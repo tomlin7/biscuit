@@ -1,0 +1,5 @@
+{
+    "copy": "<Control-C>",
+    "cut": "<Control-X>",
+    "paste": "<Control-V>"
+}
