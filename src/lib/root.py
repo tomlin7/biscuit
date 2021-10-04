@@ -8,4 +8,5 @@ class Root(tk.Tk):
 
         self.base = Base(self)
 
-        # ...
+    def run(self):
+        self.mainloop()

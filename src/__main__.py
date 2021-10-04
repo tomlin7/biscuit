@@ -4,4 +4,4 @@ from lib import root
 
 root = root.Root()
 
-root.mainloop()
+root.run()

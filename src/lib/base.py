@@ -11,7 +11,6 @@ class Base:
         self.statusbar = StatusBar(self.root)
 
         self.pack_components()
-        # ...
 
     def pack_components(self):
         self.editor.pack()
