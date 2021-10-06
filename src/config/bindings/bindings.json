@@ -1,5 +1,10 @@
 {
-    "copy": "<Control-C>",
-    "cut": "<Control-X>",
-    "paste": "<Control-V>"
+    "new": "Control-n>",
+    "open": "Control-o>",
+    "save": "Control-s>",
+    "saveAs": "Control-S>",
+    "close": "Control-w>",
+    "quit": "Control-q>",
+    "undo": "Control-z>",
+    "redo": "Control-y>"
 }
