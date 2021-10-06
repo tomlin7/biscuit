@@ -1,2 +1,0 @@
-class Bindings:
-    pass
