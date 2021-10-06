@@ -4,22 +4,27 @@ import tkinter.font as Font
 import lib.config as config
 
 class Settings:
-    font: Font
-    theme: config.Theme
     
     config: config.Config
+    bindings: config.Bindings
 
+    font: Font
+    theme: config.Theme
+        
     def __init__(self):
         self.config = config.Config()
         self.setup_properties()
 
     def setup_properties(self):
         self.setup_theme()
+        self.setup_bindings()
         self.setup_font()
-
+    
     def setup_theme(self):
-        # self.theme = config.Theme()
-        pass
+        self.theme = config.Theme(config.theme)
+    
+    def setup_bindings(self):
+        self.bindings = config.Bindings()
 
     def setup_font(self):
         self.font = tk.font.Font(
