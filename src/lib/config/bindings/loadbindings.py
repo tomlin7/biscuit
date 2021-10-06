@@ -7,7 +7,7 @@ class BindingsLoader:
 
     def load_bindings(self):
         with open(f'src/config/bindings/bindings.json', 'r') as bindings_file:
-            bindings_data = json.load(bindings)
+            bindings_data = json.load(bindings_file)
         return bindings_data
     
     def get_loaded_bindings(self):
