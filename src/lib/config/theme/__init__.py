@@ -5,7 +5,7 @@ class Theme:
     # TODO: properties
     # ...
 
-    def __init__(self, theme_name):
+    def __init__(self, theme_name="default"):
         self.theme_name = theme_name
 
         self.loader = ThemeLoader(self.theme_name)
