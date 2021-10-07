@@ -1,5 +1,5 @@
 import tkinter as tk
 
 
-class LeftPane(tk.PanedWindow):
+class TopLeftPane(tk.PanedWindow):
     pass
