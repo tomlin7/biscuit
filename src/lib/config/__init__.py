@@ -15,7 +15,7 @@ class Config:
     def __init__(self):
         self.loader = ConfigLoader()
         self.config = self.loader.get_config()
-        
+
         self.load_data()
 
     def load_data(self):
