@@ -1,12 +1,13 @@
 import tkinter as tk
 
-from lib.components.containers.top import TopPane
-from lib.components.containers.bottom import BottomPane
+from lib.containers.top import TopPane
+from lib.containers.bottom import BottomPane
 
 
 class BasePane(tk.PanedWindow):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.base = master.base
         
         self.configure(orient=tk.VERTICAL)
 
