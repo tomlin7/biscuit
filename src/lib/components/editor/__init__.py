@@ -1,5 +1,5 @@
-from lib.text import Text
-from lib.editor.utils.binder import Binder
+from lib.components.text import Text
+from lib.components.editor.utils.binder import Binder
 
 class Editor(Text):
     def __init__(self, base, *args, **kwargs):
