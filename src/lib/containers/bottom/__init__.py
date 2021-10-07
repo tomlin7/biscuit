@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from vendor.tkterminal import Terminal
+from lib.components.terminal import Terminal
 
 
 class BottomPane(tk.PanedWindow):
@@ -8,6 +8,5 @@ class BottomPane(tk.PanedWindow):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.t = Terminal(self, pady=5, padx=5, font=("Consolas", 15))
-        self.t.shell = True
-        self.add(self.t)
+        self.terminal = Terminal(self)
+        self.add(self.terminal)
