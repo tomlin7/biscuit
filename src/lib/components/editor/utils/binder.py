@@ -2,10 +2,9 @@ from lib.config.bindings import Bindings
 
 
 class Binder:
-    def __init__(self, base):
-        self.base = base
-        self.bindings = self.base.settings.bindings
-        # self.editor = self.base.editor
+    def __init__(self, bindings, editor):
+        self.bindings = bindings
+        self.editor = editor
         self.bind()
     
     def bind(self):
