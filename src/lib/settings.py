@@ -21,7 +21,7 @@ class Settings:
         self.setup_font()
     
     def setup_theme(self):
-        self.theme = config.Theme(config.theme)
+        self.theme = config.Theme(self.config.theme)
     
     def setup_bindings(self):
         self.bindings = config.Bindings()
