@@ -15,7 +15,5 @@ class Root(tk.Tk):
         self.basepane = BasePane(master=self)
         self.basepane.pack(fill=tk.BOTH, expand=1)
 
-        
-
     def run(self):
         self.mainloop()
