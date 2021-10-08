@@ -1,6 +1,8 @@
 import tkinter as tk
 import tkinter.filedialog as filedialog
 
+from datetime import datetime
+
 from lib.settings import Settings
 from lib.utils.binder import Binder
 
@@ -12,10 +14,13 @@ class Base:
         self.active_dir = None
         self.active_file = None
 
+        self.open_files = []
+
         self.binder = Binder(bindings=self.settings.bindings, base=self)
 
     def trace(self, e):
-        print(f'{e} event')
+        time = datetime.now().strftime('• %H:%M:%S •')
+        print(f'TRACE: {time} {e}')
 
     def set_active_file(self, file):
         self.active_file = file
@@ -24,51 +29,59 @@ class Base:
     def set_active_dir(self, dir):
         self.active_dir = dir
         self.trace(self.active_dir)
+    
+    def add_to_open_files(self, file):
+        self.open_files.append(file)
+        self.trace(self.open_files)
+    
+    def remove_from_open_files(self, file):
+        self.open_files.remove(file)
+        self.trace(self.open_files)
 
     # ----- interface -----
 
     def newfile(self, event):
-        self.trace('newfile')
+        self.trace('newfile event')
         pass
 
     def newwindow(self, event):
-        self.trace('newwindow')
+        self.trace('newwindow event')
         pass
 
     def openfile(self, event):
-        self.trace('open')
+        self.trace('open event')
         
         self.active_file = filedialog.askopenfilename()
-        print(f"Opened file: {self.active_file}")
+        self.trace(f"<FileOpen>({self.active_file})")
 
     def opendir(self, event):
-        self.trace('opendir')
+        self.trace('opendir event')
         
         self.active_dir = filedialog.askdirectory()
-        print(f"Opened directory: {self.active_dir}")
+        self.trace(f"<DirOpen>({self.active_dir})")
         self.root.basepane.top.left.dirtree.create_root(self.active_dir)
 
     def save(self, event):
-        self.trace('save')
+        self.trace('save event')
         pass
 
     def saveas(self, event):
-        self.trace('saveas')
+        self.trace('saveas event')
         pass
 
     def closefile(self, event):
-        self.trace('closefile')
+        self.trace('closefile event')
         pass
 
     def exit(self, event):
-        self.trace('exit')
+        self.trace('exit event')
         # self.root.destroy()
         pass
     
     def undo(self, event):
-        self.trace('undo')
+        self.trace('undo event')
         pass
     
     def redo(self, event):
-        self.trace('redo')
+        self.trace('redo event')
         pass
