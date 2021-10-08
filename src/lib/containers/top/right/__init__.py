@@ -10,7 +10,3 @@ class TopRightPane(tk.PanedWindow):
         self.editortabs = EditorTabs(self)
         self.editortabs.configure(height=25, width=75)
         self.add(self.editortabs)
-
-        # self.editor = Editor(self)
-        # self.editor.configure(height=25, width=75)
-        # self.add(self.editor)
