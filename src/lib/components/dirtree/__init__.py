@@ -1,12 +1,14 @@
 import os
 import tkinter.ttk as ttk
-
+import tkinter as tk
 
 class DirTree(ttk.Treeview):
     def __init__(self, master, startpath, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.base = master.base
         
         self.configure(columns=("fullpath", "type"), displaycolumns='')
+        self.heading('#0', text="Explorer", anchor=tk.W)
         
         self.create_root(startpath)
         self.bind("<<TreeviewOpen>>", self.update_tree)
