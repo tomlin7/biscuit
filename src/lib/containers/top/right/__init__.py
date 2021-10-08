@@ -1,6 +1,5 @@
 import tkinter as tk
 
-from lib.components.editor import Editor
 from lib.components.editortabs import EditorTabs
 
 class TopRightPane(tk.PanedWindow):
@@ -11,9 +10,6 @@ class TopRightPane(tk.PanedWindow):
         self.editortabs = EditorTabs(self)
         self.editortabs.configure(height=25, width=75)
         self.add(self.editortabs)
-
-        self.editortabs.add(Editor(self), text="Untitled")
-        self.editortabs.add(Editor(self), text="base.py")
 
         # self.editor = Editor(self)
         # self.editor.configure(height=25, width=75)
