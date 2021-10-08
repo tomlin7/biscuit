@@ -14,14 +14,14 @@ class Base:
         self.active_dir = None
         self.active_file = None
 
-        self.open_files = []
+        self.opened_files = []
 
         self.binder = Binder(bindings=self.settings.bindings, base=self)
 
     def trace(self, e):
         time = datetime.now().strftime('• %H:%M:%S •')
         print(f'TRACE: {time} {e}')
-    
+
     def refresh_dir(self):
         self.root.basepane.top.left.dirtree.create_root(self.active_dir)
 
@@ -29,8 +29,9 @@ class Base:
         self.active_file = file
         self.trace(self.active_file)
 
-        if file not in self.open_files:
+        if file not in self.opened_files:
             self.add_to_open_files(file)
+            self.trace(f"File<{self.active_file}> was added.")
 
     def set_active_dir(self, dir):
         self.active_dir = dir
@@ -39,19 +40,21 @@ class Base:
         self.trace(self.active_dir)
 
     def add_to_open_files(self, file):
-        self.open_files.append(file)
-        self.trace(self.open_files)
+        self.opened_files.append(file)
+        self.trace(f"Opened Files {self.opened_files}")
+
+        self.root.basepane.top.right.editortabs.update_tabs()
     
     def remove_from_open_files(self, file):
-        self.open_files.remove(file)
-        self.trace(self.open_files)
+        self.opened_files.remove(file)
+        self.trace(self.opened_files)
     
     def get_open_files(self):
-        return self.open_files
+        return self.opened_files
     
     def clean_open_files(self):
-        self.open_files = []
-        self.trace(self.open_files)
+        self.opened_files = []
+        self.trace(self.opened_files)
 
     # ----- interface -----
 
