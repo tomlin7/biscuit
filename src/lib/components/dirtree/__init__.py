@@ -11,8 +11,18 @@ class DirTree(ttk.Treeview):
         self.heading('#0', text="Explorer", anchor=tk.W)
         
         self.create_root(startpath)
+
         self.bind("<<TreeviewOpen>>", self.update_tree)
-        # self.bind("<<TreeviewSelect>>", update_tree)
+        # self.bind("<<TreeviewSelect>>", self.update_tree)
+        self.bind('<Double-Button-1>', self.openfile)
+
+    def openfile(self, event):
+        self = event.widget
+        item = self.focus()
+        if self.set(item, "type") == 'directory':
+            return
+        path = self.set(item, "fullpath")
+        self.base.set_active_file(path)
 
     def fill_tree(self, node):
         if self.set(node, "type") != 'directory':
@@ -39,6 +49,7 @@ class DirTree(ttk.Treeview):
         self.fill_tree(self.focus())
 
     def create_root(self, startpath):
+        self.delete(*self.get_children())
         dfpath = os.path.abspath(startpath)
         node = self.insert('', 'end', text=dfpath,
                 values=[dfpath, "directory"], open=True)

@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.filedialog as filedialog
 
 from lib.settings import Settings
 from lib.utils.binder import Binder
@@ -8,11 +9,24 @@ class Base:
         self.root = root
         self.settings = Settings()
 
+        self.active_dir = None
+        self.active_file = None
+
         self.binder = Binder(bindings=self.settings.bindings, base=self)
 
     def trace(self, e):
         print(f'{e} event')
-    
+
+    def set_active_file(self, file):
+        self.active_file = file
+        self.trace(self.active_file)
+
+    def set_active_dir(self, dir):
+        self.active_dir = dir
+        self.trace(self.active_dir)
+
+    # ----- interface -----
+
     def newfile(self, event):
         self.trace('newfile')
         pass
@@ -23,11 +37,16 @@ class Base:
 
     def openfile(self, event):
         self.trace('open')
-        pass
+        
+        self.active_file = filedialog.askopenfilename()
+        print(f"Opened file: {self.active_file}")
 
     def opendir(self, event):
         self.trace('opendir')
-        pass
+        
+        self.active_dir = filedialog.askdirectory()
+        print(f"Opened directory: {self.active_dir}")
+        self.root.basepane.top.left.dirtree.create_root(self.active_dir)
 
     def save(self, event):
         self.trace('save')
