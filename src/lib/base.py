@@ -21,21 +21,36 @@ class Base:
     def trace(self, e):
         time = datetime.now().strftime('• %H:%M:%S •')
         print(f'TRACE: {time} {e}')
+    
+    def refresh_dir(self):
+        self.root.basepane.top.left.dirtree.create_root(self.active_dir)
 
     def set_active_file(self, file):
         self.active_file = file
         self.trace(self.active_file)
 
+        if file not in self.open_files:
+            self.add_to_open_files(file)
+
     def set_active_dir(self, dir):
         self.active_dir = dir
+        self.refresh_dir()
+        self.clean_open_files()
         self.trace(self.active_dir)
-    
+
     def add_to_open_files(self, file):
         self.open_files.append(file)
         self.trace(self.open_files)
     
     def remove_from_open_files(self, file):
         self.open_files.remove(file)
+        self.trace(self.open_files)
+    
+    def get_open_files(self):
+        return self.open_files
+    
+    def clean_open_files(self):
+        self.open_files = []
         self.trace(self.open_files)
 
     # ----- interface -----
@@ -51,16 +66,15 @@ class Base:
     def openfile(self, event):
         self.trace('open event')
         
-        self.active_file = filedialog.askopenfilename()
-        self.trace(f"<FileOpen>({self.active_file})")
+        self.set_active_file(filedialog.askopenfilename())
+        # self.trace(f"<FileOpen>({self.active_file})")
 
     def opendir(self, event):
         self.trace('opendir event')
         
-        self.active_dir = filedialog.askdirectory()
-        self.trace(f"<DirOpen>({self.active_dir})")
-        self.root.basepane.top.left.dirtree.create_root(self.active_dir)
-
+        self.set_active_dir(filedialog.askdirectory())
+        # self.trace(f"<DirOpen>({self.active_dir})")
+        
     def save(self, event):
         self.trace('save event')
         pass
