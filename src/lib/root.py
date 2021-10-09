@@ -1,14 +1,16 @@
 import tkinter as tk
+from tkinterDnD import Tk
 
 from lib.base import Base
 from lib.containers import BasePane
 
 
-class Root(tk.Tk):
+class Root(Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.minsize(1290, 800)
+        self.title("Biscuit")
 
         self.base = Base(root=self)
 
