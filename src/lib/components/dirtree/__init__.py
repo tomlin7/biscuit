@@ -53,6 +53,7 @@ class DirTree(ttk.Treeview):
     def create_root(self, startpath):
         self.delete(*self.get_children())
         dfpath = os.path.abspath(startpath)
-        node = self.insert('', 'end', text=dfpath,
+        basename = os.path.basename(dfpath)
+        node = self.insert('', 'end', text=basename,
                 values=[dfpath, "directory"], open=True)
         self.fill_tree(node)
