@@ -6,7 +6,7 @@ from lib.containers import BasePane
 
 
 class Root(Tk):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.minsize(1290, 800)
@@ -16,6 +16,9 @@ class Root(Tk):
 
         self.basepane = BasePane(master=self)
         self.basepane.pack(fill=tk.BOTH, expand=1)
+
+        if dir:
+            self.base.set_active_dir(dir)
 
     def run(self):
         self.mainloop()
