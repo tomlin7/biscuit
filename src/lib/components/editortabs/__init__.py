@@ -9,9 +9,17 @@ class EditorTabs(ttk.Notebook):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
+        # dnd
+        self.configure(ondrop=self.drop)
+
         self.opened_tabs_data = {}
-        # self.opened_tab_ids = {}
         self.opened_editors = {}
+    
+    def drop(self, event):
+        test = Editor(self, path=event.data)
+        self.base.add_to_open_files(file=event.data)
+
+        self.base.trace(f"Dropped file: {event.data}")
 
     def update_tabs(self):
         for i in self.base.opened_files:
