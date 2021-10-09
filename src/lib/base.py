@@ -1,3 +1,4 @@
+import subprocess, os, sys
 import tkinter as tk
 import tkinter.filedialog as filedialog
 
@@ -34,6 +35,9 @@ class Base:
             self.trace(f"File<{self.active_file}> was added.")
 
     def set_active_dir(self, dir):
+        if not os.path.isdir(dir):
+            return
+
         self.active_dir = dir
         self.refresh_dir()
         self.clean_open_files()
@@ -55,6 +59,14 @@ class Base:
     def clean_open_files(self):
         self.opened_files = []
         self.trace(self.opened_files)
+    
+    # TODO: open file in new window
+    def open_in_new_window(self, dir):
+        # subprocess.call("")
+        print(sys.argv[0])
+
+        self.trace('open_in_new_window event')
+        pass
 
     # ----- interface -----
 
