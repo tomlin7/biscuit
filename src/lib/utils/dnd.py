@@ -1,19 +1,16 @@
 import tkinter as tk
 from tkinter import ttk
-import tkinterDnD
-
-root = tkinterDnD.Tk()  
-root.title("example")
-
-stringvar = tk.StringVar()
-stringvar.set('Drop \'em here')
-
-def drop(event):
-    print(event.data)
-
-label_2 = ttk.Label(root, ondrop=drop,
-                    textvar=stringvar, padding=100, relief="solid")
-label_2.pack(fill="both", expand=True, padx=10, pady=10)
 
 
-root.mainloop()
+class DND():
+    def __init__(self, master, *args, **kwargs):
+        self.master = master
+        self.data = None
+
+        self.setup()
+
+    def drop(self, event):
+        self.data = event.data
+    
+    def setup(self):
+        self.master.configure(ondrop=self.drop)
