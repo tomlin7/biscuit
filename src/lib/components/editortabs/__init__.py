@@ -16,8 +16,10 @@ class EditorTabs(ttk.Notebook):
         self.opened_editors = {}
     
     def drop(self, event):
-        test = Editor(self, path=event.data)
-        self.base.add_to_open_files(file=event.data)
+        if os.path.isfile(event.data):
+            self.base.add_to_open_files(file=event.data)
+        elif os.path.isdir(event.data):
+            self.base.open_in_new_window(dir=event.data)
 
         self.base.trace(f"Dropped file: {event.data}")
 
@@ -41,5 +43,8 @@ class EditorTabs(ttk.Notebook):
         self.opened_editors[i] = Editor(self, path=self.opened_tabs_data[i])
         self.opened_editors[i].configure(height=25, width=75)
         self.add(self.opened_editors[i], text=i)
+
+        # switch to newly added tab
+        self.select(self.opened_editors[i])
 
         self.base.trace(f"Editor<{i}> was added.")

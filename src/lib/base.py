@@ -60,13 +60,10 @@ class Base:
         self.opened_files = []
         self.trace(self.opened_files)
     
-    # TODO: open file in new window
     def open_in_new_window(self, dir):
-        # subprocess.call("")
-        print(sys.argv[0])
+        subprocess.Popen(["python", sys.argv[0], dir])
 
-        self.trace('open_in_new_window event')
-        pass
+        self.trace(f'Open in new window: {dir}')
 
     # ----- interface -----
 
