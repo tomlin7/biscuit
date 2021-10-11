@@ -5,11 +5,11 @@ from lib.components.editor.utils.linenumbers import LineNumbers
 from lib.components.editor.utils.binder import Binder
 
 class Editor(tk.Frame):
-    def __init__(self, master, path, *args, **kwargs):
+    def __init__(self, master, path=None, exists=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.text = Text(master=self, path=path)
+        self.text = Text(master=self, path=path, exists=exists)
         self.linenumbers = LineNumbers(master=self, text=self.text)
 
         self.scrollbar = tk.Scrollbar(self, orient="vertical", command=self.text.yview)

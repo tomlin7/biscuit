@@ -2,13 +2,15 @@ import tkinter as tk
 
 
 class Text(tk.Text):
-    def __init__(self, master, path, *args, **kwargs):
+    def __init__(self, master, path=None, exists=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
         self.path = path
         self.data = None
-        self.load_file(self.path)
+
+        if exists:
+            self.load_file(self.path)
 
         self.configure(font=self.base.settings.font)
         self.create_proxy()

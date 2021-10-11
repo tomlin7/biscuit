@@ -31,26 +31,26 @@ class EditorTabs(ttk.Notebook):
 
     def update_tabs(self):
         for filepath in self.base.opened_files:
-            filename = os.path.basename(filepath)
-            if filepath not in self.opened_tabs_data.keys():
-                self.opened_tabs_data[filepath] = filename
+            filename = os.path.basename(filepath[0])
+            if filepath[0] not in self.opened_tabs_data.keys():
+                self.opened_tabs_data[filepath[0]] = [filename, filepath[1]]
                 self.base.trace(f"Tab<{filepath}> was added.")
         
         self.update_opened_editors()
         self.base.trace(f"Opened Tabs {self.opened_tabs_data}")
 
     def update_opened_editors(self):
-        for path, name in self.opened_tabs_data.items():
-            if path not in self.opened_editors.keys():
-                self.add_editor(name, path)
+        for path, data in self.opened_tabs_data.items():
+            if path not in self.opened_editors.keys() or not data[1]:
+                self.add_editor(data[0], data[1], path)
         self.base.trace(f"Opened editors {self.opened_editors.keys()}")
     
-    def add_editor(self, name, path):
-        self.opened_editors[path] = [name, Editor(self, path=path)]
-        self.opened_editors[path][1].configure(height=25, width=75)
-        self.add(self.opened_editors[path][1], text=name)
+    def add_editor(self, name, exists, path):
+        self.opened_editors[path] = [name, exists, Editor(self, path, exists)]
+        self.opened_editors[path][2].configure(height=25, width=75)
+        self.add(self.opened_editors[path][2], text=name)
 
         # switch to newly added tab
-        self.select(self.opened_editors[path][1])
+        self.select(self.opened_editors[path][2])
 
         self.base.trace(f"Editor<{path}> was added.")

@@ -26,12 +26,12 @@ class Base:
     def refresh_dir(self):
         self.root.basepane.top.left.dirtree.create_root(self.active_dir)
 
-    def set_active_file(self, file):
+    def set_active_file(self, file, exists=True):
         self.active_file = file
-        self.trace(self.active_file)
+        self.trace(f"Active file<{self.active_file}>")
 
         if file not in self.opened_files:
-            self.add_to_open_files(file)
+            self.add_to_open_files(file, exists)
             self.trace(f"File<{self.active_file}> was added.")
 
     def set_active_dir(self, dir):
@@ -43,8 +43,8 @@ class Base:
         self.clean_open_files()
         self.trace(self.active_dir)
 
-    def add_to_open_files(self, file):
-        self.opened_files.append(file)
+    def add_to_open_files(self, file, exists):
+        self.opened_files.append([file, exists])
         self.trace(f"Opened Files {self.opened_files}")
 
         self.root.basepane.top.right.editortabs.update_tabs()
@@ -68,6 +68,7 @@ class Base:
     # ----- interface -----
 
     def newfile(self, event):
+        self.set_active_file(file="Untitled", exists=False)
         self.trace('newfile event')
         pass
 
