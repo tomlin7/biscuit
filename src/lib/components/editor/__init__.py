@@ -40,6 +40,7 @@ class Editor(tk.Frame):
     
     def set_fontsize(self, size):
         self.font.configure(size=size)
+        self.linenumbers.set_bar_width(size * 3)
         self._on_change()
 
     def refresh_fontsize(self):
