@@ -14,7 +14,7 @@ class Binder:
         self.bind(self.bindings.save, self.base.save)
         self.bind(self.bindings.save_as, self.base.saveas)
         self.bind(self.bindings.close_file, self.base.closefile)
-        self.bind(self.bindings.quit, self.base.exit)
+        self.bind(self.bindings.quit, self.base.quit)
 
     def bind(self, this, to_this):
         self.root.bind(this, to_this)
