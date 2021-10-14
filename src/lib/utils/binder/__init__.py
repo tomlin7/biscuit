@@ -1,20 +1,20 @@
 class Binder:
-    def __init__(self, bindings, base, *args, **kwargs):
+    def __init__(self, base, *args, **kwargs):
         self.base = base
         self.root = self.base.root
-        self.bindings = bindings
+        self.bindings = self.base.bindings
 
         self.bind_all()
 
     def bind_all(self):
-        self.bind('<Control-n>', self.base.newfile)
-        self.bind('<Control-N>', self.base.newwindow)
-        self.bind('<Control-o>', self.base.openfile)
-        self.bind('<Control-O>', self.base.opendir)
-        self.bind('<Control-s>', self.base.save)
-        self.bind('<Control-S>', self.base.saveas)
-        self.bind('<Control-w>', self.base.closefile)
-        self.bind('<Control-q>', self.base.exit)
+        self.bind(self.bindings.new_file, self.base.newfile)
+        self.bind(self.bindings.new_window, self.base.newwindow)
+        self.bind(self.bindings.open_file, self.base.openfile)
+        self.bind(self.bindings.open_dir, self.base.opendir)
+        self.bind(self.bindings.save, self.base.save)
+        self.bind(self.bindings.save_as, self.base.saveas)
+        self.bind(self.bindings.close_file, self.base.closefile)
+        self.bind(self.bindings.quit, self.base.exit)
 
     def bind(self, this, to_this):
         self.root.bind(this, to_this)
