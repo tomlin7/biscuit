@@ -1,12 +1,12 @@
 {
-    "newFile": "Control-n>",
-    "newWindow": "Control-N>",
-    "openFile": "Control-o>",
-    "openDir": "Control-O>",
-    "save": "Control-s>",
-    "saveAs": "Control-S>",
-    "closeFile": "Control-w>",
-    "quit": "Control-q>",
-    "undo": "Control-z>",
-    "redo": "Control-y>"
+    "newFile": "<Control-n>",
+    "newWindow": "<Control-N>",
+    "openFile": "<Control-o>",
+    "openDir": "<Control-O>",
+    "save": "<Control-s>",
+    "saveAs": "<Control-S>",
+    "closeFile": "<Control-w>",
+    "quit": "<Control-q>",
+    "undo": "<Control-z>",
+    "redo": "<Control-y>"
 }
