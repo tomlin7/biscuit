@@ -11,13 +11,14 @@ class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
         self.settings = Settings()
+        self.bindings = self.settings.bindings
 
         self.active_dir = None
         self.active_file = None
 
         self.opened_files = []
 
-        self.binder = Binder(bindings=self.settings.bindings, base=self)
+        self.binder = Binder(base=self)
 
     def trace(self, e):
         time = datetime.now().strftime('• %H:%M:%S •')
@@ -30,7 +31,7 @@ class Base:
         self.active_file = file
         self.trace(f"Active file<{self.active_file}>")
 
-        if file not in [f[0] for f in self.opened_files]:
+        if not exists or file not in [f[0] for f in self.opened_files]:
             print("♥♥ ", self.opened_files)
             self.add_to_open_files(file, exists)
             self.trace(f"File<{self.active_file}> was added.")
@@ -56,10 +57,10 @@ class Base:
         self.opened_files.remove(file)
         self.trace(self.opened_files)
     
-    def get_open_files(self):
+    def get_opened_files(self):
         return self.opened_files
     
-    def clean_open_files(self):
+    def clean_opened_files(self):
         self.opened_files = []
         self.trace(self.opened_files)
     
@@ -67,6 +68,11 @@ class Base:
         subprocess.Popen(["python", sys.argv[0], dir])
 
         self.trace(f'Open in new window: {dir}')
+    
+    def open_new_window(self):
+        subprocess.Popen(["python", sys.argv[0]])
+
+        self.trace(f'Open new window')
 
     # ----- interface -----
 
@@ -76,20 +82,16 @@ class Base:
         pass
 
     def newwindow(self, event):
-        self.trace('newwindow event')
-        pass
+        self.open_new_window()
+        self.trace(f"<NewWindowEvent>(.)")
 
     def openfile(self, event):
-        self.trace('open event')
-        
         self.set_active_file(filedialog.askopenfilename())
-        # self.trace(f"<FileOpen>({self.active_file})")
+        self.trace(f"<FileOpenEvent>({self.active_file})")
 
     def opendir(self, event):
-        self.trace('opendir event')
-        
         self.set_active_dir(filedialog.askdirectory())
-        # self.trace(f"<DirOpen>({self.active_dir})")
+        self.trace(f"<DirOpenEvent>({self.active_dir})")
         
     def save(self, event):
         self.trace('save event')
