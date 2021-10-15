@@ -34,6 +34,39 @@ class Text(tk.Text):
 
     def write(self, text):
         self.insert(tk.END, text)
+    
+    def get_all_text(self):
+        return self.get(1.0, tk.END)
+    
+    def get_selected_text(self):
+        return self.get(tk.SEL_FIRST, tk.SEL_LAST)
+    
+    @property
+    def line(self):
+        return self.index(tk.INSERT).split('.')[0]
+    
+    @property
+    def column(self):
+        return self.index(tk.INSERT).split('.')[1]
+
+    @property
+    def position(self):
+        return self.index(tk.INSERT).split('.')
+
+    def scroll_to_end(self):
+        self.see(tk.END)
+        self.mark_set(tk.INSERT, tk.END)
+        self.see(tk.INSERT)
+    
+    def scroll_to_start(self):
+        self.see(1.0)
+        self.mark_set(tk.INSERT, 1.0)
+        self.see(tk.INSERT)
+    
+    def scroll_to_line(self, line):
+        self.see(line)
+        self.mark_set(tk.INSERT, line)
+        self.see(tk.INSERT)
 
     def _proxy(self, *args):
         if args[0] == 'get' and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST) and not self.tag_ranges(tk.SEL): 
