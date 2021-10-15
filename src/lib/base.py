@@ -25,7 +25,7 @@ class Base:
 
     def trace(self, e):
         time = datetime.now().strftime('• %H:%M:%S •')
-        print(f'TRACE: {time} {e}')
+        print(f'TRACE {time} {e}')
 
     def refresh_dir(self):
         self.root.basepane.top.left.dirtree.create_root(self.active_dir)
@@ -99,8 +99,10 @@ class Base:
         self.trace(f"<DirOpenEvent>({self.active_dir})")
         
     def save(self, event):
-        self.trace('save event')
-        pass
+        with open(self.active_file, 'w') as f:
+            f.write(self.root.basepane.top.right.editortabs.get_active_text())
+
+        self.trace(f"<FileSaveEvent>({self.active_file})")
 
     def saveas(self, event):
         self.trace('saveas event')
