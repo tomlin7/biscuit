@@ -56,6 +56,8 @@ class DirTree(ttk.Treeview):
         dfpath = os.path.abspath(startpath)
         basename = os.path.basename(dfpath)
 
+        self.heading('#0', text=basename, anchor=tk.W)
+
         for p in os.listdir(dfpath):
             p = os.path.join(dfpath, p)
             ptype = None
