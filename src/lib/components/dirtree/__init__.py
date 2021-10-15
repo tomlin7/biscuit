@@ -2,18 +2,17 @@ import os
 import tkinter.ttk as ttk
 import tkinter as tk
 
+from lib.components.dirtree.utils.binder import Binder
+
 class DirTree(ttk.Treeview):
     def __init__(self, master, startpath, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         
         self.configure(columns=("fullpath", "type"), displaycolumns='')
-        
         self.create_root(startpath)
 
-        self.bind("<<TreeviewOpen>>", self.update_tree)
-        self.bind("<<TreeviewSelect>>", self.update_tree)
-        self.bind('<Double-Button-1>', self.openfile)
+        self.binder = Binder(self)
 
     def openfile(self, event):
         item = self.focus()
