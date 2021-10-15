@@ -35,9 +35,8 @@ class Events:
         self.base.trace(f"<FileCloseEvent>({self.base.active_file})")
 
     def quit(self, event):
-        self.base.trace('exit event')
-        # self.base.root.destroy()
-        pass
+        self.base.root.destroy()
+        self.base.trace(f"<ApplicationQuitEvent>")
     
     def undo(self, event):
         self.base.trace('undo event')
