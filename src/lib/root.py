@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinterDnD import Tk
 
@@ -6,9 +7,10 @@ from lib.containers import BasePane
 
 
 class Root(Tk):
-    def __init__(self, dir=None, *args, **kwargs):
+    def __init__(self, path, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        self.appdir = os.path.dirname(path)
+
         self.minsize(1290, 800)
         self.title("Biscuit")
 

@@ -1,8 +1,10 @@
-import json
+import json, os
 
 
 class ThemeLoader:
-    def __init__(self, theme_name, default="default"):
+    def __init__(self, master, theme_name, default="default"):
+        self.base = master.base
+
         self.theme_name = theme_name
         self.default = default
         self.theme_data = self.try_load_theme()
@@ -14,7 +16,7 @@ class ThemeLoader:
             return self.load_theme(self.default)
 
     def load_theme(self, theme_name):
-        with open(f'src/config/themes/{theme_name}.json', 'r') as theme_file:
+        with open(os.path.join(self.base.appdir, 'config/themes', f'{theme_name}.json'), 'r') as theme_file:
             theme_data = json.load(theme_file)
         return theme_data
     

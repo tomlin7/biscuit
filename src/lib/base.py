@@ -10,7 +10,8 @@ from lib.utils.binder import Binder
 class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
-        self.settings = Settings()
+        self.appdir = root.appdir
+        self.settings = Settings(self)
         self.bindings = self.settings.bindings
 
         self.active_dir = None

@@ -13,8 +13,10 @@ class Bindings:
     quit: str
     # ...
 
-    def __init__(self):
-        self.loader = BindingsLoader()
+    def __init__(self, master):
+        self.base = master.base
+
+        self.loader = BindingsLoader(self)
         self.bindings = self.loader.get_loaded_bindings()
         self.map_bindings()
 

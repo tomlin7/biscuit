@@ -12,8 +12,10 @@ class Config:
     # TODO: more properties
     # ...
     
-    def __init__(self):
-        self.loader = ConfigLoader()
+    def __init__(self, master):
+        self.base = master.base
+
+        self.loader = ConfigLoader(self)
         self.config = self.loader.get_config()
 
         self.load_data()

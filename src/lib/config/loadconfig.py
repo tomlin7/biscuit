@@ -1,13 +1,15 @@
-import json
+import json, os
 
 
 class ConfigLoader:
-    def __init__(self, config_file="settings.json"):
+    def __init__(self, master, config_file="settings.json"):
+        self.base = master.base
+
         self.config_file = config_file
         self.config = self.load_config()
- 
+
     def load_config(self):
-        with open(f'src/config/{self.config_file}') as settingsfile:
+        with open(os.path.join(self.base.appdir, 'config', self.config_file), 'r') as settingsfile:
             config = json.load(settingsfile)
         return config
 
