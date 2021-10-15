@@ -8,20 +8,19 @@ class DirTree(ttk.Treeview):
         self.base = master.base
         
         self.configure(columns=("fullpath", "type"), displaycolumns='')
-        self.heading('#0', text="Explorer", anchor=tk.W)
         
         self.create_root(startpath)
 
         self.bind("<<TreeviewOpen>>", self.update_tree)
-        # self.bind("<<TreeviewSelect>>", self.update_tree)
+        self.bind("<<TreeviewSelect>>", self.update_tree)
         self.bind('<Double-Button-1>', self.openfile)
 
     def openfile(self, event):
-        self = event.widget
         item = self.focus()
         if self.set(item, "type") != 'file':
             return
         path = self.set(item, "fullpath")
+
         self.base.set_active_file(path)
 
     def fill_tree(self, node):
@@ -29,6 +28,7 @@ class DirTree(ttk.Treeview):
             return
 
         path = self.set(node, "fullpath")
+
         # Delete the possibly 'dummy' node present.
         self.delete(*self.get_children(node))
 
@@ -42,7 +42,7 @@ class DirTree(ttk.Treeview):
                 ptype = 'file'
 
             fname = os.path.split(p)[1]
-            oid = self.insert(node, 'end', text=fname, values=[p, ptype])
+            oid = self.insert(node, tk.END, text=fname, values=[p, ptype])
             if ptype == 'directory':
                 self.insert(oid, 0, text='dummy')
 
@@ -52,8 +52,19 @@ class DirTree(ttk.Treeview):
 
     def create_root(self, startpath):
         self.delete(*self.get_children())
+
         dfpath = os.path.abspath(startpath)
         basename = os.path.basename(dfpath)
-        node = self.insert('', 'end', text=basename,
-                values=[dfpath, "directory"], open=True)
-        self.fill_tree(node)
+
+        for p in os.listdir(dfpath):
+            p = os.path.join(dfpath, p)
+            ptype = None
+            if os.path.isdir(p):
+                ptype = 'directory'
+            elif os.path.isfile(p):
+                ptype = 'file'
+
+            fname = os.path.split(p)[1]
+            oid = self.insert('', tk.END, text=fname, values=[p, ptype])
+            if ptype == 'directory':
+                self.insert(oid, 0, text='dummy')
