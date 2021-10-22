@@ -16,10 +16,10 @@ class EditorTabs(ttk.Notebook):
         self.opened_editors = {}
 
         # data
-        # {path: name}
+        # {path: name, exists}
 
         # editors
-        # {path: [name, editor]}
+        # {path: [name, exists, editor]}
     
     def drop(self, event):
         if os.path.isfile(event.data):
@@ -66,6 +66,9 @@ class EditorTabs(ttk.Notebook):
             if str(item) == self.select():
                 item.destroy()
                 break
+        
+    def get_active_tab(self):
+        return self.opened_editors[self.base.active_file][2]
     
     def get_active_text(self):
         return self.opened_editors[self.base.active_file][2].text.get_all_text()
