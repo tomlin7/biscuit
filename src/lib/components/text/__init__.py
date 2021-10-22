@@ -39,19 +39,26 @@ class Text(tk.Text):
         return self.get(1.0, tk.END)
     
     def get_selected_text(self):
-        return self.get(tk.SEL_FIRST, tk.SEL_LAST)
-    
+        try:
+            return self.selection_get()
+        except Exception:
+            return ""
+
+    def get_selected_count(self):
+        return len(self.get_selected_text())
+        
     @property
     def line(self):
-        return self.index(tk.INSERT).split('.')[0]
+        return int(self.index(tk.INSERT).split('.')[0])
     
     @property
     def column(self):
-        return self.index(tk.INSERT).split('.')[1]
+        return int(self.index(tk.INSERT).split('.')[1]) + 1
 
     @property
     def position(self):
-        return self.index(tk.INSERT).split('.')
+        lc = self.index(tk.INSERT).split('.')
+        return [lc[0], int(lc[1]) + 1]
 
     def scroll_to_end(self):
         self.see(tk.END)
