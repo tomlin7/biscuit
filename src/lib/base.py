@@ -81,3 +81,7 @@ class Base:
         subprocess.Popen(["python", sys.argv[0]])
 
         self.trace(f'Opened new window')
+
+    def update_statusbar(self):
+        active_text = self.root.basepane.top.right.editortabs.get_active_tab().text
+        self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
