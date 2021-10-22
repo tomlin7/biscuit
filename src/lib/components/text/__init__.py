@@ -12,7 +12,7 @@ class Text(tk.Text):
         if exists:
             self.load_file(self.path)
 
-        self.configure(font=self.master.font)
+        self.configure(font=self.master.font, wrap=tk.NONE)
         self.create_proxy()
 
     def create_proxy(self):
