@@ -4,6 +4,7 @@ from tkinterDnD import Tk
 
 from lib.base import Base
 from lib.containers import BasePane
+from lib.components.sidebar import Sidebar
 from lib.components.statusbar import StatusBar
 
 
@@ -16,6 +17,9 @@ class Root(Tk):
         self.title("Biscuit")
 
         self.base = Base(root=self)
+
+        # self.sidebar = Sidebar(self)
+        # self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
         self.basepane = BasePane(master=self)
         self.basepane.pack(fill=tk.BOTH, expand=1)
