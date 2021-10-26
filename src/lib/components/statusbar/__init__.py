@@ -27,6 +27,9 @@ class StatusBar(tk.Frame):
         self.eol.pack(side=tk.RIGHT)
         self.encoding.pack(side=tk.RIGHT)
         self.line_col_info.pack(side=tk.RIGHT)
+    
+    def set_git_info(self, branch):
+        self.branch.config(text=" {0}".format(branch))
 
     def set_line_col_info(self, line, col, selected):
         self.line_col_info.config(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))
