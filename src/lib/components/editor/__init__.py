@@ -37,7 +37,7 @@ class Editor(tk.Frame):
 
     def _on_change(self, event=None):
         self.linenumbers.redraw()
-        self.base.update_statusbar()
+        self.base.update_statusbar_ln_col_info()
     
     def set_fontsize(self, size):
         self.font.configure(size=size)
