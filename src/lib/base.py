@@ -8,12 +8,18 @@ from lib.settings import Settings
 from lib.utils.binder import Binder
 from lib.utils.events import Events
 
+from lib.components.git import GitCore
+
 class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
         self.appdir = root.appdir
         self.settings = Settings(self)
         self.bindings = self.settings.bindings
+
+        self.git_found = False
+        self.git = GitCore(self)
+        print(self.git.get_version())
 
         self.active_dir = None
         self.active_file = None
@@ -33,6 +39,9 @@ class Base:
         self.root.basepane.top.left.dirtree.create_root(self.active_dir)
 
     def set_active_file(self, file, exists=True):
+        if not file:
+            return
+
         self.active_file = file
         self.trace(f"Active file<{self.active_file}>")
 
@@ -47,6 +56,7 @@ class Base:
             return
 
         self.active_dir = dir
+        self.update_git()
         self.refresh_dir()
         self.clean_opened_files()
         self.trace(self.active_dir)
@@ -81,7 +91,15 @@ class Base:
         subprocess.Popen(["python", sys.argv[0]])
 
         self.trace(f'Opened new window')
+    
+    def update_git(self):
+        self.git.open_repo()
 
-    def update_statusbar(self):
+        self.update_statusbar_git_info()
+    
+    def update_statusbar_git_info(self):
+        self.root.statusbar.set_git_info(self.git.get_active_branch())
+
+    def update_statusbar_ln_col_info(self):
         active_text = self.root.basepane.top.right.editortabs.get_active_tab().text
         self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
