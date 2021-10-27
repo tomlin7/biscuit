@@ -9,10 +9,11 @@ class Text(tk.Text):
         self.path = path
         self.data = None
 
+        self.configure(font=self.master.font, wrap=tk.NONE)
+
         if exists:
             self.load_file(self.path)
 
-        self.configure(font=self.master.font, wrap=tk.NONE)
         self.create_proxy()
 
     def create_proxy(self):
@@ -26,10 +27,7 @@ class Text(tk.Text):
                 self.data = data.read()
                 self.clear_insert()
         except:
-            self.set_wrap(True)
-            self.data = "This file is not displayed in this editor because it is either binary \nor uses an unsupported text encoding. Do you want to open it anyway? Nope"
-            self.clear_insert()
-            self.set_active(False)
+            self.show_unsupported_dialog()
 
     def clear_insert(self):
         self.clear()
@@ -93,6 +91,13 @@ class Text(tk.Text):
             self.configure(state=tk.NORMAL)
         else:
             self.configure(state=tk.DISABLED)
+    
+    def show_unsupported_dialog(self):
+        self.set_wrap(True)
+        self.configure(font=('Arial', 10))
+        self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding. Do you want to open it anyway? Nope"
+        self.clear_insert()
+        self.set_active(False)
 
     def _proxy(self, *args):
         if args[0] == 'get' and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST) and not self.tag_ranges(tk.SEL): 
