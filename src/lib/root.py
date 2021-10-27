@@ -29,6 +29,8 @@ class Root(Tk):
 
         if dir:
             self.base.set_active_dir(dir)
+        
+        self.base.after_initialization()
 
     def run(self):
         self.mainloop()

@@ -34,6 +34,9 @@ class Base:
         self.binder = Binder(base=self)
 
         self.binder.bind('<Control-g>', self.open_git_window)
+    
+    def after_initialization(self):
+        self.update_statusbar_ln_col_info()
 
     def trace(self, e):
         time = datetime.now().strftime('• %H:%M:%S •')
@@ -54,6 +57,7 @@ class Base:
             self.trace(f"File<{self.active_file}> was added.")
         else:
             self.root.basepane.top.right.editortabs.set_active_tab(file)
+        self.update_statusbar_ln_col_info()
 
     def set_active_dir(self, dir):
         if not os.path.isdir(dir):
@@ -63,6 +67,7 @@ class Base:
         self.update_git()
         self.refresh_dir()
         self.clean_opened_files()
+        self.update_statusbar_ln_col_info()
         self.trace(self.active_dir)
 
     def add_to_open_files(self, file, exists):
@@ -76,6 +81,8 @@ class Base:
             if i[0] == file:
                 self.opened_files.remove(i)
                 self.root.basepane.top.right.editortabs.update_tabs()
+        
+        self.update_statusbar_ln_col_info()
         self.trace(self.opened_files)
     
     def get_opened_files(self):
@@ -108,5 +115,9 @@ class Base:
         self.root.statusbar.set_git_info(self.git.get_active_branch())
 
     def update_statusbar_ln_col_info(self):
-        active_text = self.root.basepane.top.right.editortabs.get_active_tab().text
-        self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
+        if self.active_file:
+            self.root.statusbar.configure_line_col_info(True)
+            active_text = self.root.basepane.top.right.editortabs.get_active_tab().text
+            self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
+        else:
+            self.root.statusbar.configure_line_col_info(False)
