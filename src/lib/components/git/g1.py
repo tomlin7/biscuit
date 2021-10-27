@@ -27,7 +27,7 @@ class BetterEntry(ttk.Entry):
 
         super().__init__(master, style='my.TEntry', **kwargs)
         self.text = placeholder
-        self.__has_placeholder = False
+        self._has_placeholder = False
 
         self._add()
 
@@ -36,28 +36,28 @@ class BetterEntry(ttk.Entry):
         self.bind('<KeyRelease>',self._normal)
 
     def _clear(self, *args):
-        if self.get() == self.text and self.__has_placeholder:
+        if self.get() == self.text and self._has_placeholder:
             self.delete(0, tk.END)
             self.configure(style='my.TEntry')
-            self.__has_placeholder = False
+            self._has_placeholder = False
 
     def _add(self, *args):
-        if self.get() == '' and not self.__has_placeholder:
+        if self.get() == '' and not self._has_placeholder:
             self.configure(style='placeholder.TEntry')
             self.insert(0, self.text)
             self.icursor(0)
-            self.__has_placeholder = True
+            self._has_placeholder = True
 
     def _normal(self, *args):
         self._add()
-        if self.get() == self.text and self.__has_placeholder:
+        if self.get() == self.text and self._has_placeholder:
             self.bind('<Key>', self._clear)
             self.icursor(-1)
         else:
             self.configure(style='my.TEntry')
 
     def acquire(self):
-        if self.get() == self.text and self.__has_placeholder:
+        if self.get() == self.text and self._has_placeholder:
             return 'None'
         else:
             return self.get()
@@ -70,12 +70,12 @@ class BetterEntry(ttk.Entry):
         if self.get() != self.text:
             self.delete(first, last)
             self._add()
-        elif self.acquire() == self.text and not self.__has_placeholder:
+        elif self.acquire() == self.text and not self._has_placeholder:
             self.delete(first, last)
             self._add()
 
     def length(self):
-        if self.get() == self.text and self.__has_placeholder:
+        if self.get() == self.text and self._has_placeholder:
             return 0
         else:
             return len(self.get())
