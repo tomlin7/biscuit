@@ -5,14 +5,22 @@ import tkinter as tk
 from lib.components.dirtree.utils.binder import Binder
 
 class DirTree(ttk.Treeview):
-    def __init__(self, master, startpath, *args, **kwargs):
+    def __init__(self, master, startpath=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         
         self.configure(columns=("fullpath", "type"), displaycolumns='')
-        self.create_root(startpath)
+        
+        if startpath:
+            self.create_root(startpath)
+        else:
+            self.set_heading('No Folder Opened')
+            self.insert('', 0, text='You have not yet opened a folder.')
 
         self.binder = Binder(self)
+    
+    def set_heading(self, text):
+        self.heading('#0', text=text, anchor=tk.W)
 
     def openfile(self, event):
         item = self.focus()
@@ -55,7 +63,7 @@ class DirTree(ttk.Treeview):
         dfpath = os.path.abspath(startpath)
         basename = os.path.basename(dfpath)
 
-        self.heading('#0', text=basename, anchor=tk.W)
+        self.set_heading(basename)
 
         for p in os.listdir(dfpath):
             p = os.path.join(dfpath, p)

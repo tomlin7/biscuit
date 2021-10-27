@@ -12,6 +12,6 @@ class TopLeftPane(tk.PanedWindow):
         self.label = tk.Label(self, text="Explorer", anchor=tk.W)
         self.add(self.label, pady=2, padx=5)
 
-        self.dirtree = DirTree(self, '.')
+        self.dirtree = DirTree(self)
         self.dirtree.configure(height=25)
         self.add(self.dirtree)
