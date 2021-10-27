@@ -33,15 +33,16 @@ class EditorTabs(ttk.Notebook):
             if self.index(editor[1][2]) == self.index(self.select()):
                 self.base.active_file = editor[0]
                 self.base.update_statusbar_ln_col_info()
+                
                 self.base.trace(f"Active tab was changed to {editor[0]}")
                 break
-        print(self.base.active_file)
+        self.base.trace(f"Currently Active file: {self.base.active_file}")
 
     def update_tabs(self):
         for opened_file in self.base.opened_files:
-            filename = os.path.basename(opened_file[0])
             if opened_file[0] not in self.opened_editors.keys() or not opened_file[1]:
-                self.add_editor(filename, opened_file[1], opened_file[0])
+                self.add_editor(os.path.basename(opened_file[0]), opened_file[1], opened_file[0])
+                
                 self.base.trace(f"Tab<{opened_file}> was added.")
         
         self.base.trace(f"Opened Tabs {self.opened_editors}")
@@ -78,8 +79,7 @@ class EditorTabs(ttk.Notebook):
         self.update_tabs()
         self.refresh_active_file()
 
-        self.base.trace(f"Active tab was closed.")
-        self.base.trace(f"Closed Tabs {self.closed_tabs}")
+        self.base.trace(f"Active tab was closed.\nClosed Tabs: {self.closed_tabs}")
         
     def get_active_tab(self):
         return self.opened_editors[self.base.active_file][2]
