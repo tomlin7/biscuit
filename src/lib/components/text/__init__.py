@@ -21,9 +21,12 @@ class Text(tk.Text):
         self.tk.createcommand(self._w, self._proxy)
 
     def load_file(self, path):
-        with open(path, 'r') as data:
-            self.data = data.read()
-            self.clear_insert()
+        try:
+            with open(path, 'r') as data:
+                self.data = data.read()
+                self.clear_insert()
+        except:
+            pass
 
     def clear_insert(self):
         self.clear()
