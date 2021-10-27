@@ -26,9 +26,10 @@ class Text(tk.Text):
                 self.data = data.read()
                 self.clear_insert()
         except:
-            self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding. Do you want to open it anyway? Nah you can't :)"
-            self.clear_insert()
             self.set_wrap(True)
+            self.data = "This file is not displayed in this editor because it is either binary \nor uses an unsupported text encoding. Do you want to open it anyway? Nope"
+            self.clear_insert()
+            self.set_active(False)
 
     def clear_insert(self):
         self.clear()
@@ -86,6 +87,12 @@ class Text(tk.Text):
             self.configure(wrap=tk.WORD)
         else:
             self.configure(wrap=tk.NONE)
+    
+    def set_active(self, flag=True):
+        if flag:
+            self.configure(state=tk.NORMAL)
+        else:
+            self.configure(state=tk.DISABLED)
 
     def _proxy(self, *args):
         if args[0] == 'get' and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST) and not self.tag_ranges(tk.SEL): 
