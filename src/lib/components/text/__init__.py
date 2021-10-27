@@ -26,11 +26,14 @@ class Text(tk.Text):
                 self.data = data.read()
                 self.clear_insert()
         except:
-            pass
+            self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding. Do you want to open it anyway? Nah you can't :)"
+            self.clear_insert()
+            self.set_wrap(True)
 
     def clear_insert(self):
         self.clear()
         self.write(text=self.data)
+        self.scroll_to_start()
         
     def clear(self):
         self.delete(1.0, tk.END)
@@ -77,6 +80,12 @@ class Text(tk.Text):
         self.see(line)
         self.mark_set(tk.INSERT, line)
         self.see(tk.INSERT)
+    
+    def set_wrap(self, flag=True):
+        if flag:
+            self.configure(wrap=tk.WORD)
+        else:
+            self.configure(wrap=tk.NONE)
 
     def _proxy(self, *args):
         if args[0] == 'get' and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST) and not self.tag_ranges(tk.SEL): 
