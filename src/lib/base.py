@@ -80,7 +80,8 @@ class Base:
         if self.active_file:
             self.remove_from_open_files(self.active_file)
             self.root.basepane.top.right.editortabs.remove_tab(self.active_file)
-            self.active_file = None
+
+            self.update_statusbar_ln_col_info()
             self.trace(f"<CloseActiveFileEvent>({self.active_file})")
     
     def remove_from_open_files(self, file):
@@ -121,10 +122,9 @@ class Base:
         self.root.statusbar.set_git_info(self.git.get_active_branch())
 
     def update_statusbar_ln_col_info(self):
-        pass
-        # if self.active_file:
-        #     self.root.statusbar.configure_line_col_info(True)
-        #     active_text = self.root.basepane.top.right.editortabs.get_active_tab().text
-        #     self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
-        # else:
-        #     self.root.statusbar.configure_line_col_info(False)
+        if self.active_file:
+            self.root.statusbar.configure_line_col_info(True)
+            active_text = self.root.basepane.top.right.editortabs.get_active_tab().text
+            self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
+        else:
+            self.root.statusbar.configure_line_col_info(False)
