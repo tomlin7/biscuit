@@ -10,24 +10,54 @@ class StatusBar(tk.Frame):
         self.base = master.base
 
         self.branch = SButton(self, text=" master")
-        self.sample = SLabel(self, text="Status Bar")
-        
+        self.branch.set_pack_data(side=tk.LEFT)
+
+        self.sample = SButton(self, text="Status Bar")
+        self.sample.set_pack_data(side=tk.LEFT)
+
         self.line_col_info = SButton(self, text="Ln ?, Col ?")
+        self.line_col_info.set_pack_data(side=tk.RIGHT)
+
         self.encoding = SButton(self, text="UTF-8")
+        self.encoding.set_pack_data(side=tk.RIGHT)
+
         self.eol = SButton(self, text="CRLF")
+        self.eol.set_pack_data(side=tk.RIGHT)
+
         self.file_type = SButton(self, text="Plain Text")
+        self.file_type.set_pack_data(side=tk.RIGHT)
+
         self.clock = SClock(self, text="H:M:S")
+        self.clock.set_pack_data(side=tk.RIGHT)
         
-        # packing
-        self.branch.pack(side=tk.LEFT)
-        self.sample.pack(side=tk.LEFT)
-        
-        self.clock.pack(side=tk.RIGHT)
-        self.file_type.pack(side=tk.RIGHT)
-        self.eol.pack(side=tk.RIGHT)
-        self.encoding.pack(side=tk.RIGHT)
-        self.line_col_info.pack(side=tk.RIGHT)
+
+        self.branch.show()
+        self.sample.show()
     
+        self.clock.show()
+        self.file_type.show()
+        self.eol.show()
+        self.encoding.show()
+        self.line_col_info.show()
+    
+    def configure_line_col_info(self, enabled):
+        if enabled:
+            if not self.line_col_info.enabled:
+                self.clock.hide()
+                self.file_type.hide()
+                self.eol.hide()
+                self.encoding.hide()
+
+                self.clock.show()
+                self.file_type.show()
+                self.eol.show()
+                self.encoding.show()
+                
+                self.line_col_info.show()
+        else:
+            if self.line_col_info.enabled:
+                self.line_col_info.hide()
+        
     def set_git_info(self, branch):
         self.branch.config(text=" {0}".format(branch))
 
