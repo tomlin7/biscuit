@@ -1,11 +1,11 @@
 import tkinter as tk
 import tkinter.font as Font
 
-from lib.components.text import Text
-from lib.components.text.utils import Utils
+from ..text import Text
+from ..text.utils import Utils
 
-from lib.components.editor.utils.linenumbers import LineNumbers
-from lib.components.editor.utils.binder import Binder
+from .utils.linenumbers import LineNumbers
+from .utils.binder import Binder
 
 class Editor(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):

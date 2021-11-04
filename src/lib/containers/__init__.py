@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from lib.containers.top import TopPane
-from lib.containers.bottom import BottomPane
+from .top import TopPane
+from .bottom import BottomPane
 
 
 class BasePane(tk.PanedWindow):

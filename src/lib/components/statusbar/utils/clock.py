@@ -1,6 +1,6 @@
 import time
 
-from lib.components.statusbar.utils.button import SButton
+from .button import SButton
 
 class SClock(SButton):
     def __init__(self, *args, **kwargs):

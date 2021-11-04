@@ -1,12 +1,11 @@
 import tkinter as tk
 import git, os, threading
 
-from lib.components.git.core import GitCore
-from lib.components.git.repo import GitRepo
+from .core import GitCore
+from .repo import GitRepo
+from .tree import ChangesTree
 
-from lib.components.git.tree import ChangesTree
-
-from lib.components.text import utils
+from ..text import utils
 
 # TODO: change into git pane later on
 class GitWindow(tk.Toplevel):

@@ -4,12 +4,12 @@ import tkinter.filedialog as filedialog
 
 from datetime import datetime
 
-from lib.settings import Settings
-from lib.utils.binder import Binder
-from lib.utils.events import Events
+from .settings import Settings
+from .utils.binder import Binder
+from .utils.events import Events
 
-from lib.components.git import GitCore
-from lib.components.git import GitWindow
+from .components.git import GitCore
+from .components.git import GitWindow
 
 
 class Base:

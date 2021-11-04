@@ -1,7 +1,7 @@
 import os
 from tkinter import ttk
 
-from lib.components.editor import Editor
+from ..editor import Editor
 
 
 class EditorTabs(ttk.Notebook):

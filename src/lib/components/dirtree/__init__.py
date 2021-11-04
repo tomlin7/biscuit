@@ -2,7 +2,7 @@ import os
 import tkinter.ttk as ttk
 import tkinter as tk
 
-from lib.components.dirtree.utils.binder import Binder
+from .utils.binder import Binder
 
 class DirTree(ttk.Treeview):
     def __init__(self, master, startpath=None, *args, **kwargs):

@@ -1,4 +1,4 @@
-from lib.config.theme.loadtheme import ThemeLoader
+from .loadtheme import ThemeLoader
 
 
 class Theme:

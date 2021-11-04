@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from lib.components.editortabs import EditorTabs
+from ....components.editortabs import EditorTabs
 
 class TopRightPane(tk.PanedWindow):
     def __init__(self, master, *args, **kwargs):

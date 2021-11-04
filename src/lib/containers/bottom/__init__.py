@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from lib.components.terminal import Terminal
+from ...components.terminal import Terminal
 
 
 class BottomPane(tk.PanedWindow):

@@ -1,4 +1,4 @@
-from lib.config.bindings import Bindings
+from ....config.bindings import Bindings
 
 
 class Binder:

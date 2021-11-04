@@ -1,8 +1,8 @@
 import tkinter as tk 
 
-from lib.components.statusbar.utils.label import SLabel
-from lib.components.statusbar.utils.button import SButton
-from lib.components.statusbar.utils.clock import SClock
+from .utils.label import SLabel
+from .utils.button import SButton
+from .utils.clock import SClock
 
 class StatusBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):

@@ -1,4 +1,4 @@
-from lib.config.bindings.loadbindings import BindingsLoader
+from .loadbindings import BindingsLoader
 
 
 class Bindings:

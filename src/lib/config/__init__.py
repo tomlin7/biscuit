@@ -1,9 +1,9 @@
 import json
 
-from lib.config.font import Font
-from lib.config.bindings import Bindings
-from lib.config.theme import Theme
-from lib.config.loadconfig import ConfigLoader
+from .font import Font
+from .bindings import Bindings
+from .theme import Theme
+from .loadconfig import ConfigLoader
 
 class Config:
     theme: str
