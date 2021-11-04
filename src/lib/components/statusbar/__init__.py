@@ -4,6 +4,8 @@ from .utils.label import SLabel
 from .utils.button import SButton
 from .utils.clock import SClock
 
+from ..popup import PopupMenu
+
 class StatusBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
