@@ -7,6 +7,7 @@ from lib.containers import BasePane
 from lib.components.sidebar import Sidebar
 from lib.components.statusbar import StatusBar
 
+from lib.components.popup import PopupMenu
 
 class Root(Tk):
     def __init__(self, path, dir=None, *args, **kwargs):
@@ -17,6 +18,15 @@ class Root(Tk):
         self.title("Biscuit")
 
         self.base = Base(root=self)
+
+        # temp
+        menus = [("Test 1", lambda e=None: print("Test 1")), ("Test 2", lambda e=None: print("Test 2")),
+                ("Test 3", lambda e=None: print("Test 3")), ("Test 4", lambda e=None: print("Test 4"))]
+
+        self.popup = PopupMenu(
+            self, menus, prompt=">", 
+            watermark="Search Something Here", bg="#f3f3f3")
+        self.bind("<Control-n>", self.popup.show)
 
         # self.sidebar = Sidebar(self)
         # self.sidebar.pack(side=tk.LEFT, fill=tk.Y)

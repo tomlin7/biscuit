@@ -34,7 +34,7 @@ class Base:
         self.binder = Binder(base=self)
 
         self.binder.bind('<Control-g>', self.open_git_window)
-    
+
     def after_initialization(self):
         self.update_statusbar_ln_col_info()
 
