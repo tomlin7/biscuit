@@ -102,8 +102,8 @@ class PopupMenu(tk.Toplevel):
 
     def show(self, *args):
         self.update_idletasks()
-        x = self.base.root.winfo_rootx() + int(self.base.root.winfo_width() / 2) - int(self.winfo_width() / 2)
-        y = self.base.root.winfo_rooty()
+        x = self.base.root.get_popup_x(self.winfo_width())
+        y = self.base.root.get_popup_y()
         self.wm_geometry(f"+{x}+{y}")
         self.deiconify()
         

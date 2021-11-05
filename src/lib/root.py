@@ -31,7 +31,7 @@ class Root(Tk):
         # self.sidebar = Sidebar(self)
         # self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.basepane = BasePane(master=self)
+        self.basepane = BasePane(master=self) #, opaqueresize=False)
         self.basepane.pack(fill=tk.BOTH, expand=1)
 
         self.statusbar = StatusBar(master=self)
@@ -41,6 +41,12 @@ class Root(Tk):
             self.base.set_active_dir(dir)
         
         self.base.after_initialization()
+
+    def get_popup_x(self, width):
+        return self.winfo_rootx() + int(self.winfo_width() / 2) - int(width / 2)
+
+    def get_popup_y(self):
+        return self.winfo_rooty()
 
     def run(self):
         self.mainloop()

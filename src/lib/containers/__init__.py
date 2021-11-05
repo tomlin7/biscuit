@@ -11,8 +11,8 @@ class BasePane(tk.PanedWindow):
         
         self.configure(orient=tk.VERTICAL)
 
-        self.top = TopPane(self, height=520)
-        self.bottom = BottomPane(self, height=280)
+        self.top = TopPane(self, height=520) #, opaqueresize=False)
+        self.bottom = BottomPane(self, height=280) #, opaqueresize=False)
         
         self.add(self.top)
         self.add(self.bottom)
