@@ -31,7 +31,7 @@ class Root(Tk):
         # self.sidebar = Sidebar(self)
         # self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.basepane = BasePane(master=self) #, opaqueresize=False)
+        self.basepane = BasePane(master=self) #, sashpad=5) #, opaqueresize=False)
         self.basepane.pack(fill=tk.BOTH, expand=1)
 
         self.statusbar = StatusBar(master=self)
