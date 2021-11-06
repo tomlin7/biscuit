@@ -58,6 +58,7 @@ class Searchbar(tk.Frame):
         self.master.hide_all_items()
 
         new = [i for i in self.master.get_items_text() if i[0].startswith(term)]
+        new += [i for i in self.master.get_items_text() if term in i[0]]
         
         if any(new):
             self.master.show_items(new)
