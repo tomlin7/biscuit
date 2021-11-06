@@ -6,6 +6,7 @@ from .utils.clock import SClock
 
 from .popups.eol import EOLPopup
 from .popups.encoding import EncodingPopup
+from .popups.filetype import FileTypePopup  
 
 class StatusBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
@@ -14,9 +15,6 @@ class StatusBar(tk.Frame):
 
         self.branch = SButton(self, text=" master")
         self.branch.set_pack_data(side=tk.LEFT)
-
-        self.sample = SButton(self, text="Status Bar")
-        self.sample.set_pack_data(side=tk.LEFT)
 
         self.line_col_info = SButton(self, text="Ln ?, Col ?")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
@@ -33,15 +31,17 @@ class StatusBar(tk.Frame):
         self.eol_popup = EOLPopup(self)
         self.eol.bind("<Button-1>", self.eol_popup.show)
 
+        # file type
         self.file_type = SButton(self, text="Plain Text")
         self.file_type.set_pack_data(side=tk.RIGHT)
+        self.file_type_popup = FileTypePopup(self)
+        self.file_type.bind("<Button-1>", self.file_type_popup.show)
 
         self.clock = SClock(self, text="H:M:S")
         self.clock.set_pack_data(side=tk.RIGHT)
         
 
         self.branch.show()
-        self.sample.show()
     
         self.clock.show()
         self.file_type.show()
