@@ -11,7 +11,11 @@ class GitCore(git.Git):
         self.repo = None
 
     def open_repo(self):
-        self.repo = repo.GitRepo(self.base.active_dir)
+        try:
+            self.repo = repo.GitRepo(self.base.active_dir)
+            self.base.set_git_found(True)
+        except git.exc.InvalidGitRepositoryError:
+            self.base.set_git_found(False)
 
     def get_version(self):
         return self.version()
