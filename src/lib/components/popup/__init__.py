@@ -4,7 +4,7 @@ from .menuitem import MenuItem
 from .searchbar import Searchbar
 
 class PopupMenu(tk.Toplevel):
-    def __init__(self, master, items=None, width=40, state=False, prompt="", watermark="Search", *args, **kwargs):
+    def __init__(self, master, items=None, width=70, state=False, prompt="", watermark="Search", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
@@ -22,15 +22,22 @@ class PopupMenu(tk.Toplevel):
 
         self.row = 1
         self.selected = 0
-        self.no_results = MenuItem(self, "No results found", lambda e: None)
+        self.no_results = MenuItem(self, "No results found", lambda e=None: None)
 
         self.add_search_bar(prompt)
+
         if items:
-            for i in items:
-                self.add_item(i[0], i[1])
-            self.refresh_selected()
-        
+            self.items = items
+            
+        self.add_all_items()
+        self.refresh_selected()
+
         self.configure_bindings()
+
+    def add_all_items(self):
+        if self.items:
+            for i in self.items:
+                self.add_item(i[0], i[1])
     
     def configure_bindings(self):
         self.bind("<FocusOut>" , self.hide)
@@ -65,6 +72,7 @@ class PopupMenu(tk.Toplevel):
         self.menu_items.append(self.no_results)
 
         self.row = 1
+        self.reset_selection()
 
     def select(self, delta):
         self.selected += delta
@@ -91,12 +99,14 @@ class PopupMenu(tk.Toplevel):
         for i in self.menu_items:
             i.grid_forget()
         
+        self.menu_items = []
         self.row = 1
     
     def show_items(self, items):
         for i in items:
             i[1].grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
             self.row += 1
+            self.menu_items.append(i[1])
         
         self.reset_selection()
 
