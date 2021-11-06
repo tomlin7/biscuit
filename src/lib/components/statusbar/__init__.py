@@ -8,6 +8,7 @@ from .popups.eol import EOLPopup
 from .popups.encoding import EncodingPopup
 from .popups.filetype import FileTypePopup
 from .popups.git import GitPopup
+from .popups.indentation import IndentationPopup
 
 class StatusBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
@@ -20,8 +21,14 @@ class StatusBar(tk.Frame):
         self.git_popup = GitPopup(self)
         self.branch.bind("<Button-1>", self.git_popup.show)
 
-        self.line_col_info = SButton(self, text="Ln ?, Col ?")
+        self.line_col_info = SButton(self, text="Ln 1, Col 1")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
+
+        # indentation
+        self.indentation = SButton(self, text="Spaces: 4")
+        self.indentation.set_pack_data(side=tk.RIGHT)
+        self.indentation_popup = IndentationPopup(self)
+        self.indentation.bind("<Button-1>", self.indentation_popup.show)
 
         # encoding
         self.encoding = SButton(self, text="UTF-8")
@@ -43,38 +50,30 @@ class StatusBar(tk.Frame):
 
         self.clock = SClock(self, text="H:M:S")
         self.clock.set_pack_data(side=tk.RIGHT)
-        
 
-        self.branch.show()
-    
+        # packing
         self.clock.show()
-        self.file_type.show()
-        self.eol.show()
-        self.encoding.show()
-        self.line_col_info.show()
     
     def configure_editmode(self, enabled):
         if enabled:
-            #if not self.line_col_info.enabled:
             self.clock.show()
             self.file_type.show()
             self.eol.show()
             self.encoding.show()
+            self.indentation.show()
             self.line_col_info.show()
         else:
-            #if self.line_col_info.enabled:
             self.file_type.hide()
             self.eol.hide()
             self.encoding.hide()
+            self.indentation.hide()
             self.line_col_info.hide()
     
     def configure_git_info(self, enabled):
         if enabled:
-            if not self.branch.enabled:
-                self.branch.show()
+            self.branch.show()
         else:
-            if self.branch.enabled:
-                self.branch.hide()
+            self.branch.hide()
         
     def set_git_info(self, branch):
         self.branch.config(text=" {0}".format(branch))
