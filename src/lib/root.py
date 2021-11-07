@@ -19,7 +19,7 @@ class Root(Tk):
 
         self.base = Base(root=self)
 
-        # temp
+        # temp, move to a class, command palette
         menus = [("Test 1", lambda e=None: print("Test 1")), ("Test 2", lambda e=None: print("Test 2")),
                 ("Test 3", lambda e=None: print("Test 3")), ("Test 4", lambda e=None: print("Test 4"))]
 
