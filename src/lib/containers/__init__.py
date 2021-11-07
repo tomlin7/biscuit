@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .top import TopPane
-from .bottom import BottomPane
+from .left import LeftPane
+from .right import RightPane
 
 
 class BasePane(tk.PanedWindow):
@@ -9,10 +9,10 @@ class BasePane(tk.PanedWindow):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         
-        self.configure(orient=tk.VERTICAL)
+        self.configure(orient=tk.HORIZONTAL)
 
-        self.top = TopPane(self, height=520) #, opaqueresize=False)
-        self.bottom = BottomPane(self, height=280) #, opaqueresize=False)
+        self.left = LeftPane(self) #, opaqueresize=False)
+        self.right = RightPane(self) #, opaqueresize=False)
         
-        self.add(self.top)
-        self.add(self.bottom)
+        self.add(self.left)
+        self.add(self.right)

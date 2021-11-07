@@ -1,8 +1,9 @@
 import tkinter as tk
 
-from ....components.dirtree import DirTree
+from ...components.dirtree import DirTree
 
-class TopLeftPane(tk.PanedWindow):
+
+class LeftPane(tk.PanedWindow):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
@@ -12,6 +13,5 @@ class TopLeftPane(tk.PanedWindow):
         self.label = tk.Label(self, text="Explorer", anchor=tk.W)
         self.add(self.label, pady=2, padx=5)
 
-        self.dirtree = DirTree(self)
-        self.dirtree.configure(height=25)
+        self.dirtree = DirTree(self, width=30)
         self.add(self.dirtree, sticky=tk.NSEW)
