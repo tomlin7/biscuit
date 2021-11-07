@@ -37,6 +37,21 @@ class Base:
 
     def after_initialization(self):
         self.update_statusbar_ln_col_info()
+    
+    def get_app_dir(self):
+        return self.appdir
+    
+    def get_config_path(self, config_file):
+        return os.path.join(self.appdir, 'config', config_file)
+    
+    def get_themes_path(self, theme_name):
+        return os.path.join(self.appdir, 'config/themes', theme_name)
+    
+    def get_bindings_path(self, bindings_file):
+        return os.path.join(self.appdir, 'config/bindings', bindings_file)
+
+    def get_res_path(self, res_file):
+        return os.path.join(self.appdir, 'res', res_file)
 
     def trace(self, e):
         time = datetime.now().strftime('• %H:%M:%S •')
