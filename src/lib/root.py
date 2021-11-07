@@ -4,7 +4,6 @@ from tkinterDnD import Tk
 
 from .base import Base
 from .containers import BasePane
-from .components.sidebar import Sidebar
 from .components.statusbar import StatusBar
 
 from .components.popup import PopupMenu
@@ -27,9 +26,6 @@ class Root(Tk):
             self, menus, prompt=">", 
             watermark="Search Something Here", bg="#f3f3f3")
         self.bind("<Control-n>", self.popup.show)
-
-        # self.sidebar = Sidebar(self)
-        # self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
 
         self.basepane = BasePane(master=self) #, sashpad=5) #, opaqueresize=False)
         self.basepane.pack(fill=tk.BOTH, expand=1)
