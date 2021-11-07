@@ -9,7 +9,7 @@ class ConfigLoader:
         self.config = self.load_config()
 
     def load_config(self):
-        with open(os.path.join(self.base.appdir, 'config', self.config_file), 'r') as settingsfile:
+        with open(self.base.get_config_path(self.config_file), 'r') as settingsfile:
             config = json.load(settingsfile)
         return config
 
