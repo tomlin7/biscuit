@@ -14,4 +14,4 @@ class TopLeftPane(tk.PanedWindow):
 
         self.dirtree = DirTree(self)
         self.dirtree.configure(height=25)
-        self.add(self.dirtree)
+        self.add(self.dirtree, sticky=tk.NSEW)
