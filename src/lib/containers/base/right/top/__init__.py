@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from .....components.editortabs import EditorTabs
+from .....components.editortabs import EditorTabsPane
 
 
 class RightTopPane(tk.PanedWindow):
@@ -10,6 +10,6 @@ class RightTopPane(tk.PanedWindow):
 
         self.config(orient=tk.HORIZONTAL)
 
-        self.editortabs = EditorTabs(self)
+        self.editortabs = EditorTabsPane(self)
         self.editortabs.configure(height=25)
         self.add(self.editortabs)

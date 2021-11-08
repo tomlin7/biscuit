@@ -24,7 +24,7 @@ class Events:
         
     def save(self, event):
         with open(self.base.active_file, 'w') as f:
-            f.write(self.base.root.primarypane.basepane.right.top.editortabs.get_active_text())
+            f.write(self.base.root.primarypane.basepane.right.top.editortabs.tabs.get_active_text())
 
         self.base.trace(f"<FileSaveEvent>({self.base.active_file})")
 
