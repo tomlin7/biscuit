@@ -2,9 +2,9 @@ import tkinter as tk
 
 
 class SidePane(tk.Frame):
-    def __init__(self, master, before=None, *args, **kwargs):
+    def __init__(self, master, active=False, before=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.active = False
+        self.active = active
         self.before = before
 
     def toggle(self):
