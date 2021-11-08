@@ -61,7 +61,7 @@ class Base:
         self.git_found = found
 
     def refresh_dir(self):
-        self.root.basepane.left.dirtree.create_root(self.active_dir)
+        self.root.primarypane.basepane.dirtree.create_root(self.active_dir)
 
     def set_active_file(self, file, exists=True):
         if not file:
@@ -74,7 +74,7 @@ class Base:
             self.add_to_open_files(file, exists)
             self.trace(f"File<{self.active_file}> was added.")
         else:
-            self.root.basepane.right.top.editortabs.set_active_tab(file)
+            self.root.primarypane.basepane.right.top.editortabs.set_active_tab(file)
         self.update_statusbar_ln_col_info()
 
     def set_active_dir(self, dir):
@@ -93,12 +93,12 @@ class Base:
         self.opened_files.append([file, exists])
         self.trace(f"Opened Files {self.opened_files}")
 
-        self.root.basepane.right.top.editortabs.update_tabs()
+        self.root.primarypane.basepane.right.top.editortabs.update_tabs()
     
     def close_active_file(self):
         if self.active_file:
             self.remove_from_open_files(self.active_file)
-            self.root.basepane.right.top.editortabs.remove_tab(self.active_file)
+            self.root.primarypane.basepane.right.top.editortabs.remove_tab(self.active_file)
 
             self.update_statusbar_ln_col_info()
             self.trace(f"<CloseActiveFileEvent>({self.active_file})")
@@ -106,7 +106,7 @@ class Base:
     def remove_from_open_files(self, file):
         self.opened_files = [f for f in self.opened_files if f[0] != file]
         self.trace(f"Removed from open files: {file}")
-        self.root.basepane.right.top.editortabs.update_tabs()
+        self.root.primarypane.basepane.right.top.editortabs.update_tabs()
         
         self.update_statusbar_ln_col_info()
         self.trace(self.opened_files)
@@ -149,7 +149,7 @@ class Base:
     def update_statusbar_ln_col_info(self):
         if self.active_file:
             self.root.statusbar.configure_editmode(True)
-            active_text = self.root.basepane.right.top.editortabs.get_active_tab().text
+            active_text = self.root.primarypane.basepane.right.top.editortabs.get_active_tab().text
             self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
         else:
             self.root.statusbar.configure_editmode(False)

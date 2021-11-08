@@ -1,20 +1,18 @@
 import tkinter as tk
 
-# from .left import LeftPane
-from .right import RightPane
-from ..components.dirtree import DirTreePane
+from ..containers.base import BasePane
 from ..components.sidebar import Sidebar
 
-class BasePane(tk.PanedWindow):
+
+class PrimaryPane(tk.PanedWindow):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
+
+        self.config(orient=tk.HORIZONTAL)
         
-        self.configure(orient=tk.HORIZONTAL)
+        self.basepane = BasePane(master=self) #, sashpad=5) #, opaqueresize=False)
+        self.add(self.basepane, sticky=tk.NSEW)
 
-        self.right = RightPane(self)
-        self.dirtree = DirTreePane(self, before=self.right)
-        self.left_panes = [self.dirtree]
-
-        self.add(self.dirtree)
-        self.add(self.right)
+        self.sidebar = Sidebar(self, self.basepane.left_panes)
+        self.add(self.sidebar, sticky=tk.NS, before=self.basepane)
