@@ -140,6 +140,7 @@ class EditorTabs(ttk.Notebook):
             self.opened_editors[path] = self.closed_tabs.pop(path)
             self.opened_editors[path][2].configure(height=25, width=75)
             self.add(self.opened_editors[path][2], text=f'{name: ^20s}')
+            self.opened_editors[path][2].focus()
 
         # switch to newly added tab
         self.select(self.opened_editors[path][2])
@@ -149,6 +150,7 @@ class EditorTabs(ttk.Notebook):
     def set_active_tab(self, path):
         if path in self.opened_editors.keys():
             self.select(self.opened_editors[path][2])
+            self.opened_editors[path][2].focus()
         else:
             self.base.trace(f"Tab<{path}> was not found.")
         

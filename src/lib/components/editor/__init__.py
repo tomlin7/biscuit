@@ -24,3 +24,6 @@ class Editor(tk.Frame):
 
         self.pathbar.grid(row=0, column=0, sticky=tk.EW)
         self.content.grid(row=1, column=0, sticky=tk.NSEW)
+    
+    def focus(self):
+        self.content.text.focus_set()
