@@ -5,7 +5,7 @@ from ..text import Text
 from ..text.utils import Utils
 
 from .content import EditorContent
-from .utils.path import Path
+from .utils.path import EditorPath
 
 class Editor(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
@@ -16,7 +16,7 @@ class Editor(tk.Frame):
         self.path = path
         self.exists = exists
 
-        self.pathbar = Path(master=self, text=path)
+        self.pathbar = EditorPath(master=self, path=path)
         self.content = EditorContent(self, path=path, exists=exists)
 
         self.rowconfigure(1, weight=1)
