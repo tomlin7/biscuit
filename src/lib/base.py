@@ -36,7 +36,11 @@ class Base:
         self.binder.bind('<Control-g>', self.open_git_window)
 
     def after_initialization(self):
+        self.refresh()
+    
+    def refresh(self):
         self.update_statusbar_ln_col_info()
+        self.update_editor_tabs_pane()
     
     def get_app_dir(self):
         return self.appdir
@@ -75,7 +79,8 @@ class Base:
             self.trace(f"File<{self.active_file}> was added.")
         else:
             self.root.primarypane.basepane.right.top.editortabs.tabs.set_active_tab(file)
-        self.update_statusbar_ln_col_info()
+        self.refresh()
+        
 
     def set_active_dir(self, dir):
         if not os.path.isdir(dir):
@@ -86,7 +91,7 @@ class Base:
         self.update_git()
         self.refresh_dir()
         self.clean_opened_files()
-        self.update_statusbar_ln_col_info()
+        self.refresh()
         self.trace(self.active_dir)
 
     def add_to_open_files(self, file, exists):
@@ -100,7 +105,7 @@ class Base:
             self.remove_from_open_files(self.active_file)
             self.root.primarypane.basepane.right.top.editortabs.tabs.remove_tab(self.active_file)
 
-            self.update_statusbar_ln_col_info()
+            self.refresh()
             self.trace(f"<CloseActiveFileEvent>({self.active_file})")
     
     def remove_from_open_files(self, file):
@@ -108,7 +113,7 @@ class Base:
         self.trace(f"Removed from open files: {file}")
         self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
         
-        self.update_statusbar_ln_col_info()
+        self.refresh()
         self.trace(self.opened_files)
     
     def get_opened_files(self):
@@ -128,6 +133,9 @@ class Base:
         subprocess.Popen(["python", sys.argv[0]])
 
         self.trace(f'Opened new window')
+    
+    def update_editor_tabs_pane(self):
+        self.root.primarypane.basepane.right.top.editortabs.update_panes()
     
     def open_git_window(self, _):
         self.git_window = GitWindow(self) 
