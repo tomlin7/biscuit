@@ -5,19 +5,31 @@ class Sidebar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
+        self.master = master
 
-        self.config(width=50, bg='#FFFFFF', relief=tk.FLAT, borderwidth=2)
+        self.config(width=60, bg='#FFFFFF', relief=tk.FLAT, borderwidth=2)
 
-        btn1 = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="A", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
-        btn1.pack(fill=tk.X, side=tk.TOP) #, pady=1)
-        btn2 = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="B", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
-        btn2.pack(fill=tk.X, side=tk.TOP) #, pady=1)
-        btn3 = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="C", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
-        btn3.pack(fill=tk.X, side=tk.TOP) #, pady=1)
-        btn4 = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="D", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
-        btn4.pack(fill=tk.X, side=tk.TOP) #, pady=1)
-        btn5 = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="E", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
-        btn5.pack(fill=tk.X, side=tk.TOP) #, pady=1)
 
-        btn6 = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="F", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
-        btn6.pack(fill=tk.X, side=tk.BOTTOM)
+        for i in self.master.left_panes:
+            btn = self.create_button(text="A")
+            self.bind_button(btn, i)
+
+        self.settings_btn = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="F", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
+        self.settings_btn.pack(fill=tk.X, side=tk.BOTTOM)
+    
+    def remove_all_except(self, frame):
+        for i in self.master.left_panes:
+            if i != frame and i.active:
+                i.toggle()
+    
+    def create_button(self, text):
+        btn = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text=text, font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
+        btn.pack(fill=tk.X, side=tk.TOP)
+        return btn
+
+    def bind_button(self, button, frame):
+        button.bind('<Button-1>', lambda e: self.on_click(frame))
+
+    def on_click(self, frame):
+        self.remove_all_except(frame)
+        frame.toggle()

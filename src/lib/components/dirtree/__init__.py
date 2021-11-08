@@ -1,9 +1,10 @@
 import tkinter as tk
 
+from ..sidebar.pane import SidePane
 from .tree import DirTreeTree
 from ..utils.scrollbar import AutoScrollbar
 
-class DirTree(tk.Frame):
+class DirTreePane(SidePane):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
