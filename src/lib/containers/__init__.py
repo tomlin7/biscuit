@@ -16,7 +16,5 @@ class BasePane(tk.PanedWindow):
         self.dirtree = DirTreePane(self, before=self.right)
         self.left_panes = [self.dirtree]
 
-        self.sidebar = Sidebar(self)
-
-        self.add(self.sidebar)
+        self.add(self.dirtree)
         self.add(self.right)
