@@ -9,7 +9,8 @@ class EmptyTab(tk.Frame):
 
         self.logo_img = self.base.settings.resources.logo.subsample(2)
         self.logo = ttk.Label(self, image=self.logo_img, width=10)
-        
+        self.logo.place(anchor=tk.CENTER, relx=.5, rely=.5)
+
         # +------------------+
         # |     +------+     |
         # |     [ logo ]     |
