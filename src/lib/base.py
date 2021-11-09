@@ -35,6 +35,7 @@ class Base:
 
         self.binder.bind('<Control-g>', self.open_git_window)
         self.binder.bind('<Control-`>', self.toggle_terminal)
+        self.binder.bind('<Control-b>', self.toggle_active_side_pane)
 
     def after_initialization(self):
         self.refresh()
@@ -137,6 +138,9 @@ class Base:
     
     def toggle_terminal(self, *args):
         self.root.primarypane.basepane.right.terminal.toggle()
+    
+    def toggle_active_side_pane(self, *args):
+        self.root.primarypane.sidebar.toggle_active_pane()
     
     def update_editor_tabs_pane(self):
         self.root.primarypane.basepane.right.top.editortabs.update_panes()

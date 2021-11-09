@@ -9,6 +9,7 @@ class Sidebar(tk.Frame):
         self.left_panes = left_panes
 
         self.config(width=60, bg='#f0f0f0', relief=tk.FLAT, bd=0)
+        self.active_pane = None
 
         for i in self.left_panes:
             btn = self.create_button(text="A")
@@ -33,3 +34,8 @@ class Sidebar(tk.Frame):
     def on_click(self, frame):
         self.remove_all_except(frame)
         frame.toggle()
+        self.active_pane = frame
+    
+    def toggle_active_pane(self):
+        if self.active_pane:
+            self.active_pane.toggle()
