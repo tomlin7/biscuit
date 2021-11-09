@@ -11,7 +11,7 @@ class EditorPath(tk.Frame):
         self.path_btns = []
 
         for i in self.path:
-            btn = tk.Menubutton(self, text=f"{i} ", font=("Helvetica", 12)) # , command=self.change_path)
+            btn = tk.Menubutton(self, text=f"{i} ", font=("Verdana", 14)) # , command=self.change_path)
             btn.config(padx=1, fg="#000000", activebackground="#4c4a48", activeforeground="#ffffff")
             btn.pack(side=tk.LEFT)
             self.path_btns.append(btn)
