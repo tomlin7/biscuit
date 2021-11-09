@@ -3,7 +3,7 @@ import tkinter.ttk as ttk
 import os
 
 
-class ChangesTree(ttk.Treeview):
+class GitTree(ttk.Treeview):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         

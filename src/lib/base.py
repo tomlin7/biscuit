@@ -150,8 +150,11 @@ class Base:
         if self.git_found:
             self.root.statusbar.configure_git_info(True)
             self.update_statusbar_git_info()
+
+            self.root.primarypane.basepane.git.enable()
         else:
             self.root.statusbar.configure_git_info(False)
+            self.root.primarypane.basepane.git.disable()
 
     def update_statusbar_git_info(self):
         self.root.statusbar.configure_git_info(True)
