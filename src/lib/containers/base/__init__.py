@@ -12,8 +12,8 @@ class BasePane(tk.PanedWindow):
         self.configure(orient=tk.HORIZONTAL)
 
         self.right = RightPane(self)
-        self.dirtree = DirTreePane(self, active=True, before=self.right)
+        self.dirtree = DirTreePane(self, active=False, before=self.right)
         self.left_panes = [self.dirtree]
 
-        self.add(self.dirtree)
+        # self.add(self.dirtree)
         self.add(self.right)
