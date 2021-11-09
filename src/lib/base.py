@@ -34,6 +34,7 @@ class Base:
         self.binder = Binder(base=self)
 
         self.binder.bind('<Control-g>', self.open_git_window)
+        self.binder.bind('<Control-`>', self.toggle_terminal)
 
     def after_initialization(self):
         self.refresh()
@@ -133,6 +134,9 @@ class Base:
         subprocess.Popen(["python", sys.argv[0]])
 
         self.trace(f'Opened new window')
+    
+    def toggle_terminal(self, *args):
+        self.root.primarypane.basepane.right.terminal.toggle()
     
     def update_editor_tabs_pane(self):
         self.root.primarypane.basepane.right.top.editortabs.update_panes()
