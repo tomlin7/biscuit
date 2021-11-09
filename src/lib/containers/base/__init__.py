@@ -2,7 +2,7 @@ import tkinter as tk
 
 from .right import RightPane
 from ...components.dirtree import DirTreePane
-from ...components.sidebar import Sidebar
+from ...components.git import GitPane
 
 class BasePane(tk.PanedWindow):
     def __init__(self, master, *args, **kwargs):
@@ -13,7 +13,8 @@ class BasePane(tk.PanedWindow):
 
         self.right = RightPane(self)
         self.dirtree = DirTreePane(self, active=False, before=self.right)
-        self.left_panes = [self.dirtree]
+        self.git = GitPane(self, active=False, before=self.right)
+        self.left_panes = [self.dirtree, self.git]
 
         # self.add(self.dirtree)
         self.add(self.right)

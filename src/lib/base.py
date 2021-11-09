@@ -9,7 +9,6 @@ from .utils.binder import Binder
 from .utils.events import Events
 
 from .components.git import GitCore
-from .components.git import GitWindow
 
 
 class Base:
@@ -33,7 +32,6 @@ class Base:
         self.events = Events(self)
         self.binder = Binder(base=self)
 
-        self.binder.bind('<Control-g>', self.open_git_window)
         self.binder.bind('<Control-`>', self.toggle_terminal)
         self.binder.bind('<Control-b>', self.toggle_active_side_pane)
 
@@ -144,9 +142,6 @@ class Base:
     
     def update_editor_tabs_pane(self):
         self.root.primarypane.basepane.right.top.editortabs.update_panes()
-    
-    def open_git_window(self, _):
-        self.git_window = GitWindow(self) 
     
     def check_git(self):
         self.git.open_repo()
