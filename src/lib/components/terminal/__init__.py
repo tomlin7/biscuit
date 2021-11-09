@@ -1,10 +1,21 @@
-from vendor.tkterminal import Terminal
+import tkinter as tk
+
+from .terminal import Terminal
 
 
-class Terminal(Terminal):
-    def __init__(self, master, *args, **kwargs):
+class TerminalPane(tk.Frame):
+    def __init__(self, master, active=False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
+        self.active = active
+
+        self.terminal = Terminal(self)
+        self.terminal.pack(fill=tk.BOTH, expand=True)
+    
+    def toggle(self):
+        self.active = not self.active
         
-        self.configure(pady=5, padx=5, font=('Consolas', 15))
-        self.shell = True
+        if self.active:
+            self.master.add(self)
+        else:
+        	self.master.forget(self)

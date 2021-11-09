@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from .top import RightTopPane
-from .bottom import RightBottomPane
+from ....components.terminal import TerminalPane
 
 class RightPane(tk.PanedWindow):
     def __init__(self, master, *args, **kwargs):
@@ -11,7 +11,7 @@ class RightPane(tk.PanedWindow):
         self.config(orient=tk.VERTICAL)
 
         self.top = RightTopPane(self, height=520) #, opaqueresize=False)
-        self.bottom = RightBottomPane(self, height=280) #, opaqueresize=False)
+        self.terminal = TerminalPane(self, active=False)
 
         self.add(self.top)
-        self.add(self.bottom)
+        # self.add(self.terminal)
