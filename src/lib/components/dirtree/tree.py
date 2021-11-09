@@ -9,18 +9,18 @@ class DirTreeTree(ttk.Treeview):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         
-        self.configure(columns=("fullpath", "type"), displaycolumns='')
+        self.configure(show="tree", columns=("fullpath", "type"), displaycolumns='')
         
         if startpath:
             self.create_root(startpath)
         else:
-            self.set_heading('No Folder Opened')
+            # self.set_heading('No Folder Opened')
             self.insert('', 0, text='You have not yet opened a folder.')
 
         self.binder = Binder(self)
     
-    def set_heading(self, text):
-        self.heading('#0', text=text, anchor=tk.W)
+    # def set_heading(self, text):
+    #     self.heading('#0', text=text, anchor=tk.W)
 
     def openfile(self, event):
         item = self.focus()
@@ -61,9 +61,9 @@ class DirTreeTree(ttk.Treeview):
         self.delete(*self.get_children())
 
         dfpath = os.path.abspath(startpath)
-        basename = self.base.active_dir_name
+        # basename = self.base.active_dir_name
 
-        self.set_heading(basename)
+        # self.set_heading(basename)
 
         for p in os.listdir(dfpath):
             p = os.path.join(dfpath, p)
