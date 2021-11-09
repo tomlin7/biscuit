@@ -25,7 +25,7 @@ class Root(Tk):
         self.popup = PopupMenu(
             self, menus, prompt=">", 
             watermark="Search Something Here", bg="#f3f3f3")
-        self.bind("<Control-n>", self.popup.show)
+        self.bind("<Control-P>", self.popup.show)
 
         self.primarypane = PrimaryPane(self)
         self.primarypane.pack(fill=tk.BOTH, expand=True)
