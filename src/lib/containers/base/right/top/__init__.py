@@ -8,7 +8,7 @@ class RightTopPane(tk.PanedWindow):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.config(orient=tk.HORIZONTAL)
+        self.config(orient=tk.HORIZONTAL, bd=0, relief=tk.FLAT)
 
         self.editortabs = EditorTabsPane(self)
         self.editortabs.configure(height=25)

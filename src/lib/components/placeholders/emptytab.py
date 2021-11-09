@@ -10,7 +10,7 @@ class EmptyTab(tk.Frame):
 
         self.bg = "#FFFFFF"
         self.fg = "#787878"
-        self.config(bg=self.bg)
+        self.config(bg=self.bg, bd=0, relief=tk.FLAT)
 
         self.grid_rowconfigure(0, weight=1)
         # self.grid_rowconfigure(1, weight=1)

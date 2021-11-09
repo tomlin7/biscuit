@@ -9,6 +9,8 @@ class PrimaryPane(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
+        self.config(bd=0, relief=tk.FLAT)
+
         self.basepane = BasePane(master=self) #, sashpad=5) #, opaqueresize=False)
         self.basepane.pack(fill=tk.BOTH, expand=1, side=tk.RIGHT)
 

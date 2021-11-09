@@ -9,6 +9,7 @@ class EditorTabsPane(tk.Frame):
         self.base = master.base
 
         self.active = False
+        self.config(bd=0, relief=tk.FLAT)
 
         self.tabs = EditorTabs(self)
         self.emptytab = EmptyTab(self)
@@ -30,7 +31,5 @@ class EditorTabsPane(tk.Frame):
     def update_panes(self):
         if self.base.active_file is not None:
             self.show()
-            print(f"Showing tabs ---- {self.base.active_file}")
         else:
             self.hide()
-            print(f"Hiding tabs ---- {self.base.active_file}")

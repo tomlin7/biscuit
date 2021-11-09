@@ -8,7 +8,7 @@ class Sidebar(tk.Frame):
         self.master = master
         self.left_panes = left_panes
 
-        self.config(width=60, bg='#FFFFFF', relief=tk.FLAT, borderwidth=2)
+        self.config(width=60, bg='#f0f0f0', relief=tk.FLAT, bd=0)
 
         for i in self.left_panes:
             btn = self.create_button(text="A")
