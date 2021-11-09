@@ -9,6 +9,7 @@ from .popups.encoding import EncodingPopup
 from .popups.filetype import FileTypePopup
 from .popups.git import GitPopup
 from .popups.indentation import IndentationPopup
+from .popups.linecolinfo import LineColInfoPopup
 
 class StatusBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
@@ -21,8 +22,11 @@ class StatusBar(tk.Frame):
         self.git_popup = GitPopup(self)
         self.branch.bind("<Button-1>", self.git_popup.show)
 
+        # line and column info
         self.line_col_info = SButton(self, text="Ln 1, Col 1")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
+        # self.line_col_info_popup = LineColInfoPopup(self)
+        # self.line_col_info.bind("<Button-1>", self.line_col_info_popup.show)
 
         # indentation
         self.indentation = SButton(self, text="Spaces: 4")
