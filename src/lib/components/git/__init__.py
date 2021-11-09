@@ -24,7 +24,6 @@ class GitPane(SidePane):
         
         self.tree = GitTree(self, selectmode=tk.BROWSE)
         self.tree.grid(row=1, column=0, sticky=tk.NSEW)
-        # self.tree.heading("#0", text="Changes", anchor=tk.W)
 
         self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
         self.tree_scrollbar.grid(row=1, column=1, sticky=tk.NS)
@@ -38,6 +37,7 @@ class GitPane(SidePane):
     
     def clear_tree(self):
         self.tree.clean_tree()
+        self.tree.clear_heading()
 
     def open_repo_dir(self):
         threading.Thread(target=self.open_repo, args=[self.core.repo]).start()
@@ -49,3 +49,5 @@ class GitPane(SidePane):
         self.tree.clean_tree()
         self.tree.add_tree("Staged Changes", staged_files)
         self.tree.add_tree("Changes", untracked_files)
+
+        self.tree.set_heading(self.base.active_dir_name)

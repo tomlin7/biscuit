@@ -23,6 +23,7 @@ class Base:
         print(self.git.get_version())
 
         self.active_dir = None
+        self.active_dir_name = None
         self.active_file = None
 
         # Opened files
@@ -87,11 +88,15 @@ class Base:
             return
 
         self.active_dir = dir
+        self.active_dir_name = os.path.basename(dir)
+
         self.check_git()
         self.update_git()
+        
         self.refresh_dir()
         self.clean_opened_files()
         self.refresh()
+        
         self.trace(self.active_dir)
 
     def add_to_open_files(self, file, exists):

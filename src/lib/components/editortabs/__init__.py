@@ -16,13 +16,13 @@ class EditorTabsPane(tk.Frame):
 
         self.emptytab.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    def hide(self):
+    def disable(self):
         if self.active:
             self.tabs.pack_forget()
             self.emptytab.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
             self.active = False
     
-    def show(self):
+    def enable(self):
         if not self.active:
             self.emptytab.pack_forget()
             self.tabs.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -30,6 +30,6 @@ class EditorTabsPane(tk.Frame):
         
     def update_panes(self):
         if self.base.active_file is not None:
-            self.show()
+            self.enable()
         else:
-            self.hide()
+            self.disable()

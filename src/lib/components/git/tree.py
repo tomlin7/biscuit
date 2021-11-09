@@ -9,6 +9,12 @@ class GitTree(ttk.Treeview):
         
         self.configure(columns=("fullpath"), displaycolumns='')
         self.bind('<Double-Button-1>', self.openfile)
+    
+    def set_heading(self, heading):
+        self.heading("#0", text=heading, anchor=tk.W)
+    
+    def clear_heading(self):
+        self.set_heading('')
 
     def openfile(self, event):
         item = self.focus()

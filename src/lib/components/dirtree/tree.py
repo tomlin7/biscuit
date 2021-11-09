@@ -61,7 +61,7 @@ class DirTreeTree(ttk.Treeview):
         self.delete(*self.get_children())
 
         dfpath = os.path.abspath(startpath)
-        basename = os.path.basename(dfpath)
+        basename = self.base.active_dir_name
 
         self.set_heading(basename)
 
