@@ -36,9 +36,17 @@ class EditorContent(tk.Frame):
         self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
         self.scrollbar.grid(row=0, column=2, sticky=tk.NS)
+
+        if exists:
+            self.text.load_file()
         
         self.binder = Binder(self)
         self.binder.bind_all()
+
+    def unsupported_file(self):
+        self.text.show_unsupported_dialog()
+        self.linenumbers.grid_remove()
+        self.scrollbar.grid_remove()
 
     def _on_change(self, event=None):
         self.linenumbers.redraw()

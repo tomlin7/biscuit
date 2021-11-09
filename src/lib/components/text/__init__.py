@@ -8,11 +8,12 @@ class Text(tk.Text):
         
         self.path = path
         self.data = None
+        self.exists = exists
 
         self.configure(font=self.master.font, wrap=tk.NONE)
 
-        if exists:
-            self.load_file(self.path)
+        # if exists:
+        #     self.load_file(self.path)
 
         self.focus_set()
         self.create_proxy()
@@ -22,13 +23,13 @@ class Text(tk.Text):
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
 
-    def load_file(self, path):
+    def load_file(self):
         try:
-            with open(path, 'r') as data:
+            with open(self.path, 'r') as data:
                 self.data = data.read()
                 self.clear_insert()
-        except:
-            self.show_unsupported_dialog()
+        except Exception:
+            self.master.unsupported_file()
 
     def clear_insert(self):
         self.clear()
