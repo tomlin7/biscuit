@@ -8,7 +8,8 @@ class GitTreeToolbar(tk.Frame):
         self.master = master
 
         self.dirvar = tk.StringVar()
-        self.dirname = tk.Label(self, font=("Helvetica", 10, 'bold'), textvariable=self.dirvar)
+        self.dirname = tk.Label(self)
+        self.dirname.config(font=("Helvetica", 11, 'bold'), anchor=tk.W, textvariable=self.dirvar)
         
         self.more_actions = tk.Menubutton(
             self, text="...", fg="#000000", font=("Helvetica", 11), width=2,
@@ -28,7 +29,7 @@ class GitTreeToolbar(tk.Frame):
             activebackground="#4c4a48", activeforeground="#ffffff")
         
         
-        self.dirname.pack(side=tk.LEFT, padx=(10, 0))
+        self.dirname.pack(side=tk.LEFT)
         self.more_actions.pack(side=tk.RIGHT)
         self.refresh.pack(side=tk.RIGHT)
         self.commit.pack(side=tk.RIGHT)

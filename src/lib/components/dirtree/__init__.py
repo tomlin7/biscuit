@@ -15,16 +15,17 @@ class DirTreePane(SidePane):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.label = tk.Label(self, text="Explorer", anchor=tk.W, padx=10, pady=10)
-        self.label.grid(row=0, column=0, sticky=tk.EW)
+        self.label = tk.Label(self)
+        self.label.config(text="EXPLORER", font=("Helvetica", 11), anchor=tk.W)
+        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=15)
 
         self.toolbar = DirTreeToolbar(self)
-        self.toolbar.grid(row=1, column=0, sticky=tk.EW)
+        self.toolbar.grid(row=1, column=0, sticky=tk.EW, padx=(25, 1))
 
         self.tree_active = False
 
         self.emptytree = EmptyDirTree(self)
-        self.emptytree.grid(row=2, column=0, sticky=tk.NSEW)
+        self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=25, pady=10)
 
         self.tree = DirTreeTree(self, selectmode=tk.BROWSE)
         self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)

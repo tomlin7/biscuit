@@ -8,19 +8,21 @@ class DirTreeToolbar(tk.Frame):
         self.master = master
 
         self.dirvar = tk.StringVar()
-        self.dirvar.set('No Folder Opened')
+        self.dirvar.set('NO FOLDER OPENED')
         
-        self.dirname = tk.Label(self, font=("Helvetica", 10, 'bold'), textvariable=self.dirvar)
-        self.dirname.pack(side=tk.LEFT, padx=(10, 0))
+        self.dirname = tk.Label(self)
+        self.dirname.config(font=("Helvetica", 11, 'bold'), anchor=tk.W, textvariable=self.dirvar)
 
         self.refresh = tk.Menubutton(
             self, text="⟳", fg="#000000", font=("Helvetica", 11), width=2,
             activebackground="#4c4a48", activeforeground="#ffffff") # , command=self.refresh)
-        self.refresh.pack(side=tk.RIGHT)
 
         self.newfile = tk.Menubutton(
             self, text="+", fg="#000000", font=("Helvetica", 11), width=2,
             activebackground="#4c4a48", activeforeground="#ffffff") #, command=self.newfile)
+
+        self.dirname.pack(side=tk.LEFT)
+        self.refresh.pack(side=tk.RIGHT)
         self.newfile.pack(side=tk.RIGHT)
 
     def update_dirname(self):

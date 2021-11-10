@@ -20,13 +20,13 @@ class GitPane(SidePane):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
         
-        self.label = tk.Label(self, text="Source Control", anchor=tk.W, padx=10, pady=10)
-        self.label.grid(row=0, column=0, sticky=tk.EW)
+        self.label = tk.Label(self, text="SOURCE CONTROL", font=("Helvetica", 11), anchor=tk.W)
+        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=15)
 
         self.tree_active = False
 
         self.empty_tree = EmptyGitTree(self)
-        self.empty_tree.grid(row=1, column=0, sticky=tk.NSEW)
+        self.empty_tree.grid(row=1, column=0, sticky=tk.NSEW, padx=25, pady=10)
 
         self.toolbar = GitTreeToolbar(self)
         self.tree = GitTree(self, selectmode=tk.BROWSE)
@@ -50,7 +50,7 @@ class GitPane(SidePane):
     def enable_tree(self):
         if not self.tree_active:
             self.empty_tree.grid_remove()
-            self.toolbar.grid(row=1, column=0, sticky=tk.EW)
+            self.toolbar.grid(row=1, column=0, sticky=tk.EW, padx=(25, 1))
             self.tree.grid(row=2, column=0, sticky=tk.NSEW)
             self.tree_scrollbar.grid(row=2, column=1, sticky=tk.NS)
             self.tree_active = True
