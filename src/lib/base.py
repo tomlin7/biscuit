@@ -67,6 +67,7 @@ class Base:
 
     def refresh_dir(self):
         self.root.primarypane.basepane.dirtree.create_root(self.active_dir)
+        self.update_dir_tree_pane()
 
     def set_active_file(self, file, exists=True):
         if not file:
@@ -147,6 +148,9 @@ class Base:
     
     def update_editor_tabs_pane(self):
         self.root.primarypane.basepane.right.top.editortabs.update_panes()
+    
+    def update_dir_tree_pane(self):
+        self.root.primarypane.basepane.dirtree.update_panes()
     
     def check_git(self):
         self.git.open_repo()
