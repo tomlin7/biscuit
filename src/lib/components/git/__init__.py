@@ -1,5 +1,4 @@
 import tkinter as tk
-import git, os, threading
 
 from .core import GitCore
 from .repo import GitRepo
@@ -35,7 +34,7 @@ class GitPane(SidePane):
         self.update_panes()
     
     def create_root(self):
-        self.open_repo_dir()
+        self.tree.open_repo_dir()
     
     def disable_tree(self):
         if self.tree_active:
@@ -56,20 +55,3 @@ class GitPane(SidePane):
             self.enable_tree()
         else:
             self.disable_tree()
-    
-    def clear_tree(self):
-        self.tree.clean_tree()
-        self.tree.clear_heading()
-
-    def open_repo_dir(self):
-        threading.Thread(target=self.open_repo, args=[self.core.repo]).start()
-    
-    def open_repo(self, repo):
-        untracked_files = repo.untracked_files
-        staged_files = [item.a_path for item in repo.index.diff(None)]
-        
-        self.tree.clean_tree()
-        self.tree.add_tree("Staged Changes", staged_files)
-        self.tree.add_tree("Changes", untracked_files)
-
-        self.tree.set_heading(self.base.active_dir_name)
