@@ -2,10 +2,11 @@ import tkinter as tk
 
 
 class Searchbar(tk.Frame):
-    def __init__(self, master, prompt, *args, **kwargs):
+    def __init__(self, master, prompt, watermark, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.prompt = prompt
+        self.watermark = watermark
 
         # border
         self.config(bg="#007fd4")

@@ -8,7 +8,11 @@ class PopupMenu(tk.Toplevel):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
+        
         self.width = width
+        self.state = state
+        self.prompt = prompt
+        self.watermark = watermark
 
         if not state:
             self.withdraw()
@@ -24,7 +28,7 @@ class PopupMenu(tk.Toplevel):
         self.selected = 0
         self.no_results = MenuItem(self, "No results found", lambda e=None: None)
 
-        self.add_search_bar(prompt)
+        self.add_search_bar(prompt, watermark)
 
         if items:
             self.items = items
@@ -43,8 +47,8 @@ class PopupMenu(tk.Toplevel):
         self.bind("<FocusOut>" , self.hide)
         self.bind("<Escape>", self.hide)
 
-    def add_search_bar(self, prompt):
-        self.search_bar = Searchbar(self, prompt=prompt)
+    def add_search_bar(self, prompt, watermark):
+        self.search_bar = Searchbar(self, prompt=prompt, watermark=watermark)
         self.search_bar.grid(row=0, sticky=tk.EW, padx=8, pady=(8, 5))
 
     def add_item(self, text, command):
