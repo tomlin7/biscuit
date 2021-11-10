@@ -20,6 +20,7 @@ class Base:
 
         self.git_found = False
         self.git = GitCore(self)
+        self.active_branch_name = None
         print(self.git.get_version())
 
         self.active_dir = None
@@ -157,6 +158,8 @@ class Base:
 
     def update_git(self):
         if self.git_found:
+            self.active_branch_name = self.git.get_active_branch()
+
             self.root.statusbar.configure_git_info(True)
             self.update_statusbar_git_info()
 
@@ -167,7 +170,6 @@ class Base:
             self.root.primarypane.basepane.git.disable_tree()
 
     def update_statusbar_git_info(self):
-        self.root.statusbar.configure_git_info(True)
         self.root.statusbar.set_git_info(self.git.get_active_branch())
 
     def update_statusbar_ln_col_info(self):

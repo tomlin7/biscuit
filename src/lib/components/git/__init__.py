@@ -3,6 +3,7 @@ import tkinter as tk
 from .core import GitCore
 from .repo import GitRepo
 from .tree import GitTree
+from .utils.toolbar import GitTreeToolbar
 
 from ..text import utils
 from ..sidebar.pane import SidePane
@@ -16,7 +17,7 @@ class GitPane(SidePane):
         
         self.core = self.base.git
 
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
         
         self.label = tk.Label(self, text="Source Control", anchor=tk.W, padx=10, pady=10)
@@ -27,6 +28,7 @@ class GitPane(SidePane):
         self.empty_tree = EmptyGitTree(self)
         self.empty_tree.grid(row=1, column=0, sticky=tk.NSEW)
 
+        self.toolbar = GitTreeToolbar(self)
         self.tree = GitTree(self, selectmode=tk.BROWSE)
         self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
 
@@ -35,9 +37,11 @@ class GitPane(SidePane):
     
     def create_root(self):
         self.tree.open_repo_dir()
+        self.toolbar.update()
     
     def disable_tree(self):
         if self.tree_active:
+            self.toolbar.grid_remove()
             self.tree.grid_remove()
             self.tree_scrollbar.grid_remove()
             self.empty_tree.grid()
@@ -46,8 +50,9 @@ class GitPane(SidePane):
     def enable_tree(self):
         if not self.tree_active:
             self.empty_tree.grid_remove()
-            self.tree.grid(row=1, column=0, sticky=tk.NSEW)
-            self.tree_scrollbar.grid(row=1, column=1, sticky=tk.NS)
+            self.toolbar.grid(row=1, column=0, sticky=tk.EW)
+            self.tree.grid(row=2, column=0, sticky=tk.NSEW)
+            self.tree_scrollbar.grid(row=2, column=1, sticky=tk.NS)
             self.tree_active = True
     
     def update_panes(self):
