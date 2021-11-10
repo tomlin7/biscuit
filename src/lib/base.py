@@ -160,10 +160,11 @@ class Base:
             self.root.statusbar.configure_git_info(True)
             self.update_statusbar_git_info()
 
-            self.root.primarypane.basepane.git.enable()
+            self.root.primarypane.basepane.git.create_root()
+            self.root.primarypane.basepane.git.update_panes()
         else:
             self.root.statusbar.configure_git_info(False)
-            self.root.primarypane.basepane.git.disable()
+            self.root.primarypane.basepane.git.disable_tree()
 
     def update_statusbar_git_info(self):
         self.root.statusbar.configure_git_info(True)
