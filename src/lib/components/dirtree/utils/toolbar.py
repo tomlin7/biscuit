@@ -11,17 +11,19 @@ class DirTreeToolbar(tk.Frame):
         self.dirvar.set('NO FOLDER OPENED')
         
         self.dirname = tk.Label(self)
-        self.dirname.config(font=("Helvetica", 11, 'bold'), anchor=tk.W, textvariable=self.dirvar)
+        self.dirname.config(
+            font=("Helvetica", 11, 'bold'), anchor=tk.W, 
+            textvariable=self.dirvar, bg="#E6E6E6")
 
         self.refresh = tk.Menubutton(
-            self, text="⟳", fg="#000000", font=("Helvetica", 11), width=2,
+            self, text="⟳", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff") # , command=self.refresh)
 
         self.newfile = tk.Menubutton(
-            self, text="+", fg="#000000", font=("Helvetica", 11), width=2,
+            self, text="+", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff") #, command=self.newfile)
 
-        self.dirname.pack(side=tk.LEFT)
+        self.dirname.pack(side=tk.LEFT, padx=(25, 0))
         self.refresh.pack(side=tk.RIGHT)
         self.newfile.pack(side=tk.RIGHT)
 

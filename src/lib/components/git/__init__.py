@@ -19,8 +19,14 @@ class GitPane(SidePane):
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        self.label_frame = tk.Frame(self)
+        self.label_frame.config(bg="#E6E6E6")
+        self.label_frame.grid(row=0, column=0, sticky=tk.EW)
         
-        self.label = tk.Label(self, text="SOURCE CONTROL", font=("Helvetica", 11), anchor=tk.W)
+        self.label = tk.Label(self.label_frame)
+        self.label.config(
+            text="SOURCE CONTROL", font=("Helvetica", 11), anchor=tk.W, bg="#E6E6E6")
         self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=15)
 
         self.tree_active = False
