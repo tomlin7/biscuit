@@ -40,8 +40,9 @@ class PopupMenu(tk.Toplevel):
 
     def add_all_items(self):
         if self.items:
-            for i in self.items:
+            for i in self.items[:-1]:
                 self.add_item(i[0], i[1])
+            self.add_last_item(self.items[-1][0], self.items[-1][1])
     
     def configure_bindings(self):
         self.bind("<FocusOut>" , self.hide)
@@ -78,9 +79,10 @@ class PopupMenu(tk.Toplevel):
         self.row = 1
         self.reset_selection()
 
+        self.base.trace("No results found")
+
     def select(self, delta):
         self.selected += delta
-        
         self.selected = min(max(0, self.selected), len(self.menu_items) - 1)
         self.refresh_selected()
     
@@ -107,11 +109,14 @@ class PopupMenu(tk.Toplevel):
         self.row = 1
     
     def show_items(self, items):
-        for i in items:
+        for i in items[:-1]:
             i[1].grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
             self.row += 1
             self.menu_items.append(i[1])
-        
+        items[-1][1].grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 5))
+        self.row += 1
+        self.menu_items.append(items[-1][1])
+
         self.reset_selection()
 
     def show(self, *args):

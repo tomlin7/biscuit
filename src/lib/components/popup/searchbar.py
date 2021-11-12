@@ -54,12 +54,11 @@ class Searchbar(tk.Frame):
         return self.search_bar.get().lower()[len(self.prompt):]
     
     def filter(self, *args):
-        print("filter")
         term = self.get_search_term()
         self.master.hide_all_items()
 
         new = [i for i in self.master.get_items_text() if i[0].startswith(term)]
-        new += [i for i in self.master.get_items_text() if term in i[0]]
+        new += [i for i in self.master.get_items_text() if term in i[0] and i not in new]
         
         if any(new):
             self.master.show_items(new)
