@@ -96,7 +96,7 @@ class Text(tk.Text):
     
     def show_unsupported_dialog(self):
         self.set_wrap(True)
-        self.configure(font=('Arial', 10))
+        self.configure(font=('Arial', 10), padx=10, pady=10)
         self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding. Do you want to open it anyway? Nope"
         self.clear_insert()
         self.set_active(False)
