@@ -14,7 +14,8 @@ class EmptyDirTree(tk.Frame):
 
         self.not_opened_dialog = WrappingLabel(self)
         self.not_opened_dialog.config(
-            text="You have not yet opened a folder.", font=("Helvetica", 13), anchor=tk.W)
+            text="You have not yet opened a folder.", font=("Helvetica", 13), 
+            anchor=tk.W, justify=tk.LEFT)
         self.not_opened_dialog.grid(row=0, pady=10, sticky=tk.EW)
 
         self.open_btn = tk.Menubutton(self)

@@ -16,7 +16,7 @@ class DirTreeToolbar(tk.Frame):
             textvariable=self.dirvar, bg="#E6E6E6")
         
         self.collapse_all = tk.Menubutton(
-            self, text="-", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
+            self, text="–", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff") # , command=self.refresh)
 
         self.refresh = tk.Menubutton(
