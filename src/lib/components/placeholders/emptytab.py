@@ -25,3 +25,5 @@ class EmptyTab(tk.Frame):
 
         self.shortcuts.add_shortcut("Show all commands", ["Ctrl", "Shift", "P"])
         self.shortcuts.add_shortcut("Toggle terminal", ["Ctrl", "`"])
+        self.shortcuts.add_shortcut("Open File", ["Ctrl", "O"])
+        self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "O"])
