@@ -1,12 +1,14 @@
 import tkinter as tk
 import tkinter.font as Font
 
-from ..text import Text
-from ..text.utils import Utils
-
 from .utils.binder import Binder
 from .utils.linenumbers import LineNumbers
+
+from ..text import Text
+from ..image_viewer import ImageViewer
+from ..text.utils import Utils
 from ..utils.scrollbar import AutoScrollbar
+from ..utils.filetype import FileType
 
 class EditorContent(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
@@ -15,38 +17,50 @@ class EditorContent(tk.Frame):
         self.master = master
         self.path = path
 
-        # self.font = self.base.settings.font
-        self.configured_font = self.base.settings.font
-        self.font = tk.font.Font(
-            family=self.configured_font['family'], 
-            size=self.configured_font['size'], 
-            weight=self.configured_font['weight'])
-        
-        self.zoom = self.font["size"]
+        self.editable = True
 
-        self.text = Text(master=self, path=path, exists=exists)
-        self.linenumbers = LineNumbers(master=self, text=self.text)
+        if FileType.is_image(path):
+            self.rowconfigure(0, weight=1)
+            self.columnconfigure(0, weight=1)
 
-        self.scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
-        self.text.configure(yscrollcommand=self.scrollbar.set)
+            self.image = ImageViewer(self, path)
+            self.image.grid(row=0, column=0, sticky=tk.NSEW)
+            self.editable = False
+        else:
+            # self.font = self.base.settings.font
+            self.configured_font = self.base.settings.font
+            self.font = tk.font.Font(
+                family=self.configured_font['family'], 
+                size=self.configured_font['size'], 
+                weight=self.configured_font['weight'])
+            
+            self.zoom = self.font["size"]
 
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
+            self.rowconfigure(0, weight=1)
+            self.columnconfigure(1, weight=1)
 
-        self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
-        self.text.grid(row=0, column=1, sticky=tk.NSEW)
-        self.scrollbar.grid(row=0, column=2, sticky=tk.NS)
+            self.text = Text(master=self, path=path, exists=exists)
+            self.linenumbers = LineNumbers(master=self, text=self.text)
 
-        if exists:
-            self.text.load_file()
-        
-        self.binder = Binder(self)
-        self.binder.bind_all()
+            self.scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
+            self.text.configure(yscrollcommand=self.scrollbar.set)
+
+            self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
+            self.text.grid(row=0, column=1, sticky=tk.NSEW)
+            self.scrollbar.grid(row=0, column=2, sticky=tk.NS)
+
+            if exists:
+                self.text.load_file()
+
+            self.binder = Binder(self)
+            self.binder.bind_all()
 
     def unsupported_file(self):
         self.text.show_unsupported_dialog()
         self.linenumbers.grid_remove()
         self.scrollbar.grid_remove()
+        self.editable = False
+        self.base.root.statusbar.configure_editmode(False)
 
     def _on_change(self, event=None):
         self.linenumbers.redraw()

@@ -1,11 +1,11 @@
 import tkinter as tk
 import tkinter.font as Font
 
-from ..text import Text
-from ..text.utils import Utils
-
 from .content import EditorContent
 from .utils.path import EditorPath
+
+from ..text import Text
+from ..text.utils import Utils
 
 class Editor(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
@@ -26,4 +26,5 @@ class Editor(tk.Frame):
         self.content.grid(row=1, column=0, sticky=tk.NSEW)
     
     def focus(self):
-        self.content.text.focus_set()
+        if self.content.editable:
+            self.content.text.focus_set()
