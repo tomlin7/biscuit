@@ -23,4 +23,8 @@ class EmptyGitTree(tk.Frame):
             text="Open Folder", bg="#0e639c", fg="#ffffff", 
             activebackground="#1177bb", activeforeground="#ffffff",
             font=("Helvetica", 13), pady=10)
+        self.open_btn.bind("<Button-1>", self.open_folder)
         self.open_btn.grid(row=1, pady=10, sticky=tk.EW)
+
+    def open_folder(self, _):
+        self.base.events.opendir()
