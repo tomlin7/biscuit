@@ -5,8 +5,7 @@ from tkinterDnD import Tk
 from .base import Base
 from .containers import PrimaryPane
 from .components.statusbar import StatusBar
-from .components.popup import PopupMenu
-
+from .components.command_palette import CommandPalette
 
 class Root(Tk):
     def __init__(self, path, dir=None, *args, **kwargs):
@@ -18,20 +17,14 @@ class Root(Tk):
 
         self.base = Base(root=self)
 
-        # temp, move to a class, command palette
-        menus = [("Test 1", lambda e=None: print("Test 1")), ("Test 2", lambda e=None: print("Test 2")),
-                ("Test 3", lambda e=None: print("Test 3")), ("Test 4", lambda e=None: print("Test 4"))]
-
-        self.popup = PopupMenu(
-            self, menus, prompt=">", 
-            watermark="Search Something Here", bg="#f3f3f3")
-        self.bind("<Control-P>", self.popup.show)
-
         self.primarypane = PrimaryPane(self)
         self.primarypane.pack(fill=tk.BOTH, expand=True)
 
         self.statusbar = StatusBar(master=self)
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.command_palette = CommandPalette(self)
+        self.base.binder.bind("<Control-P>", self.command_palette.show)
 
         if dir:
             self.base.set_active_dir(dir)
