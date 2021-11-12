@@ -14,6 +14,10 @@ class DirTreeToolbar(tk.Frame):
         self.dirname.config(
             font=("Helvetica", 11, 'bold'), anchor=tk.W, 
             textvariable=self.dirvar, bg="#E6E6E6")
+        
+        self.collapse_all = tk.Menubutton(
+            self, text="-", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
+            activebackground="#4c4a48", activeforeground="#ffffff") # , command=self.refresh)
 
         self.refresh = tk.Menubutton(
             self, text="⟳", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
@@ -24,6 +28,7 @@ class DirTreeToolbar(tk.Frame):
             activebackground="#4c4a48", activeforeground="#ffffff") #, command=self.newfile)
 
         self.dirname.pack(side=tk.LEFT, padx=(25, 0))
+        self.collapse_all.pack(side=tk.RIGHT)
         self.refresh.pack(side=tk.RIGHT)
         self.newfile.pack(side=tk.RIGHT)
 
