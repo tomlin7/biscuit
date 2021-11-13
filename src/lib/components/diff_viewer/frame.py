@@ -13,7 +13,7 @@ class DiffViewerPane(tk.Frame):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.content = EditorContent(self, path)
+        self.content = EditorContent(self, path, exists=False)
         self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
     def load_file(self):

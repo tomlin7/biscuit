@@ -90,7 +90,6 @@ class Base:
         else:
             self.root.primarypane.basepane.right.top.editortabs.tabs.set_active_tab(file)
         self.refresh()
-        
 
     def set_active_dir(self, dir):
         if not os.path.isdir(dir):
@@ -195,10 +194,14 @@ class Base:
 
     def update_statusbar_ln_col_info(self):
         if self.active_file:
-            self.root.statusbar.configure_editmode(True)
-            if self.root.primarypane.basepane.right.top.editortabs.tabs.get_active_tab().content.editable:
-                active_text = self.root.primarypane.basepane.right.top.editortabs.tabs.get_active_tab().content.text
-                self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
+            active_tab = self.root.primarypane.basepane.right.top.editortabs.tabs.get_active_tab()
+            if active_tab:
+                if active_tab.content.editable:            
+                    self.root.statusbar.configure_editmode(True)
+                    active_text = active_tab.content.text
+                    self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
+                else:
+                    self.root.statusbar.configure_editmode(False)
             else:
                 self.root.statusbar.configure_editmode(False)
         else:

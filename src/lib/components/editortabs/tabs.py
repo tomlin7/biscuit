@@ -243,8 +243,10 @@ class EditorTabs(ttk.Notebook):
     def get_active_tab(self):
         if self.base.active_file in self.opened_tabs.keys():
             return self.opened_tabs[self.base.active_file][2]
-        else:
+        elif self.base.active_file in self.opened_diff_tabs.keys():
             return self.opened_diff_tabs[self.base.active_file][1]
+        else:
+            return None
 
     def get_active_text(self):
         return self.opened_tabs[self.base.active_file][2].content.text.get_all_text()

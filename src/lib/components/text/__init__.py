@@ -1,7 +1,7 @@
 import tkinter as tk
 
 class Text(tk.Text):
-    def __init__(self, master, path=None, exists=None, *args, **kwargs):
+    def __init__(self, master, path=None, exists=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         self.master = master
@@ -11,9 +11,6 @@ class Text(tk.Text):
         self.exists = exists
 
         self.configure(wrap=tk.NONE)
-
-        # if exists:
-        #     self.load_file(self.path)
 
         self.focus_set()
         self.create_proxy()
@@ -44,8 +41,11 @@ class Text(tk.Text):
     def clear(self):
         self.delete(1.0, tk.END)
 
-    def write(self, text):
-        self.insert(tk.END, text)
+    def write(self, text, *args):
+        self.insert(tk.END, text, *args)
+    
+    def newline(self):
+        self.write("\n")
     
     def get_all_text(self):
         return self.get(1.0, tk.END)
