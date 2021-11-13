@@ -1,14 +1,23 @@
 import tkinter as tk
 
+from ..editor import EditorContent
+
 
 class DiffViewerPane(tk.Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         self.master = master
+        self.path = path
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.text = tk.Text(self)
-        self.text.grid(row=0, column=0, sticky=tk.NSEW)
+        self.content = EditorContent(self, path)
+        self.content.grid(row=0, column=0, sticky=tk.NSEW)
+
+    def load_file(self):
+        self.content.text.load_file()
+    
+    def load_text(self, text):
+        self.content.text.clear_insert(text)

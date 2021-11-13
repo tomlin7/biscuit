@@ -11,10 +11,14 @@ class DiffViewerContent(ttk.PanedWindow):
         self.master = master
         self.path = path
         
-        self.editable = False
+        self.editable = True
 
-        self.lhs_frame = DiffViewerPane(self)
+        self.lhs_frame = DiffViewerPane(self, path)
         self.add(self.lhs_frame, weight=1)
+        self.lhs_frame.load_text("previous")
 
-        self.rhs_frame = DiffViewerPane(self)  # count lines for this later
+        self.rhs_frame = DiffViewerPane(self, path)  # count lines for this later
         self.add(self.rhs_frame, weight=1)
+        self.rhs_frame.load_file()
+
+        self.text = self.lhs_frame.content.text

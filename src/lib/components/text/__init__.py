@@ -10,7 +10,7 @@ class Text(tk.Text):
         self.data = None
         self.exists = exists
 
-        self.configure(font=self.master.font, wrap=tk.NONE)
+        self.configure(wrap=tk.NONE)
 
         # if exists:
         #     self.load_file(self.path)
@@ -26,13 +26,18 @@ class Text(tk.Text):
     def load_file(self):
         try:
             with open(self.path, 'r') as data:
-                self.data = data.read()
+                self.set_data(data.read())
                 self.clear_insert()
         except Exception:
             self.master.unsupported_file()
 
-    def clear_insert(self):
+    def set_data(self, data):
+        self.data = data
+
+    def clear_insert(self, text=None):
         self.clear()
+        if text:
+            self.set_data(text)
         self.write(text=self.data)
         self.scroll_to_start()
         

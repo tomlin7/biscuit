@@ -40,6 +40,7 @@ class EditorContent(tk.Frame):
             self.columnconfigure(1, weight=1)
 
             self.text = Text(master=self, path=path, exists=exists)
+            self.text.config(font=self.font)
             self.linenumbers = LineNumbers(master=self, text=self.text)
 
             self.scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
