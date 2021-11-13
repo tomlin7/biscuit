@@ -14,6 +14,7 @@ class GitTree(ttk.Treeview):
     def openfile(self, event):
         item = self.focus()
         path = self.set(item, "fullpath")
+        self.base.set_active_file(path, diff=True)
 
     def clean_tree(self):
         self.delete(*self.get_children())

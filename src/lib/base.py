@@ -31,6 +31,10 @@ class Base:
         # [file, exists]
         self.opened_files = []
 
+        # Opened diffs
+        # [file]
+        self.opened_diffs = []
+
         self.events = Events(self)
         self.binder = Binder(base=self)
 
@@ -70,14 +74,17 @@ class Base:
         self.root.primarypane.basepane.dirtree.create_root(self.active_dir)
         self.update_dir_tree_pane()
 
-    def set_active_file(self, file, exists=True):
+    def set_active_file(self, file, exists=True, diff=False):
         if not file:
             return
 
         self.active_file = file
         self.trace(f"Active file<{self.active_file}>")
 
-        if not exists or file not in [f[0] for f in self.opened_files]:
+        if diff:
+            self.add_to_open_diffs(file)
+            self.trace(f"File-Diff<{self.active_file}> was added.")
+        elif not exists or file not in [f[0] for f in self.opened_files]:
             self.add_to_open_files(file, exists)
             self.trace(f"File<{self.active_file}> was added.")
         else:
@@ -101,6 +108,12 @@ class Base:
         
         self.trace(self.active_dir)
 
+    def add_to_open_diffs(self, file):
+        self.opened_diffs.append(file)
+        self.trace(f"Opened Diffs {self.opened_diffs}")
+
+        self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
+
     def add_to_open_files(self, file, exists):
         self.opened_files.append([file, exists])
         self.trace(f"Opened Files {self.opened_files}")
@@ -114,6 +127,14 @@ class Base:
 
             self.refresh()
             self.trace(f"<CloseActiveFileEvent>({self.active_file})")
+    
+    def remove_from_open_diffs(self, file):
+        self.opened_diffs = [f for f in self.opened_diffs if f != file]
+        self.trace(f"Removed from open diffs: {file}")
+        self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
+
+        self.refresh()
+        self.trace(self.opened_diffs)
     
     def remove_from_open_files(self, file):
         self.opened_files = [f for f in self.opened_files if f[0] != file]
