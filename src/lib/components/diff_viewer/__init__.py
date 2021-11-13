@@ -11,3 +11,4 @@ class DiffViewer(tk.Frame):
         self.path = path
 
         self.content = DiffViewerContent(self, path)
+        self.content.pack(fill=tk.BOTH, expand=True)
