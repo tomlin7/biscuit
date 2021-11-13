@@ -31,14 +31,18 @@ class DiffViewerContent(ttk.PanedWindow):
         self.left['yscrollcommand'] = self.on_textscroll
         self.right['yscrollcommand'] = self.on_textscroll
 
-        self.left.set_active(False)
         self.left.tag_config("removal", background="#EC6066")
+        self.left.tag_config("addition", background="#eceaea")
+        
         self.right.tag_config("addition", background="#99C794")
+        self.left.tag_config("addition", background="#eceaea")
 
         self.prepare_data()
 
         self.differ = Differ(self)
         self.show_diff()
+        
+        self.left.set_active(False)
 
     def on_scrollbar(self, *args):
         self.left.yview(*args)
@@ -50,10 +54,11 @@ class DiffViewerContent(ttk.PanedWindow):
         self.on_scrollbar('moveto', args[0])
     
     def prepare_data(self):
+        lhs_data = self.base.git.repo.get_commit_filedata(self.path).split("\n")
+        self.lhs_data = [f"{line}\n" if line else "\n" for line in lhs_data]
         with open(self.path, 'r') as f:
             self.rhs_data = f.readlines()
-            self.lhs_data = f.readlines()
-    
+        
     def show_diff(self):
         self.diff = self.differ.get_diff(self.lhs_data, self.rhs_data)
         for line in self.diff:
@@ -67,9 +72,9 @@ class DiffViewerContent(ttk.PanedWindow):
             elif marker == "-":
                 # line is only on the left
                 self.left.write(line[2:], "removal")
-                self.right.newline()
+                self.right.newline("removal")
 
             elif marker == "+":
                 # line is only on the right
-                self.left.newline()
+                self.left.newline("addition")
                 self.right.write(line[2:], "addition")

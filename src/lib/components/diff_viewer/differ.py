@@ -1,4 +1,4 @@
-import difflib
+import difflib, sys
 
 
 class Differ(difflib.Differ):
@@ -9,6 +9,3 @@ class Differ(difflib.Differ):
 
     def get_diff(self, lhs, rhs):
         return self.compare(lhs, rhs)
-
-        # diff = difflib.ndiff(self.string1.splitlines(), self.string2.splitlines())
-        # return list(diff)

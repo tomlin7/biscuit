@@ -21,7 +21,7 @@ class GitTree(ttk.Treeview):
 
     def add_files(self, parent, changed_files):
         for file in changed_files:
-            oid = self.insert(parent, tk.END, text=file, values=[os.path.abspath(file)])
+            oid = self.insert(parent, tk.END, text=file, values=[file])
 
     def add_tree(self, basename, files=None):
         oid = self.insert('', tk.END, text=basename, open=True)
@@ -29,12 +29,12 @@ class GitTree(ttk.Treeview):
             self.add_files(oid, files)
     
     def open_repo(self, repo):
-        untracked_files = repo.untracked_files
-        staged_files = [item.a_path for item in repo.index.diff(None)]
+        changed_files = repo.get_changed_files()
+        untracked_files = repo.get_untracked_files()
         
         self.clean_tree()
-        self.add_tree("Staged Changes", staged_files)
-        self.add_tree("Changes", untracked_files)
+        self.add_tree("Changes", changed_files)
+        self.add_tree("Untracked Files", untracked_files)
 
     def open_repo_dir(self):
         threading.Thread(target=self.open_repo, args=[self.master.core.repo]).start()

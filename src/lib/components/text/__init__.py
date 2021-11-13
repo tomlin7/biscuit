@@ -44,8 +44,8 @@ class Text(tk.Text):
     def write(self, text, *args):
         self.insert(tk.END, text, *args)
     
-    def newline(self):
-        self.write("\n")
+    def newline(self, *args):
+        self.write("\n", *args)
     
     def get_all_text(self):
         return self.get(1.0, tk.END)
