@@ -14,6 +14,8 @@ class GitPane(SidePane):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
+
+        self.name = "💼"
         
         self.core = self.base.git
 

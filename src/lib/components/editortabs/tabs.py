@@ -61,7 +61,7 @@ class EditorTabs(ttk.Notebook):
 
         style.element_create("close", "image", "img_closebtn",
                             ("active", "!disabled", "img_closebtnhover"), 
-                            border=8, sticky='')
+                            border=22, sticky='')
         style.layout("EditorTabs", [
                 ("EditorTabs.client", {
                     "sticky": "nswe"

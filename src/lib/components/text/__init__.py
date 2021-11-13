@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class Text(tk.Text):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -10,7 +11,7 @@ class Text(tk.Text):
         self.data = None
         self.exists = exists
 
-        self.configure(wrap=tk.NONE)
+        self.configure(wrap=tk.NONE, relief=tk.FLAT)
 
         self.focus_set()
         self.create_proxy()

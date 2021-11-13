@@ -12,10 +12,13 @@ class Sidebar(tk.Frame):
         self.active_pane = None
 
         for i in self.left_panes:
-            btn = self.create_button(text="A")
+            btn = self.create_button(text=i.name)
             self.bind_button(btn, i)
 
-        self.settings_btn = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text="F", font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
+        self.settings_btn = tk.Menubutton(self)
+        self.settings_btn.config(
+            height=3, width=6, relief=tk.FLAT, text="⚙", font=("Consolas", 15), 
+            bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
         self.settings_btn.pack(fill=tk.X, side=tk.BOTTOM)
     
     def remove_all_except(self, frame):
@@ -24,8 +27,12 @@ class Sidebar(tk.Frame):
                 i.toggle()
     
     def create_button(self, text):
-        btn = tk.Menubutton(self, height=3, width=6, relief=tk.FLAT, text=text, font=("Consolas", 10), bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
+        btn = tk.Menubutton(self)
+        btn.config(
+            height=3, width=6, relief=tk.FLAT, text=text, font=("Consolas", 15), 
+            bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
         btn.pack(fill=tk.X, side=tk.TOP)
+        
         return btn
 
     def bind_button(self, button, frame):

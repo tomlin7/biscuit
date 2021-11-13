@@ -12,6 +12,8 @@ class DirTreePane(SidePane):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
+        self.name = "📂"
+
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
