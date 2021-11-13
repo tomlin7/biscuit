@@ -14,7 +14,7 @@ class Shortcuts(tk.Frame):
         name = tk.Label(self, text=name, font=("Verdana", 12), anchor=tk.E, fg=self.fg, bg=self.bg)
         value = Shortcut(self, shortcuts=value, bg=self.bg)
         
-        name.grid(row=self.row, column=0, sticky=tk.EW, pady=5)
-        value.grid(row=self.row, column=1, sticky=tk.EW, pady=5)
+        name.grid(row=self.row, column=0, sticky=tk.EW, pady=10, padx=10)
+        value.grid(row=self.row, column=1, sticky=tk.EW, pady=10, padx=10)
 
         self.row += 1

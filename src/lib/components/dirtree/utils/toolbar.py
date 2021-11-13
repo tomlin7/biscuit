@@ -34,4 +34,4 @@ class DirTreeToolbar(tk.Frame):
 
     def update_dirname(self):
         if self.base.active_dir_name:
-            self.dirvar.set(self.base.active_dir_name)
+            self.dirvar.set(self.base.active_dir_name.upper())
