@@ -20,8 +20,15 @@ class Editor(tk.Frame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.pathbar.grid(row=0, column=0, sticky=tk.EW)
+        if self.content.show_path:
+            self.pathbar.grid(row=0, column=0, sticky=tk.EW)
         self.content.grid(row=1, column=0, sticky=tk.NSEW)
+        
+    def configure_pathbar(self, flag):
+        if flag:
+            self.pathbar.grid()
+        else:
+            self.pathbar.grid_remove()
     
     def focus(self):
         if self.content.editable:

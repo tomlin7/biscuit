@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 import tkinter.font as Font
 
@@ -6,6 +7,7 @@ from .utils.linenumbers import LineNumbers
 
 from ..text import Text
 from ..image_viewer import ImageViewer
+from ..welcome_page import WelcomePage
 from ..text.utils import Utils
 from ..utils.scrollbar import AutoScrollbar
 from ..utils.filetype import FileType
@@ -16,45 +18,68 @@ class EditorContent(tk.Frame):
         self.base = master.base
         self.master = master
         self.path = path
-
+        self.exists = exists
+        
+        self.show_path = True
         self.editable = True
 
-        if FileType.is_image(path):
-            self.rowconfigure(0, weight=1)
-            self.columnconfigure(0, weight=1)
-
-            self.image = ImageViewer(self, path)
-            self.image.grid(row=0, column=0, sticky=tk.NSEW)
-            self.editable = False
+        if os.path.isfile(path):
+            if FileType.is_image(path):
+                self.open_image_viewer()
+            else:
+                self.open_text_editor()
         else:
-            # self.font = self.base.settings.font
-            self.configured_font = self.base.settings.font
-            self.font = tk.font.Font(
-                family=self.configured_font['family'], 
-                size=self.configured_font['size'], 
-                weight=self.configured_font['weight'])
-            
-            self.zoom = self.font["size"]
+            if path == "@welcomepage":
+                self.open_welcome_tab()
+            else:
+                self.open_text_editor()
+        
+    def open_welcome_tab(self):
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
-            self.rowconfigure(0, weight=1)
-            self.columnconfigure(1, weight=1)
+        self.welcome_page = WelcomePage(self)
+        self.welcome_page.grid(row=0, column=0, sticky=tk.NSEW)
+        self.editable = False
+        self.show_path = False
+    
+    def open_image_viewer(self):
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
-            self.text = Text(master=self, path=path, exists=exists)
-            self.text.config(font=self.font)
-            self.linenumbers = LineNumbers(master=self, text=self.text)
+        self.image = ImageViewer(self, self.path)
+        self.image.grid(row=0, column=0, sticky=tk.NSEW)
+        self.editable = False
+    
+    def open_text_editor(self):
+        # self.font = self.base.settings.font
+        self.configured_font = self.base.settings.font
+        self.font = tk.font.Font(
+            family=self.configured_font['family'], 
+            size=self.configured_font['size'], 
+            weight=self.configured_font['weight'])
+        
+        self.zoom = self.font["size"]
 
-            self.scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
-            self.text.configure(yscrollcommand=self.scrollbar.set)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
 
-            self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
-            self.text.grid(row=0, column=1, sticky=tk.NSEW)
-            self.scrollbar.grid(row=0, column=2, sticky=tk.NS)
+        self.text = Text(master=self, path=self.path, exists=self.exists)
+        self.text.config(font=self.font)
+        self.linenumbers = LineNumbers(master=self, text=self.text)
 
-            if exists:
-                self.text.load_file()
+        self.scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
+        self.text.configure(yscrollcommand=self.scrollbar.set)
 
-            self.binder = Binder(self)
-            self.binder.bind_all()
+        self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
+        self.text.grid(row=0, column=1, sticky=tk.NSEW)
+        self.scrollbar.grid(row=0, column=2, sticky=tk.NS)
+
+        if self.exists:
+            self.text.load_file()
+
+        self.binder = Binder(self)
+        self.binder.bind_all()
 
     def unsupported_file(self):
         self.text.show_unsupported_dialog()

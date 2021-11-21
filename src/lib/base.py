@@ -40,6 +40,7 @@ class Base:
 
         self.binder.bind('<Control-`>', self.toggle_terminal)
         self.binder.bind('<Control-b>', self.toggle_active_side_pane)
+        self.binder.bind('<Control-l>', self.open_welcome_tab)
 
     def after_initialization(self):
         self.refresh()
@@ -150,6 +151,9 @@ class Base:
         self.opened_files = []
         self.active_file = None
         self.trace(f"<ClearOpenFilesEvent>({self.opened_files})")
+    
+    def open_welcome_tab(self, _):
+        self.set_active_file("@welcomepage", exists=False)
     
     def open_in_new_window(self, dir):
         subprocess.Popen(["python", sys.argv[0], dir])
