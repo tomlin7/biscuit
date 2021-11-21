@@ -9,7 +9,7 @@ class BasePane(tk.PanedWindow):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         
-        self.configure(orient=tk.HORIZONTAL, bd=0, relief=tk.FLAT)
+        self.configure(orient=tk.HORIZONTAL, bd=0, relief=tk.FLAT, opaqueresize=False)
 
         self.right = RightPane(self)
         self.dirtree = DirTreePane(self, active=False, before=self.right)

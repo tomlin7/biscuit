@@ -7,6 +7,7 @@ from .containers import PrimaryPane
 from .components.statusbar import StatusBar
 from .components.command_palette import CommandPalette
 
+
 class Root(Tk):
     def __init__(self, path, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
