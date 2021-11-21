@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 
@@ -10,7 +11,7 @@ class EmptyTab(tk.Frame):
 
         self.bg = "#FFFFFF"
         self.fg = "#787878"
-        self.config(bg=self.bg, bd=0, relief=tk.FLAT)
+        self.config(bg=self.bg, bd=0, relief=tk.FLAT) #, ondrop=self.drop)
 
         self.grid_rowconfigure(0, weight=1)
         # self.grid_rowconfigure(1, weight=1)
@@ -27,3 +28,11 @@ class EmptyTab(tk.Frame):
         self.shortcuts.add_shortcut("Toggle terminal", ["Ctrl", "`"])
         self.shortcuts.add_shortcut("Open File", ["Ctrl", "O"])
         self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "O"])
+    
+    def drop(self, event):
+        if os.path.isfile(event.data):
+            self.base.set_active_file(file=event.data, exists=True)
+        elif os.path.isdir(event.data):
+            self.base.open_in_new_window(dir=event.data)
+
+        self.base.trace(f"Dropped file: {event.data}")
