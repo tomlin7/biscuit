@@ -61,6 +61,6 @@ class Searchbar(tk.Frame):
         new += [i for i in self.master.get_items_text() if term in i[0] and i not in new]
         
         if any(new):
-            self.master.show_items(new)
+            self.master.show_items(new, term)
         else:
             self.master.show_no_results()

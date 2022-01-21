@@ -108,7 +108,7 @@ class PopupMenu(tk.Toplevel):
         self.menu_items = []
         self.row = 1
     
-    def show_items(self, items):
+    def show_items(self, items, search_term):
         for i in items[:-1]:
             i[1].grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
             self.row += 1

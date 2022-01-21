@@ -14,13 +14,9 @@ class DirTreeTree(ttk.Treeview):
         if startpath:
             self.create_root(startpath)
         else:
-            # self.set_heading('No Folder Opened')
             self.insert('', 0, text='You have not yet opened a folder.')
 
         self.binder = Binder(self)
-    
-    # def set_heading(self, text):
-    #     self.heading('#0', text=text, anchor=tk.W)
 
     def openfile(self, event):
         item = self.focus()
@@ -29,51 +25,48 @@ class DirTreeTree(ttk.Treeview):
         path = self.set(item, "fullpath")
 
         self.base.set_active_file(path)
+    
+    def clear_node(self, node):
+        self.delete(*self.get_children(node))
 
-    def fill_tree(self, node):
+    def clear_tree(self, node):
+        self.clear_node('')
+
+    def fill_node(self, node, path):
+        self.clear_node(node)
+
+        a = 0
+        items = [os.path.join(path, p) for p in os.listdir(path)]
+
+        # sub directories
+        directories = sorted([p for p in items if os.path.isdir(p)])
+        files = sorted([p for p in items if os.path.isfile(p)])
+
+        for p in directories:
+            name = os.path.split(p)[1]
+            oid = self.insert(node, tk.END, text=name, values=[p, 'directory'])
+            self.insert(oid, 0, text='dummy')
+
+            print(f"Folder-> {name}")
+        
+        for p in files:
+            if os.path.isfile(p):
+                name = os.path.split(p)[1]
+                oid = self.insert(node, tk.END, text=name, values=[p, 'file'])
+
+                print(f"File-> {name}")
+
+    def update_node(self, node):
         if self.set(node, "type") != 'directory':
             return
 
+        # parent = self.parent(node)
         path = self.set(node, "fullpath")
-
-        # Delete the possibly 'dummy' node present.
-        self.delete(*self.get_children(node))
-
-        parent = self.parent(node)
-        for p in os.listdir(path):
-            p = os.path.join(path, p)
-            ptype = None
-            if os.path.isdir(p):
-                ptype = 'directory'
-            elif os.path.isfile(p):
-                ptype = 'file'
-
-            fname = os.path.split(p)[1]
-            oid = self.insert(node, tk.END, text=fname, values=[p, ptype])
-            if ptype == 'directory':
-                self.insert(oid, 0, text='dummy')
+        self.fill_node(node, path)
 
     def update_tree(self, event):
         self = event.widget
-        self.fill_tree(self.focus())
+        self.update_node(self.focus())
 
     def create_root(self, startpath):
-        self.delete(*self.get_children())
-
-        dfpath = os.path.abspath(startpath)
-        # basename = self.base.active_dir_name
-
-        # self.set_heading(basename)
-
-        for p in os.listdir(dfpath):
-            p = os.path.join(dfpath, p)
-            ptype = None
-            if os.path.isdir(p):
-                ptype = 'directory'
-            elif os.path.isfile(p):
-                ptype = 'file'
-
-            fname = os.path.split(p)[1]
-            oid = self.insert('', tk.END, text=fname, values=[p, ptype])
-            if ptype == 'directory':
-                self.insert(oid, 0, text='dummy')
+        self.fill_node('', startpath)
