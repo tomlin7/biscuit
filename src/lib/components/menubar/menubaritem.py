@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..menu.menu import Menu
+from ..menu import Menu
 
 
 class MenuBarItem(tk.Menubutton):
