@@ -4,6 +4,7 @@ from tkinterDnD import Tk
 
 from .base import Base
 from .containers import PrimaryPane
+from .components.menubar import MenuBar
 from .components.statusbar import StatusBar
 from .components.command_palette import CommandPalette
 
@@ -17,6 +18,9 @@ class Root(Tk):
         self.title("Biscuit")
 
         self.base = Base(root=self)
+
+        self.menubar = MenuBar(self)
+        self.menubar.pack(fill=tk.X)
 
         self.primarypane = PrimaryPane(self)
         self.primarypane.pack(fill=tk.BOTH, expand=True)
