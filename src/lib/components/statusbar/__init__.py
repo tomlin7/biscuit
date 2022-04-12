@@ -17,7 +17,7 @@ class StatusBar(tk.Frame):
         self.base = master.base
 
         # git info
-        self.branch = SButton(self, text=" master")
+        self.branch = SButton(self, text="● master")
         self.branch.set_pack_data(side=tk.LEFT)
         self.git_popup = GitPopup(self)
         self.branch.bind("<Button-1>", self.git_popup.show)
@@ -80,7 +80,7 @@ class StatusBar(tk.Frame):
             self.branch.hide()
         
     def set_git_info(self, branch):
-        self.branch.config(text=" {0}".format(branch))
+        self.branch.config(text="● {0}".format(branch))
 
     def set_line_col_info(self, line, col, selected):
         self.line_col_info.config(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))

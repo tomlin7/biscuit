@@ -8,7 +8,7 @@ class Sidebar(tk.Frame):
         self.master = master
         self.left_panes = left_panes
 
-        self.config(width=60, bg='#E9E9E9', relief=tk.FLAT, bd=0)
+        self.config(bg='#E9E9E9', relief=tk.FLAT, bd=0)
         self.active_pane = None
 
         for i in self.left_panes:
@@ -17,7 +17,7 @@ class Sidebar(tk.Frame):
 
         self.settings_btn = tk.Menubutton(self)
         self.settings_btn.config(
-            height=3, width=6, relief=tk.FLAT, text="⚙", font=("Consolas", 15), 
+            height=2, width=4, relief=tk.FLAT, text="⚙", font=("Consolas", 15), 
             bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
         self.settings_btn.pack(fill=tk.X, side=tk.BOTTOM)
     
@@ -29,7 +29,7 @@ class Sidebar(tk.Frame):
     def create_button(self, text):
         btn = tk.Menubutton(self)
         btn.config(
-            height=3, width=6, relief=tk.FLAT, text=text, font=("Consolas", 15), 
+            height=2, width=4, relief=tk.FLAT, text=text, font=("Consolas", 15), 
             bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
         btn.pack(fill=tk.X, side=tk.TOP)
         
