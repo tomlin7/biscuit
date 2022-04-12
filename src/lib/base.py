@@ -9,14 +9,18 @@ from .utils.binder import Binder
 from .utils.events import Events
 
 from .components.git import GitCore
+from .components.style import Style
 
 
 class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
+        self.base = self
         self.appdir = root.appdir
         self.settings = Settings(self)
         self.bindings = self.settings.bindings
+
+        self.style = Style(self.root)
 
         self.git_found = False
         self.git = GitCore(self)

@@ -4,14 +4,14 @@ from tkinter import ttk
 
 from ..editor import Editor
 from ..diff_viewer import DiffViewer
+from ..find_replace import FindReplace
 
 
 class EditorTabs(ttk.Notebook):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.master = master
         self.base = master.base
-
-        self.initialize_style()
 
         # dnd
         self.configure(ondrop=self.drop, style="EditorTabs")
@@ -28,60 +28,19 @@ class EditorTabs(ttk.Notebook):
 
         self._active = None
 
+        #self.find_replace = FindReplace(self)
+    
         self.bind("<ButtonPress-1>", self.on_close_press, True)
         self.bind("<ButtonRelease-1>", self.on_close_release)
 
         self.bind("<<NotebookTabChanged>>", self.refresh_active_file)
     
-    def initialize_style(self):
-        style = ttk.Style()
-
-        self.images = (
-            tk.PhotoImage("img_closebtn", data='''
-                iVBORw0KGgoAAAANSUhEUgAAAB4AAAAlCAYAAABVjVnMAAAAAXNSR0IArs4
-                c6QAAAT9JREFUWEftkrtOhEAUhpkwdhYWEONivMTCGOBAwuPY+RL7DPsSdj
-                4OCRyYGAvjJYIxUFjYOWTMbLUxW8yBrFgMzTDJ+f8v880wZ6aPzcR1LPjPz
-                FvVVvXODNjHtTO1v4v/v2rf92+CIFgVReFv05Kmadc0zbLrulsTbaQTh2FY
-                c879siwPN8uTJPmQUnZCiMgEqmdIYB2Ioujedd2DsiyP9D5JkvdhGD7rur4
-                yhY4C61AYhg+c8339L6X8EkJcUqCjwTqYZZnUa57nnAodDQaAF6XUsC5gzE
-                XEUyqcfMcA8KR5iHimYQDw7DiOQsRzCpwEjuP4kTG2h4gnmxAAeFVKfVdVd
-                WEKNwZ7nne9WCxWiHi8rRwA3tq2XfZ9f2cCNwablFFmLJhia9KsVT1JHyVs
-                VVNsTZq1qifpo4RnU/0DhPBZJmDBDSEAAAAASUVORK5CYII=
-                '''),
-            tk.PhotoImage("img_closebtnhover", data='''
-                iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QA
-                AAPJJREFUSEtjZBggwDhA9jKMWsxgbm5u4+PjE0LNKNi/f/+2ffv27UI2EyOoEx
-                MTMzs6OqZR0+LOzs66vr6+5lGLUUJ1NKhhwfH//3+GGzduMGhqamJNd9evX2fQ0
-                NBgYGTELBooSlwgg4uLixl6enoYtLS0UCy/du0aQ0lJCUNvby9Wh1FkMcgmmAXI
-                lmMTQw8Sii1GtxzEB/kUWyggW04Vi5EtB7EJWQpSM7QtRo5TugX1gCSuActOA1a
-                AUFJNUi1Vk+qIUYtBITZ4mj62trbOERERCaTGIz71W7ZsWbt9+/YNeNtc1LQQn1
-                mjDXp6hTQDAPpaEC5rdvpRAAAAAElFTkSuQmCC
-                ''')
-        )
-
-        style.element_create("close", "image", "img_closebtn",
-                            ("active", "!disabled", "img_closebtnhover"), 
-                            border=22, sticky='')
-        style.layout("EditorTabs", [
-                ("EditorTabs.client", {
-                    "sticky": "nswe"
-                })
-            ])
-        style.layout("EditorTabs.Tab", [
-            ("EditorTabs.tab", {
-                "sticky": "nswe",
-                "children": [
-                    ("EditorTabs.padding", {
-                        "side": "top",
-                        "sticky": "nswe",
-                        "children": [
-                            ("EditorTabs.label", {"side": "left", "sticky": ''}),
-                            ("EditorTabs.close", {"side": "left", "sticky": ''}),
-                        ]
-                    })
-                ]
-            })
-        ])
+    def show_find_replace(self, *args):
+        if not self.find_replace_active:
+            pos_x, pos_y, width = self.text.textw.winfo_rootx(), self.text.textw.winfo_rooty(), self.text.textw.winfo_width()
+            self.find_replace.show(((pos_x + width) - (self.find_replace.winfo_width() + 10), pos_y))
+        else:
+            self.find_replace.reset()
 
     def on_close_press(self, event):
         element = self.identify(event.x, event.y)
