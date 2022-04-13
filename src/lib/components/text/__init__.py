@@ -16,6 +16,11 @@ class Text(tk.Text):
         self.focus_set()
         self.create_proxy()
 
+        self.config_bindings()
+
+    def config_bindings(self):
+        self.bind("<Control-f>", self.base.show_find_replace)
+
     def create_proxy(self):
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)

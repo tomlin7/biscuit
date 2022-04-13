@@ -214,3 +214,6 @@ class Base:
                 self.root.statusbar.configure_editmode(False)
         else:
             self.root.statusbar.configure_editmode(False)
+    
+    def show_find_replace(self, *_):
+        self.root.primarypane.basepane.right.top.editortabs.tabs.show_find_replace()

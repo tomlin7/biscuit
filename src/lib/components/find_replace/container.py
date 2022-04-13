@@ -20,8 +20,8 @@ class FindReplaceContainer(tk.Frame):
 
         self.find_results = FindResults(self)
 
-        self.replace_btn_holder = tk.Frame(self, bg="#252526", pady=2)
-        self.replace_button = Button(self.replace_btn_holder, bg="#252526", hbg="#4b4c4d", img=tk.PhotoImage(data="""
+        self.replace_btn_holder = tk.Frame(self, bg="#f3f3f3", pady=2)
+        self.replace_button = Button(self.replace_btn_holder, bg="#f3f3f3", hbg="#e1e1e1", img=tk.PhotoImage(data="""
         iVBORw0KGgoAAAANSUhEUgAAABAAAAARCAYAAADUryzEAAAACXBIWXMAAABfAAAAXwEqnu0dAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2Nhc
         GUub3Jnm+48GgAAAjBJREFUOI2VUj1olEEQfbO7lwODEAjeCSoSIaAcWJgIosct+4mCYGORNoUWIqTRQsTKLqBYp1Dwp/xEJAFDwMC3+yE2Br
         SxEUEsEiWJEDgTyG2+GQsvkjsTo6/bZd6892YG+A947xe7/8zfCCGE0wDOFUXxPkmSSQA9IYQrAKK19ikA0GZxnuf7iqIYNcYsMXNRFMU3pVQ
@@ -32,16 +32,16 @@ class FindReplaceContainer(tk.Frame):
         hohMAAgAopZYAnPTej8zNzZW24ceOBsw8KSIfieg7M0+Vy+VxEVkQkQNDQ0Mb3WwRGeuI4JxbAXCnq258J/vOuRlDRHdFxHvv/1DYARHA7c3H
         T51aBFm+qi3JAAAAAElFTkSuQmCC"""))
 
-        self.find_btns_holder = tk.Frame(self, bg="#252526", pady=6)
-        self.selection_button = Button(self.find_btns_holder, bg="#252526", hbg="#4b4c4d", img=tk.PhotoImage(data="""
+        self.find_btns_holder = tk.Frame(self, bg="#f3f3f3", pady=6)
+        self.selection_button = Button(self.find_btns_holder, bg="#f3f3f3", hbg="#e1e1e1", img=tk.PhotoImage(data="""
         iVBORw0KGgoAAAANSUhEUgAAABEAAAALCAYAAACZIGYHAAAACXBIWXMAAABfAAAAXwEqnu0dAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2Nhc
         GUub3Jnm+48GgAAAGdJREFUKJFjPHnx5n8GEsF/RgZvCz31bTA+yz8GJmNSDWH8xnCHVD30AYynLt+RpdQQlv///j6i2BAGhv9KlBoyeADjkX
         M3pIhRyPGP8ZeJifobbHIsrMyMT4kx5A8zwykGBgZzbHIAsMwZm/JJgOgAAAAASUVORK5CYII="""))
-        self.close_button = Button(self.find_btns_holder, bg="#252526", hbg="#4b4c4d", img=tk.PhotoImage(data="""
+        self.close_button = Button(self.find_btns_holder, bg="#f3f3f3", hbg="#e1e1e1", img=tk.PhotoImage(data="""
         iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAABfAAAAXwEqnu0dAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2Nhc
         GUub3Jnm+48GgAAALhJREFUGJV1kL0OAVEQhb9ze61HkK2sxk8k3sqqUNhEgafS2Evjqna9hFKiMAok3OxOOfOdM3NGPlwz8WwP0iSjoYpzmT
         t4OBMtQ9NjKLdNoKS5ida7cbmufKgsFhTnMvehMh/Kzb9DJKgDFQtktjB7FpIbgW2HaTKrhQF8qPbABLPTsJcMfmcuvhGYgB2Q+nEG9wtKmn9
-        Wj03Ka7/UlDoOrchxRlTf0MJ2TtIdWNeBAKNuZwmsDd1eZYKFNbEaSb4AAAAASUVORK5CYII="""))
+        Wj03Ka7/UlDoOrchxRlTf0MJ2TtIdWNeBAKNuZwmsDd1eZYKFNbEaSb4AAAAASUVORK5CYII="""), command=self.close)
 
         self.grid_columnconfigure(0, weight=1)
         
@@ -54,6 +54,9 @@ class FindReplaceContainer(tk.Frame):
 
         self.selection_button.grid(row=0, column=0, sticky=tk.NSEW, pady=3)
         self.close_button.grid(row=0, column=1, sticky=tk.NSEW, pady=3)
+    
+    def close(self):
+        self.master.hide()
     
     def get_term(self):
         return self.find_entry.get()

@@ -14,7 +14,7 @@ class Editor(tk.Frame):
         self.path = path
         self.exists = exists
 
-        self.pathbar = EditorPath(master=self, path=path.replace('/', '\\'))
+        self.pathbar = EditorPath(master=self, path=path.replace(self.base.active_dir or "", ""))
         self.content = EditorContent(self, path=path, exists=exists)
 
         self.rowconfigure(1, weight=1)

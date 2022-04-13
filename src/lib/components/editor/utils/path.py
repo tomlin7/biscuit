@@ -1,4 +1,4 @@
-import os, re
+import os
 import tkinter as tk
 
 
@@ -7,16 +7,17 @@ class EditorPath(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
 
-        self.config(bg="#C6C3C3")
+        self.config(bg="#ffffff")
 
-        self.path = path.split('\\')
+        self.path = path.split('\\')[1:]
         self.path_btns = []
 
         for i in self.path:
-            btn = tk.Menubutton(self, text=f"{i} ›", font=("Verdana", 14)) # , command=self.change_path)
-            btn.config(padx=1, fg="#000000", bg="#C6C3C3", activebackground="#4c4a48", activeforeground="#ffffff")
+            #TODO: show path items on click
+            if i == self.path[-1]:
+                btn = tk.Button(self, text=i, font=("Segoe UI", 13))
+            else:
+                btn = tk.Menubutton(self, text=f"{i} ›", font=("Segoe UI", 13))
+            btn.config(padx=1, fg="#818181", bg="#ffffff", activebackground="#ffffff", activeforeground="#4e4e4e")
             btn.pack(side=tk.LEFT)
             self.path_btns.append(btn)
-
-        # self.config(bg="#6c6c6c", fg="#ffffff")
-

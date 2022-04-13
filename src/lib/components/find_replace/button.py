@@ -2,12 +2,13 @@ import tkinter as tk
 
 
 class Button(tk.Frame):
-    def __init__(self, master, bg, hbg, img=None, *args, **kwargs):
+    def __init__(self, master, bg, hbg, img=None, command=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.img = img
-        self.hovered = False
+        self.command = command
 
+        self.hovered = False
         self.hbg = hbg
         self.bg = bg
         
@@ -28,7 +29,8 @@ class Button(tk.Frame):
         self.imagew.config(image=self.img)
         
     def on_click(self, *args):
-        pass
+        if self.command:
+            self.command()
     
     def on_hover(self, *args):
         self.hovered = True

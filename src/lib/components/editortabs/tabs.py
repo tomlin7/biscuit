@@ -1,5 +1,4 @@
 import os
-import tkinter as tk
 from tkinter import ttk
 
 from ..editor import Editor
@@ -28,17 +27,21 @@ class EditorTabs(ttk.Notebook):
 
         self._active = None
 
-        #self.find_replace = FindReplace(self)
+        self.find_replace = FindReplace(self)
+        self.find_replace_active = False
     
         self.bind("<ButtonPress-1>", self.on_close_press, True)
         self.bind("<ButtonRelease-1>", self.on_close_release)
 
         self.bind("<<NotebookTabChanged>>", self.refresh_active_file)
     
+    def get_find_replace_position(self):
+        pos_x, pos_y, width = self.winfo_rootx(), self.winfo_rooty(), self.winfo_width()
+        return ((pos_x + width) - (self.find_replace.winfo_width() + 40), pos_y+81)
+    
     def show_find_replace(self, *args):
         if not self.find_replace_active:
-            pos_x, pos_y, width = self.text.textw.winfo_rootx(), self.text.textw.winfo_rooty(), self.text.textw.winfo_width()
-            self.find_replace.show(((pos_x + width) - (self.find_replace.winfo_width() + 10), pos_y))
+            self.find_replace.show(self.get_find_replace_position())
         else:
             self.find_replace.reset()
 

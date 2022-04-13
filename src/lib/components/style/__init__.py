@@ -12,30 +12,35 @@ class Style(ttk.Style):
     def style_editor_tabs(self):
         self.images = (
             tk.PhotoImage("img_closebtn", data='''
-                iVBORw0KGgoAAAANSUhEUgAAAB4AAAAlCAYAAABVjVnMAAAAAXNSR0IArs4
-                c6QAAAT9JREFUWEftkrtOhEAUhpkwdhYWEONivMTCGOBAwuPY+RL7DPsSdj
-                4OCRyYGAvjJYIxUFjYOWTMbLUxW8yBrFgMzTDJ+f8v880wZ6aPzcR1LPjPz
-                FvVVvXODNjHtTO1v4v/v2rf92+CIFgVReFv05Kmadc0zbLrulsTbaQTh2FY
-                c879siwPN8uTJPmQUnZCiMgEqmdIYB2Ioujedd2DsiyP9D5JkvdhGD7rur4
-                yhY4C61AYhg+c8339L6X8EkJcUqCjwTqYZZnUa57nnAodDQaAF6XUsC5gzE
-                XEUyqcfMcA8KR5iHimYQDw7DiOQsRzCpwEjuP4kTG2h4gnmxAAeFVKfVdVd
-                WEKNwZ7nne9WCxWiHi8rRwA3tq2XfZ9f2cCNwablFFmLJhia9KsVT1JHyVs
-                VVNsTZq1qifpo4RnU/0DhPBZJmDBDSEAAAAASUVORK5CYII=
+                iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7DAAA
+                OwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAT
+                RJREFUOI2tlUtuglAUhn8hdg12AcycERNuF1TbFTBwKYqJ7TZwYChN+tiEbKAxD
+                kW/DsAG7eVh9Buew/04D3KRSoA74BlIgS3tbIE34AnoqwpwD3x3kNTxBQyqlV0j
+                O/IJ9EXR5q0Y94B3SUa3IXUkDW2ZLMtqTzXkhrLVHccxxhiSJPmXi6KIIAhYr9f
+                Wnq3C/X7PZDIhCAJWq9VffLFY4Ps+s9msdohWoU3aRdYorEpHo1EnGYDTtDLHce
+                R5ng6Hg1zXled57Xtuetuxzel0ap3pRS2fz6xuUZ2EcRzj+z7z+fwknuc5YRhij
+                Gn8bDbnwd1ux3K5tB7I87w2B/z0gFTSQ/u0O5E6kl5vJJOkFwF9ivvsWj44XrTA
+                gOI+u0Y2OKm1rHQMJFgWZWFTPvtI5RfwC7IYP8M6S0UlAAAAAElFTkSuQmCC
                 '''),
             tk.PhotoImage("img_closebtnhover", data='''
-                iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QA
-                AAPJJREFUSEtjZBggwDhA9jKMWsxgbm5u4+PjE0LNKNi/f/+2ffv27UI2EyOoEx
-                MTMzs6OqZR0+LOzs66vr6+5lGLUUJ1NKhhwfH//3+GGzduMGhqamJNd9evX2fQ0
-                NBgYGTELBooSlwgg4uLixl6enoYtLS0UCy/du0aQ0lJCUNvby9Wh1FkMcgmmAXI
-                lmMTQw8Sii1GtxzEB/kUWyggW04Vi5EtB7EJWQpSM7QtRo5TugX1gCSuActOA1a
-                AUFJNUi1Vk+qIUYtBITZ4mj62trbOERERCaTGIz71W7ZsWbt9+/YNeNtc1LQQn1
-                mjDXp6hTQDAPpaEC5rdvpRAAAAAElFTkSuQmCC
+                iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7DAAA
+                OwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAc
+                BJREFUOI2tlb9q21AUxn9XpFlspZMHPYMiYai6tJPBBtsQOts0HtLX8SuECKVvU
+                BkvBglDOjReKrj4FYrlIS3VZKzTxU7zR4pb7G/8Dt+Pez4uHMVGWuvjNE0/AR8B
+                F6jysn4rpb7nef7ZNM1Lz/NWAApgOp1aIvJFRN7sgJRpJiJnjUbjh9JaHy+Xy69
+                7wLa6rVar7482a+4LA3ibZdmFAZwfALbVuQGcFk3SNC1Nlc1E5NQAzKeDJEkYDo
+                fM5/NnoclkwnA4LIO+Nopcx3FwXRff99Fa3/tRFDEej2m1WtRqtcJXHhWZSin6/
+                T4AQRAwGAxYLBaEYUin06HZbBbCSoFPob7vk+f5ThhA4coPoZZlkec5hmFgWdaL
+                sJ3AKIoYjUa0223q9TpBEDzqtEilK0dR9KgzEQH+dmrb9r+/MEkSwjCk2+3ed6a
+                UotfrYds2QRCU/kUVx/FP4OShuV6v0Vrjuu6zQJ7naK1xHKeId6fiOL4B3pVs/l
+                9SSt0YInJ9CNhGgWGa5iUwOwDsW6VSuTI8z1uJyBlwuw9MRD54nrdSW2c2m73Ks
+                uxCRLYn4KQ8D8AvIFFKXVcqlavtCfgDSfW955Jl41YAAAAASUVORK5CYII=
                 ''')
         )
 
         self.element_create("close", "image", "img_closebtn",
                             ("active", "!disabled", "img_closebtnhover"), 
-                            border=22, sticky='')
+                            border=19, sticky='')
         self.layout("EditorTabs", [
                 ("EditorTabs.client", {
                     "sticky": "nswe"

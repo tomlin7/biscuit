@@ -8,9 +8,10 @@ class ReplaceBox(EntryBox):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
+        self.btn_frame = tk.Frame(self, bg="#ffffff")
         self.btn_frame.grid(row=0, column=1, sticky=tk.NSEW)
         
-        self.keep_case = Button(self.btn_frame, bg="#3c3c3c", hbg="#4b4c4d", img=tk.PhotoImage(data="""
+        self.keep_case = Button(self.btn_frame, bg="#ffffff", hbg="#e9e9e9", img=tk.PhotoImage(data="""
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAKCAYAAAC9vt6cAAAACXBIWXMAAABfAAAAXwEqnu0dAAAAGXRFWHRTb2Z0d2FyZQB
         3d3cuaW5rc2NhcGUub3Jnm+48GgAAAYVJREFUKJFtkD1rVGEQhZ957xsEQ2ysRTBcNteQzUbQLIKFIJgfkGXzBwTBRv+Ajb
         WgAW1E7MRixSIgaIpYuJrrLmY/JO4HWNkIEgu/MHrfY7O5RrLTzXDmmXPG2Fdpu78FlJS52fKpeHtv3ugMLgRpfdRmwGfQk

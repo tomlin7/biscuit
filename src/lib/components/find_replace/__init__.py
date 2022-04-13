@@ -5,14 +5,13 @@ from .container import FindReplaceContainer
 
 
 class FindReplace(tk.Toplevel):
-    def __init__(self, master, tw, state=False, *args, **kwargs):
+    def __init__(self, master, state=False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
-        self.tw = tw
 
         self.state = state
-        self.font = self.master.font
+        self.font = self.base.settings.font
 
         if not state:
             self.withdraw()
@@ -39,11 +38,9 @@ class FindReplace(tk.Toplevel):
 
     def do_find(self, *args):
         print(self.container.get_term())
-        # self.master.highlighter.highlight_pattern(self.container.find_entry.entry.get())
     
     def refresh_geometry(self, *args):
         self.update_idletasks()
-        self.geometry("+{}+{}".format(*self.master.cursor_screen_location()))
 
     def show(self, pos):
         self.state = True
