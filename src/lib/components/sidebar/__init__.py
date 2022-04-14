@@ -12,7 +12,7 @@ class Sidebar(tk.Frame):
         self.active_pane = None
 
         for i in self.left_panes:
-            btn = self.create_button(text=i.name)
+            btn = self.create_button(text=i.icon)
             self.bind_button(btn, i)
 
         self.settings_btn = tk.Menubutton(self)

@@ -1,3 +1,4 @@
+import tkinter as tk
 from .base import TerminalBase
 
 
@@ -6,5 +7,7 @@ class Terminal(TerminalBase):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         
-        self.configure(pady=5, padx=5, font=('Consolas', 15))
+        self.config(
+            font=("Consolas", 15), bg="#FFFFFF", bd=0, fg="#333333", 
+            padx=10, pady=10, wrap=tk.WORD, relief=tk.FLAT)
         self.shell = True

@@ -15,7 +15,9 @@ class GitPane(SidePane):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.name = "💼"
+        self.name = "Source Control"
+        self.icon = "💼"
+        self.tree_active = False
         
         self.core = self.base.git
 
@@ -28,15 +30,17 @@ class GitPane(SidePane):
         
         self.label = tk.Label(self.label_frame)
         self.label.config(
-            text="SOURCE CONTROL", font=("Helvetica", 11), anchor=tk.W, bg="#E6E6E6")
-        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=15)
+            text="SOURCE CONTROL", font=("Segoe UI", 10), anchor=tk.W, 
+            bg="#E6E6E6", fg="#6f6f6f")
+        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=9)
 
-        self.tree_active = False
 
         self.empty_tree = EmptyGitTree(self)
         self.empty_tree.grid(row=1, column=0, sticky=tk.NSEW, padx=25, pady=10)
 
         self.toolbar = GitTreeToolbar(self)
+        self.toolbar.config(bg="#E6E6E6")
+
         self.tree = GitTree(self, selectmode=tk.BROWSE)
         self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
 

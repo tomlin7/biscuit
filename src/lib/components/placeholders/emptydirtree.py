@@ -14,17 +14,17 @@ class EmptyDirTree(tk.Frame):
 
         self.not_opened_dialog = WrappingLabel(self)
         self.not_opened_dialog.config(
-            text="You have not yet opened a folder.", font=("Helvetica", 13), 
-            anchor=tk.W, justify=tk.LEFT)
-        self.not_opened_dialog.grid(row=0, pady=10, sticky=tk.EW)
+            text="You have not yet opened a folder.", font=("Segoe UI", 12), 
+            anchor=tk.W, justify=tk.LEFT, fg="#616165")
+        self.not_opened_dialog.grid(row=0, pady=5, sticky=tk.EW)
 
         self.open_btn = tk.Menubutton(self)
         self.open_btn.config(
             text="Open Folder", bg="#0e639c", fg="#ffffff", 
             activebackground="#1177bb", activeforeground="#ffffff",
-            font=("Helvetica", 13), pady=10)
+            font=("Segoe UI", 12), pady=5)
         self.open_btn.bind("<Button-1>", self.open_folder)
-        self.open_btn.grid(row=1, pady=10, sticky=tk.EW)
+        self.open_btn.grid(row=1, pady=6, sticky=tk.EW)
 
-    def open_folder(self, _):
+    def open_folder(self, *_):
         self.base.events.opendir()

@@ -12,7 +12,7 @@ class MenuBarItem(tk.Menubutton):
 
         self.name = text
 
-        self.config(text=text, font="Helvetica 11",
+        self.config(text=text, font=("Segoe UI", 11),
             padx=9, bg="#dddddd", fg="#575757", pady=8,
             activebackground="#c6c6c6", activeforeground="#575757"
         )

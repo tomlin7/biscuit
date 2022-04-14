@@ -12,7 +12,9 @@ class DirTreePane(SidePane):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.name = "📂"
+        self.name = "Explorer"
+        self.icon = "📂"
+        self.tree_active = False
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -22,14 +24,14 @@ class DirTreePane(SidePane):
         self.label_frame.grid(row=0, column=0, sticky=tk.EW)
 
         self.label = tk.Label(self.label_frame)
-        self.label.config(text="EXPLORER", font=("Helvetica", 11), anchor=tk.W, bg="#E6E6E6")
-        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=15)
+        self.label.config(
+            text="EXPLORER", font=("Segoe UI", 10), anchor=tk.W, 
+            bg="#E6E6E6", fg="#6f6f6f")
+        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=9)
 
         self.toolbar = DirTreeToolbar(self)
         self.toolbar.config(bg="#E6E6E6")
         self.toolbar.grid(row=1, column=0, sticky=tk.EW)
-
-        self.tree_active = False
 
         self.emptytree = EmptyDirTree(self)
         self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=25, pady=10)

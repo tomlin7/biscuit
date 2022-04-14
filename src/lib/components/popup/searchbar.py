@@ -24,7 +24,7 @@ class Searchbar(tk.Frame):
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
         
         self.search_bar = tk.Entry(
-            frame, font=("Helvetica", 12), fg="#616161", 
+            frame, font=("Segoe UI", 12), fg="#616161", 
             width=self.master.width, relief=tk.FLAT, bg="#FFFFFF",
             textvariable=self.text_variable)
         

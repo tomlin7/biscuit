@@ -18,6 +18,13 @@ class MenuBar(tk.Frame):
         self.menus = []
 
         self.add_menus()
+    
+    def add_menu(self, text):
+        new_menu = MenuBarItem(self, text)
+        new_menu.pack(side=tk.LEFT, fill=tk.X, padx=0)
+        self.menus.append(new_menu)
+        
+        return new_menu
 
     def add_menus(self):
         self.add_file_menu()
@@ -60,13 +67,6 @@ class MenuBar(tk.Frame):
         view_menu.menu.add_item("Syntax", placeholder)
         view_menu.menu.add_item("Indentation", placeholder)
         view_menu.menu.add_last_item("Line Endings", placeholder)
-    
-    def add_menu(self, text):
-        new_menu = MenuBarItem(self, text)
-        new_menu.pack(side=tk.LEFT, fill=tk.X, padx=0)
-        self.menus.append(new_menu)
-        
-        return new_menu
 
     def close_all_menus(self, event):
         for menu in self.menus:

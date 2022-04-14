@@ -18,7 +18,7 @@ class EntryBox(tk.Frame):
         frame.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.entry = tk.Entry(
-            frame, width=30, bg="#ffffff", fg="#616161", font=("Helvetica", 11),
+            frame, width=30, bg="#ffffff", fg="#616161", font=("Segoe UI", 11),
             textvariable=self.term, relief=tk.FLAT, insertbackground="#616161")
         self.entry.grid(sticky=tk.EW, padx=3, pady=3)
 

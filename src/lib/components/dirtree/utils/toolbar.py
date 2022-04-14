@@ -12,19 +12,19 @@ class DirTreeToolbar(tk.Frame):
 
         self.dirname = tk.Label(self)
         self.dirname.config(
-            font=("Helvetica", 11, 'bold'), anchor=tk.W,
-            textvariable=self.dirvar, bg="#E6E6E6")
+            font=("Segoe UI", 10, 'bold'), anchor=tk.W,
+            textvariable=self.dirvar, bg="#E6E6E6", fg="#616161")
 
         self.btn_collapse_all = tk.Menubutton(
-            self, text="–", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
+            self, text="–", fg="#000000", font=("Segoe UI", 10), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff")
 
         self.btn_refresh = tk.Menubutton(
-            self, text="⟳", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
+            self, text="⟳", fg="#000000", font=("Segoe UI", 10), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff")
 
         self.btn_newfile = tk.Menubutton(
-            self, text="+", fg="#000000", font=("Helvetica", 11), width=2, bg="#E6E6E6",
+            self, text="+", fg="#000000", font=("Segoe UI", 10), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff")
 
         self.dirname.pack(side=tk.LEFT, padx=(25, 0))

@@ -8,7 +8,7 @@ class FindResults(tk.Label):
         self.base = master.base
 
         self.init()
-        self.config(padx=1, width=10, font=("Helvetica", 10), bg="#f3f3f3")
+        self.config(padx=1, width=10, font=("Segoe UI", 10), bg="#f3f3f3")
 
     def show(self, n):
         if not n:

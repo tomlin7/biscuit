@@ -10,9 +10,6 @@ class TerminalPane(tk.Frame):
         self.active = active
 
         self.terminal = Terminal(self)
-        self.terminal.config(
-            font=("Consolas", 15), bg="#FFFFFF", bd=0, 
-            padx=10, pady=10, wrap=tk.WORD, relief=tk.FLAT)
         self.terminal.pack(fill=tk.BOTH, expand=True)
     
     def toggle(self):

@@ -13,6 +13,7 @@ class Editor(tk.Frame):
 
         self.path = path
         self.exists = exists
+        self.config(bg="#e8e8e8")
 
         self.pathbar = EditorPath(master=self, path=path.replace(self.base.active_dir or "", ""))
         self.content = EditorContent(self, path=path, exists=exists)
@@ -21,7 +22,7 @@ class Editor(tk.Frame):
         self.columnconfigure(0, weight=1)
 
         if self.content.show_path:
-            self.pathbar.grid(row=0, column=0, sticky=tk.EW)
+            self.pathbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
         self.content.grid(row=1, column=0, sticky=tk.NSEW)
         
     def configure_pathbar(self, flag):
