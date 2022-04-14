@@ -1,5 +1,7 @@
+import os
 import tkinter as tk
 import tkinter.font as Font
+import tkextrafont as extra
 
 from .. import config
 from .. import res
@@ -34,4 +36,5 @@ class Settings:
             family=self.config.font.family, 
             size=self.config.font.size, 
             weight=self.config.font.style)
+        self.icon_font = extra.Font(file=os.path.join(self.base.appdir, "src/res/codicon/codicon.ttf"), family="codicon")
         
