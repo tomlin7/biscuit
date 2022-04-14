@@ -1,12 +1,12 @@
 import os
 from tkinter import ttk
 
-from ..editor import Editor
-from ..diff_viewer import DiffViewer
+from ..editor_types import Editor
+from ..editor_types import DiffViewer
 from ..find_replace import FindReplace
 
 
-class EditorTabs(ttk.Notebook):
+class EditorGroups(ttk.Notebook):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master

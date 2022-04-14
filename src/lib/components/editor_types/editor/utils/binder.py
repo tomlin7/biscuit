@@ -1,6 +1,3 @@
-from ....config.bindings import Bindings
-
-
 class Binder:
     def __init__(self, master, bindings=None):
         self.base = master.base

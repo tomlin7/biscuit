@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from .content import DiffViewerContent
-from ..editor import EditorPath
+from ...breadcrumbs import BreadCrumbs
 
 
 class DiffViewer(tk.Frame):
@@ -11,8 +11,8 @@ class DiffViewer(tk.Frame):
         self.master = master
         self.path = path
 
-        self.path_view = EditorPath(master=self, path=path.replace('/', '\\'))
-        self.path_view.pack(side=tk.TOP, fill=tk.X)
+        self.breadcrumbs = BreadCrumbs(master=self, path=path.replace('/', '\\'))
+        self.breadcrumbs.pack(side=tk.TOP, fill=tk.X)
 
         self.content = DiffViewerContent(self, path)
         self.content.pack(fill=tk.BOTH, expand=True)

@@ -5,11 +5,11 @@ from .repo import GitRepo
 from .tree import GitTree
 from .utils.toolbar import GitTreeToolbar
 
-from ..sidebar.pane import SidePane
+from ..sidebar import SideBar
 from ..utils.scrollbar import AutoScrollbar
 from ..placeholders.git import GitPlaceHolder
 
-class GitPane(SidePane):
+class GitPane(SideBar):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

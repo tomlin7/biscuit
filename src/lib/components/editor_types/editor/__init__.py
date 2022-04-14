@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.font as Font
 
 from .content import EditorContent
-from .utils.path import EditorPath
+from ...breadcrumbs import BreadCrumbs
 
 
 class Editor(tk.Frame):
@@ -15,21 +15,21 @@ class Editor(tk.Frame):
         self.exists = exists
         self.config(bg="#e8e8e8")
 
-        self.pathbar = EditorPath(master=self, path=path.replace(self.base.active_dir or "", ""))
+        self.breadcrumbs = BreadCrumbs(master=self, path=path.replace(self.base.active_dir or "", ""))
         self.content = EditorContent(self, path=path, exists=exists)
 
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
         if self.content.show_path:
-            self.pathbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
+            self.breadcrumbs.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
         self.content.grid(row=1, column=0, sticky=tk.NSEW)
         
-    def configure_pathbar(self, flag):
+    def configure_breadcrumbs(self, flag):
         if flag:
-            self.pathbar.grid()
+            self.breadcrumbs.grid()
         else:
-            self.pathbar.grid_remove()
+            self.breadcrumbs.grid_remove()
     
     def focus(self):
         if self.content.editable:

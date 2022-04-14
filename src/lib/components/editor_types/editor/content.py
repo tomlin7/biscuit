@@ -5,12 +5,12 @@ import tkinter.font as Font
 from .utils.binder import Binder
 from .utils.linenumbers import LineNumbers
 
-from ..text import Text
+from ...text import Text
 from ..image_viewer import ImageViewer
-from ..welcome_page import WelcomePage
-from ..text.utils import Utils
-from ..utils.scrollbar import AutoScrollbar
-from ..utils.filetype import FileType
+from ...placeholders.welcome import WelcomePage
+from ...text.utils import Utils
+from ...utils.scrollbar import AutoScrollbar
+from ...utils.filetype import FileType
 
 class EditorContent(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):

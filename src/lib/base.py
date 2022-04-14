@@ -1,6 +1,4 @@
 import subprocess, os, sys
-import tkinter as tk
-import tkinter.filedialog as filedialog
 
 from datetime import datetime
 
@@ -9,7 +7,7 @@ from .utils.binder import Binder
 from .utils.events import Events
 
 from .components.git import GitCore
-from .components.style import Style
+from .styles import Style
 
 
 class Base:

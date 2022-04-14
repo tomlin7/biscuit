@@ -27,5 +27,5 @@ class LineNumbers(tk.Canvas):
                 break
             y = dline[1]
             linenum = str(i).split(".")[0]
-            self.create_text(3, y, anchor=tk.NW, text=linenum, font=self.font)
+            self.create_text(46, y, anchor=tk.NE, text=linenum, font=self.font)
             i = self.text.index("%s+1line" % i)

@@ -3,11 +3,11 @@ import tkinter as tk
 from .tree import DirTreeTree
 from .utils.toolbar import DirTreeToolbar
 
-from ..sidebar.pane import SidePane
+from ..sidebar import SideBar
 from ..utils.scrollbar import AutoScrollbar
 from ..placeholders.dir import DirtreePlaceholder
 
-class DirTreePane(SidePane):
+class DirTreePane(SideBar):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 
 
-class EditorPath(tk.Frame):
+class BreadCrumbs(tk.Frame):
     def __init__(self, master, path=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master

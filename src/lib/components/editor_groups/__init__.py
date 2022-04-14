@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from .tabs import EditorTabs
+from .groups import EditorGroups
 from ..placeholders.emptytab import EmptyTab
 
-class EditorTabsPane(tk.Frame):
+class EditorGroupsPane(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
@@ -11,7 +11,7 @@ class EditorTabsPane(tk.Frame):
         self.active = False
         self.config(bd=0, relief=tk.FLAT)
 
-        self.tabs = EditorTabs(self)
+        self.tabs = EditorGroups(self)
         self.emptytab = EmptyTab(self)
 
         self.emptytab.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
