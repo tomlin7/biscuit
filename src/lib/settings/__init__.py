@@ -36,5 +36,5 @@ class Settings:
             family=self.config.font.family, 
             size=self.config.font.size, 
             weight=self.config.font.style)
-        self.icon_font = extra.Font(file=os.path.join(self.base.appdir, "src/res/codicon/codicon.ttf"), family="codicon")
+        self.icon_font = extra.Font(file=os.path.join(self.base.appdir, "res/codicon/codicon.ttf"), family="codicon")
         

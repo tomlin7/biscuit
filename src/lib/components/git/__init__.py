@@ -16,7 +16,7 @@ class GitPane(SidePane):
         self.base = master.base
 
         self.name = "Source Control"
-        self.icon = "💼"
+        self.icon = "\uea68"
         self.tree_active = False
         
         self.core = self.base.git
@@ -62,7 +62,7 @@ class GitPane(SidePane):
     def enable_tree(self):
         if not self.tree_active:
             self.empty_tree.grid_remove()
-            self.toolbar.grid(row=1, column=0, sticky=tk.EW, padx=(25, 1))
+            self.toolbar.grid(row=1, column=0, sticky=tk.EW)
             self.tree.grid(row=2, column=0, sticky=tk.NSEW)
             self.tree_scrollbar.grid(row=2, column=1, sticky=tk.NS)
             self.tree_active = True

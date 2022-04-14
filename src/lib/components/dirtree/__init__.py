@@ -13,7 +13,7 @@ class DirTreePane(SidePane):
         self.base = master.base
 
         self.name = "Explorer"
-        self.icon = "📂"
+        self.icon = "\ueaf0"
         self.tree_active = False
 
         self.grid_rowconfigure(2, weight=1)

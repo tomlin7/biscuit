@@ -9,45 +9,31 @@ class GitTreeToolbar(tk.Frame):
 
         self.dirvar = tk.StringVar()
         self.dirname = tk.Label(self)
-        self.dirname.config(font=("Segoe UI", 12, 'bold'), anchor=tk.W, textvariable=self.dirvar)
+        self.dirname.config(
+            font=("Segoe UI", 10, 'bold'), anchor=tk.W, 
+            textvariable=self.dirvar, bg="#E6E6E6", fg="#616161")
         
         self.more_actions = tk.Menubutton(self)
-        self.more_actions.config(text="⋯", fg="#000000", font=("Segoe UI", 12), width=2,
+        self.more_actions.config(text="\uea7c", bg="#E6E6E6", fg="#000000", font=("codicon", 12), width=2,
             activebackground="#4c4a48", activeforeground="#ffffff")
         
         self.refresh = tk.Menubutton(self)
-        self.refresh.config(text="⟳", fg="#000000", font=("Segoe UI", 12), width=2,
+        self.refresh.config(text="\ueb37", fg="#000000", bg="#E6E6E6", font=("codicon", 12), width=2,
             activebackground="#4c4a48", activeforeground="#ffffff")
         
         self.commit = tk.Menubutton(self)
-        self.commit.config(text="✔", fg="#000000", font=("Segoe UI", 12), width=2,
+        self.commit.config(text="\ueab2", fg="#000000", bg="#E6E6E6", font=("codicon", 12), width=2,
             activebackground="#4c4a48", activeforeground="#ffffff")
         
-        self.synchronize = tk.Menubutton(self)
-        self.synchronize.config(text="🔄", fg="#000000", font=("Segoe UI", 12), width=2,
-            activebackground="#4c4a48", activeforeground="#ffffff")
         
-        self.branchname = tk.Menubutton(self)
-        self.branchname.config(text=" None", fg="#000000", font=("Segoe UI", 9), 
-            activebackground="#4c4a48", activeforeground="#ffffff", justify=tk.CENTER)
-        
-        self.dirname.pack(side=tk.LEFT)
-
+        self.dirname.pack(side=tk.LEFT, padx=(25, 0))
         self.more_actions.pack(side=tk.RIGHT)
         self.refresh.pack(side=tk.RIGHT)
         self.commit.pack(side=tk.RIGHT)
-        self.synchronize.pack(side=tk.RIGHT)
-        
-        self.branchname.pack(side=tk.RIGHT, fill=tk.Y)
     
     def update(self):
         self.update_dirname()
-        self.update_branchname()
 
     def update_dirname(self):
         if self.base.active_dir_name:
             self.dirvar.set(self.base.active_dir_name)
-    
-    def update_branchname(self):
-        if self.base.git_found:
-            self.branchname.config(text=f" {self.base.active_branch_name}")

@@ -8,7 +8,7 @@ class Sidebar(tk.Frame):
         self.master = master
         self.left_panes = left_panes
 
-        self.config(bg='#E9E9E9', relief=tk.FLAT, bd=0)
+        self.config(bg='#2c2c2c', relief=tk.FLAT, bd=0)
         self.active_pane = None
 
         for i in self.left_panes:
@@ -17,8 +17,8 @@ class Sidebar(tk.Frame):
 
         self.settings_btn = tk.Menubutton(self)
         self.settings_btn.config(
-            height=2, width=4, relief=tk.FLAT, text="⚙", font=("Consolas", 15), 
-            bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
+            height=2, width=4, relief=tk.FLAT, text="\ueb51", font=("codicon", 20), 
+            bg="#2c2c2c", fg="#7b7b7b", activebackground="#2c2c2c", activeforeground="#ffffff")
         self.settings_btn.pack(fill=tk.X, side=tk.BOTTOM)
     
     def remove_all_except(self, frame):
@@ -29,8 +29,8 @@ class Sidebar(tk.Frame):
     def create_button(self, text):
         btn = tk.Menubutton(self)
         btn.config(
-            height=2, width=4, relief=tk.FLAT, text=text, font=("Consolas", 15), 
-            bg="#DEDDDD", fg="#000000", activebackground="#A9A9A9", activeforeground="#45494c")
+            height=2, width=4, relief=tk.FLAT, text=text, font=("codicon", 15), 
+            bg="#2c2c2c", fg="#7b7b7b", activebackground="#2c2c2c", activeforeground="#ffffff")
         btn.pack(fill=tk.X, side=tk.TOP)
         
         return btn

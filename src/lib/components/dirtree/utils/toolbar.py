@@ -16,15 +16,15 @@ class DirTreeToolbar(tk.Frame):
             textvariable=self.dirvar, bg="#E6E6E6", fg="#616161")
 
         self.btn_collapse_all = tk.Menubutton(
-            self, text="–", fg="#000000", font=("Segoe UI", 10), width=2, bg="#E6E6E6",
+            self, text="\ueac5", fg="#000000", font=("codicon", 12), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff")
 
         self.btn_refresh = tk.Menubutton(
-            self, text="⟳", fg="#000000", font=("Segoe UI", 10), width=2, bg="#E6E6E6",
+            self, text="\ueb37", fg="#000000", font=("codicon", 12), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff")
 
         self.btn_newfile = tk.Menubutton(
-            self, text="+", fg="#000000", font=("Segoe UI", 10), width=2, bg="#E6E6E6",
+            self, text="\uea7f", fg="#000000", font=("codicon", 12), width=2, bg="#E6E6E6",
             activebackground="#4c4a48", activeforeground="#ffffff")
 
         self.dirname.pack(side=tk.LEFT, padx=(25, 0))
