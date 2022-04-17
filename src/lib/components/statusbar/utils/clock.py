@@ -9,5 +9,5 @@ class SClock(SButton):
     
     def update(self):
         time_live = time.strftime("%H:%M:%S")
-        self.config(text=time_live) 
+        self.text_label.config(text=time_live) 
         self.after(200, self.update)

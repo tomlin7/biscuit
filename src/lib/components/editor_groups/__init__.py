@@ -11,21 +11,21 @@ class EditorGroupsPane(tk.Frame):
         self.active = False
         self.config(bd=0, relief=tk.FLAT)
 
-        self.tabs = EditorGroups(self)
+        self.groups = EditorGroups(self)
         self.emptytab = EmptyTab(self)
 
         self.emptytab.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def disable(self):
         if self.active:
-            self.tabs.pack_forget()
+            self.groups.pack_forget()
             self.emptytab.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
             self.active = False
     
     def enable(self):
         if not self.active:
             self.emptytab.pack_forget()
-            self.tabs.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+            self.groups.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
             self.active = True
         
     def update_panes(self):

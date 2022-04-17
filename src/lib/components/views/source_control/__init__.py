@@ -5,9 +5,9 @@ from .git import GitRepo
 from .git import GitTree
 from .utils.toolbar import GitTreeToolbar
 
-from ..sidebar import SideBar
-from ..utils.scrollbar import AutoScrollbar
-from ..placeholders.git import GitPlaceHolder
+from ...sidebar import SideBar
+from ...utils.scrollbar import AutoScrollbar
+from ...placeholders.git import GitPlaceHolder
 
 class SourceControl(SideBar):
     def __init__(self, master, *args, **kwargs):

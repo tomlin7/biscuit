@@ -3,9 +3,9 @@ import tkinter as tk
 from .directory.tree import DirectoryTree
 from .directory.toolbar import DirectoryTreeToolbar
 
-from ..sidebar import SideBar
-from ..utils.scrollbar import AutoScrollbar
-from ..placeholders.dir import DirtreePlaceholder
+from ...sidebar import SideBar
+from ...utils.scrollbar import AutoScrollbar
+from ...placeholders.dir import DirtreePlaceholder
 
 class Explorer(SideBar):
     def __init__(self, master, *args, **kwargs):

@@ -10,6 +10,6 @@ class RightTopPane(tk.PanedWindow):
 
         self.config(orient=tk.HORIZONTAL, bd=0, relief=tk.FLAT)
 
-        self.editortabs = EditorGroupsPane(self)
-        self.editortabs.configure(height=25)
-        self.add(self.editortabs)
+        self.editor_groups = EditorGroupsPane(self)
+        self.editor_groups.configure(height=25)
+        self.add(self.editor_groups)

@@ -16,44 +16,43 @@ class StatusBar(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
+        self.fg = "#ffffff"
+        self.bg = "#007acc"
+        self.hbg = "#1f8ad2"
+        self.config(bg=self.bg)
+
         # git info
-        self.branch = SButton(self, text="● master")
-        self.branch.set_pack_data(side=tk.LEFT)
         self.git_popup = GitPopup(self)
-        self.branch.bind("<Button-1>", self.git_popup.show)
+        self.branch = SButton(self, text="master", icon="\uea68", function=self.git_popup.show)
+        self.branch.set_pack_data(side=tk.LEFT, padx=(10, 0))
 
         # line and column info
+        # self.line_col_info_popup = LineColInfoPopup(self)
         self.line_col_info = SButton(self, text="Ln 1, Col 1")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
-        # self.line_col_info_popup = LineColInfoPopup(self)
-        # self.line_col_info.bind("<Button-1>", self.line_col_info_popup.show)
 
         # indentation
-        self.indentation = SButton(self, text="Spaces: 4")
-        self.indentation.set_pack_data(side=tk.RIGHT)
         self.indentation_popup = IndentationPopup(self)
-        self.indentation.bind("<Button-1>", self.indentation_popup.show)
+        self.indentation = SButton(self, text="Spaces: 4", function=self.indentation_popup.show)
+        self.indentation.set_pack_data(side=tk.RIGHT)
 
         # encoding
-        self.encoding = SButton(self, text="UTF-8")
-        self.encoding.set_pack_data(side=tk.RIGHT)
         self.encoding_popup = EncodingPopup(self)
-        self.encoding.bind("<Button-1>", self.encoding_popup.show)
+        self.encoding = SButton(self, text="UTF-8", function=self.encoding_popup.show)
+        self.encoding.set_pack_data(side=tk.RIGHT)
 
         # end of line
-        self.eol = SButton(self, text="CRLF")
-        self.eol.set_pack_data(side=tk.RIGHT)
         self.eol_popup = EOLPopup(self)
-        self.eol.bind("<Button-1>", self.eol_popup.show)
+        self.eol = SButton(self, text="CRLF", function=self.eol_popup.show)
+        self.eol.set_pack_data(side=tk.RIGHT)
 
         # file type
-        self.file_type = SButton(self, text="Plain Text")
-        self.file_type.set_pack_data(side=tk.RIGHT)
         self.file_type_popup = FileTypePopup(self)
-        self.file_type.bind("<Button-1>", self.file_type_popup.show)
+        self.file_type = SButton(self, text="Plain Text", function=self.file_type_popup.show)
+        self.file_type.set_pack_data(side=tk.RIGHT)
 
         self.clock = SClock(self, text="H:M:S")
-        self.clock.set_pack_data(side=tk.RIGHT)
+        self.clock.set_pack_data(side=tk.RIGHT, padx=(0, 10))
 
         # packing
         self.clock.show()
@@ -80,7 +79,7 @@ class StatusBar(tk.Frame):
             self.branch.hide()
         
     def set_git_info(self, branch):
-        self.branch.config(text="● {0}".format(branch))
+        self.branch.change_text("{0}".format(branch))
 
     def set_line_col_info(self, line, col, selected):
-        self.line_col_info.config(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))
+        self.line_col_info.change_text(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))

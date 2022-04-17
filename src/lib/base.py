@@ -45,6 +45,10 @@ class Base:
         self.binder.bind('<Control-l>', self.open_welcome_tab)
 
     def after_initialization(self):
+        self.explorer_ref = self.root.primarypane.basepane.explorer
+        self.editor_groups_ref = self.root.primarypane.basepane.right.top.editor_groups
+        self.source_control_ref = self.root.primarypane.basepane.source_control
+        
         self.refresh()
     
     def refresh(self):
@@ -74,7 +78,7 @@ class Base:
         self.git_found = found
 
     def refresh_dir(self):
-        self.root.primarypane.basepane.dirtree.create_root(self.active_dir)
+        self.explorer_ref.create_root(self.active_dir)
         self.update_dir_tree_pane()
 
     def set_active_file(self, file, exists=True, diff=False):
@@ -88,7 +92,7 @@ class Base:
         elif not exists or file not in [f[0] for f in self.opened_files]:
             self.add_to_open_files(file, exists)
         else:
-            self.root.primarypane.basepane.right.top.editortabs.tabs.set_active_tab(file)
+            self.editor_groups_ref.groups.set_active_tab(file)
         self.refresh()
 
     def set_active_dir(self, dir):
@@ -108,27 +112,27 @@ class Base:
     def add_to_open_diffs(self, file):
         self.opened_diffs.append(file)
 
-        self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
+        self.editor_groups_ref.groups.update_tabs()
 
     def add_to_open_files(self, file, exists):
         self.opened_files.append([file, exists])
 
-        self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
+        self.editor_groups_ref.groups.update_tabs()
     
     def close_active_file(self):
         if self.active_file:
             self.remove_from_open_files(self.active_file)
-            self.root.primarypane.basepane.right.top.editortabs.tabs.remove_tab(self.active_file)
+            self.editor_groups_ref.groups.remove_tab(self.active_file)
             self.refresh()
     
     def remove_from_open_diffs(self, file):
         self.opened_diffs = [f for f in self.opened_diffs if f != file]
-        self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
+        self.editor_groups_ref.groups.update_tabs()
         self.refresh()
     
     def remove_from_open_files(self, file):
         self.opened_files = [f for f in self.opened_files if f[0] != file]
-        self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
+        self.editor_groups_ref.groups.update_tabs()
         self.refresh()
     
     def get_opened_files(self):
@@ -154,10 +158,10 @@ class Base:
         self.root.primarypane.sidebar.toggle_active_pane()
     
     def update_editor_tabs_pane(self):
-        self.root.primarypane.basepane.right.top.editortabs.update_panes()
+        self.editor_groups_ref.update_panes()
     
     def update_dir_tree_pane(self):
-        self.root.primarypane.basepane.dirtree.update_panes()
+        self.explorer_ref.update_panes()
     
     def check_git(self):
         self.git.open_repo()
@@ -169,23 +173,24 @@ class Base:
             self.root.statusbar.configure_git_info(True)
             self.update_statusbar_git_info()
 
-            self.root.primarypane.basepane.git.create_root()
-            self.root.primarypane.basepane.git.update_panes()
+            self.source_control_ref.create_root()
+            self.source_control_ref.update_panes()
         else:
             self.root.statusbar.configure_git_info(False)
-            self.root.primarypane.basepane.git.disable_tree()
+            self.source_control_ref.disable_tree()
 
     def update_statusbar_git_info(self):
         self.root.statusbar.set_git_info(self.git.get_active_branch())
 
     def update_statusbar_ln_col_info(self):
         if self.active_file:
-            active_tab = self.root.primarypane.basepane.right.top.editortabs.tabs.get_active_tab()
+            active_tab = self.editor_groups_ref.groups.get_active_tab()
             if active_tab:
                 if active_tab.content.editable:            
                     self.root.statusbar.configure_editmode(True)
                     active_text = active_tab.content.text
-                    self.root.statusbar.set_line_col_info(active_text.line, active_text.column, active_text.get_selected_count())
+                    self.root.statusbar.set_line_col_info(
+                        active_text.line, active_text.column, active_text.get_selected_count())
                 else:
                     self.root.statusbar.configure_editmode(False)
             else:
@@ -194,4 +199,4 @@ class Base:
             self.root.statusbar.configure_editmode(False)
     
     def show_find_replace(self, *_):
-        self.root.primarypane.basepane.right.top.editortabs.tabs.show_find_replace()
+        self.editor_groups_ref.groups.show_find_replace()
