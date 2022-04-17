@@ -1,8 +1,8 @@
 {
     "theme": "default",
     "font": {
-        "family": "Consolas", 
-        "size": 16,
+        "family": "Fira Code Retina", 
+        "size": 13,
         "style": "normal"
     }
 }
