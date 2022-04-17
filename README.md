@@ -2,7 +2,7 @@
     <b>Biscuit</b> - Code Editor
 </h1>
 <p align="center">
-    <img src="./.github/res/img1.png" width=900/>
+    <img src="./.github/res/preview.png" width=900/>
 </p>
 
 ## About
