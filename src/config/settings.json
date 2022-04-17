@@ -1,7 +1,7 @@
 {
     "theme": "default",
     "font": {
-        "family": "Fira Code Retina", 
+        "family": "Consolas", 
         "size": 13,
         "style": "normal"
     }
