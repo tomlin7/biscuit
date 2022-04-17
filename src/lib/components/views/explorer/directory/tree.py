@@ -1,10 +1,10 @@
-import os
+import os, threading
 import tkinter.ttk as ttk
 import tkinter as tk
 
-from .utils.binder import Binder
+from ..utils.binder import Binder
 
-class DirTreeTree(ttk.Treeview):
+class DirectoryTree(ttk.Treeview):
     def __init__(self, master, startpath=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
@@ -27,7 +27,7 @@ class DirTreeTree(ttk.Treeview):
             show="tree", columns=("fullpath", "type"), displaycolumns='')
         
         if startpath:
-            self.create_root(startpath)
+            self.open_directory(startpath)
         else:
             self.insert('', 0, text='You have not yet opened a folder.')
 
@@ -44,7 +44,7 @@ class DirTreeTree(ttk.Treeview):
     def clear_node(self, node):
         self.delete(*self.get_children(node))
 
-    def clear_tree(self, node):
+    def clear_tree(self):
         self.clear_node('')
 
     def fill_node(self, node, path):
@@ -61,21 +61,16 @@ class DirTreeTree(ttk.Treeview):
             name = os.path.split(p)[1]
             oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image=self.folder_icn)
             self.insert(oid, 0, text='dummy')
-
-            print(f"Folder-> {name}")
         
         for p in files:
             if os.path.isfile(p):
                 name = os.path.split(p)[1]
                 oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image=self.file_icn)
 
-                print(f"File-> {name}")
-
     def update_node(self, node):
         if self.set(node, "type") != 'directory':
             return
 
-        # parent = self.parent(node)
         path = self.set(node, "fullpath")
         self.fill_node(node, path)
 
@@ -84,4 +79,8 @@ class DirTreeTree(ttk.Treeview):
         self.update_node(self.focus())
 
     def create_root(self, startpath):
+        self.clear_tree()
         self.fill_node('', startpath)
+
+    def open_directory(self, path):
+        threading.Thread(target=self.create_root, args=[path]).start()

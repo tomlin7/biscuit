@@ -2,7 +2,7 @@ import tkinter as tk
 
 from .menubaritem import MenuBarItem
 
-
+#TODO: implement functions for each menuitem
 def placeholder(*args): ...
 
 class MenuBar(tk.Frame):

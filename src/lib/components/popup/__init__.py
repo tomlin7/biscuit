@@ -79,8 +79,6 @@ class PopupMenu(tk.Toplevel):
         self.row = 1
         self.reset_selection()
 
-        self.base.trace("No results found")
-
     def select(self, delta):
         self.selected += delta
         self.selected = min(max(0, self.selected), len(self.menu_items) - 1)

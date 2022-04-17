@@ -11,8 +11,8 @@ class PrimaryPane(tk.Frame):
 
         self.config(bd=0, relief=tk.FLAT)
 
-        self.basepane = BasePane(master=self) #, sashpad=5) #, opaqueresize=False)
+        self.basepane = BasePane(master=self) # (sashpad=5, opaqueresize=False)
         self.basepane.pack(fill=tk.BOTH, expand=1, side=tk.RIGHT)
 
-        self.sidebar = ActionBar(self, self.basepane.left_panes)
+        self.sidebar = ActionBar(self, self.basepane.sidebars)
         self.sidebar.pack(side=tk.RIGHT, fill=tk.Y)

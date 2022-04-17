@@ -1,9 +1,10 @@
 import git
 
-from . import repo
+from .repo import GitRepo
+from .tree import GitTree
 
 
-class GitCore(git.Git):
+class Git(git.Git):
     def __init__(self, master, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base = master

@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 
 from ..utils.label import WrappingLabel
 

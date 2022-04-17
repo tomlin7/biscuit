@@ -1,7 +1,7 @@
 import tkinter as tk
 
 
-class DirTreeToolbar(tk.Frame):
+class DirectoryTreeToolbar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         tk.Frame.__init__(self, master, *args, **kwargs)
         self.base = master.base

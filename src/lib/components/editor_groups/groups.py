@@ -77,42 +77,28 @@ class EditorGroups(ttk.Notebook):
         elif os.path.isdir(event.data):
             self.base.open_in_new_window(dir=event.data)
 
-        self.base.trace(f"Dropped file: {event.data}")
-
     def refresh_active_file(self, e=None):
         self.base.active_file = None
         for editor in self.opened_tabs.items():
             if self.index(editor[1][2]) == self.index(self.select()):
                 self.base.active_file = editor[0]
                 self.base.update_statusbar_ln_col_info()
-                
-                self.base.trace(f"Active tab was changed to {editor[0]}")
                 break
         
         for diff in self.opened_diff_tabs.items():
             if self.index(diff[1][1]) == self.index(self.select()):
                 self.base.active_file = diff[0]
                 self.base.update_statusbar_ln_col_info()
-                
-                self.base.trace(f"Active tab was changed to {diff[0]}")
                 break
-
-        self.base.trace(f"Currently Active file: {self.base.active_file}")
 
     def update_tabs(self):
         for opened_file in self.base.opened_files:
             if opened_file[0] not in self.opened_tabs.keys() or not opened_file[1]:
                 self.add_editor(os.path.basename(opened_file[0]), opened_file[1], opened_file[0])
-                
-                self.base.trace(f"Tab<{opened_file}> was added.")
-                self.base.trace(f"Opened Tabs {self.opened_tabs}")
         
         for opened_diff in self.base.opened_diffs:
             if opened_diff not in self.opened_diff_tabs.keys():
                 self.add_diff_viewer(os.path.basename(opened_diff), opened_diff)
-        
-                self.base.trace(f"Diff-Tab<{opened_diff}> was added.")
-                self.base.trace(f"Opened Diff Tabs {self.opened_tabs}")
         
     def add_editor(self, name, exists, path):
         if not path in self.closed_tabs.keys():
@@ -126,7 +112,6 @@ class EditorGroups(ttk.Notebook):
             self.opened_tabs[path][2].focus()
 
         self.select(self.opened_tabs[path][2])
-        self.base.trace(f"Editor<{path}> was added.")
 
     def add_diff_viewer(self, name, path):
         if not path in self.closed_diff_tabs.keys():
@@ -140,7 +125,6 @@ class EditorGroups(ttk.Notebook):
             self.opened_diff_tabs[path][1].focus()
 
         self.select(self.opened_diff_tabs[path][1])
-        self.base.trace(f"DiffViewer<{path}> was added.")
 
     def set_active_tab(self, path):
         if path in self.opened_tabs.keys():
@@ -162,9 +146,6 @@ class EditorGroups(ttk.Notebook):
 
                 self.refresh_active_file()
                 self.base.remove_from_open_files(tab)
-
-                self.base.trace(f"Tab<{tab}> was closed.")
-
                 break
         
         for opened_diff in self.opened_diff_tabs.items():
@@ -176,9 +157,6 @@ class EditorGroups(ttk.Notebook):
 
                 self.refresh_active_file()
                 self.base.remove_from_open_diffs(tab)
-
-                self.base.trace(f"Diff-Tab<{tab}> was closed.")
-
                 break
                 
 
@@ -199,8 +177,6 @@ class EditorGroups(ttk.Notebook):
         
         self.refresh_active_file()
         self.update_tabs()
-
-        self.base.trace(f"Active tab was closed.\nClosed Tabs: {self.closed_tabs}")
         
     def get_active_tab(self):
         if self.base.active_file in self.opened_tabs.keys():

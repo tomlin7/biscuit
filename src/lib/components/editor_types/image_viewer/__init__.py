@@ -2,6 +2,7 @@ import tkinter as tk
 
 from PIL import ImageTk, Image
 
+#TODO: zooming in and out
 class ImageViewer(tk.Frame):
     def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

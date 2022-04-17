@@ -1,6 +1,5 @@
 import os
 import tkinter as tk
-from tkinter import ttk
 
 from .utils.shortcuts import Shortcuts
 
@@ -34,5 +33,3 @@ class EmptyTab(tk.Frame):
             self.base.set_active_file(file=event.data, exists=True)
         elif os.path.isdir(event.data):
             self.base.open_in_new_window(dir=event.data)
-
-        self.base.trace(f"Dropped file: {event.data}")

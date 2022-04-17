@@ -1,6 +1,5 @@
 import os
 import tkinter as tk
-import tkinter.font as Font
 
 from .utils.binder import Binder
 from .utils.linenumbers import LineNumbers

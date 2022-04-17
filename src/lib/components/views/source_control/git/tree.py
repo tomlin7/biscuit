@@ -1,6 +1,6 @@
+import threading
 import tkinter as tk
 import tkinter.ttk as ttk
-import os, threading
 
 class GitTree(ttk.Treeview):
     def __init__(self, master, *args, **kwargs):

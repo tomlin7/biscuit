@@ -32,8 +32,6 @@ class Searchbar(tk.Frame):
         self.add_prompt()
         
     def bind_search_bar(self):
-        self.text_variable.trace_add('write', self.filter)
-
         # self.search_bar.bind("<KeyRelease>", self.filter)
         self.search_bar.bind("<Return>", self.master.search_bar_enter)
 

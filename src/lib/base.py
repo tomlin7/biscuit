@@ -6,7 +6,7 @@ from .settings import Settings
 from .utils.binder import Binder
 from .utils.events import Events
 
-from .components.git import GitCore
+from .components.views.source_control import Git
 from .styles import Style
 
 
@@ -21,7 +21,7 @@ class Base:
         self.style = Style(self.root)
 
         self.git_found = False
-        self.git = GitCore(self)
+        self.git = Git(self)
         self.active_branch_name = None
         print(self.git.get_version())
 
@@ -82,14 +82,11 @@ class Base:
             return
 
         self.active_file = file
-        self.trace(f"Active file<{self.active_file}>")
 
         if diff:
             self.add_to_open_diffs(file)
-            self.trace(f"File-Diff<{self.active_file}> was added.")
         elif not exists or file not in [f[0] for f in self.opened_files]:
             self.add_to_open_files(file, exists)
-            self.trace(f"File<{self.active_file}> was added.")
         else:
             self.root.primarypane.basepane.right.top.editortabs.tabs.set_active_tab(file)
         self.refresh()
@@ -107,18 +104,14 @@ class Base:
         self.refresh_dir()
         self.clean_opened_files()
         self.refresh()
-        
-        self.trace(self.active_dir)
 
     def add_to_open_diffs(self, file):
         self.opened_diffs.append(file)
-        self.trace(f"Opened Diffs {self.opened_diffs}")
 
         self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
 
     def add_to_open_files(self, file, exists):
         self.opened_files.append([file, exists])
-        self.trace(f"Opened Files {self.opened_files}")
 
         self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
     
@@ -126,25 +119,17 @@ class Base:
         if self.active_file:
             self.remove_from_open_files(self.active_file)
             self.root.primarypane.basepane.right.top.editortabs.tabs.remove_tab(self.active_file)
-
             self.refresh()
-            self.trace(f"<CloseActiveFileEvent>({self.active_file})")
     
     def remove_from_open_diffs(self, file):
         self.opened_diffs = [f for f in self.opened_diffs if f != file]
-        self.trace(f"Removed from open diffs: {file}")
         self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
-
         self.refresh()
-        self.trace(self.opened_diffs)
     
     def remove_from_open_files(self, file):
         self.opened_files = [f for f in self.opened_files if f[0] != file]
-        self.trace(f"Removed from open files: {file}")
         self.root.primarypane.basepane.right.top.editortabs.tabs.update_tabs()
-        
         self.refresh()
-        self.trace(self.opened_files)
     
     def get_opened_files(self):
         return self.opened_files
@@ -152,20 +137,15 @@ class Base:
     def clean_opened_files(self):
         self.opened_files = []
         self.active_file = None
-        self.trace(f"<ClearOpenFilesEvent>({self.opened_files})")
     
     def open_welcome_tab(self, _):
         self.set_active_file("@welcomepage", exists=False)
     
     def open_in_new_window(self, dir):
         subprocess.Popen(["python", sys.argv[0], dir])
-
-        self.trace(f'Opened in new window: {dir}')
     
     def open_new_window(self):
         subprocess.Popen(["python", sys.argv[0]])
-
-        self.trace(f'Opened new window')
     
     def toggle_terminal(self, *args):
         self.root.primarypane.basepane.right.terminal.toggle()

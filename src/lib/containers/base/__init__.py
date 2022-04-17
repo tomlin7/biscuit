@@ -1,8 +1,8 @@
 import tkinter as tk
 
 from .right import RightPane
-from ...components.dirtree import DirTreePane
-from ...components.git import GitPane
+from ...components.views import Explorer
+from ...components.views import SourceControl
 
 class BasePane(tk.PanedWindow):
     def __init__(self, master, *args, **kwargs):
@@ -12,9 +12,8 @@ class BasePane(tk.PanedWindow):
         self.configure(orient=tk.HORIZONTAL, bd=0, relief=tk.FLAT, opaqueresize=False)
 
         self.right = RightPane(self)
-        self.dirtree = DirTreePane(self, active=False, before=self.right)
-        self.git = GitPane(self, active=False, before=self.right)
-        self.left_panes = [self.dirtree, self.git]
+        self.explorer = Explorer(self, active=False, before=self.right)
+        self.source_control = SourceControl(self, active=False, before=self.right)
+        self.sidebars = [self.explorer, self.source_control]
 
-        # self.add(self.dirtree)
         self.add(self.right)

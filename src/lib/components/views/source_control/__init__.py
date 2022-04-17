@@ -1,60 +1,57 @@
 import tkinter as tk
 
-from .tree import DirTreeTree
-from .utils.toolbar import DirTreeToolbar
+from .git import Git
+from .git import GitRepo
+from .git import GitTree
+from .utils.toolbar import GitTreeToolbar
 
 from ..sidebar import SideBar
 from ..utils.scrollbar import AutoScrollbar
-from ..placeholders.dir import DirtreePlaceholder
+from ..placeholders.git import GitPlaceHolder
 
-class DirTreePane(SideBar):
+class SourceControl(SideBar):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.name = "Explorer"
-        self.icon = "\ueaf0"
+        self.name = "Source Control"
+        self.icon = "\uea68"
         self.tree_active = False
+        self.config(bg="#f3f3f3")
+        
+        self.core = self.base.git
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.label_frame = tk.Frame(self)
-        self.label_frame.config(bg="#f3f3f3")
-        self.label_frame.grid(row=0, column=0, sticky=tk.EW)
+        self.placeholder = GitPlaceHolder(self)
+        self.placeholder.grid(row=1, column=0, sticky=tk.NSEW, padx=25, pady=10)
 
-        self.label = tk.Label(self.label_frame)
-        self.label.config(
-            text="EXPLORER", font=("Segoe UI", 10), anchor=tk.W, 
-            bg="#f3f3f3", fg="#6f6f6f")
-        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=9)
+        self.toolbar = GitTreeToolbar(self)
+        self.toolbar.grid(row=0, column=0, sticky=tk.EW, pady=10)
+        self.toolbar.disable_tools()
 
-        self.toolbar = DirTreeToolbar(self)
-        self.toolbar.grid(row=1, column=0, sticky=tk.EW)
-
-        self.emptytree = DirtreePlaceholder(self)
-        self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=25, pady=10)
-
-        self.tree = DirTreeTree(self, selectmode=tk.BROWSE)
+        self.tree = GitTree(self, selectmode=tk.BROWSE)
         self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
-        
+
         self.tree.configure(yscrollcommand=self.tree_scrollbar.set)
         self.update_panes()
     
-    def create_root(self, startpath):
-        self.tree.create_root(startpath)
-        self.toolbar.update_dirname()
+    def create_root(self):
+        self.tree.open_repo_dir()
     
     def disable_tree(self):
         if self.tree_active:
+            self.toolbar.disable_tools()
             self.tree.grid_remove()
             self.tree_scrollbar.grid_remove()
-            self.emptytree.grid()
+            self.placeholder.grid()
             self.tree_active = False
     
     def enable_tree(self):
         if not self.tree_active:
-            self.emptytree.grid_remove()
+            self.toolbar.enable_tools()
+            self.placeholder.grid_remove()
             self.tree.grid(row=2, column=0, sticky=tk.NSEW)
             self.tree_scrollbar.grid(row=2, column=1, sticky=tk.NS)
             self.tree_active = True
