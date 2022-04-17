@@ -8,7 +8,7 @@ class LineNumbers(tk.Canvas):
         self.master = master
 
         self.font = self.master.font
-        self.configure(width=50)
+        self.config(width=50, bg="#ffffff", bd=0, highlightthickness=0)
         self.text = text
 
     def attach(self, text):
