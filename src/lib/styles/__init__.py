@@ -33,7 +33,7 @@ class Style(ttk.Style):
             ('user1', '!user2', self.img_tree_open), ('user2', self.img_tree_empty), 
             sticky='w', width=15)
         
-        self.configure("Treeview", foreground="#616161", font=("Segoe UI", 12), rowheight=26)
+        self.configure("Treeview", foreground="#616161", background="#f3f3f3", font=("Segoe UI", 12), rowheight=26)
         self.layout('Treeview', [('Treeview.treearea', {'sticky': 'nswe'})])
         self.layout('Treeview.Item', [
             ('Treeitem.padding', {
