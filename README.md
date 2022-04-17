@@ -6,9 +6,10 @@
 </p>
 
 ## About
-Biscuit is a highly customizable code editor written completely in pure python. It uses tkinter for the GUI. Biscuit is under active development currently but it is stable for use. 
+Biscuit is a highly customizable code editor written completely in pure python with the tkinter library. Biscuit stands lightweight, fast and powerful among other code editors. It is easy to use and feature rich.
 
-Biscuit may not be the most visually appealing code editor out there but it is powerful. It is easy to use and feature rich.
+## Code Editing Features
+Biscuit is powered by the [**Cupcake**](https://github.com/billyeatcookies/cupcake) code editor, written in pure python with the tkinter library. Features provided by cupcake include syntax highlighting, code completion, language specific tools, minimap, etc.
 
 ## Biscuit Developer Guide
-We welcome your contributions to Biscuit! Please read the [Developer Guide](./CONTRIBUTING.md) to have an overview of how to contribute.
+I would love to welcome your contributions to biscuit! Please see the [Developer Guide](./CONTRIBUTING.md) if you are having any issues :)
