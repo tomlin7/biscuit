@@ -8,15 +8,14 @@ def placeholder(*args): ...
 class MenuBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-
-        self.base = master.base
         self.master = master
-
-        self.config(bg="#dddddd")
+        self.base = master.base
+        self.events = self.base.events
 
         self.menu_open = False
         self.menus = []
 
+        self.config(bg="#dddddd")
         self.add_menus()
     
     def add_menu(self, text):
@@ -33,31 +32,39 @@ class MenuBar(tk.Frame):
 
     # TODO: Implement events for the menu items
     def add_file_menu(self):
+        events = self.events
+
         file_menu = self.add_menu("File")
-        file_menu.menu.add_first_item("New File", placeholder)
-        file_menu.menu.add_item("New Window", placeholder)
+        file_menu.menu.add_first_item("New File", events.new_file)
+        file_menu.menu.add_item("New Window", events.new_window)
         file_menu.menu.add_separator()
-        file_menu.menu.add_item("Open File", placeholder)
-        file_menu.menu.add_item("Open Folder", placeholder)
+        file_menu.menu.add_item("Open File", events.open_file)
+        file_menu.menu.add_item("Open Folder", events.open_dir)
         file_menu.menu.add_separator()
-        file_menu.menu.add_item("Close Editor", placeholder)
-        file_menu.menu.add_item("Close Window", placeholder)
+        file_menu.menu.add_item("Close Editor", events.close_file)
+        file_menu.menu.add_item("Close Window", events.quit)
         file_menu.menu.add_separator()
-        file_menu.menu.add_last_item("Exit", placeholder)
+        file_menu.menu.add_last_item("Exit", events.quit)
 
     def add_edit_menu(self):
+        events = self.events
+        base = self.base
+
         edit_menu = self.add_menu("Edit")
-        edit_menu.menu.add_first_item("Undo", placeholder)
-        edit_menu.menu.add_item("Redo", placeholder)
+        edit_menu.menu.add_first_item("Undo", events.undo)
+        edit_menu.menu.add_item("Redo", events.redo)
         edit_menu.menu.add_separator()
-        edit_menu.menu.add_item("Cut", placeholder)
-        edit_menu.menu.add_item("Copy", placeholder)
-        edit_menu.menu.add_item("Paste", placeholder)
+        edit_menu.menu.add_item("Cut", events.cut)
+        edit_menu.menu.add_item("Copy", events.copy)
+        edit_menu.menu.add_item("Paste", events.paste)
         edit_menu.menu.add_separator()
-        edit_menu.menu.add_item("Find", placeholder)
-        edit_menu.menu.add_last_item("Replace", placeholder)
+        edit_menu.menu.add_item("Find", events.show_find_widget)
+        edit_menu.menu.add_last_item("Replace", events.show_replace_widget)
     
     def add_view_menu(self):
+        events = self.events
+        base = self.base
+
         view_menu = self.add_menu("View")
         view_menu.menu.add_first_item("Side Bar", placeholder)
         view_menu.menu.add_item("Console", placeholder)

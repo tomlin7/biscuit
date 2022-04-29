@@ -26,4 +26,4 @@ class GitPlaceHolder(tk.Frame):
         self.open_btn.grid(row=1, pady=6, sticky=tk.EW)
 
     def open_folder(self, _):
-        self.base.events.opendir()
+        self.base.events.open_dir()

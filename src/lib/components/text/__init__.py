@@ -33,6 +33,15 @@ class Text(tk.Text):
                 self.clear_insert()
         except Exception:
             self.master.unsupported_file()
+    
+    def copy(self, *_):
+        self.event_generate("<<Copy>>")
+
+    def cut(self, *_):
+        self.event_generate("<<Cut>>")
+    
+    def paste(self, *_):
+        self.event_generate("<<Paste>>")
 
     def set_data(self, data):
         self.data = data

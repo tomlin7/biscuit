@@ -4,7 +4,7 @@ from datetime import datetime
 
 from .settings import Settings
 from .utils.binder import Binder
-from .utils.events import Events
+from .events import Events
 
 from .components.views.source_control import Git
 from .styles import Style
@@ -200,3 +200,6 @@ class Base:
     
     def show_find_replace(self, *_):
         self.editor_groups_ref.groups.show_find_replace()
+    
+    def get_active_tab(self):
+        return self.editor_groups_ref.groups.get_active_tab()

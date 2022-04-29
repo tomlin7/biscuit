@@ -39,6 +39,10 @@ class EditorGroups(ttk.Notebook):
         pos_x, pos_y, width = self.winfo_rootx(), self.winfo_rooty(), self.winfo_width()
         return ((pos_x + width) - (self.find_replace.winfo_width() + 40), pos_y+81)
     
+    #TODO: replace widget
+    def show_find_widget(self, replace=False):
+        self.show_find_replace()
+
     def show_find_replace(self, *args):
         if not self.find_replace_active:
             self.find_replace.show(self.get_find_replace_position())

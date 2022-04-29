@@ -110,3 +110,15 @@ class EditorContent(tk.Frame):
         
         self.refresh_fontsize()
         return "break"
+    
+    def cut(self, *_):
+        if self.editable:
+            self.text.cut()
+    
+    def copy(self, *_):
+        if self.editable:
+            self.text.copy()
+        
+    def paste(self, *_):
+        if self.editable:
+            self.text.paste()
