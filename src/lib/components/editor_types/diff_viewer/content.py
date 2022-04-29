@@ -35,7 +35,7 @@ class DiffViewerContent(ttk.PanedWindow):
         self.left.tag_config("addition", background="#eceaea")
         
         self.right.tag_config("addition", background="#99C794")
-        self.left.tag_config("addition", background="#eceaea")
+        self.right.tag_config("removal", background="#eceaea")
 
         self.prepare_data()
 
