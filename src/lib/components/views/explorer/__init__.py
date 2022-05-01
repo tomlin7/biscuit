@@ -1,10 +1,9 @@
 import tkinter as tk
 
-from .directory.tree import DirectoryTree
-from .directory.toolbar import DirectoryTreeToolbar
+from .directory import DirectoryTreeContainer
+from .directory import DirectoryTreeToolbar
 
 from ...sidebar import SideBar
-from ...utils.scrollbar import AutoScrollbar
 from ...placeholders.dir import DirtreePlaceholder
 
 class Explorer(SideBar):
@@ -35,10 +34,7 @@ class Explorer(SideBar):
         self.emptytree = DirtreePlaceholder(self)
         self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=25, pady=10)
 
-        self.tree = DirectoryTree(self, selectmode=tk.BROWSE)
-        self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
-        
-        self.tree.configure(yscrollcommand=self.tree_scrollbar.set)
+        self.tree = DirectoryTreeContainer(self)
         self.update_panes()
     
     def create_root(self, startpath):
@@ -48,7 +44,6 @@ class Explorer(SideBar):
     def disable_tree(self):
         if self.tree_active:
             self.tree.grid_remove()
-            self.tree_scrollbar.grid_remove()
             self.emptytree.grid()
             self.tree_active = False
     
@@ -56,7 +51,6 @@ class Explorer(SideBar):
         if not self.tree_active:
             self.emptytree.grid_remove()
             self.tree.grid(row=2, column=0, sticky=tk.NSEW)
-            self.tree_scrollbar.grid(row=2, column=1, sticky=tk.NS)
             self.tree_active = True
     
     def update_panes(self):

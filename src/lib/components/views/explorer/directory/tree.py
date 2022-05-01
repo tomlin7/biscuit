@@ -57,15 +57,19 @@ class DirectoryTree(ttk.Treeview):
         directories = sorted([p for p in items if os.path.isdir(p)])
         files = sorted([p for p in items if os.path.isfile(p)])
 
-        for p in directories:
-            name = os.path.split(p)[1]
-            oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image=self.folder_icn)
-            self.insert(oid, 0, text='dummy')
-        
-        for p in files:
-            if os.path.isfile(p):
+        def open_directories():
+            for p in directories:
                 name = os.path.split(p)[1]
-                oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image=self.file_icn)
+                oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image=self.folder_icn)
+                self.insert(oid, 0, text='dummy')
+        
+            for p in files:
+                if os.path.isfile(p):
+                    name = os.path.split(p)[1]
+                    oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image=self.file_icn)
+
+        dir_thread = threading.Thread(target=open_directories)
+        dir_thread.start()
 
     def update_node(self, node):
         if self.set(node, "type") != 'directory':

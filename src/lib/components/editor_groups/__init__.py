@@ -9,7 +9,6 @@ class EditorGroupsPane(tk.Frame):
         self.base = master.base
 
         self.active = False
-        self.config(bd=0, relief=tk.FLAT)
 
         self.groups = EditorGroups(self)
         self.emptytab = EmptyTab(self)
