@@ -6,7 +6,6 @@ from .menu import MenuContainer
 class Menu(tk.Toplevel):
     def __init__(self, master, name, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-
         self.base = master.base
         self.master = master
 
@@ -18,11 +17,24 @@ class Menu(tk.Toplevel):
         self.menu = MenuContainer(self, name)
         self.menu.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
 
+        self.configure_bindings()
+
+    def configure_bindings(self):
+        self.bind("<FocusOut>" , self.hide)
+        self.bind("<Escape>", self.hide)
+
     def show(self, *args):
-        self.menu.show()
+        self.update_idletasks()
+
+        x = self.master.winfo_rootx()
+        y = self.master.winfo_rooty() + self.master.winfo_height()
+        self.wm_geometry(f"+{x}+{y}")
+        
+        self.deiconify()
+        self.focus_set()
 
     def hide(self, *args):
-        self.menu.hide()
+        self.withdraw()
 
     def add_first_item(self, text, command):
         self.menu.add_first_item(text, command)

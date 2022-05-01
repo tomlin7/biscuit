@@ -14,7 +14,8 @@ class Root(Tk):
         super().__init__(*args, **kwargs)
         self.appdir = os.path.dirname(path)
 
-        self.minsize(1290, 800)
+        self.geometry("850x650")
+        self.minsize(800, 600)
         self.title("Biscuit")
 
         self.base = Base(root=self)

@@ -15,6 +15,8 @@ class Explorer(SideBar):
         self.icon = "\ueaf0"
         self.tree_active = False
 
+        self.config(bg="#f3f3f3")
+
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
@@ -24,15 +26,15 @@ class Explorer(SideBar):
 
         self.label = tk.Label(self.label_frame)
         self.label.config(
-            text="EXPLORER", font=("Segoe UI", 10), anchor=tk.W, 
+            text="EXPLORER", font=("Segoe UI", 8), anchor=tk.W, 
             bg="#f3f3f3", fg="#6f6f6f")
-        self.label.grid(row=0, column=0, sticky=tk.EW, padx=25, pady=9)
+        self.label.grid(row=0, column=0, sticky=tk.EW, padx=20, pady=8)
 
         self.toolbar = DirectoryTreeToolbar(self)
         self.toolbar.grid(row=1, column=0, sticky=tk.EW)
 
         self.emptytree = DirtreePlaceholder(self)
-        self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=25, pady=10)
+        self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=20, pady=10)
 
         self.tree = DirectoryTreeContainer(self)
         self.update_panes()

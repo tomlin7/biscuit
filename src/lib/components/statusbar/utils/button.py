@@ -17,11 +17,11 @@ class SButton(tk.Frame):
 
         if icon:
             self.icon_label = tk.Label(self, text=self.icon, anchor=tk.CENTER, 
-                bg=self.master.bg, fg=self.master.fg, font=("codicon", 13))
+                bg=self.master.bg, fg=self.master.fg, font=("codicon", 12))
             self.icon_label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
-        self.text_label = tk.Label(self, text=self.text, anchor=tk.CENTER, pady=3,
-                bg=self.master.bg, fg=self.master.fg, font=("Segoe UI", 10))
+        self.text_label = tk.Label(self, text=self.text, anchor=tk.CENTER, pady=2,
+                bg=self.master.bg, fg=self.master.fg, font=("Segoe UI", 9))
         self.text_label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.config_bindings()

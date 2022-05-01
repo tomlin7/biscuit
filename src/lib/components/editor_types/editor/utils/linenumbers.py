@@ -8,7 +8,7 @@ class LineNumbers(tk.Canvas):
         self.master = master
 
         self.font = self.master.font
-        self.config(width=50, bg="#ffffff", bd=0, highlightthickness=0)
+        self.config(width=65, bg="#ffffff", bd=0, highlightthickness=0)
         self.text = text
 
     def attach(self, text):
@@ -17,7 +17,7 @@ class LineNumbers(tk.Canvas):
     def set_bar_width(self, width):
         self.configure(width=width)
         
-    def redraw(self, *args):
+    def redraw(self, *_):
         self.delete(tk.ALL)
 
         i = self.text.index("@0,0")
@@ -27,5 +27,5 @@ class LineNumbers(tk.Canvas):
                 break
             y = dline[1]
             linenum = str(i).split(".")[0]
-            self.create_text(46, y, anchor=tk.NE, text=linenum, font=self.font)
+            self.create_text(46, y, anchor=tk.NE, text=linenum, font=self.font, fill="#237893")
             i = self.text.index("%s+1line" % i)

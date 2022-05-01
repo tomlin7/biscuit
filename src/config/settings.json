@@ -2,7 +2,7 @@
     "theme": "default",
     "font": {
         "family": "Consolas", 
-        "size": 13,
+        "size": 11,
         "style": "normal"
     }
 }

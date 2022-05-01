@@ -14,9 +14,9 @@ class BreadCrumbs(tk.Frame):
         for i in self.path:
             #TODO: show path items on click
             if i == self.path[-1]:
-                btn = tk.Menubutton(self, text=i, font=("Segoe UI", 12))
+                btn = tk.Menubutton(self, text=i, font=("Segoe UI", 10))
             else:
-                btn = tk.Menubutton(self, text=f"{i} ›", font=("Segoe UI", 12))
-            btn.config(padx=1, fg="#818181", bg="#ffffff", activebackground="#ffffff", activeforeground="#4e4e4e")
+                btn = tk.Menubutton(self, text=f"{i} ›", font=("Segoe UI", 10))
+            btn.config(padx=1, fg="#818181", bg="#ffffff", activebackground="#ffffff", activeforeground="#4e4e4e", height=1, pady=2)
             btn.pack(side=tk.LEFT)
             self.path_btns.append(btn)

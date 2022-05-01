@@ -21,7 +21,7 @@ class ActionBar(tk.Frame):
 
         self.settings_btn = tk.Menubutton(self)
         self.settings_btn.config(
-            height=2, width=4, relief=tk.FLAT, text="\ueb51", font=("codicon", 20), 
+            height=1, width=2, relief=tk.FLAT, text="\ueb51", font=("codicon", 18), padx=13, pady=13, 
             bg="#2c2c2c", fg="#7b7b7b", activebackground="#2c2c2c", activeforeground="#ffffff")
         self.settings_btn.pack(fill=tk.X, side=tk.BOTTOM)
     
