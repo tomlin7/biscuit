@@ -3,10 +3,10 @@ import tkinter as tk
 from .git import Git
 from .git import GitRepo
 from .git import GitTree
-from .utils.toolbar import GitTreeToolbar
+from .git import GitTreeToolbar
+from .git import GitTreeContainer
 
 from ...sidebar import SideBar
-from ...utils.scrollbar import AutoScrollbar
 from ...placeholders.git import GitPlaceHolder
 
 class SourceControl(SideBar):
@@ -18,8 +18,6 @@ class SourceControl(SideBar):
         self.icon = "\uea68"
         self.tree_active = False
         self.config(bg="#f3f3f3")
-        
-        self.core = self.base.git
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -31,10 +29,7 @@ class SourceControl(SideBar):
         self.toolbar.grid(row=0, column=0, sticky=tk.EW, pady=10)
         self.toolbar.disable_tools()
 
-        self.tree = GitTree(self, selectmode=tk.BROWSE)
-        self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
-
-        self.tree.configure(yscrollcommand=self.tree_scrollbar.set)
+        self.tree = GitTreeContainer(self)
         self.update_panes()
     
     def create_root(self):
@@ -44,7 +39,6 @@ class SourceControl(SideBar):
         if self.tree_active:
             self.toolbar.disable_tools()
             self.tree.grid_remove()
-            self.tree_scrollbar.grid_remove()
             self.placeholder.grid()
             self.tree_active = False
     
@@ -53,7 +47,6 @@ class SourceControl(SideBar):
             self.toolbar.enable_tools()
             self.placeholder.grid_remove()
             self.tree.grid(row=2, column=0, sticky=tk.NSEW)
-            self.tree_scrollbar.grid(row=2, column=1, sticky=tk.NS)
             self.tree_active = True
     
     def update_panes(self):

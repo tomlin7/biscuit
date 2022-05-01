@@ -1,27 +1,29 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .frame import DiffViewerPane
+from .frame import DiffViewerFrame
 from .differ import Differ
 
 
-class DiffViewerContent(ttk.PanedWindow):
+class DiffViewerContent(tk.PanedWindow):
     def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, orient=tk.HORIZONTAL, *args, **kwargs)
         self.base = master.base
         self.master = master
         self.path = path
+
+        self.config(opaqueresize=False, orient=tk.HORIZONTAL)
         
         self.editable = True
 
         self.lhs_data = []
         self.rhs_data = []
 
-        self.lhs_frame = DiffViewerPane(self, path)
-        self.add(self.lhs_frame, weight=1)
+        self.lhs_frame = DiffViewerFrame(self, path)
+        self.add(self.lhs_frame, stretch='always')
 
-        self.rhs_frame = DiffViewerPane(self, path)
-        self.add(self.rhs_frame, weight=1)
+        self.rhs_frame = DiffViewerFrame(self, path)
+        self.add(self.rhs_frame, stretch='always')
 
         self.left = self.lhs_frame.content.text
         self.right = self.text = self.rhs_frame.content.text
@@ -31,11 +33,11 @@ class DiffViewerContent(ttk.PanedWindow):
         self.left['yscrollcommand'] = self.on_textscroll
         self.right['yscrollcommand'] = self.on_textscroll
 
-        self.left.tag_config("removal", background="#EC6066")
-        self.left.tag_config("addition", background="#eceaea")
+        self.left.tag_config("removal", background="#ffa3a3")
+        self.left.tag_config("addition", background="#d3d3d3")
         
-        self.right.tag_config("addition", background="#99C794")
-        self.right.tag_config("removal", background="#eceaea")
+        self.right.tag_config("addition", background="#dbe6c2")
+        self.right.tag_config("removal", background="#d3d3d3")
 
         self.prepare_data()
 

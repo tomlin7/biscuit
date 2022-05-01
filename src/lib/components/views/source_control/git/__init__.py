@@ -3,6 +3,9 @@ import git
 from .repo import GitRepo
 from .tree import GitTree
 
+from .toolbar import GitTreeToolbar
+from .container import GitTreeContainer
+
 
 class Git(git.Git):
     def __init__(self, master, *args, **kwargs):

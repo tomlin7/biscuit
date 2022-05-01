@@ -3,7 +3,7 @@ import tkinter as tk
 from ..editor import EditorContent
 
 
-class DiffViewerPane(tk.Frame):
+class DiffViewerFrame(tk.Frame):
     def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

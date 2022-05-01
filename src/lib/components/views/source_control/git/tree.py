@@ -45,4 +45,4 @@ class GitTree(ttk.Treeview):
         self.add_tree("Untracked Files", untracked_files)
 
     def open_repo_dir(self):
-        threading.Thread(target=self.open_repo, args=[self.master.core.repo]).start()
+        threading.Thread(target=self.open_repo, args=[self.base.git.repo]).start()
