@@ -16,6 +16,8 @@ class DirectoryTreeContainer(tk.Frame):
         
         self.tree = DirectoryTree(self, selectmode=tk.BROWSE)
         self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree_scrollbar.config(style="TreeScrollbar")
+        
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree_scrollbar.grid(row=0, column=1, sticky=tk.NS)
 

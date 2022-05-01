@@ -1,10 +1,10 @@
-import tkinter as tk
+from tkinter import ttk
 
 
-class AutoScrollbar(tk.Scrollbar):
+class AutoScrollbar(ttk.Scrollbar):
     def set(self, low, high):
         if float(low) <= 0.0 and float(high) >= 1.0:
             self.grid_remove()
         else:
             self.grid()
-        tk.Scrollbar.set(self, low, high)
+        ttk.Scrollbar.set(self, low, high)

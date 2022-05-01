@@ -8,10 +8,35 @@ class Style(ttk.Style):
         super().__init__(master, *args, **kwargs)
         self.master = master
 
-        self.style_editor_tabs()
-        self.style_treeview()
+        self.config_editor_tabs()
+        self.config_treeview()
+        self.config_tree_scrollbar()
     
-    def style_treeview(self):
+    def config_tree_scrollbar(self):
+        self.element_create("TreeScrollbar.trough", "from", "clam")
+        self.element_create("TreeScrollbar.thumb", "from", "clam")
+
+        self.layout("TreeScrollbar", [
+            ('TreeScrollbar.trough', {
+                'sticky': 'ns',
+                'children': [
+                    ('TreeScrollbar.thumb', {
+                        'unit': '1', 
+                        # 'children': [
+                        #     ('TreeScrollbar.grip', {
+                        #         'sticky': ''
+                        #     })
+                        # ],
+                        'sticky': 'nswe'
+                    })
+                ]
+            })
+        ])
+
+        self.configure("TreeScrollbar", gripcount=0, bd=0, background="#bababa", bordercolor='#f3f3f3', troughcolor='#f3f3f3', lightcolor='#f3f3f3', darkcolor='#f3f3f3', arrowsize=14)
+        self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
+
+    def config_treeview(self):
         self.img_tree_close = tk.PhotoImage("img_tree_close", data="""
                 iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d
                 2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAALBJREFUGJVjYIACExMTfxMTk8WhoaHMDDgAE4zx69ev4////ze4d+
@@ -59,7 +84,7 @@ class Style(ttk.Style):
             })
         ])
 
-    def style_editor_tabs(self):
+    def config_editor_tabs(self):
         self.img_tabs_close = tk.PhotoImage("img_tabs_close", data="""
                 iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAYAAADgKtSgAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d
                 2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAQtJREFUSIntkbFKxEAURc9MQIRtbPMDNoEhOAkWtrJa2PgpwjbarG
