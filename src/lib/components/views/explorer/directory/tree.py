@@ -2,12 +2,14 @@ import os, threading
 import tkinter.ttk as ttk
 import tkinter as tk
 
-from ..utils.binder import Binder
 
-class DirectoryTree(ttk.Treeview):
-    def __init__(self, master, startpath=None, *args, **kwargs):
+class Tree(ttk.Treeview):
+    def __init__(self, master, double_click=None, single_click=None, startpath=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.master = master
         self.base = master.base
+        self.double_click = double_click
+        self.single_click = single_click
 
         self.file_icn = tk.PhotoImage(data="""
         iVBORw0KGgoAAAANSUhEUgAAAA0AAAARCAYAAAAG/yacAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB
@@ -31,15 +33,21 @@ class DirectoryTree(ttk.Treeview):
         else:
             self.insert('', 0, text='You have not yet opened a folder.')
 
-        self.binder = Binder(self)
+        self.bind('<Double-Button-1>', self.double_click)
+        self.bind("<<TreeviewSelect>>", self.check_single_click)
+        self.bind("<<TreeviewOpen>>", self.update_tree)
 
-    def openfile(self, event):
-        item = self.focus()
-        if self.set(item, "type") != 'file':
-            return
-        path = self.set(item, "fullpath")
-
-        self.base.set_active_file(path)
+    def check_single_click(self, _):
+        if self.item_type(self.focus()) == 'file':
+            if self.single_click:
+                self.single_click(self.item_fullpath(self.focus()))
+        else:
+            self.open_node(self.focus())
+        
+    def open_node(self, node):
+        if self.item_type(node) == 'directory':
+            self.item(node, open=True)
+            self.update_node(node)
     
     def clear_node(self, node):
         self.delete(*self.get_children(node))
@@ -50,26 +58,21 @@ class DirectoryTree(ttk.Treeview):
     def fill_node(self, node, path):
         self.clear_node(node)
 
-        a = 0
         items = [os.path.join(path, p) for p in os.listdir(path)]
 
-        # sub directories
         directories = sorted([p for p in items if os.path.isdir(p)])
         files = sorted([p for p in items if os.path.isfile(p)])
 
-        def open_directories():
-            for p in directories:
+        for p in directories:
+            name = os.path.split(p)[1]
+            oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image=self.folder_icn)
+            self.insert(oid, 0, text='dummy')
+    
+        for p in files:
+            if os.path.isfile(p):
                 name = os.path.split(p)[1]
-                oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image=self.folder_icn)
-                self.insert(oid, 0, text='dummy')
-        
-            for p in files:
-                if os.path.isfile(p):
-                    name = os.path.split(p)[1]
-                    oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image=self.file_icn)
+                oid = self.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image=self.file_icn)
 
-        dir_thread = threading.Thread(target=open_directories)
-        dir_thread.start()
 
     def update_node(self, node):
         if self.set(node, "type") != 'directory':
@@ -78,13 +81,18 @@ class DirectoryTree(ttk.Treeview):
         path = self.set(node, "fullpath")
         self.fill_node(node, path)
 
-    def update_tree(self, event):
-        self = event.widget
+    def update_tree(self, *_):
         self.update_node(self.focus())
 
     def create_root(self, startpath):
         self.clear_tree()
         self.fill_node('', startpath)
+    
+    def item_type(self, item):
+        return self.set(item, "type")
+    
+    def item_fullpath(self, item):
+        return self.set(item, "fullpath")
 
     def open_directory(self, path):
         threading.Thread(target=self.create_root, args=[path]).start()

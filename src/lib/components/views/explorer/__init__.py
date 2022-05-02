@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from .directory import DirectoryTreeContainer
+from .directory import DirectoryTree
 from .directory import DirectoryTreeToolbar
 
 from ...sidebar import SideBar
@@ -36,10 +36,10 @@ class Explorer(SideBar):
         self.emptytree = DirtreePlaceholder(self)
         self.emptytree.grid(row=2, column=0, sticky=tk.NSEW, padx=20, pady=10)
 
-        self.tree = DirectoryTreeContainer(self)
+        self.tree = DirectoryTree(self, double_click=self.openfile)
         self.update_panes()
     
-    def create_root(self, startpath):
+    def open_directory(self, startpath):
         self.tree.open_directory(startpath)
         self.toolbar.update_dirname()
     
@@ -60,3 +60,13 @@ class Explorer(SideBar):
             self.enable_tree()
         else:
             self.disable_tree()
+    
+    def openfile(self, event):
+        item = self.tree.get_selected_item()
+        if self.tree.get_item_type(item) != 'file':
+            return
+
+        path = self.tree.get_item_fullpath(item)
+
+        # set active file
+        self.base.set_active_file(path)

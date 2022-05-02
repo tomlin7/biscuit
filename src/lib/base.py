@@ -78,7 +78,7 @@ class Base:
         self.git_found = found
 
     def refresh_dir(self):
-        self.explorer_ref.create_root(self.active_dir)
+        self.explorer_ref.open_directory(self.active_dir)
         self.update_dir_tree_pane()
 
     def set_active_file(self, file, exists=True, diff=False):
