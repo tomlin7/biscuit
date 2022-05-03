@@ -3,7 +3,6 @@ from tkinter import ttk
 
 from ..editor_types import Editor
 from ..editor_types import DiffViewer
-from ..find_replace import FindReplace
 
 
 class EditorGroups(ttk.Notebook):
@@ -26,28 +25,11 @@ class EditorGroups(ttk.Notebook):
         self.opened_diff_tabs = {}
 
         self._active = None
-
-        self.find_replace = FindReplace(self)
-        self.find_replace_active = False
     
         self.bind("<ButtonPress-1>", self.on_close_press, True)
         self.bind("<ButtonRelease-1>", self.on_close_release)
 
         self.bind("<<NotebookTabChanged>>", self.refresh_active_file)
-    
-    def get_find_replace_position(self):
-        pos_x, pos_y, width = self.winfo_rootx(), self.winfo_rooty(), self.winfo_width()
-        return ((pos_x + width) - (self.find_replace.winfo_width() + 40), pos_y+81)
-    
-    #TODO: replace widget
-    def show_find_widget(self, replace=False):
-        self.show_find_replace()
-
-    def show_find_replace(self, *args):
-        if not self.find_replace_active:
-            self.find_replace.show(self.get_find_replace_position())
-        else:
-            self.find_replace.reset()
 
     def on_close_press(self, event):
         element = self.identify(event.x, event.y)

@@ -58,7 +58,7 @@ class MenuBar(tk.Frame):
         edit_menu.menu.add_item("Copy", events.copy)
         edit_menu.menu.add_item("Paste", events.paste)
         edit_menu.menu.add_separator()
-        edit_menu.menu.add_item("Find", events.show_find_widget)
+        edit_menu.menu.add_item("Find", placeholder)
         edit_menu.menu.add_last_item("Replace", events.show_replace_widget)
     
     def add_view_menu(self):

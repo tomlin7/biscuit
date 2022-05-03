@@ -203,8 +203,5 @@ class Base:
         else:
             self.root.statusbar.configure_editmode(False)
     
-    def show_find_replace(self, *_):
-        self.editor_groups_ref.groups.show_find_replace()
-    
     def get_active_tab(self):
         return self.editor_groups_ref.groups.get_active_tab()
