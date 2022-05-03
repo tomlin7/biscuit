@@ -16,6 +16,6 @@ class TerminalPane(tk.Frame):
         self.active = not self.active
         
         if self.active:
-            self.master.add(self)
+            self.master.add(self, stretch='always')
         else:
         	self.master.forget(self)
