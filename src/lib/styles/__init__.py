@@ -105,7 +105,7 @@ class Style(ttk.Style):
 
         self.element_create("close", "image", self.img_tabs_close,
                             ("active", "!disabled", self.img_tabs_close_hover), 
-                            border=20, sticky='')
+                            border=16, sticky='')
         self.layout("EditorTabs", [
                 ("EditorTabs.client", {
                     "sticky": "nswe"

@@ -55,9 +55,3 @@ class Events:
 
     def paste(self, *_):
         self.base.get_active_tab().paste()
-    
-    def show_find_widget(self, *_):
-        self.base.editor_groups_ref.groups.show_find_widget()
-    
-    def show_replace_widget(self, *_):
-        self.base.editor_groups_ref.groups.show_find_widget(replace=True)

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..utils.label import WrappingLabel
+from ..utils import WrappingLabel
 
 
 class DirtreePlaceholder(tk.Frame):

@@ -8,8 +8,8 @@ from ...text import Text
 from ..image_viewer import ImageViewer
 from ...placeholders.welcome import WelcomePage
 from ...text.utils import Utils
-from ...utils.scrollbar import AutoScrollbar
-from ...utils.filetype import FileType
+from ...utils import AutoScrollbar
+from ...utils import FileType
 
 class EditorContent(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
@@ -52,13 +52,9 @@ class EditorContent(tk.Frame):
     
     def open_text_editor(self):
         # self.font = self.base.settings.font
-        self.configured_font = self.base.settings.font
-        self.font = tk.font.Font(
-            family=self.configured_font['family'], 
-            size=self.configured_font['size'], 
-            weight=self.configured_font['weight'])
+        self.font = self.base.settings.font
         
-        self.zoom = self.font["size"]
+        # self.zoom = self.font["size"]
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -100,16 +96,16 @@ class EditorContent(tk.Frame):
         self.set_fontsize(self.zoom)
         self._on_change()
     
-    def handle_zoom(self, event):
-        if 5 <= self.zoom <= 50:
-            if event.delta < 0:
-                self.zoom -= 1
-            else:
-                self.zoom += 1
-        self.zoom = Utils.clamp(self.zoom, 5, 50)
+    # def handle_zoom(self, event):
+    #     if 5 <= self.zoom <= 50:
+    #         if event.delta < 0:
+    #             self.zoom -= 1
+    #         else:
+    #             self.zoom += 1
+    #     self.zoom = Utils.clamp(self.zoom, 5, 50)
         
-        self.refresh_fontsize()
-        return "break"
+    #     self.refresh_fontsize()
+    #     return "break"
     
     def cut(self, *_):
         if self.editable:
