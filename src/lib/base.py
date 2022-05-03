@@ -125,6 +125,11 @@ class Base:
             self.editor_groups_ref.groups.remove_tab(self.active_file)
             self.refresh()
     
+    def close_active_dir(self):
+        self.active_dir = None
+        self.active_dir_name = None
+        self.refresh()
+    
     def remove_from_open_diffs(self, file):
         self.opened_diffs = [f for f in self.opened_diffs if f != file]
         self.editor_groups_ref.groups.update_tabs()

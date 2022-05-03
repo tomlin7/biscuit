@@ -42,6 +42,10 @@ class Explorer(SideBar):
     def open_directory(self, startpath):
         self.tree.open_directory(startpath)
         self.toolbar.update_dirname()
+
+    def close_directory(self):
+        self.tree.close_directory()
+        self.toolbar.update_dirname()
     
     def disable_tree(self):
         if self.tree_active:

@@ -34,10 +34,23 @@ class DirectoryTreeToolbar(tk.Frame):
         self.btn_refresh.pack(side=tk.RIGHT)
         self.btn_newfile.pack(side=tk.RIGHT)
 
+        self.btn_collapse_all.bind("<Button-1>", self.collapse_all)
+        self.btn_refresh.bind("<Button-1>", self.refresh)
+        self.btn_newfile.bind("<Button-1>", self.newfile)
+
     def update_dirname(self):
         if self.base.active_dir_name:
             self.dirvar.set(self.base.active_dir_name.upper())
+        else:
+            self.dirvar.set('NO FOLDER OPENED')
 
-    def newfile(self): ...
-    def refresh(self): ...
-    def collapse_all(self): ...
+    def newfile(self, *_):
+        self.base.events.new_file()
+
+    def refresh(self, *_):
+        self.master.tree.refresh_tree()
+        self.update_dirname()
+
+    def collapse_all(self, *_):
+        self.master.tree.collapse_all()
+

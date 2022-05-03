@@ -24,3 +24,15 @@ class GitTreeContainer(tk.Frame):
     
     def open_repo_dir(self):
         self.tree.open_repo_dir()
+    
+    def clear_tree(self):
+        self._tree.clear_tree()
+    
+    def get_item_type(self, item):
+        return self._tree.item_type(item)
+    
+    def get_item_fullpath(self, item):
+        return self._tree.item_fullpath(item)
+    
+    def get_selected_item(self):
+        return self._tree.focus()

@@ -11,6 +11,8 @@ class Tree(ttk.Treeview):
         self.double_click = double_click
         self.single_click = single_click
 
+        self.path = startpath
+
         self.file_icn = tk.PhotoImage(data="""
         iVBORw0KGgoAAAANSUhEUgAAAA0AAAARCAYAAAAG/yacAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB
         3d3cuaW5rc2NhcGUub3Jnm+48GgAAAUNJREFUKJHVzzFLQmEUxvH/uaipF0EbW1rEsWyLJCirKShszIKMoqnFrU9Re+YSak
@@ -42,11 +44,17 @@ class Tree(ttk.Treeview):
             if self.single_click:
                 self.single_click(self.item_fullpath(self.focus()))
         else:
-            self.open_node(self.focus())
+            self.toggle_node(self.focus())
         
-    def open_node(self, node):
+    def is_open(self, node):
+        return self.item(node, 'open')
+        
+    def toggle_node(self, node):
         if self.item_type(node) == 'directory':
-            self.item(node, open=True)
+            if self.is_open(node):
+                self.item(node, open=False)
+            else:
+                self.item(node, open=True)
             self.update_node(node)
     
     def clear_node(self, node):
@@ -84,9 +92,9 @@ class Tree(ttk.Treeview):
     def update_tree(self, *_):
         self.update_node(self.focus())
 
-    def create_root(self, startpath):
+    def create_root(self, path):
         self.clear_tree()
-        self.fill_node('', startpath)
+        self.fill_node('', path)
     
     def item_type(self, item):
         return self.set(item, "type")
@@ -95,4 +103,12 @@ class Tree(ttk.Treeview):
         return self.set(item, "fullpath")
 
     def open_directory(self, path):
+        self.path = path
         threading.Thread(target=self.create_root, args=[path]).start()
+    
+    def refresh_tree(self):
+        self.open_directory(self.path)
+    
+    def collapse_all(self):
+        for node in self.get_children():
+            self.item(node, open=False)

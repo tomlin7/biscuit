@@ -24,4 +24,4 @@ class Shortcut(tk.Frame):
     def add_shortcut(self, shortcut):
         tk.Label(
             self, text=shortcut, bg=self.sc_bg, fg=self.sc_fg, 
-            font=("Consolas", 12)).pack(padx=2, side=tk.LEFT)
+            font=("Consolas", 8)).pack(padx=2, side=tk.LEFT)

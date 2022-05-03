@@ -36,3 +36,9 @@ class DirectoryTree(tk.Frame):
     
     def get_selected_item(self):
         return self._tree.focus()
+    
+    def refresh_tree(self):
+        self._tree.refresh_tree()
+    
+    def collapse_all(self):
+        self._tree.collapse_all()
