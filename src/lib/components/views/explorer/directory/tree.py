@@ -103,8 +103,8 @@ class Tree(ttk.Treeview):
         return self.set(item, "fullpath")
 
     def open_directory(self, path):
-        self.path = path
-        threading.Thread(target=self.create_root, args=[path]).start()
+        self.path = os.path.abspath(path)
+        threading.Thread(target=self.create_root, args=[self.path]).start()
     
     def refresh_tree(self):
         self.open_directory(self.path)
@@ -112,3 +112,15 @@ class Tree(ttk.Treeview):
     def collapse_all(self):
         for node in self.get_children():
             self.item(node, open=False)
+    
+    # def add_node(self):
+    #     name = enterbox("Enter file name")
+    #     selected = self.focus() or ''
+    #     # parent = self.parent(selected)
+    #     # if parent == '':
+    #     #     parent = self.path
+    #     path = os.path.join(self.item_fullpath(selected), name)
+    #     # fullpath = os.path.join(parent_path, name)
+    #     with open(path, 'w') as f:
+    #         f.write("")
+    #     self.update_node(selected)

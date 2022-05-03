@@ -8,8 +8,8 @@ class MenuItem(tk.Menubutton):
         self.text = text
         self.command  = command
         
-        self.config(text=text, anchor=tk.W, font=("Segoe UI", 12),
-            padx=30, bg="#ffffff", fg="#616161", pady=5,
+        self.config(text=text, anchor=tk.W, font=("Segoe UI", 10),
+            padx=30, bg="#ffffff", fg="#616161", pady=3,
             activebackground="#e8e8e8", activeforeground="#616161"
         )
 

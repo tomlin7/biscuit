@@ -24,7 +24,7 @@ class Searchbar(tk.Frame):
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
         
         self.search_bar = tk.Entry(
-            frame, font=("Segoe UI", 12), fg="#616161", 
+            frame, font=("Segoe UI", 10), fg="#616161", 
             width=self.master.width, relief=tk.FLAT, bg="#FFFFFF",
             textvariable=self.text_variable)
         
@@ -32,7 +32,7 @@ class Searchbar(tk.Frame):
         self.add_prompt()
         
     def bind_search_bar(self):
-        # self.search_bar.bind("<KeyRelease>", self.filter)
+        self.search_bar.bind("<KeyRelease>", self.filter)
         self.search_bar.bind("<Return>", self.master.search_bar_enter)
 
         self.search_bar.bind("<Down>", lambda e: self.master.select(1))

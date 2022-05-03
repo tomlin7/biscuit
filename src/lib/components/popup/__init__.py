@@ -4,7 +4,7 @@ from .menuitem import MenuItem
 from .searchbar import Searchbar
 
 class PopupMenu(tk.Toplevel):
-    def __init__(self, master, items=None, width=70, state=False, prompt="", watermark="Search", *args, **kwargs):
+    def __init__(self, master, items=None, width=65, state=False, prompt="", watermark="Search", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
