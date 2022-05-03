@@ -10,8 +10,8 @@ class RightPane(tk.PanedWindow):
 
         self.config(orient=tk.VERTICAL, bd=0, relief=tk.FLAT, opaqueresize=False)
 
-        self.top = RightTopPane(self, height=520) #, opaqueresize=False)
+        self.top = RightTopPane(self) #, opaqueresize=False)
         self.terminal = TerminalPane(self, active=False)
 
-        self.add(self.top)
+        self.add(self.top, height=520)
         # self.add(self.terminal)
