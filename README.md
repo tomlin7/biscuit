@@ -21,7 +21,8 @@ Biscuit is powered by the [**Cupcake**](https://github.com/billyeatcookies/cupca
 
 ### Running
 
-- Run `python src`
+- Run `cd src`
+- Run `python .`
 - Open a directory or file on biscuit.
 - Start editing!
 
