@@ -1,5 +1,7 @@
 import tkinter as tk
-import queue, subprocess
+import queue
+import subprocess
+from sys import platform
 
 from threading import Thread
 from ..utils import AutoScrollbar
@@ -15,13 +17,13 @@ class Terminal(tk.Frame):
         self.config(background="#ffffff")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        
+
         self.terminal = tk.Text(
             self, wrap=tk.WORD, font=self.font, relief=tk.FLAT,
             fg="#333333", bg="#ffffff", padx=10, pady=10
         )
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
-        
+
         self.terminal_scrollbar = AutoScrollbar(self.terminal)
         self.terminal_scrollbar.grid(row=0, column=1, sticky=tk.NS)
 
@@ -31,9 +33,15 @@ class Terminal(tk.Frame):
         self.line_start = 0
         self.alive = True
 
-        self.p = subprocess.Popen(
-            ["cmd"], stdout=subprocess.PIPE, 
-            stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        if platform in ["linux", "linux2"]:
+            self.p = subprocess.Popen(
+                ["/bin/bash"], stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        else:
+
+            self.p = subprocess.Popen(
+                ["cmd"], stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
@@ -47,7 +55,7 @@ class Terminal(tk.Frame):
 
     def destroy(self):
         self.alive = False
-        
+
         self.p.stdin.write("exit()\n".encode())
         self.p.stdin.flush()
 
