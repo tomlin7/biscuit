@@ -3,18 +3,20 @@ import subprocess, os, sys
 from datetime import datetime
 
 from .settings import Settings
-from .utils.binder import Binder
+from .utils import Binder
 from .events import Events
+from .styles import Style
+from .utils import SysInfo
 
 from .components.views.source_control import Git
-from .styles import Style
-
 
 class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
         self.base = self
         self.appdir = root.appdir
+
+        self.sysinfo = SysInfo(self)
         self.settings = Settings(self)
         self.bindings = self.settings.bindings
 
