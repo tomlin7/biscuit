@@ -16,9 +16,6 @@ class Root(Tk):
         self.appdir = os.path.dirname(path)
 
         self.geometry("900x650")
-        if platform in ["linux", "linux2"]:
-            self.appdir = os.path.join(os.path.abspath(os.getcwd()), "src")
-        
         self.minsize(800, 600)
         self.title("Biscuit")
 
