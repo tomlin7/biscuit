@@ -11,12 +11,9 @@ from .components.command_palette import CommandPalette
 
 
 class Root(Tk):
-    def __init__(self, path, dir=None, *args, **kwargs):
+    def __init__(self, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.appdir = os.path.dirname(path)
-        if platform in ["linux", "linux2"]:
-            self.appdir = os.path.join(os.path.abspath(os.getcwd()), "src")
-        self.geometry("850x650")
+        self.geometry("900x650")
         self.minsize(800, 600)
         self.title("Biscuit")
 
