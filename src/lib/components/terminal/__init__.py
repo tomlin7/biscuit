@@ -11,7 +11,7 @@ class TerminalPane(tk.Frame):
 
         self.terminal = Terminal(self)
         self.terminal.pack(fill=tk.BOTH, expand=True)
-    
+
     def toggle(self):
         self.active = not self.active
         

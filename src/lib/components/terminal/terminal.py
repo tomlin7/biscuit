@@ -33,13 +33,13 @@ class Terminal(tk.Frame):
         self.line_start = 0
         self.alive = True
 
-        if platform in ["linux", "linux2"]:
+        if self.base.sysinfo.os == "Linux" :
             shell = ["/bin/bash"]
         else:
             shell = ["cmd"]
         self.p = subprocess.Popen(
-                shell , stdout=subprocess.PIPE,
-                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            shell, stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE, stderr=subprocess.PIPE)
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
 
