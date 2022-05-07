@@ -16,9 +16,10 @@ class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
         self.base = self
-        self.appdir = root.appdir
-
+        
         self.sysinfo = SysInfo(self)
+        self.appdir = os.path.join(os.path.abspath(os.getcwd()), "src")
+        
         self.settings = Settings(self)
         self.bindings = self.settings.bindings
 
