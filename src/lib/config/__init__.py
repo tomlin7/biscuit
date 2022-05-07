@@ -5,13 +5,14 @@ from .bindings import Bindings
 from .theme import Theme
 from .loadconfig import ConfigLoader
 
+
 class Config:
     theme: str
     font: Font
-    
+
     # TODO: more properties
     # ...
-    
+
     def __init__(self, master):
         self.base = master.base
 

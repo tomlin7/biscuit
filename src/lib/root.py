@@ -1,4 +1,5 @@
 import os
+from sys import platform
 import tkinter as tk
 from tkinterDnD import Tk
 
@@ -15,6 +16,9 @@ class Root(Tk):
         self.appdir = os.path.dirname(path)
 
         self.geometry("900x650")
+        if platform in ["linux", "linux2"]:
+            self.appdir = os.path.join(os.path.abspath(os.getcwd()), "src")
+        
         self.minsize(800, 600)
         self.title("Biscuit")
 
@@ -34,7 +38,7 @@ class Root(Tk):
 
         if dir:
             self.base.set_active_dir(dir)
-        
+
         self.base.after_initialization()
 
     def get_popup_x(self, width):
