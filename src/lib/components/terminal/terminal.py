@@ -34,15 +34,12 @@ class Terminal(tk.Frame):
         self.alive = True
 
         if platform in ["linux", "linux2"]:
-            self.p = subprocess.Popen(
-                ["/bin/bash"], stdout=subprocess.PIPE,
-                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            shell = ["/bin/bash"]
         else:
-
-            self.p = subprocess.Popen(
-                ["cmd"], stdout=subprocess.PIPE,
+            shell = ["cmd"]
+        self.p = subprocess.Popen(
+                shell , stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
 
