@@ -1,4 +1,6 @@
-import subprocess, os, sys
+import subprocess
+import os
+import sys
 
 from datetime import datetime
 
@@ -42,7 +44,7 @@ class Base:
         self.events = Events(self)
         self.binder = Binder(base=self)
 
-        self.binder.bind('<Control-`>', self.toggle_terminal)
+        self.binder.bind('<Control-t>', self.toggle_terminal)
         self.binder.bind('<Control-b>', self.toggle_active_side_pane)
         self.binder.bind('<Control-l>', self.open_welcome_tab)
 

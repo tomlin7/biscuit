@@ -6,13 +6,14 @@ import tkextrafont as extra
 from .. import config
 from .. import res
 
+
 class Settings:
     font: Font
     config: config.Config
     bindings: config.Bindings
     theme: config.Theme
     resources: res.Resources
-        
+
     def __init__(self, base):
         self.base = base
 
