@@ -36,8 +36,10 @@ class Terminal(tk.Frame):
 
         if self.base.sysinfo.os == "Linux":
             shell = ["/bin/bash"]
+            identifier = "bash~$"
         else:
             shell = ["cmd"]
+            identifier = "cmd>"
         self.p = subprocess.Popen(
             shell, stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -47,18 +49,13 @@ class Terminal(tk.Frame):
         Thread(target=self.read_from_proccessOut).start()
         Thread(target=self.read_from_proccessErr).start()
 
-        #self.write_loop()
-        self.write(self.terminal_prompt())
+        self.terminal_prompt = identifier
+        
+        self.write(self.terminal_prompt)
 
         self.terminal.bind("<Return>", self.enter)
 
-    def terminal_prompt(self):
-        if self.base.sysinfo.os == "Linux":
-            delimiter = "$"
-        else:
-            delimiter = ">"
-        return os.getcwd() + delimiter
-
+        
     def destroy(self):
         self.alive = False
 
@@ -97,9 +94,8 @@ class Terminal(tk.Frame):
             self.after(10, self.write_loop)
         if self.err_queue.empty() and self.out_queue.empty():
             if not self.alive:
-                self.after(10, self.write(self.terminal_prompt()))
+                self.after(10, self.write(self.terminal_prompt))
             self.alive = False
-            
 
     def write(self, output):
         self.terminal.insert(tk.END, output)
