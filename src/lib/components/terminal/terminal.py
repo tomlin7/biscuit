@@ -46,8 +46,13 @@ class Terminal(tk.Frame):
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
 
-        Thread(target=self.read_from_proccessOut).start()
-        Thread(target=self.read_from_proccessErr).start()
+        t_out = Thread(target=self.read_from_proccessOut)
+        
+        t_err = Thread(target=self.read_from_proccessErr)
+        t_out.daemon = True
+        t_err.daemon = True
+        t_out.start()
+        t_err.start()
 
         self.terminal_prompt = identifier
         
