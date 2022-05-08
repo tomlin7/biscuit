@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 import queue
 import subprocess
 from sys import platform
@@ -32,24 +33,43 @@ class Terminal(tk.Frame):
 
         self.line_start = 0
         self.alive = True
-
-        if platform in ["linux", "linux2"]:
+        self.windows_host = False
+        
+        if self.base.sysinfo.os == "Linux":
             shell = ["/bin/bash"]
         else:
             shell = ["cmd"]
+            self.windows_host = True
+
         self.p = subprocess.Popen(
-                shell , stdout=subprocess.PIPE,
-                stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            shell, stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
 
-        Thread(target=self.read_from_proccessOut).start()
-        Thread(target=self.read_from_proccessErr).start()
+        t_out = Thread(target=self.read_from_proccessOut)
+        t_err = Thread(target=self.read_from_proccessErr)
+        t_out.daemon = True
+        t_err.daemon = True
+        t_out.start()
+        t_err.start()
 
-        self.write_loop()
+        if self.windows_host:
+            self.write_loop()
 
+        self.terminal_prompt = "bash~$ "
+        self.print_prompt()
+
+        self.configure_bindings()
+        
+    def configure_bindings(self):
         self.terminal.bind("<Return>", self.enter)
 
+    def print_prompt(self):
+        if not self.windows_host:
+            self.write(tk.END, self.terminal_prompt)
+        
     def destroy(self):
         self.alive = False
 
@@ -62,18 +82,31 @@ class Terminal(tk.Frame):
         self.line_start += len(string)
         self.p.stdin.write(string.encode())
         self.p.stdin.flush()
+        self.alive = True
+        self.write_loop()
 
     def read_from_proccessOut(self):
         """To be executed in a separate thread to make read non-blocking"""
-        while self.alive:
-            data = self.p.stdout.raw.read(1024)
-            self.out_queue.put(data)
+        if self.windows_host:
+            while self.alive:
+                data = self.p.stdout.raw.read(1024)
+                self.out_queue.put(data)
+        else:
+            while True:
+                data = self.p.stdout.readline()
+                if data == b"":
+                    break
 
     def read_from_proccessErr(self):
         """To be executed in a separate thread to make read non-blocking"""
-        while self.alive:
-            data = self.p.stderr.raw.read(1024)
-            self.err_queue.put(data)
+        if self.windows_host:
+            while self.alive:
+                data = self.p.stderr.raw.read(1024)
+                self.err_queue.put(data)
+        else:
+            while True:
+                data = self.p.stderr.raw.read(1024)
+                self.err_queue.put(data)
 
     def write_loop(self):
         """ write data from stdout and stderr to the Text widget"""
@@ -84,6 +117,12 @@ class Terminal(tk.Frame):
 
         if self.alive:
             self.after(10, self.write_loop)
+
+        if not self.windows_host:
+            if self.err_queue.empty() and self.out_queue.empty():
+                if not self.alive:
+                    self.after(10, self.write(self.terminal_prompt))
+                self.alive = False
 
     def write(self, output):
         self.terminal.insert(tk.END, output)

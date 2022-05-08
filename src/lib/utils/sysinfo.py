@@ -1,6 +1,7 @@
 import sys
 import platform
 
+
 class SysInfo:
     os: None
     version: None
@@ -8,7 +9,7 @@ class SysInfo:
     machine: None
     processor: None
     python_version: None
-    
+
     def __init__(self, master):
         self.base = master
         

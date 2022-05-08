@@ -1,5 +1,4 @@
 import os
-from sys import platform
 import tkinter as tk
 from tkinterDnD import Tk
 

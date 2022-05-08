@@ -12,6 +12,7 @@ from .utils import SysInfo
 
 from .components.views.source_control import Git
 
+
 class Base:
     def __init__(self, root, *args, **kwargs):
         self.root = root
@@ -53,9 +54,9 @@ class Base:
         self.explorer_ref = self.root.primarypane.basepane.explorer
         self.editor_groups_ref = self.root.primarypane.basepane.right.top.editor_groups
         self.source_control_ref = self.root.primarypane.basepane.source_control
-        
+
         self.refresh()
-    
+
     def refresh(self):
         self.update_statusbar_ln_col_info()
         self.update_editor_tabs_pane()
