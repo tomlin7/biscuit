@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 import queue
 import subprocess
 from sys import platform
@@ -33,7 +34,7 @@ class Terminal(tk.Frame):
         self.line_start = 0
         self.alive = True
 
-        if self.base.sysinfo.os == "Linux" :
+        if self.base.sysinfo.os == "Linux":
             shell = ["/bin/bash"]
         else:
             shell = ["cmd"]
@@ -46,9 +47,17 @@ class Terminal(tk.Frame):
         Thread(target=self.read_from_proccessOut).start()
         Thread(target=self.read_from_proccessErr).start()
 
-        self.write_loop()
+        #self.write_loop()
+        self.write(self.terminal_prompt())
 
         self.terminal.bind("<Return>", self.enter)
+
+    def terminal_prompt(self):
+        if self.base.sysinfo.os == "Linux":
+            delimiter = "$"
+        else:
+            delimiter = ">"
+        return os.getcwd() + delimiter
 
     def destroy(self):
         self.alive = False
@@ -62,16 +71,18 @@ class Terminal(tk.Frame):
         self.line_start += len(string)
         self.p.stdin.write(string.encode())
         self.p.stdin.flush()
+        self.alive = True
+        self.write_loop()
 
     def read_from_proccessOut(self):
         """To be executed in a separate thread to make read non-blocking"""
-        while self.alive:
+        while True:
             data = self.p.stdout.raw.read(1024)
             self.out_queue.put(data)
 
     def read_from_proccessErr(self):
         """To be executed in a separate thread to make read non-blocking"""
-        while self.alive:
+        while True:
             data = self.p.stderr.raw.read(1024)
             self.err_queue.put(data)
 
@@ -84,6 +95,11 @@ class Terminal(tk.Frame):
 
         if self.alive:
             self.after(10, self.write_loop)
+        if self.err_queue.empty() and self.out_queue.empty():
+            if not self.alive:
+                self.after(10, self.write(self.terminal_prompt()))
+            self.alive = False
+            
 
     def write(self, output):
         self.terminal.insert(tk.END, output)
