@@ -34,7 +34,7 @@ class Terminal(tk.Frame):
         self.line_start = 0
         self.alive = True
         self.windows_host = False
-        
+
         if self.base.sysinfo.os == "Linux":
             shell = ["/bin/bash"]
         else:
@@ -44,7 +44,7 @@ class Terminal(tk.Frame):
         self.p = subprocess.Popen(
             shell, stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        
+
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
 
@@ -62,14 +62,14 @@ class Terminal(tk.Frame):
         self.print_prompt()
 
         self.configure_bindings()
-        
+
     def configure_bindings(self):
         self.terminal.bind("<Return>", self.enter)
 
     def print_prompt(self):
         if not self.windows_host:
-            self.write(tk.END, self.terminal_prompt)
-        
+            self.write(self.terminal_prompt)
+
     def destroy(self):
         self.alive = False
 
@@ -93,9 +93,8 @@ class Terminal(tk.Frame):
                 self.out_queue.put(data)
         else:
             while True:
-                data = self.p.stdout.readline()
-                if data == b"":
-                    break
+                data = self.p.stdout.raw.read(1024)
+                self.out_queue.put(data)
 
     def read_from_proccessErr(self):
         """To be executed in a separate thread to make read non-blocking"""
