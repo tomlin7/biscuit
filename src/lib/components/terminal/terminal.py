@@ -24,12 +24,16 @@ class Terminal(tk.Frame):
             fg="#333333", bg="#ffffff", padx=10, pady=10
         )
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
+        #self.terminal.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-        self.terminal_scrollbar = AutoScrollbar(self.terminal)
-        self.terminal_scrollbar.grid(row=0, column=1, sticky=tk.NS)
+        self.terminal_scrollbar = AutoScrollbar(self)
+        self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
 
+        
         self.terminal.config(yscrollcommand=self.terminal_scrollbar.set)
-        self.terminal_scrollbar.config(command=self.terminal.yview)
+        self.terminal_scrollbar.config(command=self.terminal.yview, orient=tk.VERTICAL)
+
+        #self.terminal_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.line_start = 0
         self.alive = True
