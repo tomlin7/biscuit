@@ -5,7 +5,7 @@ import subprocess
 from sys import platform
 
 from threading import Thread
-from ..utils import AutoScrollbar
+from ..utils import AutoScrollbar, TextWithReadonly
 
 
 class Terminal(tk.Frame):
@@ -19,17 +19,18 @@ class Terminal(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.terminal = tk.Text(
+        self.terminal = TextWithReadonly(
             self, wrap=tk.WORD, font=self.font, relief=tk.FLAT,
             fg="#333333", bg="#ffffff", padx=10, pady=10
         )
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.terminal_scrollbar = AutoScrollbar(self.terminal)
-        self.terminal_scrollbar.grid(row=0, column=1, sticky=tk.NS)
+        self.terminal_scrollbar = AutoScrollbar(self)
+        self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
 
+        
         self.terminal.config(yscrollcommand=self.terminal_scrollbar.set)
-        self.terminal_scrollbar.config(command=self.terminal.yview)
+        self.terminal_scrollbar.config(command=self.terminal.yview, orient=tk.VERTICAL)
 
         self.line_start = 0
         self.alive = True
@@ -124,7 +125,7 @@ class Terminal(tk.Frame):
                 self.alive = False
 
     def write(self, output):
-        self.terminal.insert(tk.END, output)
+        self.terminal.insert(tk.END, output, "readonly")
         self.terminal.see(tk.END)
         self.line_start += len(output)
 
