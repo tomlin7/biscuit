@@ -2,6 +2,9 @@ import json, os
 
 
 class BindingsLoader:
+    """
+    Loads bindings for biscuit from json file.
+    """
     def __init__(self, master):
         self.base = master.base
 

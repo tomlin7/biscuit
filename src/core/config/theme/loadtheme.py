@@ -1,7 +1,10 @@
-import json, os
+import json
 
 
 class ThemeLoader:
+    """
+    Loads themes for biscuit from json files.
+    """
     def __init__(self, master, theme_name, default="default"):
         self.base = master.base
 

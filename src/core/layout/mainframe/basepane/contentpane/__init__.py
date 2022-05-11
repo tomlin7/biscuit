@@ -6,6 +6,21 @@ from .....components import EditorsFrame
 
 
 class ContentPane(tk.PanedWindow):
+    """
+    Main frame holds ContentPane and Terminal
+    .
+    App
+    └── Root
+        ├── Menubar
+        ├── MainFrame
+        │    ├── ActionBar
+        │    └── BasePane 
+        │        ├── ContentPane
+        │        │    ├── Sidebar
+        │        │    └── EditorsFrame
+        │        └── Terminal
+        └── StatusBar
+    """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master

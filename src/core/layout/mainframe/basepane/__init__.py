@@ -4,6 +4,19 @@ from .contentpane import ContentPane
 from ....components import Terminal
 
 class BasePane(tk.PanedWindow):
+    """
+    Main frame holds ContentPane and Terminal
+    .
+    App
+    └── Root
+        ├── Menubar
+        ├── MainFrame
+        │    ├── ActionBar
+        │    └── BasePane 
+        │        ├── ContentPane
+        │        └── Terminal
+        └── StatusBar
+    """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

@@ -2,6 +2,10 @@ from .loadbindings import BindingsLoader
 
 
 class Bindings:
+    """
+    Loads and manages bindings for biscuit.
+    """
+
     # TODO: properties
     new_file: str
     new_window: str

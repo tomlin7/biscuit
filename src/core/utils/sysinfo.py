@@ -1,10 +1,10 @@
 import sys
 import platform
-
 from dataclasses import dataclass
 
 
-class SysInfo(dataclass):
+@dataclass
+class SysInfo:
     os: None
     version: None
     release: None

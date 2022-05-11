@@ -2,6 +2,10 @@ from .loadtheme import ThemeLoader
 
 
 class Theme:
+    """
+    Loads and configures a theme for biscuit.
+    """
+
     # TODO: properties
     # ...
 

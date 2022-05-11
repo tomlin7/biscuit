@@ -7,6 +7,10 @@ from .loadconfig import ConfigLoader
 
 
 class Config:
+    """
+    Loads and manages configurations for biscuit.
+    """
+
     theme: str
     font: Font
 

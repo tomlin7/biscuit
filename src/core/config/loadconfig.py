@@ -3,6 +3,9 @@ import os
 
 
 class ConfigLoader:
+    """
+    Loads configurations for biscuit from json file.
+    """
     def __init__(self, master, config_file="settings.json"):
         self.base = master.base
 
