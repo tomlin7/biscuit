@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..containers.base import BasePane
+from ..layout.base import BasePane
 from ..components.actionbar import ActionBar
 
 
