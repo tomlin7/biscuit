@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 
 from .base import Base
-from .layout.primary import PrimaryPane
+from .layout.mainframe import MainFrame
 from .components.menubar import MenuBar
 from .components.statusbar import StatusBar
 from .components.command_palette import CommandPalette
@@ -17,14 +17,8 @@ class App(tk.Tk):
 
         self.base = Base(root=self)
 
-        self.menubar = MenuBar(self)
-        self.menubar.pack(fill=tk.X)
-
-        self.primarypane = PrimaryPane(self)
+        self.primarypane = MainFrame(self)
         self.primarypane.pack(fill=tk.BOTH, expand=True)
-
-        self.statusbar = StatusBar(master=self)
-        self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.command_palette = CommandPalette(self)
         self.base.binder.bind("<Control-P>", self.command_palette.show)
