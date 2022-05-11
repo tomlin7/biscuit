@@ -1,11 +1,11 @@
 import tkinter as tk
 
 from .contentpane import ContentPane
-from ....components import Terminal
+from .panel import Panel
 
 class BasePane(tk.PanedWindow):
     """
-    Main frame holds ContentPane and Terminal
+    Main frame holds ContentPane and Panel
     .
     App
     └── Root
@@ -14,7 +14,7 @@ class BasePane(tk.PanedWindow):
         │    ├── ActionBar
         │    └── BasePane 
         │        ├── ContentPane
-        │        └── Terminal
+        │        └── Panel
         └── StatusBar
     """
     def __init__(self, master, *args, **kwargs):
@@ -26,7 +26,7 @@ class BasePane(tk.PanedWindow):
             relief=tk.FLAT, opaqueresize=False)
 
         self.mainpane = ContentPane(self)
-        self.terminal = Terminal(self)
+        self.panel = Panel(self)
 
         self.add(self.mainpane)
-        self.add(self.terminal)
+        self.add(self.panel)
