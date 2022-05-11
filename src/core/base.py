@@ -6,7 +6,7 @@ from datetime import datetime
 
 from .settings import Settings
 from .utils import Binder
-from .events import Events
+from .utils import Events
 from .styles import Style
 from .utils import SysInfo
 
@@ -44,7 +44,7 @@ class Base:
         self.opened_diffs = []
 
         self.events = Events(self)
-        self.binder = Binder(base=self)
+        self.binder = Binder(self)
 
         self.binder.bind('<Control-t>', self.toggle_terminal)
         self.binder.bind('<Control-b>', self.toggle_active_side_pane)

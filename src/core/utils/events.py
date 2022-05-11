@@ -1,6 +1,7 @@
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfile
 
+
 class Events:
     def __init__(self, master):
         self.base = master

@@ -1,6 +1,8 @@
 class Binder:
-    def __init__(self, base, *args, **kwargs):
-        self.base = base
+    def __init__(self, master, *args, **kwargs):
+        self.master = master
+        self.base = master.base
+
         self.root = self.base.root
         self.bindings = self.base.bindings
         self.events = self.base.events
