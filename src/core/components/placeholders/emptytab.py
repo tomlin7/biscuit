@@ -11,7 +11,7 @@ class EmptyTab(tk.Frame):
 
         self.bg = "#FFFFFF"
         self.fg = "#787878"
-        self.config(bg=self.bg, bd=0, relief=tk.FLAT)  # , ondrop=self.drop)
+        self.config(bg=self.bg, bd=0, relief=tk.FLAT)
 
         self.grid_rowconfigure(0, weight=1)
         # self.grid_rowconfigure(1, weight=1)
@@ -30,8 +30,8 @@ class EmptyTab(tk.Frame):
         self.shortcuts.add_shortcut("Open File", ["Ctrl", "o"])
         self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "o"])
 
-    def drop(self, event):
-        if os.path.isfile(event.data):
-            self.base.set_active_file(file=event.data, exists=True)
-        elif os.path.isdir(event.data):
-            self.base.open_in_new_window(dir=event.data)
+    # def drop(self, event):
+    #     if os.path.isfile(event.data):
+    #         self.base.set_active_file(file=event.data, exists=True)
+    #     elif os.path.isdir(event.data):
+    #         self.base.open_in_new_window(dir=event.data)

@@ -11,8 +11,7 @@ class EditorGroups(ttk.Notebook):
         self.master = master
         self.base = master.base
 
-        # dnd
-        self.configure(ondrop=self.drop, style="EditorTabs")
+        self.configure(style="EditorTabs")
 
         self.closed_tabs = {}
         # {path: [name, exists, editor]}
@@ -57,11 +56,11 @@ class EditorGroups(ttk.Notebook):
         self.state(["!pressed"])
         self._active = None
 
-    def drop(self, event):
-        if os.path.isfile(event.data):
-            self.base.set_active_file(file=event.data, exists=True)
-        elif os.path.isdir(event.data):
-            self.base.open_in_new_window(dir=event.data)
+    # def drop(self, event):
+    #     if os.path.isfile(event.data):
+    #         self.base.set_active_file(file=event.data, exists=True)
+    #     elif os.path.isdir(event.data):
+    #         self.base.open_in_new_window(dir=event.data)
 
     def refresh_active_file(self, e=None):
         self.base.active_file = None

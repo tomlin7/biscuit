@@ -1,6 +1,5 @@
 import os
 import tkinter as tk
-from tkinterDnD import Tk
 
 from .base import Base
 from .layout import PrimaryPane
@@ -9,7 +8,7 @@ from .components.statusbar import StatusBar
 from .components.command_palette import CommandPalette
 
 
-class Root(Tk):
+class Root(tk.Tk):
     def __init__(self, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry("900x650")
