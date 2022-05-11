@@ -2,13 +2,13 @@ import os
 import tkinter as tk
 
 from .base import Base
-from .layout import PrimaryPane
+from .layout.primary import PrimaryPane
 from .components.menubar import MenuBar
 from .components.statusbar import StatusBar
 from .components.command_palette import CommandPalette
 
 
-class Root(tk.Tk):
+class App(tk.Tk):
     def __init__(self, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry("900x650")

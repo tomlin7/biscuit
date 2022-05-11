@@ -1,1 +1,1 @@
-from .root import Root
+from .app import App
