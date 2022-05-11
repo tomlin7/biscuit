@@ -1,5 +1,5 @@
 import sys
-from lib import root
+from core import root
 
 dir = None
 if len(sys.argv) >= 2:
