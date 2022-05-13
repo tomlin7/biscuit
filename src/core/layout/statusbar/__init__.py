@@ -12,6 +12,16 @@ from .popups.indentation import IndentationPopup
 from .popups.linecolinfo import LineColInfoPopup
 
 class StatusBar(tk.Frame):
+    """
+    Status bar holds various widgets that are used to display information about the current file
+    and the current state of the editor.
+    .
+    App
+    └── Root
+        ├── Menubar
+        ├── MainFrame
+        └── StatusBar
+    """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

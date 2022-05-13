@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.font as Font
 
 from .content import EditorContent
-from ...breadcrumbs import BreadCrumbs
+from ..breadcrumbs import BreadCrumbs
 
 
 class Editor(tk.Frame):

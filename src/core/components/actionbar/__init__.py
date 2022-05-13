@@ -3,7 +3,7 @@ import tkinter as tk
 from lib.components.actionbar.button import AButton
 
 
-class ActionBar(tk.Frame):
+class Actionbar(tk.Frame):
     def __init__(self, master, left_panes=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

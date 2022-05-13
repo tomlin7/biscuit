@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..editor import EditorContent
+from ..texteditor import EditorContent
 
 
 class DiffViewerFrame(tk.Frame):

@@ -1,8 +1,8 @@
 import os
 import tkinter as tk
 
-from .utils.binder import Binder
-from .utils.linenumbers import LineNumbers
+from .binder import Binder
+from .linenumbers import LineNumbers
 
 from ...text import Text
 from ..image_viewer import ImageViewer

@@ -1,4 +1,3 @@
-python-tkdnd
 gitpython
 filetype
 tkextrafont

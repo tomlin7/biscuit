@@ -12,7 +12,5 @@ class Binder:
         self.master.bind(this, to_this)
     
     def bind_all(self):
-        # Disabling zooming with scrollwheel for now
-        # self.master.text.bind("<Control-MouseWheel>", self.master.handle_zoom)
         self.master.text.bind("<<Change>>", self.master._on_change)
         self.master.text.bind("<Configure>", self.master._on_change)
