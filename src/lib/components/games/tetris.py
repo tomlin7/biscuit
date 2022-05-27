@@ -1,7 +1,7 @@
 import tkinter as tk
 from random import choice
 
-SIDE = 20
+SIDE = 25
 
 
 class Tetris(tk.Toplevel):
@@ -17,18 +17,42 @@ class Tetris(tk.Toplevel):
         self.level = 1
         self.speed = 500
         self.pieces = {}
-        self.board = tk.Canvas(self, width=Tetris.WIDTH, height=Tetris.HEIGHT, bg='black')
-        self.board.pack()
+        self.board = tk.Canvas(self, width=Tetris.WIDTH,
+                               height=Tetris.HEIGHT, bg='black')
+        self.board.pack(side='left', padx=(2*SIDE,0))
+        self.preview = tk.Canvas(self, width=4*SIDE, height=2*SIDE, bg='white')
+        self.preview.pack(side='right', padx=(0, 2*SIDE))
+        self.status_var = tk.StringVar()
+        self.update_status()
+        self.status_label = tk.Label(self, textvariable=self.status_var, width=40)
+        self.status_label.pack(side='top', pady=2*SIDE, ipadx=10)
         self.lines_cleared = []
         self.total_lines = 0
         self.bind("<Key>", self.handle_events)
         self.start()
 
     def start(self):
-        self.falling_piece = Piece(self.board)
+        self.falling_piece = Piece(self.preview)
+        self.preview.delete('all')
+        self.falling_piece.canvas=self.board
+        self.falling_piece.place_on_board()
         self.run()
         
     def run(self):
+        self.preview.delete('all')
+        self.next_piece = Piece(self.preview)
+        if not self.falling_piece.move(0,1):
+            #check for lines to clear
+            #update state
+            #create a new piece
+            pass
+
+
+
+
+
+
+
         
         self.after(self.speed, self.run)
         
@@ -49,12 +73,15 @@ class Tetris(tk.Toplevel):
             score += level*points[lines]
 
         return score
-
+    def update_status(self):
+        self.status_var.set(f"Level: {self.level}  Score: {self.score}")
 
 class Piece:
     """A tetris piece"""
     START_PT = 10*SIDE / 2 / SIDE * SIDE - SIDE
-    PIECES = (
+
+    def __init__(self, canvas):
+        self.PIECES = (
         ["yellow", (0, 0), (1, 0), (0, 1), (1, 1)],     # square
         ["lightblue", (0, 0), (1, 0), (2, 0), (3, 0)],  # line
         ["orange", (2, 0), (0, 1), (1, 1), (2, 1)],     # right el
@@ -64,15 +91,23 @@ class Piece:
         ["purple", (1, 0), (0, 1), (1, 1), (2, 1)],     # symmetrical wedge
     )
 
-    def __init__(self, canvas):
-
         self.squares = []
-        self.piece = choice(Piece.PIECES)
+        self.piece = choice(self.PIECES)
         self.color = self.piece.pop(0)
         self.canvas = canvas
 
         for point in self.piece:
             square = canvas.create_rectangle(
+                point[0] * SIDE,
+                point[1] * SIDE,
+                point[0] * SIDE + SIDE,
+                point[1] * SIDE + SIDE,
+                fill=self.color)
+            self.squares.append(square)
+        
+    def place_on_board(self):
+        for point in self.piece:
+            square = self.canvas.create_rectangle(
                 point[0] * SIDE + Piece.START_PT,
                 point[1] * SIDE,
                 point[0] * SIDE + SIDE + Piece.START_PT,
@@ -86,10 +121,11 @@ class Piece:
         else:
             for square in self.squares:
                 self.canvas.move(square, x * SIDE, y * SIDE)
+            return True
     
     def rotate(self):
         squares = self.squares[:]
-        pivot = sq.pop(2)
+        pivot = squares.pop(2)
 
         def get_move_coords(square, pivot):
             sq_coords = self.canvas.coords(square)
@@ -108,7 +144,7 @@ class Piece:
         #actually rotate
         for sq in squares:
             xmove, ymove = get_move_coords(sq, pivot)
-            self.canvas.move(sq, xmove, ymove)
+            self.canvas.move(sq, xmove*SIDE, ymove*SIDE)
 
     def is_sq_allowed(self, sq, x, y):
 
@@ -117,7 +153,7 @@ class Piece:
         coords = self.canvas.coords(sq)
 
         if coords[3] + y > Tetris.HEIGHT: return False
-        if coords[2] + x < 0 : return False
+        if coords[2] + x <= 0 : return False
         if coords[2] + x > Tetris.WIDTH: return False
 
         overlap = set(self.canvas.find_overlapping(
