@@ -42,6 +42,7 @@ class Tetris(tk.Toplevel):
     def run(self):
         
         if not self.falling_piece.move(0,1):
+            #print("stopped")
             #check for lines to clear
             #update state
             #create a new piece
@@ -166,7 +167,7 @@ class Piece:
             (coords[0] + coords[2]) / 2 + x,
             (coords[1] + coords[3]) / 2 + y,
             (coords[0] + coords[2]) / 2 + x,
-            (coords[1] + coords[3]) / 2 + y))
+            (coords[1] + coords[3]) / 2 + y)) - set(self.squares)
 
         other = set(self.canvas.find_all()) - set(self.squares)
 
