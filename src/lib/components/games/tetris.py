@@ -11,21 +11,21 @@ class Tetris(tk.Toplevel):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.geometry("500x800")
+        self.geometry("500x600")
         self.title("Tetris on Biscuit")
         self.score = 0
         self.level = 1
         self.speed = 500
         self.pieces = {}
+        self.status_var = tk.StringVar()
+        self.update_status()
+        self.status_label = tk.Label(self, textvariable=self.status_var, width=40)
+        self.status_label.pack(side='top', pady=SIDE)
         self.board = tk.Canvas(self, width=Tetris.WIDTH,
                                height=Tetris.HEIGHT, bg='black')
         self.board.pack(side='left', padx=(2*SIDE,0))
         self.preview = tk.Canvas(self, width=4*SIDE, height=2*SIDE, bg='white')
         self.preview.pack(side='right', padx=(0, 2*SIDE))
-        self.status_var = tk.StringVar()
-        self.update_status()
-        self.status_label = tk.Label(self, textvariable=self.status_var, width=40)
-        self.status_label.pack(side='top', pady=2*SIDE, ipadx=10)
         self.lines_cleared = []
         self.total_lines = 0
         self.bind("<Key>", self.handle_events)
@@ -36,16 +36,21 @@ class Tetris(tk.Toplevel):
         self.preview.delete('all')
         self.falling_piece.canvas=self.board
         self.falling_piece.place_on_board()
+        self.next_piece = Piece(self.preview)
         self.run()
         
     def run(self):
-        self.preview.delete('all')
-        self.next_piece = Piece(self.preview)
+        
         if not self.falling_piece.move(0,1):
             #check for lines to clear
             #update state
             #create a new piece
-            pass
+            self.falling_piece = self.next_piece
+            self.falling_piece.canvas=self.board
+            self.falling_piece.place_on_board()
+            self.preview.delete('all')
+            self.next_piece = Piece(self.preview)
+            
 
 
 
@@ -106,6 +111,7 @@ class Piece:
             self.squares.append(square)
         
     def place_on_board(self):
+        self.squares = []
         for point in self.piece:
             square = self.canvas.create_rectangle(
                 point[0] * SIDE + Piece.START_PT,
