@@ -1,6 +1,7 @@
 import tkinter as tk
 from random import choice
 from collections import Counter
+from tkinter import messagebox
 
 SIDE = 25
 
@@ -14,14 +15,7 @@ class Tetris(tk.Toplevel):
         super().__init__(parent)
         self.geometry("500x600")
         self.title("Tetris on Biscuit")
-        self.score = 0
-        self.level = 1
-        self.speed = 500
-        self.pieces = {}
-        self.lines_cleared = [0]
-        self.total_lines = 0
         self.status_var = tk.StringVar()
-        self.update_status()
         self.status_label = tk.Label(
             self, textvariable=self.status_var, width=40)
         self.status_label.pack(side='top', pady=SIDE)
@@ -34,6 +28,16 @@ class Tetris(tk.Toplevel):
         self.start()
 
     def start(self):
+        """Start a tetris game"""
+        
+        self.board.delete('all')
+        self.score = 0
+        self.level = 1
+        self.speed = 500
+        self.pieces = {}
+        self.lines_cleared = [0]
+        self.total_lines = 0
+        self.update_status()
         self.falling_piece = Piece(self.preview)
         self.preview.delete('all')
         self.falling_piece.canvas = self.board
@@ -55,8 +59,18 @@ class Tetris(tk.Toplevel):
             self.falling_piece.place_on_board()
             self.preview.delete('all')
             self.next_piece = Piece(self.preview)
+            if not self.falling_piece.is_move_allowed(0,1):
+                self.game_over()
+                return
 
         self.after(self.speed, self.run)
+
+    def game_over(self):
+        res = messagebox.askyesno(title="GAME OVER", message = f"Level: {self.level}  Score: {self.score}\nRetry?")
+        if res:
+            self.start()
+        else:
+            return
         
     def clear_lines(self):
         "clear complete lines and update lines_cleared and total_lines"
