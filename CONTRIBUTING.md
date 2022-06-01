@@ -12,7 +12,7 @@ Here are the basic steps needed to get set up and contribute a patch.
 git clone --recursive https://github.com/<your_username>/Biscuit.git
 cd Biscuit
 ```
-4. We appreciate using [Visual Studio Code](https://code.visualstudio.com/) for development. Open the project directory in Visual Studio Code or your preferred environment.
+4. We appreciate using [Emacs](https://www.gnu.org/savannah-checkouts/gnu/emacs/emacs.html) or [Visual Studio Code](https://code.visualstudio.com/) for development. Open the project directory in your preferred environment.
 5. **Open an issue** report in the [Biscuit issue tracker](https://github.com/billyeatcookies/Biscuit/issues) if the issue has not been reported/proposed yet. Trivial issues (e.g. typo fixes) do not require any issue to be created.
 
 5. Create a new local branch where your work for the issue will go, try to format it `fix-issue-#`, e.g.:
