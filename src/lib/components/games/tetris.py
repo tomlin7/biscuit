@@ -78,15 +78,13 @@ class Tetris(tk.Toplevel):
 
         all_squares = self.board.find_all()
         all_squares_h = {k : v for k,v in zip(all_squares, [self.board.coords(sq)[3] for sq in all_squares])}
-        print(all_squares)
-        print(all_squares_h)
         count = Counter()
         for sq in all_squares_h.values(): count[sq] += 1
         full_lines = [k for k,v in count.items() if v == Tetris.WIDTH/SIDE]
-        print(full_lines)
+        
 
         if full_lines:
-            print("clearing lines", full_lines)
+            #print("clearing lines", full_lines)
             lines = len(full_lines)
             remaining_squares_h = {}
             for k,v in all_squares_h.items():
@@ -103,7 +101,6 @@ class Tetris(tk.Toplevel):
 
         self.lines_cleared.append(lines)
         self.total_lines += lines
-        print(self.lines_cleared, self.total_lines)
 
     def handle_events(self, event):
         '''Handle all user events.'''
