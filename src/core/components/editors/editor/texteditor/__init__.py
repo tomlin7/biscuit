@@ -1,22 +1,32 @@
 import tkinter as tk
-import tkinter.font as Font
 
+<<<<<<< HEAD:src/core/components/editors/editor/texteditor/__init__.py
 from .content import EditorContent
 from ..breadcrumbs import BreadCrumbs
+=======
+from .editor import TextEditor
+from .breadcrumbs import BreadCrumbs
+from ..base import EditorBase
+>>>>>>> dec37119ca8c68530b309efab68650a6ead758f5:src/core/components/editor_types/editor/__init__.py
 
 
-class Editor(tk.Frame):
-    def __init__(self, master, path=None, exists=True, *args, **kwargs):
+class Editor(EditorBase):
+    def __init__(self, master, name, path=None, exists=False, diff=False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
         self.master = master
 
+        self.name = name
         self.path = path
         self.exists = exists
+        self.diff = diff
+
+        self.show_path = True
+        self.editable = True
+
         self.config(bg="#e8e8e8")
 
-        self.breadcrumbs = BreadCrumbs(master=self, path=path.replace(self.base.active_dir or "", ""))
-        self.content = EditorContent(self, path=path, exists=exists)
+        self.breadcrumbs = BreadCrumbs(master=self, path=path.replace(self.base.active_directory or "", ""))
+        self.content = TextEditor(self, path=path, exists=exists)
 
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)

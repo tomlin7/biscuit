@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from lib.components.actionbar.button import AButton
+from .button import AButton
 
 
 class Actionbar(tk.Frame):

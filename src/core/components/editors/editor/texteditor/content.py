@@ -1,61 +1,34 @@
 import os
 import tkinter as tk
 
+<<<<<<< HEAD:src/core/components/editors/editor/texteditor/content.py
 from .binder import Binder
+=======
+from .utils.binder import Binder
+>>>>>>> dec37119ca8c68530b309efab68650a6ead758f5:src/core/components/editor_types/editor/content.py
 from .linenumbers import LineNumbers
 
 from ...text import Text
-from ..image_viewer import ImageViewer
-from ...placeholders.welcome import WelcomePage
-from ...text.utils import Utils
 from ...utils import AutoScrollbar
-from ...utils import FileType
 
-class EditorContent(tk.Frame):
-    def __init__(self, master, path=None, exists=True, *args, **kwargs):
+
+class TextEditor(tk.Frame):
+    def __init__(
+        self, master, 
+        path=None, exists=True, font=None, 
+        *args, **kwargs
+    ):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
         self.master = master
+
         self.path = path
         self.exists = exists
-        
+        self.font = font
+
         self.show_path = True
         self.editable = True
-
-        if os.path.isfile(path):
-            if FileType.is_image(path):
-                self.open_image_viewer()
-            else:
-                self.open_text_editor()
-        else:
-            if path == "@welcomepage":
-                self.open_welcome_tab()
-            else:
-                self.open_text_editor()
-        
-    def open_welcome_tab(self):
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
-        self.welcome_page = WelcomePage(self)
-        self.welcome_page.grid(row=0, column=0, sticky=tk.NSEW)
-        self.editable = False
-        self.show_path = False
-    
-    def open_image_viewer(self):
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
-        self.image = ImageViewer(self, self.path)
-        self.image.grid(row=0, column=0, sticky=tk.NSEW)
-        self.editable = False
     
     def open_text_editor(self):
-        # self.font = self.base.settings.font
-        self.font = self.base.settings.font
-        
-        # self.zoom = self.font["size"]
-
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
@@ -92,21 +65,6 @@ class EditorContent(tk.Frame):
         self.linenumbers.set_bar_width(size * 3)
         self._on_change()
 
-    def refresh_fontsize(self):
-        self.set_fontsize(self.zoom)
-        self._on_change()
-    
-    # def handle_zoom(self, event):
-    #     if 5 <= self.zoom <= 50:
-    #         if event.delta < 0:
-    #             self.zoom -= 1
-    #         else:
-    #             self.zoom += 1
-    #     self.zoom = Utils.clamp(self.zoom, 5, 50)
-        
-    #     self.refresh_fontsize()
-    #     return "break"
-    
     def cut(self, *_):
         if self.editable:
             self.text.cut()
