@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinterDnD import Tk
 
 from .layout import PrimaryPane
 from .components.menubar import MenuBar
@@ -7,7 +6,7 @@ from .components.statusbar import StatusBar
 from .components.command_palette import CommandPalette
 
 
-class Root(Tk):
+class Root(tk.Tk):
     def __init__(self, base, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base = base
