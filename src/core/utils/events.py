@@ -21,13 +21,13 @@ class Events:
         self.base.set_active_dir(filedialog.askdirectory())
         
     def save(self, *_):
-        with open(self.base.active_editor, 'w') as f:
+        with open(self.base.active_file, 'w') as f:
             f.write(self.base.root.primarypane.basepane.right.top.editor_groups.groups.get_active_text())
 
     def save_as(self, *_):
         with asksaveasfile(
             title="Save As...", defaultextension=".txt",
-            initialfile=(self.base.active_editor if self.base.active_editor else "Untitled")
+            initialfile=(self.base.active_file if self.base.active_file else "Untitled")
         ) as fp:
             fp.write(self.base.root.primarypane.basepane.right.top.editor_groups.groups.get_active_text())
             self.base.set_active_file(fp.name)

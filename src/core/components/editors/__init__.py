@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-from .editor import Editor
-from .tabsbar import Tabsbar
-=======
 import tkinter as tk
 
 from .groups import EditorGroups
@@ -32,8 +28,7 @@ class EditorGroupsPane(tk.Frame):
             self.active = True
         
     def update_panes(self):
-        if self.base.active_editor is not None:
+        if self.base.active_file is not None:
             self.enable()
         else:
             self.disable()
->>>>>>> dec37119ca8c68530b309efab68650a6ead758f5

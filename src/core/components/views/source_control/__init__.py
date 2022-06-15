@@ -50,7 +50,7 @@ class SourceControl(SideBar):
             self.tree_active = True
     
     def update_panes(self):
-        if self.base.active_directory is not None:
+        if self.base.active_dir is not None:
             self.enable_tree()
         else:
             self.disable_tree()

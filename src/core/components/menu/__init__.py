@@ -39,7 +39,7 @@ class Menu(tk.Toplevel):
     def add_first_item(self, text, command):
         self.menu.add_first_item(text, command)
     
-    def add_item(self, text, command=self.empty):
+    def add_item(self, text, command):
         self.menu.add_item(text, command)
 
     def add_last_item(self, text, command):

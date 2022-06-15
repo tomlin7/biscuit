@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from .button import AButton
+from lib.components.actionbar.button import AButton
 
 
-class Actionbar(tk.Frame):
+class ActionBar(tk.Frame):
     def __init__(self, master, left_panes=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

@@ -25,9 +25,6 @@ class DirectoryTree(tk.Frame):
     def open_directory(self, path):
         self._tree.open_directory(path)
     
-    def close_directory(self, path):
-        self.clear_tree()
-    
     def clear_tree(self):
         self._tree.clear_tree()
     
