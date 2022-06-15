@@ -1,4 +1,4 @@
-import json, os
+import os
 import tkinter as tk
 
 
@@ -7,4 +7,4 @@ class ResourcesLoader:
         self.base = master.base
 
     def load_image(self, resource):
-        return tk.PhotoImage(file=self.base.get_res_path(resource))
+        return tk.PhotoImage(file=os.path.join(self.base.appdir, 'res', resource))

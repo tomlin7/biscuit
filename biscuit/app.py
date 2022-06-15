@@ -1,42 +1,45 @@
-import subprocess
 import os
+import subprocess
 import sys
-
 from datetime import datetime
-from unicodedata import name
 
-from .settings import Settings
-from .utils import Binder
-from .events import Events
-from .styles import Style
-from .utils import SysInfo
+from core import Binder, Events, Root, Settings, Style, SysInfo
+from core.components.views.source_control import Git
 
-from .components.views.source_control import Git
 
-class Base:
-    def __init__(self, root, *args, **kwargs):
-        self.root = root
-        self.base = self
+class App:
+    def __init__(self, dir, *args, **kwargs):
+        self.root = Root(self)
 
-        self.sysinfo = SysInfo(self)
-        self.appdir = os.path.join(os.path.abspath(os.getcwd()), "src")
-
-        self.settings = Settings(self)
-        self.bindings = self.settings.bindings
-        self.nothing = "haha"
-
-        self.style = Style(self.root)
-
-        self.git_found = False
-        self.git = Git(self)
-        self.active_branch_name = None
+        self.setup_path()
+        self.setup_configs()
+        self.setup_version_control()
 
         self.active_directory = None
-        self.active_directory_name = None
         self.active_editor = None
-
+    
+    def setup_configs(self):
+        self.sysinfo = SysInfo(self)
+        self.settings = Settings(self)
         self.events = Events(self)
         self.binder = Binder(self)
+
+        self.bindings = self.settings.bindings
+        # self.style = Style(self.root)
+
+
+    def setup_version_control(self):
+        self.git = Git(self)
+
+        self.git_found = False
+        self.active_branch_name = None
+
+    def setup_path(self):       
+        self.appdir = os.path.dirname(__file__)
+        self.configdir = os.path.join(self.appdir, 'config')
+        self.themesdir = os.path.join(self.configdir, 'themes')
+        self.bindingsdir = os.path.join(self.configdir, 'bindings')
+
 
     def after_initialization(self):
         self.explorer_ref = self.root.primarypane.basepane.explorer
@@ -67,24 +70,9 @@ class Base:
             self.close_editor(self.active_editor)
             self.editor_groups_ref.groups.remove_tab(self.active_editor)
             self.refresh()
-    
-    def get_app_dir(self):
-        return self.appdir
 
     def get_active_tab(self):
         return self.editor_groups_ref.groups.get_active_tab()
-    
-    def get_config_path(self, config_file):
-        return os.path.join(self.appdir, 'config', config_file)
-    
-    def get_themes_path(self, theme_name):
-        return os.path.join(self.appdir, 'config/themes', theme_name)
-    
-    def get_bindings_path(self, bindings_file):
-        return os.path.join(self.appdir, 'config/bindings', bindings_file)
-
-    def get_res_path(self, res_file):
-        return os.path.join(self.appdir, 'res', res_file)
     
     def open_editor(self, name, path, exists, diff):
         self.editor_groups_ref.groups.add_editor(name, path, exists, diff)

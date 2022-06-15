@@ -1,8 +1,6 @@
-import os
 import tkinter as tk
 from tkinterDnD import Tk
 
-from .base import Base
 from .layout import PrimaryPane
 from .components.menubar import MenuBar
 from .components.statusbar import StatusBar
@@ -10,16 +8,15 @@ from .components.command_palette import CommandPalette
 
 
 class Root(Tk):
-    def __init__(self, path, dir=None, *args, **kwargs):
+    def __init__(self, base, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.appdir = os.path.dirname(path)
+        self.base = base
         
         self.geometry("850x650")
         self.minsize(800, 600)
         self.title("Biscuit")
 
-        self.base = Base(root=self)
-
+    def add_components(self):
         self.menubar = MenuBar(self)
         self.menubar.pack(fill=tk.X)
 
@@ -30,12 +27,7 @@ class Root(Tk):
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.command_palette = CommandPalette(self)
-        self.base.binder.bind("<Control-P>", self.command_palette.show)
-
-        if dir:
-            self.base.set_active_dir(dir)
-
-        self.base.after_initialization()
+        # self.base.binder.bind("<Control-P>", self.command_palette.show)
 
     def get_popup_x(self, width):
         return self.winfo_rootx() + int(self.winfo_width() / 2) - int(width / 2)

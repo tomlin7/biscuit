@@ -2,7 +2,6 @@ import os
 from tkinter import ttk
 
 from ..editor_types import EditorsManager
-from ..editor_types import DiffViewer
 
 
 class EditorGroups(ttk.Notebook):

@@ -1,12 +1,8 @@
 class Binder:
-    def __init__(self, master, *args, **kwargs):
-        self.master = master
-        self.base = master.base
-        self.root = self.base.root
-        self.bindings = self.base.bindings
+    def __init__(self, base, *args, **kwargs):
+        self.base = base
+        self.bindings = self.base.settings.bindings
         self.events = self.base.events
-
-        self.bind_all()
 
     def bind_all(self):
         self.bind(self.bindings.new_file, self.events.new_file)
@@ -23,4 +19,4 @@ class Binder:
         self.bind('<Control-l>', self.base.open_welcome_tab)
 
     def bind(self, this, to_this):
-        self.root.bind(this, to_this)
+        self.base.root.bind(this, to_this)
