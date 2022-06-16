@@ -25,8 +25,7 @@ class App:
         self.binder = Binder(self)
 
         self.bindings = self.settings.bindings
-        # self.style = Style(self.root)
-
+        self.style = Style(self.root)
 
     def setup_version_control(self):
         self.git = Git(self)
@@ -39,7 +38,6 @@ class App:
         self.configdir = os.path.join(self.appdir, 'config')
         self.themesdir = os.path.join(self.configdir, 'themes')
         self.bindingsdir = os.path.join(self.configdir, 'bindings')
-
 
     def after_initialization(self):
         self.explorer_ref = self.root.primarypane.basepane.explorer

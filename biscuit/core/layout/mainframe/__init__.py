@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .basepane import BasePane
-from ...components import ActionBar
+from ...components import Actionbar
 
 
 class MainFrame(tk.Frame):
@@ -21,7 +21,7 @@ class MainFrame(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
-        self.actionbar = ActionBar(self)
+        self.actionbar = Actionbar(self)
         self.basepane = BasePane(master=self)
 
         self.actionbar.pack(side=RIGHT, fill=Y)

@@ -9,6 +9,7 @@ from .. import res
 
 class Settings:
     font: Font
+    icon_font: Font
     config: config.Config
     bindings: config.Bindings
     theme: config.Theme

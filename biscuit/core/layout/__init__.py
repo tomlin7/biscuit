@@ -3,8 +3,8 @@ from tkinter.constants import *
 
 from .mainframe import MainFrame
 
-from ..components import Menubar
-from ..components import Statusbar
+from .menubar import Menubar
+from .statusbar import Statusbar
 
 
 class Root(tk.Frame):

@@ -1,16 +1,13 @@
 import tkinter as tk
-from tkinter.constants import *
 
 from .tab import Tab
 
-class Tabsbar(tk.Frame):
-    """
-    Tabsbar holds all tabs.
-    """
+
+class Tabs(tk.Frame):
     def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
         self.master = master
-        self.base = master.base
+        self.config(bg='white')
 
         self.tabs = []
 

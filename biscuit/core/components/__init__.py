@@ -1,2 +1,2 @@
 from .actionbar import Actionbar
-from .editors import Editor
+from .menu import Menu

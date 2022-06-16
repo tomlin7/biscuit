@@ -1,35 +1,22 @@
 import tkinter as tk
+from tkinter.constants import *
 
-from .tabs import Tabs
-from .....components.views import *
+from ......components.editors import Tabsbar
 
 
-class Panel(tk.Frame):
-    """
-    Tabbed container for views.
-
-    +---------------------------------+
-    | Logs | Terminal |               |
-    +---------------------------------+
-    | \    \    \    \    \    \    \ |
-    |  \    \    \    \    \    \    \|
-    |   \    \    \    \    \    \    |
-    |    \    \    \    \    \    \   |
-    |\    \    \    \    \    \    \  |
-    +---------------------------------+
-    """
+class EditorsFrame:
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.pack_propagate(False)
 
-        self.tabs = Tabs(self)
+        self.tabs = Tabsbar(self)
         self.tabs.pack(expand=1, fill=tk.BOTH)
 
         self.active_view = None
-        self.views = []
+        self.editors = []
 
-        self.default_views = [Logs(self), Terminal(self)]
+        self.default_views = []
         self.add_views(self.default_views)
 
     def add_views(self, views):
@@ -39,26 +26,26 @@ class Panel(tk.Frame):
     
     def add_view(self, view):
         "Appends a view to list. Create a tab."
-        self.views.append(view)
+        self.editors.append(view)
         self.tabs.add_tab(view)
         self.set_active_view(view)
         
     def delete_all_views(self):
         "Permanently delete all views."
-        for view in self.views:
+        for view in self.editors:
             view.destroy()
 
-        self.views.clear()
+        self.editors.clear()
     
     def delete_view(self, view):
         "Permanently delete a view."
         view.destroy()
-        self.views.remove(view)
+        self.editors.remove(view)
     
     def set_active_view(self, view):
         "Set active view and active tab."
         self.active_view = view
-        for _view in self.views:
+        for _view in self.editors:
             _view.pack_forget()
         view.pack(fill=tk.BOTH)
     

@@ -1,1 +1,5 @@
-"""TODO: Search view"""
+from ..view import View
+
+
+class SearchView(View):
+    ...

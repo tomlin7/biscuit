@@ -5,7 +5,7 @@ from .content import EditorContent
 from ..breadcrumbs import BreadCrumbs
 
 
-class Editor(tk.Frame):
+class TextEditor(tk.Frame):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

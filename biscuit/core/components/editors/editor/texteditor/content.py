@@ -73,8 +73,8 @@ class EditorContent(tk.Frame):
         if self.exists:
             self.text.load_file()
 
-        self.binder = Binder(self)
-        self.binder.bind_all()
+        self.text.bind("<<Change>>", self._on_change)
+        self.text.bind("<Configure>", self._on_change)
 
     def unsupported_file(self):
         self.text.show_unsupported_dialog()
@@ -95,17 +95,6 @@ class EditorContent(tk.Frame):
     def refresh_fontsize(self):
         self.set_fontsize(self.zoom)
         self._on_change()
-    
-    # def handle_zoom(self, event):
-    #     if 5 <= self.zoom <= 50:
-    #         if event.delta < 0:
-    #             self.zoom -= 1
-    #         else:
-    #             self.zoom += 1
-    #     self.zoom = Utils.clamp(self.zoom, 5, 50)
-        
-    #     self.refresh_fontsize()
-    #     return "break"
     
     def cut(self, *_):
         if self.editable:

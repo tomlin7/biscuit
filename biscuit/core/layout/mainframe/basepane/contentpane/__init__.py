@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .....components import Sidebar
-from .....components import EditorsFrame
+from .sidebar import Sidebar
+from .editorsframe import EditorsFrame
 
 
 class ContentPane(tk.PanedWindow):
