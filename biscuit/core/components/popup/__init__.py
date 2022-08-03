@@ -1,7 +1,9 @@
 import tkinter as tk
 
-from .menuitem import MenuItem
+from .item import MenuItem
 from .searchbar import Searchbar
+from .popups import *
+
 
 class PopupMenu(tk.Toplevel):
     def __init__(self, master, items=None, width=65, state=False, prompt="", watermark="Search", *args, **kwargs):

@@ -1,0 +1,1 @@
+from .commandpalette import CommandPalette

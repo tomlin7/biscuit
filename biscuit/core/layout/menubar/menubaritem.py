@@ -3,7 +3,7 @@ import tkinter as tk
 from ...components import Menu
 
 
-class MenuBarItem(tk.Menubutton):
+class MenubarItem(tk.Menubutton):
     def __init__(self, master, text, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base

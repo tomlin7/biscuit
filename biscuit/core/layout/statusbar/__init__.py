@@ -1,17 +1,11 @@
-import tkinter as tk 
+import tkinter as tk
 
-from .utils.label import SLabel
+from .popups import *
 from .utils.button import SButton
 from .utils.clock import SClock
 
-from .popups.eol import EOLPopup
-from .popups.encoding import EncodingPopup
-from .popups.filetype import FileTypePopup
-from .popups.git import GitPopup
-from .popups.indentation import IndentationPopup
-from .popups.linecolinfo import LineColInfoPopup
 
-class StatusBar(tk.Frame):
+class Statusbar(tk.Frame):
     """
     Status bar holds various widgets that are used to display information about the current file
     and the current state of the editor.
@@ -20,11 +14,10 @@ class StatusBar(tk.Frame):
     └── Root
         ├── Menubar
         ├── MainFrame
-        └── StatusBar
+        └── Statusbar
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
 
         self.fg = "#ffffff"
         self.bg = "#007acc"

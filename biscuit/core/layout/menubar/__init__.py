@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from .menubaritem import MenuBarItem
+from .menubaritem import MenubarItem
 
 
-class MenuBar(tk.Frame):
+class Menubar(tk.Frame):
     """
     Root frame holds Menubar, MainFrame, and Statusbar
     .
@@ -11,7 +11,7 @@ class MenuBar(tk.Frame):
     └── Root
         ├── Menubar
         ├── MainFrame
-        └── StatusBar
+        └── Statusbar
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -26,7 +26,7 @@ class MenuBar(tk.Frame):
         self.add_menus()
     
     def add_menu(self, text):
-        new_menu = MenuBarItem(self, text)
+        new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.X, padx=0)
         self.menus.append(new_menu)
         

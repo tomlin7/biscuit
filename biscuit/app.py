@@ -3,8 +3,8 @@ import subprocess
 import sys
 from datetime import datetime
 
-from core import Binder, Events, Root, Settings, Style, SysInfo
-from core.components.views.source_control import Git
+from core import *
+from core import Git
 
 
 class App:

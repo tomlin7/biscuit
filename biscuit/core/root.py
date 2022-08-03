@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .layout.mainframe import MainFrame
-from .components.command_palette import CommandPalette
+from .components.popup import CommandPalette
+from .layout.main import MainFrame
 
 
 class Root(tk.Tk):

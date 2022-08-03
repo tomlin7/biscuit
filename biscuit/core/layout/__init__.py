@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .mainframe import MainFrame
+from .main import MainFrame
 
 from .menubar import Menubar
 from .statusbar import Statusbar
