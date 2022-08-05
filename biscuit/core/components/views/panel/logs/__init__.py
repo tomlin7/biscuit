@@ -3,8 +3,7 @@ import tkinter as tk
 
 from datetime import datetime
 
-from ..view import View
-from ...utils import Fonts
+from ...view import View
 
 
 def caller_name(skip=2):
@@ -43,6 +42,7 @@ class Logs(View):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.base = master.base
 
         self.text = tk.Text(self, relief=tk.FLAT, font=("Consolas", 13))
         self.text.pack(expand=1, fill=tk.BOTH, side=tk.LEFT)
