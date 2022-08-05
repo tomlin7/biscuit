@@ -6,7 +6,7 @@ from sys import platform
 from threading import Thread
 
 from .text import TerminalText
-from ...utils import AutoScrollbar
+from ....utils import AutoScrollbar
 
 
 class Terminal(tk.Frame):
@@ -15,13 +15,13 @@ class Terminal(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.font = self.base.settings.font
+        #self.font = self.base.settings.font
         self.config(background="#ffffff")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.terminal = TerminalText(
-            self, wrap=tk.WORD, font=self.font, relief=tk.FLAT,
+            self, wrap=tk.WORD, relief=tk.FLAT, #font=self.font, 
             fg="#333333", bg="#ffffff", padx=10, pady=10
         )
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)

@@ -7,9 +7,28 @@ from ....components.views.sidebar import *
 
 
 class Sidebar(tk.Frame):
+    """
+    Vertically slotted container for views.
+
+    +------+--------------------------+
+    | Diry |    \    \    \    \    \ |
+    +------+\    \    \    \    \    \|
+    | Src  | \    \    \    \    \    |
+    +------+  \    \    \    \    \   |
+    | Git  |   \    \    \    \    \  |
+    +------+    \    \    \    \    \ |
+    |      |\    \    \    \    \    \|
+    |      | \    \    \    \    \    |
+    |      |  \    \    \    \    \   |
+    +------+   \    \    \    \    \  |
+    | Sett |    \    \    \    \    \ |
+    +------+--------------------------+
+    """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.base = master.base 
+        
         self.pack_propagate(False)
 
         self.tabs = Slots(self)

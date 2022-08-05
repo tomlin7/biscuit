@@ -4,9 +4,8 @@ from PIL import ImageTk, Image
 
 #TODO: zooming in and out
 class ImageViewer(tk.Frame):
-    def __init__(self, master, path, *args, **kwargs):
+    def __init__(self, master, path, exists=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
         self.master = master
 
         self.path = path

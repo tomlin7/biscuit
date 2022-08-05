@@ -8,5 +8,7 @@
     "closeFile": "<Control-w>",
     "quit": "<Control-q>",
     "undo": "<Control-z>",
-    "redo": "<Control-y>"
+    "redo": "<Control-y>",
+
+    "commandpalette": "<Control-P>"
 }

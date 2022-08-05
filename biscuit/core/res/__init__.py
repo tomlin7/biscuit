@@ -16,4 +16,5 @@ class Resources:
         self.load_data()
 
     def load_data(self):
-        self.logo = self.loader.load_image("logo.png")
+        ...
+        # self.logo = self.loader.load_image("logo.png")

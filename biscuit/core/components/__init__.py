@@ -1,4 +1,4 @@
 from .menu import Menu
 from .editors import Editor
-from .popup import CommandPalette
+from .popup.popups import CommandPalette
 from .git import Git

@@ -33,3 +33,5 @@ class Bindings:
         self.save_as = self.bindings['saveAs']
         self.close_file = self.bindings['closeFile']
         self.quit = self.bindings['quit']
+
+        self.commandpalette = self.bindings['commandpalette']

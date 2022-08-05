@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from .components.popup import CommandPalette
+from .components import CommandPalette
 from .layout.main import MainFrame
-
+from .utils import Binder
 
 class Root(tk.Tk):
     def __init__(self, base, *args, **kwargs):
@@ -13,19 +13,11 @@ class Root(tk.Tk):
         self.minsize(800, 600)
         self.title("Biscuit")
 
-    def add_components(self):
-
         self.primarypane = MainFrame(self)
-        self.primarypane.pack(fill=tk.BOTH, expand=True)
-
         self.command_palette = CommandPalette(self)
-        # self.base.binder.bind("<Control-P>", self.command_palette.show)
-        
-    def get_popup_x(self, width):
-        return self.winfo_rootx() + int(self.winfo_width() / 2) - int(width / 2)
 
-    def get_popup_y(self):
-        return self.winfo_rooty()
+        self.primarypane.pack(fill=tk.BOTH, expand=True)
+        self.binder = Binder(self)
 
     def run(self):
         self.mainloop()

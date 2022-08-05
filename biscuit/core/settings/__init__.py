@@ -4,22 +4,15 @@ import tkinter.font as Font
 import tkextrafont as extra
 
 from .. import config
-from .. import res
+from ..res import Resources
 
 
 class Settings:
-    font: Font
-    icon_font: Font
-    config: config.Config
-    bindings: config.Bindings
-    theme: config.Theme
-    resources: res.Resources
-
     def __init__(self, base):
         self.base = base
 
         self.config = config.Config(self)
-        self.resources = res.Resources(self)
+        # self.resources = Resources(self)
         self.setup_properties()
 
     def setup_properties(self):

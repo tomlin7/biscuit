@@ -4,7 +4,7 @@ from tkinter.constants import *
 from .tabs import Tabs
 
 
-class ContentPane:
+class ContentPane(tk.Frame):
     """
     Tabbed container for editors.
 

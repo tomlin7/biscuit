@@ -12,7 +12,7 @@ class Slots(tk.Frame):
         self.tabs = []
 
     def add_tab(self, view):
-        tab = Slot(self, view)
+        tab = Slot(self, view, None)
         tab.pack(fill=tk.Y, side=tk.LEFT)
         self.tabs.append(tab)
     
