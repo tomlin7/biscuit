@@ -11,7 +11,7 @@ class Tab(tk.Menubutton):
         self.config(
             text=view.__class__.__name__, 
             font=("Segoe UI", 10),
-            bg='white')
+            bg='white', fg='darkgrey')
 
         self.bind('<Button-1>', self.select)
 

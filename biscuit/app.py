@@ -15,7 +15,9 @@ class App:
 
         self.active_directory = None
         self.active_editor = None
-
+    
+    def run(self):
+        self.after_initialization()
         self.root.mainloop()
     
     def setup_path(self):       
@@ -34,9 +36,14 @@ class App:
         self.active_branch_name = None
 
     def after_initialization(self):
-        self.explorer_ref = self.root.primarypane.basepane.explorer
-        self.editor_groups_ref = self.root.primarypane.basepane.right.top.editor_groups
-        self.source_control_ref = self.root.primarypane.basepane.source_control
+        self.explorer = self.root.mainframe.sidebar.get_explorer()
+        self.contentmanager = self.root.mainframe.basepane.contentpane
+        self.source_control = self.root.mainframe.sidebar.get_source_control()
+        self.logger = self.root.mainframe.basepane.panel.get_logger()
+
+        self.logger.info('Biscuit started.')
+        self.logger.warning('last biscuit, you want it or not.')
+        self.logger.error('No biscuits left.')
         # self.refresh()
     
     # def check_git(self):

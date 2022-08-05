@@ -5,12 +5,12 @@ class Slot(tk.Menubutton):
     def __init__(self, master, text, pane, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
-        self.pane = pane
+        self.base = master.base 
 
+        self.pane = pane
         self.enabled = False
-        self.config(
-            height=1, width=2, relief=tk.FLAT, text=text, font=("codicon", 18), padx=12, pady=12,
-            bg="#2c2c2c", fg="#7b7b7b", activebackground="#2c2c2c", activeforeground="#ffffff")
+        
+        self.config(text=text, relief=tk.FLAT, font=("codicon", 18), padx=10, pady=10)
         self.pack(fill=tk.X, side=tk.TOP)
         
         self.bind('<Button-1>', self.on_click)

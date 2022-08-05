@@ -25,7 +25,7 @@ class Panel(tk.Frame):
         self.pack_propagate(False)
 
         self.tabs = Tabs(self)
-        self.tabs.pack(expand=1, fill=tk.BOTH)
+        self.tabs.pack(fill=tk.X)
 
         self.active_view = None
         self.views = []

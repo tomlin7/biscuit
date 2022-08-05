@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from .menubaritem import MenubarItem
+from .item import MenubarItem
 
 
 class Menubar(tk.Frame):

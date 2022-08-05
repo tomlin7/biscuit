@@ -9,14 +9,18 @@ from .imageviewer import ImageViewer
 
 from .breadcrumbs import BreadCrumbs
 
-def get_editor(path):
+def get_editor(path, exists):
+    "Get editor for file type."
     if os.path.isfile(path):
         if FileType.is_image(path):
             return ImageViewer
         
-        return TextEditor
-
+    return TextEditor
+    
 class Editor(tk.Frame):
+    """
+    Base editor class.
+    """
     def __init__(self, master, path=None, exists=True, showpath=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master

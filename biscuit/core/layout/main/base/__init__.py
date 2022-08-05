@@ -27,8 +27,8 @@ class BasePane(tk.PanedWindow):
             orient=tk.VERTICAL, bd=0, 
             relief=tk.FLAT, opaqueresize=False)
 
-        self.mainpane = ContentPane(self)
+        self.contentpane = ContentPane(self)
         self.panel = Panel(self)
 
-        self.add(self.mainpane)
+        self.add(self.contentpane)
         self.add(self.panel)

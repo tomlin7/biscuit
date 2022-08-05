@@ -7,22 +7,23 @@ from .sidebar import Sidebar
 
 class MainFrame(tk.Frame):
     """
-    Main frame holds ActionBar and BasePane
+    Main frame holds Sidebar and BasePane
     .
     App
     └── Root
         ├── Menubar
         ├── MainFrame
-        │    ├── ActionBar
+        │    ├── Sidebar
         │    └── BasePane 
         └── StatusBar
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.master = master
         self.base = master.base
 
-        self.actionbar = Sidebar(self)
+        self.sidebar = Sidebar(self)
         self.basepane = BasePane(master=self)
 
-        self.actionbar.pack(side=RIGHT, fill=Y)
-        self.basepane.pack(fill=BOTH, expand=1, side=RIGHT)
+        self.sidebar.pack(side=LEFT, fill=Y)
+        self.basepane.pack(fill=BOTH, expand=1, side=LEFT)

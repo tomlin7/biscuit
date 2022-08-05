@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .tabs import Tabs
-
+from .....components import Editor
 
 class ContentPane(tk.Frame):
     """
@@ -30,7 +30,7 @@ class ContentPane(tk.Frame):
         self.active_editor = None
         self.editors = []
 
-        self.default_editors = []
+        self.default_editors = [Editor(self)]
         self.add_editors(self.default_editors)
 
     def add_editors(self, editors):

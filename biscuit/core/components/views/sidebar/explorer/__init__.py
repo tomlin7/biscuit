@@ -7,12 +7,12 @@ from ... import View
 # from ....utils.scrollbar import AutoScrollbar
 
 
-class Directory(View):
+class Explorer(View):
     def __init__(self, master, double_click=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
 
-        tk.Label(self, text="Directory").pack()
+        tk.Label(self, text="Explorer").pack()
 
     #     self.base = master.base
 

@@ -13,11 +13,8 @@ class Root(tk.Tk):
         self.minsize(800, 600)
         self.title("Biscuit")
 
-        self.primarypane = MainFrame(self)
-        self.command_palette = CommandPalette(self)
+        self.mainframe = MainFrame(self)
+        self.commandpalette = CommandPalette(self)
 
-        self.primarypane.pack(fill=tk.BOTH, expand=True)
+        self.mainframe.pack(fill=tk.BOTH, expand=True)
         self.binder = Binder(self)
-
-    def run(self):
-        self.mainloop()

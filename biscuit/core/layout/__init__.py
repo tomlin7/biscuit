@@ -28,4 +28,4 @@ class Root(tk.Frame):
 
         self.menubar.pack(fill=X)
         self.primary.pack(fill=BOTH, expand=1)
-        self.statusbar.pack(side=BOTTOM, fill=X)
+        self.statusbar.pack(fill=X)
