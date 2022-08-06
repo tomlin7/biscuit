@@ -19,9 +19,9 @@ class ContentPane(tk.Frame):
     +---------------------------------+
     """
     def __init__(self, master, *args, **kwargs):
-    
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.base = master.base
         self.pack_propagate(False)
 
         self.tabs = Tabs(self)
@@ -30,7 +30,7 @@ class ContentPane(tk.Frame):
         self.active_editor = None
         self.editors = []
 
-        self.default_editors = [Editor(self)]
+        self.default_editors = []
         self.add_editors(self.default_editors)
 
     def add_editors(self, editors):

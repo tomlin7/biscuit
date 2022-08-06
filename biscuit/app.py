@@ -1,17 +1,22 @@
-import os
+import os, tkinter as tk
 
 from core import *
-from core import Git
 
 
-class App:
+class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
-        self.sysinfo = SysInfo(self)
-        self.root = Root(self)
+        super().__init__(*args, **kwargs)
 
-        self.setup_path()
-        self.setup_configs()
-        self.setup_version_control()
+        self.geometry("850x650")
+        self.minsize(800, 600)
+        self.title("Biscuit")
+
+        self.root = Root(self)
+        self.commandpalette = CommandPalette(self)
+
+        self.root.pack(fill=tk.BOTH, expand=True)
+
+        self.setup()
 
         self.active_directory = None
         self.active_editor = None
@@ -20,14 +25,26 @@ class App:
         self.after_initialization()
         self.root.mainloop()
     
+    def setup(self):
+        self.setup_path()
+        self.setup_configs()
+        self.setup_version_control()
+        self.setup_references()
+
+        self.logger.info('Biscuit started.')
+        self.logger.warning('last biscuit, you want it or not.')
+        self.logger.error('No biscuits left.')
+
     def setup_path(self):       
         self.appdir = os.path.dirname(__file__)
         self.configdir = os.path.join(self.appdir, 'config')
         self.themesdir = os.path.join(self.configdir, 'themes')
 
     def setup_configs(self):
-        self.settings = Settings(self)
+        self.sysinfo = SysInfo(self)
         self.events = Events(self)
+        self.settings = Settings(self)
+        self.binder = Binder(self)
         self.style = Style(self.root)
 
     def setup_version_control(self):
@@ -35,16 +52,11 @@ class App:
         self.git_found = False
         self.active_branch_name = None
 
-    def after_initialization(self):
+    def setup_references(self):
         self.explorer = self.root.mainframe.sidebar.get_explorer()
         self.contentmanager = self.root.mainframe.basepane.contentpane
         self.source_control = self.root.mainframe.sidebar.get_source_control()
         self.logger = self.root.mainframe.basepane.panel.get_logger()
-
-        self.logger.info('Biscuit started.')
-        self.logger.warning('last biscuit, you want it or not.')
-        self.logger.error('No biscuits left.')
-        # self.refresh()
     
     # def check_git(self):
     #     self.git.open_repo()

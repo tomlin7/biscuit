@@ -11,10 +11,7 @@ class MenubarItem(tk.Menubutton):
 
         self.name = text
 
-        self.config(text=text, font=("Segoe UI", 10),
-            padx=9, bg="#dddddd", fg="#575757", pady=5,
-            activebackground="#c6c6c6", activeforeground="#575757"
-        )
+        self.config(text=text, padx=10, pady=5)
 
         self.add_menu()
 

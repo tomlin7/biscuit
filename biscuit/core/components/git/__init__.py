@@ -12,7 +12,7 @@ class Git(git.Git):
 
     def open_repo(self):
         try:
-            self.repo = repo.GitRepo(self.base.active_dir)
+            self.repo = GitRepo(self.base.active_dir)
             self.base.set_git_found(True)
         except git.exc.InvalidGitRepositoryError:
             self.base.set_git_found(False)

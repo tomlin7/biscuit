@@ -1,8 +1,7 @@
 import tkinter as tk
-import os
+
 import queue
 import subprocess
-from sys import platform
 from threading import Thread
 
 from .text import TerminalText
@@ -75,13 +74,13 @@ class Terminal(tk.Frame):
         self.p.stdin.flush()
         
     def enter(self, event):
-        command = self.get('input', 'end')
+        command = self.terminal.get('input', 'end')
         
         self.p.stdin.write(command.encode())
         self.p.stdin.flush()
         self.write_loop()
         
-        self.mark_set('input', 'insert')
+        self.terminal.mark_set('input', 'insert')
         return "break"
 
     def read_from_proccessOut(self):

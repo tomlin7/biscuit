@@ -19,7 +19,7 @@ class Menubar(tk.Frame):
         self.base = master.base
         self.events = self.base.events
 
-        self.menu_open = False
+        self.placeholder = lambda : None
         self.menus = []
 
         self.config(bg="#dddddd")
@@ -55,7 +55,6 @@ class Menubar(tk.Frame):
 
     def add_edit_menu(self):
         events = self.events
-        base = self.base
 
         edit_menu = self.add_menu("Edit")
         edit_menu.menu.add_first_item("Undo", events.undo)
@@ -65,27 +64,25 @@ class Menubar(tk.Frame):
         edit_menu.menu.add_item("Copy", events.copy)
         edit_menu.menu.add_item("Paste", events.paste)
         edit_menu.menu.add_separator()
-        edit_menu.menu.add_item("Find", placeholder)
-        edit_menu.menu.add_last_item("Replace", placeholder)
+        edit_menu.menu.add_item("Find", self.placeholder)
+        edit_menu.menu.add_last_item("Replace", self.placeholder)
     
     def add_view_menu(self):
         events = self.events
-        base = self.base
 
         view_menu = self.add_menu("View")
-        view_menu.menu.add_first_item("Side Bar", placeholder)
-        view_menu.menu.add_item("Console", placeholder)
-        view_menu.menu.add_item("Status Bar", placeholder)
-        view_menu.menu.add_item("Menu", placeholder)
+        view_menu.menu.add_first_item("Side Bar", self.placeholder)
+        view_menu.menu.add_item("Console", self.placeholder)
+        view_menu.menu.add_item("Status Bar", self.placeholder)
+        view_menu.menu.add_item("Menu", self.placeholder)
         view_menu.menu.add_separator()
-        view_menu.menu.add_item("Syntax", placeholder)
-        view_menu.menu.add_item("Indentation", placeholder)
-        view_menu.menu.add_last_item("Line Endings", placeholder)
+        view_menu.menu.add_item("Syntax", self.placeholder)
+        view_menu.menu.add_item("Indentation", self.placeholder)
+        view_menu.menu.add_last_item("Line Endings", self.placeholder)
 
     def close_all_menus(self, event):
         for menu in self.menus:
             menu.hide()
-        self.menu_open = False
 
     def show_menu(self, show):
         for i in self.menus:

@@ -1,13 +1,13 @@
-import os, tkinter as tk
+import os
+import tkinter as tk
 from tkinter.constants import *
 
 from ..utils import FileType
-
-from .texteditor import TextEditor
+from .breadcrumbs import BreadCrumbs
 from .diffeditor import DiffViewer
 from .imageviewer import ImageViewer
+from .texteditor import TextEditor
 
-from .breadcrumbs import BreadCrumbs
 
 def get_editor(path, exists):
     "Get editor for file type."
@@ -16,7 +16,8 @@ def get_editor(path, exists):
             return ImageViewer
         
     return TextEditor
-    
+
+
 class Editor(tk.Frame):
     """
     Base editor class.
