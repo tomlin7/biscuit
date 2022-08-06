@@ -1,20 +1,20 @@
 import tkinter as tk
 
-from .content import ContentPane
+from .editors import EditorsPane
 from .panel import Panel
 
 
-class BasePane(tk.PanedWindow):
+class ContentPane(tk.PanedWindow):
     """
     Main frame holds ContentPane and Panel
     .
     App
     └── Root
         ├── Menubar
-        ├── MainFrame
+        ├── BaseFrame
         │    ├── ActionBar
-        │    └── BasePane 
-        │        ├── ContentPane
+        │    └── ContentPane 
+        │        ├── EditorsPane
         │        └── Panel
         └── StatusBar
     """
@@ -27,8 +27,8 @@ class BasePane(tk.PanedWindow):
             orient=tk.VERTICAL, bd=0, 
             relief=tk.FLAT, opaqueresize=False)
 
-        self.contentpane = ContentPane(self)
+        self.editorspane = EditorsPane(self)
         self.panel = Panel(self)
 
-        self.add(self.contentpane)
+        self.add(self.editorspane)
         self.add(self.panel)

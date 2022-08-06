@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .main import MainFrame
+from .base import BaseFrame
 
 from .menubar import Menubar
 from .statusbar import Statusbar
@@ -9,23 +9,22 @@ from .statusbar import Statusbar
 
 class Root(tk.Frame):
     """
-    Root frame holds Menubar, MainFrame, and Statusbar
+    Root frame holds Menubar, BaseFrame, and Statusbar
     .
     App
     └── Root
         ├── Menubar
-        ├── MainFrame
+        ├── BaseFrame
         └── StatusBar
     """
-    def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
+    def __init__(self, base, *args, **kwargs):
+        super().__init__(base, *args, **kwargs)
+        self.base = base
 
         self.menubar = Menubar(self)
-        self.primary = MainFrame(self)
+        self.baseframe = BaseFrame(self)
         self.statusbar = Statusbar(self)
 
         self.menubar.pack(fill=X, expand=1)
-        self.primary.pack(fill=BOTH)
+        self.baseframe.pack(fill=BOTH)
         self.statusbar.pack(fill=X)

@@ -1,20 +1,20 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .base import BasePane
+from .content import ContentPane
 from .sidebar import Sidebar
 
 
-class MainFrame(tk.Frame):
+class BaseFrame(tk.Frame):
     """
-    Main frame holds Sidebar and BasePane
+    Main frame holds Sidebar and ContentPane
     .
     App
     └── Root
         ├── Menubar
-        ├── MainFrame
+        ├── BaseFrame
         │    ├── Sidebar
-        │    └── BasePane 
+        │    └── ContentPane 
         └── StatusBar
     """
     def __init__(self, master, *args, **kwargs):
@@ -23,7 +23,7 @@ class MainFrame(tk.Frame):
         self.base = master.base
 
         self.sidebar = Sidebar(self)
-        self.basepane = BasePane(master=self)
+        self.contentpane = ContentPane(master=self)
 
         self.sidebar.pack(side=LEFT, fill=Y)
-        self.basepane.pack(fill=BOTH, expand=1, side=LEFT)
+        self.contentpane.pack(fill=BOTH, expand=1, side=LEFT)

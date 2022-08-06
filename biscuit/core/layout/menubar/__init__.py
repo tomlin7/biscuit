@@ -5,24 +5,26 @@ from .item import MenubarItem
 
 class Menubar(tk.Frame):
     """
-    Root frame holds Menubar, MainFrame, and Statusbar
+    Root frame holds Menubar, BaseFrame, and Statusbar
     .
     App
     └── Root
         ├── Menubar
-        ├── MainFrame
+        ├── BaseFrame
         └── Statusbar
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
-        self.events = self.base.events
 
         self.placeholder = lambda : None
         self.menus = []
 
         self.config(bg="#dddddd")
+    
+    def initialize(self):
+        self.events = self.base.events
         self.add_menus()
     
     def add_menu(self, text):

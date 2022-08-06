@@ -1,12 +1,11 @@
 class Binder:
-    def __init__(self, root, *args, **kwargs):
-        self.root = root
-        self.base = root.base
+    def __init__(self, base, *args, **kwargs):
+        self.base = base
 
-        # self.bindings = self.base.bindings
-        # self.events = self.base.events
+        self.bindings = self.base.settings.bindings
+        self.events = self.base.events
 
-        # self.bind_all()
+        self.bind_all()
 
     def bind_all(self):
         self.bind(self.bindings.new_file, self.events.new_file)
@@ -18,7 +17,7 @@ class Binder:
         self.bind(self.bindings.close_file, self.events.close_file)
         self.bind(self.bindings.quit, self.events.quit)
 
-        self.bind(self.bindings.commandpalette, self.master.command_palette.show)
+        self.bind(self.bindings.commandpalette, self.base.commandpalette.show)
 
     def bind(self, this, to_this):
-        self.root.bind(this, to_this)
+        self.base.bind(this, to_this)

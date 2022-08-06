@@ -7,33 +7,28 @@ class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.geometry("850x650")
-        self.minsize(800, 600)
-        self.title("Biscuit")
-
-        self.root = Root(self)
         self.commandpalette = CommandPalette(self)
 
+        self.setup()
+        self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True)
 
-        self.setup()
-
-        self.active_directory = None
-        self.active_editor = None
+        self.setup_references()
+        self.initialize_editor()
     
     def run(self):
-        self.after_initialization()
-        self.root.mainloop()
+        self.mainloop()
     
     def setup(self):
+        self.setup_tk()
         self.setup_path()
         self.setup_configs()
         self.setup_version_control()
-        self.setup_references()
-
-        self.logger.info('Biscuit started.')
-        self.logger.warning('last biscuit, you want it or not.')
-        self.logger.error('No biscuits left.')
+    
+    def setup_tk(self):
+        self.geometry("850x650")
+        self.minsize(800, 600)
+        self.title("Biscuit")
 
     def setup_path(self):       
         self.appdir = os.path.dirname(__file__)
@@ -41,11 +36,14 @@ class App(tk.Tk):
         self.themesdir = os.path.join(self.configdir, 'themes')
 
     def setup_configs(self):
+        self.active_directory = None
+        self.active_editor = None
+
         self.sysinfo = SysInfo(self)
         self.events = Events(self)
         self.settings = Settings(self)
         self.binder = Binder(self)
-        self.style = Style(self.root)
+        self.style = Style(self)
 
     def setup_version_control(self):
         self.git = Git(self)
@@ -53,10 +51,15 @@ class App(tk.Tk):
         self.active_branch_name = None
 
     def setup_references(self):
-        self.explorer = self.root.mainframe.sidebar.get_explorer()
-        self.contentmanager = self.root.mainframe.basepane.contentpane
-        self.source_control = self.root.mainframe.sidebar.get_source_control()
-        self.logger = self.root.mainframe.basepane.panel.get_logger()
+        self.editorsmanager = self.root.baseframe.contentpane.editorspane
+        self.explorer = self.root.baseframe.sidebar.get_explorer()
+        self.source_control = self.root.baseframe.sidebar.get_source_control()
+        self.logger = self.root.baseframe.contentpane.panel.get_logger()
+    
+    def initialize_editor(self):
+        self.logger.info('Biscuit started.')
+        self.logger.warning('last biscuit, you want it or not.')
+        self.logger.error('No biscuits left.')
     
     # def check_git(self):
     #     self.git.open_repo()
@@ -128,10 +131,10 @@ class App(tk.Tk):
     #     self.refresh()
 
     # def toggle_terminal(self, *args):
-    #     self.root.primarypane.basepane.right.terminal.toggle()
+    #     self.primarypane.contentpane.right.terminal.toggle()
     
     # def toggle_active_side_pane(self, *args):
-    #     self.root.primarypane.sidebar.toggle_active_pane()
+    #     self.primarypane.sidebar.toggle_active_pane()
     
     # def update_editor_tabs_pane(self):
     #     self.editor_groups_ref.update_panes()
@@ -143,31 +146,31 @@ class App(tk.Tk):
     #     if self.git_found:
     #         self.active_branch_name = self.git.get_active_branch()
 
-    #         self.root.statusbar.configure_git_info(True)
+    #         self.statusbar.configure_git_info(True)
     #         self.update_statusbar_git_info()
 
     #         self.source_control_ref.create_root()
     #         self.source_control_ref.update_panes()
     #     else:
-    #         self.root.statusbar.configure_git_info(False)
+    #         self.statusbar.configure_git_info(False)
     #         self.source_control_ref.disable_tree()
 
     # def update_statusbar_git_info(self):
-    #     self.root.statusbar.set_git_info(self.git.get_active_branch())
+    #     self.statusbar.set_git_info(self.git.get_active_branch())
 
     # def update_statusbar_ln_col_info(self):
     #     if self.active_editor:
     #         active_tab = self.editor_groups_ref.groups.get_active_tab()
     #         if active_tab:
     #             if active_tab.content.editable:            
-    #                 self.root.statusbar.configure_editmode(True)
+    #                 self.statusbar.configure_editmode(True)
     #                 active_text = active_tab.content.text
-    #                 self.root.statusbar.set_line_col_info(
+    #                 self.statusbar.set_line_col_info(
     #                     active_text.line, active_text.column, active_text.get_selected_count())
     #             else:
-    #                 self.root.statusbar.configure_editmode(False)
+    #                 self.statusbar.configure_editmode(False)
     #         else:
-    #             self.root.statusbar.configure_editmode(False)
+    #             self.statusbar.configure_editmode(False)
     #     else:
-    #         self.root.statusbar.configure_editmode(False)
+    #         self.statusbar.configure_editmode(False)
     
