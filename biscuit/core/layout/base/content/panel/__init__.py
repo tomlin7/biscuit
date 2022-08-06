@@ -23,6 +23,7 @@ class Panel(tk.Frame):
         self.master = master
         self.base = master.base
         self.pack_propagate(False)
+        self.config(height=300)
 
         self.tabs = Tabs(self)
         self.tabs.pack(fill=tk.X)

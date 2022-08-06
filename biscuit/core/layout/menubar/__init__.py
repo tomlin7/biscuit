@@ -22,11 +22,9 @@ class Menubar(tk.Frame):
         self.menus = []
 
         self.config(bg="#dddddd")
-    
-    def initialize(self):
         self.events = self.base.events
         self.add_menus()
-    
+        
     def add_menu(self, text):
         new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.X, padx=0)

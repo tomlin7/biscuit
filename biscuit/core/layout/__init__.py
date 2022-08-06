@@ -25,6 +25,6 @@ class Root(tk.Frame):
         self.baseframe = BaseFrame(self)
         self.statusbar = Statusbar(self)
 
-        self.menubar.pack(fill=X, expand=1)
-        self.baseframe.pack(fill=BOTH)
+        self.menubar.pack(fill=X)
+        self.baseframe.pack(fill=BOTH, expand=1)
         self.statusbar.pack(fill=X)

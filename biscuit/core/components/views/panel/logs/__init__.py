@@ -3,6 +3,7 @@ import tkinter as tk
 
 from datetime import datetime
 
+from ....utils import AutoScrollbar
 from ...view import View
 
 
@@ -31,7 +32,7 @@ def caller_name(skip=2):
         name.append(parentframe.f_locals['self'].__class__.__name__)
     codename = parentframe.f_code.co_name
     if codename != '<module>': 
-        name.append(codename) # function or a method
+        name.append(codename)
 
     del parentframe, stack
 
@@ -44,16 +45,19 @@ class Logs(View):
         self.master = master
         self.base = master.base
 
-        self.text = tk.Text(self, relief=tk.FLAT, font=("Consolas", 13))
-        self.text.pack(expand=1, fill=tk.BOTH, side=tk.LEFT)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
-        self.scrollbar = tk.Scrollbar(self)
-        self.scrollbar.pack(fill=tk.Y, side=tk.LEFT, padx=(1, 0))
+        self.text = tk.Text(self, relief=tk.FLAT) # , font=("Consolas", 13)
+        self.text.grid(row=0, column=0, sticky=tk.NSEW)
+
+        self.scrollbar = AutoScrollbar(self)
+        self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
         
         self.text.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.text.yview)
 
-        fontbold = ("Consolas", 13, "bold")
+        fontbold = ('Courier New', 10, 'bold') # ("Consolas", 13, "bold")
 
         self.text.tag_config('time', foreground="#008000")
         self.text.tag_config('caller', foreground="#0000ff")
@@ -70,6 +74,7 @@ class Logs(View):
             else:
                 self.text.insert(tk.END, i)
         self.text.config(state=tk.DISABLED)
+        self.text.see(tk.END)
     
     def newline(self):
         self.write('\n')

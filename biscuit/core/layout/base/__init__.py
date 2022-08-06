@@ -26,4 +26,4 @@ class BaseFrame(tk.Frame):
         self.contentpane = ContentPane(master=self)
 
         self.sidebar.pack(side=LEFT, fill=Y)
-        self.contentpane.pack(fill=BOTH, expand=1, side=LEFT)
+        self.contentpane.pack(side=LEFT, fill=BOTH, expand=True)

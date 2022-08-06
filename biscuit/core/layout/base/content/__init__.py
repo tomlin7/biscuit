@@ -1,10 +1,11 @@
 import tkinter as tk
+from tkinter.constants import *
 
 from .editors import EditorsPane
 from .panel import Panel
 
 
-class ContentPane(tk.PanedWindow):
+class ContentPane(tk.Frame):
     """
     Main frame holds ContentPane and Panel
     .
@@ -23,12 +24,8 @@ class ContentPane(tk.PanedWindow):
         self.master = master
         self.base = master.base
         
-        self.configure(
-            orient=tk.VERTICAL, bd=0, 
-            relief=tk.FLAT, opaqueresize=False)
-
         self.editorspane = EditorsPane(self)
         self.panel = Panel(self)
 
-        self.add(self.editorspane)
-        self.add(self.panel)
+        self.editorspane.pack(fill=BOTH, expand=True)
+        self.panel.pack(fill=BOTH, pady=(1, 0))

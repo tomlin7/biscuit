@@ -58,7 +58,7 @@ class App(tk.Tk):
     
     def initialize_editor(self):
         self.logger.info('Biscuit started.')
-        self.logger.warning('last biscuit, you want it or not.')
+        self.logger.warning('last biscuit.')
         self.logger.error('No biscuits left.')
     
     # def check_git(self):
