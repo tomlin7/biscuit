@@ -1,26 +1,37 @@
 import tkinter as tk
+from tkinter.constants import *
 
 
 class Slot(tk.Menubutton):
-    def __init__(self, master, text, pane, *args, **kwargs):
+    def __init__(self, master, text, view, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base 
 
-        self.pane = pane
+        self.view = view
         self.enabled = False
         
-        self.config(text=text, relief=tk.FLAT, font=("codicon", 18), padx=10, pady=10)
+        self.config(text=text, relief=tk.FLAT, font=("codicon", 18), padx=10, pady=10,
+            bg="#2c2c2c", fg="darkgrey", activebackground="#2c2c2c", activeforeground="white")
         self.pack(fill=tk.X, side=tk.TOP)
         
-        self.bind('<Button-1>', self.on_click)
+        self.bind('<Button-1>', self.toggle)
     
-    def on_click(self, *_):
-        self.master.refresh(self)
-        
     def toggle(self, *_):
-        self.enabled = not self.enabled
-        if self.enabled:
-            self.config(fg="#ffffff")
+        if not self.enabled:
+            self.master.set_active_slot(self)
+            self.enable()
         else:
-            self.config(fg="#7b7b7b")
+            self.disable()
+        
+    def enable(self):
+        if not self.enabled:
+            self.view.grid(sticky=EW, column=1, row=0)
+            self.config(fg="white")
+            self.enabled = True
+
+    def disable(self):
+        if self.enabled:
+            self.view.grid_remove()
+            self.config(fg="darkgrey")
+            self.enabled = False

@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from .tree import GitTree
-from ...utils.scrollbar import AutoScrollbar
+from ....utils.scrollbar import AutoScrollbar
 
 
 class GitTreeContainer(tk.Frame):

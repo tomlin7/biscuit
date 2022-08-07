@@ -28,12 +28,15 @@ class Sidebar(tk.Frame):
         self.master = master
         self.base = master.base 
 
-        self.slots = Slots(self)
-        self.slots.pack(fill=Y, side=LEFT)
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
 
-        self.active_view = None
+        self.slots = Slots(self)
+        self.slots.grid(sticky=NS, column=0, row=0)
+
         self.views = []
 
+        # TODO order items correctly
         self.default_views = [Explorer(self), Search(self), SourceControl(self)]
         self.add_views(self.default_views)
 
@@ -46,7 +49,6 @@ class Sidebar(tk.Frame):
         "Appends a view to list. Create a tab."
         self.views.append(view)
         self.slots.add_slot(view)
-        self.set_active_view(view)
         
     def delete_all_views(self):
         "Permanently delete all views."
@@ -71,10 +73,3 @@ class Sidebar(tk.Frame):
     def get_source_control(self):
         "Get source control view."
         return self.default_views[2]
-
-    def set_active_view(self, view):
-        "Set active view and active tab."
-        self.active_view = view
-        for _view in self.views:
-            _view.pack_forget()
-        view.pack(fill=BOTH, side=RIGHT, expand=1)

@@ -9,17 +9,19 @@ class Slots(tk.Frame):
         self.master = master
         self.base = master.base 
 
-        self.config(width=100, bg='white')
+        self.config(width=100, bg='#2c2c2c')
 
-        self.tabs = []
+        self.slots = []
+        self.active_slot = None
 
     def add_slot(self, view):
-        tab = Slot(self, "\ueaf0", view)
-        tab.pack(fill=tk.Y)
-        self.tabs.append(tab)
+        slot = Slot(self, "\ueaf0", view)
+        slot.pack(fill=tk.Y)
+        self.slots.append(slot)
     
-    def set_active_slot(self, view):
-        for tab in self.tabs:
-            if tab.view != view:
-                tab.deselect()
-        self.master.set_active_view(view)
+    def set_active_slot(self, selected_slot):
+        self.active_slot = selected_slot
+        for slot in self.slots:
+            if slot != selected_slot:
+                slot.disable()
+        # self.master.set_active_view(slot.view)
