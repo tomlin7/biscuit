@@ -32,8 +32,8 @@ class Statusbar(tk.Frame):
         self.branch.set_pack_data(side=tk.LEFT, padx=(10, 0))
 
         # line and column info
-        # self.line_col_info_popup = LineColInfoPopup(self)
-        self.line_col_info = SButton(self, text="Ln 1, Col 1")
+        self.line_col_info_popup = LineColInfoPopup(self)
+        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=self.line_col_info_popup.show)
         self.line_col_info.set_pack_data(side=tk.RIGHT)
 
         # indentation

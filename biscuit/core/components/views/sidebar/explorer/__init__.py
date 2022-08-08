@@ -1,29 +1,32 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from ... import View
+from .. import SidebarView
 from .tree import Tree
+from ....utils.scrollbar import Scrollbar
+
 # from .toolbar import DirectoryTreeToolbar
-from ....utils.scrollbar import AutoScrollbar
 
 
-class Explorer(View):
+class Explorer(SidebarView):
     def __init__(self, master, double_click=None, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+        self.__buttons__ = [('ellipsis', lambda e: None)]
+        super().__init__(self, master, *args, **kwargs)
+
         self.master = master
         self.base = master.base
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
         
-        self._tree = Tree(self, double_click=double_click, selectmode=tk.BROWSE)
-        self.tree_scrollbar = AutoScrollbar(self, orient=VERTICAL, command=self._tree.yview)
+        #self._tree = Tree(self, double_click=double_click, selectmode=tk.BROWSE)
+        #self.tree_scrollbar = Scrollbar(self, orient=VERTICAL, command=self._tree.yview)
         #self.tree_scrollbar.config(style="TreeScrollbar")
         
-        self._tree.grid(row=0, column=0, sticky=NSEW)
-        self.tree_scrollbar.grid(row=0, column=1, sticky=NS)
+        #self._tree.pack(fill=BOTH, expand=True)
+        #self.tree_scrollbar.grid(row=0, column=1, sticky=NS)
 
-        self._tree.configure(yscrollcommand=self.tree_scrollbar.set)
+        #self._tree.configure(yscrollcommand=self.tree_scrollbar.set)
     
     def open_directory(self, path):
         self._tree.open_directory(path)

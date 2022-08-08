@@ -26,7 +26,7 @@ class Slot(tk.Menubutton):
         
     def enable(self):
         if not self.enabled:
-            self.view.grid(sticky=EW, column=1, row=0)
+            self.view.grid(sticky=NSEW, column=1, row=0)
             self.config(fg="white")
             self.enabled = True
 

@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from .tree import GitTree
-from ....utils.scrollbar import AutoScrollbar
+from ....utils.scrollbar import Scrollbar
 
 
 class GitTreeContainer(tk.Frame):
@@ -14,7 +14,7 @@ class GitTreeContainer(tk.Frame):
         self.grid_rowconfigure(0, weight=1)
         
         self.tree = GitTree(self, selectmode=tk.BROWSE)
-        self.tree_scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree_scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
         self.tree_scrollbar.config(style="TreeScrollbar")
         
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)

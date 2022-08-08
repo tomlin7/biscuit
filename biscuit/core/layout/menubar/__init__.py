@@ -18,7 +18,7 @@ class Menubar(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.placeholder = lambda : None
+        self.placeholder = lambda _: None
         self.menus = []
 
         self.config(bg="#dddddd")

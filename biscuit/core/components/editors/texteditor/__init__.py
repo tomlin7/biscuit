@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...utils import AutoScrollbar
+from ...utils import Scrollbar
 from .linenumbers import LineNumbers
 from .text import Text
 
@@ -22,7 +22,7 @@ class TextEditor(tk.Frame):
 
         self.text = Text(master=self, path=self.path, exists=self.exists)
         self.linenumbers = LineNumbers(master=self, text=self.text)
-        self.scrollbar = AutoScrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
+        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
         
         self.text.config(font=self.font)
         self.text.configure(yscrollcommand=self.scrollbar.set)

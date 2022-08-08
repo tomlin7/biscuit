@@ -1,15 +1,18 @@
 import tkinter as tk
 
-from ...view import View
+from .. import SidebarView
 
 # from ....placeholders.git import GitPlaceHolder
 # from .container import GitTreeContainer
 # from .toolbar import GitTreeToolbar
 
 
-class SourceControl(View):
+class SourceControl(SidebarView):
     def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+        self.__buttons__ = [('ellipsis', lambda e: None)]
+        super().__init__(self, master, *args, **kwargs)
+        
+        self.master = master
         self.base = master.base
 
         tk.Label(self, text="Source control").pack()

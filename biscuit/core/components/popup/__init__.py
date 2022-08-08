@@ -42,12 +42,14 @@ class PopupMenu(tk.Toplevel):
 
         self.row = 1
         self.selected = 0
-        self.no_results = MenuItem(self, "No results found", lambda e=None: None)
+        self.no_results = MenuItem(self, "No results found", lambda _:None)
 
         self.add_search_bar(prompt, watermark)
 
         if items:
             self.items = items
+        else:
+            self.items = []
             
         self.add_all_items()
         self.refresh_selected()
@@ -120,6 +122,9 @@ class PopupMenu(tk.Toplevel):
         self.refresh_selected()
 
     def refresh_selected(self):
+        if not self.menu_items:
+            return
+
         for i in self.menu_items:
             i.deselect()
         self.menu_items[self.selected].select()

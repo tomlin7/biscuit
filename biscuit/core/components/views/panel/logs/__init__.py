@@ -3,7 +3,7 @@ import tkinter as tk
 
 from datetime import datetime
 
-from ....utils import AutoScrollbar
+from ....utils import Scrollbar
 from ...view import View
 
 
@@ -51,7 +51,7 @@ class Logs(View):
         self.text = tk.Text(self, relief=tk.FLAT) # , font=("Consolas", 13)
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = AutoScrollbar(self)
+        self.scrollbar = Scrollbar(self)
         self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
         
         self.text.config(yscrollcommand=self.scrollbar.set)

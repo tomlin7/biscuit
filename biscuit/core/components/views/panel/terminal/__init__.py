@@ -5,7 +5,7 @@ import subprocess
 from threading import Thread
 
 from .text import TerminalText
-from ....utils import AutoScrollbar
+from ....utils import Scrollbar
 
 
 class Terminal(tk.Frame):
@@ -25,7 +25,7 @@ class Terminal(tk.Frame):
         )
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.terminal_scrollbar = AutoScrollbar(self)
+        self.terminal_scrollbar = Scrollbar(self)
         self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
 
         self.terminal.config(yscrollcommand=self.terminal_scrollbar.set)
