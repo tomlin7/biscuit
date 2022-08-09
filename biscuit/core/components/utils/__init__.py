@@ -3,6 +3,7 @@ from .filetype import FileType
 from .iconbutton import IconButton
 from .label import WrappingLabel
 from .scrollbar import Scrollbar
+from .tree import Tree
 
 @staticmethod
 def clamp(value, min_val, max_val):

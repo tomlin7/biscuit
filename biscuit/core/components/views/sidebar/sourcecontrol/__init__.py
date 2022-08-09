@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from .. import SidebarView
+from ..sidebarview import SidebarView
 
 # from ....placeholders.git import GitPlaceHolder
 # from .container import GitTreeContainer
@@ -9,11 +9,8 @@ from .. import SidebarView
 
 class SourceControl(SidebarView):
     def __init__(self, master, *args, **kwargs):
-        self.__buttons__ = [('ellipsis', lambda e: None)]
-        super().__init__(self, master, *args, **kwargs)
-        
-        self.master = master
-        self.base = master.base
+        self.__buttons__ = (('ellipsis',),)
+        super().__init__(master, *args, **kwargs)
 
         tk.Label(self, text="Source control").pack()
 
