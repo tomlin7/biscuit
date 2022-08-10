@@ -15,7 +15,7 @@ class Slots(tk.Frame):
         self.active_slot = None
 
     def add_slot(self, view):
-        slot = Slot(self, "\ueaf0", view)
+        slot = Slot(self, view)
         slot.pack(fill=tk.Y)
         self.slots.append(slot)
     

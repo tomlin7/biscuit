@@ -9,15 +9,15 @@ class SidebarView(View):
         self.base = master.base
 
         self.pack_propagate(False)
-        self.config(width=220)
+        self.config(width=230)
 
         top = tk.Frame(self)
         top.base = self.base
         top.pack(fill=tk.X, padx=10, pady=10)
         top.grid_columnconfigure(0, weight=1)
 
-        tk.Label(top, text=self.__class__.__name__.upper(), 
-            fg="grey").grid(row=0, column=0, sticky=tk.W)
+        tk.Label(top, text=self.__class__.__name__.upper(), anchor=tk.W,
+            fg="grey").grid(row=0, column=0, sticky=tk.EW)
         
         column = 1
         for i in self.__buttons__:
@@ -25,4 +25,4 @@ class SidebarView(View):
             column += 1
     
     def add_widget(self, widget, *args, **kwargs):
-        widget.pack(fill=tk.BOTH)
+        widget.pack(fill=tk.BOTH, expand=True, *args, **kwargs)

@@ -21,7 +21,7 @@ class ItemBar(tk.Frame):
         self.buttoncolumn = 0
         self.buttonframe = tk.Frame(self)
         self.buttonframe.base = self.base
-        self.buttonframe.grid(row=0, column=1, sticky=tk.E, padx=(0, 10))
+        self.buttonframe.grid(row=0, column=1, sticky=tk.E)
 
         self.add_buttons(buttons)
 

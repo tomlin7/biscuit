@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import font
 
 
 class Style(ttk.Style):
@@ -21,19 +20,14 @@ class Style(ttk.Style):
                 'sticky': 'ns',
                 'children': [
                     ('TreeScrollbar.thumb', {
-                        'unit': '1', 
-                        # 'children': [
-                        #     ('TreeScrollbar.grip', {
-                        #         'sticky': ''
-                        #     })
-                        # ],
-                        'sticky': 'nswe'
+                        'unit': '1',
+                        'sticky': 'nsew'
                     })
                 ]
             })
         ])
 
-        self.configure("TreeScrollbar", gripcount=0, bd=0, background="#bababa", bordercolor='#f3f3f3', troughcolor='#f3f3f3', lightcolor='#f3f3f3', darkcolor='#f3f3f3', arrowsize=14)
+        self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f3f3f3', troughcolor='#f3f3f3', lightcolor='#f3f3f3', darkcolor='#f3f3f3', arrowsize=14)
         self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
 
     def config_treeview(self):

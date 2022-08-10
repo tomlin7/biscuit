@@ -1,17 +1,12 @@
-import tkinter as tk
-from tkinter.constants import *
-
 from ..sidebarview import SidebarView
 from .directorytree import DirectoryTree
-from ....utils.scrollbar import Scrollbar
-
-# from .toolbar import DirectoryTreeToolbar
 
 
 class Explorer(SidebarView):
-    def __init__(self, master, double_click=None, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs):
         self.__buttons__ = (('ellipsis',),)
+        self.__icon__ = 'files'
         super().__init__(master, *args, **kwargs)
 
-        self.view = DirectoryTree(self, double_click=double_click)
+        self.view = DirectoryTree(self, '.')
         self.add_widget(self.view)
