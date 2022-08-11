@@ -1,5 +1,6 @@
 import tkinter.ttk as ttk
 import tkinter as tk
+from tkinter.constants import *
 
 from .scrollbar import Scrollbar
 
@@ -17,10 +18,9 @@ class Tree(tk.Frame):
         self.double_click = double_click
         self.single_click = single_click
 
-        self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), displaycolumns='', 
-            selectmode=tk.BROWSE)
-        self.tree.grid(row=0, column=0, sticky=tk.NSEW)
-
+        self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), displaycolumns='', selectmode=tk.BROWSE)
+        self.tree.grid(row=0, column=0, sticky=NSEW)
+        
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview, style="TreeScrollbar")
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
 
