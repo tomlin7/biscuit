@@ -9,19 +9,22 @@ class ItemBar(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
         self.title = tk.StringVar()
         if title:
             self.set_title(title)
+            
+        self.toggle = IconButton(self, icon='chevron-down', event=self.toggle_content)
+        self.toggle.grid(row=0, column=0, sticky=tk.W)
 
         self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title)
-        self.label_title.grid(row=0, column=0, sticky=tk.W, padx=(10, 0))
+        self.label_title.grid(row=0, column=1, sticky=tk.W)
 
         self.buttoncolumn = 0
         self.buttonframe = tk.Frame(self)
         self.buttonframe.base = self.base
-        self.buttonframe.grid(row=0, column=1, sticky=tk.E)
+        self.buttonframe.grid(row=0, column=2, sticky=tk.E)
 
         self.add_buttons(buttons)
 
@@ -35,3 +38,11 @@ class ItemBar(tk.Frame):
 
     def set_title(self, title):
         self.title.set(title.upper())
+    
+    def toggle_content(self, *_):
+        if not self.master.enabled:
+            self.toggle.set_icon('chevron-down')
+        else:
+            self.toggle.set_icon('chevron-right')
+        self.master.toggle()
+

@@ -12,8 +12,8 @@ class DirectoryTree(SidebarViewItem):
         self.title = 'No folder opened'
         super().__init__(master, *args, **kwargs)
         
-        self.tree = Tree(self, startpath, double_click, single_click, *args, **kwargs)
-        self.tree.grid(row=1, column=0, sticky=NSEW)
+        self.tree = Tree(self.content, startpath, double_click, single_click, *args, **kwargs)
+        self.tree.grid(row=0, column=0, sticky=NSEW)
 
         if startpath:
             self.open_directory(startpath)
@@ -36,20 +36,19 @@ class DirectoryTree(SidebarViewItem):
 
         for p in directories:
             name = os.path.split(p)[1]
-            oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image=self.tree.folder_icn)
+            oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image='foldericon')
             if os.listdir(p):
                 self.tree.insert(oid, 0, text='...')
     
         for p in files:
             if os.path.isfile(p):
                 name = os.path.split(p)[1]
-                oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image=self.tree.file_icn)
+                oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image='fileicon')
 
     def open_directory(self, path):
         self.path = os.path.abspath(path)
         self.create_root(self.path)
-        # threading.Thread(target=self.create_root, args=[self.path]).start()
-        # self.toolbar.update_dirname()
+        self.itembar.set_title(os.path.basename(self.path))
     
     def refresh_tree(self):
         self.open_directory(self.path)

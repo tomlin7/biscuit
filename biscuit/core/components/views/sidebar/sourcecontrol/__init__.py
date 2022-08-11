@@ -1,8 +1,7 @@
-import tkinter as tk
+from tkinter.constants import *
 
 from ..sidebarview import SidebarView
-
-# from ....placeholders.git import GitPlaceHolder
+from .changestree import ChangesTree
 
 
 class SourceControl(SidebarView):
@@ -10,3 +9,6 @@ class SourceControl(SidebarView):
         self.__buttons__ = (('list-tree',), ('check',), ('refresh',), ('ellipsis',))
         self.__icon__ = 'source-control'
         super().__init__(master, *args, **kwargs)
+
+        self.tree = ChangesTree(self)
+        self.add_widget(self.tree)

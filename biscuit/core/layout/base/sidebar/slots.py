@@ -24,4 +24,3 @@ class Slots(tk.Frame):
         for slot in self.slots:
             if slot != selected_slot:
                 slot.disable()
-        # self.master.set_active_view(slot.view)

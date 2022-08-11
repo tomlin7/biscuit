@@ -80,7 +80,7 @@ class App(tk.Tk):
     # def close_active_editor(self):
     #     if self.active_editor:
     #         self.close_editor(self.active_editor)
-    #         self.editor_groups_ref.groups.remove_tab(self.active_editor)
+    #         self.editor_groups_ref.groups.remove_tab(self.active_editor)  
     #         self.refresh()
 
     # def get_active_tab(self):

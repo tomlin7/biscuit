@@ -12,6 +12,9 @@ class IconButton(tk.Menubutton):
         self.base = master.base
 
         self.event = event
-        self.config(text=get_codicon(icon), font=("codicon", iconsize), width=2)
+        self.config(text=get_codicon(icon), font=("codicon", iconsize))
 
         self.bind("<Button-1>", self.event)
+    
+    def set_icon(self, icon):
+        self.config(text=get_codicon(icon))

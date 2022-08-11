@@ -1,35 +1,36 @@
-import tkinter as tk
-
 import queue
 import subprocess
 from threading import Thread
+from tkinter.constants import *
 
-from .text import TerminalText
 from ....utils import Scrollbar
+from ..panelview import PanelView
+from .text import TerminalText
 
 
-class Terminal(tk.Frame):
+class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
 
-        #self.font = self.base.settings.font
+        self.__buttons__ = (('add',),('trash',))
+
         self.config(background="#ffffff")
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.terminal = TerminalText(
-            self, wrap=tk.WORD, relief=tk.FLAT, #font=self.font, 
+            self, wrap=WORD, relief=FLAT,
             fg="#333333", bg="#ffffff", padx=10, pady=10
         )
-        self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
+        self.terminal.grid(row=0, column=0, sticky=NSEW)
 
         self.terminal_scrollbar = Scrollbar(self)
         self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
 
         self.terminal.config(yscrollcommand=self.terminal_scrollbar.set)
-        self.terminal_scrollbar.config(command=self.terminal.yview, orient=tk.VERTICAL)
+        self.terminal_scrollbar.config(command=self.terminal.yview, orient=VERTICAL)
 
         self.line_start = 0
         self.alive = True
@@ -73,7 +74,7 @@ class Terminal(tk.Frame):
         self.p.stdin.write("exit()\n".encode())
         self.p.stdin.flush()
         
-    def enter(self, event):
+    def enter(self, _):
         command = self.terminal.get('input', 'end')
         
         self.p.stdin.write(command.encode())
@@ -122,5 +123,5 @@ class Terminal(tk.Frame):
                 self.alive = False
 
     def write(self, output):
-        self.terminal.insert(tk.END, output)
-        self.terminal.see(tk.END)
+        self.terminal.insert(END, output)
+        self.terminal.see(END)

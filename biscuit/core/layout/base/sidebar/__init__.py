@@ -36,7 +36,6 @@ class Sidebar(tk.Frame):
 
         self.views = []
 
-        # TODO order items correctly
         self.default_views = [Explorer(self), Search(self), SourceControl(self)]
         self.add_views(self.default_views)
 
