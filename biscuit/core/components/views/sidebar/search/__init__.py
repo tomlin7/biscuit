@@ -1,7 +1,9 @@
+import tkinter as tk
 from tkinter.constants import *
 
 from ....utils import ButtonsEntry, IconButton
 from ..sidebarview import SidebarView
+from .results import Results
 
 
 class Search(SidebarView):
@@ -10,11 +12,16 @@ class Search(SidebarView):
         self.__icon__ = 'search'
         super().__init__(master, *args, **kwargs)
 
-        self.grid_columnconfigure(0, weight=1)
+        self.container = tk.Frame(self)
+        self.container.base = self.base
+        self.container.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
-        self.searchbox = ButtonsEntry(self, buttons=(('case-sensitive',), ('whole-word',), ('regex',)))
-        self.replacebox = ButtonsEntry(self, buttons=(('preserve-case',),))
+        self.searchbox = ButtonsEntry(self.container, buttons=(('case-sensitive',), ('whole-word',), ('regex',)))
+        self.replacebox = ButtonsEntry(self.container, buttons=(('preserve-case',),))
 
-        self.add_widget(self.searchbox)
-        self.add_widget(self.replacebox, side=LEFT)
-        self.add_widget(IconButton(self, 'replace-all'), side=RIGHT)
+        self.searchbox.pack(fill=X, anchor=N, pady=2)
+        self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
+        IconButton(self.container, 'replace-all').pack(anchor=N)
+
+        self.results = Results(self)
+        self.results.pack(fill=BOTH, expand=True)

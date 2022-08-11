@@ -1,3 +1,4 @@
+from .button import Button
 from .buttonsentry import ButtonsEntry
 from .codicon import get_codicon
 from .filetype import FileType

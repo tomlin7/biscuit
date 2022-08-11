@@ -15,11 +15,11 @@ class ItemBar(tk.Frame):
         if title:
             self.set_title(title)
             
-        self.toggle = IconButton(self, icon='chevron-down', event=self.toggle_content)
-        self.toggle.grid(row=0, column=0, sticky=tk.W)
+        self.toggle = IconButton(self, icon='chevron-down', event=self.toggle_content, width=1)
+        self.toggle.grid(row=0, column=0)
 
         self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title)
-        self.label_title.grid(row=0, column=1, sticky=tk.W)
+        self.label_title.grid(row=0, column=1, sticky=tk.EW)
 
         self.buttoncolumn = 0
         self.buttonframe = tk.Frame(self)
