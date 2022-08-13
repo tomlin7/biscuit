@@ -23,7 +23,7 @@ class EditorsPane(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.config(bg='white')
+        self.config(bg='#f2f2f2')
 
         self.grid_propagate(False)
         self.grid_rowconfigure(1, weight=1)
