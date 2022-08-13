@@ -1,3 +1,7 @@
+"""
+Various types of widgets/functions used across the editor
+"""
+
 from .button import Button
 from .buttonsentry import ButtonsEntry
 from .codicon import get_codicon
