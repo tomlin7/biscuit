@@ -8,5 +8,5 @@ class Explorer(SidebarView):
         self.__icon__ = 'files'
         super().__init__(master, *args, **kwargs)
 
-        self.view = DirectoryTree(self)
-        self.add_widget(self.view)
+        self.directory = DirectoryTree(self)
+        self.add_widget(self.directory)

@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .tabs import Tabs
-from .....components import Editor
+from .editorsbar import Editorsbar
+
 
 class EditorsPane(tk.Frame):
     """
@@ -22,12 +22,17 @@ class EditorsPane(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
-        self.pack_propagate(False)
 
-        self.tabs = Tabs(self)
-        self.tabs.pack(expand=1, fill=tk.BOTH)
+        self.config(bg='white')
 
-        self.active_editor = None
+        self.grid_propagate(False)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        self.editorsbar = Editorsbar(self)
+        self.editorsbar.grid(row=0, column=0, sticky=EW)
+        self.tabs = self.editorsbar.tabs
+
         self.editors = []
 
         self.default_editors = []
@@ -42,7 +47,6 @@ class EditorsPane(tk.Frame):
         "Appends a editor to list. Create a tab."
         self.editors.append(editor)
         self.tabs.add_tab(editor)
-        self.set_active_editor(editor)
         
     def delete_all_editors(self):
         "Permanently delete all editors."
@@ -58,8 +62,8 @@ class EditorsPane(tk.Frame):
     
     def set_active_editor(self, editor):
         "Set active editor and active tab."
-        self.active_editor = editor
-        for _editor in self.editors:
-            _editor.pack_forget()
-        editor.pack(fill=tk.BOTH)
+        ...
     
+    def get_active_editor():
+        "Get active editor."
+        ...

@@ -6,7 +6,7 @@ from .scrollbar import Scrollbar
 
 
 class Tree(tk.Frame):
-    def __init__(self, master, startpath=None, double_click=lambda _: None, single_click=lambda _: None, *args, **kwargs):
+    def __init__(self, master, startpath=None, doubleclick=lambda _: None, singleclick=lambda _: None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
@@ -15,8 +15,8 @@ class Tree(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.path = startpath
-        self.double_click = double_click
-        self.single_click = single_click
+        self.doubleclick = doubleclick
+        self.singleclick = singleclick
 
         self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), displaycolumns='', selectmode=tk.BROWSE)
         self.tree.grid(row=0, column=0, sticky=NSEW)
@@ -27,13 +27,13 @@ class Tree(tk.Frame):
         self.tree.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.tree.yview)
         
-        self.bind('<Double-Button-1>', self.double_click)
-        self.bind("<<TreeviewSelect>>", self.check_single_click)
+        self.tree.bind("<Double-Button-1>", self.doubleclick)
+        self.tree.bind("<<TreeviewSelect>>", self.check_singleclick)
 
-    def check_single_click(self, _):
+    def check_singleclick(self, _):
         if self.item_type(self.focus()) == 'file':
-            if self.single_click:
-                self.single_click(self.item_fullpath(self.focus()))
+            if self.singleclick:
+                self.singleclick(self.item_fullpath(self.focus()))
         else:
             self.toggle_node(self.focus())
     
@@ -49,7 +49,7 @@ class Tree(tk.Frame):
     
     def focus(self):
         return self.tree.focus()
-    
+
     def insert(self, *args, **kwargs):
         return self.tree.insert(*args, **kwargs)
         
@@ -64,6 +64,12 @@ class Tree(tk.Frame):
     
     def item_fullpath(self, item):
         return self.set(item, "fullpath")
+
+    def selected_path(self):
+        return self.item_fullpath(self.focus())
+
+    def selected_type(self):
+        return self.item_type(self.focus())
 
     def set(self, *args, **kwargs):
         return self.tree.set(*args, **kwargs)

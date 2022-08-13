@@ -15,10 +15,10 @@ class Events:
         self.base.open_new_window()
 
     def open_file(self, *_):
-        self.base.set_active_file(filedialog.askopenfilename())
+        self.base.open_editor(filedialog.askopenfilename())
 
     def open_dir(self, *_):
-        self.base.set_active_dir(filedialog.askdirectory())
+        self.base.open_directory(filedialog.askdirectory())
         
     def save(self, *_): ...
         # with open(self.base.active_file, 'w') as f:

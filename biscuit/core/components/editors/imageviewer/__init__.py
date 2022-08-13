@@ -1,14 +1,15 @@
 import tkinter as tk
 
-from PIL import ImageTk, Image
+from PIL import Image, ImageTk
+
+from ..editor import BaseEditor
+
 
 #TODO: zooming in and out
-class ImageViewer(tk.Frame):
+class ImageViewer(BaseEditor):
     def __init__(self, master, path, exists=True, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, path, exists, *args, **kwargs)
         self.master = master
-
-        self.path = path
         self.open_image()
 
     def open_image(self):

@@ -7,12 +7,12 @@ from ..item import SidebarViewItem
 
 
 class DirectoryTree(SidebarViewItem):
-    def __init__(self, master, startpath=None, double_click=lambda _: None, single_click=lambda _: None, *args, **kwargs):
+    def __init__(self, master, startpath=None, *args, **kwargs):
         self.__buttons__ = (('new-file',), ('new-folder',), ('refresh',), ('collapse-all',))
         self.title = 'No folder opened'
         super().__init__(master, *args, **kwargs)
         
-        self.tree = Tree(self.content, startpath, double_click, single_click, *args, **kwargs)
+        self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
         self.tree.grid(row=0, column=0, sticky=NSEW)
 
         if startpath:
@@ -81,13 +81,12 @@ class DirectoryTree(SidebarViewItem):
     #         self.grid(row=2, column=0, sticky=NSEW)
     #         self.tree_active = True
     
-    # def openfile(self, event):
-    #     item = self.get_selected_item()
-    #     if self.get_item_type(item) != 'file':
-    #         return
+    def openfile(self, _):
+        if self.tree.selected_type() != 'file':
+            return
 
-    #     path = self.get_item_fullpath(item)
-    #     self.base.set_active_file(path)
+        path = self.tree.selected_path()
+        self.base.open_editor(path)
 
     # def update_panes(self):
     #     if self.base.active_dir is not None:
@@ -95,11 +94,15 @@ class DirectoryTree(SidebarViewItem):
     #     else:
     #         self.disable_tree()
     
+    def preview_file(self, _):
+        #TODO preview editors -- extra preview param for editors
+        return
+
     def update_node(self, node):
-        if self.tree.set(node, "type") != 'directory':
+        if self.tree.item_type(node) != 'directory':
             return
 
-        path = self.tree.set(node, "fullpath")
+        path = self.tree.item_fullpath(node)
         self.fill_node(node, path)
 
     def update_tree(self, *_):

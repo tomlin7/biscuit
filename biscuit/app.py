@@ -1,7 +1,7 @@
 import os, tkinter as tk
 
 from core import *
-
+from core.components import Editor
 
 class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
@@ -86,8 +86,8 @@ class App(tk.Tk):
     # def get_active_tab(self):
     #     return self.editor_groups_ref.groups.get_active_tab()
     
-    # def open_editor(self, name, path, exists, diff):
-    #     self.editor_groups_ref.groups.add_editor(name, path, exists, diff)
+    def open_editor(self, path, exists=True):
+        self.editorsmanager.add_editor(Editor(self.editorsmanager, path, exists))
 
     # def open_welcome_tab(self, _):
     #     self.set_active_file("@welcomepage", exists=False)
@@ -101,10 +101,6 @@ class App(tk.Tk):
     # def refresh(self):
     #     self.update_statusbar_ln_col_info()
     #     self.update_editor_tabs_pane()
-    
-    # def refresh_dir(self):
-    #     self.explorer_ref.open_directory(self.active_directory)
-    #     self.update_dir_tree_pane()
 
     # def set_git_found(self, found):
     #     self.git_found = found
@@ -116,19 +112,21 @@ class App(tk.Tk):
     #     self.open_editor(self.active_file_name, self.active_editor, exists, diff)
     #     # self.refresh()
 
-    # def set_active_dir(self, dir):
-    #     if not os.path.isdir(dir):
-    #         return
+    def open_directory(self, dir):
+        if not os.path.isdir(dir):
+            return
 
-    #     self.active_directory = dir
-    #     self.active_directory_name = os.path.basename(dir)
+        self.explorer.directory.open_directory(dir)
 
-    #     self.check_git()
-    #     self.update_git()
+        # self.active_directory = dir
+        # self.active_directory_name = os.path.basename(dir)
+
+        # self.check_git()
+        # self.update_git()
         
-    #     self.refresh_dir()
-    #     self.close_all_editors()
-    #     self.refresh()
+        # self.refresh_dir()
+        # self.close_all_editors()
+        # self.refresh()
 
     # def toggle_terminal(self, *args):
     #     self.primarypane.contentpane.right.terminal.toggle()
