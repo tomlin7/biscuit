@@ -1,5 +1,7 @@
 from .. import PopupMenu
 
+#TODO all these should be just one component, with multiple categories of commands
+# selected based on the prefix used. ? -- help
 
 class CommandPalette(PopupMenu):
     """

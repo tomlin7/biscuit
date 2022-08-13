@@ -21,7 +21,10 @@ class Search(SidebarView):
 
         self.searchbox.pack(fill=X, anchor=N, pady=2)
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
-        IconButton(self.container, 'replace-all').pack(anchor=N)
+        IconButton(self.container, 'replace-all', self.replace, bg='#f3f3f3', activebackground='#e1e1e1').pack(anchor=N)
 
         self.results = Results(self)
         self.results.pack(fill=BOTH, expand=True)
+
+    def replace(self, _):
+        ...

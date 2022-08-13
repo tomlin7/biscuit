@@ -18,9 +18,13 @@ class Editorsbar(tk.Frame):
 
         self.buttons = []
         self.default_buttons = (('ellipsis',),)
+
+        self.buttonframe = tk.Frame(self)
+        self.buttonframe.base = self.base
+        self.buttonframe.pack(fill=BOTH, side=RIGHT, pady=5, padx=10)
         
         for button in self.default_buttons:
-            IconButton(self, *button, bg='#f3f3f3').pack(side=RIGHT)
+            IconButton(self.buttonframe, *button, bg='#f3f3f3', activebackground='#e1e1e1').pack(side=RIGHT)
 
     def add_buttons(self, buttons):
         for button in buttons:

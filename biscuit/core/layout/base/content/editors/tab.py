@@ -19,7 +19,7 @@ class Tab(tk.Menubutton):
         self.selected = False
         
         self.config(text=editor.filename, padx=5, pady=5,
-            font=('Segoe UI', 10), bg='#f2f2f2', activebackground='white')
+            font=('Segoe UI', 10), bg='#f3f3f3', activebackground='white')
 
         self.bind('<Button-1>', self.select)
 

@@ -19,7 +19,7 @@ class ButtonsEntry(tk.Frame):
         self.add_buttons(buttons)
 
     def add_button(self, icon, event=lambda _: None):
-        IconButton(self, icon, event).grid(row=0, column=self.column, sticky='')
+        IconButton(self, icon, event, bg='white', fg='#616161', activebackground='#e9e9e9').grid(row=0, column=self.column, sticky='')
         self.column += 1
 
     def add_buttons(self, buttons):

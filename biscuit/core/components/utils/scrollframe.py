@@ -13,7 +13,7 @@ class ScrollableFrame(tk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.cv = tk.Canvas(self, bg="#f2f2f2", highlightthickness=0)
+        self.cv = tk.Canvas(self, bg="#f3f3f3", highlightthickness=0)
         self.cv.grid(row=0, column=0, sticky=NSEW)
 
         # self.frame = tk.Frame(self.cv)

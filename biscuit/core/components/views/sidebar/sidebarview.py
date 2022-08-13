@@ -23,7 +23,7 @@ class SidebarView(View):
         
         column = 1
         for i in self.__buttons__:
-            IconButton(top, *i).grid(row=0, column=column, sticky=E)
+            IconButton(top, *i, activebackground='#e1e1e1').grid(row=0, column=column, sticky=E)
             column += 1
     
     def add_widget(self, widget, *args, **kwargs):

@@ -29,7 +29,7 @@ class ItemBar(tk.Frame):
         self.add_buttons(buttons)
 
     def add_button(self, icon, event=lambda _: None):
-        IconButton(self.buttonframe, icon=icon, event=event).grid(row=0, column=self.buttoncolumn)
+        IconButton(self.buttonframe, icon=icon, event=event, activebackground='#e1e1e1').grid(row=0, column=self.buttoncolumn)
         self.buttoncolumn += 1
     
     def add_buttons(self, buttons):
