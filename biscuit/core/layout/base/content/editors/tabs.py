@@ -9,7 +9,7 @@ class Tabs(tk.Frame):
         self.master = master
         self.base = master.base
         
-        self.config(bg="#f2f2f2")
+        self.config(bg="#f3f3f3")
 
         self.tabs = []
         self.active_tab = None
