@@ -1,3 +1,7 @@
+# TODO Reimplement all info shown on statusbar
+#   - Re add all buttons and labels
+#   - (Popups shall be revised first) Re add all popups 
+
 import tkinter as tk
 
 from .popups import *

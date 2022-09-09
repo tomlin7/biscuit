@@ -1,3 +1,8 @@
+# TODO Use grid manager
+#   As editorspane have an emptytab to be replaced
+#   and panel can be made hidden, using grid manager
+#   is the way to go here, to keep it less glitchy.
+
 import tkinter as tk
 from tkinter.constants import *
 
