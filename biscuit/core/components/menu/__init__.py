@@ -1,3 +1,9 @@
+# TODO Menus
+# - Have various types of menus
+# - Context menus for various buttons across the editor
+# - Make the api more clean and easy to use
+#   - isolate tkinter_menus library
+
 import tkinter as tk
 
 from .menu import MenuContainer

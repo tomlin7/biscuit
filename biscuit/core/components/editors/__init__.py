@@ -23,7 +23,7 @@ class Editor(tk.Frame):
     Editor class
 
     This class is the base class for all editors. It is responsible for
-    picking the right editor based on the path & exists passed.
+    picking the right editor based on the path & exists values passed.
 
     path - the path to the file to be opened
     exists - whether the file exists or not

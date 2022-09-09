@@ -2,6 +2,9 @@ import tkinter as tk
 
 
 class Button(tk.Menubutton):
+    """
+    A Flat style button 
+    """
     def __init__(self, master, text, command=lambda _: None, *args, **kwargs):
         super().__init__(master, text=text, *args, **kwargs)
         self.master = master

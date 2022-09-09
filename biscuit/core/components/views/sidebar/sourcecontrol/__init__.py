@@ -5,13 +5,16 @@ from ..sidebarview import SidebarView
 from .changestree import ChangesTree
 
 from ....utils import Button, IconButton
-
+from .placeholder import ChangesTreePlaceholder
 
 class SourceControl(SidebarView):
     def __init__(self, master, *args, **kwargs):
         self.__buttons__ = (('list-tree',), ('check',), ('refresh',), ('ellipsis',))
         self.__icon__ = 'source-control'
         super().__init__(master, *args, **kwargs)
+
+        # self.placeholder = ChangesTreePlaceholder(self)
+        # self.placeholder.pack(fill=BOTH, padx=(15, 10), pady=5)
 
         self.container = tk.Frame(self)
         self.container.base = self.base

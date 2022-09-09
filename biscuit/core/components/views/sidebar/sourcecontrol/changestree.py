@@ -3,7 +3,6 @@ from tkinter.constants import *
 from ....utils import Tree
 from ..item import SidebarViewItem
 
-
 class ChangesTree(SidebarViewItem):
     def __init__(self, master, *args, **kwargs):
         self.__buttons__ = (('discard',), ('add',))

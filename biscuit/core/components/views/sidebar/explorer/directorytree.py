@@ -4,6 +4,7 @@ from tkinter.constants import *
 
 from ....utils import Tree
 from ..item import SidebarViewItem
+from .placeholder import DirectoryTreePlaceholder
 
 
 class DirectoryTree(SidebarViewItem):
@@ -11,6 +12,9 @@ class DirectoryTree(SidebarViewItem):
         self.__buttons__ = (('new-file',), ('new-folder',), ('refresh',), ('collapse-all',))
         self.title = 'No folder opened'
         super().__init__(master, *args, **kwargs)
+
+        # self.placeholder = DirectoryTreePlaceholder(self.content)
+        # self.placeholder.grid(row=0, column=0, sticky=NSEW, padx=10, pady=5)
         
         self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
         self.tree.grid(row=0, column=0, sticky=NSEW)

@@ -1,3 +1,11 @@
+# TODO Quick access menus
+# Rename popup menus to Quick Access
+#   - Have quick access prefixes (eg. >, ?, :)
+#   - Use the same instance of quick access everywhere, with suited prefixes
+#   - Rename command palette spawned with root to quick access
+#       - Command Palette should be a special case of quick access
+
+
 import tkinter as tk
 
 from .item import MenuItem
