@@ -8,7 +8,7 @@ class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.commandpalette = CommandPalette(self)
+        self.palette = Palette(self)
 
         self.setup()
         self.root = Root(self)

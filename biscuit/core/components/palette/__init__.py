@@ -12,12 +12,12 @@ from .item import MenuItem
 from .searchbar import Searchbar
 
 
-class PopupMenu(tk.Toplevel):
+class Palette(tk.Toplevel):
     """
-    Popup Menus
+    Palette
 
-    Popup menus are centered horizontally and aligned to top of root.
-    They contain a list of options to choose from.
+    Palette is an action menu centered horizontally and aligned to top of root.
+    They contain a list of actions.
 
     +----------------------------------------------+
     |  \   | item_name                      |  \   |
@@ -29,17 +29,16 @@ class PopupMenu(tk.Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=65, state=False, prompt="", watermark="Search", *args, **kwargs):
+    def __init__(self, master, items=None, width=65, hint="Search...", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         
         self.width = width
-        self.state = state
-        self.prompt = prompt
-        self.watermark = watermark
+        self.active = False
+        self.prompt = ""
+        self.hint = hint
 
-        if not state:
-            self.withdraw()
+        self.withdraw()
         self.overrideredirect(True)
 
         self.grid_columnconfigure(0, weight=1)
@@ -52,7 +51,7 @@ class PopupMenu(tk.Toplevel):
         self.selected = 0
         self.no_results = MenuItem(self, "No results found", lambda _:None)
 
-        self.add_search_bar(prompt, watermark)
+        self.add_search_bar()
 
         if items:
             self.items = items
