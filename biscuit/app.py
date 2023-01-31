@@ -3,6 +3,7 @@ import os, tkinter as tk
 from core import *
 from core.components import Editor
 
+
 class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
         super().__init__(*args, **kwargs)
