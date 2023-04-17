@@ -1,5 +1,4 @@
-# TODO Quick access menus
-# Rename popup menus to Quick Access
+# TODO Palette
 #   - Have quick access prefixes (eg. >, ?, :)
 #   - Use the same instance of quick access everywhere, with suited prefixes
 #   - Rename command palette spawned with root to quick access
@@ -10,6 +9,7 @@ import tkinter as tk
 
 from .item import MenuItem
 from .searchbar import Searchbar
+from .actionset import ActionSet
 
 
 class Palette(tk.Toplevel):
@@ -20,7 +20,7 @@ class Palette(tk.Toplevel):
     They contain a list of actions.
 
     +----------------------------------------------+
-    |  \   | item_name                      |  \   |
+    |  \   | search                         |  \   |
     |   \  +--------------------------------+   \  |
     |    \    \    \    \    \    \    \    \    \ |
     |\    \    \    \    \    \    \    \    \    \|
@@ -29,14 +29,13 @@ class Palette(tk.Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=65, hint="Search...", *args, **kwargs):
+    def __init__(self, master, items=None, width=65,*args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.base = master
         
         self.width = width
         self.active = False
-        self.prompt = ""
-        self.hint = hint
 
         self.withdraw()
         self.overrideredirect(True)
@@ -44,50 +43,39 @@ class Palette(tk.Toplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.menu_items = []
-        self.menu_items_text = []
-
         self.row = 1
         self.selected = 0
-        self.no_results = MenuItem(self, "No results found", lambda _:None)
 
+        self.shown_items = []
+
+        self.actionsets = []
+        self.active_set = None
         self.add_search_bar()
-
-        if items:
-            self.items = items
-        else:
-            self.items = []
-            
-        self.add_all_items()
-        self.refresh_selected()
-
+        
         self.configure_bindings()
 
-    def add_all_items(self):
-        if self.items:
-            for i in self.items[:-1]:
-                self.add_item(i[0], i[1])
-            self.add_last_item(self.items[-1][0], self.items[-1][1])
+    def register_actionset(self, actionset):
+        self.actionsets.append(actionset)
+    
+    def generate_help_actionset(self):
+        actionset = ActionSet("Help", "?", [("? Help", lambda e=None:print("Help e"))])
+        for i in self.actionsets:
+            if i.prompt:
+                actionset.append((f"{i.prompt} {i.id}", lambda e=None:print(f"Help {i.id}")))
+        self.register_actionset(actionset)
 
     def add_item(self, text, command):
         new_item = MenuItem(self, text, command)
         new_item.grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
         
-        self.menu_items.append(new_item)
-        self.menu_items_text.append((text.lower(), new_item))
+        self.shown_items.append(new_item)
 
         self.row += 1
         self.refresh_selected()
-        
-    def add_last_item(self, text, command):
-        new_item = MenuItem(self, text, command)
-        new_item.grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 5))
-        
-        self.menu_items.append(new_item)
-        self.menu_items_text.append((text.lower(), new_item))
+        return new_item
 
-    def add_search_bar(self, prompt, watermark):
-        self.search_bar = Searchbar(self, prompt=prompt, watermark=watermark)
+    def add_search_bar(self):
+        self.search_bar = Searchbar(self)
         self.search_bar.grid(row=0, sticky=tk.EW, padx=8, pady=(8, 5))
     
     def configure_bindings(self):
@@ -96,9 +84,18 @@ class Palette(tk.Toplevel):
 
         self.row += 1
         self.refresh_selected()
-
+    
+    def pick_actionset(self, actionset):
+        self.active_set = actionset
+    
+    def pick_file_search(self):
+        items = self.base.explorer.get_all_files()
+        for i in items:
+            new = self.add_item(i[0], lambda e=None:print(i[1]))
+            self.shown_items.append(new)
+        
     def choose(self, *args):
-        self.menu_items[self.selected].command()
+        self.shown_items[self.selected].command()
         self.hide()
     
     def get_popup_x(self, width):
@@ -108,20 +105,17 @@ class Palette(tk.Toplevel):
         return self.winfo_rooty()
 
     def get_items(self):
-        return self.menu_items
-    
-    def get_items_text(self):
-        return self.menu_items_text
+        return self.active_set
     
     def hide(self, *args):
         self.withdraw()
         self.reset()
         
     def hide_all_items(self):
-        for i in self.menu_items:
-            i.grid_forget()
+        for i in self.shown_items:
+            i.destroy()
         
-        self.menu_items = []
+        self.shown_items = []
         self.row = 1
     
     def reset_selection(self):
@@ -129,12 +123,12 @@ class Palette(tk.Toplevel):
         self.refresh_selected()
 
     def refresh_selected(self):
-        if not self.menu_items:
+        if not self.shown_items:
             return
 
-        for i in self.menu_items:
+        for i in self.shown_items:
             i.deselect()
-        self.menu_items[self.selected].select()
+        self.shown_items[self.selected].select()
     
     def reset(self):
         self.search_bar.clear()
@@ -145,41 +139,28 @@ class Palette(tk.Toplevel):
         return "break"
     
     def show_no_results(self):
-        self.no_results.grid(row=1, sticky=tk.EW, padx=1, pady=(0, 5))
-        self.menu_items.append(self.no_results)
+        self.add_item("No results found", lambda _:None)
 
         self.row = 1
         self.reset_selection()
 
     def select(self, delta):
         self.selected += delta
-        self.selected = min(max(0, self.selected), len(self.menu_items) - 1)
+        self.selected = min(max(0, self.selected), len(self.shown_items) - 1)
         self.refresh_selected()
     
-    def show_items(self, items, search_term):
-        for i in items[:-1]:
-            i[1].grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
-            self.row += 1
-            self.menu_items.append(i[1])
-        items[-1][1].grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 5))
-        self.row += 1
-        self.menu_items.append(items[-1][1])
+    def show_items(self, items):
+        self.hide_all_items()
+
+        for i in items:
+            self.add_item(*i)
 
         self.reset_selection()
 
-    def show(self, *args):
+    def show_prompt(self, prompt):
         self.update_idletasks()
-        x = self.get_popup_x(self.winfo_width())
-        y = self.get_popup_y()
-        self.wm_geometry(f"+{x}+{y}")
+        self.geometry("{}x{}+{}+{}".format(400, 200, int(self.master.winfo_rootx() + self.master.winfo_vrootwidth()/2 - self.winfo_width()), self.master.winfo_rooty()))
         self.deiconify()
-        
         self.focus_set()
         self.search_bar.focus()
-
-
-# experimental tcl for centering window
-
-# root.eval('tk::PlaceWindow . center')
-# second_win = tkinter.Toplevel(root)
-# root.eval(f'tk::PlaceWindow {str(second_win)} center')
+        self.search_bar.add_prompt(prompt)

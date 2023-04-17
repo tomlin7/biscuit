@@ -5,6 +5,7 @@ import tkextrafont as extra
 
 from .. import config
 from ..res import Resources
+from core.components import ActionSet
 
 
 class Settings:
@@ -14,6 +15,15 @@ class Settings:
         self.config = config.Config(self)
         # self.resources = Resources(self)
         self.setup_properties()
+        self.gen_actionset()
+    
+    def gen_actionset(self):
+        self.actionset = ActionSet(
+            "Settings", ">",
+            [("Editor Theme", lambda e=None: print("Theme", e)),
+            ("Editor Bindings", lambda e=None: print("Bindings", e)),
+            ("Editor Font", lambda e=None: print("Font", e))],
+        )
 
     def setup_properties(self):
         self.setup_theme()
@@ -29,7 +39,8 @@ class Settings:
     def setup_font(self):
         self.font = tk.font.Font(
             family=self.config.font.family, 
-            size=self.config.font.size, 
-            weight=self.config.font.style)
-        self.icon_font = extra.Font(file=os.path.join(self.base.appdir, "res/codicon/codicon.ttf"), family="codicon")
+            size=self.config.font.size)
+        
+        # iconfont
+        self.iconfont = extra.Font(file=os.path.join(self.base.appdir, "res/codicon/codicon.ttf"), family="codicon")
         

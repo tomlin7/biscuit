@@ -15,6 +15,10 @@ class App(tk.Tk):
         self.root.pack(fill=tk.BOTH, expand=True)
 
         self.setup_references()
+
+        self.command_palette = self.palette.register_actionset(self.settings.actionset)
+        self.bind("<Control-P>", lambda e: self.palette.show_prompt(">"))
+
         self.initialize_editor()
     
     def run(self):
@@ -58,6 +62,8 @@ class App(tk.Tk):
         self.logger = self.root.baseframe.contentpane.panel.get_logger()
     
     def initialize_editor(self):
+        self.palette.generate_help_actionset()
+
         self.logger.info('Biscuit started.')
         self.logger.warning('last biscuit.')
         self.logger.error('No biscuits left.')

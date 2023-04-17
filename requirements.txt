@@ -1,3 +1,4 @@
 gitpython
 filetype
 tkextrafont
+hintedtext

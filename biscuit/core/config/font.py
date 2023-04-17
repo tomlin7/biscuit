@@ -8,4 +8,3 @@ class Font:
     """
     family: str
     size: int
-    style: str

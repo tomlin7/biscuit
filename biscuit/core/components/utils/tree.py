@@ -50,14 +50,17 @@ class Tree(tk.Frame):
     def focus(self):
         return self.tree.focus()
 
+    def get_children(self, *a, **kw):
+        return self.tree.get_children(*a, **kw)
+
     def insert(self, *args, **kwargs):
         return self.tree.insert(*args, **kwargs)
         
     def is_open(self, node):
         return self.tree.item(node, "open")
     
-    def item(self, *args, **kwargs):
-        return self.tree.item(*args, **kwargs)
+    def item(self, item):
+        return (self.item_fullpath(item), self.item_type(item))
         
     def item_type(self, item):
         return self.set(item, "type")

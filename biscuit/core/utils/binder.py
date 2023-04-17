@@ -17,7 +17,7 @@ class Binder:
         self.bind(self.bindings.close_file, self.events.close_file)
         self.bind(self.bindings.quit, self.events.quit)
 
-        self.bind(self.bindings.commandpalette, self.base.commandpalette.show)
+        # self.bind(self.bindings.commandpalette, self.base.commandpalette.show)
 
     def bind(self, this, to_this):
         self.base.bind(this, to_this)

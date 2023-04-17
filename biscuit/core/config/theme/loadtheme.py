@@ -1,4 +1,4 @@
-import json, os
+import toml, os
 
 
 class ThemeLoader:
@@ -19,8 +19,8 @@ class ThemeLoader:
             return self.load_theme(self.default)
 
     def load_theme(self, theme_name):
-        with open(os.path.join(self.base.configdir, f'{theme_name}.json'), 'r') as theme_file:
-            theme_data = json.load(theme_file)
+        with open(os.path.join(self.base.configdir, f'{theme_name}.toml'), 'r') as theme_file:
+            theme_data = toml.load(theme_file)
         return theme_data
     
     def get_loaded_theme(self):

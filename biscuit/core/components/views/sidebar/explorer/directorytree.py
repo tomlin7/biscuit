@@ -1,4 +1,4 @@
-import os
+import os, asyncio
 import tkinter as tk
 from tkinter.constants import *
 
@@ -26,28 +26,45 @@ class DirectoryTree(SidebarViewItem):
 
         self.tree.tree.bind("<<TreeviewOpen>>", self.update_tree)
     
-    def create_root(self, path):
-        self.tree.clear_tree()
-        self.fill_node('', path)
-
-    def fill_node(self, node, path):
-        self.tree.clear_node(node)
-
-        items = [os.path.join(path, p) for p in os.listdir(path)]
-
-        directories = sorted([p for p in items if os.path.isdir(p)])
-        files = sorted([p for p in items if os.path.isfile(p)])
-
-        for p in directories:
-            name = os.path.split(p)[1]
-            oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image='foldericon')
-            if os.listdir(p):
-                self.tree.insert(oid, 0, text='...')
+    def get_all_files(self):
+        files = []
+        for item in self.tree.get_children():
+            if self.tree.item_type(item) == 'file':
+                files.append(self.tree.item(item))
+        return files
     
-        for p in files:
-            if os.path.isfile(p):
-                name = os.path.split(p)[1]
-                oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image='fileicon')
+    def create_root(self, path):
+        self.actionset = []
+
+        self.tree.clear_tree()
+        # self.fill_node('', path)
+        asyncio.run(self.update_treeview("", [(path, os.path.abspath(path))]))
+        self.gen_actionset(path)
+
+    # def fill_node(self, node, path):
+    #     self.tree.clear_node(node)
+
+    #     items = [os.path.join(path, p) for p in os.listdir(path)]
+
+    #     directories = sorted([p for p in items if os.path.isdir(p)])
+    #     files = sorted([p for p in items if os.path.isfile(p)])
+
+    #     for p in directories:
+    #         name = os.path.split(p)[1]
+    #         oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'directory'], image='foldericon')
+    #         if os.listdir(p):
+    #             self.tree.insert(oid, 0, text='...')
+    
+    #     for p in files:
+    #         if os.path.isfile(p):
+    #             name = os.path.split(p)[1]
+    #             oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image='fileicon')
+
+    def gen_actionset(self, path):
+        self.actionset = [(file, os.path.join(root, file)) for root, dirs, files in os.walk(path) for file in files]
+    
+    def get_actionset(self, path):
+        return self.actionset
 
     def open_directory(self, path):
         self.path = os.path.abspath(path)
@@ -56,6 +73,20 @@ class DirectoryTree(SidebarViewItem):
     
     def refresh_tree(self):
         self.open_directory(self.path)
+    
+    async def async_scandir(self, path):
+        entries = []
+        for entry in os.scandir(path):
+            entries.append((entry.name, entry.path))
+        return entries
+
+    async def update_treeview(self, parent, entries):
+        for name, path in entries:
+            if os.path.isdir(path):
+                item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
+                await self.update_treeview(item, await self.async_scandir(path))
+            else:
+                self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='fileicon')
     
     # def add_node(self):
     #     name = enterbox("Enter file name")
@@ -106,8 +137,8 @@ class DirectoryTree(SidebarViewItem):
         if self.tree.item_type(node) != 'directory':
             return
 
-        path = self.tree.item_fullpath(node)
-        self.fill_node(node, path)
+        # path = self.tree.item_fullpath(node)
+        self.tree.toggle_node(node)
 
     def update_tree(self, *_):
         self.update_node(self.tree.focus())

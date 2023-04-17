@@ -1,5 +1,3 @@
-import json
-
 from .font import Font
 from .bindings import Bindings
 from .theme import Theme
@@ -28,4 +26,4 @@ class Config:
     def load_data(self):
         self.theme = self.config['theme']
         font = self.config['font']
-        self.font = Font(font['family'], font['size'], font['style'])
+        self.font = Font(font, 15)

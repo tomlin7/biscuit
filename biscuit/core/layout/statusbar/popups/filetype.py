@@ -1,4 +1,4 @@
-from ....components.popup import PopupMenu
+from ....components.palette import PopupMenu
 
 
 class FileTypePopup(PopupMenu):
