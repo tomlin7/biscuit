@@ -71,11 +71,11 @@ class App(tk.Tk):
     # def check_git(self):
     #     self.git.open_repo()
 
-    # def close_active_dir(self):
-    #     self.active_directory = None
-    #     self.active_directory_name = None
-    #     self.refresh()
-    #     self.explorer_ref.close_directory()
+    def close_active_dir(self):
+        self.active_directory = None
+        self.active_directory_name = None
+        self.refresh()
+        self.explorer.close_directory()
     
     # def close_editor(self, path):
     #     self.editor_groups_ref.groups.remove_tab(path)

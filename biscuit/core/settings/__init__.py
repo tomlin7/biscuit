@@ -19,7 +19,7 @@ class Settings:
     
     def gen_actionset(self):
         self.actionset = ActionSet(
-            "Settings", ">",
+            "Show and run commands", ">",
             [("Editor Theme", lambda e=None: print("Theme", e)),
             ("Editor Bindings", lambda e=None: print("Bindings", e)),
             ("Editor Font", lambda e=None: print("Font", e))],

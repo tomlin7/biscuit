@@ -59,8 +59,8 @@ class Tree(tk.Frame):
     def is_open(self, node):
         return self.tree.item(node, "open")
     
-    def item(self, item):
-        return (self.item_fullpath(item), self.item_type(item))
+    def item(self, *a, **kw):
+        return self.tree.item(*a, **kw)
         
     def item_type(self, item):
         return self.set(item, "type")

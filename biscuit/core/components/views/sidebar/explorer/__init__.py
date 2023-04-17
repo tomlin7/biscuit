@@ -11,6 +11,6 @@ class Explorer(SidebarView):
         self.directory = DirectoryTree(self)
         self.add_widget(self.directory)
     
-    def get_all_files(self):
-        return self.directory.get_all_files()
+    def get_actionset(self):
+        return self.directory.get_actionset() 
     

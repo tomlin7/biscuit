@@ -4,7 +4,8 @@ from tkinter.constants import *
 
 from ....utils import Tree
 from ..item import SidebarViewItem
-from .placeholder import DirectoryTreePlaceholder
+#TODO from .placeholder import DirectoryTreePlaceholder
+from core.components import ActionSet
 
 
 class DirectoryTree(SidebarViewItem):
@@ -13,12 +14,15 @@ class DirectoryTree(SidebarViewItem):
         self.title = 'No folder opened'
         super().__init__(master, *args, **kwargs)
 
+        self.actionset = ActionSet("Search files", "file:", [])
+
         # self.placeholder = DirectoryTreePlaceholder(self.content)
         # self.placeholder.grid(row=0, column=0, sticky=NSEW, padx=10, pady=5)
         
         self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
         self.tree.grid(row=0, column=0, sticky=NSEW)
 
+        self.path = startpath
         if startpath:
             self.open_directory(startpath)
         else:
@@ -26,20 +30,9 @@ class DirectoryTree(SidebarViewItem):
 
         self.tree.tree.bind("<<TreeviewOpen>>", self.update_tree)
     
-    def get_all_files(self):
-        files = []
-        for item in self.tree.get_children():
-            if self.tree.item_type(item) == 'file':
-                files.append(self.tree.item(item))
-        return files
-    
     def create_root(self, path):
-        self.actionset = []
-
         self.tree.clear_tree()
-        # self.fill_node('', path)
         asyncio.run(self.update_treeview("", [(path, os.path.abspath(path))]))
-        self.gen_actionset(path)
 
     # def fill_node(self, node, path):
     #     self.tree.clear_node(node)
@@ -60,12 +53,17 @@ class DirectoryTree(SidebarViewItem):
     #             name = os.path.split(p)[1]
     #             oid = self.tree.insert(node, tk.END, text=f"  {name}", values=[p, 'file'], image='fileicon')
 
-    def gen_actionset(self, path):
-        self.actionset = [(file, os.path.join(root, file)) for root, dirs, files in os.walk(path) for file in files]
-    
-    def get_actionset(self, path):
+    def get_actionset(self):
         return self.actionset
 
+    def get_all_files(self):
+        files = []
+        for item in self.tree.get_children():
+            if self.tree.item_type(item) == 'file':
+                files.append((self.tree.item(item, "text"), lambda _ : print(self.tree.item_fullpath(item))))
+        
+        return files
+    
     def open_directory(self, path):
         self.path = os.path.abspath(path)
         self.create_root(self.path)
@@ -81,12 +79,18 @@ class DirectoryTree(SidebarViewItem):
         return entries
 
     async def update_treeview(self, parent, entries):
+        files = []
         for name, path in entries:
             if os.path.isdir(path):
                 item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
                 await self.update_treeview(item, await self.async_scandir(path))
             else:
                 self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='fileicon')
+                files.append((name, lambda _: print(path)))
+        
+        print(files)
+        
+        self.actionset = ActionSet("Search files by name", "file:", files)
     
     # def add_node(self):
     #     name = enterbox("Enter file name")

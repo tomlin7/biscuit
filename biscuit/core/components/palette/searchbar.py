@@ -10,6 +10,7 @@ class Searchbar(tk.Frame):
         self.config(bg="#007fd4")
         
         self.text_variable = tk.StringVar()
+        self.text_variable.trace("w", self.filter) 
         
         frame = tk.Frame(self, bg="#FFFFFF")
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
@@ -23,7 +24,6 @@ class Searchbar(tk.Frame):
         self.configure_bindings()
 
     def configure_bindings(self):
-        self.search_bar.bind("<Key>", self.filter)
         self.search_bar.bind("<Return>", self.master.search_bar_enter)
 
         self.search_bar.bind("<Down>", lambda e: self.master.select(1))
@@ -51,12 +51,11 @@ class Searchbar(tk.Frame):
                 self.master.pick_actionset(actionset)
                 term = term[len(actionset.prompt):]
                 prompt_found = True
-        
-        term = self.get_search_term()
-        if not prompt_found:
+        if term: print(term)
+        if not prompt_found or not (term or prompt_found):
             self.master.pick_file_search()
         
-        new = [i for i in self.master.get_items() if str(i).startswith(term)]
+        new = [i for i in self.master.get_items() if i[0].startswith(term)]
         new += [i for i in self.master.get_items() if term in str(i) and i not in new]
         
         if any(new):

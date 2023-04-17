@@ -29,7 +29,7 @@ class Palette(tk.Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=65,*args, **kwargs):
+    def __init__(self, master, items=None, width=80,*args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master
@@ -89,10 +89,7 @@ class Palette(tk.Toplevel):
         self.active_set = actionset
     
     def pick_file_search(self):
-        items = self.base.explorer.get_all_files()
-        for i in items:
-            new = self.add_item(i[0], lambda e=None:print(i[1]))
-            self.shown_items.append(new)
+        self.active_set = self.base.explorer.get_actionset()
         
     def choose(self, *args):
         self.shown_items[self.selected].command()
@@ -139,9 +136,8 @@ class Palette(tk.Toplevel):
         return "break"
     
     def show_no_results(self):
+        self.hide_all_items()
         self.add_item("No results found", lambda _:None)
-
-        self.row = 1
         self.reset_selection()
 
     def select(self, delta):
@@ -159,7 +155,9 @@ class Palette(tk.Toplevel):
 
     def show_prompt(self, prompt):
         self.update_idletasks()
-        self.geometry("{}x{}+{}+{}".format(400, 200, int(self.master.winfo_rootx() + self.master.winfo_vrootwidth()/2 - self.winfo_width()), self.master.winfo_rooty()))
+        x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)
+        y = self.master.winfo_rooty()
+        self.geometry(f"+{x}+{y}")
         self.deiconify()
         self.focus_set()
         self.search_bar.focus()
