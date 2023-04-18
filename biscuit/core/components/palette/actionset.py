@@ -4,6 +4,3 @@ class ActionSet(list):
         self.id = id
         self.prompt = prompt
     
-    def __str__(self):
-        return self.id
-

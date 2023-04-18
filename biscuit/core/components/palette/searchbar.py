@@ -51,12 +51,12 @@ class Searchbar(tk.Frame):
                 self.master.pick_actionset(actionset)
                 term = term[len(actionset.prompt):]
                 prompt_found = True
-        if term: print(term)
-        if not prompt_found or not (term or prompt_found):
+
+        if not prompt_found:
             self.master.pick_file_search()
-        
-        new = [i for i in self.master.get_items() if i[0].startswith(term)]
-        new += [i for i in self.master.get_items() if term in str(i) and i not in new]
+
+        new = [i for i in self.master.get_items() if i[0].lower().startswith(term.lower())]
+        new += [i for i in self.master.get_items() if any([f.lower() in i[0].lower() or i[0].lower() in f.lower() and i not in new for f in term.lower().split()])]
         
         if any(new):
             self.master.show_items(new)

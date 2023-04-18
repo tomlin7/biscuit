@@ -33,6 +33,8 @@ class Palette(tk.Toplevel):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master
+
+        self.config(pady=1, bg='#e8e8e8')
         
         self.width = width
         self.active = False
@@ -137,8 +139,8 @@ class Palette(tk.Toplevel):
     
     def show_no_results(self):
         self.hide_all_items()
-        self.add_item("No results found", lambda _:None)
         self.reset_selection()
+        self.add_item("No results found", lambda:...)
 
     def select(self, delta):
         self.selected += delta
@@ -148,7 +150,7 @@ class Palette(tk.Toplevel):
     def show_items(self, items):
         self.hide_all_items()
 
-        for i in items:
+        for i in items[:10]:
             self.add_item(*i)
 
         self.reset_selection()
