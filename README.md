@@ -1,6 +1,19 @@
 <h1 align="center">
     <b>Biscuit</b> - Code Editor
 </h1>
+
+<h3 align="center">
+  <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28>  
+  <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge">
+  <br>
+  <img alt="GitHub issues" src="https://img.shields.io/github/issues/billyeatcookies/Biscuit?style=for-the-badge">
+  <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/billyeatcookies/Biscuit?style=for-the-badge">
+  <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
+
+  
+</h3>
+
 <p align="center">
     <img src="./.github/res/preview1.png" width=900/>
 </p>
