@@ -1,15 +1,13 @@
 import os, asyncio
 import concurrent.futures
-import tkinter as tk
 from tkinter.constants import *
+from core.components import ActionSet
 
 from ....utils import Tree
 from ..item import SidebarViewItem
 #TODO from .placeholder import DirectoryTreePlaceholder
-from core.components import ActionSet
+from .watcher import DirectoryTreeWatcher
 
-
-#TODO directory watcher
 
 class DirectoryTree(SidebarViewItem):
     def __init__(self, master, startpath=None, *args, **kwargs):
@@ -17,6 +15,8 @@ class DirectoryTree(SidebarViewItem):
         self.title = 'No folder opened'
         super().__init__(master, *args, **kwargs)
 
+        self.nodes = {}
+        
         self.actionset = ActionSet("Search files", "file:", [])
         self.ignore_dirs = [".git", "__pycache__"]
         self.ignore_exts = [".pyc"]
@@ -28,23 +28,38 @@ class DirectoryTree(SidebarViewItem):
         self.tree.grid(row=0, column=0, sticky=NSEW)
 
         self.path = startpath
+        self.watcher = DirectoryTreeWatcher(self, self.tree)
         if startpath:
             self.open_directory(startpath)
         else:
             self.tree.insert('', 0, text='You have not yet opened a folder.')
 
-        self.tree.tree.bind("<<TreeviewOpen>>", self.update_tree)
-    
-    def create_root(self, path):
-        self.tree.clear_tree()
+    def create_root(self):
+        #self.tree.clear_tree()
         self.files = []
-        asyncio.run(self.update_treeview("", [(p, os.path.abspath(p)) for p in os.listdir(os.curdir)]))
+        asyncio.run(self.update_treeview())
 
-        # generate actionset
-        with concurrent.futures.ThreadPoolExecutor() as executor:        
-            def gen_actionset():
+        with concurrent.futures.ThreadPoolExecutor() as executor:  
+            def after():
+                for path, item in list(self.nodes.items()):
+                    if not os.path.exists(path):
+                        self.tree.delete(item)
+                        self.nodes.pop(path)
+                        
                 self.actionset = ActionSet("Search files by name", "file:", self.files)
-            executor.submit(gen_actionset)
+            executor.submit(after)
+    
+    def change_path(self, path):
+        self.path = os.path.abspath(path)
+        if self.path:
+            self.watcher.watch()
+            self.create_root()
+            self.itembar.set_title(os.path.basename(self.path))
+        else:
+            # TODO placeholder
+            self.tree.clear_tree()
+            self.tree.insert('', 0, text='You have not yet opened a folder.')
+            self.itembar.set_title('No folder opened')
 
     def get_actionset(self):
         return self.actionset
@@ -58,12 +73,7 @@ class DirectoryTree(SidebarViewItem):
         return files
     
     def open_directory(self, path):
-        self.path = os.path.abspath(path)
-        self.create_root(self.path)
-        self.itembar.set_title(os.path.basename(self.path))
-    
-    def refresh_tree(self):
-        self.open_directory(self.path)
+        self.change_path(path)
     
     async def async_scandir(self, path):
         entries = []
@@ -71,34 +81,40 @@ class DirectoryTree(SidebarViewItem):
             entries.append((entry.name, entry.path))
         return entries
 
-    async def update_treeview(self, parent, entries):
+    async def update_treeview(self, parent="", entries=[(p, os.path.abspath(p)) for p in os.listdir(os.curdir)]):
         entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
         for name, path in entries:
             if os.path.isdir(path):
                 if name in self.ignore_dirs:
                     continue
+                if path in self.nodes.keys():    
+                    continue
                 item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
+                self.nodes[path] = item
                 await self.update_treeview(item, await self.async_scandir(path))
             else:
                 if name.split(".")[-1] in self.ignore_exts:
                     continue
-                self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='fileicon')
-                
+                if path in self.nodes.keys():    
+                    continue
+                item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='fileicon')
+                self.nodes[path] = item
+
                 # for the actionset
                 self.files.append((name, lambda: print(path)))
     
     #TODO insert file/folder
-    def add_node(self):
+    def add_node(self): ...
         #name = enterbox("Enter file name")
-        selected = self.focus() or ''
+        # selected = self.focus() or ''
         # parent = self.parent(selected)
         # if parent == '':
         #     parent = self.path
-        path = os.path.join(self.item_fullpath(selected), name)
+        # path = os.path.join(self.item_fullpath(selected), name)
         # fullpath = os.path.join(parent_path, name)
-        with open(path, 'w') as f:
-            f.write("")
-        self.update_node(selected)
+        # with open(path, 'w') as f:
+        #     f.write("")
+        # self.update_node(selected)
 
     #TODO close directory
     def close_directory(self):
@@ -124,22 +140,6 @@ class DirectoryTree(SidebarViewItem):
         path = self.tree.selected_path()
         self.base.open_editor(path)
 
-    # def update_panes(self):
-    #     if self.base.active_dir is not None:
-    #         self.enable_tree()
-    #     else:
-    #         self.disable_tree()
-    
     def preview_file(self, _):
         #TODO preview editors -- extra preview param for editors
         return
-
-    def update_node(self, node):
-        if self.tree.item_type(node) != 'directory':
-            return
-
-        # path = self.tree.item_fullpath(node)
-        self.tree.toggle_node(node)
-
-    def update_tree(self, *_):
-        self.update_node(self.tree.focus())

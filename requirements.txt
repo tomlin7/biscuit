@@ -2,3 +2,4 @@ gitpython
 filetype
 tkextrafont
 hintedtext
+watchdog

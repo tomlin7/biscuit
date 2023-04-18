@@ -47,6 +47,9 @@ class Tree(tk.Frame):
         for node in self.tree.get_children():
             self.tree.item(node, open=False)
     
+    def delete(self, *a, **kw):
+        self.tree.delete(*a, *kw)
+    
     def focus(self):
         return self.tree.focus()
 
