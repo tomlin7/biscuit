@@ -8,13 +8,17 @@ class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.commandpalette = CommandPalette(self)
+        self.palette = Palette(self)
 
         self.setup()
         self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True)
 
         self.setup_references()
+
+        self.command_palette = self.palette.register_actionset(self.settings.actionset)
+        self.bind("<Control-P>", lambda e: self.palette.show_prompt(">"))
+
         self.initialize_editor()
     
     def run(self):
@@ -58,6 +62,8 @@ class App(tk.Tk):
         self.logger = self.root.baseframe.contentpane.panel.get_logger()
     
     def initialize_editor(self):
+        self.palette.generate_help_actionset()
+
         self.logger.info('Biscuit started.')
         self.logger.warning('last biscuit.')
         self.logger.error('No biscuits left.')
@@ -65,11 +71,11 @@ class App(tk.Tk):
     # def check_git(self):
     #     self.git.open_repo()
 
-    # def close_active_dir(self):
-    #     self.active_directory = None
-    #     self.active_directory_name = None
-    #     self.refresh()
-    #     self.explorer_ref.close_directory()
+    def close_active_dir(self):
+        self.active_directory = None
+        self.active_directory_name = None
+        self.refresh()
+        self.explorer.close_directory()
     
     # def close_editor(self, path):
     #     self.editor_groups_ref.groups.remove_tab(path)

@@ -1,12 +1,11 @@
-# TODO Reimplement all info shown on statusbar
-#   - Re add all buttons and labels
-#   - (Popups shall be revised first) Re add all popups 
-
+#TODO add actual functions to actionset
 import tkinter as tk
 
 from .popups import *
 from .utils.button import SButton
 from .utils.clock import SClock
+
+from core.components import ActionSet
 
 
 class Statusbar(tk.Frame):
@@ -31,33 +30,61 @@ class Statusbar(tk.Frame):
         self.config(bg=self.bg)
 
         # git info
-        self.git_popup = GitPopup(self)
-        self.branch = SButton(self, text="master", icon="\uea68", function=self.git_popup.show)
+        self.git_actionset = ActionSet(
+            "GIT", "branch:",
+            [("main", lambda e=None: print("main", e)), ("rewrite", lambda e=None: print("rewrite", e))],
+        )
+        self.base.palette.register_actionset(self.git_actionset)
+        self.branch = SButton(self, text="master", icon="\uea68", function=lambda e: self.base.palette.show_prompt('branch:'))
         self.branch.set_pack_data(side=tk.LEFT, padx=(10, 0))
 
         # line and column info
-        self.line_col_info_popup = LineColInfoPopup(self)
-        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=self.line_col_info_popup.show)
+        self.lc_actionset = ActionSet(
+            "GOTO", ":",
+            [("goto line", lambda e=None: print("goto line", e))],
+        )
+        self.base.palette.register_actionset(self.lc_actionset)
+        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda e: self.base.palette.show_prompt(':'))
         self.line_col_info.set_pack_data(side=tk.RIGHT)
 
         # indentation
-        self.indentation_popup = IndentationPopup(self)
-        self.indentation = SButton(self, text="Spaces: 4", function=self.indentation_popup.show)
+        self.indent_actionset = ActionSet(
+            "INDENT", "indent:",
+            [("2", lambda e=None: print("indent 2", e)),
+            ("4", lambda e=None: print("indent 2", e))],
+        )
+        self.base.palette.register_actionset(self.indent_actionset)
+        self.indentation = SButton(self, text="Spaces: 4", function=lambda e: self.base.palette.show_prompt('indent:'))
         self.indentation.set_pack_data(side=tk.RIGHT)
 
         # encoding
-        self.encoding_popup = EncodingPopup(self)
-        self.encoding = SButton(self, text="UTF-8", function=self.encoding_popup.show)
+        self.encoding_actionset = ActionSet(
+            "ENCODING", "encoding:",
+            [("UTF-8", lambda e=None: print("encoding UTF-8", e))],
+        )
+        self.base.palette.register_actionset(self.encoding_actionset)
+        self.encoding = SButton(self, text="UTF-8", function=lambda e: self.base.palette.show_prompt('encoding:'))
         self.encoding.set_pack_data(side=tk.RIGHT)
 
         # end of line
-        self.eol_popup = EOLPopup(self)
-        self.eol = SButton(self, text="CRLF", function=self.eol_popup.show)
+        self.eol_actionset = ActionSet(
+            "EOL", "eol:",
+            [("LF", lambda e=None: print("eol lf", e)),
+            ("CRLF", lambda e=None: print("eol crlf", e))],
+        )
+        self.base.palette.register_actionset(self.eol_actionset)
+        self.eol = SButton(self, text="CRLF", function=lambda e: self.base.palette.show_prompt('eol:'))
         self.eol.set_pack_data(side=tk.RIGHT)
 
-        # file type
-        self.file_type_popup = FileTypePopup(self)
-        self.file_type = SButton(self, text="Plain Text", function=self.file_type_popup.show)
+        # TODO use pyglet
+        self.filetype_actionset = ActionSet(
+            "FILETYPE", "syntax:",
+            [("Plain Text", lambda e=None: print("filetype Plain Text", e)),
+            ("python", lambda e=None: print("filetype python", e)),
+            ("c++", lambda e=None: print("filetype c++", e))],
+        )
+        self.base.palette.register_actionset(self.filetype_actionset)
+        self.file_type = SButton(self, text="Plain Text", function=lambda e: self.base.palette.show_prompt('syntax:'))
         self.file_type.set_pack_data(side=tk.RIGHT)
 
         self.clock = SClock(self, text="H:M:S")

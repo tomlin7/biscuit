@@ -1,4 +1,4 @@
-import json, os
+import toml, os
 
 
 class BindingsLoader:
@@ -11,8 +11,8 @@ class BindingsLoader:
         self.bindings_data = self.load_bindings()
 
     def load_bindings(self):
-        with open(os.path.join(self.base.configdir, 'bindings.json'), 'r') as bindings_file:
-            bindings_data = json.load(bindings_file)
+        with open(os.path.join(self.base.configdir, 'bindings.toml'), 'r') as bindings_file:
+            bindings_data = toml.load(bindings_file)
         return bindings_data
     
     def get_loaded_bindings(self):

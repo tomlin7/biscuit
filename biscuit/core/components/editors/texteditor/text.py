@@ -84,17 +84,14 @@ class Text(tk.Text):
         return [lc[0], int(lc[1]) + 1]
 
     def scroll_to_end(self):
-        self.see(tk.END)
         self.mark_set(tk.INSERT, tk.END)
         self.see(tk.INSERT)
     
     def scroll_to_start(self):
-        self.see(1.0)
         self.mark_set(tk.INSERT, 1.0)
         self.see(tk.INSERT)
     
     def scroll_to_line(self, line):
-        self.see(line)
         self.mark_set(tk.INSERT, line)
         self.see(tk.INSERT)
     
