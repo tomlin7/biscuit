@@ -15,7 +15,7 @@
 </h3>
 
 <p align="center">
-    <img src="./.github/res/preview1.png" width=900/>
+    <img src=https://user-images.githubusercontent.com/70792552/232812360-d256d67f-5ea5-4c9b-a4c6-171062b5a806.png width=900/>
 </p>
 
 ## About
