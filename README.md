@@ -1,5 +1,5 @@
 <h1 align="center">
-    <b>Biscuit</b> - Code Editor
+    <b>Biscuit</b> - Code Editor 
 </h1>
 
 <h3 align="center">
@@ -16,15 +16,15 @@
     <img src=https://user-images.githubusercontent.com/70792552/232812360-d256d67f-5ea5-4c9b-a4c6-171062b5a806.png width=900/>
 </p>
 
-# What's new!
+# What's new! ✨
 - Playable **Tetris** inside the editor `Ctrl` + `Shift` + `t`
 - Rich **Command palette** which works based on various prompts used
 - **Git** support and **Diff editor**!
 
-## About
+## About 
 Biscuit is a highly customizable code editor written completely in pure python with the tkinter library. Biscuit stands lightweight, fast and powerful among other code editors. It is easy to use and feature rich.
 
-## Running biscuit
+## Running biscuit 💿
 This project is a WIP. Bugs and missing or incomplete features will be present.
 You need **python 3.10** or above. Install required packages `pip install -r requirements.txt`
 
