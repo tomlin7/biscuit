@@ -1,35 +1,45 @@
 import tkinter as tk
-from random import choice
-from collections import Counter
 from tkinter import messagebox
+import random
+from collections import Counter
+
+from core.components.editors.editor import BaseEditor
 
 SIDE = 25
+WIDTH = 10 * SIDE
+HEIGHT = 15 * SIDE
 
 
-class Tetris(tk.Toplevel):
-    """The tetris game"""
-    WIDTH = 10 * SIDE
-    HEIGHT = 20 * SIDE
+class Tetris(BaseEditor):
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, None, None, *args, **kwargs)
+        self.master = master
+        self.base = master.base
+        self.config(bg='#F4EEE0')
+        
+        self.path = "games/tetris"
+        self.exists = False
+        self.filename = "Tetris"
 
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.geometry("500x600")
-        self.title("Tetris on Biscuit")
         self.status_var = tk.StringVar()
-        self.status_label = tk.Label(
-            self, textvariable=self.status_var, width=40)
-        self.status_label.pack(side='top', pady=SIDE)
-        self.board = tk.Canvas(self, width=Tetris.WIDTH,
-                               height=Tetris.HEIGHT, bg='black')
-        self.board.pack(side='left', padx=(2*SIDE, 0))
-        self.preview = tk.Canvas(self, width=4*SIDE, height=2*SIDE, bg='white')
-        self.preview.pack(side='right', padx=(0, 2*SIDE))
-        self.bind("<Key>", self.handle_events)
+        self.status_label = tk.Label(self, textvariable=self.status_var, font='Fixedsys 18', bg='#F4EEE0', fg='#B99B6B')
+        self.status_label.pack(side='top', pady=5)
+
+        self.board = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg='#F1DFB4')
+        self.board.pack(side='left', padx=(40, 20), expand=True)
+        
+        self.preview = tk.Canvas(self, width=5*SIDE, height=5*SIDE, bg='#F1DFB4')
+        self.preview.pack(padx=(0, 40), expand=True, side=tk.TOP)
+
+        self.controls = tk.Text(self, relief=tk.FLAT, 
+            bg='#F4EEE0', insertbackground='#F4EEE0', fg='#F4EEE0')
+        self.controls.pack(fill=tk.BOTH, side=tk.BOTTOM)
+
+        self.controls.bind("<Key>", self.handle_events)
+        self.bind('<Motion>', lambda _: self.controls.focus())
         self.start()
 
     def start(self):
-        """Start a tetris game"""
-        
         self.board.delete('all')
         self.score = 0
         self.level = 1
@@ -46,14 +56,9 @@ class Tetris(tk.Toplevel):
         self.run()
 
     def run(self):
-
         if not self.falling_piece.move(0, 1):
-            # print("stopped")
-            # check for lines to clear
             self.clear_lines()
-            # update state
             self.update_status()
-            # create a new piece
             self.falling_piece = self.next_piece
             self.falling_piece.canvas = self.board
             self.falling_piece.place_on_board()
@@ -73,18 +78,15 @@ class Tetris(tk.Toplevel):
             return
         
     def clear_lines(self):
-        "clear complete lines and update lines_cleared and total_lines"
         lines = 0
 
         all_squares = self.board.find_all()
         all_squares_h = {k : v for k,v in zip(all_squares, [self.board.coords(sq)[3] for sq in all_squares])}
         count = Counter()
         for sq in all_squares_h.values(): count[sq] += 1
-        full_lines = [k for k,v in count.items() if v == Tetris.WIDTH/SIDE]
+        full_lines = [k for k,v in count.items() if v == WIDTH/SIDE]
         
-
         if full_lines:
-            #print("clearing lines", full_lines)
             lines = len(full_lines)
             remaining_squares_h = {}
             for k,v in all_squares_h.items():
@@ -103,52 +105,53 @@ class Tetris(tk.Toplevel):
         self.total_lines += lines
 
     def handle_events(self, event):
-        '''Handle all user events.'''
-        if event.keysym == "Left":
+        if event.keysym in ("Left", "a"):
             self.falling_piece.move(-1, 0)
-        if event.keysym == "Right":
+        if event.keysym in ("Right", "d"):
             self.falling_piece.move(1, 0)
-        if event.keysym == "Down":
+        if event.keysym in ("Down", "s"):
             self.falling_piece.move(0, 1)
-        if event.keysym == "Up":
+        if event.keysym in ("Up", "w"):
             self.falling_piece.rotate()
+        
+        return "break"
 
     def update_status(self):
 
         points = [0, 40, 100, 300, 1200]
         self.score += self.level * points[self.lines_cleared[-1]]
         self.level = 1 + divmod(self.total_lines, 10)[0]
-        self.status_var.set(f"Level: {self.level}  Score: {self.score}")
+        self.status_var.set(f"Level: {self.level} Score: {self.score}")
         self.speed = 500 - 20*self.level
 
 
 class Piece:
-    """A tetris piece"""
     START_PT = 10*SIDE // 2 // SIDE * SIDE - SIDE
 
     def __init__(self, canvas):
-        self.PIECES = (
-            ["yellow", (0, 0), (1, 0), (0, 1), (1, 1)],     # square
-            ["lightblue", (0, 0), (1, 0), (2, 0), (3, 0)],  # line
-            ["orange", (2, 0), (0, 1), (1, 1), (2, 1)],     # right el
-            ["blue", (0, 0), (0, 1), (1, 1), (2, 1)],       # left el
-            ["green", (0, 1), (1, 1), (1, 0), (2, 0)],      # right wedge
-            ["red", (0, 0), (1, 0), (1, 1), (2, 1)],        # left wedge
-            ["purple", (1, 0), (0, 1), (1, 1), (2, 1)],     # symmetrical wedge
-        )
+        self.PIECES = [
+            ["#A9907E", (0, 0), (1, 0), (0, 1), (1, 1)],     # square
+            ["#698269", (0, 0), (1, 0), (2, 0), (3, 0)],  # line
+            ["#ABC4AA", (2, 0), (0, 1), (1, 1), (2, 1)],     # right el
+            ["#675D50", (0, 0), (0, 1), (1, 1), (2, 1)],       # left el
+            ["#609966", (0, 1), (1, 1), (1, 0), (2, 0)],      # right wedge
+            ["#B99B6B", (0, 0), (1, 0), (1, 1), (2, 1)],        # left wedge
+            ["#AA5656", (1, 0), (0, 1), (1, 1), (2, 1)],     # symmetrical wedge
+        ]
+        random.shuffle(self.PIECES)
 
         self.squares = []
-        self.piece = choice(self.PIECES)
+        self.piece = random.choice(self.PIECES)
         self.color = self.piece.pop(0)
         self.canvas = canvas
 
         for point in self.piece:
             square = canvas.create_rectangle(
-                point[0] * SIDE,
-                point[1] * SIDE,
-                point[0] * SIDE + SIDE,
-                point[1] * SIDE + SIDE,
-                fill=self.color)
+                point[0] * SIDE + 10,
+                point[1] * SIDE + 10,
+                point[0] * SIDE + SIDE + 10,
+                point[1] * SIDE + SIDE + 10,
+                fill=self.color, outline=self.color)
             self.squares.append(square)
 
     def place_on_board(self):
@@ -159,7 +162,7 @@ class Piece:
                 point[1] * SIDE,
                 point[0] * SIDE + SIDE + Piece.START_PT,
                 point[1] * SIDE + SIDE,
-                fill=self.color)
+                fill=self.color, outline=self.color)
             self.squares.append(square)
 
     def move(self, x, y):
@@ -183,12 +186,11 @@ class Piece:
             y_move = (x_diff - y_diff) / SIDE
             return x_move, y_move
 
-        # check if its allowed
         for sq in squares:
             xmove, ymove = get_move_coords(sq, pivot)
             if not self.is_sq_allowed(sq, xmove, ymove):
                 return False
-        # actually rotate
+
         for sq in squares:
             xmove, ymove = get_move_coords(sq, pivot)
             self.canvas.move(sq, xmove*SIDE, ymove*SIDE)
@@ -199,11 +201,11 @@ class Piece:
         y = y * SIDE
         coords = self.canvas.coords(sq)
 
-        if coords[3] + y > Tetris.HEIGHT:
+        if coords[3] + y > HEIGHT:
             return False
         if coords[2] + x <= 0:
             return False
-        if coords[2] + x > Tetris.WIDTH:
+        if coords[2] + x > WIDTH:
             return False
 
         overlap = set(self.canvas.find_overlapping(
@@ -225,10 +227,3 @@ class Piece:
             if not self.is_sq_allowed(sq, x, y):
                 return False
         return True
-
-
-root = tk.Tk()
-t = Tetris(root)
-t.lift()
-
-root.mainloop()

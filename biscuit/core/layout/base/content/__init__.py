@@ -31,6 +31,15 @@ class ContentPane(tk.Frame):
         
         self.editorspane = EditorsPane(self)
         self.panel = Panel(self)
+        self._panel_enabled = False
 
         self.editorspane.pack(fill=BOTH, expand=True)
-        self.panel.pack(fill=BOTH, pady=(1, 0))
+        self.toggle_panel()
+    
+    def toggle_panel(self, *_):
+        if self._panel_enabled:
+            self.panel.pack_forget()
+        else:
+            self.panel.pack(fill=BOTH, pady=(1, 0))
+        
+        self._panel_enabled = not self._panel_enabled

@@ -2,6 +2,7 @@ import os, tkinter as tk
 
 from core import *
 from core.components import Editor
+from core.components.games import Tetris
 
 
 class App(tk.Tk):
@@ -18,6 +19,10 @@ class App(tk.Tk):
 
         self.command_palette = self.palette.register_actionset(self.settings.actionset)
         self.bind("<Control-P>", lambda e: self.palette.show_prompt(">"))
+
+        # test 
+        self.bind("<Control-T>", self.open_tetris)
+        self.bind("<Control-`>", self.root.baseframe.contentpane.toggle_panel)
 
         self.initialize_editor()
     
@@ -95,6 +100,9 @@ class App(tk.Tk):
     
     def open_editor(self, path, exists=True):
         self.editorsmanager.add_editor(Editor(self.editorsmanager, path, exists))
+    
+    def open_tetris(self, _):
+        self.editorsmanager.add_editor(Tetris(self.editorsmanager))
 
     # def open_welcome_tab(self, _):
     #     self.set_active_file("@welcomepage", exists=False)
