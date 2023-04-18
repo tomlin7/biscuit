@@ -8,8 +8,8 @@
             "name": "Python: Launch Biscuit",
             "type": "python",
             "request": "launch",
-            "program": "src/.",
-            "console": "externalTerminal"
+            "program": "biscuit",
+            "console": "integratedTerminal"
         }
     ]
 }

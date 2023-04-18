@@ -1,4 +1,4 @@
-python-tkdnd
 gitpython
 filetype
 tkextrafont
+hintedtext
