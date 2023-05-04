@@ -20,8 +20,8 @@ class Menu(tk.Toplevel):
         self.overrideredirect(True)
         # self.wm_attributes("-topmost", 1)
 
-        self.menu = MenuContainer(self, name)
-        self.menu.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
+        self._menu = MenuContainer(self, name)
+        self._menu.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
 
         self.configure_bindings()
 
@@ -42,14 +42,8 @@ class Menu(tk.Toplevel):
     def hide(self, *args):
         self.withdraw()
 
-    def add_first_item(self, text, command):
-        self.menu.add_first_item(text, command)
-    
     def add_item(self, text, command=None):
-        self.menu.add_item(text, command)
+        self._menu.add_item(text, command)
 
-    def add_last_item(self, text, command):
-        self.menu.add_last_item(text, command)
-    
     def add_separator(self):
-        self.menu.add_separator()
+        self._menu.add_separator()

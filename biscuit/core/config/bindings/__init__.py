@@ -5,18 +5,6 @@ class Bindings:
     """
     Loads and manages bindings for biscuit.
     """
-
-    # TODO: properties
-    new_file: str
-    new_window: str
-    open_file: str
-    open_dir: str
-    save: str
-    save_as: str
-    close_file: str
-    quit: str
-    # ...
-
     def __init__(self, master):
         self.base = master.base
 
@@ -35,3 +23,4 @@ class Bindings:
         self.quit = self.bindings['quit']
 
         self.commandpalette = self.bindings['commandpalette']
+        self.panel = "<Control-`>"

@@ -14,15 +14,13 @@ class App(tk.Tk):
         self.setup()
         self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True)
+        self.late_setup()
 
         self.setup_references()
-
         self.command_palette = self.palette.register_actionset(self.settings.actionset)
-        self.bind("<Control-P>", lambda e: self.palette.show_prompt(">"))
 
         # TODO testing only
         self.bind("<Control-T>", self.open_tetris)
-        self.bind("<Control-`>", self.root.baseframe.contentpane.toggle_panel)
 
         self.initialize_editor()
     
@@ -35,6 +33,9 @@ class App(tk.Tk):
         self.setup_configs()
         self.setup_version_control()
     
+    def late_setup(self):
+        self.binder.late_bind_all()
+
     def setup_tk(self):
         self.geometry("850x650")
         self.minsize(800, 600)
@@ -101,7 +102,7 @@ class App(tk.Tk):
     def open_editor(self, path, exists=True):
         self.editorsmanager.add_editor(Editor(self.editorsmanager, path, exists))
     
-    def open_tetris(self, _):
+    def open_tetris(self, *_):
         self.editorsmanager.add_editor(Tetris(self.editorsmanager))
 
     # def open_welcome_tab(self, _):

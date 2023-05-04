@@ -5,10 +5,6 @@ class Theme:
     """
     Loads and configures a theme for biscuit.
     """
-
-    # TODO: properties
-    # ...
-
     def __init__(self, master, theme_name="default"):
         self.base = master.base
 

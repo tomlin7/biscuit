@@ -18,9 +18,12 @@ class Settings:
     def gen_actionset(self):
         self.actionset = ActionSet(
             "Show and run commands", ">",
-            [("Editor Theme", lambda e=None: print("Theme", e)),
-            ("Editor Bindings", lambda e=None: print("Bindings", e)),
-            ("Editor Font", lambda e=None: print("Font", e))],
+            [
+                ("Editor Theme", lambda e=None: print("Theme", e)),
+                ("Editor Bindings", lambda e=None: print("Bindings", e)),
+                ("Editor Font", lambda e=None: print("Font", e)),
+                ("Play tetris", self.base.open_tetris)
+            ],
         )
 
     def setup_properties(self):
