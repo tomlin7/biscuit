@@ -4,7 +4,6 @@ import tkinter.font as Font
 import tkextrafont as extra
 
 from .. import config
-from ..res import Resources
 from core.components import ActionSet
 
 
@@ -13,7 +12,6 @@ class Settings:
         self.base = base
 
         self.config = config.Config(self)
-        # self.resources = Resources(self)
         self.setup_properties()
         self.gen_actionset()
     
