@@ -20,7 +20,7 @@ class App(tk.Tk):
         self.command_palette = self.palette.register_actionset(self.settings.actionset)
         self.bind("<Control-P>", lambda e: self.palette.show_prompt(">"))
 
-        # test 
+        # TODO testing only
         self.bind("<Control-T>", self.open_tetris)
         self.bind("<Control-`>", self.root.baseframe.contentpane.toggle_panel)
 
@@ -79,8 +79,8 @@ class App(tk.Tk):
     def close_active_dir(self):
         self.active_directory = None
         self.active_directory_name = None
-        self.refresh()
-        self.explorer.close_directory()
+        # self.refresh()
+        self.explorer.directory.close_directory()
     
     # def close_editor(self, path):
     #     self.editor_groups_ref.groups.remove_tab(path)

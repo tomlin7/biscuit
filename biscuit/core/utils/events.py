@@ -37,7 +37,7 @@ class Events:
         self.base.close_active_file()
     
     def close_dir(self, *_):
-        self.base.trace('close dir event')
+        self.base.close_active_dir()
 
     def quit(self, *_):
         self.base.destroy()

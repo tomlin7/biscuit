@@ -13,4 +13,3 @@ class Explorer(SidebarView):
     
     def get_actionset(self):
         return self.directory.get_actionset() 
-    

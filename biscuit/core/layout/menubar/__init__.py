@@ -18,7 +18,6 @@ class Menubar(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.placeholder = lambda _: None
         self.menus = []
 
         self.config(bg="#dddddd")
@@ -49,6 +48,7 @@ class Menubar(tk.Frame):
         file_menu.menu.add_item("Open Folder", events.open_dir)
         file_menu.menu.add_separator()
         file_menu.menu.add_item("Close Editor", events.close_file)
+        file_menu.menu.add_item("Close Folder", events.close_dir)
         file_menu.menu.add_item("Close Window", events.quit)
         file_menu.menu.add_separator()
         file_menu.menu.add_last_item("Exit", events.quit)
@@ -64,21 +64,21 @@ class Menubar(tk.Frame):
         edit_menu.menu.add_item("Copy", events.copy)
         edit_menu.menu.add_item("Paste", events.paste)
         edit_menu.menu.add_separator()
-        edit_menu.menu.add_item("Find", self.placeholder)
-        edit_menu.menu.add_last_item("Replace", self.placeholder)
+        edit_menu.menu.add_item("Find",)
+        edit_menu.menu.add_last_item("Replace",)
     
     def add_view_menu(self):
         events = self.events
 
         view_menu = self.add_menu("View")
-        view_menu.menu.add_first_item("Side Bar", self.placeholder)
-        view_menu.menu.add_item("Console", self.placeholder)
-        view_menu.menu.add_item("Status Bar", self.placeholder)
-        view_menu.menu.add_item("Menu", self.placeholder)
+        view_menu.menu.add_first_item("Side Bar",)
+        view_menu.menu.add_item("Console",)
+        view_menu.menu.add_item("Status Bar",)
+        view_menu.menu.add_item("Menu",)
         view_menu.menu.add_separator()
-        view_menu.menu.add_item("Syntax", self.placeholder)
-        view_menu.menu.add_item("Indentation", self.placeholder)
-        view_menu.menu.add_last_item("Line Endings", self.placeholder)
+        view_menu.menu.add_item("Syntax",)
+        view_menu.menu.add_item("Indentation",)
+        view_menu.menu.add_last_item("Line Endings",)
 
     def close_all_menus(self, event):
         for menu in self.menus:
