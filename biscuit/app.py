@@ -131,10 +131,9 @@ class App(tk.Tk):
         if not os.path.isdir(dir):
             return
 
-        self.explorer.directory.open_directory(dir)
-
-        # self.active_directory = dir
-        # self.active_directory_name = os.path.basename(dir)
+        self.active_directory = dir
+        self.explorer.directory.change_path(dir)
+        self.set_title(os.path.basename(self.active_directory))
 
         # self.check_git()
         # self.update_git()
@@ -142,6 +141,9 @@ class App(tk.Tk):
         # self.refresh_dir()
         # self.close_all_editors()
         # self.refresh()
+    
+    def set_title(self, name):
+        self.title(f"{name} - Biscuit")
 
     # def toggle_terminal(self, *args):
     #     self.primarypane.contentpane.right.terminal.toggle()

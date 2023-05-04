@@ -20,7 +20,7 @@ class Terminal(PanelView):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.terminal = TerminalText(self, relief=FLAT, padx=10, pady=10)
+        self.terminal = TerminalText(self, relief=FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.terminal.grid(row=0, column=0, sticky=NSEW)
         self.terminal.bind("<Return>", self.enter)
 

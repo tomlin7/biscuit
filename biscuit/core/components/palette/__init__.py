@@ -1,8 +1,6 @@
 # TODO Palette
-#   - Have quick access prefixes (eg. >, ?, :)
-#   - Use the same instance of quick access everywhere, with suited prefixes
-#   - Rename command palette spawned with root to quick access
-#       - Command Palette should be a special case of quick access
+#   - working commands
+#   - sub menus
 
 
 import tkinter as tk

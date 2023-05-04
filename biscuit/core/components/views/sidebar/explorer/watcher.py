@@ -4,18 +4,18 @@ from watchdog.events import FileSystemEventHandler
 
 
 class DirectoryTreeWatcher(FileSystemEventHandler):
-    def __init__(self, master, tree):
+    def __init__(self, master, tree, observe_changes):
         self.master = master
         self.tree = tree
+        self.observe_changes = observe_changes
 
         self.observer = Observer()
-        self.watch()
+        self.observer.start()
 
     def watch(self):
         self.observer.unschedule_all()
-        if self.master.path:
+        if self.master.path and self.observe_changes:
             self.observer.schedule(self, self.master.path, recursive=True)
-            self.observer.start()
     
     def stop_watch(self):
         self.observer.stop()

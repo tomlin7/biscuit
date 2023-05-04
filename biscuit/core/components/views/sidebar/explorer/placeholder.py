@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ....utils import WrappingLabel, Button
+from core.components.utils import WrappingLabel, Button
 
 
 class DirectoryTreePlaceholder(tk.Frame):
@@ -8,6 +8,7 @@ class DirectoryTreePlaceholder(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
+        self.config(padx=10, pady=10)
         self.columnconfigure(0, weight=1)
 
         WrappingLabel(self, text="You have not yet opened a folder.", font=("Segoe UI", 10), anchor=tk.W, fg="#616161").grid(row=0, sticky=tk.EW)

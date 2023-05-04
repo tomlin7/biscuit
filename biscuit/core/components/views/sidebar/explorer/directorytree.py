@@ -37,7 +37,8 @@ class DirectoryTree(SidebarViewItem):
 
     # IMPORTANT
     def change_path(self, path):
-        self.path = os.path.abspath(path)
+        self.nodes.clear()
+        self.path = path
         if self.path:
             self.tree.grid()
             self.placeholder.grid_remove()
@@ -55,10 +56,10 @@ class DirectoryTree(SidebarViewItem):
         self.files = []
         self.update_treeview([(p, os.path.join(self.path, p)) for p in os.listdir(self.path)])
 
-        # for path, item in list(self.nodes.items()):
-        #     if not os.path.exists(path):
-        #         self.tree.delete(item)
-        #         self.nodes.pop(path)
+        for path, item in list(self.nodes.items()):
+            if not os.path.exists(path):
+                self.tree.delete(item)
+                self.nodes.pop(path)
                 
         self.actionset = ActionSet("Search files by name", "file:", self.files)
 

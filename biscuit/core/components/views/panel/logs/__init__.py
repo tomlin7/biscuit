@@ -50,7 +50,7 @@ class Logs(PanelView):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.text = tk.Text(self, relief=FLAT, padx=10, pady=10) # , font=("Consolas", 13)
+        self.text = tk.Text(self, relief=FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.text.grid(row=0, column=0, sticky=NSEW)
 
         self.scrollbar = Scrollbar(self)
@@ -59,7 +59,7 @@ class Logs(PanelView):
         self.text.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.text.yview)
 
-        fontbold = ('Courier New', 10, 'bold') # ("Consolas", 13, "bold")
+        fontbold = ("Consolas", 11, "bold") 
 
         self.text.tag_config('time', foreground="#008000")
         self.text.tag_config('caller', foreground="#0000ff")
