@@ -96,7 +96,9 @@ class DirectoryTree(SidebarViewItem):
                     continue
                 if path in self.nodes.keys():    
                     continue
-                item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='fileicon')
+                    
+                #TODO check filetype and get matching icon, cases
+                item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
                 self.nodes[path] = item
 
                 # for the actionset
