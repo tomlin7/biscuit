@@ -3,3 +3,4 @@ filetype
 tkextrafont
 hintedtext
 watchdog
+tksvg

@@ -12,7 +12,7 @@ class Panelbar(tk.Frame):
         self.base = master.base
         content = self.master.master
 
-        self.config(bg='white')
+        self.config(bg='#f8f8f8')
 
         self.tabs = Tabs(self)
         self.tabs.pack(fill=tk.X, side=LEFT, expand=True)
@@ -21,7 +21,7 @@ class Panelbar(tk.Frame):
         self.default_buttons = (('close', content.toggle_panel), ('chevron-up', content.toggle_max_panel, 'chevron-down'))
         
         for button in self.default_buttons:
-            IconButton(self, *button, bg='white').pack(side=RIGHT)
+            IconButton(self, *button).pack(side=RIGHT)
 
     def add_buttons(self, buttons):
         for button in buttons:

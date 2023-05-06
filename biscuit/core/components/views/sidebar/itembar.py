@@ -9,6 +9,8 @@ class ItemBar(tk.Frame):
         self.master = master
         self.base = master.base
 
+        self.config(bg='#f8f8f8')
+
         self.grid_columnconfigure(1, weight=1)
 
         self.title = tk.StringVar()
@@ -18,18 +20,18 @@ class ItemBar(tk.Frame):
         self.toggle = IconButton(self, icon='chevron-down', event=self.toggle_content, width=1)
         self.toggle.grid(row=0, column=0)
 
-        self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title)
+        self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title, bg='#f8f8f8')
         self.label_title.grid(row=0, column=1, sticky=tk.EW)
 
         self.buttoncolumn = 0
-        self.buttonframe = tk.Frame(self)
+        self.buttonframe = tk.Frame(self, bg='#f8f8f8')
         self.buttonframe.base = self.base
         self.buttonframe.grid(row=0, column=2, sticky=tk.E)
 
         self.add_buttons(buttons)
 
-    def add_button(self, icon, event=lambda _: None):
-        IconButton(self.buttonframe, icon=icon, event=event, activebackground='#e1e1e1').grid(row=0, column=self.buttoncolumn)
+    def add_button(self, *args):
+        IconButton(self.buttonframe, *args).grid(row=0, column=self.buttoncolumn)
         self.buttoncolumn += 1
     
     def add_buttons(self, buttons):

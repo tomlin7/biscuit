@@ -11,7 +11,7 @@ class Editorsbar(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.config(bg='#f3f3f3')
+        self.config(bg='#f8f8f8')
 
         self.tabs = Tabs(self)
         self.tabs.pack(fill=BOTH, side=LEFT, expand=True)
@@ -19,12 +19,13 @@ class Editorsbar(tk.Frame):
         self.buttons = []
         self.default_buttons = (('ellipsis',),)
 
+        # TODO like panelbar, add __buttons__ to BaseEditor
         self.buttonframe = tk.Frame(self)
         self.buttonframe.base = self.base
         self.buttonframe.pack(fill=BOTH, side=RIGHT, pady=5, padx=10)
         
         for button in self.default_buttons:
-            IconButton(self.buttonframe, *button, bg='#f3f3f3', activebackground='#e1e1e1').pack(side=RIGHT)
+            IconButton(self.buttonframe, *button).pack(side=RIGHT)
 
     def add_buttons(self, buttons):
         for button in buttons:

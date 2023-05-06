@@ -10,6 +10,7 @@ class ButtonsEntry(tk.Frame):
         self.master = master
         self.base = master.base
         
+        self.config(padx=1, pady=1, bg='#dfdfdf')
         self.grid_columnconfigure(0, weight=1)
 
         self.entry = tk.Entry(self, relief=tk.FLAT, bd=5)
@@ -19,7 +20,7 @@ class ButtonsEntry(tk.Frame):
         self.add_buttons(buttons)
 
     def add_button(self, icon, event=lambda _: None):
-        IconButton(self, icon, event, bg='white', fg='#616161', activebackground='#e9e9e9').grid(row=0, column=self.column, sticky='')
+        IconButton(self, icon, event, bg='white').grid(row=0, column=self.column, sticky='')
         self.column += 1
 
     def add_buttons(self, buttons):

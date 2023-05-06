@@ -20,11 +20,12 @@ class Root(tk.Frame):
     def __init__(self, base, *args, **kwargs):
         super().__init__(base, *args, **kwargs)
         self.base = base
+        self.config(bg="#dfdfdf")
 
         self.menubar = Menubar(self)
         self.baseframe = BaseFrame(self)
         self.statusbar = Statusbar(self)
 
         self.menubar.pack(fill=X)
-        self.baseframe.pack(fill=BOTH, expand=1)
-        self.statusbar.pack(fill=X)
+        self.baseframe.pack(fill=BOTH, expand=1, pady=(1,0))
+        self.statusbar.pack(fill=X, pady=(1,0))

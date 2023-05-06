@@ -1,20 +1,13 @@
 from .font import Font
 from .bindings import Bindings
 from .theme import Theme
-from .loadconfig import ConfigLoader
+from .loader import ConfigLoader
 
 
 class Config:
     """
     Loads and manages configurations for biscuit.
     """
-
-    theme: str
-    font: Font
-
-    # TODO: more properties
-    # ...
-
     def __init__(self, master):
         self.base = master.base
 

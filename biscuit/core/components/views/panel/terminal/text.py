@@ -2,9 +2,11 @@ import tkinter as tk
 
 class TerminalText(tk.Text):
     def __init__(self, master=None, **kw):
-        tk.Text.__init__(self, master, **kw)
+        super().__init__(master, **kw)
         self.mark_set('input', 'insert')
         self.mark_gravity('input', 'left')
+
+        self.config(bg='#f8f8f8', fg='#424242')
 
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)

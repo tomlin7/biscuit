@@ -11,6 +11,8 @@ class Tree(tk.Frame):
         self.master = master
         self.base = master.base
 
+        self.config(bg='#f8f8f8')
+
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 

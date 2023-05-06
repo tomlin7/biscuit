@@ -12,7 +12,7 @@ class Search(SidebarView):
         self.__icon__ = 'search'
         super().__init__(master, *args, **kwargs)
 
-        self.container = tk.Frame(self)
+        self.container = tk.Frame(self, bg='#f8f8f8')
         self.container.base = self.base
         self.container.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
@@ -21,10 +21,10 @@ class Search(SidebarView):
 
         self.searchbox.pack(fill=X, anchor=N, pady=2)
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
-        IconButton(self.container, 'replace-all', self.replace, bg='#f3f3f3', activebackground='#e1e1e1').pack(anchor=N)
+        IconButton(self.container, 'replace-all', self.replace).pack(anchor=N)
 
-        self.results = Results(self)
+        self.results = Results(self, bg='#f8f8f8')
         self.results.pack(fill=BOTH, expand=True)
 
-    def replace(self, _):
+    def replace(self):
         ...

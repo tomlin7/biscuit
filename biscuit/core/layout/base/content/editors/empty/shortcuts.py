@@ -1,5 +1,5 @@
 import tkinter as tk
-from .shortcut import Shortcut
+from core.components.utils import Shortcut
 
 
 class Shortcuts(tk.Frame):

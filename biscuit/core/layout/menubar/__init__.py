@@ -20,7 +20,7 @@ class Menubar(tk.Frame):
 
         self.menus = []
 
-        self.config(bg="#dddddd")
+        self.config(bg="#f8f8f8")
         self.events = self.base.events
         self.add_menus()
         

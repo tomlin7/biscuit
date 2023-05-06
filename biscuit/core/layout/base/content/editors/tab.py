@@ -19,14 +19,14 @@ class Tab(tk.Menubutton):
         self.selected = False
         
         self.config(text=editor.filename, padx=5, pady=5,
-            font=('Segoe UI', 10), bg='#f3f3f3', activebackground='white')
+            font=('Segoe UI', 10), bg='#f8f8f8', activebackground='white')
 
         self.bind('<Button-1>', self.select)
 
     def deselect(self, *_):
         if self.selected:
             self.editor.grid_remove()
-            self.config(bg='#f3f3f3')
+            self.config(bg='#f8f8f8')
             self.selected = False
         
     def select(self, *_):

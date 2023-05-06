@@ -28,6 +28,8 @@ class ContentPane(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
+
+        self.config(bg="#dfdfdf")
         
         self.editorspane = EditorsPane(self)
         self.panel = Panel(self)

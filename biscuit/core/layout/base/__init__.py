@@ -21,6 +21,8 @@ class BaseFrame(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
+        
+        self.config(bg="#dfdfdf")
 
         self.sidebar = Sidebar(self)
         self.contentpane = ContentPane(master=self)

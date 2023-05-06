@@ -11,7 +11,8 @@ class MenubarItem(tk.Menubutton):
 
         self.name = text
 
-        self.config(text=text, padx=10, pady=5)
+        self.config(text=text, padx=10, pady=5,
+                    bg='#f8f8f8', fg='black', activebackground='#e4e4e4', activeforeground='black')
 
         self.add_menu()
 

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from .res import Resources
 
 class Style(ttk.Style):
     def __init__(self, master, *args, **kwargs):
@@ -27,7 +28,7 @@ class Style(ttk.Style):
             })
         ])
 
-        self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f3f3f3', troughcolor='#f3f3f3', lightcolor='#f3f3f3', darkcolor='#f3f3f3', arrowsize=14)
+        self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f8f8f8', troughcolor='#f8f8f8', lightcolor='#f8f8f8', darkcolor='#f8f8f8', arrowsize=14)
         self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
 
     def config_treeview(self):
@@ -53,7 +54,7 @@ class Style(ttk.Style):
             ('user1', '!user2', self.img_tree_open), ('user2', self.img_tree_empty), 
             sticky='w', width=15)
 
-        self.configure("Treeview", foreground="#616161", background="#f3f3f3", font=("Segoe UI", 10), rowheight=23)
+        self.configure("Treeview", foreground="#424242", background="#f8f8f8", font=("Segoe UI", 10), rowheight=23)
         self.layout('Treeview', [('Treeview.treearea', {'sticky': 'nswe'})])
         self.layout('Treeview.Item', [
             ('Treeitem.padding', {

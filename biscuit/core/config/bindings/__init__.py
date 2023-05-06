@@ -1,4 +1,4 @@
-from .loadbindings import BindingsLoader
+from .loader import BindingsLoader
 
 
 class Bindings:

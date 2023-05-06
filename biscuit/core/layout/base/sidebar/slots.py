@@ -9,7 +9,7 @@ class Slots(tk.Frame):
         self.master = master
         self.base = master.base 
 
-        self.config(width=100, bg='#2c2c2c')
+        self.config(width=100, bg="#f8f8f8")
 
         self.slots = []
         self.active_slot = None

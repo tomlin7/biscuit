@@ -6,8 +6,8 @@ class IconButton(tk.Menubutton):
     """
     Button with only an icon
     """
-    def __init__(self, master, icon, event=lambda _:..., icon2=None, iconsize=12, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=12, fg='#424242', bg='#f8f8f8', activeforeground='#424242', activebackground='#e1e1e1', *args, **kwargs):
+        super().__init__(master, fg=fg, bg=bg, activeforeground=activeforeground, activebackground=activebackground, *args, **kwargs)
         self.master = master
         self.base = master.base
 

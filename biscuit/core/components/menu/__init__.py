@@ -15,10 +15,9 @@ class Menu(tk.Toplevel):
         self.base = master.base
         self.master = master
 
-        self.configure(bg='#e8e8e8')
+        self.configure(bg='#d4d4d4')
         self.withdraw()
         self.overrideredirect(True)
-        # self.wm_attributes("-topmost", 1)
 
         self._menu = MenuContainer(self, name)
         self._menu.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)

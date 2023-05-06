@@ -1,5 +1,6 @@
 import tkinter as tk
 
+#TODO welcome page
 
 class WelcomePage(tk.Frame):
     def __init__(self, master, *args, **kwargs):

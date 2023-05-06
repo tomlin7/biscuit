@@ -3,7 +3,8 @@ import tkinter as tk
 import tkinter.font as Font
 import tkextrafont as extra
 
-from .. import config
+from core import config
+from core.styles import Resources
 from core.components import ActionSet
 
 
@@ -12,6 +13,7 @@ class Settings:
         self.base = base
 
         self.config = config.Config(self)
+        self.res = Resources(self)
         self.setup_properties()
         self.gen_actionset()
     
@@ -43,5 +45,5 @@ class Settings:
             size=self.config.font.size)
         
         # iconfont
-        self.iconfont = extra.Font(file=os.path.join(self.base.appdir, "res/codicon/codicon.ttf"), family="codicon")
+        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "codicon/codicon.ttf"), family="codicon")
         

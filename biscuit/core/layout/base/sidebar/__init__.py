@@ -28,11 +28,13 @@ class Sidebar(tk.Frame):
         self.master = master
         self.base = master.base 
 
+        self.config(bg="#dfdfdf")
+
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
         self.slots = Slots(self)
-        self.slots.grid(sticky=NS, column=0, row=0)
+        self.slots.grid(sticky=NS, column=0, row=0, padx=(0, 1))
 
         self.views = []
 

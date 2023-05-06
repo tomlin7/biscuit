@@ -4,10 +4,14 @@ from core import *
 from core.components import Editor
 from core.components.games import Tetris
 
+# TODO re enable statusbar info
 
 class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # TODO handling resizing, positioning, close min max buttons
+        #self.overrideredirect(True)
 
         self.palette = Palette(self)
 
@@ -44,6 +48,7 @@ class App(tk.Tk):
     def setup_path(self):       
         self.appdir = os.path.dirname(__file__)
         self.configdir = os.path.join(self.appdir, 'config')
+        self.resdir = os.path.join(self.appdir, 'res')
         self.themesdir = os.path.join(self.configdir, 'themes')
 
     def setup_configs(self):

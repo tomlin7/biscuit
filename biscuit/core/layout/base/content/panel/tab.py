@@ -12,14 +12,14 @@ class Tab(tk.Menubutton):
         self.selected = False
         
         self.config(text=view.__class__.__name__, padx=5, pady=5,
-            font=("Segoe UI", 10), fg='darkgrey', bg='white')
+            font=("Segoe UI", 10), fg='#424242', bg='#f8f8f8')
 
         self.bind('<Button-1>', self.select)
 
     def deselect(self, *_):
         if self.selected:
             self.view.grid_remove()
-            self.config(fg="darkgrey")
+            self.config(fg="#424242")
             self.selected = False
         
     def select(self, *_):

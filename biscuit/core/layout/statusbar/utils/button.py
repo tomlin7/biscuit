@@ -7,9 +7,10 @@ class SButton(tk.Frame):
         self.master = master
         self.function = function or (lambda *_: None)
 
-        self.bg = master.bg
-        self.fg = master.fg
-        self.hbg = master.hbg
+        self.fg = "#424242"
+        self.hfg = "black"
+        self.bg = "#f8f8f8"
+        self.hbg = "#f8f8f8"
 
         self.config(padx=5, bg=self.bg)
         self.text = text
@@ -17,11 +18,11 @@ class SButton(tk.Frame):
 
         if icon:
             self.icon_label = tk.Label(self, text=self.icon, anchor=tk.CENTER, 
-                bg=self.master.bg, fg=self.master.fg, font=("codicon", 12))
+                bg=self.bg, fg=self.fg, font=("codicon", 12))
             self.icon_label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
         self.text_label = tk.Label(self, text=self.text, anchor=tk.CENTER, pady=2,
-                bg=self.master.bg, fg=self.master.fg, font=("Segoe UI", 9))
+                bg=self.bg, fg=self.fg, font=("Segoe UI", 9))
         self.text_label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.config_bindings()
@@ -38,9 +39,9 @@ class SButton(tk.Frame):
 
     def on_enter(self, _):
         self.config(bg=self.hbg)
-        self.text_label.config(bg=self.hbg)
+        self.text_label.config(bg=self.hbg, fg=self.hfg)
         if self.icon:
-            self.icon_label.config(bg=self.hbg)
+            self.icon_label.config(bg=self.hbg, fg=self.hfg)
 
     def on_leave(self, _):
         self.config(bg=self.bg)

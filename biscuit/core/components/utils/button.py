@@ -10,5 +10,5 @@ class Button(tk.Menubutton):
         self.master = master
         self.base = master.base
 
-        self.config(bg="#007acc", fg="#ffffff", activebackground="#0062a3", activeforeground="#ffffff", pady=5)
+        self.config(bg="#dc8c34", fg="white", activebackground="#ecb464", activeforeground="white", pady=5)
         self.bind('<Button-1>', command)

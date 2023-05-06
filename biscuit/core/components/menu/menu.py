@@ -12,7 +12,7 @@ class MenuContainer(tk.Frame):
 
         self.name = name
         
-        self.configure(bg='#ffffff', padx=1, pady=1)
+        self.configure(bg='#ffffff', padx=5, pady=5)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -21,14 +21,17 @@ class MenuContainer(tk.Frame):
 
     def add_item(self, text, command):
         new_item = MenuItem(self, text, command)
-        new_item.grid(row=self.row, sticky=tk.EW, pady=(0, 0))
+        new_item.grid(row=self.row, sticky=tk.EW, pady=0)
         self.menu_items.append(new_item)
 
         self.row += 1
 
     def add_separator(self):
         new_sep = Separator(self)
-        new_sep.grid(row=self.row, sticky=tk.EW, pady=(0, 0))
+        new_sep.grid(row=self.row, sticky=tk.EW, pady=0)
         self.menu_items.append(new_sep)
 
         self.row += 1
+    
+    def hide(self):
+        self.master.hide()

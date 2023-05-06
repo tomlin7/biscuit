@@ -9,6 +9,6 @@ class Separator(tk.Label):
         self.master = master
 
         self.config(
-            text="———————————————————————", padx=6, pady=0,
-            bg="#ffffff", fg="#d4d4d4", height=1
+            text="———————————————————————", pady=0,
+            bg="white", fg="#d4d4d4", height=1
         )

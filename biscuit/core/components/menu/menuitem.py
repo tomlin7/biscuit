@@ -9,7 +9,11 @@ class MenuItem(tk.Menubutton):
         self.command = command
         
         self.config(text=text, anchor=tk.W, font=("Segoe UI", 10),
-            padx=20, bg="#ffffff", fg="#616161", pady=2,
-            activebackground="#0060c0", activeforeground="#ffffff"
+            padx=20, bg="#ffffff", fg="#424242", pady=2,
+            activebackground="#e8e8e8", activeforeground="black"
         )
-        self.bind("<Button-1>", self.command)
+        self.bind("<Button-1>", self.onclick)
+    
+    def onclick(self, *_):
+        self.command()
+        self.master.hide()

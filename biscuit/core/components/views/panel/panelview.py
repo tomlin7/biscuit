@@ -10,7 +10,9 @@ class PanelView(View):
         self.master = master
         self.base = master.base
 
+        self.config(background="#f8f8f8")
+
         self.__buttons__ = ()
 
     def create_buttons(self, panelbar):
-        self.__buttons__ = [IconButton(panelbar, *button, bg='white') for button in self.__buttons__]
+        self.__buttons__ = [IconButton(panelbar, *button) for button in self.__buttons__]

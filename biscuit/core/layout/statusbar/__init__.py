@@ -1,7 +1,6 @@
 #TODO add actual functions to actionset
 import tkinter as tk
 
-from .popups import *
 from .utils.button import SButton
 from .utils.clock import SClock
 
@@ -24,10 +23,7 @@ class Statusbar(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.fg = "#ffffff"
-        self.bg = "#007acc"
-        self.hbg = "#1f8ad2"
-        self.config(bg=self.bg)
+        self.config(bg="#f8f8f8")
 
         # git info
         self.git_actionset = ActionSet(

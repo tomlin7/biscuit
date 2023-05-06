@@ -50,7 +50,8 @@ class Logs(PanelView):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.text = tk.Text(self, relief=FLAT, padx=10, pady=10, font=("Consolas", 11))
+        self.text = tk.Text(self, relief=FLAT, padx=10, pady=10, 
+                            font=("Consolas", 11), fg='#424242', bg='#f8f8f8')
         self.text.grid(row=0, column=0, sticky=NSEW)
 
         self.scrollbar = Scrollbar(self)

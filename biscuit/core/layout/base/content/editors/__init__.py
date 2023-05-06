@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .editorsbar import Editorsbar
+from .empty import Empty
 
 
 class EditorsPane(tk.Frame):
@@ -34,6 +35,9 @@ class EditorsPane(tk.Frame):
         self.tabs = self.editorsbar.tabs
 
         self.editors = []
+        self.empty = True
+        self.emptytab = Empty(self)
+        self.emptytab.grid(column=0, row=1, sticky=NSEW)
 
         self.default_editors = []
         self.add_editors(self.default_editors)
@@ -57,8 +61,9 @@ class EditorsPane(tk.Frame):
     
     def delete_editor(self, editor):
         "Permanently delete a editor."
-        editor.destroy()
         self.editors.remove(editor)
+        editor.destroy()
+        self.refresh()
     
     def set_active_editor(self, editor):
         "Set active editor and active tab."
@@ -67,3 +72,10 @@ class EditorsPane(tk.Frame):
     def get_active_editor():
         "Get active editor."
         ...
+    
+    def refresh(self):
+        if not len(self.editors) and not self.empty:
+            self.empty = not self.empty
+            self.emptytab.grid()
+        if len(self.editors) and self.empty:
+            self.emptytab.grid_remove()
