@@ -21,7 +21,8 @@
 
 ![tetris](https://imgur.com/9C0eJsx.jpg)
 
-- Rich **Command palette** which works based on various prompts used
+- Rich **Palette** which works based on various prefixes used 
+  (`Ctrl` + `shift` + `p` for command palette)
 
 ![palette](https://imgur.com/8gKyeks.jpg)
 
