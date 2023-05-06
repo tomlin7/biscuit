@@ -4,7 +4,7 @@
 
 <h3 align="center">
   <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28>  
-  <img alt="new" src="https://img.shields.io/badge/What's-New!-%23ea004c?style=for-the-badge">
+  <a href=https://github.com/billyeatcookies/Biscuit#whats-new-><img alt="new" src="https://img.shields.io/badge/What's-New!-%23ea004c?style=for-the-badge"></a>
   <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge">
   <br>
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge">
