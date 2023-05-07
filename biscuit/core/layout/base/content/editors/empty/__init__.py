@@ -16,8 +16,7 @@ class Empty(tk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.logo_img = self.base.settings.res.logo
-        self.logo = tk.Label(self, image=self.logo_img, bg=self.bg)
+        self.logo = tk.Label(self, image=self.base.settings.res.logo, bg=self.bg)
         self.logo.grid(row=0, column=0)
 
         self.shortcuts = Shortcuts(self, bg=self.bg)

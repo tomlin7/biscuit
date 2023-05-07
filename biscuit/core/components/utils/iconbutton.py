@@ -9,7 +9,6 @@ class IconButton(tk.Menubutton):
     def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=12, fg='#424242', bg='#f8f8f8', activeforeground='#424242', activebackground='#e1e1e1', *args, **kwargs):
         super().__init__(master, fg=fg, bg=bg, activeforeground=activeforeground, activebackground=activebackground, *args, **kwargs)
         self.master = master
-        self.base = master.base
 
         self.icons = [icon, icon2]
         self.icon2 = icon2

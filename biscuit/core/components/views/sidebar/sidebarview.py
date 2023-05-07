@@ -6,6 +6,8 @@ from ...utils import IconButton
 
 class SidebarView(View):
     def __init__(self, master, *args, **kwargs):
+        self.__buttons__ = ()
+        
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base

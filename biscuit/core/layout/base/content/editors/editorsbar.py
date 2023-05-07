@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .....components.utils import IconButton
+from core.components.utils import IconButton
 from .tabs import Tabs
 
 

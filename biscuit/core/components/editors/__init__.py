@@ -4,9 +4,11 @@ from tkinter.constants import *
 
 from ..utils import FileType
 from .breadcrumbs import BreadCrumbs
-from .diffeditor import DiffViewer
+
+#TODO from .diffeditor import DiffViewer
 from .imageviewer import ImageViewer
 from .texteditor import TextEditor
+from .misc import Welcome
 
 
 def get_editor(path):
@@ -14,6 +16,9 @@ def get_editor(path):
     if os.path.isfile(path):
         if FileType.is_image(path):
             return ImageViewer
+    
+    if path == '::welcome::':
+        return Welcome
         
     return TextEditor
 
@@ -38,25 +43,21 @@ class Editor(tk.Frame):
         self.exists = exists
         self.showpath = showpath
         self.filename = os.path.basename(self.path) if path else None
+        # TODO for now, this
+        if self.filename.endswith('::'):
+            self.filename = self.filename[:-2]
 
         self.grid_columnconfigure(0, weight=1)
-
-        self.breadcrumbs = BreadCrumbs(self, path)
         self.content = get_editor(path=path)(self, path, exists)
 
         if self.showpath:
+            self.breadcrumbs = BreadCrumbs(self, path)
             self.grid_rowconfigure(1, weight=1)  
             self.breadcrumbs.grid(row=0, column=0, sticky=EW, pady=(0, 1))
             self.content.grid(row=1, column=0, sticky=NSEW)
         else:
             self.grid_rowconfigure(0, weight=1)
             self.content.grid(row=0, column=0, sticky=NSEW)
-    
-    def configure_breadcrumbs(self, flag):
-        if flag:
-            self.breadcrumbs.grid()
-        else:
-            self.breadcrumbs.grid_remove()
     
     def focus(self):
         self.content.focus()

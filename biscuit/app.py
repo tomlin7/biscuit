@@ -23,9 +23,6 @@ class App(tk.Tk):
         self.setup_references()
         self.command_palette = self.palette.register_actionset(self.settings.actionset)
 
-        # TODO testing only
-        self.bind("<Control-T>", self.open_tetris)
-
         self.initialize_editor()
     
     def run(self):
@@ -41,7 +38,7 @@ class App(tk.Tk):
         self.binder.late_bind_all()
 
     def setup_tk(self):
-        self.geometry("850x650")
+        self.geometry("1100x750")
         self.minsize(800, 600)
         self.title("Biscuit")
 
@@ -105,7 +102,7 @@ class App(tk.Tk):
     #     return self.editor_groups_ref.groups.get_active_tab()
     
     def open_editor(self, path, exists=True):
-        self.editorsmanager.add_editor(Editor(self.editorsmanager, path, exists))
+        self.editorsmanager.open_editor(path, exists)
     
     def open_tetris(self, *_):
         self.editorsmanager.add_editor(Tetris(self.editorsmanager))

@@ -40,6 +40,7 @@ class Sidebar(tk.Frame):
 
         self.default_views = [Explorer(self), Search(self), SourceControl(self)]
         self.add_views(self.default_views)
+        self.slots.toggle_first_slot()
 
     def add_views(self, views):
         "Append views to list. Create tabs for them."

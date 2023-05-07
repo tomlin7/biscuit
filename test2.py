@@ -4,43 +4,47 @@ import tkinter as tk
 class FloatingWindow(tk.Tk):
     def __init__(self):
         super().__init__()
+
         self.overrideredirect(True)
         self.center()
 
-        self.label = tk.Label(self, text="Grab one of the blue")
+        self.label = tk.Label(self, text="window", bg='white')
         self.label.pack(side="top", fill="both", expand=True)
 
-        self.grip_se = tk.Label(self,bg='blue')
-        self.grip_se.place(relx=1.0, rely=1.0, anchor="se")
-        self.grip_se.bind("<B1-Motion>",lambda e, mode='se':self.OnMotion(e,mode))
-
-        self.grip_e = tk.Label(self,bg='green')
-        self.grip_e.place(relx=1.0, rely=0.5, anchor="e")
-        self.grip_e.bind("<B1-Motion>",lambda e, mode='e':self.OnMotion(e,mode))
-        
-        self.grip_ne = tk.Label(self,bg='blue')
-        self.grip_ne.place(relx=1.0, rely=0, anchor="ne")
-        self.grip_ne.bind("<B1-Motion>",lambda e, mode='ne':self.OnMotion(e,mode))
-
-        self.grip_n = tk.Label(self,bg='green')
-        self.grip_n.place(relx=0.5, rely=0, anchor="n")
+        #edge handles
+        self.grip_n = tk.Label(self, bg='white', cursor='top_side')
+        self.grip_n.place(relx=0.5, rely=0, anchor="n", relwidth=1, relheight=0.01)
         self.grip_n.bind("<B1-Motion>",lambda e, mode='n':self.OnMotion(e,mode))
 
-        self.grip_nw = tk.Label(self,bg='blue')
-        self.grip_nw.place(relx=0, rely=0, anchor="nw")
+        self.grip_s = tk.Label(self, bg='white', cursor='bottom_side')
+        self.grip_s.place(relx=0.5, rely=1, anchor="s", relwidth=1, relheight=0.01)
+        self.grip_s.bind("<B1-Motion>",lambda e, mode='s':self.OnMotion(e,mode))
+
+        self.grip_e = tk.Label(self, bg='white', cursor='right_side')
+        self.grip_e.place(relx=1.0, rely=0.5, anchor="e", relheight=1, relwidth=0.01)
+        self.grip_e.bind("<B1-Motion>",lambda e, mode='e':self.OnMotion(e,mode))
+
+        self.grip_w = tk.Label(self, bg='white', cursor='left_side')
+        self.grip_w.place(relx=0, rely=0.5, anchor="w", relheight=1, relwidth=0.01)
+        self.grip_w.bind("<B1-Motion>",lambda e, mode='w':self.OnMotion(e,mode)) 
+
+
+
+        self.grip_se = tk.Label(self, bg='white', cursor='bottom_right_corner')
+        self.grip_se.place(relx=1.0, rely=1.0, anchor="se", relwidth=0.05, relheight=0.05)
+        self.grip_se.bind("<B1-Motion>",lambda e, mode='se':self.OnMotion(e,mode))
+
+        self.grip_ne = tk.Label(self, bg='white', cursor='top_right_corner')
+        self.grip_ne.place(relx=1.0, rely=0, anchor="ne", relwidth=0.05, relheight=0.05)
+        self.grip_ne.bind("<B1-Motion>",lambda e, mode='ne':self.OnMotion(e,mode))
+
+        self.grip_nw = tk.Label(self, bg='white', cursor='top_left_corner')
+        self.grip_nw.place(relx=0, rely=0, anchor="nw", relwidth=0.05, relheight=0.05)
         self.grip_nw.bind("<B1-Motion>",lambda e, mode='nw':self.OnMotion(e,mode))
 
-        self.grip_w = tk.Label(self,bg='green')
-        self.grip_w.place(relx=0, rely=0.5, anchor="w")
-        self.grip_w.bind("<B1-Motion>",lambda e, mode='w':self.OnMotion(e,mode))
-
-        self.grip_sw = tk.Label(self,bg='blue')
-        self.grip_sw.place(relx=0, rely=1, anchor="sw")
+        self.grip_sw = tk.Label(self, bg='white', cursor='bottom_left_corner')
+        self.grip_sw.place(relx=0, rely=1, anchor="sw", relwidth=0.05, relheight=0.05)
         self.grip_sw.bind("<B1-Motion>",lambda e, mode='sw':self.OnMotion(e,mode))
-
-        self.grip_s = tk.Label(self,bg='green')
-        self.grip_s.place(relx=0.5, rely=1, anchor="s")
-        self.grip_s.bind("<B1-Motion>",lambda e, mode='s':self.OnMotion(e,mode))
 
     def OnMotion(self, event, mode):
         abs_x = self.winfo_pointerx() - self.winfo_rootx()

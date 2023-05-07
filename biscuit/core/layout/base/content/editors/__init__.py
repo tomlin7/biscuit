@@ -3,6 +3,7 @@ from tkinter.constants import *
 
 from .editorsbar import Editorsbar
 from .empty import Empty
+from core.components.editors import Editor
 
 
 class EditorsPane(tk.Frame):
@@ -39,11 +40,11 @@ class EditorsPane(tk.Frame):
         self.emptytab = Empty(self)
         self.emptytab.grid(column=0, row=1, sticky=NSEW)
 
-        self.default_editors = []
+        self.default_editors = [Editor(self, '::welcome::', False, False)]
         self.add_editors(self.default_editors)
 
     def add_editors(self, editors):
-        "Append editors to list. Create tabs for them."
+        "Append <Editor>s to list. Create tabs for them."
         for editor in editors:
             self.add_editor(editor)
     
@@ -58,6 +59,10 @@ class EditorsPane(tk.Frame):
             editor.destroy()
 
         self.editors.clear()
+    
+    def open_editor(self, path, exists):
+        "open Editor with path and exists values passed"
+        self.add_editor(Editor(self, path, exists))
     
     def delete_editor(self, editor):
         "Permanently delete a editor."

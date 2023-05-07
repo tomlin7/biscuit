@@ -19,6 +19,9 @@ class Slots(tk.Frame):
         slot.pack(fill=tk.Y)
         self.slots.append(slot)
     
+    def toggle_first_slot(self):
+        self.slots[0].toggle()
+    
     def set_active_slot(self, selected_slot):
         self.active_slot = selected_slot
         for slot in self.slots:
