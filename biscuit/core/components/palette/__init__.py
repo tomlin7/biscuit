@@ -27,12 +27,12 @@ class Palette(tk.Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=80,*args, **kwargs):
+    def __init__(self, master, items=None, width=60,*args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master
 
-        self.config(pady=1, bg='#e8e8e8')
+        self.config(pady=5, padx=5, bg='#F2F2F2')
         
         self.width = width
         self.active = False
@@ -76,7 +76,7 @@ class Palette(tk.Toplevel):
 
     def add_search_bar(self):
         self.search_bar = Searchbar(self)
-        self.search_bar.grid(row=0, sticky=tk.EW, padx=8, pady=(8, 5))
+        self.search_bar.grid(row=0, sticky=tk.EW, pady=(0, 5))
     
     def configure_bindings(self):
         self.bind("<FocusOut>", self.hide)

@@ -23,7 +23,8 @@ class Tabs(tk.Frame):
 
     def set_active_tab(self, selected_tab):
         self.active_tab = selected_tab
-        self.master.replace_buttons(selected_tab.editor.content.__buttons__)
+        if selected_tab.editor.has_content:
+            self.master.replace_buttons(selected_tab.editor.content.__buttons__)
         for tab in self.tabs:
             if tab != selected_tab:
                 tab.deselect()

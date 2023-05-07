@@ -15,11 +15,13 @@ class Tetris(BaseEditor):
         super().__init__(master, None, None, *args, **kwargs)
         self.master = master
         self.base = master.base
+
         self.config(bg='#F4EEE0')
         
         self.path = "games/tetris"
         self.exists = False
         self.filename = "Tetris"
+        self.has_content = False
 
         self.status_var = tk.StringVar()
         self.status_label = tk.Label(self, textvariable=self.status_var, font='Fixedsys 18', bg='#F4EEE0', fg='#B99B6B')

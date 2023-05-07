@@ -29,8 +29,8 @@ class MenuItem(tk.Menubutton):
             self.deselect()
 
     def select(self):
-        self.config(bg="#0060c0", fg="#ffffff", 
-                    activebackground="#0060c0", activeforeground="#ffffff")
+        self.config(bg="#dc8c34", fg="#ffffff", 
+                    activebackground="#dc8c34", activeforeground="#ffffff")
         self.selected = True
     
     def deselect(self):

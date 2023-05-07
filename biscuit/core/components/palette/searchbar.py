@@ -7,7 +7,7 @@ class Searchbar(tk.Frame):
         self.master = master
 
         # border
-        self.config(bg="#007fd4")
+        self.config(bg="#ecb464")
         
         self.text_variable = tk.StringVar()
         self.text_variable.trace("w", self.filter) 
