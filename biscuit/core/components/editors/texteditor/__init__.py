@@ -1,7 +1,9 @@
-from tkinter.constants import *
+import tkinter as tk
 
 from ...utils import Scrollbar
 from ..editor import BaseEditor
+
+from .minimap import Minimap
 from .linenumbers import LineNumbers
 from .text import Text
 
@@ -16,14 +18,16 @@ class TextEditor(BaseEditor):
 
         self.text = Text(self, path=self.path, exists=self.exists)
         self.linenumbers = LineNumbers(self, text=self.text)
-        self.scrollbar = Scrollbar(self, orient=VERTICAL, command=self.text.yview)
+        self.minimap = Minimap(self, self.text)
+        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
         
         self.text.config(font=self.font)
         self.text.configure(yscrollcommand=self.scrollbar.set)
 
-        self.linenumbers.grid(row=0, column=0, sticky=NS)
-        self.text.grid(row=0, column=1, sticky=NSEW)
-        self.scrollbar.grid(row=0, column=2, sticky=NS)
+        self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
+        self.text.grid(row=0, column=1, sticky=tk.NSEW)
+        self.minimap.grid(row=0, column=2, sticky=tk.NS)
+        self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
 
         if self.exists:
             self.text.load_file()
@@ -37,8 +41,13 @@ class TextEditor(BaseEditor):
         self.scrollbar.grid_remove()
         self.editable = False
 
+    def focus(self):
+        self.text.focus()
+        self.on_change()
+
     def on_change(self, event=None):
         self.linenumbers.redraw()
+        self.minimap.redraw()
         self.event_generate("<<Change>>")
     
     def set_fontsize(self, size):

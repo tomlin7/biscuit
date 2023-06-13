@@ -30,6 +30,7 @@ class Style(ttk.Style):
 
         self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f8f8f8', troughcolor='#f8f8f8', lightcolor='#f8f8f8', darkcolor='#f8f8f8', arrowsize=14)
         self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
+        self.map('Treeview', background=[('selected', '#dc8c34')])
 
     def config_treeview(self):
         ## TREENODE CHEVRONS -----

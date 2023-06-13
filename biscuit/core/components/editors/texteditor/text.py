@@ -11,8 +11,8 @@ class Text(tk.Text):
         self.data = None
         self.exists = exists
 
-        self.configure(wrap=tk.NONE, relief=tk.FLAT)
-        self.tag_config(tk.SEL, background="#add6ff")
+        self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white")
+        self.tag_config(tk.SEL, background="#dc8c34")
 
         self.focus_set()
         self.create_proxy()
