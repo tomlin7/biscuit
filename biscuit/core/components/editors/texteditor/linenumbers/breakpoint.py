@@ -6,7 +6,7 @@ class Breakpoint(tk.Label):
         super().__init__(master, *args, **kwargs)
         self.master = master
 
-        self.config(text="●", font=("Consolas", 14), bg="#1e1e1e", fg="#1e1e1e", cursor="hand2", 
+        self.config(text="●", font=("Consolas", 14), bg="white", fg="#1e1e1e", cursor="hand2", 
             borderwidth=0, width=2, height=1, pady=0, padx=0, relief=tk.FLAT)
 
         self.active = False
@@ -28,7 +28,6 @@ class Breakpoint(tk.Label):
         else:
             self.config(fg="#1e1e1e")
         
-
     def on_click(self, event):
         self.active = not self.active
         self.redraw()
