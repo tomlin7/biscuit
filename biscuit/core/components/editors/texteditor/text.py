@@ -114,6 +114,23 @@ class Text(tk.Text):
         self.clear_insert()
         self.set_active(False)
 
+            
+    def move_cursor(self, position):
+        self.mark_set(tk.INSERT, position)
+
+    def clear_all_selection(self):
+        self.tag_remove(tk.SEL, 1.0, tk.END)
+    
+    def select_line(self, line):
+        self.clear_all_selection()
+        
+        line = int(line.split(".")[0])
+        start = str(float(line))
+        end = str(float(line + 1))
+        self.tag_add(tk.SEL, start, end)
+
+        self.move_cursor(end)
+
     def _proxy(self, *args):
         if args[0] == 'get' and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST) and not self.tag_ranges(tk.SEL): 
             return

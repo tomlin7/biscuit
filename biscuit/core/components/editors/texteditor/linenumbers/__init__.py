@@ -56,7 +56,7 @@ class LineNumbers(tk.Canvas):
             else:
                 self.create_text(40, y, anchor=tk.NE, text=linenum, font=self.font, fill=self.fill, tag=i)
             
-            self.tag_bind(i, "<Button-1>", lambda _, i=i: self.select_line(i))
+            self.tag_bind(i, "<Button-1>", lambda _, i=i: self.text.select_line(i))
 
             # TODO drawing breakpoints - need optimisations
             # self.draw_breakpoint(y)
