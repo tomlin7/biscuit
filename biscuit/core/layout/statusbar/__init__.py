@@ -25,6 +25,8 @@ class Statusbar(tk.Frame):
 
         self.config(bg="#f8f8f8")
 
+        # TODO add a button for toggling panel, left side, "terminal-bash", color
+
         # git info
         self.git_actionset = ActionSet(
             "GIT", "branch:",

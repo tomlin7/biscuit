@@ -48,6 +48,7 @@ class TextEditor(BaseEditor):
     def on_change(self, event=None):
         self.linenumbers.redraw()
         self.minimap.redraw()
+        self.text.on_change()
         self.event_generate("<<Change>>")
     
     def set_fontsize(self, size):

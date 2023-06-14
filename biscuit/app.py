@@ -1,7 +1,7 @@
 import os, tkinter as tk
 
 from core import *
-from core.components import Editor
+from core.components import Editor, LSP
 from core.components.games import Tetris
 
 # TODO re enable statusbar info
@@ -14,6 +14,7 @@ class App(tk.Tk):
         #self.overrideredirect(True)
 
         self.palette = Palette(self)
+        self.lsp = LSP()
 
         self.setup()
         self.root = Root(self)

@@ -9,8 +9,8 @@ class LineNumbers(tk.Canvas):
         self.base = master.base
         self.master = master
 
-        self.fill = "#237893"
-        self.highlight_fill = "#c6c6c6"
+        self.fill = "#6e7681"
+        self.highlight_fill = "#171184"
 
         self.font = self.master.font
         self.config(width=65, bg="#ffffff", bd=0, highlightthickness=0)

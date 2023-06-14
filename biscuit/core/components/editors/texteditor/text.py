@@ -1,5 +1,7 @@
+import re
 import tkinter as tk
 
+from .autocomplete import AutoComplete
 
 class Text(tk.Text):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
@@ -11,16 +13,135 @@ class Text(tk.Text):
         self.data = None
         self.exists = exists
 
+        self.lsp = self.base.lsp
+        self.keywords = self.base.lsp.keywords
+
+        self.current_word = None
+        self.words = []
+        self.auto_completion = AutoComplete(
+            self, items=self.lsp.get_autocomplete_list())
+
         self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white")
         self.tag_config(tk.SEL, background="#dc8c34")
+        self.tag_config("highlight", background="#464646", foreground="#d4d4d4")
 
         self.focus_set()
+        self.config_tags()
         self.create_proxy()
+        self.config_bindings()
 
-    def create_proxy(self):
-        self._orig = self._w + "_orig"
-        self.tk.call("rename", self._w, self._orig)
-        self.tk.createcommand(self._w, self._proxy)
+        self.update_words()
+
+    def config_tags(self):
+        self.tag_config(tk.SEL, background="#dc8c34")
+        self.tag_config("highlight", background="#464646", foreground="#d4d4d4")
+
+    def config_bindings(self):
+        self.bind("<KeyRelease>", self.key_release_events) 
+        self.bind("<FocusOut>", self.hide_autocomplete) 
+        
+        self.bind("<Up>", self.auto_completion.move_up)
+        self.bind("<Down>", self.auto_completion.move_down)
+
+        self.bind("<Return>", self.enter_key_events)
+        self.bind("<Tab>", self.tab_key_events)
+
+    def key_release_events(self, event):
+        if event.keysym not in ("Up", "Down", "Return"):
+            self.show_autocomplete(event)
+
+        match event.keysym:
+            # autocompletion keys
+            case "Button-2" | "BackSpace" | "Escape" | "Control_L" | "Control_R" | "space":
+                self.hide_autocomplete()
+            case "rightarrow" | "leftarrow":
+                self.update_completions()
+            
+            case _:
+                pass
+
+    def enter_key_events(self, *_):
+        return self.tab_key_events()
+        
+    def tab_key_events(self, *_):
+        if self.auto_completion.active:        
+            self.auto_completion.choose()
+            return "break"
+    
+    def get_all_text(self, *args):
+        return self.get(1.0, tk.END)
+
+    def get_all_text_ac(self, *args):
+        """
+        Helper function for autocomplete.show
+        extracts all text except the current word.
+        """
+        return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
+    
+    def get_current_word(self):
+        return self.current_word.strip()
+    
+    def get_all_words(self, *args):
+        return self.words
+
+    def update_words(self, *_):
+        self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
+        self.after(1000, self.update_words)
+    
+    def update_completions(self):
+        self.auto_completion.update_completions()   
+    
+    def confirm_autocomplete(self, text):
+        self.replace_current_word(text)
+        
+    def replace_current_word(self, new_word):
+        if self.current_word.startswith("\n"):
+            self.delete("insert-1c wordstart+1c", "insert")
+        else:
+            self.delete("insert-1c wordstart", "insert")
+        self.insert("insert", new_word)
+    
+    def check_autocomplete_keys(self, event):
+        """
+        Helper function for autocomplete.show to check triggers
+        """
+        return True if event.keysym not in [
+            "BackSpace", "Escape", "Return", "Tab", "space", 
+            "Up", "Down", "Control_L", "Control_R"] else False 
+    
+    def cursor_screen_location(self):
+        """
+        Helper function for autocomplete.show to detect cursor location
+        """
+        pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
+
+        cursor = tk.INSERT
+        bbox = self.bbox(cursor)
+        if not bbox:
+            return (0, 0)
+        
+        bbx_x, bbx_y, _, bbx_h = bbox
+        return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
+    
+    def hide_autocomplete(self, *_):
+        self.auto_completion.hide()
+    
+    def show_autocomplete(self, event):
+        if not self.check_autocomplete_keys(event):
+            return
+        
+        if self.current_word.strip() not in ["{", "}", ":", "", None, "\""]:
+            if not self.auto_completion.active:
+                if event.keysym in ["Left", "Right"]:
+                    return
+                pos = self.cursor_screen_location()
+                self.auto_completion.show(pos)
+                self.auto_completion.update_completions()
+            else:
+                self.auto_completion.update_completions()
+        else:
+            if self.auto_completion.active:
+                self.hide_autocomplete()
 
     def load_file(self):
         try:
@@ -66,6 +187,9 @@ class Text(tk.Text):
             return self.selection_get()
         except Exception:
             return ""
+        
+    def add_newline(self, count=1):
+        self.insert(tk.INSERT, "\n" * count)
 
     def get_selected_count(self):
         return len(self.get_selected_text())
@@ -110,11 +234,10 @@ class Text(tk.Text):
     def show_unsupported_dialog(self):
         self.set_wrap(True)
         self.configure(font=('Arial', 10), padx=10, pady=10)
-        self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding. Do you want to open it anyway? Nope"
+        self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding."
         self.clear_insert()
         self.set_active(False)
 
-            
     def move_cursor(self, position):
         self.mark_set(tk.INSERT, position)
 
@@ -130,6 +253,14 @@ class Text(tk.Text):
         self.tag_add(tk.SEL, start, end)
 
         self.move_cursor(end)
+        
+    def on_change(self, *args):
+        self.current_word = self.get("insert-1c wordstart", "insert")
+
+    def create_proxy(self):
+        self._orig = self._w + "_orig"
+        self.tk.call("rename", self._w, self._orig)
+        self.tk.createcommand(self._w, self._proxy)
 
     def _proxy(self, *args):
         if args[0] == 'get' and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST) and not self.tag_ranges(tk.SEL): 
