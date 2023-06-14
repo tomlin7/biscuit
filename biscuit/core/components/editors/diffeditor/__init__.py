@@ -4,6 +4,7 @@ from tkinter import ttk
 from .pane import DiffPane
 from .differ import Differ
 
+#TODO reimplement diff editor + git
 
 class DiffViewer(tk.PanedWindow):
     def __init__(self, master, path, *args, **kwargs):

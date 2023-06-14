@@ -7,7 +7,11 @@ class LSP:
         self.setup_tokens()
 
     def setup_tokens(self):
+        #TODO lsp
         self.keywords = self.syntax.keywords
+        self.identifiers = None
+        self.type_identifiers = None
+        self.numeric_literals = None
         self.numbers = self.syntax.numbers
         self.strings = self.syntax.strings
         self.comments = self.syntax.comments

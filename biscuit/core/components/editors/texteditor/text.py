@@ -1,6 +1,7 @@
 import re
 import tkinter as tk
 
+from .highlighter import Highlighter
 from .autocomplete import AutoComplete
 
 class Text(tk.Text):
@@ -16,14 +17,16 @@ class Text(tk.Text):
         self.lsp = self.base.lsp
         self.keywords = self.base.lsp.keywords
 
+        self.highlighter = Highlighter(self)
+
         self.current_word = None
         self.words = []
         self.auto_completion = AutoComplete(
             self, items=self.lsp.get_autocomplete_list())
 
         self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white")
-        self.tag_config(tk.SEL, background="#dc8c34")
-        self.tag_config("highlight", background="#464646", foreground="#d4d4d4")
+        self.tag_config(tk.SEL, background="#b98852")
+        self.tag_config("highlight", background="#eeb87e")
 
         self.focus_set()
         self.config_tags()
@@ -253,9 +256,19 @@ class Text(tk.Text):
         self.tag_add(tk.SEL, start, end)
 
         self.move_cursor(end)
-        
+    
+    def highlight_current_word(self):
+        self.tag_remove("highlight", 1.0, tk.END)
+        text = self.get("insert wordstart", "insert wordend")
+        word = re.findall(r"\w+", text)
+        if any(word):
+            if word[0] not in self.keywords:
+                self.highlighter.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+
     def on_change(self, *args):
         self.current_word = self.get("insert-1c wordstart", "insert")
+        self.highlight_current_word()
+        self.highlighter.highlight_all()
 
     def create_proxy(self):
         self._orig = self._w + "_orig"
