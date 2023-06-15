@@ -1,20 +1,16 @@
 <h1 align="center">
     <b>Biscuit</b> - Code Editor 
 </h1>
-
+<p align="center">
+    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/8eddc6bb-a687-4af3-83ee-31242998827f width=900/>
+</p>
 <h3 align="center">
-  <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28>  
-  <a href=https://github.com/billyeatcookies/Biscuit#whats-new-><img alt="new" src="https://img.shields.io/badge/What's-New!-%23ea004c?style=for-the-badge"></a>
-  <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge">
-  <br>
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge">
-  <img alt="GitHub issues" src="https://img.shields.io/github/issues/billyeatcookies/Biscuit?style=for-the-badge">
+  <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
+  <a href=https://github.com/billyeatcookies/Biscuit#whats-new-><img alt="new" src="https://img.shields.io/badge/What's-New!-%23ea004c?style=for-the-badge"></a> 
+  <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge"> 
   <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
 </h3>
-
-<p align="center">
-    <img src=https://user-images.githubusercontent.com/70792552/232812360-d256d67f-5ea5-4c9b-a4c6-171062b5a806.png width=900/>
-</p>
 
 # What's New!
 - **Autocompletions** (words in file + keywords, no LSP) 
