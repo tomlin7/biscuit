@@ -16,11 +16,12 @@
     <img src=https://user-images.githubusercontent.com/70792552/232812360-d256d67f-5ea5-4c9b-a4c6-171062b5a806.png width=900/>
 </p>
 
-# What's new! ✨
-- Playable **Tetris** inside the editor (Beta)
+# What's New!
+- **Autocompletions** (words in file + keywords, no LSP) 
 
-![tetris](https://imgur.com/9C0eJsx.jpg)
+![completion](https://github.com/billyeatcookies/Biscuit/assets/70792552/08fe5cbf-81d7-4770-8a80-d70821bf96c9)
 
+- **Syntax Highlighting** (based on word matching and regex, no semantic highlighting yet)
 - Rich **Palette** which works based on various prefixes used 
   (`Ctrl` + `shift` + `p` for command palette)
 
@@ -29,6 +30,12 @@
 - New **PathView** update for the **Breadcrumbs!**
 
 ![pathview](https://imgur.com/CztWtni.jpg)
+
+- Material icons for directory tree
+
+- Various improvements to text editor such as auto-indent, highlighting words, better line numbers 
+
+![selections](https://github.com/billyeatcookies/Biscuit/assets/70792552/da1560a3-d34b-41c7-8ad9-d05c4d236a97)
 
 ## About 
 Biscuit is a highly customizable code editor written completely in pure python with the tkinter library. Biscuit stands lightweight, fast and powerful among other code editors. It is easy to use and feature rich.
