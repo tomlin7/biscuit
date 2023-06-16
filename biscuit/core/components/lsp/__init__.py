@@ -1,13 +1,12 @@
 from core.config.languages import CPP
 
-
 class LSP:
-    def __init__(self):
+    def __init__(self, base):
         self.syntax = CPP()
         self.setup_tokens()
 
     def setup_tokens(self):
-        #TODO lsp
+        # TODO lsp
         self.keywords = self.syntax.keywords
         self.identifiers = None
         self.type_identifiers = None
@@ -23,6 +22,6 @@ class LSP:
         self.rgx_numbers = "|".join(self.numbers)
         self.rgx_strings = "|".join(self.strings)
         self.rgx_comments = "|".join(self.comments)
-    
+
     def get_autocomplete_list(self):
         return [(i, "keyword") for i in self.keywords]

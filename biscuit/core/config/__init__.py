@@ -1,3 +1,4 @@
+import os
 from .font import Font
 from .bindings import Bindings
 from .theme import Theme

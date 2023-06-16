@@ -26,8 +26,7 @@ class Text(tk.Text):
 
         self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white")
         self.tag_config(tk.SEL, background="#b98852")
-        self.tag_config("highlight", background="#eeb87e")
-
+        
         self.focus_set()
         self.config_tags()
         self.create_proxy()
@@ -37,11 +36,12 @@ class Text(tk.Text):
 
     def config_tags(self):
         self.tag_config(tk.SEL, background="#dc8c34")
-        self.tag_config("highlight", background="#464646", foreground="#d4d4d4")
+        self.tag_config("highlight", background="#dca66b")
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
         self.bind("<FocusOut>", self.hide_autocomplete) 
+        self.bind("<Button-1>", self.hide_autocomplete)
         
         self.bind("<Up>", self.auto_completion.move_up)
         self.bind("<Down>", self.auto_completion.move_down)
@@ -263,12 +263,34 @@ class Text(tk.Text):
         word = re.findall(r"\w+", text)
         if any(word):
             if word[0] not in self.keywords:
-                self.highlighter.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+                self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+
+  
+    def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
+        start = self.index(start)
+        end = self.index(end)
+        
+        self.mark_set("matchStart", start)
+        self.mark_set("matchEnd", start)
+        self.mark_set("searchLimit", end)
+
+        self.tag_remove(tag, start, end)
+        
+        count = tk.IntVar()
+        while True:
+            index = self.search(pattern, "matchEnd", "searchLimit", count=count, regexp=regexp)
+            if index == "" or count.get() == 0:
+                break
+
+            self.mark_set("matchStart", index)
+            self.mark_set("matchEnd", f"{index}+{count.get()}c")
+
+            self.tag_add(tag, "matchStart", "matchEnd")
 
     def on_change(self, *args):
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlight_current_word()
-        self.highlighter.highlight_all()
+        self.highlighter.highlight()
 
     def create_proxy(self):
         self._orig = self._w + "_orig"

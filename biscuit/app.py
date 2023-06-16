@@ -1,4 +1,4 @@
-import os, tkinter as tk
+import os, sys, subprocess, tkinter as tk
 
 from core import *
 from core.components import Editor, LSP
@@ -13,17 +13,10 @@ class App(tk.Tk):
         # TODO handling resizing, positioning, close min max buttons
         #self.overrideredirect(True)
 
-        self.palette = Palette(self)
-        self.lsp = LSP()
-
         self.setup()
         self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True)
         self.late_setup()
-
-        self.setup_references()
-        self.command_palette = self.palette.register_actionset(self.settings.actionset)
-
         self.initialize_editor()
     
     def run(self):
@@ -37,6 +30,8 @@ class App(tk.Tk):
     
     def late_setup(self):
         self.binder.late_bind_all()
+        self.setup_references()
+        self.palette.register_actionset(self.settings.actionset)
 
     def setup_tk(self):
         self.geometry("1100x750")
@@ -53,16 +48,38 @@ class App(tk.Tk):
         self.active_directory = None
         self.active_editor = None
 
+        self.palette = Palette(self)
         self.sysinfo = SysInfo(self)
         self.events = Events(self)
         self.settings = Settings(self)
         self.binder = Binder(self)
         self.style = Style(self)
+        self.lsp = LSP(self)
 
     def setup_version_control(self):
+        #TODO enable git features
         self.git = Git(self)
         self.git_found = False
         self.active_branch_name = None
+
+    # def check_git(self):
+    #     self.git.open_repo()
+
+    # def set_git_found(self, found):
+    #     self.git_found = found
+
+    # def update_git(self):
+    #     if self.git_found:
+    #         self.active_branch_name = self.git.get_active_branch()
+
+    #         self.statusbar.configure_git_info(True)
+    #         self.update_statusbar_git_info()
+
+    #         self.source_control_ref.create_root()
+    #         self.source_control_ref.update_panes()
+    #     else:
+    #         self.statusbar.configure_git_info(False)
+    #         self.source_control_ref.disable_tree()
 
     def setup_references(self):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
@@ -77,60 +94,6 @@ class App(tk.Tk):
         self.logger.warning('last biscuit.')
         self.logger.error('No biscuits left.')
     
-    # def check_git(self):
-    #     self.git.open_repo()
-
-    def close_active_dir(self):
-        self.active_directory = None
-        self.active_directory_name = None
-        # self.refresh()
-        self.explorer.directory.close_directory()
-    
-    # def close_editor(self, path):
-    #     self.editor_groups_ref.groups.remove_tab(path)
-    #     self.refresh()
-    
-    # def close_all_editors(self):
-    #     self.active_editor = None
-
-    # def close_active_editor(self):
-    #     if self.active_editor:
-    #         self.close_editor(self.active_editor)
-    #         self.editor_groups_ref.groups.remove_tab(self.active_editor)  
-    #         self.refresh()
-
-    # def get_active_tab(self):
-    #     return self.editor_groups_ref.groups.get_active_tab()
-    
-    def open_editor(self, path, exists=True):
-        self.editorsmanager.open_editor(path, exists)
-    
-    def open_tetris(self, *_):
-        self.editorsmanager.add_editor(Tetris(self.editorsmanager))
-
-    # def open_welcome_tab(self, _):
-    #     self.set_active_file("@welcomepage", exists=False)
-    
-    # def open_in_new_window(self, dir):
-    #     subprocess.Popen(["python", sys.argv[0], dir])
-    
-    # def open_new_window(self):
-    #     subprocess.Popen(["python", sys.argv[0]])
-
-    # def refresh(self):
-    #     self.update_statusbar_ln_col_info()
-    #     self.update_editor_tabs_pane()
-
-    # def set_git_found(self, found):
-    #     self.git_found = found
-
-    # def set_active_file(self, path, exists=True, diff=False):
-    #     self.active_editor = path
-    #     self.active_file_name = os.path.basename(path)
-
-    #     self.open_editor(self.active_file_name, self.active_editor, exists, diff)
-    #     # self.refresh()
-
     def open_directory(self, dir):
         if not os.path.isdir(dir):
             return
@@ -146,34 +109,32 @@ class App(tk.Tk):
         # self.close_all_editors()
         # self.refresh()
     
+    def close_active_dir(self):
+        self.active_directory = None
+        self.active_directory_name = None
+        self.explorer.directory.close_directory()
+
+    def open_editor(self, path, exists=True):
+        self.editorsmanager.open_editor(path, exists)
+    
+    # games ----
+    def open_tetris(self, *_):
+        self.editorsmanager.add_editor(Tetris(self.editorsmanager))
+    # ----------
+
+    def open_in_new_window(self, dir):
+        subprocess.Popen(["python", sys.argv[0], dir])
+    
+    def open_new_window(self):
+        subprocess.Popen(["python", sys.argv[0]])
+
+    # def refresh(self):
+    #     self.update_statusbar_ln_col_info()
+    #     self.update_editor_tabs_pane()
+
     def set_title(self, name):
         self.title(f"{name} - Biscuit")
-
-    # def toggle_terminal(self, *args):
-    #     self.primarypane.contentpane.right.terminal.toggle()
     
-    # def toggle_active_side_pane(self, *args):
-    #     self.primarypane.sidebar.toggle_active_pane()
-    
-    # def update_editor_tabs_pane(self):
-    #     self.editor_groups_ref.update_panes()
-    
-    # def update_dir_tree_pane(self):
-    #     self.explorer_ref.update_panes()
-    
-    # def update_git(self):
-    #     if self.git_found:
-    #         self.active_branch_name = self.git.get_active_branch()
-
-    #         self.statusbar.configure_git_info(True)
-    #         self.update_statusbar_git_info()
-
-    #         self.source_control_ref.create_root()
-    #         self.source_control_ref.update_panes()
-    #     else:
-    #         self.statusbar.configure_git_info(False)
-    #         self.source_control_ref.disable_tree()
-
     # def update_statusbar_git_info(self):
     #     self.statusbar.set_git_info(self.git.get_active_branch())
 

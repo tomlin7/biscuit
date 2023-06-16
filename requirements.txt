@@ -1,6 +1,6 @@
 gitpython
 filetype
 tkextrafont
-hintedtext
 watchdog
 tksvg
+pygments
