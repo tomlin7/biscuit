@@ -25,14 +25,14 @@ class EditorsPane(tk.Frame):
         self.master = master
         self.base = master.base
 
-        self.config(bg='white')
+        self.config(bg='#dfdfdf')
 
         self.grid_propagate(False)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         self.editorsbar = Editorsbar(self)
-        self.editorsbar.grid(row=0, column=0, sticky=EW)
+        self.editorsbar.grid(row=0, column=0, sticky=EW, pady=(0,1))
         self.tabs = self.editorsbar.tabs
 
         self.editors = []

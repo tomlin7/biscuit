@@ -16,10 +16,18 @@ class Tabs(tk.Frame):
 
     def add_tab(self, view):
         tab = Tab(self, view)
-        tab.pack(fill=tk.Y, side=tk.LEFT)
+        tab.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1))
         self.tabs.append(tab)
 
         tab.select()
+    
+    def close_tab(self, tab):
+        # i = self.tabs.index(tab)
+        self.tabs.remove(tab)
+        self.master.master.delete_editor(tab.editor)
+        tab.destroy()
+
+        # TODO switch to next tab
 
     def set_active_tab(self, selected_tab):
         self.active_tab = selected_tab
