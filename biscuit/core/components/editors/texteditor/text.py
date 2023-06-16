@@ -39,14 +39,18 @@ class Text(tk.Text):
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
-        self.bind("<FocusOut>", self.hide_autocomplete) 
-        self.bind("<Button-1>", self.hide_autocomplete)
-        
-        self.bind("<Up>", self.auto_completion.move_up)
-        self.bind("<Down>", self.auto_completion.move_down)
+
+        self.bind("<Control-d>", self.multi_selection)
+        self.bind("<Control-Left>", lambda e: self.handle_ctrl_hmovement())
+        self.bind("<Control-Right>", lambda e: self.handle_ctrl_hmovement(True))
 
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
+
+        self.bind("<FocusOut>", self.hide_autocomplete) 
+        self.bind("<Button-1>", self.hide_autocomplete)
+        self.bind("<Up>", self.auto_completion.move_up)
+        self.bind("<Down>", self.auto_completion.move_down)
 
     def key_release_events(self, event):
         if event.keysym not in ("Up", "Down", "Return"):
@@ -59,16 +63,41 @@ class Text(tk.Text):
             case "rightarrow" | "leftarrow":
                 self.update_completions()
             
+            # bracket pair completions
+            case "braceleft":
+                self.complete_pair("}")
+            case "bracketleft":
+                self.complete_pair("]")
+            case "parenleft":
+                self.complete_pair(")")
+
+            # surroundings for selection
+            case "apostrophe":
+                self.surrounding_selection("\'")
+            case "quotedbl":
+                self.surrounding_selection("\"")
+
+            # extra spaces
+            case ":" | ",":
+                self.insert(tk.INSERT, " ")
+
             case _:
                 pass
 
     def enter_key_events(self, *_):
-        return self.tab_key_events()
+        if self.auto_completion.active:        
+            self.auto_completion.choose()
+            return "break"
+        
+        return self.check_indentation()
         
     def tab_key_events(self, *_):
         if self.auto_completion.active:        
             self.auto_completion.choose()
             return "break"
+    
+        self.insert(tk.INSERT, " "*4)
+        return "break"
     
     def get_all_text(self, *args):
         return self.get(1.0, tk.END)
@@ -132,7 +161,6 @@ class Text(tk.Text):
         if not self.check_autocomplete_keys(event):
             return
 
-        print(self.current_word)
         if self.current_word.strip() not in ["{", "}", ":", "", None, "\""] and not self.current_word.strip()[0].isdigit():
             if not self.auto_completion.active:
                 if event.keysym in ["Left", "Right"]:
@@ -146,6 +174,67 @@ class Text(tk.Text):
             if self.auto_completion.active:
                 self.hide_autocomplete()
 
+    def complete_pair(self, char):
+        self.insert(tk.INSERT, char)
+        self.mark_set(tk.INSERT, "insert-1c")
+
+    def surrounding_selection(self, char):
+        if self.tag_ranges(tk.SEL):
+            self.insert(char, tk.SEL_LAST)
+            self.insert(char, tk.SEL_FIRST)
+            return
+        
+        self.complete_pair(char)
+
+    def move_to_next_word(self):
+        self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
+
+    def move_to_previous_word(self):
+        self.mark_set(tk.INSERT, self.index("insert-1c wordstart"))
+
+    def handle_ctrl_hmovement(self, delta=False):
+        if delta:
+            self.move_to_next_word()
+        else:
+            self.move_to_previous_word()
+        
+        return "break"
+
+    def update_current_indent(self):
+        line = self.get("insert linestart", "insert lineend")
+        match = re.match(r'^(\s+)', line)
+        self.current_indent = len(match.group(0)) if match else 0
+
+    def update_current_line(self):
+        self.current_line = self.get("insert linestart", "insert lineend")
+        return self.current_line
+    
+    def add_newline(self, count=1):
+        self.insert(tk.INSERT, "\n" * count)
+    
+    def check_indentation(self, *args):
+        self.update_current_indent()
+        if self.update_current_line():
+            if self.current_line[-1] in ["{", "[", ":", "("]:
+                self.current_indent += 4
+            elif self.current_line[-1] in ["}", "]", ")"]:
+                self.current_indent -= 4
+            
+            self.add_newline()
+            self.insert(tk.INSERT, " " * self.current_indent)
+
+            self.update_current_indent()
+            
+            return "break"
+
+    # def handle_space(self, *args):
+    #     self.insert(tk.INSERT, "-")
+    #     return "break"
+
+    def multi_selection(self, *args):
+        #TODO: multi cursor editing
+        return "break"
+    
     def load_file(self):
         try:
             with open(self.path, 'r') as data:
