@@ -1,6 +1,6 @@
-import tkinter as tk
+import os, tkinter as tk
 from pygments import lex
-from pygments.lexers import PythonLexer
+from pygments.lexers import get_lexer_for_filename
 from pygments.token import Token
 
 class Highlighter:
@@ -8,9 +8,7 @@ class Highlighter:
         self.text = master
         self.base = master.base
 
-        # testing
-        self.lexer = PythonLexer()
-
+        self.lexer = get_lexer_for_filename(os.path.basename(master.path))
         self.tag_colors = {
             Token.Keyword: "#0000ff",
             Token.Keyword.Constant:"#0000ff",
@@ -65,12 +63,6 @@ class Highlighter:
             Token.Number.Integer.Long:"#098658",
             Token.Number.Oct:"#098658",
 
-            # Operator: "#",
-            # Operator.Word: "#",
-
-            # Punctuation: "#",
-            # Punctuation.Marker: "#",
-
             Token.Comment:"#098658",
             Token.Comment.Hashbang:"#098658",
             Token.Comment.Multiline:"#098658",
@@ -78,6 +70,13 @@ class Highlighter:
             Token.Comment.PreprocFile:"#098658",
             Token.Comment.Single:"#098658",
             Token.Comment.Special:"#098658",
+
+            # Operator: "#",
+            # Operator.Word: "#",
+
+            Token.Punctuation: "#3b3b3b",
+            Token.Punctuation.Marker: "#3b3b3b",
+
         }
 
         self.setup_highlight_tags()
@@ -87,6 +86,7 @@ class Highlighter:
             self.text.tag_configure(str(token), foreground=color)
 
     def highlight(self):
+        # clear all existing tags
         for token, _ in self.tag_colors.items():
             self.text.tag_remove(str(token), '1.0', tk.END)
             
@@ -96,7 +96,7 @@ class Highlighter:
             self.text.mark_set("range_end", f"range_start + {len(content)}c")
             self.text.tag_add(str(token), "range_start", "range_end")
             self.text.mark_set("range_start", "range_end")
-
-        #DEBUG
-        #     print(f"{content} is recognized as a <{str(token)}>")
+            
+            # DEBUG
+            # print(f"{content} is recognized as a <{str(token)}>")
         # print("==================================")

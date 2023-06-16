@@ -1,8 +1,9 @@
 import re
 import tkinter as tk
 
-from .highlighter import Highlighter
+from .syntax.highlighter import Highlighter
 from .autocomplete import AutoComplete
+from .syntax import Syntax
 
 class Text(tk.Text):
     def __init__(self, master, path=None, exists=True, *args, **kwargs):
@@ -14,15 +15,13 @@ class Text(tk.Text):
         self.data = None
         self.exists = exists
 
-        self.lsp = self.base.lsp
-        self.keywords = self.base.lsp.keywords
-
+        self.syntax = Syntax(self)
         self.highlighter = Highlighter(self)
 
         self.current_word = None
         self.words = []
         self.auto_completion = AutoComplete(
-            self, items=self.lsp.get_autocomplete_list())
+            self, items=self.syntax.get_autocomplete_list())
 
         self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white", fg="#3b3b3b")
         self.tag_config(tk.SEL, background="#b98852")
@@ -132,8 +131,9 @@ class Text(tk.Text):
     def show_autocomplete(self, event):
         if not self.check_autocomplete_keys(event):
             return
-        
-        if self.current_word.strip() not in ["{", "}", ":", "", None, "\""]:
+
+        print(self.current_word)
+        if self.current_word.strip() not in ["{", "}", ":", "", None, "\""] and not self.current_word.strip()[0].isdigit():
             if not self.auto_completion.active:
                 if event.keysym in ["Left", "Right"]:
                     return
@@ -262,7 +262,7 @@ class Text(tk.Text):
         text = self.get("insert wordstart", "insert wordend")
         word = re.findall(r"\w+", text)
         if any(word):
-            if word[0] not in self.keywords:
+            if word[0] not in self.syntax.keywords:
                 self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
 
   

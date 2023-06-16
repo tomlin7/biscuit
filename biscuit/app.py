@@ -1,7 +1,7 @@
 import os, sys, subprocess, tkinter as tk
 
 from core import *
-from core.components import Editor, LSP
+from core.components import Editor
 from core.components.games import Tetris
 
 # TODO re enable statusbar info
@@ -54,7 +54,6 @@ class App(tk.Tk):
         self.settings = Settings(self)
         self.binder = Binder(self)
         self.style = Style(self)
-        self.lsp = LSP(self)
 
     def setup_version_control(self):
         #TODO enable git features

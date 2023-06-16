@@ -12,7 +12,7 @@ TODO
 from ...config import languages
 
 
-class LanguageTools:
+class LSP:
     def __init__(self, master, *args, **kwargs):
         self.master = master
 
