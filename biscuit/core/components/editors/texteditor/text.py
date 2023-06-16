@@ -24,7 +24,7 @@ class Text(tk.Text):
         self.auto_completion = AutoComplete(
             self, items=self.lsp.get_autocomplete_list())
 
-        self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white")
+        self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white", fg="#3b3b3b")
         self.tag_config(tk.SEL, background="#b98852")
         
         self.focus_set()

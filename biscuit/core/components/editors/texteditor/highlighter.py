@@ -96,3 +96,7 @@ class Highlighter:
             self.text.mark_set("range_end", f"range_start + {len(content)}c")
             self.text.tag_add(str(token), "range_start", "range_end")
             self.text.mark_set("range_start", "range_end")
+
+        #DEBUG
+        #     print(f"{content} is recognized as a <{str(token)}>")
+        # print("==================================")
