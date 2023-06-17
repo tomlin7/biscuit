@@ -74,13 +74,13 @@ class EditorsPane(tk.Frame):
         "Set active editor and active tab."
         ...
     
-    def get_active_editor():
+    def get_active_editor(self):
         "Get active editor."
-        ...
+        return self.editorsbar.tabs.active_tab.editor
     
     def refresh(self):
-        if not len(self.editors) and not self.empty:
-            self.empty = not self.empty
+        if not len(self.editors) and self.empty:
             self.emptytab.grid()
-        if len(self.editors) and self.empty:
+        elif len(self.editors) and not self.empty:
             self.emptytab.grid_remove()
+        self.empty = not self.empty

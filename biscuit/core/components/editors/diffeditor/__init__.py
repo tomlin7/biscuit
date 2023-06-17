@@ -1,20 +1,16 @@
 import tkinter as tk
-from tkinter import ttk
 
 from .pane import DiffPane
 from .differ import Differ
 
 #TODO reimplement diff editor + git
-
-class DiffViewer(tk.PanedWindow):
+class DiffViewer(tk.Frame):
     def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, orient=tk.HORIZONTAL, *args, **kwargs)
         self.base = master.base
         self.master = master
         self.path = path
 
-        self.config(opaqueresize=False, orient=tk.HORIZONTAL)
-        
         self.editable = True
 
         self.lhs_data = []

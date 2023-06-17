@@ -55,8 +55,8 @@ class Searchbar(tk.Frame):
         if not prompt_found:
             self.master.pick_file_search()
 
-        new = [i for i in self.master.get_items() if i[0].lower().startswith(term.lower())]
-        new += [i for i in self.master.get_items() if any([f.lower() in i[0].lower() or i[0].lower() in f.lower() and i not in new for f in term.lower().split()])]
+        new = [i for i in self.master.active_set if i[0].lower().startswith(term.lower())]
+        new += [i for i in self.master.active_set if any([f.lower() in i[0].lower() or i[0].lower() in f.lower() and i not in new for f in term.lower().split()])]
         
         if any(new):
             self.master.show_items(new)

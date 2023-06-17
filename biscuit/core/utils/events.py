@@ -1,5 +1,5 @@
 import tkinter.filedialog as filedialog
-from tkinter.filedialog import asksaveasfile
+from tkinter.filedialog import asksaveasfilename
 
 
 class Events:
@@ -8,7 +8,7 @@ class Events:
         self.count = 1
 
     def new_file(self, *_):
-        self.base.set_active_file(file=f"Untitled-{self.count}", exists=False)
+        self.base.open_editor(file=f"Untitled-{self.count}", exists=False)
         self.count += 1
 
     def new_window(self, *_):
@@ -20,18 +20,16 @@ class Events:
     def open_dir(self, *_):
         self.base.open_directory(filedialog.askdirectory())
         
-    def save(self, *_): ...
-        # with open(self.base.active_file, 'w') as f:
-        #     f.write(self.base.root.primarypane.contentpane.right.top.editor_groups.groups.get_active_text())
+    def save(self, *_):
+        if editor := self.base.editorsmanager.get_active_editor():
+            editor.save()
 
-    def save_as(self, *_): ...
-        # with asksaveasfile(
-        #     title="Save As...", defaultextension=".txt",
-        #     initialfile=(self.base.active_file if self.base.active_file else "Untitled")
-        # ) as fp:
-        #     fp.write(self.base.root.primarypane.contentpane.right.top.editor_groups.groups.get_active_text())
-        #     self.base.set_active_file(fp.name)
-        #     print(f"Saved as {fp.name}")
+    def save_as(self, *_):
+        #TODO set initial filename to a range of text inside the editor
+        if editor := self.base.editorsmanager.get_active_editor():
+            with asksaveasfilename(title="Save As...", defaultextension=".txt", 
+                initialfile=(self.base.active_file if self.base.active_file else "Untitled")) as path:
+                editor.save(path)
 
     def close_file(self, *_):
         self.base.close_active_file()
@@ -42,11 +40,12 @@ class Events:
     def quit(self, *_):
         self.base.destroy()
     
+    #TODO implement undo redo
     def undo(self, *_):
-        self.base.trace('undo event')
+        print('undo event')
     
     def redo(self, *_):
-        self.base.trace('redo event')
+        print('redo event')
     
     def cut(self, *_):
         self.base.get_active_tab().cut()

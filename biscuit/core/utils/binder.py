@@ -17,7 +17,6 @@ class Binder:
         self.bind(self.bindings.close_file, self.events.close_file)
         self.bind(self.bindings.quit, self.events.quit)
 
-
     def late_bind_all(self):
         self.bind(self.bindings.commandpalette, lambda e: self.base.palette.show_prompt(">"))
         self.bind(self.bindings.panel, self.base.root.baseframe.contentpane.toggle_panel)

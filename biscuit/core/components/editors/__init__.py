@@ -60,5 +60,8 @@ class Editor(tk.Frame):
             self.grid_rowconfigure(0, weight=1)
             self.content.grid(row=0, column=0, sticky=NSEW)
     
+    def save(self, path=None):
+        self.content.save(path)
+    
     def focus(self):
         self.content.focus()

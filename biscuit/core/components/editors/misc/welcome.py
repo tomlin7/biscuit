@@ -5,8 +5,8 @@ from ..editor import BaseEditor
 
 
 class Welcome(BaseEditor):
-    def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+    def __init__(self, master, exists=False, editable=False, *args, **kwargs):
+        super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
         self.master = master
         self.base = master.base
 

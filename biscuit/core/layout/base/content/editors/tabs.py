@@ -22,13 +22,17 @@ class Tabs(tk.Frame):
         tab.select()
     
     def close_tab(self, tab):
-        # i = self.tabs.index(tab)
+        i = self.tabs.index(tab)
         self.tabs.remove(tab)
         self.master.master.delete_editor(tab.editor)
         tab.destroy()
 
-        # TODO switch to next tab
-
+        if self.tabs:
+            if i < len(self.tabs):
+                self.tabs[i].select()
+            else:
+                self.tabs[i-1].select()
+        
     def set_active_tab(self, selected_tab):
         self.active_tab = selected_tab
         if selected_tab.editor.has_content:

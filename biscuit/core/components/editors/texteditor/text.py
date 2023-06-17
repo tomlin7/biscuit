@@ -65,7 +65,7 @@ class Text(tk.Text):
             
             # bracket pair completions
             case "braceleft":
-                self.complete_pair("}")
+                return self.complete_pair("}")
             case "bracketleft":
                 self.complete_pair("]")
             case "parenleft":
@@ -112,9 +112,6 @@ class Text(tk.Text):
     def get_current_word(self):
         return self.current_word.strip()
     
-    def get_all_words(self, *args):
-        return self.words
-
     def update_words(self, *_):
         self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
         self.after(1000, self.update_words)
@@ -243,6 +240,23 @@ class Text(tk.Text):
         except Exception:
             self.master.unsupported_file()
     
+    def save_file(self, path=None):
+        if path:
+            try:
+                with open(path, 'w') as fp:
+                    fp.write(self.get_all_text())
+            except Exception:
+                return
+            
+            self.path = path
+            #TODO update tab name
+        
+        try:
+            with open(self.path, 'w') as fp:
+                fp.write(self.get_all_text())
+        except Exception:
+            return
+             
     def copy(self, *_):
         self.event_generate("<<Copy>>")
 

@@ -26,6 +26,10 @@ class IconButton(tk.Menubutton):
         
         self.switch = not self.switch
         self.config(text=get_codicon(self.icons[self.switch]))
+        self.v_onclick()
+    
+    def v_onclick(self):
+        ...
     
     def set_icon(self, icon):
         self.config(text=get_codicon(icon))

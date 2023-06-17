@@ -56,6 +56,10 @@ class TextEditor(BaseEditor):
         self.linenumbers.set_bar_width(size * 3)
         self.on_change()
     
+    def save(self, path=None):
+        if self.editable:
+            self.text.save_file(path)
+    
     def cut(self, *_):
         if self.editable:
             self.text.cut()

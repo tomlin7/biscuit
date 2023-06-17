@@ -39,7 +39,7 @@ class AutoComplete(tk.Toplevel):
         term = self.master.get_current_word()
 
         exact, starts, includes = [], [], []
-        for i in self.get_items():
+        for i in self.menu_items:
             if i.get_text() == term:
                 exact.append(i)
             elif i.get_text().startswith(term):
@@ -72,12 +72,12 @@ class AutoComplete(tk.Toplevel):
         self.refresh_selected()
     
     def update_all_words(self):
-        for word in self.master.get_all_words():
+        for word in self.master.words:
             if word not in self.get_items_text():
                 self.add_item(word, "word")
         
-        for word in self.get_items():
-            if word.get_text() not in self.master.get_all_words() and word.get_kind() == "word":
+        for word in self.menu_items:
+            if word.get_text() not in self.master.words and word.get_kind() == "word":
                 self.remove_item(word)
 
     def add_item(self, left, kind=None):
@@ -111,9 +111,6 @@ class AutoComplete(tk.Toplevel):
             i.deselect()
         if self.selected < len(self.active_items):
             self.active_items[self.selected].select()
-
-    def get_items(self):
-        return self.menu_items
     
     def get_items_text(self):
         return [i.get_text() for i in self.menu_items]
