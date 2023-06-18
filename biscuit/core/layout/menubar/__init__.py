@@ -46,10 +46,15 @@ class Menubar(tk.Frame):
         file_menu.menu.add_separator()
         file_menu.menu.add_item("Open File", events.open_file)
         file_menu.menu.add_item("Open Folder", events.open_dir)
+        # TODO open recent files 
         file_menu.menu.add_separator()
         file_menu.menu.add_item("Close Editor", events.close_file)
         file_menu.menu.add_item("Close Folder", events.close_dir)
         file_menu.menu.add_item("Close Window", events.quit)
+        file_menu.menu.add_separator()
+        file_menu.menu.add_item("Save", events.save)
+        file_menu.menu.add_item("Save As...", events.save_as)
+        file_menu.menu.add_item("Save All", events.save_all)
         file_menu.menu.add_separator()
         file_menu.menu.add_item("Exit", events.quit)
 

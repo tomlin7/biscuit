@@ -21,7 +21,7 @@ class Tetris(BaseEditor):
         self.path = "games/tetris"
         self.exists = False
         self.filename = "Tetris"
-        self.has_content = False
+        self.content = None
 
         self.status_var = tk.StringVar()
         self.status_label = tk.Label(self, textvariable=self.status_var, font='Fixedsys 18', bg='#F4EEE0', fg='#B99B6B')

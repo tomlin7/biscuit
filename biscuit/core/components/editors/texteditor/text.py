@@ -1,7 +1,7 @@
 import re
 import tkinter as tk
 
-from .syntax.highlighter import Highlighter
+from .syntax import Highlighter
 from .autocomplete import AutoComplete
 from .syntax import Syntax
 
@@ -40,6 +40,7 @@ class Text(tk.Text):
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
 
+        self.bind("<Control-f>", self.open_find_replace)
         self.bind("<Control-d>", self.multi_selection)
         self.bind("<Control-Left>", lambda e: self.handle_ctrl_hmovement())
         self.bind("<Control-Right>", lambda e: self.handle_ctrl_hmovement(True))
@@ -231,6 +232,9 @@ class Text(tk.Text):
     def multi_selection(self, *args):
         #TODO: multi cursor editing
         return "break"
+
+    def open_find_replace(self, *_):
+        ...
     
     def load_file(self):
         try:

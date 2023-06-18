@@ -42,7 +42,6 @@ class Editor(tk.Frame):
         self.path = path
         self.exists = exists
         self.showpath = showpath
-        self.has_content = True
         self.filename = os.path.basename(self.path) if path else None
         # TODO for now, this
         if self.filename.endswith('::'):
