@@ -1,6 +1,7 @@
 import os, tkinter as tk
 from pygments import lex
 from pygments.lexers import get_lexer_for_filename
+from pygments.util import ClassNotFound
 from pygments.token import Token
 
 class Highlighter:
@@ -8,7 +9,11 @@ class Highlighter:
         self.text = master
         self.base = master.base
 
-        self.lexer = get_lexer_for_filename(os.path.basename(master.path))
+        try:
+            self.lexer = get_lexer_for_filename(os.path.basename(master.path))
+        except ClassNotFound:
+            self.lexer = None
+
         self.tag_colors = {
             Token.Keyword: "#0000ff",
             Token.Keyword.Constant:"#0000ff",
@@ -86,7 +91,9 @@ class Highlighter:
             self.text.tag_configure(str(token), foreground=color)
 
     def highlight(self):
-        # clear all existing tags
+        if not self.lexer:
+            return
+        
         for token, _ in self.tag_colors.items():
             self.text.tag_remove(str(token), '1.0', tk.END)
             
