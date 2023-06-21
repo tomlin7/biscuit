@@ -20,10 +20,22 @@ class BreadCrumbs(tk.Frame):
 
         self.pathview = PathView(self)
 
-        path = os.path.relpath(path, self.base.active_directory).split('\\')
-        for i, item in enumerate(path):
-            text = item if item == path[-1] else f"{item} ›"
+        # if the file does not belong to active directory, use the absolute path instead
+        if not (self.base.active_directory and 
+                os.path.commonpath([self.base.active_directory, path]) == os.path.abspath(self.base.active_directory)):
+            path = os.path.abspath(path).split('\\')
+            for i, item in enumerate(path):
+                text = item if item == path[-1] else f"{item} ›"
 
-            btn = Item(self, os.path.join(self.base.active_directory, "\\".join(path[:i])), text=text)
-            btn.bind("<Button-1>", self.pathview.show)
-            btn.pack(side=tk.LEFT)
+                btn = Item(self, "\\".join(path[:i]), text=text)
+                btn.bind("<Button-1>", self.pathview.show)
+                btn.pack(side=tk.LEFT)
+        else:
+            # otherwise use the relative path to active directory
+            path = os.path.relpath(path, self.base.active_directory).split('\\')
+            for i, item in enumerate(path):
+                text = item if item == path[-1] else f"{item} ›"
+
+                btn = Item(self, os.path.join(self.base.active_directory, "\\".join(path[:i])), text=text)
+                btn.bind("<Button-1>", self.pathview.show)
+                btn.pack(side=tk.LEFT)
