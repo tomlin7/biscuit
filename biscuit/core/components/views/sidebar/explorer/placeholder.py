@@ -24,7 +24,7 @@ class DirectoryTreePlaceholder(tk.Frame):
         clone_btn.grid(row=3, pady=5, sticky=tk.EW)
 
     def open_folder(self, *_):
-        self.base.events.open_dir()
+        self.base.events.open_directory()
 
     def clone_repo(self, *_):
         pass

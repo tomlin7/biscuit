@@ -45,7 +45,7 @@ class Menubar(tk.Frame):
         file_menu.menu.add_item("New Window", events.new_window)
         file_menu.menu.add_separator()
         file_menu.menu.add_item("Open File", events.open_file)
-        file_menu.menu.add_item("Open Folder", events.open_dir)
+        file_menu.menu.add_item("Open Folder", events.open_directory)
         # TODO open recent files 
         file_menu.menu.add_separator()
         file_menu.menu.add_item("Close Editor", events.close_file)

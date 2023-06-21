@@ -10,6 +10,9 @@ class Git(git.Git):
 
         self.repo = None
 
+    def check_git(self):
+        self.open_repo()
+
     def open_repo(self):
         try:
             self.repo = GitRepo(self.base.active_dir)

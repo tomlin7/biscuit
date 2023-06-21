@@ -1,5 +1,4 @@
 import tkinter as tk
-import tksvg
 
 from .shortcuts import Shortcuts
 
@@ -32,6 +31,6 @@ class Empty(tk.Frame):
     # TODO drop to open
     # def drop(self, event):
     #     if os.path.isfile(event.data):
-    #         self.base.set_active_file(file=event.data, exists=True)
+    #         self.base.open_editor(event.data, exists=True)
     #     elif os.path.isdir(event.data):
-    #         self.base.open_in_new_window(dir=event.data)
+    #         self.base.events.open_in_new_window(dir=event.data)

@@ -234,7 +234,7 @@ class Text(tk.Text):
         return "break"
 
     def open_find_replace(self, *_):
-        ...
+        self.base.findreplace.show(self)
     
     def load_file(self):
         try:

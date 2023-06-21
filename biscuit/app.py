@@ -1,7 +1,7 @@
 import os, sys, subprocess, tkinter as tk
 
 from core import *
-from core.components import Editor
+from core.components import FindReplace
 from core.components.games import Tetris
 
 # TODO re enable statusbar info
@@ -26,7 +26,6 @@ class App(tk.Tk):
         self.setup_tk()
         self.setup_path()
         self.setup_configs()
-        self.setup_version_control()
     
     def late_setup(self):
         self.binder.late_bind_all()
@@ -45,40 +44,18 @@ class App(tk.Tk):
         self.themesdir = os.path.join(self.configdir, 'themes')
 
     def setup_configs(self):
+        self.git_found = False
         self.active_directory = None
-        self.active_editor = None
+        self.active_branch_name = None
 
+        self.git = Git(self)
         self.palette = Palette(self)
+        self.findreplace = FindReplace(self)
         self.sysinfo = SysInfo(self)
         self.events = Events(self)
         self.settings = Settings(self)
         self.binder = Binder(self)
         self.style = Style(self)
-
-    def setup_version_control(self):
-        #TODO enable git features
-        self.git = Git(self)
-        self.git_found = False
-        self.active_branch_name = None
-
-    # def check_git(self):
-    #     self.git.open_repo()
-
-    # def set_git_found(self, found):
-    #     self.git_found = found
-
-    # def update_git(self):
-    #     if self.git_found:
-    #         self.active_branch_name = self.git.get_active_branch()
-
-    #         self.statusbar.configure_git_info(True)
-    #         self.update_statusbar_git_info()
-
-    #         self.source_control_ref.create_root()
-    #         self.source_control_ref.update_panes()
-    #     else:
-    #         self.statusbar.configure_git_info(False)
-    #         self.source_control_ref.disable_tree()
 
     def setup_references(self):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
@@ -103,10 +80,6 @@ class App(tk.Tk):
 
         # self.check_git()
         # self.update_git()
-        
-        # self.refresh_dir()
-        # self.close_all_editors()
-        # self.refresh()
     
     def close_active_dir(self):
         self.active_directory = None
@@ -119,17 +92,27 @@ class App(tk.Tk):
     # games ----
     def open_tetris(self, *_):
         self.editorsmanager.add_editor(Tetris(self.editorsmanager))
+
     # ----------
+    
+    # def update_git(self):
+    #     if self.git_found:
+    #         self.active_branch_name = self.git.get_active_branch()
+
+    #         self.statusbar.configure_git_info(True)
+    #         self.update_statusbar_git_info()
+
+    #         self.source_control_ref.create_root()
+    #         self.source_control_ref.update_panes()
+    #     else:
+    #         self.statusbar.configure_git_info(False)
+    #         self.source_control_ref.disable_tree()
 
     def open_in_new_window(self, dir):
         subprocess.Popen(["python", sys.argv[0], dir])
     
     def open_new_window(self):
         subprocess.Popen(["python", sys.argv[0]])
-
-    # def refresh(self):
-    #     self.update_statusbar_ln_col_info()
-    #     self.update_editor_tabs_pane()
 
     def set_title(self, name):
         self.title(f"{name} - Biscuit")
@@ -152,4 +135,3 @@ class App(tk.Tk):
     #             self.statusbar.configure_editmode(False)
     #     else:
     #         self.statusbar.configure_editmode(False)
-    

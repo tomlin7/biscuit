@@ -13,23 +13,22 @@ class Toggle(IconButton):
 
     def v_onclick(self):
         if self.state:
-            self.imagew.config(image=self.image_toggled)
             self.config(pady=30, padx=2)
         else:
-            self.imagew.config(image=self.image)
             self.config(pady=10, padx=5)
         self.master.toggle_replace(self.state)
 
 
 class FindReplace(tk.Toplevel):
-    def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
+    def __init__(self, base, *args, **kwargs):
+        super().__init__(base, *args, **kwargs)
+        self.base = base
+        
+        self.offset = 10
         self.active = False
         self.overrideredirect(True)
         self.config(bg="#454545")
+        self.withdraw()
         
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -43,25 +42,25 @@ class FindReplace(tk.Toplevel):
         container.grid_columnconfigure(0, weight=1)
         container.grid(row=0, column=1, sticky=tk.NSEW)
 
-        self.find_entry = FindBox(self, width=20)
-        self.results_count = FindResults(self)
-        self.replace_entry = ReplaceBox(self, width=20)
+        # self.find_entry = FindBox(self, width=20)
+        # self.results_count = FindResults(self)
+        # self.replace_entry = ReplaceBox(self, width=20)
 
-        self.replace_btn_holder = tk.Frame(self, bg="#252526", pady=2)
-        self.replace_button = IconButton(self.replace_btn_holder, "replace-all")
+        # self.replace_btn_holder = tk.Frame(self, bg="#252526", pady=2)
+        # self.replace_button = IconButton(self.replace_btn_holder, "replace-all")
 
-        self.find_btns_holder = tk.Frame(self, bg="#252526", pady=6)
-        self.selection_button = IconButton(self.find_btns_holder, 'list-selection')
-        self.close_button = IconButton(self.find_btns_holder, 'close')
+        # self.find_btns_holder = tk.Frame(self, bg="#252526", pady=6)
+        # self.selection_button = IconButton(self.find_btns_holder, 'list-selection')
+        # self.close_button = IconButton(self.find_btns_holder, 'close')
         
-        self.find_entry.grid(row=0, column=0, sticky=tk.NSEW, pady=5)
-        self.results_count.grid(row=0, column=1, sticky=tk.NSEW, pady=5)
-        self.replace_button.grid(row=0, column=0, sticky=tk.NS, padx=5)
-        self.find_btns_holder.grid(row=0, column=2, sticky=tk.NSEW, padx=(10, 5))
-        self.selection_button.grid(row=0, column=0, sticky=tk.NSEW, pady=3)
-        self.close_button.grid(row=0, column=1, sticky=tk.NSEW, pady=3)
+        # self.find_entry.grid(row=0, column=0, sticky=tk.NSEW, pady=5)
+        # self.results_count.grid(row=0, column=1, sticky=tk.NSEW, pady=5)
+        # self.replace_button.grid(row=0, column=0, sticky=tk.NS, padx=5)
+        # self.find_btns_holder.grid(row=0, column=2, sticky=tk.NSEW, padx=(10, 5))
+        # self.selection_button.grid(row=0, column=0, sticky=tk.NSEW, pady=3)
+        # self.close_button.grid(row=0, column=1, sticky=tk.NSEW, pady=3)
 
-        self.config_bindings()
+        # self.config_bindings()
 
     def config_bindings(self, *args):
         self.find_entry.entry.bind("<Configure>", self.do_find)
@@ -87,16 +86,17 @@ class FindReplace(tk.Toplevel):
         self.update_idletasks()
         # self.geometry("+{}+{}".format(*self.master.cursor_screen_location()))
 
-    def show(self, pos):
+    def show(self, text):
         self.active = True
         self.update_idletasks()
-        self.geometry("+{}+{}".format(*pos))
+        x = text.winfo_rootx() + text.winfo_width() - self.winfo_width() - self.offset
+        y = text.winfo_rooty()
+        self.geometry(f"+{x}+{y}")
         self.deiconify()
 
     def hide(self, *args):
         self.active = False
         self.withdraw()
-        self.master.find_replace_active = False
     
     def reset(self, *args):
         ...

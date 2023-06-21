@@ -1,5 +1,4 @@
 import os
-import threading
 from tkinter.constants import *
 
 from ....palette.actionset import ActionSet
@@ -31,7 +30,7 @@ class DirectoryTree(SidebarViewItem):
         self.path = startpath
         self.watcher = DirectoryTreeWatcher(self, self.tree, observe_changes)
         if startpath:
-            self.open_directory(startpath)
+            self.change_path(startpath)
         else:
             self.tree.insert('', 0, text='You have not yet opened a folder.')
 

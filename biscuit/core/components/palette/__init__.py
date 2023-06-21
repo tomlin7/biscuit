@@ -94,13 +94,7 @@ class Palette(tk.Toplevel):
     def choose(self, *args):
         self.shown_items[self.selected].command()
         self.hide()
-    
-    def get_popup_x(self, width):
-        return self.winfo_rootx() + int(self.winfo_width() / 2) - int(width / 2)
-
-    def get_popup_y(self):
-        return self.winfo_rooty()
-
+        
     def get_items(self):
         return self.active_set
     

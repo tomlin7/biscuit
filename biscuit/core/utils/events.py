@@ -1,3 +1,4 @@
+import os
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
@@ -17,9 +18,9 @@ class Events:
     def open_file(self, *_):
         self.base.open_editor(filedialog.askopenfilename())
 
-    def open_dir(self, *_):
+    def open_directory(self, *_):
         self.base.open_directory(filedialog.askdirectory())
-        
+
     def save(self, *_):
         editor = self.base.editorsmanager.get_active_editor()
         if editor.content:

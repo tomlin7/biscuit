@@ -58,4 +58,4 @@ class Welcome(BaseEditor):
         self.base.events.open_file()
     
     def open_folder(self, _):
-        self.base.events.open_dir()
+        self.base.events.open_directory()
