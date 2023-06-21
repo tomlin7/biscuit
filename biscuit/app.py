@@ -78,20 +78,29 @@ class App(tk.Tk):
         self.active_directory = dir
         self.explorer.directory.change_path(dir)
         self.set_title(os.path.basename(self.active_directory))
-
-        # self.check_git()
-        # self.update_git()
+        self.update_git()
     
-    def close_active_dir(self):
+    def close_active_directory(self):
         self.active_directory = None
-        self.active_directory_name = None
         self.explorer.directory.close_directory()
+        self.editorsmanager.delete_all_editors()
+        self.set_title()
+        self.update_git()
+    
+    def close_active_editor(self):
+        self.editorsmanager.close_active_editor()
 
     def open_editor(self, path, exists=True):
-        if not os.path.isfile(path):
+        if exists and not os.path.isfile(path):
             return
 
         self.editorsmanager.open_editor(path, exists)
+
+    def open_diff(self, path, exists=True):
+        if exists and not os.path.isfile(path):
+            return
+
+        self.editorsmanager.open_diff_editor(path, exists)
     
     # games ----
     def open_tetris(self, *_):
@@ -99,18 +108,10 @@ class App(tk.Tk):
 
     # ----------
     
-    # def update_git(self):
-    #     if self.git_found:
-    #         self.active_branch_name = self.git.get_active_branch()
-
-    #         self.statusbar.configure_git_info(True)
-    #         self.update_statusbar_git_info()
-
-    #         self.source_control_ref.create_root()
-    #         self.source_control_ref.update_panes()
-    #     else:
-    #         self.statusbar.configure_git_info(False)
-    #         self.source_control_ref.disable_tree()
+    def update_git(self):
+        self.git.check_git()
+        self.statusbar.update_git_info()
+        self.source_control.refresh()
 
     def open_in_new_window(self, dir):
         subprocess.Popen(["python", sys.argv[0], dir])
@@ -118,14 +119,13 @@ class App(tk.Tk):
     def open_new_window(self):
         subprocess.Popen(["python", sys.argv[0]])
 
-    def set_title(self, name):
+    def set_title(self, name=None):
+        if name:
+            return self.title("Biscuit")
         self.title(f"{name} - Biscuit")
     
-    # def update_statusbar_git_info(self):
-    #     self.statusbar.set_git_info(self.git.get_active_branch())
-
     def update_statusbar(self):
-        if editor := self.editorsmanager.get_active_editor():
+        if editor := self.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 self.statusbar.toggle_editmode(True)
                 active_text = editor.content.text

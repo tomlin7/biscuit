@@ -1,4 +1,4 @@
-import difflib, sys
+import difflib
 
 
 class Differ(difflib.Differ):

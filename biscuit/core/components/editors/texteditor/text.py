@@ -1,12 +1,12 @@
 import re
 import tkinter as tk
 
-from .syntax import Highlighter
-from .autocomplete import AutoComplete
 from .syntax import Syntax
+from .highlighter import Highlighter
+from .autocomplete import AutoComplete
 
 class Text(tk.Text):
-    def __init__(self, master, path=None, exists=True, *args, **kwargs):
+    def __init__(self, master, path=None, exists=True, minimalist=False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         self.master = master
@@ -14,6 +14,7 @@ class Text(tk.Text):
         self.path = path
         self.data = None
         self.exists = exists
+        self.minimalist = minimalist
 
         self.syntax = Syntax(self)
         self.highlighter = Highlighter(self)
@@ -21,7 +22,7 @@ class Text(tk.Text):
         self.current_word = None
         self.words = []
         self.auto_completion = AutoComplete(
-            self, items=self.syntax.get_autocomplete_list())
+            self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
 
         self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white", fg="#3b3b3b")
         self.tag_config(tk.SEL, background="#b98852")
@@ -47,6 +48,9 @@ class Text(tk.Text):
 
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
+
+        if self.minimalist:
+            return
 
         self.bind("<FocusOut>", self.hide_autocomplete) 
         self.bind("<Button-1>", self.hide_autocomplete)
@@ -118,6 +122,9 @@ class Text(tk.Text):
         self.after(1000, self.update_words)
     
     def update_completions(self):
+        if self.minimalist:
+            return
+        
         self.auto_completion.update_completions()   
     
     def confirm_autocomplete(self, text):
@@ -153,10 +160,13 @@ class Text(tk.Text):
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
     
     def hide_autocomplete(self, *_):
+        if self.minimalist:
+            return
+        
         self.auto_completion.hide()
     
     def show_autocomplete(self, event):
-        if not self.check_autocomplete_keys(event):
+        if self.minimalist or not self.check_autocomplete_keys(event):
             return
 
         if self.current_word.strip() not in ["{", "}", ":", "", None, "\""] and not self.current_word.strip()[0].isdigit():

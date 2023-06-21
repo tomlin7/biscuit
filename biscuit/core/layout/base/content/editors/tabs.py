@@ -24,7 +24,8 @@ class Tabs(tk.Frame):
     def close_tab(self, tab):
         i = self.tabs.index(tab)
         self.tabs.remove(tab)
-        self.master.master.delete_editor(tab.editor)
+        tab.editor.grid_forget()
+        self.master.master.close_editor(tab.editor)
         tab.destroy()
 
         if self.tabs:
@@ -40,3 +41,9 @@ class Tabs(tk.Frame):
         for tab in self.tabs:
             if tab != selected_tab:
                 tab.deselect()
+
+    def clear_all_tabs(self):
+        for tab in self.tabs:
+            tab.destroy()
+        
+        self.tabs.clear()

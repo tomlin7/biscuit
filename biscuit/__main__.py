@@ -1,5 +1,4 @@
 import sys
-
 from app import App
 
 dir = None

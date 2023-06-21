@@ -51,11 +51,11 @@ class Welcome(BaseEditor):
 
         #TODO add recents
 
-    def new_file(self, _):
+    def new_file(self, *_):
         self.base.events.new_file()
     
-    def open_file(self, _):
+    def open_file(self, *_):
         self.base.events.open_file()
     
-    def open_folder(self, _):
+    def open_folder(self, *_):
         self.base.events.open_directory()

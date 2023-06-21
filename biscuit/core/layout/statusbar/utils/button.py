@@ -49,7 +49,7 @@ class SButton(tk.Frame):
         if self.icon:
             self.icon_label.config(bg=self.bg)
 
-    def on_click(self, _):
+    def on_click(self, *_):
         self.function()
 
     def change_text(self, text):

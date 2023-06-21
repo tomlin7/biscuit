@@ -3,14 +3,14 @@ from tkinter import messagebox
 import random
 from collections import Counter
 
-from core.components.editors.editor import BaseEditor
+from .game import BaseGame
 
 SIDE = 25
 WIDTH = 10 * SIDE
 HEIGHT = 15 * SIDE
 
 
-class Tetris(BaseEditor):
+class Tetris(BaseGame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
         self.master = master
@@ -19,6 +19,7 @@ class Tetris(BaseEditor):
         self.config(bg='#F4EEE0')
         
         self.path = "games/tetris"
+        self.diff = False
         self.exists = False
         self.filename = "Tetris"
         self.content = None

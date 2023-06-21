@@ -1,8 +1,3 @@
-from .highlighter import Highlighter
-
-from core.config.languages import CPP
-
-
 class Syntax:
     def __init__(self, master):
         self.master = master

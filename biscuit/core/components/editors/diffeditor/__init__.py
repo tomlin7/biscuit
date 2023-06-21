@@ -2,11 +2,12 @@ import tkinter as tk
 
 from .pane import DiffPane
 from .differ import Differ
+from ..editor import BaseEditor
 
-#TODO reimplement diff editor + git
-class DiffViewer(tk.Frame):
+
+class DiffEditor(BaseEditor):
     def __init__(self, master, path, *args, **kwargs):
-        super().__init__(master, orient=tk.HORIZONTAL, *args, **kwargs)
+        super().__init__(master, *args, **kwargs)
         self.base = master.base
         self.master = master
         self.path = path
@@ -17,16 +18,16 @@ class DiffViewer(tk.Frame):
         self.rhs_data = []
 
         self.lhs = DiffPane(self, path)
-        self.add(self.lhs, stretch='always')
+        self.lhs.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
         self.rhs = DiffPane(self, path)
-        self.add(self.rhs, stretch='always')
+        self.rhs.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
 
-        self.left = self.lhs.content.text
-        self.right = self.text = self.rhs.content.text
+        self.left = self.lhs.text
+        self.right = self.text = self.rhs.text
 
-        self.lhs.content.scrollbar['command'] = self.on_scrollbar
-        self.rhs.content.scrollbar['command'] = self.on_scrollbar
+        self.lhs.scrollbar['command'] = self.on_scrollbar
+        self.rhs.scrollbar['command'] = self.on_scrollbar
         self.left['yscrollcommand'] = self.on_textscroll
         self.right['yscrollcommand'] = self.on_textscroll
 

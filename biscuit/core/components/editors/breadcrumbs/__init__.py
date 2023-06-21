@@ -22,20 +22,19 @@ class BreadCrumbs(tk.Frame):
 
         # if the file does not belong to active directory, use the absolute path instead
         if not (self.base.active_directory and 
-                os.path.commonpath([self.base.active_directory, path]) == os.path.abspath(self.base.active_directory)):
+                os.path.commonpath([self.base.active_directory, os.path.abspath(path)]) == os.path.abspath(self.base.active_directory)):
             path = os.path.abspath(path).split('\\')
             for i, item in enumerate(path):
                 text = item if item == path[-1] else f"{item} ›"
-
-                btn = Item(self, "\\".join(path[:i]), text=text)
-                btn.bind("<Button-1>", self.pathview.show)
-                btn.pack(side=tk.LEFT)
+                self.additem("\\".join(path[:i]), text)
         else:
             # otherwise use the relative path to active directory
-            path = os.path.relpath(path, self.base.active_directory).split('\\')
+            path = os.path.relpath(path, self.base.active_directory).split('\\')        
             for i, item in enumerate(path):
                 text = item if item == path[-1] else f"{item} ›"
+                self.additem(os.path.join(self.base.active_directory, "\\".join(path[:i])), text)
 
-                btn = Item(self, os.path.join(self.base.active_directory, "\\".join(path[:i])), text=text)
-                btn.bind("<Button-1>", self.pathview.show)
-                btn.pack(side=tk.LEFT)
+    def additem(self, path, text):
+        btn = Item(self, path, text=text)
+        btn.bind("<Button-1>", self.pathview.show)
+        btn.pack(side=tk.LEFT)

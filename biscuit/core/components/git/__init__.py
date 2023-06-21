@@ -11,17 +11,19 @@ class Git(git.Git):
         self.repo = None
 
     def check_git(self):
-        self.open_repo()
-
-    def open_repo(self):
+        if not self.base.active_directory:
+            self.base.git_found = False
+            return
+        
         try:
-            self.repo = GitRepo(self.base.active_dir)
-            self.base.set_git_found(True)
+            self.repo = GitRepo(self.base.active_directory)
+            self.base.git_found = True
         except git.exc.InvalidGitRepositoryError:
-            self.base.set_git_found(False)
+            self.base.git_found = False
 
     def get_version(self):
         return self.version()
     
-    def get_active_branch(self):
+    @property
+    def active_branch(self):
         return self.repo.active_branch

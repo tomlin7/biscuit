@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.constants import *
 
 from .editorsbar import Editorsbar
 from .empty import Empty
@@ -32,15 +31,16 @@ class EditorsPane(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.editorsbar = Editorsbar(self)
-        self.editorsbar.grid(row=0, column=0, sticky=EW, pady=(0,1))
+        self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0,1))
         self.tabs = self.editorsbar.tabs
 
         self.editors = []
+        self.closed_editors = {}
         self.empty = True
         self.emptytab = Empty(self)
-        self.emptytab.grid(column=0, row=1, sticky=NSEW)
+        self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
-        self.default_editors = [Editor(self, '::welcome::', False, False)]
+        self.default_editors = [Editor(self, '::welcome::', False, False, False)]
         self.add_editors(self.default_editors)
 
     def add_editors(self, editors):
@@ -58,25 +58,52 @@ class EditorsPane(tk.Frame):
         for editor in self.editors:
             editor.destroy()
 
+        self.editorsbar.clear()
+        self.tabs.clear_all_tabs()
         self.editors.clear()
     
     def open_editor(self, path, exists):
         "open Editor with path and exists values passed"
+        if path in self.closed_editors:
+            return self.add_editor(self.closed_editors[path])
         self.add_editor(Editor(self, path, exists))
     
+    def open_diff_editor(self, path, exists):
+        "open Editor with path and exists values passed"
+        self.add_editor(Editor(self, path, exists, diff=True))
+    
+    def close_editor(self, editor):
+        "removes an editor, keeping it in cache."
+        self.editors.remove(editor)
+
+        # not keeping diff in cache
+        if not editor.diff:
+            self.closed_editors[editor.path] = editor
+        self.refresh()
+    
+    def close_active_editor(self):
+        "Closes the active tab"
+        self.close_editor(self.active_editor)
+
+    def delete_editor(self, editor):
+        "Permanently delete a editor."
+        self.editors.remove(editor)
+        if editor.path in self.closed_editors:
+            self.closed_editors.remove(editor)
+
+        editor.destroy()
+        self.refresh()
+
     def delete_editor(self, editor):
         "Permanently delete a editor."
         self.editors.remove(editor)
         editor.destroy()
         self.refresh()
-    
-    def set_active_editor(self, editor):
-        "Set active editor and active tab."
-        ...
-    
-    def get_active_editor(self):
+
+    @property
+    def active_editor(self):
         "Get active editor."
-        return self.editorsbar.tabs.active_tab.editor
+        return self.tabs.active_tab.editor
     
     def refresh(self):
         if not len(self.editors) and self.empty:

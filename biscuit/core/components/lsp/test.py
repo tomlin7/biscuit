@@ -9,9 +9,6 @@ TODO
 
 """
 
-from ...config import languages
-
-
 class LSP:
     def __init__(self, master, *args, **kwargs):
         self.master = master
@@ -20,26 +17,16 @@ class LSP:
         """
         Get the language of a file
         """
-        ext = filename.split('.')[-1]
-        if ext in languages:
-            return ext
-        else:
-            return 'plain'
+        ...
         
     def get_language_name(self, language):
         """
         Get the name of a language
         """
-        if language in languages:
-            return self.languages[language]['name']
-        else:
-            return 'Plain Text'
+        ...
     
     def get_language_extensions(self, language):
         """
         Get the extensions of a language
         """
-        if language in languages:
-            return self.languages[language]['extensions']
-        else:
-            return []
+        ...

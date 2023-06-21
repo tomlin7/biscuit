@@ -19,7 +19,8 @@ class Tab(tk.Frame):
         self.editor = editor
         self.selected = False
         
-        self.name = tk.Label(self, text=editor.filename, padx=5, pady=5, font=('Segoe UI', 10), bg='#f8f8f8')
+        self.name = tk.Label(self, text=f"{editor.filename} (working tree)" if editor.diff else editor.filename,
+                             padx=5, pady=5, font=('Segoe UI', 10), bg='#f8f8f8')
         self.name.pack(side=tk.LEFT)
 
         self.closebtn = IconButton(self, 'close', event=self.close, activebackground="#e9e9e9")

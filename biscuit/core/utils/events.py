@@ -22,7 +22,7 @@ class Events:
         self.base.open_directory(filedialog.askdirectory())
 
     def save(self, *_):
-        editor = self.base.editorsmanager.get_active_editor()
+        editor = self.base.editorsmanager.active_editor
         if editor.content:
             if not editor.content.exists:
                 return self.save_as()
@@ -31,7 +31,7 @@ class Events:
 
     def save_as(self, *_):
         #TODO set initial filename to a range of text inside the editor
-        if editor := self.base.editorsmanager.get_active_editor():
+        if editor := self.base.editorsmanager.active_editor:
             if editor.content:
                 if editor.content.editable:
                     if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):
@@ -50,7 +50,7 @@ class Events:
         self.base.close_active_file()
     
     def close_dir(self, *_):
-        self.base.close_active_dir()
+        self.base.close_active_directory()
 
     def quit(self, *_):
         self.base.destroy()

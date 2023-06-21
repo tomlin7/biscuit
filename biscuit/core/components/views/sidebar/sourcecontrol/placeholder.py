@@ -8,9 +8,10 @@ class ChangesTreePlaceholder(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
 
+        self.config(padx=10, pady=10, bg='#f8f8f8')
         self.columnconfigure(0, weight=1)
 
-        WrappingLabel(self, font=("Segoe UI", 10), anchor=tk.W, fg="#616161",
+        WrappingLabel(self, font=("Segoe UI", 10), anchor=tk.W, fg="#424242", bg='#f8f8f8',
             text="In order to use git features, you can open a folder containing a git repository or clone from a URL.").grid(row=0, sticky=tk.EW)
 
         open_btn = Button(self, text="Open Folder")
@@ -22,7 +23,7 @@ class ChangesTreePlaceholder(tk.Frame):
         clone_btn.grid(row=2, pady=5, sticky=tk.EW)
 
     def open_folder(self, _):
-        pass
+        self.base.events.open_directory()
 
     def clone_repo(self, *_):
         pass

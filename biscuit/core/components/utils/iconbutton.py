@@ -19,7 +19,7 @@ class IconButton(tk.Menubutton):
 
         self.bind("<Button-1>", self.onclick)
     
-    def onclick(self, _):
+    def onclick(self, *_):
         self.event()
         if not self.icon2:
             return

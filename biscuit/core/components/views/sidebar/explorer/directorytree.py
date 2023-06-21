@@ -39,8 +39,8 @@ class DirectoryTree(SidebarViewItem):
         self.nodes.clear()
         self.path = path
         if self.path:
-            self.tree.grid()
             self.placeholder.grid_remove()
+            self.tree.grid()
             self.watcher.watch()
             self.tree.clear_tree()
             self.create_root()

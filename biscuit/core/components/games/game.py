@@ -16,6 +16,13 @@ class BaseGame(tk.Frame):
         self.exists = False
         self.showpath = False
         self.content = None
+        self.diff = False
+        self.editable = False
+
+        self.__buttons__ = ()
 
     def reload(self, *_):
+        ...    
+        
+    def save(self, *_):
         ...

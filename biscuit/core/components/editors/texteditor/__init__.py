@@ -9,24 +9,27 @@ from .text import Text
 
 
 class TextEditor(BaseEditor):
-    def __init__(self, master, path=None, exists=True, *args, **kwargs):
+    def __init__(self, master, path=None, exists=True, minimalist=False, *args, **kwargs):
         super().__init__(master, path, exists, *args, **kwargs)
         self.font = self.base.settings.font
+        self.minimalist = minimalist
         
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
-        self.text = Text(self, path=self.path, exists=self.exists)
+        self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist)
         self.linenumbers = LineNumbers(self, text=self.text)
-        self.minimap = Minimap(self, self.text)
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview)
         
         self.text.config(font=self.font)
         self.text.configure(yscrollcommand=self.scrollbar.set)
-
+        
+        if not self.minimalist:
+            self.minimap = Minimap(self, self.text)
+            self.minimap.grid(row=0, column=2, sticky=tk.NS)
+        
         self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
-        self.minimap.grid(row=0, column=2, sticky=tk.NS)
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
 
         if self.exists:
@@ -47,7 +50,8 @@ class TextEditor(BaseEditor):
 
     def on_change(self, event=None):
         self.linenumbers.redraw()
-        self.minimap.redraw()
+        if not self.minimalist:
+            self.minimap.redraw()
         self.text.on_change()
         self.event_generate("<<Change>>")
         self.base.update_statusbar()
