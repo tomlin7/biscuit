@@ -59,6 +59,7 @@ class App(tk.Tk):
 
     def setup_references(self):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
+        self.statusbar = self.root.statusbar
         self.explorer = self.root.baseframe.sidebar.get_explorer()
         self.source_control = self.root.baseframe.sidebar.get_source_control()
         self.logger = self.root.baseframe.contentpane.panel.get_logger()
@@ -87,6 +88,9 @@ class App(tk.Tk):
         self.explorer.directory.close_directory()
 
     def open_editor(self, path, exists=True):
+        if not os.path.isfile(path):
+            return
+
         self.editorsmanager.open_editor(path, exists)
     
     # games ----
@@ -120,18 +124,12 @@ class App(tk.Tk):
     # def update_statusbar_git_info(self):
     #     self.statusbar.set_git_info(self.git.get_active_branch())
 
-    # def update_statusbar_ln_col_info(self):
-    #     if self.active_editor:
-    #         active_tab = self.editor_groups_ref.groups.get_active_tab()
-    #         if active_tab:
-    #             if active_tab.content.editable:            
-    #                 self.statusbar.configure_editmode(True)
-    #                 active_text = active_tab.content.text
-    #                 self.statusbar.set_line_col_info(
-    #                     active_text.line, active_text.column, active_text.get_selected_count())
-    #             else:
-    #                 self.statusbar.configure_editmode(False)
-    #         else:
-    #             self.statusbar.configure_editmode(False)
-    #     else:
-    #         self.statusbar.configure_editmode(False)
+    def update_statusbar(self):
+        if editor := self.editorsmanager.get_active_editor():
+            if editor.content and editor.content.editable:
+                self.statusbar.toggle_editmode(True)
+                active_text = editor.content.text
+                return self.statusbar.set_line_col_info(
+                    active_text.line, active_text.column, active_text.get_selected_count())
+
+        self.statusbar.toggle_editmode(False)

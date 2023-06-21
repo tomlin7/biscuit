@@ -91,8 +91,8 @@ class Statusbar(tk.Frame):
         # packing
         self.clock.show()
     
-    def configure_editmode(self, enabled):
-        if enabled:
+    def toggle_editmode(self, state):
+        if state:
             self.clock.show()
             self.file_type.show()
             self.eol.show()
@@ -106,8 +106,8 @@ class Statusbar(tk.Frame):
             self.indentation.hide()
             self.line_col_info.hide()
     
-    def configure_git_info(self, enabled):
-        if enabled:
+    def configure_git_info(self, state):
+        if state:
             self.branch.show()
         else:
             self.branch.hide()

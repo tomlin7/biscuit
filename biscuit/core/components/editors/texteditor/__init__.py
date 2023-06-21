@@ -50,6 +50,7 @@ class TextEditor(BaseEditor):
         self.minimap.redraw()
         self.text.on_change()
         self.event_generate("<<Change>>")
+        self.base.update_statusbar()
     
     def set_fontsize(self, size):
         self.font.configure(size=size)
