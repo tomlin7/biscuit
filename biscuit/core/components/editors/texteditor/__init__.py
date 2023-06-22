@@ -39,6 +39,7 @@ class TextEditor(BaseEditor):
         self.text.bind("<Configure>", self.on_change)
 
     def unsupported_file(self):
+        self.text.highlighter.lexer = None
         self.text.show_unsupported_dialog()
         self.linenumbers.grid_remove()
         self.scrollbar.grid_remove()
