@@ -77,7 +77,7 @@ class EditorsPane(tk.Frame):
         self.editors.remove(editor)
 
         # not keeping diff in cache
-        if not editor.diff:
+        if not editor.diff and editor.content:
             self.closed_editors[editor.path] = editor
         self.refresh()
     
@@ -99,6 +99,12 @@ class EditorsPane(tk.Frame):
         self.editors.remove(editor)
         editor.destroy()
         self.refresh()
+    
+    def set_active_editor(self, editor):
+        "set an existing editor to currently shown one"
+        for tab in self.tabs.tabs:
+            if tab.editor == editor:
+                self.tabs.set_active_tab(tab)
 
     @property
     def active_editor(self):

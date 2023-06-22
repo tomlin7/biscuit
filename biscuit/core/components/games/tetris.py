@@ -23,6 +23,7 @@ class Tetris(BaseGame):
         self.exists = False
         self.filename = "Tetris"
         self.content = None
+        self.loop = None
 
         self.status_var = tk.StringVar()
         self.status_label = tk.Label(self, textvariable=self.status_var, font='Fixedsys 18', bg='#F4EEE0', fg='#B99B6B')
@@ -71,7 +72,7 @@ class Tetris(BaseGame):
                 self.game_over()
                 return
 
-        self.after(self.speed, self.run)
+        self.loop = self.after(self.speed, self.run)
 
     def game_over(self):
         res = messagebox.askyesno(title="GAME OVER", message = f"Level: {self.level}  Score: {self.score}\nRetry?")
@@ -80,6 +81,10 @@ class Tetris(BaseGame):
         else:
             return
         
+    def destroy(self):
+        self.after_cancel(self.loop)
+        return super().destroy()
+
     def clear_lines(self):
         lines = 0
 

@@ -59,13 +59,16 @@ class App(tk.Tk):
 
     def setup_references(self):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
+        self.panel = self.root.baseframe.contentpane.panel
+        self.contentpane = self.root.baseframe.contentpane
         self.statusbar = self.root.statusbar
-        self.explorer = self.root.baseframe.sidebar.get_explorer()
-        self.source_control = self.root.baseframe.sidebar.get_source_control()
-        self.logger = self.root.baseframe.contentpane.panel.get_logger()
+        self.explorer = self.root.baseframe.sidebar.explorer
+        self.source_control = self.root.baseframe.sidebar.source_control
+        self.logger = self.panel.logger
     
     def initialize_editor(self):
         self.palette.generate_help_actionset()
+        self.focus_set()
 
         self.logger.info('Biscuit started.')
         self.logger.warning('last biscuit.')
@@ -123,6 +126,10 @@ class App(tk.Tk):
         if name:
             return self.title("Biscuit")
         self.title(f"{name} - Biscuit")
+    
+    def toggle_terminal(self):
+        self.panel.set_active_view(self.panel.terminal)
+        self.contentpane.toggle_panel()
     
     def update_statusbar(self):
         if editor := self.editorsmanager.active_editor:

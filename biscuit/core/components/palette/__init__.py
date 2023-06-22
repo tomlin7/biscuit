@@ -32,7 +32,7 @@ class Palette(tk.Toplevel):
         self.master = master
         self.base = master
 
-        self.config(pady=5, padx=5, bg='#dddbdd')
+        self.config(pady=1, bg='#dddbdd')
         
         self.width = width
         self.active = False
@@ -76,7 +76,7 @@ class Palette(tk.Toplevel):
 
     def add_search_bar(self):
         self.search_bar = Searchbar(self)
-        self.search_bar.grid(row=0, sticky=tk.EW, pady=(0, 5))
+        self.search_bar.grid(row=0, sticky=tk.EW, pady=5, padx=5)
     
     def configure_bindings(self):
         self.bind("<FocusOut>", self.hide)
@@ -119,7 +119,11 @@ class Palette(tk.Toplevel):
 
         for i in self.shown_items:
             i.deselect()
-        self.shown_items[self.selected].select()
+        
+        try:
+            self.shown_items[self.selected].select()
+        except IndexError:
+            self.base.logger.error(f"item {self.selected} is doesnt exist")
     
     def reset(self):
         self.search_bar.clear()

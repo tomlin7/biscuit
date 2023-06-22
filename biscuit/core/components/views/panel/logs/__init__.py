@@ -91,10 +91,13 @@ class Logs(PanelView):
         self.newline()
 
     def info(self, text):
+        "info level log"
         self.log((' [info] ', 'info'), caller_name(), text)
     
     def warning(self, text):
+        "warning level log"
         self.log((' [warning] ', 'warning'), caller_name(), text)
     
     def error(self, text):
+        "error level log"
         self.log((' [error] ', 'error'), caller_name(), text)

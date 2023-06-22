@@ -64,14 +64,17 @@ class Sidebar(tk.Frame):
         view.destroy()
         self.views.remove(view)
     
-    def get_explorer(self):
+    @property
+    def explorer(self):
         "Get explorer view."
         return self.default_views[0]
 
-    def get_search(self):
+    @property
+    def search(self):
         "Get search view."
         return self.default_views[1]
 
-    def get_source_control(self):
+    @property
+    def source_control(self):
         "Get source control view."
         return self.default_views[2]

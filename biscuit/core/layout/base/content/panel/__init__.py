@@ -63,8 +63,16 @@ class Panel(tk.Frame):
         view.destroy()
         self.views.remove(view)
     
-    def get_logger(self):
+    def set_active_view(self, view):
+        "set an existing editor to currently shown one"
+        for tab in self.tabs.tabs:
+            if tab.view == view:
+                self.tabs.set_active_tab(tab)
+    
+    @property
+    def logger(self):
         return self.default_views[0]
     
-    def get_terminal(self):
+    @property
+    def terminal(self):
         return self.default_views[1]
