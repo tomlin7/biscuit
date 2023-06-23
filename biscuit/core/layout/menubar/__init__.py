@@ -27,7 +27,7 @@ class Menubar(tk.Frame):
     def add_menu(self, text):
         new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.X, padx=0)
-        self.menus.append(new_menu)
+        self.menus.append(new_menu.menu)
         
         return new_menu
 
@@ -85,26 +85,17 @@ class Menubar(tk.Frame):
         view_menu.menu.add_item("Indentation",)
         view_menu.menu.add_item("Line Endings",)
 
-    def close_all_menus(self, event):
+    def close_all_menus(self, *_):
         for menu in self.menus:
             menu.hide()
 
-    def show_menu(self, show):
+    def switch_menu(self, menu):
+        active = False
         for i in self.menus:
-            if i.name != show.name:
+            if i.active:
+                active = True
+            if i != menu:
                 i.hide()
-    
-    def hover_file_menu(self, event):
-        if self.menudown:
-            self.show_menu(self.file_menu)
-            self.file_menu.show(event)
-    
-    def hover_edit_menu(self, event):
-        if self.menudown:
-            self.show_menu(self.edit_menu)
-            self.edit_menu.show(event)
-    
-    def hover_view_menu(self, event):
-        if self.menudown:
-            self.show_menu(self.view_menu)
-            self.view_menu.show(event)
+        
+        if active:
+            menu.show()

@@ -15,6 +15,7 @@ class Menu(tk.Toplevel):
         self.base = master.base
         self.master = master
 
+        self.active = False
         self.configure(bg='#d4d4d4')
         self.withdraw()
         self.overrideredirect(True)
@@ -29,6 +30,7 @@ class Menu(tk.Toplevel):
         self.bind("<Escape>", self.hide)
 
     def show(self, *args):
+        self.active = True
         self.update_idletasks()
 
         x = self.master.winfo_rootx()
@@ -39,6 +41,7 @@ class Menu(tk.Toplevel):
         self.focus_set()
 
     def hide(self, *args):
+        self.active = False
         self.withdraw()
 
     def add_item(self, text, command=None):
