@@ -4,4 +4,6 @@ tkextrafont
 watchdog
 tksvg
 pygments
+Pillow
+toml
 
