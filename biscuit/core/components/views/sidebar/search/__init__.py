@@ -9,8 +9,8 @@ from .results import Results
 class Search(SidebarView):
     def __init__(self, master, *args, **kwargs):
         self.__buttons__ = (('refresh',), ('clear-all',), ('collapse-all',))
-        self.__icon__ = 'search'
         super().__init__(master, *args, **kwargs)
+        self.__icon__ = 'search'
 
         self.container = tk.Frame(self, bg='#f8f8f8')
         self.container.base = self.base

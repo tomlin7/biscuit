@@ -3,13 +3,14 @@ Various types of widgets/functions used across the editor
 """
 
 from .button import Button
+from .bubble import Bubble
 from .buttonsentry import ButtonsEntry
 from .codicon import get_codicon
 from .filetype import FileType
 from .iconbutton import IconButton
 from .label import WrappingLabel
 from .scrollbar import Scrollbar
-from .scrollframe import ScrollableFrame
+from .scrollableframe import ScrollableFrame
 from .tree import Tree
 from .shortcut import Shortcut
 from .entrybox import EntryBox

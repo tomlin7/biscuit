@@ -3,9 +3,10 @@ import tkinter as tk
 import tkinter.font as Font
 import tkextrafont as extra
 
+from .editor import SettingsEditor
+
 from core import config
 from core.styles import Resources
-from core.components import ActionSet
 
 
 class Settings:
@@ -18,12 +19,14 @@ class Settings:
         self.gen_actionset()
     
     def gen_actionset(self):
+        from core.components import ActionSet
         self.actionset = ActionSet(
             "Show and run commands", ">",
             [
                 ("Editor Theme", lambda e=None: print("Theme", e)),
                 ("Editor Bindings", lambda e=None: print("Bindings", e)),
                 ("Editor Font", lambda e=None: print("Font", e)),
+                ("Open settings", self.base.open_settings),
                 ("Play tetris", self.base.open_tetris)
             ],
         )

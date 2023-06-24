@@ -1,2 +1,41 @@
 theme="default"
 font="Consolas"
+
+[commonly_used]
+font_size=14
+font_family="Consolas"
+tab_size=4
+theme="light"
+
+[text_editor]
+auto_save=false
+auto_closing_pairs=true
+auto_closing_delete=true
+auto_indent=true
+auto_surround=true
+cursor_style="line"
+word_wrap=false
+exclude_dirs=[".git"]
+exclude_types=["__pycache__"]
+
+# This is a TOML document
+[owner]
+name = "Tom Preston-Werner"
+dob = 1979-05-27T07:32:00-08:00
+
+[database]
+enabled = true
+ports = [ 8000, 8001, 8002 ]
+data = [ ["delta", "phi"], [3.14] ]
+temp_targets = { cpu = 79.5, case = 72.0 }
+
+[servers]
+
+[servers.alpha]
+ip = "10.0.0.1"
+role = "frontend"
+
+[servers.beta]
+ip = "10.0.0.2"
+role = "backend"
+

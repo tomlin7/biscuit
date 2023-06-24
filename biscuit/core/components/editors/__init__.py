@@ -9,6 +9,7 @@ from .diffeditor import DiffEditor
 from .imageviewer import ImageViewer
 from .texteditor import TextEditor
 from .misc import Welcome
+from core.settings.editor import SettingsEditor
 
 
 def get_editor(path, diff):
@@ -20,8 +21,11 @@ def get_editor(path, diff):
         if FileType.is_image(path):
             return ImageViewer
     
-    if path == '::welcome::':
-        return Welcome
+    match path:
+        case '::welcome::':
+            return Welcome
+        case '::settings::':
+            return SettingsEditor
         
     return TextEditor
 

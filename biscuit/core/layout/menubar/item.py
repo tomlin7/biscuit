@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...components import Menu
+from core import Menu
 
 
 class MenubarItem(tk.Menubutton):
@@ -10,7 +10,6 @@ class MenubarItem(tk.Menubutton):
         self.menubar = menubar
 
         self.name = text
-
         self.config(text=text, padx=10, pady=5,
                     bg='#f8f8f8', fg='black', activebackground='#e4e4e4', activeforeground='black')
 

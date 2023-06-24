@@ -15,6 +15,13 @@ class BaseEditor(tk.Frame):
         self.exists = exists
         self.editable = editable
 
+        # TODO temp fix for settings, misc editor types
+        self.showpath = False
+        self.content = None
+        self.diff = False
+
+        self.__buttons__ = ()
+
         self.__buttons__ = ()
 
     def save(self, *_):

@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 class MenuItem(tk.Menubutton):
-    def __init__(self, master, text, command=lambda _:..., *args, **kwargs):
+    def __init__(self, master, text, command=lambda *_:..., *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         self.master = master
@@ -15,5 +15,5 @@ class MenuItem(tk.Menubutton):
         self.bind("<Button-1>", self.onclick)
     
     def onclick(self, *_):
-        self.command()
         self.master.hide()
+        self.command()

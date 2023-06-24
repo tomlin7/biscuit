@@ -6,7 +6,8 @@
     "python.testing.pytestEnabled": true,
     "python.analysis.typeCheckingMode": "off",
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": false
     },
     "python.formatting.provider": "none"
 }

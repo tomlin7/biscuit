@@ -22,21 +22,20 @@ class Events:
         self.base.open_directory(filedialog.askdirectory())
 
     def save(self, *_):
-        editor = self.base.editorsmanager.active_editor
-        if editor.content:
-            if not editor.content.exists:
-                return self.save_as()
-            if editor.content.editable:
-                editor.save()
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content:
+                if not editor.content.exists:
+                    return self.save_as()
+                if editor.content.editable:
+                    editor.save()
 
     def save_as(self, *_):
         #TODO set initial filename to a range of text inside the editor
         if editor := self.base.editorsmanager.active_editor:
-            if editor.content:
-                if editor.content.editable:
-                    if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):
-                        editor.save(path)
-    
+            if editor.content and editor.content.editable:
+                if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):
+                    editor.save(path)
+
     def save_all(self, *_):
         for editor in self.base.editorsmanager.editors:
             if editor.content:
@@ -63,10 +62,16 @@ class Events:
         print('redo event')
     
     def cut(self, *_):
-        self.base.get_active_tab().cut()
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.cut()
 
     def copy(self, *_):
-        self.base.get_active_tab().copy()
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.copy()
 
     def paste(self, *_):
-        self.base.get_active_tab().paste()
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.paste()

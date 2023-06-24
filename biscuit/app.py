@@ -2,9 +2,11 @@ import os, sys, subprocess, tkinter as tk
 
 from core import *
 from core.components import FindReplace
-from core.components.games import Tetris
 
-# TODO re enable statusbar info
+# TODO temporary imports for testing
+from core.components.games import Tetris
+from core.settings.editor import SettingsEditor
+
 
 class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
@@ -104,6 +106,9 @@ class App(tk.Tk):
             return
 
         self.editorsmanager.open_diff_editor(path, exists)
+    
+    def open_settings(self):
+        self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
     
     # games ----
     def open_tetris(self, *_):

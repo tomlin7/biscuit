@@ -28,23 +28,25 @@ class Menu(tk.Toplevel):
     def configure_bindings(self):
         self.bind("<FocusOut>" , self.hide)
         self.bind("<Escape>", self.hide)
+    
+    def get_coords(self):
+        return self.master.winfo_rootx(), self.master.winfo_rooty() + self.master.winfo_height()
 
     def show(self, *args):
         self.active = True
         self.update_idletasks()
 
-        x = self.master.winfo_rootx()
-        y = self.master.winfo_rooty() + self.master.winfo_height()
+        x, y = self.get_coords()
         self.wm_geometry(f"+{x}+{y}")
         
         self.deiconify()
         self.focus_set()
-
+    
     def hide(self, *args):
         self.active = False
         self.withdraw()
 
-    def add_item(self, text, command=None):
+    def add_item(self, text, command=lambda *_:...):
         self._menu.add_item(text, command)
 
     def add_separator(self):
