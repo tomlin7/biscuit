@@ -8,6 +8,8 @@ from .placeholder import ChangesTreePlaceholder
 from ....utils import Button, IconButton
 from .placeholder import ChangesTreePlaceholder
 
+from hintedtext import HintedEntry
+
 
 class ChangesTree(SidebarViewItem):
     def __init__(self, master, *args, **kwargs):
@@ -21,9 +23,7 @@ class ChangesTree(SidebarViewItem):
         self.commitbox.grid(row=0, padx=(15, 10), pady=5, column=0, sticky=tk.NSEW)
         self.commitbox.grid_remove()
 
-        self.commit_message = tk.StringVar()
-        self.commit_message.set('Message')
-        self.commit_message_entry = tk.Entry(self.commitbox, textvariable=self.commit_message, relief=tk.FLAT, bd=5, bg='white')
+        self.commit_message_entry = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, bg='white')
         self.commit_message_entry.pack(fill=tk.X, pady=(0, 5))
 
         self.commit_button = Button(self.commitbox, text='Commit')

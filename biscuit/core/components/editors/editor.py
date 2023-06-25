@@ -10,6 +10,7 @@ class BaseEditor(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
+        self.config(bg="white")
 
         self.path = path
         self.exists = exists

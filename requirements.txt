@@ -6,4 +6,4 @@ tksvg
 pygments
 Pillow
 toml
-
+hintedtext

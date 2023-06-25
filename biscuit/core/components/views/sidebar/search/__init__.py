@@ -16,8 +16,10 @@ class Search(SidebarView):
         self.container.base = self.base
         self.container.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
-        self.searchbox = ButtonsEntry(self.container, buttons=(('case-sensitive',), ('whole-word',), ('regex',)))
-        self.replacebox = ButtonsEntry(self.container, buttons=(('preserve-case',),))
+        self.searchterm = tk.StringVar(self)
+
+        self.searchbox = ButtonsEntry(self.container, hint="Search", buttons=(('case-sensitive',), ('whole-word',), ('regex',)))
+        self.replacebox = ButtonsEntry(self.container, hint="Replace", buttons=(('preserve-case',),))
 
         self.searchbox.pack(fill=X, anchor=N, pady=2)
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)

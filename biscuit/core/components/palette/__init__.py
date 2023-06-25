@@ -32,7 +32,7 @@ class Palette(tk.Toplevel):
         self.master = master
         self.base = master
 
-        self.config(pady=1, bg='#dddbdd')
+        self.config(pady=1, bg='#dfdfdf')
         
         self.width = width
         self.active = False

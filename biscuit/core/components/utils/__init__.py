@@ -5,7 +5,9 @@ Various types of widgets/functions used across the editor
 from .button import Button
 from .bubble import Bubble
 from .buttonsentry import ButtonsEntry
+from .canvas import Canvas
 from .codicon import get_codicon
+from .frame import Frame
 from .filetype import FileType
 from .iconbutton import IconButton
 from .label import WrappingLabel

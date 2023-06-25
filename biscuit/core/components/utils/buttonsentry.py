@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .iconbutton import IconButton
-
+from hintedtext import HintedEntry
 
 class ButtonsEntry(tk.Frame):
-    def __init__(self, master, buttons=(), *args, **kwargs):
+    def __init__(self, master, hint="", buttons=(), *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
@@ -13,7 +13,7 @@ class ButtonsEntry(tk.Frame):
         self.config(padx=1, pady=1, bg='#dfdfdf')
         self.grid_columnconfigure(0, weight=1)
 
-        self.entry = tk.Entry(self, relief=tk.FLAT, bd=5)
+        self.entry = HintedEntry(self, relief=tk.FLAT, bd=5, hint=hint)
         self.entry.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.column = 1
