@@ -52,6 +52,7 @@ class App(tk.Tk):
 
         self.git = Git(self)
         self.palette = Palette(self)
+        self.notifications = Notifications(self)
         self.findreplace = FindReplace(self)
         self.sysinfo = SysInfo(self)
         self.events = Events(self)

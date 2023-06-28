@@ -23,7 +23,5 @@ class BaseEditor(tk.Frame):
 
         self.__buttons__ = ()
 
-        self.__buttons__ = ()
-
     def save(self, *_):
         ...

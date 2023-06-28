@@ -16,6 +16,7 @@ from .scrollableframe import ScrollableFrame
 from .tree import Tree
 from .shortcut import Shortcut
 from .entrybox import EntryBox
+from .entry import Entry
 
 
 @staticmethod
