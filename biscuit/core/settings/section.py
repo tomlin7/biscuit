@@ -11,7 +11,7 @@ class Section(tk.Frame):
         self.config(padx=10, pady=10)
 
         self.items = []
-        tk.Label(self, text=title, font=("Segoi UI", 20), anchor=tk.W).pack(fill=tk.X, expand=True)
+        tk.Label(self, text=title, font=("Segoi UI", 22, "bold"), anchor=tk.W).pack(fill=tk.X, expand=True)
 
     def add_dropdown(self, name="Example", options=["True", "False"], default=0):
         dropdown = DropdownItem(self, name, options, default)

@@ -5,13 +5,6 @@ from dataclasses import dataclass
 
 @dataclass
 class SysInfo:
-    os: None
-    version: None
-    release: None
-    machine: None
-    processor: None
-    python_version: None
-
     def __init__(self, master):
         self.base = master
         

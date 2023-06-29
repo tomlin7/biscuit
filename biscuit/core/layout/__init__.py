@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .base import BaseFrame
-
 from .menubar import Menubar
+from .base import BaseFrame
 from .statusbar import Statusbar
 
 

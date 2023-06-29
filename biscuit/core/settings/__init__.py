@@ -1,20 +1,26 @@
 import os
 import tkinter as tk
-import tkinter.font as Font
 import tkextrafont as extra
 
-from .editor import SettingsEditor
+from .config import Config, Bindings
+from .styles import Style, Resources
 
-from core import config
-from core.styles import Resources
+from .editor import SettingsEditor
 
 
 class Settings:
     def __init__(self, base):
         self.base = base
 
-        self.config = config.Config(self)
+        self.style = Style(self.base)
+        self.config = Config(self)
         self.res = Resources(self)
+
+        self.commands = [
+            ("Open settings", self.base.open_settings),
+            ("Play tetris", self.base.open_tetris)
+        ]
+        
         self.setup_properties()
         self.gen_actionset()
     
@@ -26,21 +32,18 @@ class Settings:
                 ("Editor Theme", lambda e=None: print("Theme", e)),
                 ("Editor Bindings", lambda e=None: print("Bindings", e)),
                 ("Editor Font", lambda e=None: print("Font", e)),
-                ("Open settings", self.base.open_settings),
-                ("Play tetris", self.base.open_tetris)
-            ],
+            ] + self.commands
         )
 
+    def add_command(self, command, action):
+        self.commands.append((command, action))
+
     def setup_properties(self):
-        self.setup_theme()
         self.setup_bindings()
         self.setup_font()
     
-    def setup_theme(self):
-        self.theme = config.Theme(self, self.config.theme)
-    
     def setup_bindings(self):
-        self.bindings = config.Bindings(self)
+        self.bindings = Bindings(self)
 
     def setup_font(self):
         self.font = tk.font.Font(

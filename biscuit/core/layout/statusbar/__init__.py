@@ -89,9 +89,11 @@ class Statusbar(tk.Frame):
 
         self.clock = SClock(self, text="H:M:S")
         self.clock.set_pack_data(side=tk.RIGHT, padx=(0, 10))
-
-        # packing
         self.clock.show()
+
+        self.notif = SButton(self, icon="bell", function=self.base.notifications.show)
+        self.notif.pack(side=tk.RIGHT)
+
     
     def toggle_terminal(self):
         self.base.toggle_terminal()

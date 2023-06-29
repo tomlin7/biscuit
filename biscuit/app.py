@@ -54,7 +54,7 @@ class App(tk.Tk):
         self.settings = Settings(self)
         
         self.configs = settings.config
-        self.theme = self.config.theme
+        self.theme = self.configs.theme
         
         self.events = Events(self)
         self.binder = Binder(self)

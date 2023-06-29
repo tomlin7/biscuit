@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
+
+from core.components.utils import Entry
 
 
 class Item(tk.Frame):
@@ -7,12 +8,12 @@ class Item(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
-        self.config(bg="white")
+        self.config(bg="white", padx=10, pady=10)
 
         self.name = name
         self.description = None # TODO add descriptions
 
-        self.lbl = tk.Label(self, text=self.name, font=("Segoi UI", 15), bg="white", anchor=tk.W)
+        self.lbl = tk.Label(self, text=self.name, font=("Segoi UI", 11, "bold"), bg="white", anchor=tk.W)
         self.lbl.pack(fill=tk.X, expand=True)
         
         self.bind("<Enter>", self.hoverin)
@@ -45,7 +46,7 @@ class IntegerItem(Item):
         super().__init__(master, name, *args, **kwargs)
         self.base.register(self.validate)
 
-        self.entry = tk.Entry(self, font=("Segoi UI", 14), validate="key", validatecommand=(self.validate, "%P"),
+        self.entry = Entry(self, font=("Segoi UI", 11), validate="key", validatecommand=(self.validate, "%P"),
                                width=30, relief=tk.FLAT, bg="#f8f8f8")
         self.entry.insert(tk.END, default)
         self.entry.pack(side=tk.LEFT)
@@ -65,7 +66,7 @@ class StringItem(Item):
     def __init__(self, master, name="Example", default="placeholder", *args, **kwargs):
         super().__init__(master, name, *args, **kwargs)
 
-        self.entry = tk.Entry(self, font=("Segoi UI", 14), width=30, relief=tk.FLAT, bg="#f8f8f8")
+        self.entry = Entry(self, font=("Segoi UI", 11), width=30, relief=tk.FLAT, bg="#f8f8f8")
         self.entry.insert(tk.END, default)
         self.entry.pack(side=tk.LEFT)
 
@@ -84,3 +85,6 @@ class CheckboxItem(Item):
     @property
     def value(self):
         return self.var.get()
+
+
+#TODO list item with add to list button for taking list values
