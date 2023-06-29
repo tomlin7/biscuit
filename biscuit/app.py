@@ -53,7 +53,7 @@ class App(tk.Tk):
         self.sysinfo = SysInfo(self)
         self.settings = Settings(self)
         
-        self.configs = settings.config
+        self.configs = self.settings.config
         self.theme = self.configs.theme
         
         self.events = Events(self)

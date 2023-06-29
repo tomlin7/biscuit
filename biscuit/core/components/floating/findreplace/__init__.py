@@ -4,7 +4,7 @@ from .findbox import FindBox
 from .replacebox import ReplaceBox
 from .results import FindResults
 
-from ..utils import IconButton
+from core.components.utils import IconButton
 
 
 class Toggle(IconButton):

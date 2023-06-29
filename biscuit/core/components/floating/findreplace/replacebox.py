@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..utils import EntryBox, IconButton
+from core.components.utils import EntryBox, IconButton
 
 
 class ReplaceBox(EntryBox):
