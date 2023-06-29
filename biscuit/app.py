@@ -50,15 +50,19 @@ class App(tk.Tk):
         self.active_directory = None
         self.active_branch_name = None
 
+        self.sysinfo = SysInfo(self)
+        self.settings = Settings(self)
+        
+        self.configs = settings.config
+        self.theme = self.config.theme
+        
+        self.events = Events(self)
+        self.binder = Binder(self)
+
         self.git = Git(self)
         self.palette = Palette(self)
         self.notifications = Notifications(self)
         self.findreplace = FindReplace(self)
-        self.sysinfo = SysInfo(self)
-        self.events = Events(self)
-        self.settings = Settings(self)
-        self.binder = Binder(self)
-        self.style = Style(self)
 
     def setup_references(self):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane

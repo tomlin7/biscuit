@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.constants import *
 
 from .iconbutton import IconButton
 from hintedtext import HintedEntry
