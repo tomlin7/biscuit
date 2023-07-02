@@ -43,6 +43,21 @@ class ThemeObject(Mapping):
     def remove_bg_highlight(self):
         self.highlightbackground = self.background
         return self
+    
+    # TODO update child theme objects if parent's color values are altered after initialization
+    # NOTE experimental code for updating child themeobjects
+    # def update_child_colors(self, color_name, color_value):
+    #     for attr_name in dir(self):
+    #         attr = getattr(self, attr_name)
+    #         if isinstance(attr, ThemeObject):
+    #             setattr(attr, color_name, color_value)
+
+    # def __setattr__(self, name, value):
+    #     super().__setattr__(name, value)
+    #     self.update_child_colors(name, value)
+
+    # def __getattr__(self, name):
+    #     return self.to_dict().get(name)
 
 
 class HighlightableThemeObject(ThemeObject):
