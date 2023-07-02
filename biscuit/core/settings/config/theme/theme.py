@@ -182,6 +182,7 @@ class Editors(FrameThemeObject):
         super().__init__(*args, **kwargs)
         self.biscuit_labels = FrameThemeObject(self) # welcome page
         self.button = HighlightableThemeObject(self)
+        self.section = HighlightableThemeObject(self) # settings
         self.labels = ThemeObject(self)
 
         self.text = ThemeObject(self)

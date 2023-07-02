@@ -31,7 +31,7 @@ class Palette(Toplevel):
     """
     def __init__(self, master, items=None, width=60,*args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(pady=1, bg='#dfdfdf')
+        self.config(pady=1, bg=self.base.theme.border)
         
         self.width = width
         self.active = False

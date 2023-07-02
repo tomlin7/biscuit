@@ -8,24 +8,21 @@ class Searchbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
-
-        # border
-        self.config(bg="#ecb464")
+        self.config(bg=self.base.theme.biscuit)
         
-        frame = Frame(self, bg="#FFFFFF")
+        frame = Frame(self, **self.base.theme.editors)
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
         
         self.text_variable = tk.StringVar()
         self.searchbar = HintedEntry(
-            frame, font=("Segoe UI", 12), fg="#616161", hint="Search settings",
-            relief=tk.FLAT, bg="#FFFFFF", 
-            textvariable=self.text_variable)
-        self.text_variable.trace("w", self.filter) 
+            frame, font=("Segoe UI", 12),hint="Search settings",
+            relief=tk.FLAT, textvariable=self.text_variable, **self.base.theme.editors.text)
         self.searchbar.pack(fill=tk.X, expand=True, pady=5, padx=5)
+        
         self.configure_bindings()
 
     def configure_bindings(self):
-        ...
+        self.text_variable.trace("w", self.filter) 
 
     def clear(self):
         self.text_variable.set("")

@@ -8,10 +8,10 @@ from core.components.utils import Frame
 class Section(Frame):
     def __init__(self, master, title="", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(padx=10, pady=10)
+        self.config(**self.base.theme.editors)
 
         self.items = []
-        tk.Label(self, text=title, font=("Segoi UI", 22, "bold"), anchor=tk.W).pack(fill=tk.X, expand=True)
+        tk.Label(self, text=title, font=("Segoi UI", 22, "bold"), anchor=tk.W, **self.base.theme.editors.labels).pack(fill=tk.X, expand=True)
 
     def add_dropdown(self, name="Example", options=["True", "False"], default=0):
         dropdown = DropdownItem(self, name, options, default)

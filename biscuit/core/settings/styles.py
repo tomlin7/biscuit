@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-
+import sv_ttk
 
 class Style(ttk.Style):
     def __init__(self, master, theme, *args, **kwargs):
@@ -8,7 +8,9 @@ class Style(ttk.Style):
         self.master = master
         self.base = master.base
         self.theme = theme
-
+        sv_ttk.use_dark_theme()
+        
+        self.configure("TCheckbutton", background=self.theme.editors.background)
         self.gen_fileicons()
         self.config_treeview()
         self.config_tree_scrollbar()
@@ -29,8 +31,15 @@ class Style(ttk.Style):
             })
         ])
 
-        self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f8f8f8', troughcolor='#f8f8f8', lightcolor='#f8f8f8', darkcolor='#f8f8f8', arrowsize=14)
-        self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
+        self.layout('Vertical.TScrollbar', [
+            ('Vertical.Scrollbar.trough', {
+                'children': [('Vertical.Scrollbar.thumb', {'unit': '1', 'sticky': 'nsew'})],
+                'sticky': 'ns'
+            })
+        ])
+
+        # self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f8f8f8', troughcolor='#f8f8f8', lightcolor='#f8f8f8', darkcolor='#f8f8f8', arrowsize=14)
+        # self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
 
     def config_treeview(self):
         ## TREENODE CHEVRONS -----

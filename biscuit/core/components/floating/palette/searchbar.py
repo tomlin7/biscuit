@@ -7,18 +7,17 @@ class Searchbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         # border
-        self.config(bg="#ecb464")
+        self.config(bg=self.base.theme.biscuit)
         
         self.text_variable = tk.StringVar()
         self.text_variable.trace("w", self.filter) 
         
-        frame = Frame(self, bg="#FFFFFF")
+        frame = Frame(self, **self.base.theme.palette)
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
         
         self.search_bar = tk.Entry(
-            frame, font=("Segoe UI", 10), fg="#616161", 
-            width=self.master.width, relief=tk.FLAT, bg="#FFFFFF",
-            textvariable=self.text_variable)
+            frame, font=("Segoe UI", 10), width=self.master.width, relief=tk.FLAT, 
+            textvariable=self.text_variable, **self.base.theme.palette.searchbar)
         
         self.search_bar.grid(sticky=tk.EW, padx=5, pady=5)
         self.configure_bindings()

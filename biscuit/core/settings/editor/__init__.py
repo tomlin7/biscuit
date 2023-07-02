@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import ScrollableFrame
+from core.components.utils import ScrollableFrame, Frame, Button
 from core.components.editors.editor import BaseEditor
 
 from .searchbar import Searchbar
@@ -10,16 +10,25 @@ from .section import Section
 class SettingsEditor(BaseEditor):
     def __init__(self, master, exists=False, editable=False, *args, **kwargs):
         super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
-        self.config(padx=100, bg='white')
+        self.config(padx=100, pady=20, **self.base.theme.editors)
         self.filename = 'settings'
 
         #TODO searchbar functionality not implemented yet
         #NOTE: unpack the container and pack a new container for showing results
         self.search = Searchbar(self)
-        self.search.pack(fill=tk.X, pady=20)
+        self.search.pack(fill=tk.X)
+
+        frame = Frame(self, bg=self.base.theme.border)
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        self.tree = Frame(frame, **self.base.theme.editors, width=200, pady=20)
+        self.tree.pack_propagate(False)
+        self.tree.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1))
 
         self.sections = []
-        self.container = ScrollableFrame(self)
+        self.container = ScrollableFrame(frame)
+        self.container.content.config(pady=10)
+        self.container.config(**self.base.theme.editors)
         self.container.pack(fill=tk.BOTH, expand=True)
 
         self.add_sections()
@@ -30,6 +39,7 @@ class SettingsEditor(BaseEditor):
 
     def add_commonly_used(self):
         commonly_used = self.add_section(f"Commonly Used")
+        
         commonly_used.add_dropdown("Color Theme", ("dark", "light"))
         commonly_used.add_intvalue("Font Size", 14)
         commonly_used.add_stringvalue("Font Family", "Consolas")
@@ -48,6 +58,10 @@ class SettingsEditor(BaseEditor):
         section = Section(self.container.content, name)
         section.pack(fill=tk.X, expand=True)
         self.sections.append(section)
+
+        shortcut = Button(self.tree, name, anchor=tk.W)
+        shortcut.pack(fill=tk.X)
+        shortcut.config(**self.base.theme.editors.button)
         return section
     
     def show_result(self, items):

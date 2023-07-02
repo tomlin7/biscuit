@@ -1,16 +1,16 @@
 import tkinter as tk
 
+from core.components.utils import Menubutton
 
-class MenuItem(tk.Menubutton):
+
+class MenuItem(Menubutton):
     def __init__(self, master, text, command, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
         self.text = text
         self.command  = command
         
         self.config(text=text, anchor=tk.W, font=("Segoe UI", 10),
-            padx=30, bg="#ffffff", fg="#616161", pady=3,
-            activebackground="#e8e8e8", activeforeground="#616161"
+            padx=30, pady=3, **self.base.theme.palette.item
         )
 
         self.bind("<Button-1>", self.on_click)
@@ -29,11 +29,10 @@ class MenuItem(tk.Menubutton):
             self.deselect()
 
     def select(self):
-        self.config(bg="#dc8c34", fg="#ffffff", 
-                    activebackground="#dc8c34", activeforeground="#ffffff")
+        self.config(bg=self.base.theme.biscuit_dark, fg='white', 
+                    activebackground=self.base.theme.biscuit_dark, activeforeground='white')
         self.selected = True
     
     def deselect(self):
-        self.config(bg="#ffffff", fg="#616161", 
-                    activebackground="#e8e8e8", activeforeground="#616161")
+        self.config(**self.base.theme.palette.item)
         self.selected = False

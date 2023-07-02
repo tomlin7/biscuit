@@ -1,36 +1,39 @@
 import tkinter as tk
+from tkinter import ttk
 
 from core.components.utils import Entry, Frame
 
 class Item(Frame):
     def __init__(self, master, name="Example", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(bg="white", padx=10, pady=10)
 
         self.name = name
         self.description = None # TODO add descriptions
 
-        self.lbl = tk.Label(self, text=self.name, font=("Segoi UI", 11, "bold"), bg="white", anchor=tk.W)
+        self.bg, self.fg, self.highlightbg, _ = self.base.theme.editors.section.values()
+        self.config(padx=10, pady=10, bg=self.bg)
+
+        self.lbl = tk.Label(self, text=self.name, font=("Segoi UI", 11, "bold"), anchor=tk.W, bg=self.bg, fg=self.fg)
         self.lbl.pack(fill=tk.X, expand=True)
         
-        self.bind("<Enter>", self.hoverin)
-        self.bind("<Leave>", self.hoveroff)
+    #     self.bind("<Enter>", self.hoverin)
+    #     self.bind("<Leave>", self.hoveroff)
     
-    def hoverin(self, *_):
-        self.config(bg="#f8f8f8")
-        self.lbl.config(bg="#f8f8f8")
+    # def hoverin(self, *_):
+    #     self.config(bg=self.highlightbg)
+    #     self.lbl.config(bg=self.highlightbg)
     
-    def hoveroff(self, *_):
-        self.config(bg="white")
-        self.lbl.config(bg="white")
+    # def hoveroff(self, *_):
+    #     self.config(bg=self.bg)
+    #     self.lbl.config(bg=self.bg)
 
 class DropdownItem(Item):
     def __init__(self, master, name="Example", options=["True", "False"], default=0, *args, **kwargs):
         super().__init__(master, name, *args, **kwargs)
 
         self.var = tk.StringVar(self, value=options[default])
-        m = tk.OptionMenu(self, self.var, *options)
-        m.config(relief=tk.FLAT, width=30, bg="#f8f8f8")
+        m = ttk.OptionMenu(self, self.var, options[default], *options)
+        m.config(width=30)
         m.pack(side=tk.LEFT)
         
     @property
@@ -43,9 +46,8 @@ class IntegerItem(Item):
         super().__init__(master, name, *args, **kwargs)
         self.base.register(self.validate)
 
-        self.entry = Entry(self, font=("Segoi UI", 11), validate="key", validatecommand=(self.validate, "%P"),
-                               width=30, relief=tk.FLAT, bg="#f8f8f8")
-        self.entry.insert(tk.END, default)
+        self.entry = ttk.Entry(self, font=("Segoi UI", 11), width=30, validate="key", validatecommand=(self.register(self.validate), "%P"))
+        self.entry.insert(0, default)
         self.entry.pack(side=tk.LEFT)
 
     def validate(self, value):
@@ -63,7 +65,7 @@ class StringItem(Item):
     def __init__(self, master, name="Example", default="placeholder", *args, **kwargs):
         super().__init__(master, name, *args, **kwargs)
 
-        self.entry = Entry(self, font=("Segoi UI", 11), width=30, relief=tk.FLAT, bg="#f8f8f8")
+        self.entry = ttk.Entry(self, font=("Segoi UI", 11), width=30)
         self.entry.insert(tk.END, default)
         self.entry.pack(side=tk.LEFT)
 
@@ -77,7 +79,7 @@ class CheckboxItem(Item):
         super().__init__(master, name, *args, **kwargs)
 
         self.var = tk.BooleanVar(self, value=default)
-        tk.Checkbutton(self, text=name, variable=self.var, relief=tk.FLAT, anchor=tk.W, bg="white").pack(fill=tk.X, anchor=tk.W)
+        ttk.Checkbutton(self, text=name, variable=self.var).pack(fill=tk.X, anchor=tk.W)
 
     @property
     def value(self):
