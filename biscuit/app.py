@@ -24,6 +24,7 @@ class App(tk.Tk):
     
     def run(self):
         self.mainloop()
+        self.extensionsmanager.stop_server()
     
     def setup(self):
         self.setup_tk()
@@ -34,6 +35,12 @@ class App(tk.Tk):
         self.binder.late_bind_all()
         self.setup_references()
         self.palette.register_actionset(self.settings.actionset)
+        self.setup_extensions()
+    
+    def setup_extensions(self):
+        self.api = ExtensionsAPI(self)
+        self.extensionsmanager = ExtensionManager(self)
+        self.extensionsmanager.start_server()
 
     def setup_tk(self):
         self.geometry("1100x750")
@@ -44,7 +51,7 @@ class App(tk.Tk):
         self.appdir = os.path.dirname(__file__)
         self.configdir = os.path.join(self.appdir, 'config')
         self.resdir = os.path.join(self.appdir, 'res')
-        self.themesdir = os.path.join(self.configdir, 'themes')
+        self.extensionsdir = os.path.join(self.appdir, "extensions")
 
     def setup_configs(self):
         self.git_found = False
@@ -62,8 +69,8 @@ class App(tk.Tk):
 
         self.git = Git(self)
         self.palette = Palette(self)
-        self.notifications = Notifications(self)
         self.findreplace = FindReplace(self)
+        self.notifications = Notifications(self)
 
     def setup_references(self):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
@@ -77,10 +84,7 @@ class App(tk.Tk):
     def initialize_editor(self):
         self.palette.generate_help_actionset()
         self.focus_set()
-
-        self.logger.info('Biscuit started.')
-        self.logger.warning('last biscuit.')
-        self.logger.error('No biscuits left.')
+        self.logger.info('Initializing editor finished.')
     
     def open_directory(self, dir):
         if not os.path.isdir(dir):
