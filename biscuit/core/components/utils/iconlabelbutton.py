@@ -1,14 +1,15 @@
 import tkinter as tk
 
-from core.components.utils import get_codicon, Frame
+from .codicon import get_codicon
+from .frame import Frame
 
 
-class SButton(Frame):
+class IconLabelButton(Frame):
     def __init__(self, master, text=None, icon=None, function=lambda *_: None, padx=5, pady=1, *args, **kwargs):
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
         self.function = function
 
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.layout.statusbar.button.values()
+        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.utils.iconlabelbutton.values()
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
@@ -74,15 +75,3 @@ class SButton(Frame):
         if self.visible:
             self.visible = False
             self.pack_forget()
-
-
-
-class TerminalButton(SButton):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.bg = self.base.theme.biscuit
-        self.hbg = self.base.theme.biscuit_dark
-        self.fg = "white"
-        self.hfg = "white"        
-        self.on_leave()

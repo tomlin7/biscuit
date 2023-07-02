@@ -1,15 +1,14 @@
 import tkinter as tk
 
+from core.components.utils import Frame
 
-class BaseGame(tk.Frame):
+
+class BaseGame(Frame):
     """
     Base class for games.
     """
     def __init__(self, master, path=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
         self.path = path
         self.filename = None
 

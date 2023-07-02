@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from tkinter.constants import *
 
-from ..utils import FileType
+from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
 
 from .diffeditor import DiffEditor
@@ -10,6 +10,7 @@ from .imageviewer import ImageViewer
 from .texteditor import TextEditor
 from .misc import Welcome
 from core.settings.editor import SettingsEditor
+
 
 
 def get_editor(path, diff):
@@ -30,7 +31,7 @@ def get_editor(path, diff):
     return TextEditor
 
 
-class Editor(tk.Frame):
+class Editor(Frame):
     """
     Editor class
 
@@ -44,9 +45,7 @@ class Editor(tk.Frame):
     """
     def __init__(self, master, path=None, exists=True, diff=False, showpath=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
+        self.config(bg=self.base.theme.border)
         self.path = path
         self.exists = exists
         self.diff = diff

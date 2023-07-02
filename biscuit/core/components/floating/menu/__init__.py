@@ -6,26 +6,34 @@
 
 import tkinter as tk
 
-from .menu import MenuContainer
+from .menuitem import MenuItem
+from .separator import Separator
+
+from core.components.utils import Toplevel, Frame
 
 
-class Menu(tk.Toplevel):
+class Menu(Toplevel):
     def __init__(self, master, name, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
-        self.master = master
-
         self.active = False
-        self.configure(bg='#d4d4d4')
+        self.name = name
+
+        self.config(bg=self.base.theme.border)
         self.withdraw()
         self.overrideredirect(True)
 
-        self._menu = MenuContainer(self, name)
-        self._menu.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
+        self.container = Frame(self, padx=5, pady=5, **self.base.theme.menu)
+        self.container.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
+        self.container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.hide = self.hide
 
-        self.configure_bindings()
+        self.menu_items = []
+        self.row = 0
 
-    def configure_bindings(self):
+        self.config_bindings()
+
+    def config_bindings(self):
         self.bind("<FocusOut>" , self.hide)
         self.bind("<Escape>", self.hide)
     
@@ -47,7 +55,15 @@ class Menu(tk.Toplevel):
         self.withdraw()
 
     def add_item(self, text, command=lambda *_:...):
-        self._menu.add_item(text, command)
+        new_item = MenuItem(self.container, text, command)
+        new_item.grid(row=self.row, sticky=tk.EW, pady=0)
+        self.menu_items.append(new_item)
+
+        self.row += 1
 
     def add_separator(self):
-        self._menu.add_separator()
+        new_sep = Separator(self.container)
+        new_sep.grid(row=self.row, sticky=tk.EW, pady=0)
+        self.menu_items.append(new_sep)
+
+        self.row += 1

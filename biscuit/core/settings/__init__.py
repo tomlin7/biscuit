@@ -3,8 +3,8 @@ import tkinter as tk
 import tkextrafont as extra
 
 from .config import Config, Bindings
-from .styles import Style, Resources
-
+from .res import Resources
+from .styles import Style
 from .editor import SettingsEditor
 
 
@@ -12,8 +12,8 @@ class Settings:
     def __init__(self, base):
         self.base = base
 
-        self.style = Style(self.base)
         self.config = Config(self)
+        self.style = Style(self.base, self.config.theme)
         self.res = Resources(self)
 
         self.commands = [

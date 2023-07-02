@@ -3,13 +3,13 @@ import tkinter as tk
 from .slot import Slot
 from .item import MenuItem
 
-class Slots(tk.Frame):
+from core.components.utils import Frame
+
+
+class Slots(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base 
-
-        self.config(width=100, bg="#f8f8f8")
+        self.config(width=100, **self.base.theme.layout.base.sidebar.slots)
 
         self.slots = []
         self.active_slot = None

@@ -1,9 +1,9 @@
 import tkinter as tk
 
 
-class Canvas(tk.Canvas):
+class Menubutton(tk.Menubutton):
     """
-    normal canvas with reference to base
+    normal menubutton with reference to base
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

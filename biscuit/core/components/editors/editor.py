@@ -1,16 +1,13 @@
-import os
-import tkinter as tk
+from core.components.utils import Frame
 
 
-class BaseEditor(tk.Frame):
+class BaseEditor(Frame):
     """
     Base class for editors.
     """
     def __init__(self, master, path=None, exists=None, editable=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-        self.config(bg="white")
+        self.config(**self.base.theme.editors)
 
         self.path = path
         self.exists = exists

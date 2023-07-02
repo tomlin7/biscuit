@@ -3,15 +3,13 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .scrollbar import Scrollbar
+from .frame import Frame
 
 
-class Tree(tk.Frame):
+class Tree(Frame):
     def __init__(self, master, startpath=None, doubleclick=lambda _: None, singleclick=lambda _: None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg='#f8f8f8')
+        self.config(**self.base.theme.utils.tree)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -20,7 +18,8 @@ class Tree(tk.Frame):
         self.doubleclick = doubleclick
         self.singleclick = singleclick
 
-        self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), displaycolumns='', selectmode=tk.BROWSE)
+        self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), 
+                                 displaycolumns='', selectmode=tk.BROWSE)
         self.tree.grid(row=0, column=0, sticky=NSEW)
         
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview, style="TreeScrollbar")

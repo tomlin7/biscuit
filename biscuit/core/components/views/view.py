@@ -1,14 +1,10 @@
-import tkinter as tk
-from tkinter.constants import *
+from core.components.utils import Frame
 
 
-class View(tk.Frame):
+class View(Frame):
     """
     View is a container of content that can appear in the sidebar or panel
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg='#f8f8f8')
+        self.config(**self.base.theme.views)

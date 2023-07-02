@@ -1,13 +1,10 @@
 import tkinter as tk
 
-from core.components.utils import Entry
+from core.components.utils import Entry, Frame
 
-
-class Item(tk.Frame):
+class Item(Frame):
     def __init__(self, master, name="Example", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
         self.config(bg="white", padx=10, pady=10)
 
         self.name = name

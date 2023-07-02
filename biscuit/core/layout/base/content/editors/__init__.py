@@ -2,10 +2,12 @@ import tkinter as tk
 
 from .editorsbar import Editorsbar
 from .empty import Empty
+
 from core.components.editors import Editor
+from core.components.utils import Frame
 
 
-class EditorsPane(tk.Frame):
+class EditorsPane(Frame):
     """
     Tabbed container for editors.
 
@@ -21,10 +23,7 @@ class EditorsPane(tk.Frame):
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg='#dfdfdf')
+        self.config(bg=self.base.theme.border)
 
         self.grid_propagate(False)
         self.grid_rowconfigure(1, weight=1)

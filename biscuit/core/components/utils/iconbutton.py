@@ -2,14 +2,16 @@ import tkinter as tk
 
 from .codicon import get_codicon
 
-class IconButton(tk.Menubutton):
+from .menubutton import Menubutton
+
+
+class IconButton(Menubutton):
     """
     Button with only an icon
     """
-    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=12, fg='#424242', bg='#f8f8f8', activeforeground='#424242', activebackground='#e1e1e1', *args, **kwargs):
-        super().__init__(master, fg=fg, bg=bg, activeforeground=activeforeground, activebackground=activebackground, *args, **kwargs)
-        self.master = master
-
+    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=12, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.config(**self.base.theme.utils.iconbutton)
         self.icons = [icon, icon2]
         self.icon2 = icon2
         self.switch = False

@@ -11,9 +11,6 @@ from .text import TerminalText
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
         self.__buttons__ = (('add',),('trash',))
 
         self.grid_columnconfigure(0, weight=1)

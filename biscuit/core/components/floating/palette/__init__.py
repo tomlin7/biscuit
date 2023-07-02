@@ -9,8 +9,10 @@ from .item import MenuItem
 from .searchbar import Searchbar
 from .actionset import ActionSet
 
+from core.components.utils import Toplevel
 
-class Palette(tk.Toplevel):
+
+class Palette(Toplevel):
     """
     Palette
 
@@ -29,9 +31,6 @@ class Palette(tk.Toplevel):
     """
     def __init__(self, master, items=None, width=60,*args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master
-
         self.config(pady=1, bg='#dfdfdf')
         
         self.width = width

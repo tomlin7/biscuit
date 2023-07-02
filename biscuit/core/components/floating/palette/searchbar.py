@@ -1,18 +1,18 @@
 import tkinter as tk
 
+from core.components.utils import Frame
 
-class Searchbar(tk.Frame):
+
+class Searchbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-
         # border
         self.config(bg="#ecb464")
         
         self.text_variable = tk.StringVar()
         self.text_variable.trace("w", self.filter) 
         
-        frame = tk.Frame(self, bg="#FFFFFF")
+        frame = Frame(self, bg="#FFFFFF")
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
         
         self.search_bar = tk.Entry(

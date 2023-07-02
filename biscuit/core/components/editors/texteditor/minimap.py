@@ -1,17 +1,16 @@
 import tkinter as tk
+from core.components.utils import Frame
 
 
-class Minimap(tk.Frame):
+class Minimap(Frame):
     def __init__(self, master, textw, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        
         self.tw = textw
         self.font = ("Arial", 1, "bold")
-
-        self.config(bg="white", highlightthickness=0)
-        self.cw = tk.Canvas(self, bg="white", width=100, highlightthickness=0)
-        self.cw.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+        self.config(highlightthickness=0, bg=self.base.theme.border)
+        
+        self.cw = tk.Canvas(self, width=100, highlightthickness=0, **self.base.theme.editors.minimap)
+        self.cw.pack(fill=tk.BOTH, expand=True, side=tk.LEFT, padx=(1, 0))
 
         self.slider_image = tk.PhotoImage(data="""iVBORw0KGgoAAAANSUhEUgAAAG4AAABFCAYAAACrMNMO
         AAAACXBIWXMAAABfAAAAXwEqnu0dAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAMBJRE

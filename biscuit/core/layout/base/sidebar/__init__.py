@@ -2,10 +2,12 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .slots import Slots
-from ....components.views.sidebar import *
+
+from core.components.views.sidebar import *
+from core.components.utils import Frame
 
 
-class Sidebar(tk.Frame):
+class Sidebar(Frame):
     """
     Vertically slotted container for views.
 
@@ -25,10 +27,7 @@ class Sidebar(tk.Frame):
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base 
-
-        self.config(bg="#dfdfdf")
+        self.config(bg=self.base.theme.border)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)

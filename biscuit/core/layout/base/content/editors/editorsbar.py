@@ -1,17 +1,14 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from core.components.utils import IconButton
 from .tabs import Tabs
+from core.components.utils import IconButton, Frame
 
 
-class Editorsbar(tk.Frame):
+class Editorsbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg='#f8f8f8')
+        self.config(**self.base.theme.layout.base.content.editors.bar)
 
         self.tabs = Tabs(self)
         self.tabs.pack(fill=BOTH, side=LEFT, expand=True)
@@ -20,8 +17,7 @@ class Editorsbar(tk.Frame):
         self.default_buttons = (('ellipsis',),)
 
         # TODO like panelbar, add __buttons__ to BaseEditor
-        self.buttonframe = tk.Frame(self)
-        self.buttonframe.base = self.base
+        self.buttonframe = Frame(self)
         self.buttonframe.pack(fill=BOTH, side=RIGHT, pady=5, padx=10)
         
         for button in self.default_buttons:

@@ -10,14 +10,16 @@ from .codicon import get_codicon
 from .frame import Frame
 from .filetype import FileType
 from .iconbutton import IconButton
-from .label import WrappingLabel
+from .label import WrappingLabel, Label
 from .scrollbar import Scrollbar
 from .scrollableframe import ScrollableFrame
 from .tree import Tree
 from .shortcut import Shortcut
-from .entrybox import EntryBox
 from .entry import Entry
-
+from .toplevel import Toplevel
+from .menubutton import Menubutton
+from .text import Text
+from .iconlabelbutton import IconLabelButton
 
 @staticmethod
 def clamp(value, min_val, max_val):

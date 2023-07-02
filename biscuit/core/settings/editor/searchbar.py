@@ -1,9 +1,10 @@
 import tkinter as tk
 
 from hintedtext import HintedEntry
+from core.components.utils import Frame
 
 
-class Searchbar(tk.Frame):
+class Searchbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
@@ -11,7 +12,7 @@ class Searchbar(tk.Frame):
         # border
         self.config(bg="#ecb464")
         
-        frame = tk.Frame(self, bg="#FFFFFF")
+        frame = Frame(self, bg="#FFFFFF")
         frame.pack(fill=tk.BOTH, padx=1, pady=1)
         
         self.text_variable = tk.StringVar()

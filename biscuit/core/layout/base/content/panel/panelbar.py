@@ -1,18 +1,16 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .....components.utils import IconButton
 from .tabs import Tabs
+from core.components.utils import IconButton, Frame
 
 
-class Panelbar(tk.Frame):
+class Panelbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
         content = self.master.master
 
-        self.config(bg='#f8f8f8')
+        self.config(**self.base.theme.layout.base.content.panel.bar)
 
         self.tabs = Tabs(self)
         self.tabs.pack(fill=tk.X, side=LEFT, expand=True)

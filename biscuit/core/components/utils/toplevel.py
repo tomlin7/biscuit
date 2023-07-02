@@ -1,10 +1,7 @@
 import tkinter as tk
 
 
-class Canvas(tk.Canvas):
-    """
-    normal canvas with reference to base
-    """
+class Toplevel(tk.Toplevel):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master

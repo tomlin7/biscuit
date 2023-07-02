@@ -1,13 +1,12 @@
 theme="default"
 font="Consolas"
 
-[commonly_used]
+
+[testing]
 font_size=14
 font_family="Consolas"
 tab_size=4
 theme="light"
-
-[text_editor]
 auto_save=false
 auto_closing_pairs=true
 auto_closing_delete=true

@@ -7,7 +7,7 @@ class FindResults(tk.Label):
         self.master = master
 
         self.init()
-        self.config(padx=1, width=10, font=("Helvetica", 10), bg="#252526")
+        self.config(padx=1, width=10, font=("Helvetica", 10), **self.base.theme.editors)
 
     def show(self, n):
         if not n:
@@ -18,4 +18,4 @@ class FindResults(tk.Label):
         
     def init(self):
         self.config(text="No results")
-        self.config(fg="#cccccc")
+        self.config(fg=self.base.theme.editors.foreground)

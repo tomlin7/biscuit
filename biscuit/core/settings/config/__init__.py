@@ -1,8 +1,13 @@
-import os
-from .font import Font
 from .bindings import Bindings
 from .loader import ConfigLoader
-from .theme import Light
+from .theme import Light, Dark
+from dataclasses import dataclass
+
+
+@dataclass
+class Font:
+    family: str
+    size: int
 
 
 class Config:
@@ -19,6 +24,6 @@ class Config:
 
     def load_data(self):
         #testing 
-        self.theme = Light()
+        self.theme = Dark()
         font = self.config['font']
         self.font = Font(font, 15)

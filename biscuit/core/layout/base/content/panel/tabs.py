@@ -1,15 +1,13 @@
 import tkinter as tk
 
 from .tab import Tab
+from core.components.utils import Frame
 
 
-class Tabs(tk.Frame):
+class Tabs(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-        
-        self.config(bg='#f8f8f8')
+        self.config(**self.base.theme.layout.base.content.panel.bar)
 
         self.tabs = []
         self.active_tab = None

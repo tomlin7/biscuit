@@ -1,57 +1,78 @@
-class ThemeObject:
+from collections.abc import Mapping
+
+
+class ThemeObject(Mapping):
     """
-    Base theme object
+    Base theme object. If no colors are passed, uses the parent's color data.
 
     Parameters:
-    background, foreground, highlightbackground, highlightforeground,
-    selectedhighlightbackground, selectedhighlightforeground
+    parent, background, foreground, highlightbackground, highlightforeground,
+    selectedbackground, selectedforeground
     """
-    def __init__(self, 
-                 background=None, 
-                 foreground=None, 
-                 
-                 highlightbackground=None, 
-                 highlightforeground=None,
-
-                 selectedhighlightbackground=None, 
-                 selectedhighlightforeground=None,
-                 
-                 **kwargs):
-        self.background = background
-        self.foreground = foreground
-        self.highlightbackground = highlightbackground or background
-        self.highlightforeground = highlightforeground or foreground
-        self.selectedhighlightbackground = selectedhighlightbackground or highlightbackground
-        self.selectedhighlightforeground = selectedhighlightforeground or highlightforeground
+    def __init__(self, master, background=None, foreground=None, 
+                 highlightbackground=None, highlightforeground=None,
+                 selectedbackground=None,  selectedforeground=None, **kwargs):
+        self.master = master
+        self.background = background or master.background
+        self.foreground = foreground or master.foreground
+        self.highlightbackground = highlightbackground or master.highlightbackground
+        self.highlightforeground = highlightforeground or master.highlightforeground
+        self.selectedbackground = selectedbackground or highlightbackground or master.selectedbackground
+        self.selectedforeground = selectedforeground or highlightforeground or master.selectedforeground
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def __str__(self):
-        return self.background
-        
-    def __contains__(self, attr):
-        return hasattr(self, attr)
+    def values(self):
+        return self.background, self.foreground, self.highlightbackground, self.highlightforeground
+    
+    def to_dict(self):
+        return {
+            'background': self.background, 'foreground': self.foreground,
+            }
+    
+    def __getitem__(self, key):
+        return self.to_dict()[key]
+
+    def __iter__(self):
+        return iter(self.to_dict())
+
+    def __len__(self):
+        return len(self.to_dict())
+
+    def remove_bg_highlight(self):
+        self.highlightbackground = self.background
+        return self
 
 
-class Editors(ThemeObject):
+class HighlightableThemeObject(ThemeObject):
+    def to_dict(self):
+        return {
+            'background': self.background, 'foreground': self.foreground,
+            'activebackground': self.highlightbackground,
+            'activeforeground': self.highlightforeground
+            }
+
+class FrameThemeObject(ThemeObject):
+    def to_dict(self):
+        return {'background': self.background}
+
+
+class EditorsPane(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bar = ThemeObject(self.background)
-        self.tab = ThemeObject(self.bar.background, 'black', 'white')
-        self.tab.close = ThemeObject(self.bar.background, "#424242", self.bar.background, 'black')
-        self.button = ThemeObject(self.background, '#424242', '#e1e1e1')
+        self.bar = FrameThemeObject(self)
+        self.bar.tab = HighlightableThemeObject(self.bar)
+        self.bar.tab.close = HighlightableThemeObject(self.bar)
 
-class Panel(ThemeObject):
+class PanelPane(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bar = ThemeObject(self.background)
-        self.tab = ThemeObject(self.bar.background, 'black', 'white')
-        self.tab.close = ThemeObject(self.bar.background, "#424242", self.bar.background, 'black')
-        self.button = ThemeObject(self.background, '#424242', '#e1e1e1')
+        self.bar = FrameThemeObject(self)
+        self.bar.tab = HighlightableThemeObject(self.bar).remove_bg_highlight()
 
 
-class Content(ThemeObject):
+class ContentPane(FrameThemeObject):
     """
     ContentPane 
     ├── EditorsPane
@@ -59,23 +80,18 @@ class Content(ThemeObject):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.editors = Editors(self.background)
-        self.panel = Panel(self.background)
+        self.editors = EditorsPane(self)
+        self.panel = PanelPane(self)
 
-class Sidebar(ThemeObject):
+class SidebarPane(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.slots = ThemeObject(self.background)
-        self.slots.slot = ThemeObject(self.slots.background, "#626262", self.slots.background, 'black')
-        self.slots.bubble = ThemeObject(self.slots.background, 'black', border='#dddbdd')
+        self.slots = FrameThemeObject(self)
+        self.slots.slot = HighlightableThemeObject(self.slots).remove_bg_highlight()
+        self.slots.bubble = ThemeObject(self.slots)
 
 
-class Menubar(ThemeObject):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.item = ThemeObject(self.background, 'black', "#e4e4e4")
-
-class Base(ThemeObject):
+class BasePane(FrameThemeObject):
     """
     Base
      ├── Sidebar
@@ -83,77 +99,135 @@ class Base(ThemeObject):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.content = Content(self.background)
-        self.sidebar = Sidebar(self.background)
+        self.content = ContentPane(self)
+        self.sidebar = SidebarPane(self)
 
-class Statusbar(ThemeObject):
+
+class Layout(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.button = ThemeObject(self.background, "#424242", self.background, 'black')
-        self.toggle_button = ThemeObject("#dc8c34", 'white', "#ecb464")
+        self.menubar = FrameThemeObject(self)
+        self.menubar.item = HighlightableThemeObject(self.menubar)
 
+        self.base = BasePane(self)
 
-class Layout(ThemeObject):
+        self.statusbar = FrameThemeObject(self)
+        self.statusbar.button = HighlightableThemeObject(self.statusbar).remove_bg_highlight()
+
+class SidebarViews(FrameThemeObject):    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.menubar = Menubar(self.background)
-        self.base = Base(self.background)
-        self.statusbar = Statusbar(self.background)
+
+        self.title = ThemeObject(self)
+        self.itembar = FrameThemeObject(self)
+        self.itembar.title = ThemeObject(self)
+        self.item = FrameThemeObject(self)
+        self.item.content = ThemeObject(self)
+        self.toggle_button = HighlightableThemeObject(self)
     
-class Views(ThemeObject):
+class PanelViews(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.panel = ThemeObject(self.background, self.foreground)
-        self.panel.button = ThemeObject(self.background, self.panel.foreground, "#e1e1e1")
+        self.button = HighlightableThemeObject(self)
+        
+        self.logs = ThemeObject(self)
+        self.logs.time = "#008000"
+        self.logs.caller = "#0000ff"
+        self.logs.info = "#098677"
+        self.logs.warning = "#a31515"
+        self.logs.error = "#ab1515"
 
-        self.panel.logs = ThemeObject(self.background, self.panel.foreground)
-        self.panel.logs.time = "#008000"
-        self.panel.logs.caller = "#0000ff"
-        self.panel.logs.info = "#098677"
-        self.panel.logs.warning = "#a31515"
-        self.panel.logs.error = "#ab1515"
+        self.terminal = ThemeObject(self)
 
-        self.panel.terminal = ThemeObject(self.background, self.panel.foreground)
-
-        self.sidebar = ThemeObject(self.background, self.foreground)
-        self.sidebar.itembar = ThemeObject(self.sidebar.background, self.sidebar.foreground)
-        self.sidebar.item = ThemeObject(self.sidebar.background, self.sidebar.foreground)
-        self.sidebar.toggle_button = ThemeObject(self.sidebar.background, self.sidebar.foreground, '#e1e1e1')
-
-class Palette(ThemeObject):
+class Views(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.searchbar = ThemeObject('white', "#424242", border="#ecb464")
-        self.item = ThemeObject('white', "#424242", "#e8e8e8", border="#ecb464")
+        self.panel = PanelViews(self)
+        self.sidebar = SidebarViews(self)
+
+class Palette(FrameThemeObject):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.searchbar = ThemeObject(self)
+        self.item = HighlightableThemeObject(self)
+
+class Menu(FrameThemeObject):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.item = HighlightableThemeObject(self)
+
+class Notifications(FrameThemeObject):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.button = HighlightableThemeObject(self)
+        self.text = ThemeObject(self)
+
+class Editors(FrameThemeObject):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.biscuit_labels = FrameThemeObject(self) # welcome page
+        self.button = HighlightableThemeObject(self)
+        self.labels = ThemeObject(self)
+
+        self.text = ThemeObject(self)
+        self.minimap = FrameThemeObject(self)
+
+        self.breadcrumbs = FrameThemeObject(self)
+        self.breadcrumbs.item = HighlightableThemeObject(self).remove_bg_highlight()
+
+        self.linenumbers = FrameThemeObject(self)
+        self.linenumbers.number = ThemeObject(self.linenumbers)
+        self.linenumbers.number.foreground = "#6e7681"
+        self.linenumbers.number.highlightforeground = "#171184"
+
+class Utils(ThemeObject):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        theme = self.master
+
+        self.button = HighlightableThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
+        self.colorlabel = ThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
+        self.tree = FrameThemeObject(self)
+        self.tree.item = ThemeObject(self.tree)
+        self.bubble = ThemeObject(self)
+        self.iconbutton = HighlightableThemeObject(self)
+        self.iconlabelbutton = HighlightableThemeObject(self, theme.secondary_background, theme.secondary_foreground, self.highlightbackground)
+        self.entry = ThemeObject(self, theme.secondary_background, theme.secondary_foreground, self.highlightbackground)
+        self.buttonsentry = ThemeObject(self, theme.secondary_background, theme.secondary_foreground, self.highlightbackground)
+        self.buttonsentry.button = HighlightableThemeObject(self.buttonsentry)
+        self.bubble = ThemeObject(self)
 
 class Theme:
     """
-    Following are the attributes available.
-
-    Layout
-    ├── Menubar
-    ├── Base
-    └── StatusBar
-
-    Views
-    ├── Sidebar views
-    └── Panel views
-
-    Editors
-    Palette
-
+    Following are the attributes available:
+    layout, views, editors, palette, menu, notifications, utils
     """
-    def __init__(self, theme_name="default"):
-        self.theme_name = theme_name
+    name = "default"
+    
+    biscuit = "#dc8c34"
+    biscuit_light = "#ecb464"
+    biscuit_dark = "#B56711"
+    
+    border = "#dfdfdf"
 
-        self.layout = Layout("#dfdfdf")
-        self.views = Views("#f8f8f8", "#424242")
+    primary_background = "#f8f8f8"
+    primary_foreground = "#424242"
+    primary_background_highlight = "#e1e1e1"
+    primary_foreground_highlight = 'black'
 
-        self.editors = ThemeObject("white")
-        self.editors.button = ThemeObject("#dfdfdf", "#424242", "#e1e1e1")
+    secondary_background = 'white'
+    secondary_foreground = 'black'
+    secondary_background_highlight = 'white'
+    secondary_foreground_highlight = 'black'
 
-        self.palette = Palette("#dfdfdf", "#424242")
-        self.notifications = ThemeObject("#dfdfdf", "#424242")
-
-        self.utils = ThemeObject()
-        self.utils.button = ThemeObject("#dc8c34", "white", "#ecb464")
+    def __init__(self):
+        primary = [self.primary_background, self.primary_foreground, self.primary_background_highlight, self.primary_foreground_highlight]
+        secondary = [self.secondary_background, self.secondary_foreground, self.secondary_background_highlight, self.secondary_foreground_highlight]
+        
+        self.layout = Layout(self, *primary)
+        self.views = Views(self, *primary)
+        self.utils = Utils(self, *primary)
+        self.menu = Menu(self, *secondary)
+        self.editors = Editors(self, *secondary)
+        self.palette = Palette(self, *secondary)
+        self.notifications = Notifications(self, *secondary)

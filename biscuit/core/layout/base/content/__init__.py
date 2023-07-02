@@ -4,8 +4,10 @@ from tkinter.constants import *
 from .editors import EditorsPane
 from .panel import Panel
 
+from core.components.utils import Frame
 
-class ContentPane(tk.Frame):
+
+class ContentPane(Frame):
     """
     Main frame holds ContentPane and Panel
     .
@@ -21,10 +23,7 @@ class ContentPane(tk.Frame):
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg="#dfdfdf")
+        self.config(bg=self.base.theme.border)
         
         self.editorspane = EditorsPane(self)
         self.panel = Panel(self)

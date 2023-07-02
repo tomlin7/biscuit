@@ -1,14 +1,12 @@
 import tkinter as tk
 
 from hintedtext import HintedEntry
+from .frame import Frame
 
 
-class Entry(tk.Frame):
+class Entry(Frame):
     def __init__(self, master, hint="", *args, **kwargs):
         super().__init__(master)
-        self.master = master
-        self.base = master.base
-        
         self.config(padx=1, pady=1, bg='#dfdfdf')
         self.grid_columnconfigure(0, weight=1)
 

@@ -1,14 +1,11 @@
 import os
 import tkinter as tk
-
-from ....utils import Tree
-from ..item import SidebarViewItem
-from .placeholder import ChangesTreePlaceholder
-
-from ....utils import Button, IconButton
-from .placeholder import ChangesTreePlaceholder
-
 from hintedtext import HintedEntry
+
+from .placeholder import ChangesTreePlaceholder
+from ..item import SidebarViewItem
+
+from core.components.utils import Tree, Frame, Button, IconButton
 
 
 class ChangesTree(SidebarViewItem):
@@ -18,19 +15,18 @@ class ChangesTree(SidebarViewItem):
         super().__init__(master, *args, **kwargs)
 
         # --- COMMIT MESSAGE, BUTTON ---
-        self.commitbox = tk.Frame(self.content, bg='#f8f8f8')
-        self.commitbox.base = self.base
+        self.commitbox = Frame(self.content, **self.base.theme.views.sidebar.item)
         self.commitbox.grid(row=0, padx=(15, 10), pady=5, column=0, sticky=tk.NSEW)
         self.commitbox.grid_remove()
 
-        self.commit_message_entry = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, bg='white')
+        self.commit_message_entry = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, **self.base.theme.utils.entry)
         self.commit_message_entry.pack(fill=tk.X, pady=(0, 5))
 
         self.commit_button = Button(self.commitbox, text='Commit')
         self.commit_button.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        tk.Label(self.commitbox, text="｜", fg='white', bg="#dc8c34").pack(side=tk.LEFT, fill=tk.Y)
-        self.more = IconButton(self.commitbox, icon='chevron-down', 
-            bg="#dc8c34", fg="white", activebackground="#ffaf3c", activeforeground="white")
+        tk.Label(self.commitbox, text="｜", **self.base.theme.utils.colorlabel).pack(side=tk.LEFT, fill=tk.Y)
+        self.more = IconButton(self.commitbox, icon='chevron-down')
+        self.more.config(**self.base.theme.utils.button)
         self.more.pack(fill=tk.Y)
         # ------------------------------
 

@@ -11,6 +11,7 @@ from core.settings.editor import SettingsEditor
 class App(tk.Tk):
     def __init__(self, dir, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.base = self
 
         # TODO handling resizing, positioning, close min max buttons
         #self.overrideredirect(True)

@@ -7,10 +7,7 @@ from ..view import View
 class PanelView(View):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(background="#f8f8f8")
+        self.config(**self.base.theme.views.panel)
 
         self.__buttons__ = ()
 

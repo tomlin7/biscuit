@@ -1,10 +1,8 @@
 import tkinter as tk
 
-from .findbox import FindBox
-from .replacebox import ReplaceBox
 from .results import FindResults
 
-from core.components.utils import IconButton
+from core.components.utils import IconButton, Frame, Toplevel
 
 
 class Toggle(IconButton):
@@ -19,15 +17,13 @@ class Toggle(IconButton):
         self.master.toggle_replace(self.state)
 
 
-class FindReplace(tk.Toplevel):
+class FindReplace(Toplevel):
     def __init__(self, base, *args, **kwargs):
         super().__init__(base, *args, **kwargs)
-        self.base = base
-        
         self.offset = 10
         self.active = False
         self.overrideredirect(True)
-        self.config(bg="#454545")
+        self.config(bg=self.base.theme.border)
         self.withdraw()
         
         self.grid_rowconfigure(0, weight=1)
@@ -36,8 +32,8 @@ class FindReplace(tk.Toplevel):
         toggle = Toggle(self)
         toggle.grid(row=0, column=0, sticky=tk.NS, padx=(2, 0))
 
-        container = tk.Frame(self)
-        container.config(bg="#252526")
+        container = Frame(self)
+        container.config(**self.base.theme.editors)
         container.replace_enabled = False
         container.grid_columnconfigure(0, weight=1)
         container.grid(row=0, column=1, sticky=tk.NSEW)
@@ -46,10 +42,10 @@ class FindReplace(tk.Toplevel):
         # self.results_count = FindResults(self)
         # self.replace_entry = ReplaceBox(self, width=20)
 
-        # self.replace_btn_holder = tk.Frame(self, bg="#252526", pady=2)
+        # self.replace_btn_holder = Frame(self, bg="#252526", pady=2)
         # self.replace_button = IconButton(self.replace_btn_holder, "replace-all")
 
-        # self.find_btns_holder = tk.Frame(self, bg="#252526", pady=6)
+        # self.find_btns_holder = Frame(self, bg="#252526", pady=6)
         # self.selection_button = IconButton(self.find_btns_holder, 'list-selection')
         # self.close_button = IconButton(self.find_btns_holder, 'close')
         

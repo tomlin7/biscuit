@@ -1,14 +1,13 @@
 import tkinter as tk
 
+from .menubutton import Menubutton
 
-class Button(tk.Menubutton):
+
+class Button(Menubutton):
     """
     A Flat style button 
     """
     def __init__(self, master, text, command=lambda _: None, *args, **kwargs):
         super().__init__(master, text=text, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg="#dc8c34", fg="white", activebackground="#ecb464", activeforeground="white", pady=5)
+        self.config(pady=5, **self.base.theme.utils.button)
         self.bind('<Button-1>', command)

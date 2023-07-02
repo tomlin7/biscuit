@@ -4,9 +4,10 @@ from tkinter.constants import *
 from .menubar import Menubar
 from .base import BaseFrame
 from .statusbar import Statusbar
+from core.components.utils import Frame
 
 
-class Root(tk.Frame):
+class Root(Frame):
     """
     Root frame holds Menubar, BaseFrame, and Statusbar
     .
@@ -18,8 +19,7 @@ class Root(tk.Frame):
     """
     def __init__(self, base, *args, **kwargs):
         super().__init__(base, *args, **kwargs)
-        self.base = base
-        self.config(bg="#dfdfdf")
+        self.config(bg=self.base.theme.border)
 
         self.menubar = Menubar(self)
         self.baseframe = BaseFrame(self)

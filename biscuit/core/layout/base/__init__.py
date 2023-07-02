@@ -4,8 +4,10 @@ from tkinter.constants import *
 from .content import ContentPane
 from .sidebar import Sidebar
 
+from core.components.utils import Frame
 
-class BaseFrame(tk.Frame):
+
+class BaseFrame(Frame):
     """
     Main frame holds Sidebar and ContentPane
     .
@@ -19,10 +21,7 @@ class BaseFrame(tk.Frame):
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-        
-        self.config(bg="#dfdfdf")
+        self.config(bg=self.base.theme.border)
 
         self.sidebar = Sidebar(self)
         self.contentpane = ContentPane(master=self)

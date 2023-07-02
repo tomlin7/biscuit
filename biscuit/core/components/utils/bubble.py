@@ -1,16 +1,20 @@
 import tkinter as tk
 
+from .toplevel import Toplevel
+from .label import Label
 
-class Bubble(tk.Toplevel):
+
+class Bubble(Toplevel):
     """
      +===============+
     ||      Text     ||
      +===============+
     """
-    def __init__(self, master, text, border='#dddbdd', bg="#f8f8f8", bd=1, *args, **kw):
-        super().__init__(master, bg=border, *args, **kw)
+    def __init__(self, master, text, bd=1, *args, **kw):
+        super().__init__(master, *args, **kw)
         self.overrideredirect(True)
-        tk.Label(self, text=text, bg=bg, padx=5, pady=5).pack(padx=bd, pady=bd)
+        self.config(bg=self.base.theme.border)
+        Label(self, text=text, padx=5, pady=5, **self.base.theme.utils.bubble).pack(padx=bd, pady=bd)
         self.withdraw()
 
     def show(self, *_):

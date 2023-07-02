@@ -1,13 +1,14 @@
 #TODO add actual functions to actionset
 import tkinter as tk
 
-from .utils.button import SButton
+from .utils.button import SButton, TerminalButton
 from .utils.clock import SClock
 
 from core.components import ActionSet
+from core.components.utils import Frame
 
 
-class Statusbar(tk.Frame):
+class Statusbar(Frame):
     """
     Status bar holds various widgets that are used to display information about the current file
     and the current state of the editor.
@@ -20,13 +21,10 @@ class Statusbar(tk.Frame):
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg="#f8f8f8")
+        self.config(bg=self.base.theme.layout.statusbar.background)
 
         # TODO add a button for toggling panel, left side, "terminal-bash", color
-        self.branch = SButton(self, icon="terminal-bash", function=self.toggle_terminal, bg="#dc8c34", hbg="#ecb464", fg="white", hfg="white", padx=10)
+        self.branch = TerminalButton(self, icon="terminal-bash", function=self.toggle_terminal, padx=10)
         self.branch.pack(side=tk.LEFT)
 
         # git info
@@ -87,14 +85,13 @@ class Statusbar(tk.Frame):
         self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('syntax:'))
         self.file_type.set_pack_data(side=tk.RIGHT)
 
+        self.notif = SButton(self, icon="bell", function=self.base.notifications.show)
+        self.notif.pack(side=tk.RIGHT, padx=(0, 10))
+
         self.clock = SClock(self, text="H:M:S")
-        self.clock.set_pack_data(side=tk.RIGHT, padx=(0, 10))
+        self.clock.set_pack_data(side=tk.RIGHT)
         self.clock.show()
 
-        self.notif = SButton(self, icon="bell", function=self.base.notifications.show)
-        self.notif.pack(side=tk.RIGHT)
-
-    
     def toggle_terminal(self):
         self.base.toggle_terminal()
 

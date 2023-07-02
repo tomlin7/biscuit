@@ -4,14 +4,14 @@ from itertools import chain
 from .kinds import Kinds
 from .item import AutoCompleteItem
 
+from core.components.utils import Toplevel
 
-class AutoComplete(tk.Toplevel):
+
+class AutoComplete(Toplevel):
     def __init__(self, master, items=None, active=False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-
         self.autocomplete_kinds = Kinds(self)
-        self.config(bg="#d4d4d4", padx=1, pady=1)
+        self.config(padx=1, pady=1, bg=self.base.theme.border)
         
         self.active = active
         if not self.active:
@@ -80,8 +80,8 @@ class AutoComplete(tk.Toplevel):
             if word.get_text() not in self.master.words and word.get_kind() == "word":
                 self.remove_item(word)
 
-    def add_item(self, left, kind=None):
-        new_item = AutoCompleteItem(self, left, kind=kind)
+    def add_item(self, text, kind=None):
+        new_item = AutoCompleteItem(self, text, kind=kind)
         new_item.grid(row=self.row, sticky=tk.EW)
         
         self.menu_items.append(new_item)

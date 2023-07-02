@@ -2,8 +2,10 @@ import tkinter as tk
 
 from .item import MenubarItem
 
+from core.components.utils import Frame
 
-class Menubar(tk.Frame):
+
+class Menubar(Frame):
     """
     Root frame holds Menubar, BaseFrame, and Statusbar
     .
@@ -15,12 +17,9 @@ class Menubar(tk.Frame):
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
         self.menus = []
 
-        self.config(bg="#f8f8f8")
+        self.config(bg=self.base.theme.layout.menubar.background)
         self.events = self.base.events
         self.add_menus()
         

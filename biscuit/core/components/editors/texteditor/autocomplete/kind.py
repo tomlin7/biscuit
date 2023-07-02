@@ -5,6 +5,8 @@ class Kind(tk.Label):
     def __init__(self, master, kinds, kind="text", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.base = master.base
+        
         self.kinds = kinds
         self.kind = kind
 
@@ -14,7 +16,7 @@ class Kind(tk.Label):
         self.config_image()
 
     def config_appearance(self):
-        self.config(bg="#f8f8f8")
+        self.config(**self.base.theme.editors.autocomplete)
     
     def config_image(self):
         match self.kind:

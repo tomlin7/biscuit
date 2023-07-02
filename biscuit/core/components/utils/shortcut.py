@@ -1,15 +1,12 @@
 import tkinter as tk
 
+from .frame import Frame
 
-class Shortcut(tk.Frame):
-    def __init__(self, master, shortcuts, sc_bg="#f3f3f3", sc_fg="#767676", *args, **kwargs):
+
+class Shortcut(Frame):
+    def __init__(self, master, shortcuts, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.shortcuts = shortcuts
-        self.bg = master.bg
-        
-        self.sc_bg = sc_bg
-        self.sc_fg = sc_fg
-        
         self.add_shortcuts()
 
     def add_shortcuts(self):
@@ -19,9 +16,9 @@ class Shortcut(tk.Frame):
         self.add_shortcut(self.shortcuts[-1])
 
     def add_separator(self):
-        tk.Label(self, text="+", bg=self.bg).pack(padx=2, side=tk.LEFT)
+        tk.Label(self, text="+", **self.base.theme.editors.labels).pack(padx=2, side=tk.LEFT)
 
     def add_shortcut(self, shortcut):
         tk.Label(
-            self, text=shortcut, bg=self.sc_bg, fg=self.sc_fg, 
+            self, text=shortcut, bg=self.base.theme.border, fg=self.base.theme.biscuit_dark, 
             font=("Consolas", 8)).pack(padx=2, side=tk.LEFT)

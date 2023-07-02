@@ -1,9 +1,9 @@
 import tkinter as tk
 
 
-class Canvas(tk.Canvas):
+class Text(tk.Text):
     """
-    normal canvas with reference to base
+    normal text with reference to base
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

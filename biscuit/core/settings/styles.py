@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .res import Resources
 
 class Style(ttk.Style):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, theme, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.base = master.base
+        self.theme = theme
 
         self.gen_fileicons()
         self.config_treeview()
@@ -30,7 +31,6 @@ class Style(ttk.Style):
 
         self.configure("TreeScrollbar", gripcount=0, background="#bababa", bordercolor='#f8f8f8', troughcolor='#f8f8f8', lightcolor='#f8f8f8', darkcolor='#f8f8f8', arrowsize=14)
         self.map("TreeScrollbar", background=[('pressed', '#616161'), ('!disabled', '#bababa')])
-        self.map('Treeview', background=[('selected', '#dc8c34')])
 
     def config_treeview(self):
         ## TREENODE CHEVRONS -----
@@ -55,7 +55,9 @@ class Style(ttk.Style):
             ('user1', '!user2', self.img_tree_open), ('user2', self.img_tree_empty), 
             sticky='w', width=15)
 
-        self.configure("Treeview", foreground="#424242", background="#f8f8f8", font=("Segoe UI", 10), rowheight=23)
+        self.configure("Treeview", font=("Segoe UI", 10), rowheight=23, **self.theme.utils.tree.item)  
+        self.map("Treeview", background=[('selected', self.theme.utils.tree.item.selectedbackground)])
+
         self.layout('Treeview', [('Treeview.treearea', {'sticky': 'nswe'})])
         self.layout('Treeview.Item', [
             ('Treeitem.padding', {
@@ -75,14 +77,13 @@ class Style(ttk.Style):
         ])
     
     def gen_fileicons(self):
-        # self.file_icn = tk.PhotoImage("document", data="""
-        # iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADlSURBVDiNpZGxTgJBFEXPW9aGCRTYWht+wyVEEuq1md7Exm/A2NjxFUvBD1CQ7JZWlOhXQCNsoYnPajZk3Zks4VaTmfvOO8nAhRF3SJfa2X2XLwi39ZIi74XtzoOA0eIwUZVVQ+cDuAHmuTWz+mNUbdGo57HcKiTAc5KVb15AKIU1G4Ux6GMd0grgICIyBX26yw737j5uMZsm2VEBVBUAIeqfbeDLP4PcGmkqujgbLyDJjsuLDAJJWwFyax6ainV1L8BX9KX6BZHfr7ZDp93KYBCb9f6nfFUYhoZV+by+MutzLIP5A16TRi/mS3m5AAAAAElFTkSuQmCC
-        # """)
-        # self.file_icn = tk.PhotoImage("document", data="""
-        # iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADlSURBVDiNpZGxTgJBFEXPW9aGCRTYWht+wyVEEuq1md7Exm/A2NjxFUvBD1CQ7JZWlOhXQCNsoYnPajZk3Zks4VaTmfvOO8nAhRF3SJfa2X2XLwi39ZIi74XtzoOA0eIwUZVVQ+cDuAHmuTWz+mNUbdGo57HcKiTAc5KVb15AKIU1G4Ux6GMd0grgICIyBX26yw737j5uMZsm2VEBVBUAIeqfbeDLP4PcGmkqujgbLyDJjsuLDAJJWwFyax6ainV1L8BX9KX6BZHfr7ZDp93KYBCb9f6nfFUYhoZV+by+MutzLIP5A16TRi/mS3m5AAAAAElFTkSuQmCC
-        # """)
         self.document_icn = tk.PhotoImage("document", data="""
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADlSURBVDiNpZGxTgJBFEXPW9aGCRTYWht+wyVEEuq1md7Exm/A2NjxFUvBD1CQ7JZWlOhXQCNsoYnPajZk3Zks4VaTmfvOO8nAhRF3SJfa2X2XLwi39ZIi74XtzoOA0eIwUZVVQ+cDuAHmuTWz+mNUbdGo57HcKiTAc5KVb15AKIU1G4Ux6GMd0grgICIyBX26yw737j5uMZsm2VEBVBUAIeqfbeDLP4PcGmkqujgbLyDJjsuLDAJJWwFyax6ainV1L8BX9KX6BZHfr7ZDp93KYBCb9f6nfFUYhoZV+by+MutzLIP5A16TRi/mS3m5AAAAAElFTkSuQmCC
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQA
+        AABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADlSURBVDiNpZGxTgJBFEXPW9aGCRTYWht+wyVEEuq1md
+        7Exm/A2NjxFUvBD1CQ7JZWlOhXQCNsoYnPajZk3Zks4VaTmfvOO8nAhRF3SJfa2X2XLwi39ZIi74XtzoOA0eIwUZVVQ+cDu
+        AHmuTWz+mNUbdGo57HcKiTAc5KVb15AKIU1G4Ux6GMd0grgICIyBX26yw737j5uMZsm2VEBVBUAIeqfbeDLP4PcGmkqujgb
+        LyDJjsuLDAJJWwFyax6ainV1L8BX9KX6BZHfr7ZDp93KYBCb9f6nfFUYhoZV+by+MutzLIP5A16TRi/mS3m5AAAAAElFTkS
+        uQmCC
         """)
 
         self.folder_icn = tk.PhotoImage("foldericon", data="""

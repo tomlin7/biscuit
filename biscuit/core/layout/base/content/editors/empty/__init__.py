@@ -1,24 +1,21 @@
 import tkinter as tk
 
 from .shortcuts import Shortcuts
+from core.components.utils import Frame
 
 
-class Empty(tk.Frame):
+class Empty(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
-
-        self.bg = "#FFFFFF"
-        self.fg = "#787878"
-        self.config(bg=self.bg, bd=0, relief=tk.FLAT)
+        self.config(bd=0, relief=tk.FLAT, **self.base.theme.editors)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.logo = tk.Label(self, image=self.base.settings.res.logo, bg=self.bg)
+        self.logo = tk.Label(self, image=self.base.settings.res.logo, **self.base.theme.editors.labels)
         self.logo.grid(row=0, column=0)
 
-        self.shortcuts = Shortcuts(self, bg=self.bg)
+        self.shortcuts = Shortcuts(self, **self.base.theme.editors)
         self.shortcuts.grid(row=1, column=0, pady=(0, 40))
 
         self.shortcuts.add_shortcut("Show all commands", ["Ctrl", "Shift", "p"])

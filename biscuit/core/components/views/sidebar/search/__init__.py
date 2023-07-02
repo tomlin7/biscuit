@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from ....utils import ButtonsEntry, IconButton
-from ..sidebarview import SidebarView
 from .results import Results
+from ..sidebarview import SidebarView
+
+from core.components.utils import ButtonsEntry, IconButton, Frame
 
 
 class Search(SidebarView):
@@ -12,8 +13,7 @@ class Search(SidebarView):
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'search'
 
-        self.container = tk.Frame(self, bg='#f8f8f8')
-        self.container.base = self.base
+        self.container = Frame(self, **self.base.theme.views.sidebar)
         self.container.pack(fill=BOTH, expand=True, padx=10, pady=5)
 
         self.searchterm = tk.StringVar(self)
@@ -25,7 +25,7 @@ class Search(SidebarView):
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
         IconButton(self.container, 'replace-all', self.replace).pack(anchor=N)
 
-        self.results = Results(self, bg='#f8f8f8')
+        self.results = Results(self, **self.base.theme.views.sidebar.item)
         self.results.pack(fill=BOTH, expand=True)
 
     def replace(self):

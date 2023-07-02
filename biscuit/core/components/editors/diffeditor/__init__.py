@@ -8,8 +8,6 @@ from ..editor import BaseEditor
 class DiffEditor(BaseEditor):
     def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
-        self.master = master
         self.path = path
 
         self.editable = True

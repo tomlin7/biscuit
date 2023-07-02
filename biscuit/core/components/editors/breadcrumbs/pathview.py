@@ -1,17 +1,16 @@
-import tkinter as tk
-from ...views.sidebar.explorer import DirectoryTree
+from core.components.views.sidebar.explorer import DirectoryTree
+from core.components.utils import Toplevel
 
-class PathView(tk.Toplevel):
+
+class PathView(Toplevel):
     def __init__(self, master, width=80, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
         self.width = width
         
         self.tree = DirectoryTree(self, width=width, observe_changes=False, itembar=False)
         self.tree.pack()
 
-        self.config(pady=1, padx=1, bg='#e8e8e8')
+        self.config(pady=1, padx=1, bg=self.base.theme.border)
         self.overrideredirect(True)
         self.withdraw()
 

@@ -1,15 +1,12 @@
 import tkinter as tk
 
-from ...utils import IconButton
+from core.components.utils import IconButton, Frame
 
 
-class ItemBar(tk.Frame):
+class ItemBar(Frame):
     def __init__(self, master, title=None, buttons=(), *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
-        self.config(bg='#f8f8f8')
+        self.config(**self.base.theme.views.sidebar.itembar)
 
         self.grid_columnconfigure(1, weight=1)
 
@@ -20,12 +17,11 @@ class ItemBar(tk.Frame):
         self.toggle = IconButton(self, icon='chevron-down', event=self.toggle_content, width=1)
         self.toggle.grid(row=0, column=0)
 
-        self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title, bg='#f8f8f8')
+        self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title,  **self.base.theme.views.sidebar.itembar.title)
         self.label_title.grid(row=0, column=1, sticky=tk.EW)
 
         self.buttoncolumn = 0
-        self.buttonframe = tk.Frame(self, bg='#f8f8f8')
-        self.buttonframe.base = self.base
+        self.buttonframe = Frame(self,  **self.base.theme.views.sidebar.itembar)
         self.buttonframe.grid(row=0, column=2, sticky=tk.E)
 
         self.add_buttons(buttons)

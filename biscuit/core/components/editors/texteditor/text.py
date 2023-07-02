@@ -5,12 +5,12 @@ from .syntax import Syntax
 from .highlighter import Highlighter
 from .autocomplete import AutoComplete
 
-class Text(tk.Text):
+from core.components.utils import Text
+
+
+class Text(Text):
     def __init__(self, master, path=None, exists=True, minimalist=False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
-        self.master = master
-        
         self.path = path
         self.data = None
         self.exists = exists
@@ -24,7 +24,7 @@ class Text(tk.Text):
         self.auto_completion = AutoComplete(
             self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
 
-        self.configure(wrap=tk.NONE, relief=tk.FLAT, bg="white", fg="#3b3b3b")
+        self.configure(wrap=tk.NONE, relief=tk.FLAT, **self.base.theme.editors.text)
         self.tag_config(tk.SEL, background="#b98852")
         
         self.focus_set()

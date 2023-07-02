@@ -13,9 +13,6 @@ HEIGHT = 15 * SIDE
 class Tetris(BaseGame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
         self.config(bg='#F4EEE0')
         
         self.path = "games/tetris"

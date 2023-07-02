@@ -17,9 +17,6 @@ class Scrollbar(ttk.Scrollbar):
 class ScrollableFrame(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
         self.scrollbar = Scrollbar(self)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 

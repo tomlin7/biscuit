@@ -1,16 +1,15 @@
 import tkinter as tk
 
+from core.components.utils import Menubutton
 
-class MenuItem(tk.Menubutton):
+
+class MenuItem(Menubutton):
     def __init__(self, master, text, command=lambda *_:..., *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.base = master.base
-        self.master = master
         self.command = command
         
         self.config(text=text, anchor=tk.W, font=("Segoe UI", 10),
-            padx=20, bg="#ffffff", fg="#424242", pady=2,
-            activebackground="#e8e8e8", activeforeground="black"
+            padx=20, pady=2, **self.base.theme.menu.item
         )
         self.bind("<Button-1>", self.onclick)
     

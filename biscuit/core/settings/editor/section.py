@@ -2,12 +2,12 @@ import tkinter as tk
 
 from .items import DropdownItem, StringItem, IntegerItem, CheckboxItem
 
+from core.components.utils import Frame
 
-class Section(tk.Frame):
+
+class Section(Frame):
     def __init__(self, master, title="", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
         self.config(padx=10, pady=10)
 
         self.items = []

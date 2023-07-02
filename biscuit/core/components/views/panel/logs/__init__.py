@@ -42,16 +42,13 @@ def caller_name(skip=2):
 class Logs(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-
         self.__buttons__ = (('clear-all',),('unlock',),('go-to-file',))
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
         self.text = tk.Text(self, relief=FLAT, padx=10, pady=10, 
-                            font=("Consolas", 11), fg='#424242', bg='#f8f8f8')
+                            font=("Consolas", 11), **self.base.theme.views.panel.logs)
         self.text.grid(row=0, column=0, sticky=NSEW)
 
         self.scrollbar = Scrollbar(self)
@@ -62,12 +59,12 @@ class Logs(PanelView):
 
         fontbold = ("Consolas", 11, "bold") 
 
-        self.text.tag_config('time', foreground="#008000")
-        self.text.tag_config('caller', foreground="#0000ff")
+        self.text.tag_config('time', foreground=self.base.theme.views.panel.logs.time)
+        self.text.tag_config('caller', foreground=self.base.theme.views.panel.logs.caller)
 
-        self.text.tag_config('info', foreground="#098677")
-        self.text.tag_config('warning', foreground="#a31515")
-        self.text.tag_config('error', foreground="#ab1515", font=fontbold)
+        self.text.tag_config('info', foreground=self.base.theme.views.panel.logs.info)
+        self.text.tag_config('warning', foreground=self.base.theme.views.panel.logs.warning)
+        self.text.tag_config('error', foreground=self.base.theme.views.panel.logs.error, font=fontbold)
 
     def write(self, *args):
         self.text.config(state=NORMAL)
