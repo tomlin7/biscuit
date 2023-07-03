@@ -24,11 +24,10 @@ class Notifications(Toplevel):
         self.label = Label(self, text="NO NEW NOTIFICATIONS", anchor=tk.W, padx=10, **self.base.theme.notifications.text)
         self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH)
 
-        close_button = IconButton(self, "chevron-down")
+        close_button = IconButton(self, "chevron-down", self.hide)
         close_button.pack(side=tk.RIGHT, fill=tk.BOTH)
-        close_button.bind('<Button-1>', self.hide)
 
-        self.bind("<FocusOut>", self.hide)
+        self.base.bind("<Configure>", self._follow_root)
         self.withdraw()
     
     def info(self, text):
@@ -46,13 +45,15 @@ class Notifications(Toplevel):
         self.label.configure(text=text)
         self.show()
     
-    def show(self, *_):
-        #NOTE binding to <Map> and <Configure> should allow following the root when its moved
-        self.wm_deiconify()
+    def _follow_root(self, *_):
         self.update_idletasks()
-        x = self.master.winfo_x() + self.master.winfo_width() - self.winfo_width() - self.offset 
-        y = self.master.winfo_y() + self.master.winfo_height() - self.winfo_height() - self.offset 
+        x = self.base.winfo_x() + self.base.winfo_width() - self.winfo_width() - self.offset 
+        y = self.base.winfo_y() + self.base.winfo_height() - self.winfo_height() - self.offset 
         self.geometry(f"+{x}+{y}")
+    
+    def show(self, *_):
+        self._follow_root()
+        self.wm_deiconify()
     
     def hide(self, *_):
         self.withdraw()

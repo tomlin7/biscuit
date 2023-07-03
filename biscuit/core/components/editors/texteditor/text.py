@@ -37,6 +37,9 @@ class Text(Text):
     def config_tags(self):
         self.tag_config(tk.SEL, background="#dc8c34")
         self.tag_config("highlight", background="#dca66b")
+        
+        self.tag_config("found", background="green")
+        self.tag_config("foundcurrent", background="orange")
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
