@@ -1,17 +1,29 @@
 import queue
 import subprocess
+import platform
 from threading import Thread
 from tkinter.constants import *
 
 from ....utils import Scrollbar
 from ..panelview import PanelView
 from .text import TerminalText
+from .....utils.sysinfo import SysInfo
+
+
 
 
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.__buttons__ = (('add',),('trash',))
+        self.sysinf = SysInfo(master)
+        print(self.sysinf.os)
+        self.terminal_command=""
+        if self.sysinf.os == "Linux":
+            self.terminal_command = "/bin/bash"
+        elif self.sysinf.os == "windows":
+            self.terminal_command = "cmd"
+        print(f"terminal command:{self.terminal_command}")
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -29,7 +41,7 @@ class Terminal(PanelView):
         self.alive = True
 
         self.p = subprocess.Popen(
-            "cmd", stdout=subprocess.PIPE,
+            self.terminal_command, stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
         self.out_queue = queue.Queue()

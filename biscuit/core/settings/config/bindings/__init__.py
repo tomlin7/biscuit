@@ -23,4 +23,4 @@ class Bindings:
         self.quit = self.bindings['quit']
 
         self.commandpalette = self.bindings['commandpalette']
-        self.panel = "<Control-`>"
+        self.panel = "<Control-grave>"

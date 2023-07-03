@@ -12,7 +12,7 @@ class Notifications(Toplevel):
         super().__init__(base)
         self.config(bg=self.base.theme.border, padx=1, pady=1)
 
-        self.attributes("-toolwindow", True)
+        #self.attributes("-toolwindow", True)
         self.overrideredirect(True)
 
         self.offset = 10
