@@ -13,27 +13,24 @@ HEIGHT = 15 * SIDE
 class Tetris(BaseGame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
-        self.config(bg='#F4EEE0')
+        bg = self.base.theme.editors.background
+        self.config(bg=bg)
         
         self.path = "games/tetris"
-        self.diff = False
-        self.exists = False
         self.filename = "Tetris"
-        self.content = None
         self.loop = None
 
         self.status_var = tk.StringVar()
-        self.status_label = tk.Label(self, textvariable=self.status_var, font='Fixedsys 18', bg='#F4EEE0', fg='#B99B6B')
-        self.status_label.pack(side='top', pady=5)
+        self.status_label = tk.Label(self, textvariable=self.status_var, font='Fixedsys 18', fg=self.base.theme.biscuit, bg=bg)
+        self.status_label.pack(pady=5)
 
-        self.board = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg='#F1DFB4')
+        self.board = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg=bg)
         self.board.pack(side='left', padx=(40, 20), expand=True)
         
-        self.preview = tk.Canvas(self, width=5*SIDE, height=5*SIDE, bg='#F1DFB4')
+        self.preview = tk.Canvas(self, width=5*SIDE, height=5*SIDE, bg=bg)
         self.preview.pack(padx=(0, 40), expand=True, side=tk.TOP)
 
-        self.controls = tk.Text(self, relief=tk.FLAT, 
-            bg='#F4EEE0', insertbackground='#F4EEE0', fg='#F4EEE0')
+        self.controls = tk.Text(self, relief=tk.FLAT, insertbackground=bg, fg=bg, bg=bg)
         self.controls.pack(fill=tk.BOTH, side=tk.BOTTOM)
 
         self.controls.bind("<Key>", self.handle_events)
@@ -135,13 +132,13 @@ class Piece:
 
     def __init__(self, canvas):
         self.PIECES = [
-            ["#A9907E", (0, 0), (1, 0), (0, 1), (1, 1)],     # square
-            ["#698269", (0, 0), (1, 0), (2, 0), (3, 0)],  # line
-            ["#ABC4AA", (2, 0), (0, 1), (1, 1), (2, 1)],     # right el
-            ["#675D50", (0, 0), (0, 1), (1, 1), (2, 1)],       # left el
-            ["#609966", (0, 1), (1, 1), (1, 0), (2, 0)],      # right wedge
-            ["#B99B6B", (0, 0), (1, 0), (1, 1), (2, 1)],        # left wedge
-            ["#AA5656", (1, 0), (0, 1), (1, 1), (2, 1)],     # symmetrical wedge
+            ["#A9907E", (0, 0), (1, 0), (0, 1), (1, 1)],    # square
+            ["#698269", (0, 0), (1, 0), (2, 0), (3, 0)],    # line
+            ["#ABC4AA", (2, 0), (0, 1), (1, 1), (2, 1)],    # right el
+            ["#675D50", (0, 0), (0, 1), (1, 1), (2, 1)],    # left el
+            ["#609966", (0, 1), (1, 1), (1, 0), (2, 0)],    # right wedge
+            ["#B99B6B", (0, 0), (1, 0), (1, 1), (2, 1)],    # left wedge
+            ["#AA5656", (1, 0), (0, 1), (1, 1), (2, 1)],    # symmetrical wedge
         ]
         random.shuffle(self.PIECES)
 

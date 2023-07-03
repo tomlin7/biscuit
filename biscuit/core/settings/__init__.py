@@ -18,7 +18,8 @@ class Settings:
 
         self.commands = [
             ("Open settings", self.base.open_settings),
-            ("Play tetris", self.base.open_tetris)
+            ("Play tetris", self.base.open_tetris),
+            ("Play game of life", self.base.open_gameoflife)
         ]
         
         self.setup_properties()

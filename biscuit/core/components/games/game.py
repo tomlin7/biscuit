@@ -16,8 +16,8 @@ class BaseGame(Frame):
         self.showpath = False
         self.content = None
         self.diff = False
-        self.editable = False
-
+        self.editable = False        
+        
         self.__buttons__ = ()
 
     def reload(self, *_):
