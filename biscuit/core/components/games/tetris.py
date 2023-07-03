@@ -6,8 +6,8 @@ from collections import Counter
 from .game import BaseGame
 
 SIDE = 25
-WIDTH = 10 * SIDE
-HEIGHT = 15 * SIDE
+WIDTH = 20 * SIDE
+HEIGHT = 20 * SIDE
 
 
 class Tetris(BaseGame):

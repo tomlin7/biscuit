@@ -2,19 +2,7 @@ import tkinter as tk
 
 from .results import FindResults
 
-from core.components.utils import IconButton, Frame, Toplevel
-
-
-class Toggle(IconButton):
-    def __init__(self, master, *args, **kwargs):
-        super().__init__(master, icon='chevron-right', icon2='chevron-down', *args, **kwargs)
-
-    def v_onclick(self):
-        if self.state:
-            self.config(pady=30, padx=2)
-        else:
-            self.config(pady=10, padx=5)
-        self.master.toggle_replace(self.state)
+from core.components.utils import IconButton, Frame, Toplevel, ButtonsEntry
 
 
 class FindReplace(Toplevel):
@@ -23,56 +11,42 @@ class FindReplace(Toplevel):
         self.offset = 10
         self.active = False
         self.overrideredirect(True)
-        self.config(bg=self.base.theme.border)
+        self.config(padx=1, pady=1, bg=self.base.theme.border)
         self.withdraw()
+
+        self.container = Frame(self, padx=5, pady=5, **self.base.theme.findreplace)
+        self.container.pack(fill=tk.BOTH)
+        self.container.grid_columnconfigure(0, weight=1)
+
+        # find
+        self.findbox = ButtonsEntry(self.container, hint="Find", buttons=(('case-sensitive',), ('whole-word',), ('regex',)))
+        self.findbox.grid(row=0, column=0, pady=2)
+
+        self.results_count = FindResults(self.container)
+        self.results_count.grid(row=0, column=1, sticky=tk.NSEW, padx=5, pady=2)
         
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        buttons = Frame(self.container, **self.base.theme.findreplace)
+        buttons.grid(row=0, column=2, sticky=tk.NSEW, pady=2)
+        IconButton(buttons, 'arrow-up').pack(side=tk.LEFT)
+        IconButton(buttons, 'arrow-down').pack(side=tk.LEFT)
+        IconButton(buttons, 'list-selection').pack(side=tk.LEFT)
+        IconButton(buttons, 'close').pack(side=tk.LEFT)
 
-        toggle = Toggle(self)
-        toggle.grid(row=0, column=0, sticky=tk.NS, padx=(2, 0))
+        # replace
+        self.replacebox = ButtonsEntry(self.container, hint="Replace", buttons=(('preserve-case',),))
+        self.replacebox.grid(row=1, column=0, sticky=tk.NSEW, pady=2)
 
-        container = Frame(self)
-        container.config(**self.base.theme.editors)
-        container.replace_enabled = False
-        container.grid_columnconfigure(0, weight=1)
-        container.grid(row=0, column=1, sticky=tk.NSEW)
+        buttons = Frame(self.container, **self.base.theme.findreplace)
+        buttons.grid(row=1, column=1, sticky=tk.NSEW, padx=5, pady=2)
+        IconButton(buttons, "replace-all").pack(side=tk.LEFT)
 
-        # self.find_entry = FindBox(self, width=20)
-        # self.results_count = FindResults(self)
-        # self.replace_entry = ReplaceBox(self, width=20)
-
-        # self.replace_btn_holder = Frame(self, bg="#252526", pady=2)
-        # self.replace_button = IconButton(self.replace_btn_holder, "replace-all")
-
-        # self.find_btns_holder = Frame(self, bg="#252526", pady=6)
-        # self.selection_button = IconButton(self.find_btns_holder, 'list-selection')
-        # self.close_button = IconButton(self.find_btns_holder, 'close')
-        
-        # self.find_entry.grid(row=0, column=0, sticky=tk.NSEW, pady=5)
-        # self.results_count.grid(row=0, column=1, sticky=tk.NSEW, pady=5)
-        # self.replace_button.grid(row=0, column=0, sticky=tk.NS, padx=5)
-        # self.find_btns_holder.grid(row=0, column=2, sticky=tk.NSEW, padx=(10, 5))
-        # self.selection_button.grid(row=0, column=0, sticky=tk.NSEW, pady=3)
-        # self.close_button.grid(row=0, column=1, sticky=tk.NSEW, pady=3)
-
-        # self.config_bindings()
+        self.config_bindings()
 
     def config_bindings(self, *args):
-        self.find_entry.entry.bind("<Configure>", self.do_find)
+        self.findbox.entry.bind("<Configure>", self.do_find)
     
     def get_term(self):
-        return self.find_entry.get()
-
-    def toggle_replace(self, state):
-        if state:
-            self.replace_enabled = False
-            self.replace_entry.grid_remove()
-            self.replace_btn_holder.grid_remove()
-        else:
-            self.replace_enabled = True
-            self.replace_entry.grid(row=1, column=0, sticky=tk.NSEW, pady=(0, 5))
-            self.replace_btn_holder.grid(row=1, column=1, sticky=tk.NSEW, pady=(0, 5))
+        return self.findbox.get()
 
     def do_find(self, *args):
         print(self.get_term())

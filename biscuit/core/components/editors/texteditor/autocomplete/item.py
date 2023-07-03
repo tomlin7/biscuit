@@ -6,7 +6,7 @@ from core.components.utils import Frame
 class AutoCompleteItem(Frame):
     def __init__(self, master, text, kind=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(width=400, **self.base.theme.editors.autocomplete.item)
+        self.config(width=400, **self.base.theme.editors.autocomplete)
         
         self.text = text
         self.kind = kind

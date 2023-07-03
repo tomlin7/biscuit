@@ -180,6 +180,8 @@ class Notifications(FrameThemeObject):
 class Editors(FrameThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        theme = self.master
+
         self.biscuit_labels = FrameThemeObject(self) # welcome page
         self.button = HighlightableThemeObject(self)
         self.section = HighlightableThemeObject(self) # settings
@@ -195,6 +197,9 @@ class Editors(FrameThemeObject):
         self.linenumbers.number = ThemeObject(self.linenumbers)
         self.linenumbers.number.foreground = "#6e7681"
         self.linenumbers.number.highlightforeground = "#171184"
+
+        self.autocomplete = FrameThemeObject(self)
+        self.autocomplete.item = ThemeObject(self.autocomplete)
 
 class Utils(ThemeObject):
     def __init__(self, *args, **kwargs):
@@ -246,4 +251,7 @@ class Theme:
         self.menu = Menu(self, *secondary)
         self.editors = Editors(self, *secondary)
         self.palette = Palette(self, *secondary)
+        self.findreplace = FrameThemeObject(self, *primary)
         self.notifications = Notifications(self, *secondary)
+
+        #TODO syntax highlighting definitions

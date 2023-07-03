@@ -11,6 +11,7 @@ class ButtonsEntry(Frame):
         super().__init__(master, *args, **kwargs)
         self.config(padx=1, pady=1, bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
         self.entry = HintedEntry(self, relief=tk.FLAT, bd=5, hint=hint, **self.base.theme.utils.buttonsentry)
         self.entry.grid(row=0, column=0, sticky=tk.NSEW)
@@ -27,3 +28,6 @@ class ButtonsEntry(Frame):
     def add_buttons(self, buttons):
         for btn in buttons:
             self.add_button(*btn)
+    
+    def get(self, *args):
+        return self.entry.get(*args)
