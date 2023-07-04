@@ -217,6 +217,7 @@ class Utils(ThemeObject):
         self.buttonsentry = ThemeObject(self, theme.secondary_background, theme.secondary_foreground, self.highlightbackground)
         self.buttonsentry.button = HighlightableThemeObject(self.buttonsentry)
         self.bubble = ThemeObject(self)
+        self.scrollbar = HighlightableThemeObject(self)
 
 class Theme:
     """

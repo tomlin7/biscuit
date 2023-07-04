@@ -2,6 +2,7 @@ import tkinter as tk
 from core.components.utils import Frame
 
 
+#TODO update minimap when scrollbar is used
 class Minimap(Frame):
     def __init__(self, master, textw, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

@@ -37,11 +37,6 @@ class App(tk.Tk):
         self.palette.register_actionset(self.settings.actionset)
         self.setup_extensions()
     
-    def setup_extensions(self):
-        self.api = ExtensionsAPI(self)
-        self.extensionsmanager = ExtensionManager(self)
-        self.extensionsmanager.start_server()
-
     def setup_tk(self):
         self.geometry("1100x750")
         self.minsize(800, 600)
@@ -82,6 +77,11 @@ class App(tk.Tk):
         self.source_control = self.root.baseframe.sidebar.source_control
         self.logger = self.panel.logger
     
+    def setup_extensions(self):
+        self.api = ExtensionsAPI(self)
+        self.extensionsmanager = ExtensionManager(self)
+        self.extensionsmanager.start_server()
+
     def initialize_editor(self):
         self.palette.generate_help_actionset()
         self.focus_set()
