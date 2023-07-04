@@ -21,7 +21,8 @@ class Settings:
             #TODO games actionset to be added
             ("Play tetris", self.base.open_tetris),
             ("Play game of life", self.base.open_gameoflife),
-            ("Play snake", self.base.open_snake)
+            ("Play pong", self.base.open_pong),
+            ("Play snake (WIP)", self.base.open_snake),
         ]
         
         self.setup_properties()

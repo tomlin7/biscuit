@@ -19,9 +19,6 @@ RAND_POS = WIDTH // DOT_SIZE
 class Snake(BaseGame):
     def __init__(self, master):
         super().__init__(master)
-        self.config(**self.base.theme.editors)
-        
-        self.path = "games/snake"
         self.filename = "snake"
 
         self.cv = Canvas(self, width=WIDTH*DOT_SIZE, height=HEIGHT*DOT_SIZE, borderwidth=0, highlightthickness=0, **self.base.theme.editors)
@@ -39,7 +36,7 @@ class Snake(BaseGame):
         
     def create_objects(self):
         for x, y in self.snake_pos:
-            self.cv.create_rectangle(x, y, x + DOT_SIZE, y + DOT_SIZE, fill="white", tag="snake")
+            self.cv.create_rectangle(x, y, x + DOT_SIZE, y + DOT_SIZE, fill=self.base.theme.biscuit_dark, tag="snake")
             
         self.cv.create_rectangle(*self.snake_pos[0], self.snake_pos[0][0] + DOT_SIZE, self.snake_pos[0][1] + DOT_SIZE, fill="red", outline="", tag="snake")
         self.food = self.cv.create_rectangle(*self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE, fill="green", outline="", tag="food")

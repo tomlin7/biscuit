@@ -15,9 +15,6 @@ INITIAL_ALIVE_PROBABILITY = 0.2
 class GameOfLife(BaseGame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
-        self.config(**self.base.theme.editors)
-
-        self.path = "games/gameoflife"
         self.filename = "gameoflife"
 
         self.start_stop_button = Button(self, text="Start", command=self.toggle_start_stop, padx=20, pady=20, font=("Fixedsys", 15))

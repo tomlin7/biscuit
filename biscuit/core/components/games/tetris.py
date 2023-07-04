@@ -17,9 +17,6 @@ class Tetris(BaseGame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
         bg = self.base.theme.editors.background
-        self.config(bg=bg)
-        
-        self.path = "games/tetris"
         self.filename = "Tetris"
         self.loop = None
 

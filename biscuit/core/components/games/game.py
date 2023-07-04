@@ -9,6 +9,7 @@ class BaseGame(Frame):
     """
     def __init__(self, master, path=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.config(**self.base.theme.editors)
         self.path = path
         self.filename = None
 

@@ -24,7 +24,6 @@ class App(tk.Tk):
     
     def run(self):
         self.mainloop()
-        self.running = False
         self.extensionsmanager.stop_server()
     
     def setup(self):
@@ -55,7 +54,6 @@ class App(tk.Tk):
         self.extensionsdir = os.path.join(self.appdir, "extensions")
 
     def setup_configs(self):
-        self.running = True
         self.git_found = False
         self.active_directory = None
         self.active_branch_name = None
@@ -132,6 +130,9 @@ class App(tk.Tk):
     
     def open_snake(self, *_):
         self.editorsmanager.add_editor(Snake(self.editorsmanager))
+    
+    def open_pong(self, *_):
+        self.editorsmanager.add_editor(Pong(self.editorsmanager))
 
     # ----------
     
