@@ -13,7 +13,8 @@
 Biscuit is not just your ordinary text editor—it's a cutting-edge powerhouse designed to revolutionize your coding experience. With its highly customizable and clutter-free user interface, Biscuit draws inspiration from the legendary <b>Visual Studio Code</b>, aiming to deliver a comparable level of capability and elegance. But here's the game-changer: Biscuit is built entirely with pure Python and the versatile Tkinter library.
 <h1></h1>
 <h3>
-    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/5c75d61d-4cb5-4013-b4a5-9ffa7a15b9fe />
+    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/0e596550-22fe-42bc-a4e7-7e028155387a />
+    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/ce31691d-a45d-442c-9f54-16cebe02ef7a />
 </h3>
 
 ## Running biscuit 💿
@@ -25,6 +26,10 @@ You need **python 3.10** or above.
 ```
 
 ## Screenshots ✨
+![python_s8THu31T0Q](https://github.com/billyeatcookies/Biscuit/assets/70792552/032fac52-3f2f-4b1e-8908-a7b7c42aee13)
+![python_k6yohhbuck](https://github.com/billyeatcookies/Biscuit/assets/70792552/e34ae3ca-7767-4210-a446-41a517af0e76)
+
+## Features
 - **Palette** which works based on various prompts used 
   (`Ctrl` + `shift` + `p` for command palette)
 
