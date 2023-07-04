@@ -25,7 +25,11 @@ class ExtensionManager:
 
     def run_extensions(self):
         for extension in self.extensions:
-            extension.run()
+            try:
+                extension.run()
+            except Exception as e:
+                self.base.logger.error(e)
+                self.base.notifications.error(f"Extension {extension} failed: see logs.")
     
     def start_server(self):
         self.base.logger.info(f"Extensions server started.")

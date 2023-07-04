@@ -5,4 +5,4 @@ class Extension:
         self.api = api
 
     def run(self):
-        ...
+        self.api.commands.register_command("Hello world", lambda: print("Hello world"))

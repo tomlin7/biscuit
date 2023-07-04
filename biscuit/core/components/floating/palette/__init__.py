@@ -59,9 +59,9 @@ class Palette(Toplevel):
     def generate_help_actionset(self):
         actionset = ActionSet("Help", "?", [("? Help", lambda e=None:print("Help e"))])
         for i in self.actionsets:
+            i = i() # get the actionset
             if i.prompt:
                 actionset.append((f"{i.prompt} {i.id}", lambda e=None:print(f"Help {i.id}")))
-        self.register_actionset(actionset)
 
     def add_item(self, text, command):
         new_item = MenuItem(self, text, command)
@@ -122,7 +122,7 @@ class Palette(Toplevel):
         try:
             self.shown_items[self.selected].select()
         except IndexError:
-            self.base.logger.error(f"item {self.selected} is doesnt exist")
+            self.base.logger.error(f"Command '{self.selected}' doesnt exist")
     
     def reset(self):
         self.search_bar.clear()

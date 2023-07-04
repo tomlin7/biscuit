@@ -34,7 +34,7 @@ class App(tk.Tk):
     def late_setup(self):
         self.binder.late_bind_all()
         self.setup_references()
-        self.palette.register_actionset(self.settings.actionset)
+        self.palette.register_actionset(lambda: self.settings.actionset)
         self.setup_extensions()
     
     def setup_tk(self):

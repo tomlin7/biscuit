@@ -46,6 +46,7 @@ class Searchbar(Frame):
 
         prompt_found = False
         for actionset in self.master.actionsets:
+            actionset = actionset()
             if term.startswith(actionset.prompt):
                 self.master.pick_actionset(actionset)
                 term = term[len(actionset.prompt):]

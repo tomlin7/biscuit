@@ -32,7 +32,7 @@ class Statusbar(Frame):
             "GIT", "branch:",
             [("main", lambda e=None: print("main", e)), ("rewrite", lambda e=None: print("rewrite", e))],
         )
-        self.base.palette.register_actionset(self.git_actionset)
+        self.base.palette.register_actionset(lambda: self.git_actionset)
         self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show_prompt('branch:'))
         self.branch.set_pack_data(side=tk.LEFT, padx=(2, 0))
 
@@ -41,7 +41,7 @@ class Statusbar(Frame):
             "GOTO", ":",
             [("goto line", lambda e=None: print("goto line", e))],
         )
-        self.base.palette.register_actionset(self.lc_actionset)
+        self.base.palette.register_actionset(lambda: self.lc_actionset)
         self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'))
         self.line_col_info.set_pack_data(side=tk.RIGHT)
 
@@ -51,7 +51,7 @@ class Statusbar(Frame):
             [("2", lambda e=None: print("indent 2", e)),
             ("4", lambda e=None: print("indent 2", e))],
         )
-        self.base.palette.register_actionset(self.indent_actionset)
+        self.base.palette.register_actionset(lambda: self.indent_actionset)
         self.indentation = SButton(self, text="Spaces: 4", function=lambda: self.base.palette.show_prompt('indent:'))
         self.indentation.set_pack_data(side=tk.RIGHT)
 
@@ -60,7 +60,7 @@ class Statusbar(Frame):
             "ENCODING", "encoding:",
             [("UTF-8", lambda e=None: print("encoding UTF-8", e))],
         )
-        self.base.palette.register_actionset(self.encoding_actionset)
+        self.base.palette.register_actionset(lambda: self.encoding_actionset)
         self.encoding = SButton(self, text="UTF-8", function=lambda: self.base.palette.show_prompt('encoding:'))
         self.encoding.set_pack_data(side=tk.RIGHT)
 
@@ -70,7 +70,7 @@ class Statusbar(Frame):
             [("LF", lambda e=None: print("eol lf", e)),
             ("CRLF", lambda e=None: print("eol crlf", e))],
         )
-        self.base.palette.register_actionset(self.eol_actionset)
+        self.base.palette.register_actionset(lambda: self.eol_actionset)
         self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'))
         self.eol.set_pack_data(side=tk.RIGHT)
 
@@ -81,7 +81,7 @@ class Statusbar(Frame):
             ("python", lambda e=None: print("filetype python", e)),
             ("c++", lambda e=None: print("filetype c++", e))],
         )
-        self.base.palette.register_actionset(self.filetype_actionset)
+        self.base.palette.register_actionset(lambda: self.filetype_actionset)
         self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('syntax:'))
         self.file_type.set_pack_data(side=tk.RIGHT)
 

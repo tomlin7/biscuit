@@ -1,4 +1,4 @@
 class Endpoint:
     """Base endpoint class"""
-    def __init__(self, master):
-        self.__base = master.base
+    def __init__(self, base):
+        self.__base = base
