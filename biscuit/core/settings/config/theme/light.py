@@ -1,3 +1,4 @@
+import sv_ttk
 from .theme import Theme
 
 
@@ -18,3 +19,4 @@ class Light(Theme):
 
     def __init__(self, *args, **kwds):
         super().__init__(*args, **kwds)
+        sv_ttk.use_light_theme()

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...utils import IconButton, Toplevel, Label
+from ...utils import IconButton, Toplevel, Label, Icon
 
 
 class Notifications(Toplevel):
@@ -11,12 +11,14 @@ class Notifications(Toplevel):
     def __init__(self, base):
         super().__init__(base)
         self.config(bg=self.base.theme.border, padx=1, pady=1)
+        self.active = False
+
         self.overrideredirect(True)
 
         self.offset = 10
         self.minsize(width=400, height=1)
 
-        self.icon = IconButton(self, 'info', padx=5)
+        self.icon = Icon(self, 'info', padx=5, **self.base.theme.notifications.text)
         self.icon.pack(side=tk.LEFT, fill=tk.BOTH)
 
         self.label = Label(self, text="NO NEW NOTIFICATIONS", anchor=tk.W, padx=10, **self.base.theme.notifications.text)
@@ -25,8 +27,8 @@ class Notifications(Toplevel):
         close_button = IconButton(self, "chevron-down", self.hide)
         close_button.pack(side=tk.RIGHT, fill=tk.BOTH)
 
-        self.base.bind("<Configure>", self._follow_root)
         self.withdraw()
+        self.base.register_onupdate(self._follow_root)
     
     def info(self, text):
         self.icon.set_icon("info")
@@ -44,16 +46,21 @@ class Notifications(Toplevel):
         self.show()
     
     def _follow_root(self, *_):
+        if not self.active:
+            return
+        
         self.update_idletasks()
         x = self.base.winfo_x() + self.base.winfo_width() - self.winfo_width() - self.offset 
         y = self.base.winfo_y() + self.base.winfo_height() - self.winfo_height() - self.offset 
         self.geometry(f"+{x}+{y}")
     
     def show(self, *_):
+        self.active = True
         self._follow_root()
         self.wm_deiconify()
     
     def hide(self, *_):
+        self.active = False
         self.withdraw()
     
     def clear(self, *_):

@@ -24,6 +24,7 @@ class App(tk.Tk):
     
     def run(self):
         self.mainloop()
+        self.running = False
         self.extensionsmanager.stop_server()
     
     def setup(self):
@@ -54,9 +55,11 @@ class App(tk.Tk):
         self.extensionsdir = os.path.join(self.appdir, "extensions")
 
     def setup_configs(self):
+        self.running = True
         self.git_found = False
         self.active_directory = None
         self.active_branch_name = None
+        self.onupdate_functions = []
 
         self.sysinfo = SysInfo(self)
         self.settings = Settings(self)
@@ -158,3 +161,13 @@ class App(tk.Tk):
                     active_text.line, active_text.column, active_text.get_selected_count())
 
         self.statusbar.toggle_editmode(False)
+    
+    def register_onupdate(self, fn):
+        self.onupdate_functions.append(fn)
+
+    def on_gui_update(self, *_):
+        for fn in self.onupdate_functions:
+            try:
+                fn()
+            except tk.TclError:
+                pass

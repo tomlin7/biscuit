@@ -252,6 +252,7 @@ class Theme:
         self.editors = Editors(self, *secondary)
         self.palette = Palette(self, *secondary)
         self.findreplace = FrameThemeObject(self, *primary)
+        self.findreplace.label = ThemeObject(self.findreplace)
         self.notifications = Notifications(self, *secondary)
 
         #TODO syntax highlighting definitions

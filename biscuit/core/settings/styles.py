@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sv_ttk
+
 
 class Style(ttk.Style):
     def __init__(self, master, theme, *args, **kwargs):
@@ -8,7 +8,6 @@ class Style(ttk.Style):
         self.master = master
         self.base = master.base
         self.theme = theme
-        sv_ttk.use_dark_theme()
         
         self.configure("TCheckbutton", background=self.theme.editors.background)
         self.gen_fileicons()

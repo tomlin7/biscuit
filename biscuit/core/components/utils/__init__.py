@@ -9,6 +9,7 @@ from .canvas import Canvas
 from .codicon import get_codicon
 from .frame import Frame
 from .filetype import FileType
+from .icon import Icon
 from .iconbutton import IconButton
 from .label import WrappingLabel, Label
 from .scrollbar import Scrollbar

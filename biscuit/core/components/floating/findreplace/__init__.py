@@ -49,7 +49,7 @@ class FindReplace(Toplevel):
         IconButton(buttons, "replace-all", self.replace_all).pack(side=tk.LEFT)
 
         self.term.trace("w", self.find)
-        self.master.bind("<Configure>", self._follow_root)
+        self.base.register_onupdate(self._follow_root)
 
     def _follow_root(self, *_):
         if not self.active:
