@@ -4,11 +4,10 @@ import platform
 from threading import Thread
 from tkinter.constants import *
 
-from ....utils import Scrollbar
-from ..panelview import PanelView
-from .text import TerminalText
-from .....utils.sysinfo import SysInfo
 
+from .text import TerminalText
+from ..panelview import PanelView
+from core.components.utils import Scrollbar, Label
 
 
 
@@ -16,18 +15,18 @@ class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.__buttons__ = (('add',),('trash',))
-        self.sysinf = SysInfo(master)
-        print(self.sysinf.os)
-        self.terminal_command=""
-        if self.sysinf.os == "Linux":
-            self.terminal_command = "/bin/bash"
-        elif self.sysinf.os == "windows":
-            self.terminal_command = "cmd"
-        print(f"terminal command:{self.terminal_command}")
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        if self.base.sysinfo.os == "Linux":
+            self.terminal_command = "/bin/bash"
+        elif self.base.sysinfo.os == "Windows":
+            self.terminal_command = "cmd"
+        else:
+            Label(self, text="No terminals detected for the host os, report an issue otherwise.").pack()
+            return 
+        
         self.terminal = TerminalText(self, relief=FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.terminal.grid(row=0, column=0, sticky=NSEW)
         self.terminal.bind("<Return>", self.enter)
