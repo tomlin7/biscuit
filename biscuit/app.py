@@ -4,7 +4,7 @@ from core import *
 from core.components import FindReplace
 
 # TODO temporary imports for testing
-from core.components.games import Tetris, GameOfLife
+from core.components.games import *
 from core.settings.editor import SettingsEditor
 
 
@@ -123,12 +123,15 @@ class App(tk.Tk):
     def open_settings(self):
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
     
-    # games ----
+    #TODO games actionset to be added
     def open_tetris(self, *_):
         self.editorsmanager.add_editor(Tetris(self.editorsmanager))
     
     def open_gameoflife(self, *_):
         self.editorsmanager.add_editor(GameOfLife(self.editorsmanager))
+    
+    def open_snake(self, *_):
+        self.editorsmanager.add_editor(Snake(self.editorsmanager))
 
     # ----------
     

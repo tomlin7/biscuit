@@ -1,20 +1,31 @@
+__author__ = "cid0rz"
+
+
 import tkinter as tk
 import random
 
-# Constants
-WIDTH = 400
-HEIGHT = 400
+from .game import BaseGame
+from ..utils import Canvas
+
+
+WIDTH = 800
+HEIGHT = 800
 DELAY = 150
-DOT_SIZE = 10
+DOT_SIZE = 20
 ALL_DOTS = WIDTH * HEIGHT // (DOT_SIZE ** 2)
 RAND_POS = WIDTH // DOT_SIZE
 
-# Snake class
-class Snake(tk.Canvas):
+
+class Snake(BaseGame):
     def __init__(self, master):
-        super().__init__(master, width=WIDTH, height=HEIGHT, background="black", highlightthickness=0)
+        super().__init__(master)
+        self.config(**self.base.theme.editors)
         
-        self.master = master
+        self.path = "games/snake"
+        self.filename = "snake"
+
+        self.cv = Canvas(self, width=WIDTH*DOT_SIZE, height=HEIGHT*DOT_SIZE, borderwidth=0, highlightthickness=0, **self.base.theme.editors)
+        self.cv.pack(fill=tk.BOTH, expand=True)
         
         self.snake_pos = [(100, 50), (90, 50), (80, 50)]
         self.food_pos = self.random_food_pos()
@@ -23,25 +34,23 @@ class Snake(tk.Canvas):
         self.score = 0
         
         self.bind_all("<Key>", self.on_key_press)
-        
         self.create_objects()
-        
-        self.after(DELAY, self.update_game)
+        self.update_game()
         
     def create_objects(self):
         for x, y in self.snake_pos:
-            self.create_rectangle(x, y, x + DOT_SIZE, y + DOT_SIZE, fill="white", tag="snake")
+            self.cv.create_rectangle(x, y, x + DOT_SIZE, y + DOT_SIZE, fill="white", tag="snake")
             
-        self.create_rectangle(*self.snake_pos[0], self.snake_pos[0][0] + DOT_SIZE, self.snake_pos[0][1] + DOT_SIZE, fill="red", tag="snake")
-        self.food = self.create_rectangle(*self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE, fill="green", tag="food")
+        self.cv.create_rectangle(*self.snake_pos[0], self.snake_pos[0][0] + DOT_SIZE, self.snake_pos[0][1] + DOT_SIZE, fill="red", outline="", tag="snake")
+        self.food = self.cv.create_rectangle(*self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE, fill="green", outline="", tag="food")
         
-        self.create_text(50, 12, text="Score: 0", tag="score", fill="white")
-        self.game_over_text = self.create_text(
+        self.cv.create_text(100, 20, text="Score: 0", tag="score", fill="white", font=("Fixedsys", 25))
+        self.game_over_text = self.cv.create_text(
             WIDTH / 2,
             HEIGHT / 2,
             text="Game Over",
             fill="white",
-            font=("Arial", 20),
+            font=("Fixedsys", 25),
             state=tk.HIDDEN
         )
         
@@ -66,14 +75,15 @@ class Snake(tk.Canvas):
         elif self.direction == "Down":
             new_head = (head_x, head_y + DOT_SIZE)
         
-        self.snake_pos = [new_head] + self.snake_pos[:-1]
-        
-        self.delete("snake")
+        self.snake_pos.insert(0, new_head)  # Insert the new head position at the beginning	
+        self.snake_pos = self.snake_pos[:len(self.snake_pos) - 1]  # Remove the last element (tail)
+            
+        self.cv.delete("snake")
         
         for x, y in self.snake_pos:
-            self.create_rectangle(x, y, x + DOT_SIZE, y + DOT_SIZE, fill="white", tag="snake")
+            self.cv.create_rectangle(x, y, x + DOT_SIZE, y + DOT_SIZE, fill="white", tag="snake")
             
-        self.create_rectangle(*self.snake_pos[0], self.snake_pos[0][0] + DOT_SIZE, self.snake_pos[0][1] + DOT_SIZE, fill="red", tag="snake")
+        self.cv.create_rectangle(*self.snake_pos[0], self.snake_pos[0][0] + DOT_SIZE, self.snake_pos[0][1] + DOT_SIZE, fill="red", tag="snake")
         
     def check_collisions(self):
         head_x, head_y = self.snake_pos[0]
@@ -88,13 +98,21 @@ class Snake(tk.Canvas):
             self.in_game = False
             
     def check_food_collision(self):
-        if self.snake_pos[0] == self.food_pos:
+        head_x, head_y = self.snake_pos[0]
+
+        food_x, food_y = self.food_pos
+
+        if (
+            abs(head_x - food_x) < DOT_SIZE
+            and abs(head_y - food_y) < DOT_SIZE
+        ):
             self.snake_pos.append((0, 0))
-            self.create_rectangle(*self.snake_pos[-1], self.snake_pos[-1][0] + DOT_SIZE, self.snake_pos[-1][1] + DOT_SIZE, fill="white", tag="snake")
+            self.cv.create_rectangle(*self.snake_pos[-1], self.snake_pos[-1][0] + DOT_SIZE, self.snake_pos[-1][1] + DOT_SIZE, fill="white", tag="snake")
             self.food_pos = self.random_food_pos()
-            self.coords(self.food, *self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE)
+            self.cv.coords(self.food, *self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE)
             self.score += 1
-            self.itemconfigure("score", text=f"Score: {self.score}")
+            self.cv.itemconfigure("score", text=f"Score: {self.score}")
+
             
     def random_food_pos(self):
         x = random.randint(1, RAND_POS - 1) * DOT_SIZE
@@ -121,29 +139,17 @@ class Snake(tk.Canvas):
                 self.restart_game()
             
     def show_game_over_text(self):
-        self.itemconfigure(self.game_over_text, state=tk.NORMAL)
+        self.cv.itemconfigure(self.game_over_text, state=tk.NORMAL)
         
     def restart_game(self):
         self.in_game = True
         self.score = 0
-        self.itemconfigure("score", text="Score: 0")
-        self.itemconfigure(self.game_over_text, state=tk.HIDDEN)
+        self.cv.itemconfigure("score", text="Score: 0")
+        self.cv.itemconfigure(self.game_over_text, state=tk.HIDDEN)
         self.snake_pos = [(100, 50), (90, 50), (80, 50)]
         self.direction = "Right"
-        self.delete("snake")
-        self.delete(self.food)
+        self.cv.delete("snake")
+        self.cv.delete(self.food)
         self.food_pos = self.random_food_pos()
-        self.food = self.create_rectangle(*self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE, fill="green", tag="food")
+        self.food = self.cv.create_rectangle(*self.food_pos, self.food_pos[0] + DOT_SIZE, self.food_pos[1] + DOT_SIZE, fill="green", tag="food")
         self.create_objects()
-
-
-# Main game window
-root = tk.Tk()
-root.title("Snake")
-root.resizable(0, 0)
-
-snake = Snake(root)
-snake.pack()
-
-root.mainloop()
-

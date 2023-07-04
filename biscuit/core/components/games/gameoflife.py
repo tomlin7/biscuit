@@ -1,3 +1,5 @@
+__author__ = "billyeatcookies"
+
 import random
 import tkinter as tk
 

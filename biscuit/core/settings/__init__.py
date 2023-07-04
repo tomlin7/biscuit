@@ -18,8 +18,10 @@ class Settings:
 
         self.commands = [
             ("Open settings", self.base.open_settings),
+            #TODO games actionset to be added
             ("Play tetris", self.base.open_tetris),
-            ("Play game of life", self.base.open_gameoflife)
+            ("Play game of life", self.base.open_gameoflife),
+            ("Play snake", self.base.open_snake)
         ]
         
         self.setup_properties()
