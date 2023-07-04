@@ -1,11 +1,14 @@
 import queue
 import subprocess
+import platform
 from threading import Thread
 from tkinter.constants import *
 
-from ....utils import Scrollbar
-from ..panelview import PanelView
+
 from .text import TerminalText
+from ..panelview import PanelView
+from core.components.utils import Scrollbar, Label
+
 
 
 class Terminal(PanelView):
@@ -16,6 +19,14 @@ class Terminal(PanelView):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        if self.base.sysinfo.os == "Linux":
+            self.terminal_command = "/bin/bash"
+        elif self.base.sysinfo.os == "Windows":
+            self.terminal_command = "cmd"
+        else:
+            Label(self, text="No terminals detected for the host os, report an issue otherwise.").pack()
+            return 
+        
         self.terminal = TerminalText(self, relief=FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.terminal.grid(row=0, column=0, sticky=NSEW)
         self.terminal.bind("<Return>", self.enter)
@@ -29,7 +40,7 @@ class Terminal(PanelView):
         self.alive = True
 
         self.p = subprocess.Popen(
-            "cmd", stdout=subprocess.PIPE,
+            self.terminal_command, stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
         self.out_queue = queue.Queue()
