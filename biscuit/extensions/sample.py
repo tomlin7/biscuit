@@ -6,3 +6,4 @@ class Extension:
 
     def run(self):
         self.api.commands.register_command("Hello world", lambda: print("Hello world"))
+        

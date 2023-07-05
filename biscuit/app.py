@@ -133,6 +133,9 @@ class App(tk.Tk):
     
     def open_pong(self, *_):
         self.editorsmanager.add_editor(Pong(self.editorsmanager))
+    
+    def show_404(self, *_):
+        self.editorsmanager.add_editor(Whoops(self.editorsmanager))
 
     # ----------
     

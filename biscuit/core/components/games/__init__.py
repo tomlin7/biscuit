@@ -1,7 +1,7 @@
 from .tetris import Tetris
 from .gameoflife import GameOfLife
-from .whoops import Whoops
 from .snake import Snake
 from .pong import Pong
+from .whoops import Whoops
 
 #TODO game actionset, prompt, api

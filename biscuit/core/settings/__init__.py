@@ -24,6 +24,7 @@ class Settings:
             ("Play game of life", self.base.open_gameoflife),
             ("Play pong", self.base.open_pong),
             ("Play snake (WIP)", self.base.open_snake),
+            ("404 (testing)", self.base.show_404),
         ]
         
         self.setup_properties()
