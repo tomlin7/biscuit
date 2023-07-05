@@ -7,6 +7,7 @@ from .bubble import Bubble
 from .buttonsentry import ButtonsEntry
 from .canvas import Canvas
 from .codicon import get_codicon
+from .colorizer import colorize
 from .frame import Frame
 from .filetype import FileType
 from .icon import Icon

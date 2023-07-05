@@ -5,5 +5,6 @@ class Extension:
         self.api = api
 
     def run(self):
-        self.api.commands.register_command("Hello world", lambda: print("Hello world"))
+        self.api.commands.register_command("Hello world", lambda: self.api.logger.log("Hello world"))
+        self.api.commands.register_command("Hola!", lambda: self.api.notifications.show(f"Hola from {__name__}"))
         
