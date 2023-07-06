@@ -129,27 +129,40 @@ class Tetris(BaseGame):
 
 
 class Piece:
-    START_PT = 10*SIDE // 2 // SIDE * SIDE - SIDE
+    START_PT = 10 * SIDE // 2 // SIDE * SIDE - SIDE
 
     def __init__(self, canvas):
         self.PIECES = [
-            ["#A9907E", (0, 0), (1, 0), (0, 1), (1, 1)],    # square
-            ["#698269", (0, 0), (1, 0), (2, 0), (3, 0)],    # line
-            ["#ABC4AA", (2, 0), (0, 1), (1, 1), (2, 1)],    # right el
-            ["#675D50", (0, 0), (0, 1), (1, 1), (2, 1)],    # left el
-            ["#609966", (0, 1), (1, 1), (1, 0), (2, 0)],    # right wedge
-            ["#B99B6B", (0, 0), (1, 0), (1, 1), (2, 1)],    # left wedge
-            ["#AA5656", (1, 0), (0, 1), (1, 1), (2, 1)],    # symmetrical wedge
+            ["#A9907E", (0, 0), (1, 0), (0, 1), (1, 1)],  # square
+            ["#698269", (0, 0), (1, 0), (2, 0), (3, 0)],  # line
+            ["#ABC4AA", (2, 0), (0, 1), (1, 1), (2, 1)],  # right el
+            ["#675D50", (0, 0), (0, 1), (1, 1), (2, 1)],  # left el
+            ["#609966", (0, 1), (1, 1), (1, 0), (2, 0)],  # right wedge
+            ["#B99B6B", (0, 0), (1, 0), (1, 1), (2, 1)],  # left wedge
+            ["#AA5656", (1, 0), (0, 1), (1, 1), (2, 1)],  # symmetrical wedge
         ]
-        random.shuffle(self.PIECES)
+        self.bag = self.PIECES.copy()
+        random.shuffle(self.bag)
 
         self.squares = []
-        self.piece = random.choice(self.PIECES)
-        self.color = self.piece.pop(0)
+        self.piece = None
+        self.color = None
         self.canvas = canvas
+        self.rotation_state = 0
+
+        self.generate_piece()
+
+    def generate_piece(self):
+        if not self.bag:
+            self.bag = self.PIECES.copy()
+            random.shuffle(self.bag)
+
+        self.piece = self.bag.pop(0)
+        self.color = self.piece[0]
+        self.piece = self.piece[1:]
 
         for point in self.piece:
-            square = canvas.create_rectangle(
+            square = self.canvas.create_rectangle(
                 point[0] * SIDE + 10,
                 point[1] * SIDE + 10,
                 point[0] * SIDE + SIDE + 10,
