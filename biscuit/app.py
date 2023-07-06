@@ -29,6 +29,7 @@ class App(tk.Tk):
         self.setup_configs()
     
     def late_setup(self):
+        self.focus_set()
         self.binder.late_bind_all()
         self.setup_references()
         self.palette.register_actionset(lambda: self.settings.actionset)
@@ -81,7 +82,6 @@ class App(tk.Tk):
 
     def initialize_editor(self):
         self.palette.generate_help_actionset()
-        self.focus_set()
         self.logger.info('Initializing editor finished.')
     
     def open_directory(self, dir):

@@ -13,7 +13,7 @@ INITIAL_ALIVE_PROBABILITY = 0.2
 
 
 class GameOfLife(BaseGame):
-    name = "Game"
+    name = "Game of Life"
     
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
