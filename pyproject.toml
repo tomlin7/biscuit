@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "biscuit"
+version = "2.3.0"
+description = "A Code Editor Built with Python"
+authors = ["Billy <billydevbusiness@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10"
+hintedtext = "^0.6.0"
+watchdog = "^3.0.0"
+filetype = "^1.2.0"
+GitPython = "^3.1.31"
+tkextrafont = "^0.6.3"
+tksvg = "^0.7.4"
+Pygments = "^2.15.1"
+toml = "^0.10.2"
+sv-ttk = "^2.5.3"
+Pillow = "^10.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
