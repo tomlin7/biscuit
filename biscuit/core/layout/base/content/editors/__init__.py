@@ -1,9 +1,11 @@
 import tkinter as tk
 
+
 from .editorsbar import Editorsbar
 from .empty import Empty
 
 from core.components.editors import Editor
+from core.components.games import Game
 from core.components.utils import Frame
 
 
@@ -71,11 +73,14 @@ class EditorsPane(Frame):
         "open Editor with path and exists values passed"
         self.add_editor(Editor(self, path, exists, diff=True))
     
+    def open_game(self, name):
+        self.add_editor(Game(self, name))
+    
     def close_editor(self, editor):
         "removes an editor, keeping it in cache."
         self.editors.remove(editor)
 
-        # not keeping diff in cache
+        # not keeping diff/games in cache
         if not editor.diff and editor.content:
             self.closed_editors[editor.path] = editor
         self.refresh()

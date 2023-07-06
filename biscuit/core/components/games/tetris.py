@@ -14,10 +14,11 @@ HEIGHT = 20 * SIDE
 
 
 class Tetris(BaseGame):
+    name = "Tetris!"
+    
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
         bg = self.base.theme.editors.background
-        self.filename = "Tetris"
         self.loop = None
 
         self.status_var = tk.StringVar()

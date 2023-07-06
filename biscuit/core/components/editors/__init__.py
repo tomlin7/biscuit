@@ -1,7 +1,7 @@
 import os
-import tkinter as tk
 from tkinter.constants import *
 
+from .editor import BaseEditor
 from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
 

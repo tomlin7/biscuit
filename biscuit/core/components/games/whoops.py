@@ -48,10 +48,11 @@ class PhysicsObject:
 
 
 class Whoops(BaseGame):
+    name = "404"
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config(bg='#22223b')
-        self.filename = "404"
         self.gravity = 0.5
         self.canvas = tk.Canvas(self, width=800, height=400, bg='#22223b', borderwidth=0, highlightthickness=0)
         self.canvas.pack(pady=30)

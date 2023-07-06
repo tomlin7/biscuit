@@ -13,9 +13,10 @@ INITIAL_ALIVE_PROBABILITY = 0.2
 
 
 class GameOfLife(BaseGame):
+    name = "Game"
+    
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
-        self.filename = "gameoflife"
 
         self.start_stop_button = Button(self, text="Start", command=self.toggle_start_stop, padx=20, pady=20, font=("Fixedsys", 15))
         self.canvas = tk.Canvas(self, width=GRID_WIDTH*CELL_SIZE, height=GRID_HEIGHT*CELL_SIZE, 

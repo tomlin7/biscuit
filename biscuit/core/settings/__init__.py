@@ -6,6 +6,7 @@ from .config import Config, Bindings
 from .res import Resources
 from .styles import Style
 
+from core.components.games import get_games
 from .editor import SettingsEditor
 
 
@@ -19,12 +20,6 @@ class Settings:
 
         self.commands = [
             ("Open settings", self.base.open_settings),
-            #TODO games actionset to be added
-            ("Play tetris", self.base.open_tetris),
-            ("Play game of life", self.base.open_gameoflife),
-            ("Play pong", self.base.open_pong),
-            ("Play snake (WIP)", self.base.open_snake),
-            ("404 (testing)", self.base.show_404),
         ]
         
         self.setup_properties()
@@ -42,7 +37,7 @@ class Settings:
                 ("Editor Theme", lambda e=None: print("Theme", e)),
                 ("Editor Bindings", lambda e=None: print("Bindings", e)),
                 ("Editor Font", lambda e=None: print("Font", e)),
-            ] + self.commands
+            ] + self.commands + get_games(self.base)
         )
     
     @property

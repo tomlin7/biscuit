@@ -15,9 +15,10 @@ PADDLE_SPEED = 5
 
 
 class Pong(BaseGame):
+    name = "Pong!"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.filename = "pong!"
 
         self.ball_dx = self.ball_dy = 5
         self.paddle1_dy = self.paddle2_dy = 0

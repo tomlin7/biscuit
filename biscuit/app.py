@@ -1,10 +1,7 @@
 import os, sys, subprocess, tkinter as tk
 
 from core import *
-from core.components import FindReplace
-
-# TODO temporary imports for testing
-from core.components.games import *
+from core.components import FindReplace, register_game
 from core.settings.editor import SettingsEditor
 
 
@@ -121,23 +118,12 @@ class App(tk.Tk):
     def open_settings(self):
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
     
-    #TODO games actionset to be added
-    def open_tetris(self, *_):
-        self.editorsmanager.add_editor(Tetris(self.editorsmanager))
+    def open_game(self, name):
+        self.editorsmanager.open_game(name)
     
-    def open_gameoflife(self, *_):
-        self.editorsmanager.add_editor(GameOfLife(self.editorsmanager))
-    
-    def open_snake(self, *_):
-        self.editorsmanager.add_editor(Snake(self.editorsmanager))
-    
-    def open_pong(self, *_):
-        self.editorsmanager.add_editor(Pong(self.editorsmanager))
-    
-    def show_404(self, *_):
-        self.editorsmanager.add_editor(Whoops(self.editorsmanager))
-
-    # ----------
+    def register_game(self, game):
+        register_game(game)
+        self.settings.gen_actionset()
     
     def update_git(self):
         self.git.check_git()
