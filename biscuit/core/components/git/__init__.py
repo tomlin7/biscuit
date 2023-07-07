@@ -1,6 +1,9 @@
-import git
-
-from .repo import GitRepo
+from tkinter import messagebox
+try:
+    import git
+    from .repo import GitRepo
+except ImportError:
+    messagebox.showerror("Git not found", "Git is not installed on your PC. Install Git and add Git to the PATH to use Biscuit")
 
 
 class Git(git.Git):
