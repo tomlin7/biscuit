@@ -24,6 +24,11 @@ You need **python 3.10** or above.
 > pip install -r requirements.txt
 > python biscuit
 ```
+If you use **poetry**, this will get biscuit up and running
+```bash
+> poetry install
+> python biscuit
+```
 
 ## Screenshots ✨
 ![python_s8THu31T0Q](https://github.com/billyeatcookies/Biscuit/assets/70792552/032fac52-3f2f-4b1e-8908-a7b7c42aee13)

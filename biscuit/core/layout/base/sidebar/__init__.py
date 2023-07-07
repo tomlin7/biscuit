@@ -13,17 +13,18 @@ class Sidebar(Frame):
 
     +------+--------------------------+
     | Diry |    \    \    \    \    \ |
-    +------+\    \    \    \    \    \|
+    |------|\    \    \    \    \    \|
     | Src  | \    \    \    \    \    |
-    +------+  \    \    \    \    \   |
+    |------|  \    \    \    \    \   |
     | Git  |   \    \    \    \    \  |
-    +------+    \    \    \    \    \ |
-    |      |\    \    \    \    \    \|
-    |      | \    \    \    \    \    |
+    |------|    \    \    \    \    \ |
+    | Ext  |\    \    \    \    \    \|
+    |------| \    \    \    \    \    |
     |      |  \    \    \    \    \   |
-    +------+   \    \    \    \    \  |
-    | Sett |    \    \    \    \    \ |
-    +------+--------------------------+
+    |      |   \    \    \    \    \  |
+    |------|    \    \    \    \    \ |
+    | Sett |\    \    \    \    \    \|
+    +------+--------------------------+ 
     """
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -37,7 +38,7 @@ class Sidebar(Frame):
 
         self.views = []
 
-        self.default_views = [Explorer(self), Search(self), SourceControl(self)]
+        self.default_views = [Explorer(self), Search(self), SourceControl(self), Extensions(self)]
         self.add_views(self.default_views)
         self.slots.toggle_first_slot()
 
