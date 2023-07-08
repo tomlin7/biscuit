@@ -5,4 +5,4 @@ from .settings import Settings
 from .layout import Root
 
 from .api import ExtensionsAPI
-from .extensions import ExtensionManager
+from .components.extensions import ExtensionManager

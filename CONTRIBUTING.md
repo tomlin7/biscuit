@@ -22,7 +22,7 @@ cd Biscuit
     git checkout -b fix-123 main
     ```
 5. Once you fixed the issue, try running the application, and check no errors are occuring, if everything is ok, commit with a proper message regarding what has been fixed.
-6. You can run the changelog command as following (not mandatory, requires `pip install git-changelog`):
+6. You can run the changelog command (not mandatory, requires `pip install git-changelog`):
     ```
     git-changelog -o CHANGELOG.md
     ```
