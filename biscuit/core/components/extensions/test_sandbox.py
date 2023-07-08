@@ -39,7 +39,7 @@ def run_extension(script_path):
     extension_name = os.path.splitext(script_path)[0]
     module_name = f"{extension_name}"
     extension_module = importlib.import_module(module_name)
-    
+
     # override the import function to enforce module restrictions
     extension_module.__import__ = restricted_import
 
@@ -48,11 +48,6 @@ def run_extension(script_path):
         extension_module.run()
     except Exception as e:
         print("Extension encountered an error:", str(e))
-    finally:
-        # Clean up and restore the original import function
-        ...
-
 
 # Test
 execute_extension('test_sandbox_script.py')
-import collections

@@ -138,6 +138,7 @@ class SidebarViews(FrameThemeObject):
         self.itembar.title = ThemeObject(self)
         self.item = FrameThemeObject(self)
         self.item.content = ThemeObject(self)
+        self.item.button = HighlightableThemeObject(self)
         self.toggle_button = HighlightableThemeObject(self)
     
 class PanelViews(FrameThemeObject):
