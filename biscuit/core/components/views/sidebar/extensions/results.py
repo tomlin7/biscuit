@@ -14,6 +14,8 @@ class Results(SidebarViewItem):
         self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
         self.list_url = self.repo_url + "extensions.toml"
 
+        #TODO list installed extensions separately
+
         self.run_fetch_list()
         
     def run_fetch_list(self):
@@ -29,4 +31,4 @@ class Results(SidebarViewItem):
         for name, file in self.extensions.items():
             #TODO add further loops for folders
             #TODO add author, description
-            Extension(self.content, name, self.repo_url+file).pack(fill=tk.X)
+            Extension(self.content, name, file, f"{self.repo_url}extensions/{file}").pack(fill=tk.X)
