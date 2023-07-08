@@ -30,18 +30,18 @@ def run_extension(script_path):
     allowed_imports = {module: __import__(module) for module in ALLOWED_MODULES}
 
     def restricted_import(name, globals={}, locals={}, fromlist=[], level=0):
+        print(name)
         if name in ALLOWED_MODULES+list(globals.keys()):
             return allowed_imports[name]
         raise ImportError("Module '{}' is not allowed.".format(name))
-
-    # override the import function to enforce module restrictions
-    builtins = sys.modules['__builtin__'] if sys.version_info.major == 2 else sys.modules['builtins']
-    builtins.__import__ = restricted_import
-
+    
     # Load the extension script
     extension_name = os.path.splitext(script_path)[0]
     module_name = f"{extension_name}"
     extension_module = importlib.import_module(module_name)
+    
+    # override the import function to enforce module restrictions
+    extension_module.__import__ = restricted_import
 
     # Execute the extension code
     try:
@@ -50,8 +50,9 @@ def run_extension(script_path):
         print("Extension encountered an error:", str(e))
     finally:
         # Clean up and restore the original import function
-        builtins.__import__ = __import__
+        ...
 
 
 # Test
 execute_extension('test_sandbox_script.py')
+import collections
