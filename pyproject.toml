@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.10"
+python = "^3.10"
 hintedtext = "^0.6.0"
 watchdog = "^3.0.0"
 filetype = "^1.2.0"
