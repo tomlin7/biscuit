@@ -15,7 +15,7 @@ class ContentPane(Frame):
     └── Root
         ├── Menubar
         ├── BaseFrame
-        │    ├── ActionBar
+        │    ├── SideBar
         │    └── ContentPane 
         │        ├── EditorsPane
         │        └── Panel

@@ -90,7 +90,8 @@ class Palette(Toplevel):
     def pick_file_search(self):
         self.active_set = self.base.explorer.get_actionset()
         
-    def choose(self, *args):
+    def choose(self, *_):
+        #TODO pass the term to the function as argument (for input requiring commands)
         self.shown_items[self.selected].command()
         self.hide()
         

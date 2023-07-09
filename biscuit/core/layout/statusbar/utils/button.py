@@ -1,10 +1,16 @@
 import tkinter as tk
 
-from core.components.utils import get_codicon, Frame
+from core.components.utils import Bubble, Frame, get_codicon
+
+
+class SBubble(Bubble):
+    def get_pos(self):
+        return (f"+{int(self.master.winfo_rootx() + (self.master.winfo_width() - self.winfo_width())/2)}" + 
+                f"+{self.master.winfo_rooty() - self.master.winfo_height() - 10}")
 
 
 class SButton(Frame):
-    def __init__(self, master, text=None, icon=None, function=lambda *_: None, padx=5, pady=1, *args, **kwargs):
+    def __init__(self, master, text=None, icon=None, function=lambda *_: None, description=None, padx=5, pady=1, *args, **kwargs):
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
         self.function = function
 
@@ -12,6 +18,8 @@ class SButton(Frame):
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
+
+        self.bubble = SBubble(self, text=description)
 
         if icon:
             self.icon_label = tk.Label(self, text=get_codicon(self.icon), anchor=tk.CENTER, 
@@ -37,6 +45,7 @@ class SButton(Frame):
             self.icon_label.bind("<Button-1>", self.on_click)
 
     def on_enter(self, *_):
+        self.bubble.show()
         self.config(bg=self.hbg)
         if self.text:
             self.text_label.config(bg=self.hbg, fg=self.hfg)
@@ -44,6 +53,7 @@ class SButton(Frame):
             self.icon_label.config(bg=self.hbg, fg=self.hfg)
 
     def on_leave(self, *_):
+        self.bubble.hide()
         self.config(bg=self.bg)
         if self.text:
             self.text_label.config(bg=self.bg, fg=self.fg)
@@ -67,6 +77,7 @@ class SButton(Frame):
 
     def show(self):
         if not self.visible:
+            self.lift()
             self.visible = True
             self.pack(**self.get_pack_data())
     

@@ -24,7 +24,7 @@ class Statusbar(Frame):
         self.config(bg=self.base.theme.layout.statusbar.background)
 
         # TODO add a button for toggling panel, left side, "terminal-bash", color
-        self.branch = TerminalButton(self, icon="terminal-bash", function=self.toggle_terminal, padx=10)
+        self.branch = TerminalButton(self, icon="terminal-bash", function=self.toggle_terminal, description="Toggle terminal", padx=10)
         self.branch.pack(side=tk.LEFT)
 
         # git info
@@ -33,16 +33,16 @@ class Statusbar(Frame):
             [("main", lambda e=None: print("main", e)), ("rewrite", lambda e=None: print("rewrite", e))],
         )
         self.base.palette.register_actionset(lambda: self.git_actionset)
-        self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show_prompt('branch:'))
+        self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show_prompt('branch:'), description="Checkout branch")
         self.branch.set_pack_data(side=tk.LEFT, padx=(2, 0))
 
         # line and column info
         self.lc_actionset = ActionSet(
             "GOTO", ":",
-            [("goto line", lambda e=None: print("goto line", e))],
+            [("goto line", lambda e=None: print("goto line (WIP not implemented)", e)),],
         )
         self.base.palette.register_actionset(lambda: self.lc_actionset)
-        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'))
+        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'), description="Go to Line/Column")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
 
         # indentation
@@ -52,7 +52,7 @@ class Statusbar(Frame):
             ("4", lambda e=None: print("indent 2", e))],
         )
         self.base.palette.register_actionset(lambda: self.indent_actionset)
-        self.indentation = SButton(self, text="Spaces: 4", function=lambda: self.base.palette.show_prompt('indent:'))
+        self.indentation = SButton(self, text="Spaces: 4", function=lambda: self.base.palette.show_prompt('indent:'), description="Select indentation")
         self.indentation.set_pack_data(side=tk.RIGHT)
 
         # encoding
@@ -61,7 +61,7 @@ class Statusbar(Frame):
             [("UTF-8", lambda e=None: print("encoding UTF-8", e))],
         )
         self.base.palette.register_actionset(lambda: self.encoding_actionset)
-        self.encoding = SButton(self, text="UTF-8", function=lambda: self.base.palette.show_prompt('encoding:'))
+        self.encoding = SButton(self, text="UTF-8", function=lambda: self.base.palette.show_prompt('encoding:'), description="Select encoding")
         self.encoding.set_pack_data(side=tk.RIGHT)
 
         # end of line
@@ -71,10 +71,10 @@ class Statusbar(Frame):
             ("CRLF", lambda e=None: print("eol crlf", e))],
         )
         self.base.palette.register_actionset(lambda: self.eol_actionset)
-        self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'))
+        self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'), description="Select End of Line sequence")
         self.eol.set_pack_data(side=tk.RIGHT)
 
-        # TODO use pyglet
+        # TODO use pygments to list out? 
         self.filetype_actionset = ActionSet(
             "FILETYPE", "syntax:",
             [("Plain Text", lambda e=None: print("filetype Plain Text", e)),
@@ -82,13 +82,18 @@ class Statusbar(Frame):
             ("c++", lambda e=None: print("filetype c++", e))],
         )
         self.base.palette.register_actionset(lambda: self.filetype_actionset)
-        self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('syntax:'))
+        self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('syntax:'), description="Select Language Mode")
         self.file_type.set_pack_data(side=tk.RIGHT)
 
-        self.notif = SButton(self, icon="bell", function=self.base.notifications.show)
+        self.notif = SButton(self, icon="bell", function=self.base.notifications.show, description="No notifications")
         self.notif.pack(side=tk.RIGHT, padx=(0, 10))
 
-        self.clock = SClock(self, text="H:M:S")
+        self.filetype_actionset = ActionSet(
+            "TIME", "time:",
+            [("12 hours", lambda e=None: print("time 12 hours", e)),
+            ("24 hours", lambda e=None: print("time 24 hours", e)),],
+        )
+        self.clock = SClock(self, text="H:M:S", function=lambda: self.base.palette.show_prompt('time:'), description="Time")
         self.clock.set_pack_data(side=tk.RIGHT)
         self.clock.show()
 
