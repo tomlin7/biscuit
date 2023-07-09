@@ -1,4 +1,4 @@
-# TODO implement this sandboxed execution for biscuit extensions
+#OBSOLETE implement this sandboxed execution for biscuit extensions
 
 import importlib
 import threading
@@ -32,9 +32,9 @@ def run_extension(script_path):
     allowed_imports = {module: __import__(module) for module in ALLOWED_MODULES}
 
     def restricted_import(name, globals={}, locals={}, fromlist=[], level=0):
-        print(name)
-        if name in ALLOWED_MODULES+list(globals.keys()):
+        if name in ALLOWED_MODULES:
             return allowed_imports[name]
+    
         raise ImportError("Module '{}' is not allowed.".format(name))
     
     # Load the extension script
@@ -43,13 +43,15 @@ def run_extension(script_path):
     extension_module = importlib.import_module(module_name)
 
     # override the import function to enforce module restrictions
-    extension_module.__import__ = restricted_import
+    extension_module.__builtins__["__import__"] = restricted_import
 
     # Execute the extension code
     try:
         extension_module.run()
     except Exception as e:
         print("Extension encountered an error:", str(e))
+    finally:
+        extension_module.__builtins__["__import__"] = __import__
 
 # Test
 execute_extension('test_sandbox_script.py')

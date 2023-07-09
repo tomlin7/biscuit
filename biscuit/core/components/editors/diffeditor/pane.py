@@ -9,4 +9,4 @@ class DiffPane(TextEditor):
         self.text.load_file()
     
     def load_text(self, text):
-        self.text.clear_insert(text)
+        self.text.clear_insert(text) # haha
