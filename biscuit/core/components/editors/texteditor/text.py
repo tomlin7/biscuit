@@ -25,7 +25,6 @@ class Text(Text):
             self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
 
         self.configure(wrap=tk.NONE, relief=tk.FLAT, **self.base.theme.editors.text)
-        self.tag_config(tk.SEL, background="#b98852")
         
         self.focus_set()
         self.config_tags()
@@ -35,8 +34,8 @@ class Text(Text):
         self.update_words()
 
     def config_tags(self):
-        self.tag_config(tk.SEL, background="#dc8c34")
-        self.tag_config("highlight", background="#dca66b")
+        self.tag_config(tk.SEL, background=self.base.theme.biscuit)
+        self.tag_config("highlight", background=self.base.theme.biscuit_dark)
         
         self.tag_config("found", background="green")
         self.tag_config("foundcurrent", background="orange")

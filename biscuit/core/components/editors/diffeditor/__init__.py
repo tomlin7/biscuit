@@ -8,6 +8,9 @@ from ..editor import BaseEditor
 class DiffEditor(BaseEditor):
     def __init__(self, master, path, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
         self.path = path
 
         self.editable = True
@@ -15,11 +18,12 @@ class DiffEditor(BaseEditor):
         self.lhs_data = []
         self.rhs_data = []
 
+
         self.lhs = DiffPane(self, path)
-        self.lhs.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+        self.lhs.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.rhs = DiffPane(self, path)
-        self.rhs.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
+        self.rhs.grid(row=0, column=1, sticky=tk.NSEW)
 
         self.left = self.lhs.text
         self.right = self.text = self.rhs.text
