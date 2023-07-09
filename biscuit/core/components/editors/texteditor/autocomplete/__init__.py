@@ -26,11 +26,11 @@ class AutoComplete(Toplevel):
         self.row = 0
         self.selected = 0
         if items:
-            self.items = items
-            # [(completion, type), ...]
+            self.items = items # [(completion, type), ...]
             self.add_all_items()
             self.refresh_selected()
     
+    # filter
     def update_completions(self):
         self.refresh_geometry()
         self.update_idletasks()

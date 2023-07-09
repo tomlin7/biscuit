@@ -7,18 +7,19 @@ class AutoCompleteItem(Frame):
     def __init__(self, master, text, kind=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.config(width=400, **self.base.theme.editors.autocomplete)
-        
+        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.editors.autocomplete.item.values()
+
         self.text = text
         self.kind = kind
 
         self.kindw = Kind(self, self.master.autocomplete_kinds, kind)
         self.textw = tk.Text(self, 
-            font=('Consolas', 11), **self.base.theme.editors.autocomplete.item,
+            font=('Consolas', 11), fg=self.fg, bg=self.bg,
             relief=tk.FLAT, highlightthickness=0, width=30, height=1)
         self.textw.insert(tk.END, text)
         self.textw.config(state=tk.DISABLED)
 
-        self.textw.tag_config("term", foreground="#dc8c34")
+        self.textw.tag_config("term", foreground=self.base.theme.biscuit)
         
         self.kindw.bind("<Button-1>", self.on_click)
         self.textw.bind("<Button-1>", self.on_click)
@@ -52,14 +53,14 @@ class AutoCompleteItem(Frame):
     
     def on_hover(self, *args):
         if not self.selected:
-            self.kindw.config(bg="#f2f2f2")
-            self.textw.config(bg="#f2f2f2")
+            self.kindw.config(bg=self.hbg)
+            self.textw.config(bg=self.hbg)
             self.hovered = True
 
     def off_hover(self, *args):
         if not self.selected:
-            self.kindw.config(bg="#f8f8f8")
-            self.textw.config(bg="#f8f8f8")
+            self.kindw.config(bg=self.bg)
+            self.textw.config(bg=self.bg)
             self.hovered = False
     
     def toggle_selection(self):
@@ -69,11 +70,11 @@ class AutoCompleteItem(Frame):
             self.deselect()
 
     def select(self):
-        self.kindw.config(bg="#e8e8e8")
-        self.textw.config(bg="#e8e8e8", fg="black")
+        self.kindw.config(bg=self.hbg)
+        self.textw.config(bg=self.hbg, fg=self.hfg)
         self.selected = True
     
     def deselect(self):
-        self.kindw.config(bg="#f8f8f8")
-        self.textw.config(bg="#f8f8f8", fg="#717171")
+        self.kindw.config(bg=self.bg)
+        self.textw.config(bg=self.bg, fg=self.fg)
         self.selected = False
