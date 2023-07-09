@@ -32,6 +32,7 @@ class App(tk.Tk):
         self.focus_set()
         self.binder.late_bind_all()
         self.setup_references()
+        self.editorsmanager.add_default_editors()
         self.palette.register_actionset(lambda: self.settings.actionset)
         self.setup_extensions()
     

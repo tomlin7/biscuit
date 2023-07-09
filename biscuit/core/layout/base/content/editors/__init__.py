@@ -42,6 +42,8 @@ class EditorsPane(Frame):
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
         self.default_editors = [Editor(self, '::welcome::', False, False, False)]
+    
+    def add_default_editors(self):
         self.add_editors(self.default_editors)
 
     def add_editors(self, editors):
@@ -83,7 +85,6 @@ class EditorsPane(Frame):
         # not keeping diff/games in cache
         if not editor.diff and editor.content:
             self.closed_editors[editor.path] = editor
-        self.refresh()
     
     def close_active_editor(self):
         "Closes the active tab"
@@ -96,14 +97,7 @@ class EditorsPane(Frame):
             self.closed_editors.remove(editor)
 
         editor.destroy()
-        self.refresh()
 
-    def delete_editor(self, editor):
-        "Permanently delete a editor."
-        self.editors.remove(editor)
-        editor.destroy()
-        self.refresh()
-    
     def set_active_editor(self, editor):
         "set an existing editor to currently shown one"
         for tab in self.tabs.tabs:
@@ -113,6 +107,9 @@ class EditorsPane(Frame):
     @property
     def active_editor(self):
         "Get active editor."
+        if not self.tabs.active_tab:
+            return
+        
         return self.tabs.active_tab.editor
     
     def refresh(self):
@@ -121,3 +118,4 @@ class EditorsPane(Frame):
         elif len(self.editors) and not self.empty:
             self.emptytab.grid_remove()
         self.empty = not self.empty
+        self.base.update_statusbar()

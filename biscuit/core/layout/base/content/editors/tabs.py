@@ -25,12 +25,15 @@ class Tabs(Frame):
         tab.editor.grid_forget()
         self.master.master.close_editor(tab.editor)
         tab.destroy()
-
+        
         if self.tabs:
             if i < len(self.tabs):
                 self.tabs[i].select()
             else:
                 self.tabs[i-1].select()
+        else:
+            self.active_tab = None
+        self.master.master.refresh()
         
     def set_active_tab(self, selected_tab):
         self.active_tab = selected_tab
