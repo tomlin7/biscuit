@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 
 from .pane import DiffPane
@@ -18,7 +19,6 @@ class DiffEditor(BaseEditor):
         self.lhs_data = []
         self.rhs_data = []
 
-
         self.lhs = DiffPane(self, path)
         self.lhs.grid(row=0, column=0, sticky=tk.NSEW)
 
@@ -33,11 +33,13 @@ class DiffEditor(BaseEditor):
         self.left['yscrollcommand'] = self.on_textscroll
         self.right['yscrollcommand'] = self.on_textscroll
 
+        self.stipple = self.base.settings.res.stipple
+
+        self.left.tag_config("addition", background="#d3d3d3", bgstipple=f"@{self.stipple}")
         self.left.tag_config("removal", background="#ffa3a3")
-        self.left.tag_config("addition", background="#d3d3d3")
         
         self.right.tag_config("addition", background="#dbe6c2")
-        self.right.tag_config("removal", background="#d3d3d3")
+        self.right.tag_config("removal", background="#d3d3d3", bgstipple=f"@{self.stipple}")
 
         self.prepare_data()
 

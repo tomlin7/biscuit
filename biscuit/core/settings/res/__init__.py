@@ -11,3 +11,4 @@ class Resources:
 
     def load_data(self):
         self.logo = self.loader.load_svg("logo.svg")
+        self.stipple = self.loader.get_res_path('stipple.xbm')
