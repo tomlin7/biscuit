@@ -7,4 +7,5 @@ pygments
 Pillow
 toml
 hintedtext
-sv-ttk 
+sv-ttk
+requests
