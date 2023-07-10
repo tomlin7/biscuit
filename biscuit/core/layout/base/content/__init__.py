@@ -35,13 +35,14 @@ class ContentPane(Frame):
     def toggle_panel(self, *_):
         if self._panel_enabled:
             self.panel.pack_forget()
-            if self._panel_maxed:
-                self.editorspane.pack(fill=BOTH, expand=True)
+            self.editorspane.pack(fill=BOTH, expand=True)
         else:
-            self.panel.pack(fill=BOTH, pady=(1, 0))
             if self._panel_maxed:
+                self.panel.pack(fill=BOTH, pady=(1, 0), expand=True)
                 self.editorspane.pack_forget()
-        
+            else:
+                self.panel.pack(fill=BOTH, pady=(1, 0))
+
         self._panel_enabled = not self._panel_enabled
     
     def toggle_max_panel(self, *_):
@@ -51,7 +52,6 @@ class ContentPane(Frame):
             self.panel.pack(fill=BOTH, pady=(1, 0))
         else:
             self.editorspane.pack_forget()
-            if not self._panel_enabled:
-                self.toggle_panel()
+            self.panel.pack(fill=BOTH, pady=(1, 0), expand=True)
         
         self._panel_maxed = not self._panel_maxed
