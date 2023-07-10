@@ -6,11 +6,12 @@ class ExtensionManager:
     def __init__(self, base):
         self.base = base
         self.extensions = {}
-
+        self.run_finished = {}
+        
         #TODO file watcher for extensions directory
 
         self.blocked_modules = ['os', 'sys']
-        self.imports = {module: __import__(module) for module in sys.builtin_module_names}
+        self.imports = {module: __import__(module) for module in sys.modules}
         sys.modules['builtins'].__import__ = self.restricted_import
 
         self.load_extensions()
@@ -32,6 +33,9 @@ class ExtensionManager:
 
                 self.load_extension(extension_name)
 
+    def refresh_extensions(self):
+        self.load_extensions()
+
     def load_extension(self, extension_name):
         module_name = f"extensions.{extension_name}"
         try:
@@ -49,14 +53,21 @@ class ExtensionManager:
         self.server = threading.Thread(target=self.run_extensions)
         self.server.start()
     
+    def restart_server(self):
+        self.start_server()
+
     def stop_server(self):
         print(f"Extensions server stopped.")
         self.server.join()
 
     def run_extensions(self):
-        for _, extension in self.extensions.items():
+        for name, extension in self.extensions.items():
+            if name in self.run_finished.keys():
+                continue
+            
             try:
                 extension.run()
+                self.run_finished[name] = extension
             except Exception as e:
                 self.base.logger.error(e)
                 self.base.notifications.error(f"Extension '{extension}' failed: see logs.")

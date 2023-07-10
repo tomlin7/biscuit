@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/2.0.0...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.5.0...HEAD)</small>
+
+<!-- insertion marker -->
+## [v2.5.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.5.0) - 2023-07-10
+
+<small>[Compare with 2.0.0](https://github.com/billyeatcookies/Biscuit/compare/2.0.0...v2.5.0)</small>
 
 ### Added
 
@@ -20,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix: Text is blurred in windows systems ([b29ce6b](https://github.com/billyeatcookies/Biscuit/commit/b29ce6b163b0f6ddd39fe19380d4b3ac7bf69d64) by Billy).
 - fix: custom prompt is shown for linux only ([9cf9df9](https://github.com/billyeatcookies/Biscuit/commit/9cf9df9e69d8c0563420df26b5134bb47dba37da) by Billy).
 - fix: Diff Editor lhs/rhs should be equally divided ([59fee40](https://github.com/billyeatcookies/Biscuit/commit/59fee40991341b6947830866a479cb9778890a0f) by Billy).
 - fix: Poetry - python version can be any `^3.10` - add `poetry.lock` file ([da82367](https://github.com/billyeatcookies/Biscuit/commit/da82367e83f60fb7d8fe254c3811ed0f92031fec) by Billy).
@@ -37,7 +43,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Remove unnecessary instances ([acc99e3](https://github.com/billyeatcookies/Biscuit/commit/acc99e34a0a7970e22e1554b30ab3ec12183bd58) by Billy).
 
-<!-- insertion marker -->
 ## [2.0.0](https://github.com/billyeatcookies/Biscuit/releases/tag/2.0.0) - 2023-06-14
 
 <small>[Compare with v1.0.0](https://github.com/billyeatcookies/Biscuit/compare/v1.0.0...2.0.0)</small>

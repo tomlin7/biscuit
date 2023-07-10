@@ -6,8 +6,8 @@ The following versions of Biscuit are currently being supported with security up
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 2.5.x   | :white_check_mark: |
 | 2.0.x   | :white_check_mark: |
-| 1.1.x   | :white_check_mark: |
 | 1.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability

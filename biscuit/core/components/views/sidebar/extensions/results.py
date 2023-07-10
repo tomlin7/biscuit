@@ -1,7 +1,9 @@
 import tkinter as tk
 import requests, threading, toml
 
+
 from .extension import Extension
+from .watcher import ExtensionsWatcher
 from ..item import SidebarViewItem
 
 class Results(SidebarViewItem):
@@ -11,13 +13,24 @@ class Results(SidebarViewItem):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
+        self.extensions = {}
+        self.shown = {}
+
         self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
         self.list_url = self.repo_url + "extensions.toml"
+
+        self.watcher = ExtensionsWatcher(self)
+        self.watcher.watch()
 
         #TODO list installed extensions separately
 
         self.run_fetch_list()
-        
+    
+    def refresh(self):
+        self.run_fetch_list()
+        self.base.extensionsmanager.refresh_extensions()
+        self.base.extensionsmanager.restart_server()
+    
     def run_fetch_list(self):
         threading.Thread(target=self.fetch_list).start()
 
@@ -26,9 +39,14 @@ class Results(SidebarViewItem):
         if response.status_code == 200:
             self.extensions = toml.loads(response.text)
             self.load_extensions()
-
+    
     def load_extensions(self):
         for name, file in self.extensions.items():
             #TODO add further loops for folders
             #TODO add author, description
-            Extension(self.content, name, file, f"{self.repo_url}extensions/{file}").pack(fill=tk.X)
+            if name in self.shown.keys():
+                continue
+
+            ext = Extension(self.content, name, file, f"{self.repo_url}extensions/{file}")
+            ext.pack(fill=tk.X)
+            self.shown[name] = ext

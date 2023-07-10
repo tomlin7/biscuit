@@ -12,12 +12,16 @@ class Extension(Frame):
         self.name = name
         self.file = os.path.join(self.base.extensionsdir, file)
         self.url = url
+        self.installed = os.path.isfile(self.file)
+
+        self.bg = self.base.theme.views.sidebar.item.background
+        self.hbg = self.base.theme.views.sidebar.item.highlightbackground
 
         self.namelbl = Label(self, text=name, font=("Segoi UI", 11, "bold"), anchor=tk.W, 
                                   padx=10, pady=20, **self.base.theme.views.sidebar.item.content)
         self.namelbl.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.install = Button(self, "Install", self.run_fetch_extension, font=("Segoi UI", 8), padx=10, pady=0, height=0)
+        self.install = Button(self, "Install" if not self.installed else "Installed", self.run_fetch_extension, font=("Segoi UI", 8), padx=10, pady=0, height=0)
         self.install.pack(fill=tk.BOTH, expand=True)
 
         self.bind("<Enter>", self.hoverin)
@@ -34,14 +38,12 @@ class Extension(Frame):
 
             self.base.logger.info(f"Fetching extension '{self.name}' successful.")
             self.base.notifications.info(f"Extension '{self.name}' has been installed!")
-            self.install.config(text="Installed", bg=self.base.theme.utils.button.highlightbackground)
-            self.install.unbind_all("<Button-1>")
 
     def hoverin(self, *_):
-        self.config(bg=self.base.theme.views.sidebar.item.highlightbackground)
-        self.namelbl.config(bg=self.base.theme.views.sidebar.item.highlightbackground)
+        self.config(bg=self.hbg)
+        self.namelbl.config(bg=self.hbg)
     
     def hoveroff(self, *_):
-        self.config(bg=self.base.theme.views.sidebar.item.background)
-        self.namelbl.config(bg=self.base.theme.views.sidebar.item.background)
+        self.config(bg=self.bg if not self.installed else self.hbg)
+        self.namelbl.config(bg=self.bg if not self.installed else self.hbg)
     
