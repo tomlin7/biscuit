@@ -47,3 +47,12 @@ If you use **poetry**, this will get biscuit up and running
 - **PathView** for the **Breadcrumbs!**
 
 ![pathview](https://imgur.com/CztWtni.jpg)
+
+
+
+## Contributors
+To contribute to the biscuit project, check our [contributing guidelines](./CONTRIBUTING.md). Your contributions and support are greatly appreciated! 🧡 
+
+<a href="https://github.com/billyeatcookies/biscuit/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=billyeatcookies/biscuit" />
+</a>
