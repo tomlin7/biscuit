@@ -49,8 +49,12 @@ class Terminal(PanelView):
         t_out.start()
         t_err.start()
 
-        self.write("->>")
+        self.show_prompt()
         self.write_loop()
+    
+    def show_prompt(self):
+        if self.base.sysinfo.os == "Linux":
+            self.write("->>")
 
     def destroy(self):
         self.alive = False
@@ -78,13 +82,12 @@ class Terminal(PanelView):
         """ write data from stdout and stderr to the Text widget"""
         if not self.err_queue.empty():
             self.write(self.err_queue.get())
-            self.write("->>")
+            self.show_prompt()
         if not self.out_queue.empty():
             self.write(self.out_queue.get())
-            self.write("->>")
+            self.show_prompt()
         if self.alive:
             self.after(10, self.write_loop)
-
 
     def write(self, output):
         self.terminal.insert(END, output)
