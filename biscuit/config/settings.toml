@@ -1,10 +1,11 @@
 theme="default"
 font="Consolas"
+font_size=11
 
 
 [testing]
 font_size=14
-font_family="Consolas"
+font_family="firacode"
 tab_size=4
 theme="light"
 auto_save=false

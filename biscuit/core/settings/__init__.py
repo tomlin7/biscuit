@@ -52,12 +52,10 @@ class Settings:
         self.bindings = Bindings(self)
 
     def setup_font(self):
+        
+        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/firacode/firacode.ttf"), family="firacode")
+        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/fixedsys/FSEX302.ttf"), family="fixedsys")
+        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/codicon/codicon.ttf"), family="codicon")
         self.font = tk.font.Font(
-            family=self.config.font.family, 
-            size=self.config.font.size)
-        
-        # iconfont
-        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "codicon/codicon.ttf"), family="codicon")
-
-        #TODO load firacode, fixedsys
-        
+            family=self.config.font[0], 
+            size=self.config.font[1])

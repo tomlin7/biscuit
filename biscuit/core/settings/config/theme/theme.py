@@ -1,4 +1,5 @@
 from collections.abc import Mapping
+from pygments.token import Token
 
 
 class ThemeObject(Mapping):
@@ -243,6 +244,16 @@ class Theme:
     secondary_background_highlight = 'white'
     secondary_foreground_highlight = 'black'
 
+    # syntax
+    Keyword = "#0000ff"
+    Name = "#267f99"
+    Function = "#795e26"
+    String = "#b11515"
+    Number = "#098658"
+    Comment = "#098658"
+    Punctuation = "#3b3b3b"
+
+
     def __init__(self):
         primary = [self.primary_background, self.primary_foreground, self.primary_background_highlight, self.primary_foreground_highlight]
         secondary = [self.secondary_background, self.secondary_foreground, self.secondary_background_highlight, self.secondary_foreground_highlight]
@@ -257,4 +268,71 @@ class Theme:
         self.findreplace.label = ThemeObject(self.findreplace)
         self.notifications = Notifications(self, *secondary)
 
-        #TODO syntax highlighting definitions
+        self.syntax = {
+            Token.Keyword: self.Keyword,
+            Token.Keyword.Constant: self.Keyword,
+            Token.Keyword.Declaration: self.Keyword,
+            Token.Keyword.Namespace: self.Keyword,
+            Token.Keyword.Pseudo: self.Keyword,
+            Token.Keyword.Reserved: self.Keyword,
+            Token.Keyword.Type: self.Keyword,
+
+            Token.Name: self.Name,
+            Token.Name.Attribute: self.Name,
+            Token.Name.Builtin: self.Name,
+            Token.Name.Builtin.Pseudo: self.Name,
+            Token.Name.Class: self.Name,
+            Token.Name.Constant: self.Name,
+            Token.Name.Decorator: self.Name,
+            Token.Name.Entity: self.Name,
+            Token.Name.Exception: self.Name,
+            Token.Name.Function: self. Function,
+            Token.Name.Function.Magic: self.Function,
+            Token.Name.Property: self.Name,
+            Token.Name.Label: self.Name,
+            Token.Name.Namespace: self.Name,
+            Token.Name.Other: self.Name,
+            Token.Name.Tag: self.Name,
+            Token.Name.Variable: self.Name,
+            Token.Name.Variable.Class: self.Name,
+            Token.Name.Variable.Global: self.Name,
+            Token.Name.Variable.Instance: self.Name,
+            Token.Name.Variable.Magic: self.Name,
+
+            Token.String: self.String,
+            Token.String.Affix: self.String,
+            Token.String.Backtick: self.String,
+            Token.String.Char: self.String,
+            Token.String.Delimiter: self.String,
+            Token.String.Doc: self.String,
+            Token.String.Double: self.String,
+            Token.String.Escape: self.String,
+            Token.String.Heredoc: self.String,
+            Token.String.Interpol: self.String,
+            Token.String.Other: self.String,
+            Token.String.Regex: self.String,
+            Token.String.Single: self.String,
+            Token.String.Symbol: self.String,
+
+            Token.Number: self.Number,
+            Token.Number.Bin: self.Number,
+            Token.Number.Float: self.Number,
+            Token.Number.Hex: self.Number,
+            Token.Number.Integer: self.Number,
+            Token.Number.Integer.Long: self.Number,
+            Token.Number.Oct: self.Number,
+
+            Token.Comment: self.Comment,
+            Token.Comment.Hashbang: self.Comment,
+            Token.Comment.Multiline: self.Comment,
+            Token.Comment.Preproc: self.Comment,
+            Token.Comment.PreprocFile: self.Comment,
+            Token.Comment.Single: self.Comment,
+            Token.Comment.Special: self.Comment,
+
+            # Operator: "#"
+            # Operator.Word: "#"
+
+            Token.Punctuation: self.Punctuation,
+            Token.Punctuation.Marker: self.Punctuation,
+        }

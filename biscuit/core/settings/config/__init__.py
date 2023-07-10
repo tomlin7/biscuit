@@ -1,13 +1,7 @@
+import os, toml
 from .bindings import Bindings
-from .loader import ConfigLoader
 from .theme import Light, Dark
 from dataclasses import dataclass
-
-
-@dataclass
-class Font:
-    family: str
-    size: int
 
 
 class Config:
@@ -16,14 +10,16 @@ class Config:
     """
     def __init__(self, master):
         self.base = master.base
-
-        self.loader = ConfigLoader(self)
-        self.config = self.loader.get_config()
-
+        self.config = self.load_config()
         self.load_data()
 
+    def load_config(self):
+        with open(os.path.join(self.base.configdir, "settings.toml"), 'r') as settingsfile:
+            config = toml.load(settingsfile)
+            
+        return config
+
     def load_data(self):
-        #testing 
+        #TODO testing 
         self.theme = Dark()
-        font = self.config['font']
-        self.font = Font(font, 15)
+        self.font = (self.config['font'], self.config['font_size'])

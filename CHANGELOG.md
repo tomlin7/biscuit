@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added `requests` in dependency list ([56f92e5](https://github.com/billyeatcookies/Biscuit/commit/56f92e5f66a8a7f0c12674dccff511621e29dde5) by Satakun Utama).
 - Added further checks to handle git not found exceptions ([c0bb977](https://github.com/billyeatcookies/Biscuit/commit/c0bb977459392a045c02a01cd7c65b0db311ab46) by Billy).
 - Add poetry to project ([c490824](https://github.com/billyeatcookies/Biscuit/commit/c490824ad53124ee0527d52f66c41ff188bd706a) by Billy).
 - Add games/game of life implementation - games/game of life ([fae2067](https://github.com/billyeatcookies/Biscuit/commit/fae2067b34add88467d5b23c887ba4481eb5627d) by Billy).
@@ -19,6 +20,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix: custom prompt is shown for linux only ([9cf9df9](https://github.com/billyeatcookies/Biscuit/commit/9cf9df9e69d8c0563420df26b5134bb47dba37da) by Billy).
+- fix: Diff Editor lhs/rhs should be equally divided ([59fee40](https://github.com/billyeatcookies/Biscuit/commit/59fee40991341b6947830866a479cb9778890a0f) by Billy).
+- fix: Poetry - python version can be any `^3.10` - add `poetry.lock` file ([da82367](https://github.com/billyeatcookies/Biscuit/commit/da82367e83f60fb7d8fe254c3811ed0f92031fec) by Billy).
+- fix: Status bar editmode info are not hidden when editor is closed ([765d5ce](https://github.com/billyeatcookies/Biscuit/commit/765d5ced7e8acce1a625ec616c3749ad20e2f9a6) by Billy).
+- fix #55: theming autocompletions correctly ([f145b2e](https://github.com/billyeatcookies/Biscuit/commit/f145b2efb3fab713c41b68279300e44bcd3f26e5) by Billy).
+- fix: enforce module restrictions only for the imported extensions, not globally ([d28ec3b](https://github.com/billyeatcookies/Biscuit/commit/d28ec3baf692e537cc4bdf8e2585c3b669a650e6) by Billy).
 - Fix the closure bug with games manager ([bc18052](https://github.com/billyeatcookies/Biscuit/commit/bc1805228eec4fda9cfb5d902617e180fbe1376d) by Billy).
 - Fix #59: Notifications not showing up on `info`, `warn`, `error` calls ([a77c15c](https://github.com/billyeatcookies/Biscuit/commit/a77c15c1ad7d435fb85a03d35c91be744050279c) by Billy).
 - Fix #58: Actionsets registered are not updated when new actions are added ([f4f4817](https://github.com/billyeatcookies/Biscuit/commit/f4f4817e088dfc0c22bf74a0f0166620b9c43fe0) by Billy).

@@ -43,6 +43,8 @@ def run_extension(script_path):
     extension_module = importlib.import_module(module_name)
 
     # override the import function to enforce module restrictions
+    
+    # issue with this is that it restricts imports globally, affecting the main app
     extension_module.__builtins__["__import__"] = restricted_import
 
     # Execute the extension code

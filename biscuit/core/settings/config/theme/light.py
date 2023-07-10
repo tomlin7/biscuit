@@ -1,5 +1,6 @@
 import sv_ttk
 from .theme import Theme
+from pygments.token import Token
 
 
 class Light(Theme):
@@ -17,6 +18,16 @@ class Light(Theme):
     secondary_foreground = 'black'
     secondary_foreground_highlight = 'black'
 
+    # syntax
+    Keyword = "#0000ff"
+    Name = "#267f99"
+    Function = "#795e26"
+    String = "#b11515"
+    Number = "#098658"
+    Comment = "#098658"
+    Punctuation = "#3b3b3b"
+    
     def __init__(self, *args, **kwds):
         super().__init__(*args, **kwds)
         sv_ttk.use_light_theme()
+        
