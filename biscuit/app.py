@@ -1,4 +1,8 @@
-import os, sys, subprocess, tkinter as tk
+import os
+import subprocess
+import sys
+import tkinter as tk
+from ctypes import windll
 
 from core import *
 from core.components import FindReplace, register_game
@@ -37,6 +41,7 @@ class App(tk.Tk):
         self.setup_extensions()
     
     def setup_tk(self):
+        windll.shcore.SetProcessDpiAwareness(1)
         self.geometry("1100x750")
         self.minsize(800, 600)
         self.title("Biscuit")
