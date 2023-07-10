@@ -2,25 +2,26 @@ import importlib
 import os, threading, sys
 
 
+
 class ExtensionManager:
     def __init__(self, base):
         self.base = base
         self.extensions = []
 
-        self.allowed_modules = ['math', 'random', '_io']
-        self.allowed_imports = {module: __import__(module) for module in self.allowed_modules}
+        self.blocked_modules = ['os', 'sys']
+
         sys.modules['builtins'].__import__ = self.restricted_import
 
         self.load_extensions()
 
     def restricted_import(self, name, globals={}, locals={}, fromlist=[], level=0):
-        if name in self.allowed_modules:
-            return self.allowed_imports[name]
-    
-        raise ImportError("Module '{}' is not allowed.".format(name))
+        if name in self.blocked_modules:
+            raise ImportError("Module '{}' is not allowed.".format(name))
+
+        return __import__(name, globals, locals, fromlist, level)
 
     def load_extensions(self):
-        "currently loads all extension in the directory"
+        # Currently loads all extensions in the directory
         extension_files = os.listdir(self.base.extensionsdir)
         for extension_file in extension_files:
             if extension_file.endswith(".py"):
@@ -35,12 +36,12 @@ class ExtensionManager:
                 except ImportError as e:
                     self.base.logger.error(f"Failed to load extension '{extension_name}': {e}")
                     self.base.notifications.error(f"Extension '{extension_name}' failed: see logs.")
-    
+
     def start_server(self):
         self.base.logger.info(f"Extensions server started.")
         self.server = threading.Thread(target=self.run_extensions)
         self.server.start()
-    
+
     def stop_server(self):
         print(f"Extensions server stopped.")
         self.server.join()
