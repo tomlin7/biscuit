@@ -22,6 +22,9 @@ class Terminal(PanelView):
 
         #get the correct terminal command depending on platform
         self.terminal_command = environ.get('COMSPEC') or environ.get('SHELL')
+        if not self.terminal_command:
+            Label(self, text="No terminals detected for the host os, report an issue otherwise.").pack()
+            return
         
         self.terminal = TerminalText(self, relief=FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.terminal.grid(row=0, column=0, sticky=NSEW)
