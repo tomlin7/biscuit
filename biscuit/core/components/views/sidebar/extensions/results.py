@@ -27,11 +27,17 @@ class Results(SidebarViewItem):
         self.run_fetch_list()
     
     def refresh(self):
+        if self.base.testing:
+            return
+        
         self.run_fetch_list()
         self.base.extensionsmanager.refresh_extensions()
         self.base.extensionsmanager.restart_server()
     
-    def run_fetch_list(self):
+    def run_fetch_list(self):        
+        if self.base.testing:
+            return
+        
         threading.Thread(target=self.fetch_list).start()
 
     def fetch_list(self):

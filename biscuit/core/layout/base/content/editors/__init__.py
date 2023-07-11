@@ -88,7 +88,7 @@ class EditorsPane(Frame):
     
     def close_active_editor(self):
         "Closes the active tab"
-        self.close_editor(self.active_editor)
+        self.tabs.close_active_tab()
 
     def delete_editor(self, editor):
         "Permanently delete a editor."

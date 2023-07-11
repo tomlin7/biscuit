@@ -19,6 +19,9 @@ class Tabs(Frame):
 
         tab.select()
     
+    def close_active_tab(self):
+        self.close_tab(self.active_tab)
+    
     def close_tab(self, tab):
         i = self.tabs.index(tab)
         self.tabs.remove(tab)

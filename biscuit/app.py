@@ -1,6 +1,5 @@
-import os
+import os, sys
 import subprocess
-import sys
 import tkinter as tk
 from ctypes import windll
 
@@ -8,15 +7,22 @@ from core import *
 from core.components import FindReplace, register_game
 from core.settings.editor import SettingsEditor
 
-
 class App(tk.Tk):
-    def __init__(self, dir, *args, **kwargs):
+    """
+    The App class is the main class of Biscuit. It inherits from the Tkinter Tk class and provides the main window of the application. 
+    The class is responsible for setting up the application, initializing the editor, handling events, and managing the different components of the application. 
+    It also provides methods for opening and closing directories, editors, and settings, as well as for updating the Git status and registering games. 
+    The class uses other classes from the core package, such as Root, SysInfo, Settings, Git, Palette, FindReplace, Notifications, 
+    and ExtensionManager, to provide the different functionalities of the application.
+    """
+    def __init__(self, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base = self
 
         # TODO handling resizing, positioning, close min max buttons
         #self.overrideredirect(True)
 
+        self.withdraw()
         self.setup()
         self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True)
@@ -31,7 +37,7 @@ class App(tk.Tk):
         self.setup_tk()
         self.setup_path()
         self.setup_configs()
-    
+
     def late_setup(self):
         self.focus_set()
         self.binder.late_bind_all()
@@ -42,7 +48,12 @@ class App(tk.Tk):
     
     def setup_tk(self):
         windll.shcore.SetProcessDpiAwareness(1)
-        self.geometry("1100x750")
+        app_width = 1200
+        app_height = 900
+        # x = int((self.winfo_screenwidth() - app_width) / 2)
+        # y = int((self.winfo_screenheight() - app_height) / 2)
+
+        self.geometry(f"{app_width}x{app_height}")
         self.minsize(800, 600)
         self.title("Biscuit")
 
@@ -53,6 +64,10 @@ class App(tk.Tk):
         self.extensionsdir = os.path.join(self.appdir, "extensions")
 
     def setup_configs(self):
+        self.testing = False
+        if os.environ.get('ENVIRONMENT') == 'test':
+            self.testing = True
+
         self.git_found = False
         self.active_directory = None
         self.active_branch_name = None
@@ -82,6 +97,9 @@ class App(tk.Tk):
         self.logger = self.panel.logger
     
     def setup_extensions(self):
+        if self.testing:
+            return
+        
         self.api = ExtensionsAPI(self)
         self.extensionsmanager = ExtensionManager(self)
         self.extensionsmanager.start_server()
@@ -89,6 +107,9 @@ class App(tk.Tk):
     def initialize_editor(self):
         self.palette.generate_help_actionset()
         self.logger.info('Initializing editor finished.')
+        
+        self.update_idletasks()
+        self.deiconify()
     
     def open_directory(self, dir):
         if not os.path.isdir(dir):

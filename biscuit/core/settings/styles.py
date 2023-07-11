@@ -52,6 +52,9 @@ class Style(ttk.Style):
 
     def config_treeview(self):
         ## TREENODE CHEVRONS -----
+        if self.base.testing:
+            return
+        
         self.img_tree_close = tk.PhotoImage("img_tree_close", data="""
                 iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d
                 2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAALBJREFUGJVjYIACExMTfxMTk8WhoaHMDDgAE4zx69ev4////ze4d+
