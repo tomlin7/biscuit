@@ -1,3 +1,10 @@
+"""
+Entry point for the main app.
+To run the app, do:
+
+>>> python biscuit
+"""
+
 import sys
 from app import App
 

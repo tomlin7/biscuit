@@ -11,6 +11,12 @@ from .editor import SettingsEditor
 
 
 class Settings:
+    """
+    The Settings class is responsible for managing the configuration settings of the application. 
+    It initializes the Config, Style, and Resources classes, and sets up properties such as bindings and fonts. 
+    It also generates an action set that allows the user to run commands and access various settings 
+    related to the editor theme, bindings, and font.
+    """
     def __init__(self, base):
         self.base = base
 
@@ -26,10 +32,20 @@ class Settings:
         self.gen_actionset()
     
     def register_command(self, name, command):
+        """
+        Registers a new command to the action set.
+
+        Args:
+            name (str): The name of the command.
+            command (function): The function to be executed when the command is triggered.
+        """
         self.commands.append((name, command))
         self.gen_actionset()
-    
+
     def gen_actionset(self):
+        """
+        Generates the action set with predefined commands and registered commands.
+        """
         from core.components import ActionSet
         self._actionset = ActionSet(
             "Show and run commands", ">",
@@ -39,23 +55,38 @@ class Settings:
                 ("Editor Font", lambda e=None: print("Font", e)),
             ] + self.commands + get_games(self.base)
         )
-    
-    @property
-    def actionset(self):
-        return self._actionset
 
     def setup_properties(self):
+        """
+        Sets up properties such as bindings and fonts.
+        """
         self.setup_bindings()
         self.setup_font()
-    
+
     def setup_bindings(self):
+        """
+        Sets up the Bindings class.
+        """
         self.bindings = Bindings(self)
 
     def setup_font(self):
-        
-        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/firacode/firacode.ttf"), family="firacode")
-        self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/fixedsys/FSEX302.ttf"), family="fixedsys")
+        """
+        Sets up the font and icon fonts.
+        """
+        self.firacodefont = extra.Font(file=os.path.join(self.base.resdir, "fonts/firacode/firacode.ttf"), family="firacode")
+        self.fixedsysfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/fixedsys/FSEX302.ttf"), family="fixedsys")
         self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/codicon/codicon.ttf"), family="codicon")
         self.font = tk.font.Font(
-            family=self.config.font[0], 
-            size=self.config.font[1])
+            family=self.config.font[0],
+            size=self.config.font[1]
+        )
+
+    @property
+    def actionset(self):
+        """
+        Returns the generated action set.
+
+        Returns:
+            ActionSet: The generated action set.
+        """
+        return self._actionset
