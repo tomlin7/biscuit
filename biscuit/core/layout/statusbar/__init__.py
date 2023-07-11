@@ -124,3 +124,6 @@ class Statusbar(Frame):
 
     def set_line_col_info(self, line, col, selected):
         self.line_col_info.change_text(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))
+
+    def set_encoding(self, encoding):
+        self.encoding.change_text(text=encoding.upper())
