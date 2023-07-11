@@ -10,7 +10,7 @@ class Highlighter:
         self.base = master.base
 
         try:
-            self.lexer = get_lexer_for_filename(os.path.basename(master.path))
+            self.lexer = get_lexer_for_filename(os.path.basename(master.path), inencoding=master.encoding, encoding=master.encoding)
         except ClassNotFound:
             self.lexer = None
 
