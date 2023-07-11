@@ -32,9 +32,6 @@ class TextEditor(BaseEditor):
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
 
-        if self.exists:
-            self.text.load_file()
-
         self.text.bind("<<Change>>", self.on_change)
         self.text.bind("<Configure>", self.on_change)
 

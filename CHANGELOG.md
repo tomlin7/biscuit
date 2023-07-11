@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.5.0...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.5.1...HEAD)</small>
 
 <!-- insertion marker -->
+## [v2.5.1](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.5.1) - 2023-07-10
+
+<small>[Compare with v2.5.0](https://github.com/billyeatcookies/Biscuit/compare/v2.5.0...v2.5.1)</small>
+
 ## [v2.5.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.5.0) - 2023-07-10
 
 <small>[Compare with 2.0.0](https://github.com/billyeatcookies/Biscuit/compare/2.0.0...v2.5.0)</small>

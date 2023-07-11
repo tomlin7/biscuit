@@ -1,4 +1,4 @@
-import re
+import re, codecs, io
 import tkinter as tk
 
 from .syntax import Syntax
@@ -13,23 +13,27 @@ class Text(Text):
         super().__init__(master, *args, **kwargs)
         self.path = path
         self.data = None
+        self.encoding = 'utf-8'
         self.exists = exists
         self.minimalist = minimalist
 
-        self.syntax = Syntax(self)
-        self.highlighter = Highlighter(self)
-
+        self.bom = True
         self.current_word = None
         self.words = []
+
+        if self.exists:
+            self.load_file()
+
+        self.syntax = Syntax(self)
         self.auto_completion = AutoComplete(
             self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
+        self.highlighter = Highlighter(self)
 
-        self.configure(wrap=tk.NONE, relief=tk.FLAT, **self.base.theme.editors.text)
-        
         self.focus_set()
         self.config_tags()
         self.create_proxy()
         self.config_bindings()
+        self.configure(wrap=tk.NONE, relief=tk.FLAT, **self.base.theme.editors.text)
 
         self.update_words()
 
@@ -247,13 +251,32 @@ class Text(Text):
 
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)
-    
+
+    def detect_encoding_and_endianness(self, file_path):
+        with open(file_path, 'rb') as file:
+            bom = file.read(4)
+
+        if bom.startswith(codecs.BOM_UTF8):
+            return 'utf-8'
+        elif bom.startswith(codecs.BOM_LE) or bom.startswith(codecs.BOM_BE):
+            return 'utf-16'
+        elif bom.startswith(codecs.BOM32_BE) or bom.startswith(codecs.BOM32_LE):
+            return 'utf-32'
+
+        self.bom = False
+        return 'utf-8'
+
     def load_file(self):
         try:
-            with open(self.path, 'r') as data:
-                self.set_data(data.read())
+            encoding = self.detect_encoding_and_endianness(self.path)
+            with open(self.path, 'r', encoding=encoding) as data:
+                content = data.read()
+                if content.startswith('\ufeff'):
+                    content = content[1:]
+                self.encoding = encoding
+                self.set_data(content)
                 self.clear_insert()
-        except Exception:
+        except Exception as e:
             self.master.unsupported_file()
     
     def save_file(self, path=None):
