@@ -7,6 +7,15 @@ from core import *
 from core.components import FindReplace, register_game
 from core.settings.editor import SettingsEditor
 
+import os, sys
+import subprocess
+import tkinter as tk
+from ctypes import windll
+
+from core import *
+from core.components import FindReplace, register_game
+from core.settings.editor import SettingsEditor
+
 class App(tk.Tk):
     """
     The App class is the main class of Biscuit. It inherits from the Tkinter Tk class and provides the main window of the application. 
@@ -15,6 +24,7 @@ class App(tk.Tk):
     The class uses other classes from the core package, such as Root, SysInfo, Settings, Git, Palette, FindReplace, Notifications, 
     and ExtensionManager, to provide the different functionalities of the application.
     """
+
     def __init__(self, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base = self
@@ -30,15 +40,18 @@ class App(tk.Tk):
         self.initialize_editor()
     
     def run(self):
+        """Runs the main loop of the application and stops the extension manager server."""
         self.mainloop()
         self.extensionsmanager.stop_server()
     
     def setup(self):
+        """Sets up the Tkinter window, path, and configurations of the application."""
         self.setup_tk()
         self.setup_path()
         self.setup_configs()
 
     def late_setup(self):
+        """Sets up the references, binds, and extensions of the application."""
         self.focus_set()
         self.binder.late_bind_all()
         self.setup_references()
@@ -47,6 +60,7 @@ class App(tk.Tk):
         self.setup_extensions()
     
     def setup_tk(self):
+        """Sets up the Tkinter window size, title, and minimum size."""
         windll.shcore.SetProcessDpiAwareness(1)
         app_width = 1200
         app_height = 900
@@ -58,12 +72,14 @@ class App(tk.Tk):
         self.title("Biscuit")
 
     def setup_path(self):       
+        """Sets up the application directory, configuration directory, resource directory, and extensions directory."""
         self.appdir = os.path.dirname(__file__)
         self.configdir = os.path.join(self.appdir, 'config')
         self.resdir = os.path.join(self.appdir, 'res')
         self.extensionsdir = os.path.join(self.appdir, "extensions")
 
     def setup_configs(self):
+        """Sets up the system information, settings, configurations, theme, events, binder, Git, palette, find and replace, and notifications of the application."""
         self.testing = False
         if os.environ.get('ENVIRONMENT') == 'test':
             self.testing = True
@@ -88,6 +104,7 @@ class App(tk.Tk):
         self.notifications = Notifications(self)
 
     def setup_references(self):
+        """Sets up the editors manager, panel, content pane, status bar, explorer, source control, and logger of the application."""
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
         self.contentpane = self.root.baseframe.contentpane
@@ -97,6 +114,7 @@ class App(tk.Tk):
         self.logger = self.panel.logger
     
     def setup_extensions(self):
+        """Sets up the extensions API and manager of the application."""
         if self.testing:
             return
         
@@ -105,6 +123,7 @@ class App(tk.Tk):
         self.extensionsmanager.start_server()
 
     def initialize_editor(self):
+        """Generates the help action set and initializes the editor of the application."""
         self.palette.generate_help_actionset()
         self.logger.info('Initializing editor finished.')
         
@@ -112,6 +131,7 @@ class App(tk.Tk):
         self.deiconify()
     
     def open_directory(self, dir):
+        """Opens a directory in the explorer and updates the Git status."""
         if not os.path.isdir(dir):
             return
 
@@ -121,6 +141,7 @@ class App(tk.Tk):
         self.update_git()
     
     def close_active_directory(self):
+        """Closes the active directory and all editors associated with it."""
         self.active_directory = None
         self.explorer.directory.close_directory()
         self.editorsmanager.delete_all_editors()
@@ -128,51 +149,63 @@ class App(tk.Tk):
         self.update_git()
     
     def close_active_editor(self):
+        """Closes the active editor."""
         self.editorsmanager.close_active_editor()
 
     def open_editor(self, path, exists=True):
+        """Opens an editor for a file path."""
         if exists and not os.path.isfile(path):
             return
 
         self.editorsmanager.open_editor(path, exists)
 
     def open_diff(self, path, exists=True):
+        """Opens a diff editor for a file path."""
         if exists and not os.path.isfile(path):
             return
 
         self.editorsmanager.open_diff_editor(path, exists)
     
     def open_settings(self):
+        """Opens the settings editor."""
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
     
     def open_game(self, name):
+        """Opens a game editor."""
         self.editorsmanager.open_game(name)
     
     def register_game(self, game):
+        """Registers a game and generates the action set."""
         register_game(game)
         self.settings.gen_actionset()
     
     def update_git(self):
+        """Updates the Git status and refreshes the source control."""
         self.git.check_git()
         self.statusbar.update_git_info()
         self.source_control.refresh()
 
     def open_in_new_window(self, dir):
+        """Opens a new window for a directory."""
         subprocess.Popen(["python", sys.argv[0], dir])
     
     def open_new_window(self):
+        """Opens a new window."""
         subprocess.Popen(["python", sys.argv[0]])
 
     def set_title(self, name=None):
+        """Sets the title of the application window."""
         if name:
             return self.title("Biscuit")
         self.title(f"{name} - Biscuit")
     
     def toggle_terminal(self):
+        """Toggles the terminal panel."""
         self.panel.set_active_view(self.panel.terminal)
         self.contentpane.toggle_panel()
     
     def update_statusbar(self):
+        """Updates the status bar with the line, column, and selection information of the active editor."""
         if editor := self.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 self.statusbar.toggle_editmode(True)
@@ -183,9 +216,11 @@ class App(tk.Tk):
         self.statusbar.toggle_editmode(False)
     
     def register_onupdate(self, fn):
+        """Registers a function to be called on GUI update."""
         self.onupdate_functions.append(fn)
 
     def on_gui_update(self, *_):
+        """Calls all registered functions on GUI update."""
         for fn in self.onupdate_functions:
             try:
                 fn()
