@@ -8,11 +8,11 @@ class ExtensionManager:
         self.extensions = {}
         self.run_finished = {}
         
-        #TODO file watcher for extensions directory
+        # #TODO file watcher for extensions directory
 
-        self.blocked_modules = ['os', 'sys']
-        self.imports = {module: __import__(module) for module in sys.modules}
-        sys.modules['builtins'].__import__ = self.restricted_import
+        # self.blocked_modules = ['os', 'sys']
+        # self.imports = {module: __import__(module) for module in sys.modules}
+        # sys.modules['builtins'].__import__ = self.restricted_import
 
         self.load_extensions()
 
