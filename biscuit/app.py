@@ -46,9 +46,9 @@ class App(tk.Tk):
     
     def setup(self):
         """Sets up the Tkinter window, path, and configurations of the application."""
-        self.setup_tk()
         self.setup_path()
         self.setup_configs()
+        self.setup_tk()
 
     def late_setup(self):
         """Sets up the references, binds, and extensions of the application."""
@@ -59,17 +59,6 @@ class App(tk.Tk):
         self.palette.register_actionset(lambda: self.settings.actionset)
         self.setup_extensions()
     
-    def setup_tk(self):
-        """Sets up the Tkinter window size, title, and minimum size."""
-        windll.shcore.SetProcessDpiAwareness(1)
-        app_width = 1200
-        app_height = 900
-        # x = int((self.winfo_screenwidth() - app_width) / 2)
-        # y = int((self.winfo_screenheight() - app_height) / 2)
-
-        self.geometry(f"{app_width}x{app_height}")
-        self.minsize(800, 600)
-        self.title("Biscuit")
 
     def setup_path(self):       
         """Sets up the application directory, configuration directory, resource directory, and extensions directory."""
@@ -112,6 +101,23 @@ class App(tk.Tk):
         self.explorer = self.root.baseframe.sidebar.explorer
         self.source_control = self.root.baseframe.sidebar.source_control
         self.logger = self.panel.logger
+
+    def setup_tk(self):
+        """Sets up the Tkinter window size, title, and minimum size."""
+        windll.shcore.SetProcessDpiAwareness(1)
+
+        dpi_value = self.winfo_fpixels('1i')
+        scale = dpi_value / 96
+        self.tk.call('tk', 'scaling', '-displayof', '.', scale)
+
+        app_width = round(1500 * scale)
+        app_height = round(950 * scale)
+        # x = int((self.winfo_screenwidth() - app_width) / 2)
+        # y = int((self.winfo_screenheight() - app_height) / 2)
+
+        self.geometry(f"{app_width}x{app_height}")
+        self.minsize(800, 600)
+        self.title("Biscuit")
     
     def setup_extensions(self):
         """Sets up the extensions API and manager of the application."""
