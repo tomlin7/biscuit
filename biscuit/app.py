@@ -106,12 +106,8 @@ class App(tk.Tk):
         """Sets up the Tkinter window size, title, and minimum size."""
         windll.shcore.SetProcessDpiAwareness(1)
 
-        dpi_value = self.winfo_fpixels('1i')
-        scale = dpi_value / 96
-        self.tk.call('tk', 'scaling', '-displayof', '.', scale)
-
-        app_width = round(1500 * scale)
-        app_height = round(950 * scale)
+        app_width = 1500
+        app_height = 950
         # x = int((self.winfo_screenwidth() - app_width) / 2)
         # y = int((self.winfo_screenheight() - app_height) / 2)
 
