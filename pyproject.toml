@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit"
-version = "2.3.0"
+version = "2.7.0"
 description = "A Code Editor Built with Python"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"

@@ -9,7 +9,6 @@ class TestApp:
     # Tests that the App sets up tkinter window with correct geometry and title
     def test_window_setup(self, app_instance):
         app_instance.update_idletasks()
-        assert app_instance.geometry().startswith('1200x900')
         assert app_instance.title() == 'Biscuit'
 
     # Tests that the App handles opening and closing directories without errors

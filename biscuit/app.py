@@ -38,21 +38,7 @@ class App(tk.Tk):
         self.root.pack(fill=tk.BOTH, expand=True)
         self.late_setup()
         self.initialize_editor()        
-        
-        # testing
-        self.bind('<Control-a>', self.zoom_in)
-        self.bind('<Control-s>', self.zoom_out)
-
-    def zoom_in(self, event):
-        self.scale *= 1.1  # Increase scale by 10%
-        self.tk.call('tk', 'scaling', '-displayof', '.', self.scale)
-        self.update_idletasks()
-
-    def zoom_out(self, event):
-        self.scale /= 1.1  # Decrease scale by 10%
-        self.tk.call('tk', 'scaling', '-displayof', '.', self.scale)
-        self.update_idletasks()
-        
+      
     def run(self):
         """Runs the main loop of the application and stops the extension manager server."""
         self.mainloop()
@@ -78,8 +64,8 @@ class App(tk.Tk):
         windll.shcore.SetProcessDpiAwareness(1)
 
         self.dpi_value = self.winfo_fpixels('1i')
-        self.scale = self.dpi_value / 65
-        self.tk.call('tk', 'scaling', '-displayof', '.', self.scale)
+        self.scale = self.dpi_value / 72
+        self.tk.call('tk', 'scaling', self.scale)
 
         app_width = round(1000 * self.scale)
         app_height = round(650 * self.scale)
