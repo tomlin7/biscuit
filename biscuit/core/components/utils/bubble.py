@@ -14,7 +14,7 @@ class Bubble(Toplevel):
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
         self.config(bg=self.base.theme.border)
-        Label(self, text=text, padx=5, pady=5, **self.base.theme.utils.bubble).pack(padx=bd, pady=bd)
+        Label(self, text=text, padx=5, pady=5, font=("Segoi UI", 10), **self.base.theme.utils.bubble).pack(padx=bd, pady=bd)
         self.withdraw()
     
     def get_pos(self):

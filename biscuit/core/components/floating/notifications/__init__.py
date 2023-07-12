@@ -16,7 +16,7 @@ class Notifications(Toplevel):
         self.overrideredirect(True)
 
         self.offset = 10
-        self.minsize(width=400, height=20)
+        self.minsize(width=round(300*self.base.scale), height=round(15*self.base.scale))
 
         self.icon = Icon(self, 'info', padx=5, **self.base.theme.notifications.text)
         self.icon.pack(side=tk.LEFT, fill=tk.BOTH)

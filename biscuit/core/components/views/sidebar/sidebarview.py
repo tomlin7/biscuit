@@ -15,10 +15,10 @@ class SidebarView(View):
         self.config(width=300, **self.base.theme.views.sidebar)
 
         top = Frame(self, **self.base.theme.views.sidebar)
-        top.pack(fill=X, padx=(15, 10), pady=5)
+        top.pack(fill=X, padx=(15, 10), pady=7)
         top.grid_columnconfigure(0, weight=1)
 
-        tk.Label(top, text=self.__class__.__name__.upper(), anchor=W,
+        tk.Label(top, text=self.__class__.__name__.upper(), anchor=W, font=("Segoi UI", 8),
                  **self.base.theme.views.sidebar.title).grid(row=0, column=0, sticky=EW)
         
         column = 1

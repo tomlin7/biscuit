@@ -10,7 +10,7 @@ class Entry(Frame):
         self.config(padx=1, pady=1, bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
 
-        self.entry = HintedEntry(self, relief=tk.FLAT, **self.base.theme.utils.entry, bd=5, hint=hint)
+        self.entry = HintedEntry(self, relief=tk.FLAT, font=("Segoi UI", 10), **self.base.theme.utils.entry, bd=5, hint=hint)
         self.entry.config(*args, **kwargs)
         self.entry.grid(row=0, column=0, sticky=tk.NSEW)
 
