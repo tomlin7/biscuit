@@ -3,7 +3,7 @@ from core.components.utils import Toplevel
 
 
 class PathView(Toplevel):
-    def __init__(self, master, width=80, *args, **kwargs):
+    def __init__(self, master, width=100, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.width = width
         
