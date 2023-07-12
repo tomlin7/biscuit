@@ -1,4 +1,5 @@
 import re, codecs, io
+import threading
 import tkinter as tk
 
 from .syntax import Syntax
@@ -16,7 +17,8 @@ class Text(Text):
         self.encoding = 'utf-8'
         self.exists = exists
         self.minimalist = minimalist
-
+        
+        self.buffer_size = 1000
         self.bom = True
         self.current_word = None
         self.words = []
@@ -252,7 +254,7 @@ class Text(Text):
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)
 
-    def detect_encoding_and_endianness(self, file_path):
+    def detect_encoding(self, file_path):
         with open(file_path, 'rb') as file:
             bom = file.read(4)
 
@@ -268,14 +270,18 @@ class Text(Text):
 
     def load_file(self):
         try:
-            encoding = self.detect_encoding_and_endianness(self.path)
-            with open(self.path, 'r', encoding=encoding) as data:
-                content = data.read()
-                if content.startswith('\ufeff'):
-                    content = content[1:]
-                self.encoding = encoding
-                self.set_data(content)
-                self.clear_insert()
+            encoding = self.detect_encoding(self.path)
+            file = open(self.path, 'r', encoding=encoding)
+            self.encoding = encoding
+            def load_file():
+                while True:
+                    chunk = file.read(self.buffer_size)
+                    if not chunk:
+                        file.close()
+                        break
+                    self.write(chunk)
+                    self.update() 
+            threading.Thread(target=load_file).start()
         except Exception as e:
             self.master.unsupported_file()
     
