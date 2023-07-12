@@ -28,7 +28,7 @@ class GameOfLife(BaseGame):
         self.is_running = False
 
         self.start_stop_button.pack()
-        self.canvas.pack(fill="both", expand="true")
+        self.canvas.pack()
 
         self.canvas.bind("<B1-Motion>", self.add_cell)
 

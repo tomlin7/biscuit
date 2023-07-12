@@ -85,6 +85,8 @@ class EditorsPane(Frame):
         # not keeping diff/games in cache
         if not editor.diff and editor.content:
             self.closed_editors[editor.path] = editor
+        else:
+            editor.destroy()
     
     def close_active_editor(self):
         "Closes the active tab"
