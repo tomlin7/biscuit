@@ -71,4 +71,4 @@ class Minimap(Frame):
             self.cw.move("slider", 0, -(y - self.y_bottom_lim))
 
         self.tw.yview(int(y / self.cw.winfo_height() * 350))
-        self.tw.master.on_change()
+        self.tw.master.on_scroll()
