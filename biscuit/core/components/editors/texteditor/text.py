@@ -40,8 +40,8 @@ class Text(Text):
         self.update_words()
 
     def config_tags(self):
-        self.tag_config(tk.SEL, background=self.base.theme.biscuit)
-        self.tag_config("highlight", background=self.base.theme.biscuit_dark)
+        self.tag_config(tk.SEL, background=self.base.theme.primary_background_highlight)
+        self.tag_config("highlight", background=self.base.theme.primary_background_highlight)
         
         self.tag_config("found", background="green")
         self.tag_config("foundcurrent", background="orange")
@@ -126,6 +126,9 @@ class Text(Text):
         return self.current_word.strip()
     
     def update_words(self, *_):
+        if self.minimalist:
+            return
+        
         self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
         self.after(1000, self.update_words)
     
@@ -280,7 +283,8 @@ class Text(Text):
                         file.close()
                         break
                     self.write(chunk)
-                    self.update() 
+                    self.update()
+                    self.master.on_scroll()
             threading.Thread(target=load_file).start()
         except Exception as e:
             self.master.unsupported_file()
@@ -406,14 +410,21 @@ class Text(Text):
         self.move_cursor(end)
     
     def highlight_current_word(self):
-        self.tag_remove("highlight", 1.0, tk.END)
-        text = self.get("insert wordstart", "insert wordend")
-        word = re.findall(r"\w+", text)
-        if any(word):
-            if word[0] not in self.syntax.keywords:
-                self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+        if self.minimalist:
+            return
 
-  
+        self.tag_remove("highlight", 1.0, tk.END)
+        try:
+            if word := self.get_selected_text():
+                self.highlight_pattern(word, "highlight", end="insert-1c wordstart-1c")
+                self.highlight_pattern(word, start="insert+1c")
+            else:
+                word = re.findall(r"\w+", self.get("insert wordstart", "insert wordend"))
+                if any(word) and word[0] not in self.syntax.keywords:
+                    self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+        except:
+            pass
+
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
         end = self.index(end)
@@ -435,7 +446,7 @@ class Text(Text):
 
             self.tag_add(tag, "matchStart", "matchEnd")
 
-    def on_change(self, *args):
+    def refresh(self, *args):
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlight_current_word()
         self.highlighter.highlight()
@@ -454,13 +465,11 @@ class Text(Text):
         cmd = (self._orig,) + args
         result = self.tk.call(cmd)
 
-        if (args[0] in ("insert", "replace", "delete") or 
-            args[0:3] == ("mark", "set", "insert") or
-            args[0:2] == ("xview", "moveto") or
-            args[0:2] == ("xview", "scroll") or
-            args[0:2] == ("yview", "moveto") or
-            args[0:2] == ("yview", "scroll")
-        ):
+        if (args[0] in ("insert", "replace", "delete") or args[0:3] == ("mark", "set", "insert")):
             self.event_generate("<<Change>>", when="tail")
+        
+        elif (args[0:2] == ("xview", "moveto") or args[0:2] == ("yview", "moveto") or 
+              args[0:2] == ("xview", "scroll") or args[0:2] == ("yview", "scroll")):
+            self.event_generate("<<Scroll>>", when="tail")
             
         return result

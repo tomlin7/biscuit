@@ -31,3 +31,9 @@ class ButtonsEntry(Frame):
     
     def get(self, *args):
         return self.entry.get(*args)
+
+    def delete(self, *args):
+        return self.entry.delete(*args)
+
+    def insert(self, *args):
+        return self.entry.insert(*args)

@@ -33,7 +33,16 @@ class TextEditor(BaseEditor):
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
 
         self.text.bind("<<Change>>", self.on_change)
-        self.text.bind("<Configure>", self.on_change)
+        self.text.bind("<<Scroll>>", self.on_scroll)
+
+    def on_change(self, *_):
+        self.text.refresh()
+        self.base.update_statusbar()
+
+    def on_scroll(self, *_):        
+        self.linenumbers.redraw()
+        if not self.minimalist:
+            self.minimap.redraw()
 
     def unsupported_file(self):
         self.text.highlighter.lexer = None
@@ -46,14 +55,6 @@ class TextEditor(BaseEditor):
         self.text.focus()
         self.on_change()
 
-    def on_change(self, event=None):
-        self.linenumbers.redraw()
-        if not self.minimalist:
-            self.minimap.redraw()
-        self.text.on_change()
-        self.event_generate("<<Change>>")
-        self.base.update_statusbar()
-    
     def set_fontsize(self, size):
         self.font.configure(size=size)
         self.linenumbers.set_bar_width(size * 3)
