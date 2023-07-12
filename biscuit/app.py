@@ -37,8 +37,22 @@ class App(tk.Tk):
         self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True)
         self.late_setup()
-        self.initialize_editor()
-    
+        self.initialize_editor()        
+        
+        # testing
+        self.bind('<Control-a>', self.zoom_in)
+        self.bind('<Control-s>', self.zoom_out)
+
+    def zoom_in(self, event):
+        self.scale *= 1.1  # Increase scale by 10%
+        self.tk.call('tk', 'scaling', '-displayof', '.', self.scale)
+        self.update_idletasks()
+
+    def zoom_out(self, event):
+        self.scale /= 1.1  # Decrease scale by 10%
+        self.tk.call('tk', 'scaling', '-displayof', '.', self.scale)
+        self.update_idletasks()
+        
     def run(self):
         """Runs the main loop of the application and stops the extension manager server."""
         self.mainloop()
@@ -59,7 +73,6 @@ class App(tk.Tk):
         self.palette.register_actionset(lambda: self.settings.actionset)
         self.setup_extensions()
     
-
     def setup_path(self):       
         """Sets up the application directory, configuration directory, resource directory, and extensions directory."""
         self.appdir = os.path.dirname(__file__)
@@ -115,6 +128,23 @@ class App(tk.Tk):
         self.minsize(800, 600)
         self.title("Biscuit")
     
+    def setup_tk(self):
+        """Sets up the Tkinter window size, title, and minimum size."""
+        windll.shcore.SetProcessDpiAwareness(1)
+
+        self.dpi_value = self.winfo_fpixels('1i')
+        self.scale = self.dpi_value / 65
+        self.tk.call('tk', 'scaling', '-displayof', '.', self.scale)
+
+        app_width = round(1000 * self.scale)
+        app_height = round(650 * self.scale)
+        # x = int((self.winfo_screenwidth() - app_width) / 2)
+        # y = int((self.winfo_screenheight() - app_height) / 2)
+
+        self.geometry(f"{app_width}x{app_height}")
+
+        self.title("Biscuit")
+
     def setup_extensions(self):
         """Sets up the extensions API and manager of the application."""
         if self.testing:

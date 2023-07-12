@@ -46,7 +46,7 @@ class Events:
                     editor.save()
 
     def close_file(self, *_):
-        self.base.close_active_file()
+        self.base.close_active_editor()
     
     def close_dir(self, *_):
         self.base.close_active_directory()

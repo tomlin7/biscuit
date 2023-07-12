@@ -74,9 +74,9 @@ class Style(ttk.Style):
         self.element_create(
             'Treeitem.nindicator', 'image',  self.img_tree_close,
             ('user1', '!user2', self.img_tree_open), ('user2', self.img_tree_empty), 
-            sticky='w', width=15)
+            sticky='w', width=20)
 
-        self.configure("Treeview", font=("Segoe UI", 10), rowheight=23, **self.theme.utils.tree.item)  
+        self.configure("Treeview", font=("Segoe UI", 10), rowheight=25, **self.theme.utils.tree.item)  
         self.map("Treeview", background=[('selected', self.theme.utils.tree.item.selectedbackground)])
 
         self.layout('Treeview', [('Treeview.treearea', {'sticky': 'nswe'})])

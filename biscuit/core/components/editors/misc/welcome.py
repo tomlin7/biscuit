@@ -7,7 +7,7 @@ from ..editor import BaseEditor
 class Welcome(BaseEditor):
     def __init__(self, master, exists=False, editable=False, *args, **kwargs):
         super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
-        self.config(padx=100, pady=100, **self.base.theme.editors)
+        self.config(padx=100, pady=50, **self.base.theme.editors)
 
         self.left = Frame(self, **self.base.theme.editors)
         self.left.pack(expand=True, side=tk.LEFT, fill=tk.BOTH, anchor=tk.CENTER)
@@ -15,10 +15,10 @@ class Welcome(BaseEditor):
         self.right = Frame(self, **self.base.theme.editors)
         self.right.pack(expand=True, fill=tk.BOTH, anchor=tk.CENTER)
 
-        self.title = Label(self.left, text="Biscuit", font=("Segoe UI", 45), fg=self.base.theme.biscuit, **self.base.theme.editors.biscuit_labels)
+        self.title = Label(self.left, text="Biscuit", font=("Segoe UI", 50), fg=self.base.theme.biscuit, **self.base.theme.editors.biscuit_labels)
         self.title.grid(row=0, column=0, sticky=tk.W)
 
-        self.description = Label(self.left, text="Made with ❤", font=("Segoe UI", 20), fg=self.base.theme.biscuit_light, **self.base.theme.editors.biscuit_labels)
+        self.description = Label(self.left, text="Made with ❤", font=("Segoe UI", 20), fg=self.base.theme.biscuit_dark, **self.base.theme.editors.biscuit_labels)
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.create_start_group()
@@ -27,7 +27,7 @@ class Welcome(BaseEditor):
         self.logo.grid(row=0, column=0, sticky=tk.NSEW)
     
     def create_start_group(self):
-        Label(self.left, text="Start", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=2, column=0, sticky=tk.W, pady=(30, 0))
+        Label(self.left, text="Start", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
         start_group = Frame(self.left, **self.base.theme.editors)
         start_group.grid(row=3, column=0, sticky=tk.EW)
 

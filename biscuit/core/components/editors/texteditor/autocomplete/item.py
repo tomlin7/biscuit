@@ -14,7 +14,7 @@ class AutoCompleteItem(Frame):
 
         self.kindw = Kind(self, self.master.autocomplete_kinds, kind)
         self.textw = tk.Text(self, 
-            font=('Consolas', 11), fg=self.fg, bg=self.bg,
+            font=self.base.settings.font, fg=self.fg, bg=self.bg,
             relief=tk.FLAT, highlightthickness=0, width=30, height=1)
         self.textw.insert(tk.END, text)
         self.textw.config(state=tk.DISABLED)

@@ -9,7 +9,7 @@ from core.components.utils import Frame
 class Slots(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(width=100, **self.base.theme.layout.base.sidebar.slots)
+        self.config(width=150, **self.base.theme.layout.base.sidebar.slots)
 
         self.slots = []
         self.active_slot = None

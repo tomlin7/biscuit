@@ -8,6 +8,6 @@ class Separator(tk.Label):
         self.master = master
 
         self.config(
-            text="———————————————————————", pady=0,
+            text="—"*round((18*self.base.scale)), pady=0,
             height=1, **self.base.theme.menu, fg=self.base.theme.border
         )

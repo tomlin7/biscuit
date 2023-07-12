@@ -3,9 +3,9 @@ from core.components.utils import Toplevel
 
 
 class PathView(Toplevel):
-    def __init__(self, master, width=80, *args, **kwargs):
+    def __init__(self, master, width=150, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.width = width
+        self.width = round(width * self.base.scale)
         
         self.tree = DirectoryTree(self, width=width, observe_changes=False, itembar=False)
         self.tree.pack()

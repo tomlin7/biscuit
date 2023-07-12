@@ -17,7 +17,7 @@ class ItemBar(Frame):
         self.toggle = IconButton(self, icon='chevron-down', event=self.toggle_content, width=1)
         self.toggle.grid(row=0, column=0)
 
-        self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title,  **self.base.theme.views.sidebar.itembar.title)
+        self.label_title = tk.Label(self, anchor=tk.W, textvariable=self.title, font=("Segoi UI", 9, "bold"),  **self.base.theme.views.sidebar.itembar.title)
         self.label_title.grid(row=0, column=1, sticky=tk.EW)
 
         self.buttoncolumn = 0

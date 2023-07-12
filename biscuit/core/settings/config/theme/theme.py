@@ -128,7 +128,7 @@ class Layout(FrameThemeObject):
         self.base = BasePane(self)
 
         self.statusbar = FrameThemeObject(self)
-        self.statusbar.button = HighlightableThemeObject(self.statusbar).remove_bg_highlight()
+        self.statusbar.button = HighlightableThemeObject(self.statusbar)
 
 class SidebarViews(FrameThemeObject):    
     def __init__(self, *args, **kwargs):
