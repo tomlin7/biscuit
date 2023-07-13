@@ -1,16 +1,19 @@
 <h1 align="center">
-    <img src="./logo.svg" width=300><br>Biscuit
+    <img src="./logo.svg" width=300><br>
+    THE BISCUIT PROJECT
 </h1>
-<h3 align="center">
-    A Code Editor Built with Python
-</h3>
-<h3 align="center">
-  <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
-  <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge"> 
-  <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
-</h3>
-Biscuit is not just your ordinary text editor—it's a cutting-edge powerhouse designed to revolutionize your coding experience. With its highly customizable and clutter-free user interface, Biscuit draws inspiration from the legendary <b>Visual Studio Code</b>, aiming to deliver a comparable level of capability and elegance. But here's the game-changer: Biscuit is built entirely with pure Python and the versatile Tkinter library.
+<h2 align="center">
+     Understanding Code Editors & Streamlining Processes<br><br>
+    <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
+    <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge"> 
+    <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
+</h2>
+
+The main aim of the **Biscuit project**, when it started off was to break down the complex processes behind popular code editors that power today, and develop a comparable tool that is as capable, efficient, and well-optimized as the existing ones. The current codebase of Biscuit is written in **pure Python** and draws a lot of inspiration from esteemed code editors like Visual Studio Code, Atom, and Emacs.
+
+Our project also aims to foster a vibrant open-source community of Python enthusiasts and software developers, working together to create a truly innovative tool. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletion, and Git integration.
+
 <h1></h1>
 <h3>
     <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/0e596550-22fe-42bc-a4e7-7e028155387a />
