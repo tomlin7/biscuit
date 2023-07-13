@@ -29,7 +29,7 @@ class App(tk.Tk):
         super().__init__(*args, **kwargs)
         self.base = self
 
-        # TODO handling resizing, positioning, close min max buttons
+        # TODO app is not added to taskbar
         self.overrideredirect(True)
 
         self.withdraw()
@@ -102,10 +102,10 @@ class App(tk.Tk):
 
         app_width = round(1000 * self.scale)
         app_height = round(650 * self.scale)
-        # x = int((self.winfo_screenwidth() - app_width) / 2)
-        # y = int((self.winfo_screenheight() - app_height) / 2)
+        x = int((self.winfo_screenwidth() - app_width) / 2)
+        y = int((self.winfo_screenheight() - app_height) / 2)
 
-        self.geometry(f"{app_width}x{app_height}")
+        self.geometry(f"{app_width}x{app_height}+{x}+{y}")
         self.title("Biscuit")    
     
     def setup_floating_widgets(self):
