@@ -15,7 +15,9 @@ class Notifications(Toplevel):
 
         self.overrideredirect(True)
 
-        self.offset = 10
+        self.xoffset = 5 * self.base.scale
+        self.yoffset = 25 * self.base.scale
+        
         self.minsize(width=round(300*self.base.scale), height=round(15*self.base.scale))
 
         self.icon = Icon(self, 'info', padx=5, **self.base.theme.notifications.text)
@@ -52,9 +54,10 @@ class Notifications(Toplevel):
             return
         
         self.update_idletasks()
-        x = self.base.winfo_x() + self.base.winfo_width() - self.winfo_width() - self.offset 
-        y = self.base.winfo_y() + self.base.winfo_height() - self.winfo_height() - self.offset 
-        self.geometry(f"+{x}+{y}")
+        x = self.base.winfo_x() + self.base.winfo_width() - self.winfo_width() - self.xoffset 
+        y = self.base.winfo_y() + self.base.winfo_height() - self.winfo_height() - self.yoffset 
+        
+        self.geometry(f"+{int(x)}+{int(y)}")
     
     def show(self, *_):
         self.active = True

@@ -53,13 +53,12 @@ class App(tk.Tk):
 
     def late_setup(self):
         """Sets up the references, binds, and extensions of the application."""
-        self.focus_set()
-        self.binder.late_bind_all()
-
         self.setup_references()
+        self.binder.late_bind_all()
         self.editorsmanager.add_default_editors()
         self.palette.register_actionset(lambda: self.settings.actionset)
-    
+        
+        self.focus_set()
         self.setup_extensions()
     
     def setup_path(self):       
@@ -116,10 +115,10 @@ class App(tk.Tk):
 
     def setup_references(self):
         """Sets up the editors manager, panel, content pane, status bar, explorer, source control, and logger of the application."""
+        self.statusbar = self.root.statusbar
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
         self.contentpane = self.root.baseframe.contentpane
-        self.statusbar = self.root.statusbar
         self.explorer = self.root.baseframe.sidebar.explorer
         self.source_control = self.root.baseframe.sidebar.source_control
         self.logger = self.panel.logger
