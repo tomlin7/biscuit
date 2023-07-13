@@ -30,7 +30,7 @@ class App(tk.Tk):
         self.base = self
 
         # TODO handling resizing, positioning, close min max buttons
-        #self.overrideredirect(True)
+        self.overrideredirect(True)
 
         self.withdraw()
         self.setup()
@@ -46,35 +46,22 @@ class App(tk.Tk):
     
     def setup(self):
         """Sets up the Tkinter window, path, and configurations of the application."""
-        self.setup_tk()
         self.setup_path()
         self.setup_configs()
+        self.setup_tk()
+        self.setup_floating_widgets()
 
     def late_setup(self):
         """Sets up the references, binds, and extensions of the application."""
         self.focus_set()
         self.binder.late_bind_all()
+
         self.setup_references()
         self.editorsmanager.add_default_editors()
         self.palette.register_actionset(lambda: self.settings.actionset)
+    
         self.setup_extensions()
     
-    def setup_tk(self):
-        """Sets up the Tkinter window size, title, and minimum size."""
-        windll.shcore.SetProcessDpiAwareness(1)
-
-        self.dpi_value = self.winfo_fpixels('1i')
-        self.scale = self.dpi_value / 72
-        self.tk.call('tk', 'scaling', self.scale)
-
-        app_width = round(1000 * self.scale)
-        app_height = round(650 * self.scale)
-        # x = int((self.winfo_screenwidth() - app_width) / 2)
-        # y = int((self.winfo_screenheight() - app_height) / 2)
-
-        self.geometry(f"{app_width}x{app_height}")
-        self.title("Biscuit")
-        
     def setup_path(self):       
         """Sets up the application directory, configuration directory, resource directory, and extensions directory."""
         self.appdir = os.path.dirname(__file__)
@@ -102,8 +89,27 @@ class App(tk.Tk):
         
         self.events = Events(self)
         self.binder = Binder(self)
-
         self.git = Git(self)
+    
+    def setup_tk(self):
+        """Sets up the Tkinter window size, title, and scaling"""
+        
+        if self.sysinfo.os == "Windows":
+            windll.shcore.SetProcessDpiAwareness(1)
+
+        self.dpi_value = self.winfo_fpixels('1i')
+        self.scale = self.dpi_value / 72
+        self.tk.call('tk', 'scaling', self.scale)
+
+        app_width = round(1000 * self.scale)
+        app_height = round(650 * self.scale)
+        # x = int((self.winfo_screenwidth() - app_width) / 2)
+        # y = int((self.winfo_screenheight() - app_height) / 2)
+
+        self.geometry(f"{app_width}x{app_height}")
+        self.title("Biscuit")    
+    
+    def setup_floating_widgets(self):
         self.palette = Palette(self)
         self.findreplace = FindReplace(self)
         self.notifications = Notifications(self)
@@ -117,7 +123,6 @@ class App(tk.Tk):
         self.explorer = self.root.baseframe.sidebar.explorer
         self.source_control = self.root.baseframe.sidebar.source_control
         self.logger = self.panel.logger
-
 
     def setup_extensions(self):
         """Sets up the extensions API and manager of the application."""

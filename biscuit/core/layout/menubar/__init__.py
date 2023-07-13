@@ -2,7 +2,7 @@ import tkinter as tk
 
 from .item import MenubarItem
 
-from core.components.utils import Frame
+from core.components.utils import Frame, IconButton
 
 
 class Menubar(Frame):
@@ -19,13 +19,39 @@ class Menubar(Frame):
         super().__init__(master, *args, **kwargs)
         self.menus = []
 
+        close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.base.events.quit)
+        close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+        
+        max = IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.base.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+        min = IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.base.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+
         self.config(bg=self.base.theme.layout.menubar.background)
         self.events = self.base.events
         self.add_menus()
+        self.config_bindings()
+
+    def config_bindings(self):
+        self.bind('<Map>', self.events.window_mapped)
+        self.bind("<Button-1>", self.startMove)
+        self.bind("<ButtonRelease-1>", self.stopMove)
+        self.bind("<B1-Motion>", self.moving)
+
+    def startMove(self, event):
+        self.x = event.x
+        self.y = event.y
+
+    def stopMove(self, event):
+        self.x = None
+        self.y = None
+
+    def moving(self,event):
+        x = (event.x_root - self.x - self.winfo_rootx() + self.winfo_rootx())
+        y = (event.y_root - self.y - self.winfo_rooty() + self.winfo_rooty())
+        self.base.geometry(f"+{x}+{y}")
         
     def add_menu(self, text):
         new_menu = MenubarItem(self, text)
-        new_menu.pack(side=tk.LEFT, fill=tk.X, padx=0)
+        new_menu.pack(side=tk.LEFT, fill=tk.BOTH)
         self.menus.append(new_menu.menu)
         
         return new_menu.menu
