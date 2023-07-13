@@ -10,7 +10,6 @@ class FindReplace(Toplevel):
         super().__init__(base, *args, **kwargs)
         self.offset = 10
         self.active = False
-        self.attributes('-topmost', True)
         self.overrideredirect(True)
         self.config(padx=1, pady=1, bg=self.base.theme.border)
         self.withdraw()
@@ -49,6 +48,8 @@ class FindReplace(Toplevel):
         IconButton(buttons, "replace-all", self.replace_all).pack(side=tk.LEFT)
 
         self.term.trace("w", self.find)
+
+        self.base.register_onfocus(self.lift)
         self.base.register_onupdate(self._follow_root)
 
     def _follow_root(self, *_):

@@ -92,6 +92,7 @@ class App(tk.Tk):
         self.active_directory = None
         self.active_branch_name = None
         self.onupdate_functions = []
+        self.onfocus_functions = []
 
         self.sysinfo = SysInfo(self)
         self.settings = Settings(self)
@@ -228,6 +229,18 @@ class App(tk.Tk):
     def on_gui_update(self, *_):
         """Calls all registered functions on GUI update."""
         for fn in self.onupdate_functions:
+            try:
+                fn()
+            except tk.TclError:
+                pass
+    
+    def register_onfocus(self, fn):
+        """Registers a function to be called on focus."""
+        self.onfocus_functions.append(fn)
+        
+    def on_focus(self, *_):
+        """Calls all registered functions on focus."""
+        for fn in self.onfocus_functions:
             try:
                 fn()
             except tk.TclError:

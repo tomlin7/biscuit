@@ -20,7 +20,9 @@ class Binder:
     def late_bind_all(self):
         self.bind(self.bindings.commandpalette, lambda e: self.base.palette.show_prompt(">"))
         self.bind(self.bindings.panel, self.base.root.baseframe.contentpane.toggle_panel)
+        
         self.bind('<Configure>', self.base.on_gui_update)
+        self.bind('<FocusIn>', self.base.on_focus)
 
     def bind(self, this, to_this):
         self.base.bind(this, to_this)

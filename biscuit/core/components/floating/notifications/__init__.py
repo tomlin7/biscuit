@@ -28,6 +28,8 @@ class Notifications(Toplevel):
         close_button.pack(side=tk.RIGHT, fill=tk.BOTH)
 
         self.withdraw()
+
+        self.base.register_onfocus(self.lift)
         self.base.register_onupdate(self._follow_root)
     
     def info(self, text):
@@ -45,12 +47,11 @@ class Notifications(Toplevel):
         self.label.configure(text=text)
         self.show()
     
-    def _follow_root(self, *_):
+    def _follow_root(self):
         if not self.active:
             return
         
         self.update_idletasks()
-        self.lift()
         x = self.base.winfo_x() + self.base.winfo_width() - self.winfo_width() - self.offset 
         y = self.base.winfo_y() + self.base.winfo_height() - self.winfo_height() - self.offset 
         self.geometry(f"+{x}+{y}")
@@ -59,6 +60,7 @@ class Notifications(Toplevel):
         self.active = True
         self._follow_root()
         self.deiconify()
+        self.lift()
     
     def hide(self, *_):
         self.active = False
