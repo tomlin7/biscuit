@@ -7,6 +7,8 @@ class Events:
     def __init__(self, base):
         self.base = base
         self.count = 1
+        self.maximized = False
+        self.minimized = False
 
     def new_file(self, *_):
         self.base.open_editor(f"Untitled-{self.count}", exists=False)
@@ -54,7 +56,23 @@ class Events:
     def quit(self, *_):
         self.base.destroy()
     
-    #TODO implement undo redo
+    def toggle_maximize(self, *_):
+        self.base.wm_state('normal' if self.maximized else 'zoomed')
+        self.maximized = not self.maximized
+    
+    def minimize(self, *_):
+        self.base.update_idletasks()
+        self.base.overrideredirect(False)
+        self.base.state('iconic')
+        self.minimized = True
+    
+    def window_mapped(self, *_):
+        if self.minimized:
+            self.base.update_idletasks()
+            self.base.overrideredirect(True)
+            self.base.state('normal')
+
+    #TODO implement undo-redo
     def undo(self, *_):
         print('undo event')
     

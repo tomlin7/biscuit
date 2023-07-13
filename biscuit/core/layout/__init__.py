@@ -25,6 +25,6 @@ class Root(Frame):
         self.baseframe = BaseFrame(self)
         self.statusbar = Statusbar(self)
 
-        self.menubar.pack(fill=X)
+        self.menubar.pack(fill=BOTH)
         self.baseframe.pack(fill=BOTH, expand=1, pady=(1,0))
         self.statusbar.pack(fill=X, pady=(1,0))

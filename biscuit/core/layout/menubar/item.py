@@ -10,7 +10,7 @@ class MenubarItem(Menubutton):
         self.menubar = menubar
 
         self.name = text
-        self.config(text=text, padx=10, pady=5, **self.base.theme.layout.menubar.item)
+        self.config(text=text, padx=10, pady=5, font=("Segoi UI", 11), **self.base.theme.layout.menubar.item)
 
         self.menu = Menu(self, self.name)
         self.bind("<Button-1>", self.menu.show)
