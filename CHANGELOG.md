@@ -8,9 +8,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.5.1...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.5.2...HEAD)</small>
+
+### Fixed
+
+- fix: Command palette should be resized with window scaling - close button should be red when hovered ([7a7a279](https://github.com/billyeatcookies/Biscuit/commit/7a7a279ce9d15aae92972f77c5249fd27f47bb7a) by Billy).
+- fix: Notifications offset based on window scale ([6758343](https://github.com/billyeatcookies/Biscuit/commit/67583431d9ca90a75d3573f24a32d57571549c77) by Billy).
+- fix: FindReplace is not rendered as topmost ([d348751](https://github.com/billyeatcookies/Biscuit/commit/d348751ef1f794ce4f620841a4e519e44523c39d) by Billy).
+- fix: Notifications are not rendered topmost ([af8676f](https://github.com/billyeatcookies/Biscuit/commit/af8676f2d6d5d09a20b8c3fcb48bff75322b5cd5) by Billy).
+- fix: Minimap shouldn't refresh text editor internals (optimizations) ([197df75](https://github.com/billyeatcookies/Biscuit/commit/197df75c5e04cdc1265b34fe5e61d75d20838504) by Billy).
+- fix: Proxy now generates different Scroll, Change events for better performance ([bbc31bb](https://github.com/billyeatcookies/Biscuit/commit/bbc31bb5d6914ca3e6efaf6ed38a13d2c4c862ab) by Billy).
+- fix: Scaling tk based on screen DPI ([be3a380](https://github.com/billyeatcookies/Biscuit/commit/be3a380fd0734ed05a0b879080741663abc19fb3) by Billy).
+- fix: Scale all components based on dpi ([df61777](https://github.com/billyeatcookies/Biscuit/commit/df617776c821e9cf81d26c05ba803aa960fbeb34) by Billy).
+- fix: Scaling of fonts, toplevel windows ([108976b](https://github.com/billyeatcookies/Biscuit/commit/108976b14c1543a458cf4634fb5b24b4da051822) by Billy).
+- fix: Scale components based on screen dpi ([e6da8ee](https://github.com/billyeatcookies/Biscuit/commit/e6da8ee1c853cd8af8bf9dc653a336ba8cba904e) by Billy).
+- fix #75: Scale tk based on the dpi of screen ([26fe26d](https://github.com/billyeatcookies/Biscuit/commit/26fe26d875800cdce91b92c87c8d29d51985cb3f) by Billy).
+- fix: Scale tk based on the dpi of screen ([08903e1](https://github.com/billyeatcookies/Biscuit/commit/08903e1d50a538c1b7a7a411edf6f0bece51e245) by Billy).
+- fix: Update statusbar info to show encoding of opened file ([9ec0268](https://github.com/billyeatcookies/Biscuit/commit/9ec0268e005f3544161c37b0bb78f6051cc7c2ae) by Billy).
+- fix: #71 Decide encoding of files with BOM (if exists) BOM is not loaded as text ([c4b09be](https://github.com/billyeatcookies/Biscuit/commit/c4b09be92a0fb9d18bdfa8e1399b7b392950796f) by Billy).
 
 <!-- insertion marker -->
+## [v2.5.2](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.5.2) - 2023-07-11
+
+<small>[Compare with v2.5.1](https://github.com/billyeatcookies/Biscuit/compare/v2.5.1...v2.5.2)</small>
+
 ## [v2.5.1](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.5.1) - 2023-07-10
 
 <small>[Compare with v2.5.0](https://github.com/billyeatcookies/Biscuit/compare/v2.5.0...v2.5.1)</small>
