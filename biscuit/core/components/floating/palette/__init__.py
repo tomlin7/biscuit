@@ -33,7 +33,7 @@ class Palette(Toplevel):
         super().__init__(master, *args, **kwargs)
         self.config(pady=1, bg=self.base.theme.border)
         
-        self.width = width
+        self.width = round(width * self.base.scale)
         self.active = False
 
         self.withdraw()

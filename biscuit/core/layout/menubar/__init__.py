@@ -20,6 +20,7 @@ class Menubar(Frame):
         self.menus = []
 
         close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.base.events.quit)
+        close.config(activebackground='#e81123', activeforeground="white")
         close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
         
         max = IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.base.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
