@@ -8,10 +8,11 @@ from .section import Section
 
 
 class SettingsEditor(BaseEditor):
+    name = "settings"
     def __init__(self, master, exists=False, editable=False, *args, **kwargs):
         super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
         self.config(padx=100, pady=20, **self.base.theme.editors)
-        self.filename = 'settings'
+        self.filename = 'Settings'
 
         #TODO searchbar functionality not implemented yet
         #NOTE: unpack the container and pack a new container for showing results

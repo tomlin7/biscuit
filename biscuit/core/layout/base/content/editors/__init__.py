@@ -41,7 +41,7 @@ class EditorsPane(Frame):
         self.emptytab = Empty(self)
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
-        self.default_editors = [Editor(self, '::welcome::', False, False, False)]
+        self.default_editors = [Editor(self, '::welcome', False, False, False)]
     
     def add_default_editors(self):
         self.add_editors(self.default_editors)

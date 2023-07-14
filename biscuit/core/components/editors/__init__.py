@@ -9,9 +9,23 @@ from .diffeditor import DiffEditor
 from .imageviewer import ImageViewer
 from .texteditor import TextEditor
 from .misc import Welcome
+
+from core.components.games import Whoops
 from core.settings.editor import SettingsEditor
 
+editors = {f"::{i.name}":i for i in (Welcome, SettingsEditor)}
 
+def get_editors(base):
+    "helper function to generate actionset items"
+    return [(f"Open {i}", lambda i=i: base.open_game(i)) for i in editors.keys()]
+
+def register_editor(editor):
+    "registers a custome editor"
+    global editors
+    try:
+        editors[editor.name] = editor
+    except AttributeError:
+        editors[f"Editor {len(editors) + 1}"] = editor
 
 def get_editor(path, diff):
     "picks the right editor for the given path"
@@ -22,12 +36,9 @@ def get_editor(path, diff):
         if FileType.is_image(path):
             return ImageViewer
     
-    match path:
-        case '::welcome::':
-            return Welcome
-        case '::settings::':
-            return SettingsEditor
-        
+    if path in editors.keys():
+        return editors.get(path, Whoops)
+      
     return TextEditor
 
 
@@ -51,9 +62,6 @@ class Editor(Frame):
         self.diff = diff
         self.showpath = showpath
         self.filename = os.path.basename(self.path) if path else None
-        # TODO for now, this
-        if self.filename.endswith('::'):
-            self.filename = self.filename[:-2]
 
         self.grid_columnconfigure(0, weight=1)
         self.content = get_editor(path=path, diff=diff)(self, path, exists)

@@ -5,9 +5,13 @@ from ..editor import BaseEditor
 
 
 class Welcome(BaseEditor):
+    name = "welcome"
+    
     def __init__(self, master, exists=False, editable=False, *args, **kwargs):
         super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
         self.config(padx=100, pady=50, **self.base.theme.editors)
+
+        self.filename = "Welcome"
 
         self.left = Frame(self, **self.base.theme.editors)
         self.left.pack(expand=True, side=tk.LEFT, fill=tk.BOTH, anchor=tk.CENTER)
