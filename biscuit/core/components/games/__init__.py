@@ -4,11 +4,12 @@ from ..utils import Frame
 from .tetris import Tetris
 from .gameoflife import GameOfLife
 from .pong import Pong
+from .ttt import TicTacToe
 from .whoops import Whoops
 
 from .game import BaseGame
 
-games = {i.name:i for i in (Tetris, GameOfLife, Pong)}
+games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe)}
 
 def get_games(base):
     "helper function to generate actionset items"
