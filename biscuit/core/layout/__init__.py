@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.constants import *
 
 from .menubar import Menubar
 from .base import BaseFrame
@@ -21,10 +20,19 @@ class Root(Frame):
         super().__init__(base, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
-        self.menubar = Menubar(self)
-        self.baseframe = BaseFrame(self)
-        self.statusbar = Statusbar(self)
+        grip_n = tk.Frame(self, bg=self.base.theme.biscuit, cursor='top_side')
+        grip_n.bind("<B1-Motion>", lambda e: self.base.resize('n'))
+        grip_n.pack(fill=tk.X)
 
-        self.menubar.pack(fill=BOTH)
-        self.baseframe.pack(fill=BOTH, expand=1, pady=(1,0))
-        self.statusbar.pack(fill=X, pady=(1,0))
+        self.menubar = Menubar(self)
+        self.menubar.pack(fill=tk.BOTH)
+
+        self.baseframe = BaseFrame(self)
+        self.baseframe.pack(fill=tk.BOTH, expand=True, pady=(1,0))
+
+        self.statusbar = Statusbar(self)
+        self.statusbar.pack(fill=tk.X, pady=(1,0))
+
+        grip_s = tk.Frame(self, bg=self.base.theme.biscuit, cursor='bottom_side')
+        grip_s.bind("<B1-Motion>", lambda e: self.base.resize('s'))
+        grip_s.pack(fill=tk.X)

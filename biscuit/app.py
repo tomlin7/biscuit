@@ -34,8 +34,6 @@ class App(tk.Tk):
 
         self.withdraw()
         self.setup()
-        self.root = Root(self)
-        self.root.pack(fill=tk.BOTH, expand=True)
         self.late_setup()
         self.initialize_editor()        
       
@@ -50,6 +48,17 @@ class App(tk.Tk):
         self.setup_configs()
         self.setup_tk()
         self.setup_floating_widgets()
+
+        grip_w = tk.Frame(self, bg=self.base.theme.biscuit, cursor='left_side')
+        grip_w.bind("<B1-Motion>", lambda e: self.resize('w'))
+        grip_w.pack(fill=tk.Y, side=tk.LEFT)
+
+        self.root = Root(self)
+        self.root.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+
+        grip_e = tk.Frame(self, bg=self.base.theme.biscuit, cursor='right_side')
+        grip_e.bind("<B1-Motion>", lambda e: self.resize('e'))
+        grip_e.pack(fill=tk.Y, side=tk.LEFT)
 
     def late_setup(self):
         """Sets up the references, binds, and extensions of the application."""
@@ -106,8 +115,8 @@ class App(tk.Tk):
         y = int((self.winfo_screenheight() - app_height) / 2)
 
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
-        self.title("Biscuit")    
-    
+        self.title("Biscuit")
+
     def setup_floating_widgets(self):
         self.palette = Palette(self)
         self.findreplace = FindReplace(self)
@@ -249,3 +258,30 @@ class App(tk.Tk):
                 fn()
             except tk.TclError:
                 pass
+    
+    def resize(self, mode):
+        abs_x = self.winfo_pointerx() - self.winfo_rootx()
+        abs_y = self.winfo_pointery() - self.winfo_rooty()
+        width = self.winfo_width()
+        height= self.winfo_height()
+        x = self.winfo_rootx()
+        y = self.winfo_rooty()
+        
+        match mode:
+            case 'e':
+                if height > 0 and abs_x > 0:
+                    return self.geometry(f"{abs_x}x{height}")
+            case 'n':
+                height = height - abs_y
+                y = y + abs_y
+                if height > 0 and width > 0:
+                    return self.geometry(f"{width}x{height}+{x}+{y}")
+            case 'w':
+                width = width - abs_x
+                x = x + abs_x
+                if height > 0 and width > 0:
+                    return self.geometry(f"{width}x{height}+{x}+{y}")
+            case 's':
+                height = height - (height - abs_y)
+                if height > 0 and width > 0:
+                    return self.geometry(f"{width}x{height}+{x}+{y}")
