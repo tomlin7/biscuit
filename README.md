@@ -1,9 +1,6 @@
-<h1 align="center">
-    <img src="./logo.svg" width=300><br>
-    THE BISCUIT PROJECT
-</h1>
 <h2 align="center">
-     Understanding Code Editors & Streamlining Processes<br><br>
+    <img src="./.github/banner.png" width=1000><br>
+     ―――――― The uncompromising code editor ――――――<br><br>
     <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
     <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge"> 
