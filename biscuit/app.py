@@ -109,6 +109,9 @@ class App(tk.Tk):
         self.scale = self.dpi_value / 72
         self.tk.call('tk', 'scaling', self.scale)
 
+        self.min_width = round(500 * self.scale)
+        self.min_height = round(500 * self.scale)
+
         app_width = round(1000 * self.scale)
         app_height = round(650 * self.scale)
         x = int((self.winfo_screenwidth() - app_width) / 2)
@@ -269,19 +272,19 @@ class App(tk.Tk):
         
         match mode:
             case 'e':
-                if height > 0 and abs_x > 0:
+                if height > self.min_height and abs_x > self.min_width:
                     return self.geometry(f"{abs_x}x{height}")
             case 'n':
                 height = height - abs_y
                 y = y + abs_y
-                if height > 0 and width > 0:
+                if height > self.min_height and width > self.min_width:
                     return self.geometry(f"{width}x{height}+{x}+{y}")
             case 'w':
                 width = width - abs_x
                 x = x + abs_x
-                if height > 0 and width > 0:
+                if height > self.min_height and width > self.min_width:
                     return self.geometry(f"{width}x{height}+{x}+{y}")
             case 's':
                 height = height - (height - abs_y)
-                if height > 0 and width > 0:
+                if height > self.min_height and width > self.min_width:
                     return self.geometry(f"{width}x{height}+{x}+{y}")
