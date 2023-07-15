@@ -31,11 +31,7 @@ class Tetris(BaseGame):
         self.preview = tk.Canvas(self, width=5*SIDE, height=5*SIDE, bg=bg)
         self.preview.pack(padx=(0, 40), expand=True, side=tk.TOP)
 
-        self.controls = tk.Text(self, relief=tk.FLAT, insertbackground=bg, fg=bg, bg=bg)
-        self.controls.pack(fill=tk.BOTH, side=tk.BOTTOM)
-
-        self.controls.bind("<Key>", self.handle_events)
-        self.bind('<Motion>', lambda _: self.controls.focus())
+        self.bind_all("<Key>", self.handle_events)
         self.start()
 
     def start(self):

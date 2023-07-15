@@ -31,6 +31,11 @@ class GameOfLife(BaseGame):
         self.canvas.pack()
 
         self.canvas.bind("<B1-Motion>", self.add_cell)
+        self.canvas.bind("<Button-1>", self.add_cell)
+        self.canvas.bind("<B3-Motion>", self.remove_cell)
+        self.canvas.bind("<Button-3>", self.remove_cell)
+
+        self.base.notifications.info("INSTRUCTIONS: Left click to add cells, Right click to remove cells!")
 
     def randomize_grid(self):
         for row in range(GRID_HEIGHT):
@@ -59,8 +64,14 @@ class GameOfLife(BaseGame):
     def add_cell(self, event):
         col = event.x // CELL_SIZE
         row = event.y // CELL_SIZE
-        self._grid[row][col] = 1
+        self._grid[row][col] = not self._grid[row][col]
         self.draw_cell(row, col)
+    
+    def remove_cell(self, event):
+        col = event.x // CELL_SIZE
+        row = event.y // CELL_SIZE
+        self._grid[row][col] = 0
+        self.erase_cell(row, col)
 
     def update(self):
         if not self.is_running:
@@ -110,3 +121,10 @@ class GameOfLife(BaseGame):
         x2 = x1 + CELL_SIZE
         y2 = y1 + CELL_SIZE
         self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.base.theme.biscuit, outline="", tags="cell")
+
+    def erase_cell(self, row, col):
+        x1 = col * CELL_SIZE
+        y1 = row * CELL_SIZE
+        x2 = x1 + CELL_SIZE
+        y2 = y1 + CELL_SIZE
+        self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.base.theme.editors.background, outline=self.base.theme.border, tags="cell")
