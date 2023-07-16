@@ -14,10 +14,12 @@ class Tree(Frame):
         self.row = 0
 
     def clear_tree(self, *_):
-        for item in self.menu_items:
-            item.grid_forget()
-            item.destroy()
-        
+        try:
+            for item in self.menu_items:
+                item.grid_forget()
+                item.destroy()
+        except:
+            pass        
         self.row = 0
     
     def add_item(self, text):

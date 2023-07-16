@@ -30,7 +30,8 @@ class Statusbar(Frame):
         # git info
         self.git_actionset = ActionSet(
             "GIT", "branch:",
-            [("main", lambda e=None: print("main", e)), ("rewrite", lambda e=None: print("rewrite", e))],
+            [("main", lambda e=None: print("main", e)), 
+             ("rewrite", lambda e=None: print("rewrite", e))],
         )
         self.base.palette.register_actionset(lambda: self.git_actionset)
         self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show_prompt('branch:'), description="Checkout branch")
@@ -119,6 +120,7 @@ class Statusbar(Frame):
         if self.base.git_found:
             self.branch.show()
             self.branch.change_text("{0}".format(self.base.git.active_branch))
+            self.git_actionset.update([(str(branch), lambda e=None: self.base.git.checkout(str(branch))) for branch in self.base.git.repo.branches])
         else:
             self.branch.hide()
 

@@ -38,3 +38,6 @@ class Git(git.Git):
             return 
 
         return self.repo.active_branch
+
+    def checkout(self, branch):
+        self.repo.index.checkout(branch)
