@@ -37,10 +37,10 @@ class TextEditor(BaseEditor):
 
     def on_change(self, *_):
         self.text.refresh()
+        self.linenumbers.redraw()
         self.base.update_statusbar()
 
-    def on_scroll(self, *_):        
-        self.linenumbers.redraw()
+    def on_scroll(self, *_):
         if not self.minimalist:
             self.minimap.redraw()
 

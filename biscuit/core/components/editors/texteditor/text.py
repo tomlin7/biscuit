@@ -198,11 +198,18 @@ class Text(Text):
         self.mark_set(tk.INSERT, "insert-1c")
 
     def surrounding_selection(self, char):
+        line_text = self.get(tk.INSERT, "insert linestart")
+        count_quotes = line_text.count(char)
+
+        if count_quotes % 2 == 1:
+            # open quote so ignore adding another quote
+            return
+
         if self.tag_ranges(tk.SEL):
             self.insert(char, tk.SEL_LAST)
             self.insert(char, tk.SEL_FIRST)
             return
-        
+
         self.complete_pair(char)
 
     def move_to_next_word(self):
@@ -284,7 +291,7 @@ class Text(Text):
                         break
                     self.write(chunk)
                     self.update()
-                    self.master.on_scroll()
+                    self.master.on_change()
             threading.Thread(target=load_file).start()
         except Exception as e:
             self.master.unsupported_file()
