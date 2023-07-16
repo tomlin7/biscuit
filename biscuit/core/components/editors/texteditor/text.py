@@ -66,6 +66,15 @@ class Text(Text):
         self.bind("<Up>", self.auto_completion.move_up)
         self.bind("<Down>", self.auto_completion.move_down)
 
+        # self.bind("<braceleft>", lambda e: self.complete_pair("}"))
+        # self.bind("<bracketleft>", lambda e: self.complete_pair("]"))
+        # self.bind("<parenleft>", lambda e: self.complete_pair(")"))
+
+        # self.bind("<apostrophe>", lambda e: self.surrounding_selection("\'"))
+        # self.bind("<quotedbl>", lambda e: self.surrounding_selection("\""))
+
+        # self.mark_set(tk.INSERT, "insert+1c")
+
     def key_release_events(self, event):
         if event.keysym not in ("Up", "Down", "Return"):
             self.show_autocomplete(event)
@@ -197,20 +206,19 @@ class Text(Text):
     def complete_pair(self, char):
         self.insert(tk.INSERT, char)
         self.mark_set(tk.INSERT, "insert-1c")
-
+    
     def surrounding_selection(self, char):
-        line_text = self.get("insert linestart", tk.INSERT)
-        count_quotes = line_text.count(char)
-
-        if count_quotes and count_quotes % 2 == 1:
+        next_char = self.get("insert", "insert+1c")
+        if next_char == char:
             self.mark_set(tk.INSERT, "insert+1c")
+            self.delete("insert-1c", "insert")
             return "break"
 
         if self.tag_ranges(tk.SEL):
             self.insert(char, tk.SEL_LAST)
             self.insert(char, tk.SEL_FIRST)
             return
-
+        
         self.complete_pair(char)
         return "break"
 
