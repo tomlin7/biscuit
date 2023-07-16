@@ -1,6 +1,7 @@
 import re, codecs, io
 import threading
 import tkinter as tk
+from collections import deque
 
 from .syntax import Syntax
 from .highlighter import Highlighter
@@ -80,15 +81,15 @@ class Text(Text):
             case "braceleft":
                 return self.complete_pair("}")
             case "bracketleft":
-                self.complete_pair("]")
+                return self.complete_pair("]")
             case "parenleft":
-                self.complete_pair(")")
+                return self.complete_pair(")")
 
             # surroundings for selection
             case "apostrophe":
-                self.surrounding_selection("\'")
+                return self.surrounding_selection("\'")
             case "quotedbl":
-                self.surrounding_selection("\"")
+                return self.surrounding_selection("\"")
 
             # extra spaces
             case ":" | ",":
@@ -98,7 +99,7 @@ class Text(Text):
                 pass
 
     def enter_key_events(self, *_):
-        if self.auto_completion.active:        
+        if not self.minimalist and self.auto_completion.active:        
             self.auto_completion.choose()
             return "break"
         
@@ -198,12 +199,12 @@ class Text(Text):
         self.mark_set(tk.INSERT, "insert-1c")
 
     def surrounding_selection(self, char):
-        line_text = self.get(tk.INSERT, "insert linestart")
+        line_text = self.get("insert linestart", tk.INSERT)
         count_quotes = line_text.count(char)
 
-        if count_quotes % 2 == 1:
-            # open quote so ignore adding another quote
-            return
+        if count_quotes and count_quotes % 2 == 1:
+            self.mark_set(tk.INSERT, "insert+1c")
+            return "break"
 
         if self.tag_ranges(tk.SEL):
             self.insert(char, tk.SEL_LAST)
@@ -211,6 +212,7 @@ class Text(Text):
             return
 
         self.complete_pair(char)
+        return "break"
 
     def move_to_next_word(self):
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
@@ -327,10 +329,22 @@ class Text(Text):
 
     def clear_insert(self, text=None):
         self.clear()
-        if text:
-            self.set_data(text)
-        self.write(text=self.data)
-        self.scroll_to_start()
+
+        def write_with_buffer():
+            buffer = deque(maxlen=self.buffer_size)
+            for char in text:
+                buffer.append(char)
+                if len(buffer) >= self.buffer_size:
+                    chunk = ''.join(buffer)
+                    self.write(chunk)
+                    self.update()
+                    buffer.clear()
+            if buffer:
+                chunk = ''.join(buffer)
+                self.write(chunk)
+                self.update()
+
+        threading.Thread(target=write_with_buffer).start()
         
     def clear(self):
         self.delete(1.0, tk.END)
@@ -396,8 +410,7 @@ class Text(Text):
     def show_unsupported_dialog(self):
         self.set_wrap(True)
         self.configure(font=('Arial', 10), padx=10, pady=10)
-        self.data = "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding."
-        self.clear_insert()
+        self.write("This file is not displayed in this editor because it is either binary or uses an unsupported text encoding.")
         self.set_active(False)
 
     def move_cursor(self, position):

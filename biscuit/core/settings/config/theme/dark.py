@@ -33,3 +33,7 @@ class Dark(Theme):
 
         self.editors.linenumbers.number.foreground = "#6e7681"
         self.editors.linenumbers.number.highlightforeground = "#cccccc"
+
+        self.editors.diff.not_exist = "#424242"
+        self.editors.diff.removed = "#452323"
+        self.editors.diff.addition = "#203423"

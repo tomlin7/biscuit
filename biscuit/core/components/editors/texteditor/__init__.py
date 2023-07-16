@@ -41,6 +41,7 @@ class TextEditor(BaseEditor):
         self.base.update_statusbar()
 
     def on_scroll(self, *_):
+        self.linenumbers.redraw()
         if not self.minimalist:
             self.minimap.redraw()
 

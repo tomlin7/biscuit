@@ -35,12 +35,12 @@ class DiffEditor(BaseEditor):
 
         self.stipple = self.base.settings.res.stipple
 
-        self.left.tag_config("addition", background="#d3d3d3", bgstipple=f"@{self.stipple}")
-        self.left.tag_config("removal", background="#ffa3a3")
+        self.left.tag_config("addition", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
+        self.left.tag_config("removal", background=self.base.theme.editors.diff.removed)
         self.left.tag_config("uhhh", background="red")
         
-        self.right.tag_config("addition", background="#dbe6c2")
-        self.right.tag_config("removal", background="#d3d3d3", bgstipple=f"@{self.stipple}")
+        self.right.tag_config("addition", background=self.base.theme.editors.diff.addition)
+        self.right.tag_config("removal", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
         self.right.tag_config("uhhh", background="green")
 
         self.prepare_data()
@@ -52,7 +52,10 @@ class DiffEditor(BaseEditor):
 
     def on_scrollbar(self, *args):
         self.left.yview(*args)
+        self.lhs.on_scroll()
+
         self.right.yview(*args)
+        self.rhs.on_scroll()
 
     def on_textscroll(self, *args):
         self.lhs.scrollbar.set(*args)
@@ -79,14 +82,16 @@ class DiffEditor(BaseEditor):
             elif marker == "-":
                 # line is only on the left
                 self.left.write(content, "removal")
-                self.right.write(content)
+                self.right.newline("removal")
 
             elif marker == "+":
                 # line is only on the right
-                self.left.write(content)
+                self.left.newline("addition")
                 self.right.write(content, "addition")
                 
             elif marker == "?":
+                return
+
                 # line has changes within it
                 insert = self.right.index(tk.END)
                 #TODO fix the duplicate insert issue

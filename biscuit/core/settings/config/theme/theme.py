@@ -203,6 +203,11 @@ class Editors(FrameThemeObject):
         self.autocomplete = FrameThemeObject(self)
         self.autocomplete.item = ThemeObject(self.autocomplete)
 
+        self.diff = FrameThemeObject(self)
+        self.diff.not_exist = "#d3d3d3"
+        self.diff.removed = "#ffa3a3"
+        self.diff.addition = "#dbe6c2"
+
 class Utils(ThemeObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
