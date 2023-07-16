@@ -160,6 +160,7 @@ class App(tk.Tk):
         self.active_directory = dir
         self.explorer.directory.change_path(dir)
         self.set_title(os.path.basename(self.active_directory))
+        self.git.check_git()
         self.update_git()
     
     def close_active_directory(self):
@@ -168,6 +169,7 @@ class App(tk.Tk):
         self.explorer.directory.close_directory()
         self.editorsmanager.delete_all_editors()
         self.set_title()
+        self.git_found = False
         self.update_git()
     
     def close_active_editor(self):
@@ -203,7 +205,6 @@ class App(tk.Tk):
     
     def update_git(self):
         """Updates the Git status and refreshes the source control."""
-        self.git.check_git()
         self.statusbar.update_git_info()
         self.source_control.refresh()
 

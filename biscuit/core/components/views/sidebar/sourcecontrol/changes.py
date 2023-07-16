@@ -3,12 +3,13 @@ import tkinter as tk
 from hintedtext import HintedEntry
 
 from .placeholder import ChangesTreePlaceholder
+from .tree import Tree
 from ..item import SidebarViewItem
 
-from core.components.utils import Tree, Frame, Button, IconButton
+from core.components.utils import Frame, Button, IconButton
 
 
-class ChangesTree(SidebarViewItem):
+class Changes(SidebarViewItem):
     def __init__(self, master, *args, **kwargs):
         self.__buttons__ = (('discard',), ('add',))
         self.title = 'No folder opened'
@@ -19,8 +20,8 @@ class ChangesTree(SidebarViewItem):
         self.commitbox.grid(row=0, padx=(15, 10), pady=5, column=0, sticky=tk.NSEW)
         self.commitbox.grid_remove()
 
-        self.commit_message_entry = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, **self.base.theme.utils.entry)
-        self.commit_message_entry.pack(fill=tk.X, pady=(0, 5))
+        self.commit_message = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, **self.base.theme.utils.entry)
+        self.commit_message.pack(fill=tk.X, pady=(0, 5))
 
         self.commit_button = Button(self.commitbox, text='Commit')
         self.commit_button.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -30,30 +31,23 @@ class ChangesTree(SidebarViewItem):
         self.more.pack(fill=tk.Y)
         # ------------------------------
 
-        self.tree = Tree(self.content, doubleclick=self.opendiff, *args, **kwargs)
+        self.tree = Tree(self.content, *args, **kwargs)
         self.tree.grid(row=1, column=0, sticky=tk.NSEW)
         self.tree.grid_remove()
 
         self.placeholder = ChangesTreePlaceholder(self.content)
         self.placeholder.grid(row=0, column=0, sticky=tk.NSEW)
 
-    def opendiff(self, event):
-        path = self.tree.selected_path()
-        self.base.open_diff(path)
-
-    def add_files(self, parent='', changed_files=()):
+    def add_files(self, changed_files=()):
         for file in changed_files:
-            self.tree.insert(parent, tk.END, text=f"  {file}", values=[file, 'file'], image='document')
+            self.tree.add_item(text=file)
     
     def open_repo(self):
         self.tree.clear_tree()
         self.set_title(f"{os.path.basename(self.base.active_directory)}({self.base.git.active_branch})")
 
-        changes = self.tree.insert('', tk.END, text=f"  Changes", image='foldericon')
-        untracked = self.tree.insert('', tk.END, text=f"  Untracked Files", image='foldericon')
-
-        self.add_files(changes, self.base.git.repo.get_changed_files())
-        self.add_files(untracked, self.base.git.repo.get_untracked_files())
+        self.add_files(self.base.git.repo.get_changed_files())
+        self.add_files(self.base.git.repo.get_untracked_files())
     
     def enable_tree(self):
         self.content.grid_rowconfigure(0, weight=0)
@@ -70,3 +64,6 @@ class ChangesTree(SidebarViewItem):
         self.tree.grid_remove()
         self.placeholder.grid()
         self.set_title('No folder opened')
+
+    def get_commit_message(self):
+        return self.commit_message.get()
