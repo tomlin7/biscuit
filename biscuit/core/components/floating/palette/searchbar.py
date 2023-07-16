@@ -1,4 +1,5 @@
 import tkinter as tk
+from itertools import chain
 
 from core.components.utils import Frame
 
@@ -6,7 +7,6 @@ from core.components.utils import Frame
 class Searchbar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        # border
         self.config(bg=self.base.theme.biscuit)
         
         self.text_variable = tk.StringVar()
@@ -55,9 +55,17 @@ class Searchbar(Frame):
         if not prompt_found:
             self.master.pick_file_search()
 
-        new = [i for i in self.master.active_set if i[0].lower().startswith(term.lower())]
-        new += [i for i in self.master.active_set if any([f.lower() in i[0].lower() or i[0].lower() in f.lower() and i not in new for f in term.lower().split()])]
-        
+        exact, starts, includes = [], [], []
+        for i in self.master.active_set:
+            item = i[0]
+            if item == term:
+                exact.append(i)
+            elif item.startswith(term):
+                starts.append(i)
+            elif term in item:
+                includes.append(i)
+        new = list(chain(exact, starts, includes))
+
         if any(new):
             self.master.show_items(new)
         else:

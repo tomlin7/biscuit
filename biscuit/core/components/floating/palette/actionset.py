@@ -3,3 +3,7 @@ class ActionSet(list):
         super().__init__(*args, **kwargs)
         self.id = id
         self.prompt = prompt
+    
+    def update(self, items):
+        self.clear()
+        self += items
