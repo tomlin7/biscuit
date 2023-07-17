@@ -21,6 +21,7 @@ class SidebarViewItem(Frame):
             self.itembar.grid(row=0, column=0, sticky=NSEW)
 
         self.content = Frame(self, **self.base.theme.views.sidebar.item)
+        self.content.master = self.master
         self.content.grid_rowconfigure(0, weight=1)
         self.content.grid_columnconfigure(0, weight=1)
         self.content.grid(row=1 if itembar else 0, column=0, sticky=NSEW)

@@ -33,22 +33,24 @@ class Changes(SidebarViewItem):
 
         self.tree = Tree(self.content, *args, **kwargs)
         self.tree.grid(row=1, column=0, sticky=tk.NSEW)
+        self.tree.master = self
         self.tree.grid_remove()
 
         self.placeholder = ChangesTreePlaceholder(self.content)
         self.placeholder.grid(row=0, column=0, sticky=tk.NSEW)
 
-    def add_files(self, changed_files=()):
+    def add_files(self, changed_files=(), kind=0):
         for file in changed_files:
-            self.tree.add_item(text=file)
+            self.tree.add_item(file, kind)
     
     def open_repo(self):
         self.tree.clear_tree()
         self.set_title(f"{os.path.basename(self.base.active_directory)}({self.base.git.active_branch})")
 
-        self.add_files(self.base.git.repo.get_changed_files())
-        self.add_files(self.base.git.repo.get_untracked_files())
-    
+        self.add_files(self.base.git.repo.get_deleted_files(), 0)
+        self.add_files(self.base.git.repo.get_added_files(), 1)
+        self.add_files(self.base.git.repo.get_modified_files(), 2)
+
     def enable_tree(self):
         self.content.grid_rowconfigure(0, weight=0)
         self.content.grid_rowconfigure(1, weight=1)

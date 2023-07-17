@@ -6,11 +6,14 @@ class GitRepo(git.Repo):
         super().__init__(path, *args, **kwargs)
         self.path = path
         self.config = self.config_reader()
+
+    def get_added_files(self):
+        return [item.a_path for item in self.index.diff(None).iter_change_type('A')]
+
+    def get_deleted_files(self):
+        return [item.a_path for item in self.index.diff(None).iter_change_type('D')]
     
-    def get_untracked_files(self):
-        return self.untracked_files
-    
-    def get_changed_files(self):
+    def get_modified_files(self):
         return [item.a_path for item in self.index.diff(None).iter_change_type('M')]
     
     def get_latest_commit(self):

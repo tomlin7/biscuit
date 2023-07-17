@@ -23,8 +23,8 @@ class Menubar(Frame):
         close.config(activebackground='#e81123', activeforeground="white")
         close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
         
-        max = IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.base.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-        min = IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.base.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+        IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.base.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+        IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.base.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
 
         self.config(bg=self.base.theme.layout.menubar.background)
         self.events = self.base.events
