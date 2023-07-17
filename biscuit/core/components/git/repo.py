@@ -22,6 +22,15 @@ class GitRepo(git.Repo):
     def get_commit_filedata(self, filename):
         return self.head.commit.tree[filename].data_stream.read().decode('utf-8')
 
+    def get_staged_added_files(self):
+        return [item.a_path for item in self.index.diff("HEAD").iter_change_type('A')]
+
+    def get_staged_deleted_files(self):
+        return [item.a_path for item in self.index.diff("HEAD").iter_change_type('D')]
+    
+    def get_staged_modified_files(self):
+        return [item.a_path for item in self.index.diff("HEAD").iter_change_type('M')]
+    
     def add_files(self, *paths):
         self.index.add(paths)
     
