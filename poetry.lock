@@ -539,13 +539,13 @@ files = [
 
 [[package]]
 name = "sv-ttk"
-version = "2.5.3"
+version = "2.5.4"
 description = "A gorgeous theme for Tkinter, based on Windows 11's UI"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sv_ttk-2.5.3-py3-none-any.whl", hash = "sha256:d13bf6a7b49316431eefcf83f30d0daf312c00553c4e0b6f91acffd7b2aaa1d3"},
-    {file = "sv_ttk-2.5.3.tar.gz", hash = "sha256:d9b9a5d14f4cbdd4e0bda2e1a84445b0aa852b99f74aafce9386459e385717b3"},
+    {file = "sv_ttk-2.5.4-py3-none-any.whl", hash = "sha256:2ddf5b26a7a2a5d730e4efe5b81a9925748a0dcd3b1725c8d457950aedf885ea"},
+    {file = "sv_ttk-2.5.4.tar.gz", hash = "sha256:8d764d78f84383bb6fa37e5e1dbb282dd295ccbf68ab35280b3398014eb882cf"},
 ]
 
 [[package]]
@@ -678,4 +678,4 @@ test = ["pytest (>=6.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a97a2f3a012fd923cbb1f6ec720a5ddd5413488582eea7bab1b661a4b7c3113a"
+content-hash = "2b6ed8feed599d7dd17579aaf7f62bb3318aa764dc7c929a3568884823dcf567"
