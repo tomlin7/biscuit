@@ -4,9 +4,9 @@ import tkinter as tk
 from core.components.utils import Menubutton, Frame, IconButton, Bubble, Label
 
 
-KINDS = [("D", "Deleted", "red"), ("A", "Added", "green"), ("M", "Modified", "orange")]
+KINDS = [("D", "Deleted", "red"), ("A", "Added", "green"), ("M", "Modified", "orange"), ("U", "Untracked", "green")]
 
-class TreeItem(Frame):
+class ChangeItem(Frame):
     """
     Changes tree item.
     Kinds:
@@ -37,5 +37,5 @@ class TreeItem(Frame):
         self.base.open_diff(self.path)
     
     def git_add(self, *_):
-        self.base.git.repo.add_files(self.path)
+        self.base.git.repo.stage_files((self.path, self.kind))
         self.master.master.open_repo()

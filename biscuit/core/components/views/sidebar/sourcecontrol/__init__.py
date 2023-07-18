@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.constants import *
 
 from ..sidebarview import SidebarView
-from .changes import Changes
+from .git import Git
 
 class SourceControl(SidebarView):
     def __init__(self, master, *args, **kwargs):
@@ -10,7 +10,7 @@ class SourceControl(SidebarView):
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'source-control'
 
-        self.tree = Changes(self)
+        self.tree = Git(self)
         self.add_widget(self.tree)
     
     def refresh(self):

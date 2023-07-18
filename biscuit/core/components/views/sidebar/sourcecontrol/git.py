@@ -1,0 +1,76 @@
+import os
+import tkinter as tk
+from hintedtext import HintedEntry
+
+from .placeholder import ChangesTreePlaceholder
+from .changes import Changes
+from .stagedchanges import StagedChanges
+
+from core.components.utils import Frame, Button, IconButton
+
+
+class Git(Frame):
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.config(**self.base.theme.views.sidebar.item)
+
+        self.commitbox = Frame(self, **self.base.theme.views.sidebar.item)
+        self.commit_message = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, **self.base.theme.utils.entry)
+        self.commit_message.pack(fill=tk.X, pady=(0, 5))
+
+        self.commit_button = Button(self.commitbox, text='Commit', command=self.commit)
+        self.commit_button.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        tk.Label(self.commitbox, text="｜", **self.base.theme.utils.colorlabel).pack(side=tk.LEFT, fill=tk.Y)
+        self.more = IconButton(self.commitbox, icon='chevron-down')
+        self.more.config(**self.base.theme.utils.button)
+        self.more.pack(fill=tk.Y)
+
+        self.staged_changes_tree = StagedChanges(self, *args, **kwargs)
+        self.changes_tree = Changes(self, *args, **kwargs)
+
+        self.placeholder = ChangesTreePlaceholder(self)
+        self.placeholder.pack(fill=tk.BOTH, expand=True)
+        
+    def add_staged_changes(self, changed_files=(), kind=0):
+        for file in changed_files:
+            self.staged_changes_tree.add_item(file, kind)
+    
+    def add_changes(self, changed_files=(), kind=0):
+        for file in changed_files:
+            self.changes_tree.add_item(file, kind)
+    
+    def open_repo(self):
+        self.staged_changes_tree.clear_tree()
+        self.changes_tree.clear_tree()
+        # self.set_title(f"{os.path.basename(self.base.active_directory)}({self.base.git.active_branch})")
+
+        self.add_staged_changes(self.base.git.repo.get_staged_deleted_files(), 0)
+        self.add_staged_changes(self.base.git.repo.get_staged_added_files(), 1)
+        self.add_staged_changes(self.base.git.repo.get_staged_modified_files(), 2)
+
+        self.add_changes(self.base.git.repo.get_deleted_files(), 0)
+        self.add_changes(self.base.git.repo.get_added_files(), 1)
+        self.add_changes(self.base.git.repo.get_modified_files(), 2)
+        self.add_changes(self.base.git.repo.get_untracked_files(), 3)
+
+    def enable_tree(self):
+        self.placeholder.pack_forget()
+        self.commitbox.pack(padx=(15, 10), pady=5, fill=tk.BOTH)
+        self.staged_changes_tree.pack(fill=tk.BOTH)
+        self.changes_tree.pack(fill=tk.BOTH)
+
+        self.staged_changes_tree.clear_tree()
+        self.changes_tree.clear_tree()
+        self.open_repo()
+
+    def disable_tree(self):
+        self.commitbox.pack_forget()
+        self.staged_changes_tree.pack_forget()
+        self.changes_tree.pack_forget()
+        self.placeholder.pack(fill=tk.BOTH, expand=True)
+
+    def get_commit_message(self):
+        return self.commit_message.get()
+
+    def commit(self, *_):
+        self.base.git.repo.commit_files(self.get_commit_message())

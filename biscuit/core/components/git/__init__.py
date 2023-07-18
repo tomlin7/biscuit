@@ -12,7 +12,6 @@ class Git(git.Git):
     def __init__(self, master, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base = master
-
         self.repo = None
 
     def check_git(self):
@@ -21,7 +20,7 @@ class Git(git.Git):
             return
         
         try:
-            self.repo = GitRepo(self.base.active_directory)
+            self.repo = GitRepo(self, self.base.active_directory)
             self.base.git_found = True
         except git.exc.InvalidGitRepositoryError:
             self.base.git_found = False
