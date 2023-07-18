@@ -43,4 +43,11 @@ class ItemBar(Frame):
         else:
             self.toggle.set_icon('chevron-right')
         self.master.toggle()
-
+    
+    def hide_content(self, *_):
+        self.toggle.set_icon('chevron-right')
+        self.master.disable()
+    
+    def show_content(self, *_):
+        self.toggle.set_icon('chevron-down')
+        self.master.enable()

@@ -1,12 +1,10 @@
-import os
 import tkinter as tk
-from hintedtext import HintedEntry
 
 from .placeholder import ChangesTreePlaceholder
 from .changes import Changes
 from .stagedchanges import StagedChanges
 
-from core.components.utils import Frame, Button, IconButton
+from core.components.utils import Frame, Button, IconButton, Entry
 
 
 class Git(Frame):
@@ -15,7 +13,7 @@ class Git(Frame):
         self.config(**self.base.theme.views.sidebar.item)
 
         self.commitbox = Frame(self, **self.base.theme.views.sidebar.item)
-        self.commit_message = HintedEntry(self.commitbox, hint="Message", relief=tk.FLAT, bd=5, **self.base.theme.utils.entry)
+        self.commit_message = Entry(self.commitbox, hint="Message", **self.base.theme.utils.entry)
         self.commit_message.pack(fill=tk.X, pady=(0, 5))
 
         self.commit_button = Button(self.commitbox, text='Commit', command=self.commit)
@@ -34,10 +32,14 @@ class Git(Frame):
     def add_staged_changes(self, changed_files=(), kind=0):
         for file in changed_files:
             self.staged_changes_tree.add_item(file, kind)
+        
+        self.staged_changes_tree.refresh()
     
     def add_changes(self, changed_files=(), kind=0):
         for file in changed_files:
             self.changes_tree.add_item(file, kind)
+        
+        self.changes_tree.refresh()
     
     def open_repo(self):
         self.staged_changes_tree.clear_tree()

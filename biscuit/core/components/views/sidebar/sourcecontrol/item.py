@@ -27,7 +27,7 @@ class ChangeItem(Frame):
         self.diff_btn.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         IconButton(self, "add", self.git_add, **self.base.theme.views.sidebar.item.button).pack(fill=tk.BOTH, side=tk.LEFT)
-        Label(self, text=KINDS[self.kind][0], fg=KINDS[self.kind][2], font=("Segoe UI", 11, "bold"), padx=5, pady=2, **self.base.theme.views.sidebar.item).pack(fill=tk.BOTH)
+        Label(self, text=KINDS[self.kind][0], fg=KINDS[self.kind][2], font=("Segoe UI", 11, "bold"), width=3, pady=2, **self.base.theme.views.sidebar.item).pack(fill=tk.BOTH)
 
         self.bubble = Bubble(self, text=f"{path} • {KINDS[self.kind][1]}")
         self.bind('<Enter>', self.bubble.show)

@@ -11,6 +11,13 @@ class Changes(SidebarViewItem):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.items = {}
+    
+    def refresh(self):
+        if not self.items:
+            self.itembar.hide_content()
+        else:
+            self.itembar.show_content()
+        # self.update()
 
     def clear_tree(self, *_):
         for item, _ in self.items.values():
