@@ -7,6 +7,10 @@ class GitRepo(git.Repo):
         self.base = master.base
         self.path = path
         self.config = self.config_reader()
+
+        self.author_name = self.config.get_value("user", "name")
+        self.author_email = self.config.get_value("user", "email")
+        self.author = git.Actor(self.author_name, self.author_email)
     
     def get_untracked_files(self):
         return [item for item in self.untracked_files]
@@ -54,7 +58,7 @@ class GitRepo(git.Repo):
         if not message:
             message = "Commit changes"
     
-        return self.do(self.index.commit, message, author=self.config.get_value("user", "name"), **kwargs)
+        return self.index.commit(message, author=self.author, **kwargs)
 
     def push_files(self, remote=None, branch=None, **kwargs):
         if not remote:
