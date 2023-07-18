@@ -34,9 +34,13 @@ class GitRepo(git.Repo):
     
     def get_commit_filedata(self, filename):
         return self.head.commit.tree[filename].data_stream.read().decode('utf-8')
+    
     def stage_files(self, *paths):
         for path, change_type in paths:
-            if change_type == 'D':
+            print(path, change_type)
+            # change type can be 0, 1, 2, 3
+            # respectively represents Deleted, Added, Modified, Untracked
+            if change_type == 0:
                 self.do(self.index.remove, [path])
             else:
                 self.do(self.index.add, [path])
