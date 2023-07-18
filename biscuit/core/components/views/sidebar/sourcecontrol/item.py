@@ -20,14 +20,21 @@ class ChangeItem(Frame):
         self.path = path
         self.kind = kind
 
-        self.diff_btn = Menubutton(self, text=os.path.basename(path), anchor=tk.W, font=("Segoe UI", 10),
+        name_label = Menubutton(self, text=os.path.basename(path), anchor=tk.W, font=("Segoe UI", 11),
             padx=10, pady=2, **self.base.theme.views.sidebar.item.button
         )
-        self.diff_btn.bind("<Double-Button-1>", self.open_diff)
-        self.diff_btn.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+        name_label.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+        name_label.bind("<Double-Button-1>", self.open_diff)
 
+        # path_label = TruncatedLabel(self, text=path, anchor=tk.W, font=("Segoe UI", 9),
+        #     padx=10, pady=2, fg="grey", **self.base.theme.views.sidebar.item
+        # )
+        # path_label.pack(fill=tk.BOTH, side=tk.LEFT)
+        # path_label.bind("<Double-Button-1>", self.open_diff)
+
+        IconButton(self, "discard", self.git_discard, **self.base.theme.views.sidebar.item.button).pack(fill=tk.BOTH, side=tk.LEFT)
         IconButton(self, "add", self.git_add, **self.base.theme.views.sidebar.item.button).pack(fill=tk.BOTH, side=tk.LEFT)
-        Label(self, text=KINDS[self.kind][0], fg=KINDS[self.kind][2], font=("Segoe UI", 11, "bold"), width=3, pady=2, **self.base.theme.views.sidebar.item).pack(fill=tk.BOTH)
+        Label(self, text=KINDS[self.kind][0], fg=KINDS[self.kind][2], font=("Segoe UI", 11, "bold"), width=3, pady=2, **self.base.theme.views.sidebar.item).pack(fill=tk.BOTH, expand=True)
 
         self.bubble = Bubble(self, text=f"{path} • {KINDS[self.kind][1]}")
         self.bind('<Enter>', self.bubble.show)
@@ -38,4 +45,8 @@ class ChangeItem(Frame):
     
     def git_add(self, *_):
         self.base.git.repo.stage_files((self.path, self.kind))
+        self.master.master.open_repo()
+    
+    def git_discard(self, *_):
+        self.base.git.repo.discard_changes(self.path)
         self.master.master.open_repo()

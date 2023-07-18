@@ -42,3 +42,7 @@ class Changes(SidebarViewItem):
         if unstaged := [(path, item[1]) for path, item in self.items.items()]:
             self.base.git.repo.stage_files(*unstaged)
             self.master.open_repo()
+    
+    def git_discard_all(self, *_):
+        self.base.git.repo.discard_changes(self.path)
+        self.master.master.open_repo()

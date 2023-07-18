@@ -12,7 +12,7 @@ from .frame import Frame
 from .filetype import FileType
 from .icon import Icon
 from .iconbutton import IconButton
-from .label import WrappingLabel, Label
+from .label import WrappingLabel, Label, TruncatedLabel
 from .scrollbar import Scrollbar
 from .scrollableframe import ScrollableFrame
 from .tree import Tree

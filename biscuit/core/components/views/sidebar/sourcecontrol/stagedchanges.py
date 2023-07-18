@@ -6,7 +6,7 @@ from ..item import SidebarViewItem
 
 class StagedChanges(SidebarViewItem):
     def __init__(self, master, *args, **kwargs):
-        self.__buttons__ = (('discard',), ('remove', self.git_remove_all))
+        self.__buttons__ = (('remove', self.git_remove_all),)
         self.title = "Staged Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)

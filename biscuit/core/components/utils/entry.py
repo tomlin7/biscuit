@@ -16,3 +16,6 @@ class Entry(Frame):
 
     def insert(self, *args):
         self.entry.insert(*args)
+    
+    def get(self, *args):
+        return self.entry.get(*args)
