@@ -43,7 +43,7 @@ class Text(Text):
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.primary_background_highlight)
         self.tag_config("highlight", background=self.base.theme.primary_background_highlight)
-        
+        self.tag_config("currentline", background=self.base.theme.border)
         self.tag_config("found", background="green")
         self.tag_config("foundcurrent", background="orange")
 
@@ -302,6 +302,7 @@ class Text(Text):
                     self.write(chunk)
                     self.update()
                     self.master.on_change()
+                self.master.on_scroll()
             threading.Thread(target=load_file).start()
         except Exception as e:
             self.master.unsupported_file()
@@ -426,7 +427,15 @@ class Text(Text):
 
     def clear_all_selection(self):
         self.tag_remove(tk.SEL, 1.0, tk.END)
-    
+
+    def highlight_current_line(self, *_):
+        self.tag_remove("currentline", 1.0, tk.END)
+        
+        line = int(self.index(tk.INSERT).split(".")[0])
+        start = str(float(line))
+        end = str(float(line + 1))
+        self.tag_add("currentline", start, end)
+
     def select_line(self, line):
         self.clear_all_selection()
         
@@ -476,8 +485,9 @@ class Text(Text):
 
     def refresh(self, *args):
         self.current_word = self.get("insert-1c wordstart", "insert")
-        self.highlight_current_word()
         self.highlighter.highlight()
+        self.highlight_current_word()
+        self.highlight_current_line()
 
     def create_proxy(self):
         self._orig = self._w + "_orig"
