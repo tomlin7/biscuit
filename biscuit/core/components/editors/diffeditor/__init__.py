@@ -1,4 +1,4 @@
-import os
+import re
 import tkinter as tk
 
 from .pane import DiffPane
@@ -13,11 +13,12 @@ class DiffEditor(BaseEditor):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.path = path
-
         self.editable = True
 
         self.lhs_data = []
         self.rhs_data = []
+
+        self.last_line = None
 
         self.lhs = DiffPane(self, path)
         self.lhs.grid(row=0, column=0, sticky=tk.NSEW)
@@ -43,8 +44,6 @@ class DiffEditor(BaseEditor):
         self.right.tag_config("removal", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
         self.right.tag_config("uhhh", background="green")
 
-        self.prepare_data()
-
         self.differ = Differ(self)
         self.show_diff()
         
@@ -62,56 +61,38 @@ class DiffEditor(BaseEditor):
         self.rhs.scrollbar.set(*args)
         self.on_scrollbar('moveto', args[0])
     
-    def prepare_data(self):
+    def show_diff(self):
         lhs_data = self.base.git.repo.get_commit_filedata(self.path).split("\n")
         self.lhs_data = [f"{line}\n" if line else "\n" for line in lhs_data]
         with open(self.path, 'r') as f:
             self.rhs_data = f.readlines()
         
-    def show_diff(self):
         self.diff = self.differ.get_diff(self.lhs_data, self.rhs_data)
         for line in self.diff:
             marker = line[0]
             content = line[2:]
 
-            if marker == " ":
-                # line is same in both
-                self.left.write(content)
-                self.right.write(content)
+            match marker:
+                case" ":
+                    # line is same in both
+                    self.left.write(content)
+                    self.right.write(content)
 
-            elif marker == "-":
-                # line is only on the left
-                self.left.write(content, "removal")
-                self.right.newline("removal")
+                case "-":
+                    # line is only on the left
+                    self.left.write(content, "removal")
+                    self.right.newline("removal")
 
-            elif marker == "+":
-                # line is only on the right
-                self.left.newline("addition")
-                self.right.write(content, "addition")
+                case "+":
+                    # line is only on the right
+                    self.last_line = int(float(self.right.index(tk.INSERT)))
+                    self.left.newline("addition")
+                    self.right.write(content, "addition")
                 
-            elif marker == "?":
-                return
-
-                # line has changes within it
-                insert = self.right.index(tk.END)
-                #TODO fix the duplicate insert issue
-                line = int(insert.split(".")[0]) - 2
-
-                modified_parts = []
-                current_start = None
-
-                for i, char in enumerate(content):
-                    if char == "+":
-                        if current_start is None:
-                            current_start = i
-                    elif current_start is not None:
-                        modified_parts.append((current_start, i))
-                        current_start = None
-
-                if current_start is not None:
-                    modified_parts.append((current_start, len(content)))
-
-                for start, end in modified_parts:
-                    start_pos = f"{line}.{start}"
-                    end_pos = f"{line}.{end}"
-                    self.right.tag_add("uhhh", start_pos, end_pos)
+                case "?":
+                    # the above line has changes
+                    matches = re.finditer(r'\++', content)
+                    for match in matches:
+                        start = f"{self.last_line}.{match.start()}"
+                        end = f"{self.last_line}.{match.end()}"
+                        self.right.tag_add("uhhh", start, end)

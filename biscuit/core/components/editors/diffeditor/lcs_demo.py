@@ -8,7 +8,7 @@ def lcs(t1, t2):
             else:
                 dp[i][j] = max(dp[i][j + 1], dp[i + 1][j])
 
-    return dp[0][0]
+    return dp[0][0] # hii
 
 print(lcs("abcd", "ab cf"))
 
