@@ -301,7 +301,7 @@ class Text(Text):
                         break
                     self.write(chunk)
                     self.update()
-                    self.master.on_change()
+                self.master.on_change()
                 self.master.on_scroll()
             threading.Thread(target=load_file).start()
         except Exception as e:
@@ -484,6 +484,9 @@ class Text(Text):
             self.tag_add(tag, "matchStart", "matchEnd")
 
     def refresh(self, *args):
+        if self.minimalist:
+            return
+        
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlighter.highlight()
         self.highlight_current_word()

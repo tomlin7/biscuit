@@ -1,4 +1,5 @@
 import re
+import threading
 import tkinter as tk
 
 from .pane import DiffPane
@@ -18,7 +19,8 @@ class DiffEditor(BaseEditor):
         self.lhs_data = []
         self.rhs_data = []
 
-        self.last_line = None
+        self.lhs_last_line = None
+        self.rhs_last_line = None
 
         self.lhs = DiffPane(self, path)
         self.lhs.grid(row=0, column=0, sticky=tk.NSEW)
@@ -61,38 +63,78 @@ class DiffEditor(BaseEditor):
         self.rhs.scrollbar.set(*args)
         self.on_scrollbar('moveto', args[0])
     
+    def run_show_diff(self):
+        threading.Thread(target=self.show_diff).start()
+    
     def show_diff(self):
-        lhs_data = self.base.git.repo.get_commit_filedata(self.path).split("\n")
-        self.lhs_data = [f"{line}\n" if line else "\n" for line in lhs_data]
+        lhs_data = self.base.git.repo.get_commit_filedata(self.path)
         with open(self.path, 'r') as f:
-            self.rhs_data = f.readlines()
+            rhs_data = f.read()
+
+        lhs_lines = [line+"\n" for line in lhs_data.split('\n')]
+        rhs_lines = [line+"\n" for line in rhs_data.split('\n')]
         
-        self.diff = self.differ.get_diff(self.lhs_data, self.rhs_data)
-        for line in self.diff:
+        self.diff = list(self.differ.get_diff(lhs_lines, rhs_lines))
+        for i, line in enumerate(self.diff):
             marker = line[0]
             content = line[2:]
 
             match marker:
-                case" ":
+                case " ":
                     # line is same in both
                     self.left.write(content)
                     self.right.write(content)
 
                 case "-":
                     # line is only on the left
+                    self.lhs_last_line = int(float(self.left.index(tk.INSERT)))
                     self.left.write(content, "removal")
-                    self.right.newline("removal")
+
+                    # only if the next line's marker is not ? add a newline
+                    try:
+                        if not self.diff[i + 1][0] in ["?", " "]: 
+                            self.right.newline("removal")
+                    except:
+                        pass
 
                 case "+":
                     # line is only on the right
-                    self.last_line = int(float(self.right.index(tk.INSERT)))
-                    self.left.newline("addition")
+                    self.rhs_last_line = int(float(self.right.index(tk.INSERT)))
                     self.right.write(content, "addition")
-                
+                    
+                    # only if the next line's marker is not ? add a newline
+                    try:
+                        if not self.diff[i + 1][0] in ["?", " "]:
+                            self.left.newline("addition")
+                    except:
+                        pass
+
                 case "?":
                     # the above line has changes
-                    matches = re.finditer(r'\++', content)
-                    for match in matches:
-                        start = f"{self.last_line}.{match.start()}"
-                        end = f"{self.last_line}.{match.end()}"
+                    for match in re.finditer(r'\++', content):
+                        start = f"{self.rhs_last_line}.{match.start()}"
+                        end = f"{self.rhs_last_line}.{match.end()}"
                         self.right.tag_add("uhhh", start, end)
+
+                    for match in re.finditer(r'-+', content):
+                        start = f"{self.lhs_last_line}.{match.start()}"
+                        end = f"{self.lhs_last_line}.{match.end()}"
+                        self.left.tag_add("uhhh", start, end)
+                    
+            self.left.update()
+            self.right.update()
+        
+        self.left.highlighter.highlight()
+        self.right.highlighter.highlight()
+
+        # Add extra empty lines at the bottom if one side has fewer lines
+        lhs_line_count = int(float(self.left.index(tk.END))) - 1
+        rhs_line_count = int(float(self.right.index(tk.END))) - 1
+        if lhs_line_count > rhs_line_count:
+            extra_newlines = lhs_line_count - rhs_line_count
+            for _ in range(extra_newlines):
+                self.right.newline()
+        elif rhs_line_count > lhs_line_count:
+            extra_newlines = rhs_line_count - lhs_line_count
+            for _ in range(extra_newlines):
+                self.left.newline()
