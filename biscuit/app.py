@@ -183,12 +183,9 @@ class App(tk.Tk):
 
         self.editorsmanager.open_editor(path, exists)
 
-    def open_diff(self, path, exists=True):
+    def open_diff(self, path, kind):
         """Opens a diff editor for a file path."""
-        if exists and not os.path.isfile(path):
-            return
-
-        self.editorsmanager.open_diff_editor(path, exists)
+        self.editorsmanager.open_diff_editor(path, kind)
     
     def open_settings(self):
         """Opens the settings editor."""

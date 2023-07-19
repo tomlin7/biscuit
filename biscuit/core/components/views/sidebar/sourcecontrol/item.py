@@ -13,6 +13,7 @@ class ChangeItem(Frame):
         0 - deleted
         1 - added
         2 - modified
+        3 - untracked
     """
     def __init__(self, master, path, kind, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -41,7 +42,7 @@ class ChangeItem(Frame):
         self.bind('<Leave>', self.bubble.hide)
 
     def open_diff(self, _):
-        self.base.open_diff(self.path)
+        self.base.open_diff(self.path, self.kind)
     
     def git_add(self, *_):
         self.base.git.repo.stage_files((self.path, self.kind))

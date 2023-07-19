@@ -8,22 +8,24 @@ from ..editor import BaseEditor
 
 
 class DiffEditor(BaseEditor):
-    def __init__(self, master, path, *args, **kwargs):
+    def __init__(self, master, path, kind, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.path = path
+        self.kind = kind
         self.editable = True
 
         self.lhs_data = []
         self.rhs_data = []
 
-        self.lhs_last_line = None
-        self.rhs_last_line = None
+        self.lhs_last_line = 0
+        self.rhs_last_line = 0
 
         self.lhs = DiffPane(self, path)
-        self.lhs.grid(row=0, column=0, sticky=tk.NSEW)
+        self.lhs.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))
 
         self.rhs = DiffPane(self, path)
         self.rhs.grid(row=0, column=1, sticky=tk.NSEW)
@@ -67,10 +69,27 @@ class DiffEditor(BaseEditor):
         threading.Thread(target=self.show_diff).start()
     
     def show_diff(self):
+        # case: deleted file
+        if not self.kind:
+            self.left.write(self.base.git.repo.get_commit_filedata(self.path))
+            self.left.update()
+            self.left.highlighter.highlight()
+            return
+
+        # case: new/untracked file
+        if self.kind in (1, 3):
+            with open(self.path, 'r') as f:
+                self.right.write(f.read())
+                self.right.update()
+                self.right.highlighter.highlight()
+                return
+    
+        # case: modified file
         lhs_data = self.base.git.repo.get_commit_filedata(self.path)
         with open(self.path, 'r') as f:
             rhs_data = f.read()
 
+        
         lhs_lines = [line+"\n" for line in lhs_data.split('\n')]
         rhs_lines = [line+"\n" for line in rhs_data.split('\n')]
         
@@ -90,36 +109,34 @@ class DiffEditor(BaseEditor):
                     self.lhs_last_line = int(float(self.left.index(tk.INSERT)))
                     self.left.write(content, "removal")
 
-                    # only if the next line's marker is not ? add a newline
-                    try:
-                        if not self.diff[i + 1][0] in ["?", " "]: 
-                            self.right.newline("removal")
-                    except:
-                        pass
+                    # TODO this check is done to make sure if this is a line with modifications
+                    # and not a newly added line, but this is not done right.
+                    self.left.newline("addition")
 
                 case "+":
                     # line is only on the right
                     self.rhs_last_line = int(float(self.right.index(tk.INSERT)))
                     self.right.write(content, "addition")
                     
-                    # only if the next line's marker is not ? add a newline
-                    try:
-                        if not self.diff[i + 1][0] in ["?", " "]:
-                            self.left.newline("addition")
-                    except:
-                        pass
+                    # TODO this check is done to make sure if this is a line with modifications
+                    # and not a newly added line, but this is not done right.
+                    self.left.newline("addition")
 
                 case "?":
                     # the above line has changes
-                    for match in re.finditer(r'\++', content):
-                        start = f"{self.rhs_last_line}.{match.start()}"
-                        end = f"{self.rhs_last_line}.{match.end()}"
-                        self.right.tag_add("uhhh", start, end)
+                    if matches := re.finditer(r'\++', content):
+                        self.left.delete(str(float(self.rhs_last_line+1)), str(float(int(float(self.left.index(tk.INSERT))))))
+                        for match in matches:
+                            start = f"{self.rhs_last_line}.{match.start()}"
+                            end = f"{self.rhs_last_line}.{match.end()}"
+                            self.right.tag_add("uhhh", start, end)
 
-                    for match in re.finditer(r'-+', content):
-                        start = f"{self.lhs_last_line}.{match.start()}"
-                        end = f"{self.lhs_last_line}.{match.end()}"
-                        self.left.tag_add("uhhh", start, end)
+                    if matches := re.finditer(r'-+', content):
+                        self.right.delete(str(float(self.lhs_last_line+1)), str(float(int(float(self.right.index(tk.INSERT))))))
+                        for match in matches:
+                            start = f"{self.lhs_last_line}.{match.start()}"
+                            end = f"{self.lhs_last_line}.{match.end()}"
+                            self.left.tag_add("uhhh", start, end)
                     
             self.left.update()
             self.right.update()

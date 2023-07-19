@@ -35,7 +35,7 @@ class StagedChangeItem(Frame):
         self.bind('<Leave>', self.bubble.hide)
 
     def open_diff(self, _):
-        self.base.open_diff(self.path)
+        self.base.open_diff(self.path, self.kind)
     
     def git_remove(self, *_):
         self.base.git.repo.unstage_files(self.path)
