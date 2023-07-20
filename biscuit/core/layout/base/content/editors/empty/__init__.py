@@ -22,8 +22,7 @@ class Empty(Frame):
         self.shortcuts.add_shortcut("Toggle terminal", ["Ctrl", "`"])
         self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "o"])
 
-        #TODO open new empty file
-        self.bind("<Double-Button-1>", lambda _: ...)
+        self.bind("<Double-Button-1>", self.base.events.new_file)
 
     # TODO drop to open
     # def drop(self, event):

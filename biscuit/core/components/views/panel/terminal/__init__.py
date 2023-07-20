@@ -21,7 +21,7 @@ class Terminal(PanelView):
 
         self.terminals = []
 
-        self.default_terminals = [Default(self)]
+        self.default_terminals = [Default(self), Default(self)]
         self.add_terminals(self.default_terminals)
 
     def add_terminals(self, terminals):
@@ -63,3 +63,19 @@ class Terminal(PanelView):
     @property
     def python(self):
         return self.default_terminals[1]
+
+    @property
+    def active_editor(self):
+        "Get active editor."
+        if not self.tabs.active_tab:
+            return
+        
+        return self.tabs.active_tab.editor
+    
+    def refresh(self):
+        ...
+        # if not len(self.editors) and self.empty:
+        #     self.emptytab.grid()
+        # elif len(self.editors) and not self.empty:
+        #     self.emptytab.grid_remove()
+        # self.empty = not self.empty

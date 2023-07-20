@@ -22,6 +22,9 @@ class TerminalBase(PanelView):
         enter - flush terminal
         write - write text to terminal
     """
+    name: str
+    icon: str
+    
     def __init__(self, master, shell=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.__buttons__ = (('add',),('trash', self.destroy))
