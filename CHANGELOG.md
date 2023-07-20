@@ -8,7 +8,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.5.2...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.9.2...HEAD)</small>
+
+### Fixed
+
+- fix: Handling deleted/untracked files in diff viewer ([47c1a7b](https://github.com/billyeatcookies/Biscuit/commit/47c1a7b55dd140402eb00dac55121a903ea140eb) by Billy).
+- fix: Optimizations done for diff viewer ([e5789db](https://github.com/billyeatcookies/Biscuit/commit/e5789dbbaa5212a8d67b1121bc60c45cd1639982) by Billy).
+- fix: Git integration - hide changes/staged changes when there arent any ([5447380](https://github.com/billyeatcookies/Biscuit/commit/5447380d260147e77495e717fdcbbed553aaf502) by Billy).
+- fix: Git integration no longer fails to stage deleted files ([1c34b4f](https://github.com/billyeatcookies/Biscuit/commit/1c34b4f18f57ad76ebd39a1aa51b2137aec92019) by Billy).
+- fixed auto pair completion bug for quotes ([e4eb489](https://github.com/billyeatcookies/Biscuit/commit/e4eb489416aa916bd70857c2db97b1eb067f693c) by CSP).
+- fix: Optimize palette filter to work more efficiently ([d103ee5](https://github.com/billyeatcookies/Biscuit/commit/d103ee5af0f3a866bfad314e23ce0d4e139e5112) by Billy).
+- fix: Diffeditor line numbers should update on scroll ([fcd7236](https://github.com/billyeatcookies/Biscuit/commit/fcd7236dcc477a1540a1fefbb5db44c32b89a598) by Billy).
+- fix: Line numbers should be redrawn on every content change ([01555ff](https://github.com/billyeatcookies/Biscuit/commit/01555ff43299a93016ded5bcce9d9509b11fc516) by Billy).
+- fix: Remove cells in game of life, fix tetris bindings - show instructions for game of life ([6b7b88c](https://github.com/billyeatcookies/Biscuit/commit/6b7b88c4fec51800a8b7a4248d4297da8f12d4f2) by Billy).
+- fix: Restrict resizing with minimum width/height ([bea7d47](https://github.com/billyeatcookies/Biscuit/commit/bea7d47d6825094a12201cec2464b13ae61ccc4c) by Billy).
+
+<!-- insertion marker -->
+## [v2.9.2](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.9.2) - 2023-07-13
+
+<small>[Compare with v2.5.2](https://github.com/billyeatcookies/Biscuit/compare/v2.5.2...v2.9.2)</small>
 
 ### Fixed
 
@@ -27,7 +45,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix: Update statusbar info to show encoding of opened file ([9ec0268](https://github.com/billyeatcookies/Biscuit/commit/9ec0268e005f3544161c37b0bb78f6051cc7c2ae) by Billy).
 - fix: #71 Decide encoding of files with BOM (if exists) BOM is not loaded as text ([c4b09be](https://github.com/billyeatcookies/Biscuit/commit/c4b09be92a0fb9d18bdfa8e1399b7b392950796f) by Billy).
 
-<!-- insertion marker -->
 ## [v2.5.2](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.5.2) - 2023-07-11
 
 <small>[Compare with v2.5.1](https://github.com/billyeatcookies/Biscuit/compare/v2.5.1...v2.5.2)</small>
