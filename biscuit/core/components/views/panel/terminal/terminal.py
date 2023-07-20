@@ -59,8 +59,8 @@ class TerminalBase(PanelView):
         self.out_queue = queue.Queue()
         self.err_queue = queue.Queue()
 
-        t_out = Thread(target=self.process_out)
-        t_err = Thread(target=self.process_err)
+        self.t_out = t_out = Thread(target=self.process_out)
+        self.t_err = t_err = Thread(target=self.process_err)
         t_out.daemon = True
         t_err.daemon = True
         t_out.start()
@@ -77,9 +77,6 @@ class TerminalBase(PanelView):
 
     def destroy(self, *_):
         self.alive = False
-
-        self.p.stdin.write("exit()\n".encode())
-        self.p.stdin.flush()
     
     def run_command(self, command):
         self.write(command, "command")

@@ -8,7 +8,7 @@ from ..panelview import PanelView
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (('add',),('trash',))
+        self.__buttons__ = (('add', self.add_current_terminal), ('trash', self.delete_active_terminal))
 
         self.config(bg=self.base.theme.border)
         self.grid_rowconfigure(0, weight=1)
@@ -21,8 +21,12 @@ class Terminal(PanelView):
 
         self.terminals = []
 
-        self.default_terminals = [Default(self), Default(self)]
+        self.default_terminals = [Default(self)]
         self.add_terminals(self.default_terminals)
+    
+    def add_current_terminal(self, *_):
+        "Spawns an instance of currently active terminal"
+        self.add_terminal(self.active_terminal_type(self))
 
     def add_terminals(self, terminals):
         "Append terminals to list. Create tabs for them."
@@ -46,6 +50,10 @@ class Terminal(PanelView):
         terminal.destroy()
         self.terminals.remove(terminal)
     
+    def delete_active_terminal(self):
+        "Closes the active tab"
+        self.tabs.close_active_tab()
+   
     def set_active_terminal(self, terminal):
         "set an existing terminal to currently shown one"
         for tab in self.tabs.tabs:
@@ -65,6 +73,13 @@ class Terminal(PanelView):
         return self.default_terminals[1]
 
     @property
+    def active_terminal_type(self):
+        if active := self.active_terminal:
+            return type(active)
+        
+        return Default
+   
+    @property
     def active_terminal(self):
         "Get active terminal."
         if not self.tabs.active_tab:
@@ -73,6 +88,5 @@ class Terminal(PanelView):
         return self.tabs.active_tab.terminal
     
     def refresh(self):
-        ...
         if not len(self.terminals):
             self.master.toggle_panel()
