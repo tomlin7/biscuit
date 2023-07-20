@@ -73,3 +73,6 @@ class Panel(Frame):
     @property
     def terminal(self):
         return self.default_views[1]
+
+    def toggle_panel(self):
+        self.master.toggle_panel()

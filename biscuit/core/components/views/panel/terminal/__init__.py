@@ -47,7 +47,7 @@ class Terminal(PanelView):
         self.terminals.remove(terminal)
     
     def set_active_terminal(self, terminal):
-        "set an existing editor to currently shown one"
+        "set an existing terminal to currently shown one"
         for tab in self.tabs.tabs:
             if tab.terminal == terminal:
                 self.tabs.set_active_tab(tab)
@@ -65,17 +65,14 @@ class Terminal(PanelView):
         return self.default_terminals[1]
 
     @property
-    def active_editor(self):
-        "Get active editor."
+    def active_terminal(self):
+        "Get active terminal."
         if not self.tabs.active_tab:
             return
         
-        return self.tabs.active_tab.editor
+        return self.tabs.active_tab.terminal
     
     def refresh(self):
         ...
-        # if not len(self.editors) and self.empty:
-        #     self.emptytab.grid()
-        # elif len(self.editors) and not self.empty:
-        #     self.emptytab.grid_remove()
-        # self.empty = not self.empty
+        if not len(self.terminals):
+            self.master.toggle_panel()
