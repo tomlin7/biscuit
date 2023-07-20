@@ -154,7 +154,9 @@ class PanelViews(FrameThemeObject):
         self.logs.warning = "#a31515"
         self.logs.error = "#ab1515"
 
-        self.terminal = ThemeObject(self)
+        self.terminal = FrameThemeObject(self)
+        self.terminal.content = ThemeObject(self)
+        self.terminal.tab = HighlightableThemeObject(self)
 
 class Views(FrameThemeObject):
     def __init__(self, *args, **kwargs):

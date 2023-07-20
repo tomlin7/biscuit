@@ -37,3 +37,9 @@ class Dark(Theme):
         self.editors.diff.not_exist = "#424242"
         self.editors.diff.removed = "#452323"
         self.editors.diff.addition = "#203423"
+
+        self.views.panel.logs.time = "#6a9955"
+        self.views.panel.logs.caller = "#569cd6"
+        self.views.panel.logs.info = "#b5cea8"
+        self.views.panel.logs.warning = "#ce9178"
+        self.views.panel.logs.error = "#ce9178"

@@ -9,7 +9,7 @@ class TerminalText(Text):
         self.mark_set('input', 'insert')
         self.mark_gravity('input', 'left')
 
-        self.config(**self.base.theme.views.panel.terminal)
+        self.config(**self.base.theme.views.panel.terminal.content)
 
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)
