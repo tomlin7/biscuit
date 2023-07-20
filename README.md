@@ -37,6 +37,13 @@ If you use **poetry**, this will get biscuit up and running
 > > pip install scikit-build
 > ```
 
+## Contributors
+To contribute to the biscuit project, check our [contributing guidelines](./CONTRIBUTING.md). Your contributions and support are greatly appreciated! 🧡 
+
+<a href="https://github.com/billyeatcookies/biscuit/graphs/contributors">
+  <img src="https://opencollective.com/biscuit/contributors.svg?width=890" />
+</a>
+
 ## Screenshots ✨
 ![python_s8THu31T0Q](https://github.com/billyeatcookies/Biscuit/assets/70792552/032fac52-3f2f-4b1e-8908-a7b7c42aee13)
 ![python_k6yohhbuck](https://github.com/billyeatcookies/Biscuit/assets/70792552/e34ae3ca-7767-4210-a446-41a517af0e76)
@@ -55,11 +62,3 @@ If you use **poetry**, this will get biscuit up and running
 
 ![pathview](https://imgur.com/CztWtni.jpg)
 
-
-
-## Contributors
-To contribute to the biscuit project, check our [contributing guidelines](./CONTRIBUTING.md). Your contributions and support are greatly appreciated! 🧡 
-
-<a href="https://github.com/billyeatcookies/biscuit/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=billyeatcookies/biscuit" />
-</a>
