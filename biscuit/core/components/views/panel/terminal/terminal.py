@@ -3,9 +3,10 @@ import subprocess
 import tkinter as tk
 from threading import Thread
 
-from .text import TerminalText
-from ..panelview import PanelView
 from core.components.utils import Scrollbar
+
+from ..panelview import PanelView
+from .text import TerminalText
 
 
 class TerminalBase(PanelView):

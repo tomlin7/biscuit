@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from hintedtext import HintedEntry
 from core.components.utils import Frame
+from hintedtext import HintedEntry
 
 
 class Searchbar(Frame):

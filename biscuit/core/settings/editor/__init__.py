@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from core.components.utils import ScrollableFrame, Frame, Button
 from core.components.editors.editor import BaseEditor
+from core.components.utils import Button, Frame, ScrollableFrame
 
 from .searchbar import Searchbar
 from .section import Section

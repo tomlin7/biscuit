@@ -1,9 +1,9 @@
+from core.components import BaseEditor, BaseGame
+
 from .commands import Commands
 from .logger import Logger
 from .notifications import Notifications
 from .utils import Utils
-
-from core.components import BaseGame, BaseEditor
 
 
 class ExtensionsAPI:

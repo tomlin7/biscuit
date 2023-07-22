@@ -1,7 +1,9 @@
 import tkinter as tk
 
-from .kind import Kind
 from core.components.utils import Frame
+
+from .kind import Kind
+
 
 class AutoCompleteItem(Frame):
     def __init__(self, master, text, kind=None, *args, **kwargs):

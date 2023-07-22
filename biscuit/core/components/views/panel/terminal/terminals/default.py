@@ -1,7 +1,8 @@
 import os
-from ..terminal import TerminalBase
 
 from core.components.utils import Label
+
+from ..terminal import TerminalBase
 
 
 class Default(TerminalBase):

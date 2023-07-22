@@ -1,7 +1,6 @@
 import tkinter as tk
 
 from .codicon import get_codicon
-
 from .menubutton import Menubutton
 
 

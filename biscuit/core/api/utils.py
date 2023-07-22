@@ -1,6 +1,7 @@
+from core.components.utils import *
+
 from .endpoint import Endpoint
 
-from core.components.utils import *
 
 class Utils(Endpoint):
     def __init__(self, *a):

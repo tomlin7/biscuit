@@ -1,5 +1,6 @@
 import tkinter as tk
-from core.components.utils import IconButton, Frame, Icon, Label
+
+from core.components.utils import Frame, Icon, IconButton, Label
 
 ICONS = {
     "cmd": "terminal-cmd",

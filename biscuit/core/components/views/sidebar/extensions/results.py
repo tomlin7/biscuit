@@ -1,10 +1,13 @@
+import threading
 import tkinter as tk
-import requests, threading, toml
 
+import requests
+import toml
 
+from ..item import SidebarViewItem
 from .extension import Extension
 from .watcher import ExtensionsWatcher
-from ..item import SidebarViewItem
+
 
 class Results(SidebarViewItem):
     def __init__(self, master, *args, **kwargs):

@@ -1,5 +1,7 @@
 import importlib
-import os, threading, sys
+import os
+import sys
+import threading
 
 
 class ExtensionManager:
@@ -18,7 +20,7 @@ class ExtensionManager:
 
     def restricted_import(self, name, globals={}, locals={}, fromlist=[], level=0):
         if name in self.blocked_modules:
-            raise ImportError("Module '{}' is not allowed.".format(name))
+            raise importError("Module '{}' is not allowed.".format(name))
 
         return self.imports[name]
 
@@ -44,7 +46,7 @@ class ExtensionManager:
             self.extensions[extension_name] = extension_instance
 
             self.base.logger.info(f"Extension '{extension_name}' loaded.")
-        except ImportError as e:
+        except importError as e:
             self.base.logger.error(f"Failed to load extension '{extension_name}': {e}")
             self.base.notifications.error(f"Extension '{extension_name}' failed: see logs.")
     

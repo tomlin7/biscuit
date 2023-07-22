@@ -8,7 +8,7 @@ import re
 
 def Get_HWND_DPI(window_handle):
     # To detect high DPI displays and avoid need to set Windows compatibility flags
-    from ctypes import windll, pointer, wintypes
+    from ctypes import pointer, windll, wintypes
 
     try:
         windll.shcore.SetProcessDpiAwareness(1)

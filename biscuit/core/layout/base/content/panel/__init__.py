@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .panelbar import Panelbar
-from core.components.views.panel import *
 from core.components.utils import Frame
+from core.components.views.panel import *
+
+from .panelbar import Panelbar
+
 
 class Panel(Frame):
     """

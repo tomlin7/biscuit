@@ -1,7 +1,8 @@
 import random
 
-from .game import BaseGame
 from core.components.utils import Button, Canvas
+
+from .game import BaseGame
 
 
 class TicTacToe(BaseGame):

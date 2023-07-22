@@ -1,8 +1,9 @@
-import tkinter as tk
 import random
+import tkinter as tk
+
+from core.components.utils import Button, Canvas
 
 from .game import BaseGame
-from core.components.utils import Canvas, Button
 
 # Constants
 WIDTH = 600

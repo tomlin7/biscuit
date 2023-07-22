@@ -1,10 +1,10 @@
 import tkinter as tk
 
-from .placeholder import ChangesTreePlaceholder
-from .changes import Changes
-from .stagedchanges import StagedChanges
+from core.components.utils import Button, Entry, Frame, IconButton
 
-from core.components.utils import Frame, Button, IconButton, Entry
+from .changes import Changes
+from .placeholder import ChangesTreePlaceholder
+from .stagedchanges import StagedChanges
 
 
 class Git(Frame):

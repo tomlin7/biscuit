@@ -1,13 +1,15 @@
-import re, codecs, io
+import codecs
+import io
+import re
 import threading
 import tkinter as tk
 from collections import deque
 
-from .syntax import Syntax
-from .highlighter import Highlighter
-from .autocomplete import AutoComplete
-
 from core.components.utils import Text
+
+from .autocomplete import AutoComplete
+from .highlighter import Highlighter
+from .syntax import Syntax
 
 
 class Text(Text):

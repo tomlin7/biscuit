@@ -1,8 +1,9 @@
 import re
 import tkinter as tk
 
+from core.components.utils import ButtonsEntry, Frame, IconButton, Toplevel
+
 from .results import FindResults
-from core.components.utils import IconButton, Frame, Toplevel, ButtonsEntry
 
 
 class FindReplace(Toplevel):

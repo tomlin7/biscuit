@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import Shortcut, Frame
+from core.components.utils import Frame, Shortcut
 
 
 class Shortcuts(Frame):

@@ -1,7 +1,8 @@
 import tkinter as tk
 
-from .tab import Tab
 from core.components.utils import Frame
+
+from .tab import Tab
 
 
 class Tabs(Frame):

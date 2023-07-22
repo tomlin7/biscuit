@@ -2,6 +2,7 @@ import tkinter as tk
 
 from .loader import ResourcesLoader
 
+
 class Resources:
     def __init__(self, master):
         self.base = master.base

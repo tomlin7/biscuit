@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter.constants import *
 
+from core.components.utils import Bubble, Menubutton, get_codicon
+
 from .menu import ActionbarMenu
-from core.components.utils import get_codicon, Bubble, Menubutton
 
 
 class MenuItem(Menubutton):

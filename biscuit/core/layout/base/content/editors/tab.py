@@ -1,5 +1,6 @@
 import tkinter as tk
-from core.components.utils import IconButton, Frame
+
+from core.components.utils import Frame, IconButton
 
 
 class Tab(Frame):

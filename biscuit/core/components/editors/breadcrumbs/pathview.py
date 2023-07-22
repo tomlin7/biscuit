@@ -1,5 +1,5 @@
-from core.components.views.sidebar.explorer import DirectoryTree
 from core.components.utils import Toplevel
+from core.components.views.sidebar.explorer import DirectoryTree
 
 
 class PathView(Toplevel):

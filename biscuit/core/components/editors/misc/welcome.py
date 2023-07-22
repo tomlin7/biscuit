@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...utils import IconLabelButton, Frame, Label
+from ...utils import Frame, IconLabelButton, Label
 from ..editor import BaseEditor
 
 

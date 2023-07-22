@@ -1,10 +1,12 @@
-import os, sys
+import os
 import subprocess
+import sys
 import tkinter as tk
 
 from core import *
 from core.components import FindReplace, register_game
 from core.settings.editor import SettingsEditor
+
 
 class App(tk.Tk):
     """

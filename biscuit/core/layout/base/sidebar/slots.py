@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from .slot import Slot
-from .item import MenuItem
-
 from core.components.utils import Frame
+
+from .item import MenuItem
+from .slot import Slot
 
 
 class Slots(Frame):

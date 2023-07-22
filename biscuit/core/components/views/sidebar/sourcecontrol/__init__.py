@@ -4,6 +4,7 @@ from tkinter.constants import *
 from ..sidebarview import SidebarView
 from .git import Git
 
+
 class SourceControl(SidebarView):
     def __init__(self, master, *args, **kwargs):
         self.__buttons__ = (('list-tree',), ('check',), ('refresh',), ('ellipsis',))

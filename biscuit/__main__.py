@@ -6,6 +6,7 @@ To run the app, do:
 """
 
 import sys
+
 from app import App
 
 dir = None

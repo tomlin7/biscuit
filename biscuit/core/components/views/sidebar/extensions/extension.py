@@ -1,7 +1,9 @@
 import os
+import threading
 import tkinter as tk
-import requests, threading
-from core.components.utils import Frame, Label, Button
+
+import requests
+from core.components.utils import Button, Frame, Label
 
 
 class Extension(Frame):
