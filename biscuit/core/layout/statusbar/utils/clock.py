@@ -2,7 +2,6 @@ import time
 
 from .button import SButton
 
-
 #TODO 12/24 actionset config
 class SClock(SButton):
     def __init__(self, *args, **kwargs):

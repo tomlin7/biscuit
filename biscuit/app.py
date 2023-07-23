@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 import tkinter as tk
+from ctypes import windll
 
 from biscuit.core import *
 from biscuit.core.components import FindReplace, register_game
@@ -93,7 +94,6 @@ class App(tk.Tk):
         """Sets up the Tkinter window size, title, and scaling"""
         
         if self.sysinfo.os == "Windows":
-            from ctypes import windll
             windll.shcore.SetProcessDpiAwareness(1)
 
         self.dpi_value = self.winfo_fpixels('1i')

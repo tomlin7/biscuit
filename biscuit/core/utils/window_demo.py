@@ -2,8 +2,8 @@
 #https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
 
 import tkinter as tk
-from ctypes import windll
 from tkinter import ttk
+from ctypes import windll
 
 
 def set_appwindow():

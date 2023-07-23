@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...utils import Icon, IconButton, Label, Toplevel
+from ...utils import IconButton, Toplevel, Label, Icon
 
 
 class Notifications(Toplevel):

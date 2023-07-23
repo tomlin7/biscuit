@@ -1,6 +1,5 @@
 import tkinter as tk
-
-from biscuit.core.components.utils import Frame, IconButton
+from biscuit.core.components.utils import IconButton, Frame
 
 
 class Tab(Frame):

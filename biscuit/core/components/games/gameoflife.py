@@ -3,8 +3,8 @@ __author__ = "billyeatcookies"
 import random
 import tkinter as tk
 
-from ..utils import Button
 from .game import BaseGame
+from ..utils import Button
 
 GRID_WIDTH = 50
 GRID_HEIGHT = 50

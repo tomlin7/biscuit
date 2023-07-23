@@ -1,5 +1,5 @@
-import platform
 import sys
+import platform
 from dataclasses import dataclass
 
 

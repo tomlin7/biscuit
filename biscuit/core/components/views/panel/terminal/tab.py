@@ -1,6 +1,5 @@
 import tkinter as tk
-
-from biscuit.core.components.utils import Frame, Icon, IconButton, Label
+from biscuit.core.components.utils import IconButton, Frame, Icon, Label
 
 ICONS = {
     "cmd": "terminal-cmd",

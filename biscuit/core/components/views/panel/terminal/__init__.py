@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from ..panelview import PanelView
 from .tabs import Tabs
 from .terminals import Default
+from ..panelview import PanelView
 
 
 class Terminal(PanelView):

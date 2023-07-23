@@ -3,10 +3,9 @@ import subprocess
 import tkinter as tk
 from threading import Thread
 
-from biscuit.core.components.utils import Scrollbar
-
-from ..panelview import PanelView
 from .text import TerminalText
+from ..panelview import PanelView
+from biscuit.core.components.utils import Scrollbar
 
 
 class TerminalBase(PanelView):

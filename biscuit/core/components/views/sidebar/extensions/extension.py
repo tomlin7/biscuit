@@ -1,10 +1,7 @@
 import os
-import threading
 import tkinter as tk
-
-import requests
-
-from biscuit.core.components.utils import Button, Frame, Label
+import requests, threading
+from biscuit.core.components.utils import Frame, Label, Button
 
 
 class Extension(Frame):

@@ -1,4 +1,5 @@
-from .findreplace import FindReplace
 from .menu import Menu
+from .palette import Palette
+from .palette import ActionSet
 from .notifications import Notifications
-from .palette import ActionSet, Palette
+from .findreplace import FindReplace

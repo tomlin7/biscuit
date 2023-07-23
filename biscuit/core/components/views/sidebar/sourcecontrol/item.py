@@ -1,8 +1,8 @@
 import os
 import tkinter as tk
 
-from biscuit.core.components.utils import (Bubble, Frame, IconButton, Label,
-                                           Menubutton)
+from biscuit.core.components.utils import Menubutton, Frame, IconButton, Bubble, Label
+
 
 KINDS = [("D", "Deleted", "red"), ("A", "Added", "green"), ("M", "Modified", "orange"), ("U", "Untracked", "green")]
 

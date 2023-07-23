@@ -1,15 +1,13 @@
-import codecs
-import io
-import re
+import re, codecs, io
 import threading
 import tkinter as tk
 from collections import deque
 
-from biscuit.core.components.utils import Text
-
-from .autocomplete import AutoComplete
-from .highlighter import Highlighter
 from .syntax import Syntax
+from .highlighter import Highlighter
+from .autocomplete import AutoComplete
+
+from biscuit.core.components.utils import Text
 
 
 class Text(Text):

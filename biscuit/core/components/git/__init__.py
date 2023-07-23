@@ -3,9 +3,8 @@ from tkinter import messagebox
 git_available = True
 try:
     import git
-
     from .repo import GitRepo
-except importError:
+except ImportError:
     messagebox.showerror("Git not found", "Git is not installed on your PC. Install Git and add Git to the PATH to use Biscuit")
     git_available = False
 

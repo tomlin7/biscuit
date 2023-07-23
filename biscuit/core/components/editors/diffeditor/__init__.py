@@ -2,9 +2,9 @@ import re
 import threading
 import tkinter as tk
 
-from ..editor import BaseEditor
-from .differ import Differ
 from .pane import DiffPane
+from .differ import Differ
+from ..editor import BaseEditor
 
 
 class DiffEditor(BaseEditor):

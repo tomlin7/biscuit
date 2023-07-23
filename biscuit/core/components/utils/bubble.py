@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .label import Label
 from .toplevel import Toplevel
+from .label import Label
 
 
 class Bubble(Toplevel):

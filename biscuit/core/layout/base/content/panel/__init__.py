@@ -1,11 +1,9 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from biscuit.core.components.utils import Frame
-from biscuit.core.components.views.panel import *
-
 from .panelbar import Panelbar
-
+from biscuit.core.components.views.panel import *
+from biscuit.core.components.utils import Frame
 
 class Panel(Frame):
     """

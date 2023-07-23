@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from biscuit.core.components.utils import Bubble, Menubutton, get_codicon
+from biscuit.core.components.utils import get_codicon, Bubble, Menubutton
 
 
 class Slot(Menubutton):

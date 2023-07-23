@@ -1,16 +1,9 @@
 import tkinter as tk
 
-<<<<<<< HEAD
 from .results import Results
 from ..sidebarview import SidebarView
 
 from biscuit.core.components.utils import Entry
-=======
-from core.components.utils import Entry
->>>>>>> 1532478d15e85132762a0e9f94631f9009845e28
-
-from ..sidebarview import SidebarView
-from .results import Results
 
 
 class Extensions(SidebarView):

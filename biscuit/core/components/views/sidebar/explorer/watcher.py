@@ -1,7 +1,6 @@
 import os
-
-from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 
 class DirectoryTreeWatcher(FileSystemEventHandler):

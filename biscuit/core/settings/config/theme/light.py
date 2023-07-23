@@ -1,7 +1,6 @@
 import sv_ttk
-from pygments.token import Token
-
 from .theme import Theme
+from pygments.token import Token
 
 
 class Light(Theme):
