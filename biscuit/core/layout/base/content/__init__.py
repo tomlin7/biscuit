@@ -4,7 +4,7 @@ from tkinter.constants import *
 from .editors import EditorsPane
 from .panel import Panel
 
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class ContentPane(Frame):

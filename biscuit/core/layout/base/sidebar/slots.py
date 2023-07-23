@@ -3,7 +3,7 @@ import tkinter as tk
 from .slot import Slot
 from .item import MenuItem
 
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class Slots(Frame):

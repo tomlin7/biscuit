@@ -4,7 +4,7 @@ from .placeholder import ChangesTreePlaceholder
 from .changes import Changes
 from .stagedchanges import StagedChanges
 
-from core.components.utils import Frame, Button, IconButton, Entry
+from biscuit.core.components.utils import Frame, Button, IconButton, Entry
 
 
 class Git(Frame):

@@ -3,8 +3,8 @@ from tkinter.constants import *
 
 from .slots import Slots
 
-from core.components.views.sidebar import *
-from core.components.utils import Frame
+from biscuit.core.components.views.sidebar import *
+from biscuit.core.components.utils import Frame
 
 
 class Sidebar(Frame):

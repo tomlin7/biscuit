@@ -5,7 +5,7 @@ from threading import Thread
 
 from .text import TerminalText
 from ..panelview import PanelView
-from core.components.utils import Scrollbar
+from biscuit.core.components.utils import Scrollbar
 
 
 class TerminalBase(PanelView):

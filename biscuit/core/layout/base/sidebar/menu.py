@@ -1,4 +1,4 @@
-from core import Menu
+from biscuit.core import Menu
 
 
 class ActionbarMenu(Menu):

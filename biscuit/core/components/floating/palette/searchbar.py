@@ -1,7 +1,7 @@
 import tkinter as tk
 from itertools import chain
 
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class Searchbar(Frame):

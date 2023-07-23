@@ -2,7 +2,7 @@ import tkinter as tk
 import random
 
 from .game import BaseGame
-from core.components.utils import Canvas, Button
+from biscuit.core.components.utils import Canvas, Button
 
 # Constants
 WIDTH = 600

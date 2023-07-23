@@ -2,7 +2,7 @@ import tkinter as tk
 
 from .breakpoint import Breakpoint
 
-from core.components.utils import Canvas, Menubutton
+from biscuit.core.components.utils import Canvas, Menubutton
 
 
 class LineNumbers(Canvas):

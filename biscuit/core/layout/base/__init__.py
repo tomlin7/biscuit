@@ -4,7 +4,7 @@ from tkinter.constants import *
 from .content import ContentPane
 from .sidebar import Sidebar
 
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class BaseFrame(Frame):

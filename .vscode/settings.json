@@ -9,5 +9,8 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": false
     },
-    "python.formatting.provider": "none"
+    "python.formatting.provider": "none",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
 }

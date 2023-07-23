@@ -8,7 +8,7 @@
             "name": "Python: Launch Biscuit",
             "type": "python",
             "request": "launch",
-            "program": "biscuit",
+            "module": "biscuit",
             "console": "integratedTerminal"
         }
     ]

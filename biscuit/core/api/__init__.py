@@ -3,7 +3,7 @@ from .logger import Logger
 from .notifications import Notifications
 from .utils import Utils
 
-from core.components import BaseGame, BaseEditor
+from biscuit.core.components import BaseGame, BaseEditor
 
 
 class ExtensionsAPI:

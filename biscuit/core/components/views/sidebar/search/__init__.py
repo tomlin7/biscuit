@@ -4,7 +4,7 @@ from tkinter.constants import *
 from .results import Results
 from ..sidebarview import SidebarView
 
-from core.components.utils import ButtonsEntry, IconButton, Frame
+from biscuit.core.components.utils import ButtonsEntry, IconButton, Frame
 
 
 class Search(SidebarView):

@@ -7,7 +7,7 @@ from .syntax import Syntax
 from .highlighter import Highlighter
 from .autocomplete import AutoComplete
 
-from core.components.utils import Text
+from biscuit.core.components.utils import Text
 
 
 class Text(Text):

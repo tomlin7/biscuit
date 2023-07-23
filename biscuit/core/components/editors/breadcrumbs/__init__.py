@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from .pathview import PathView
 
-from core.components.utils import Frame, Menubutton
+from biscuit.core.components.utils import Frame, Menubutton
 
 
 class Item(Menubutton):

@@ -4,7 +4,7 @@ from itertools import chain
 from .kinds import Kinds
 from .item import AutoCompleteItem
 
-from core.components.utils import Toplevel
+from biscuit.core.components.utils import Toplevel
 
 
 class AutoComplete(Toplevel):

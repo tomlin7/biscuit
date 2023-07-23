@@ -3,7 +3,7 @@ import tkinter as tk
 from .menubar import Menubar
 from .base import BaseFrame
 from .statusbar import Statusbar
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class Root(Frame):

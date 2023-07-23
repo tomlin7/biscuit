@@ -10,8 +10,8 @@ from .imageviewer import ImageViewer
 from .texteditor import TextEditor
 from .misc import Welcome
 
-from core.components.games import Whoops
-from core.settings.editor import SettingsEditor
+from biscuit.core.components.games import Whoops
+from biscuit.core.settings.editor import SettingsEditor
 
 editors = {f"::{i.name}":i for i in (Welcome, SettingsEditor)}
 

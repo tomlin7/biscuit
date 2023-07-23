@@ -2,7 +2,7 @@ import re
 import tkinter as tk
 
 from .results import FindResults
-from core.components.utils import IconButton, Frame, Toplevel, ButtonsEntry
+from biscuit.core.components.utils import IconButton, Frame, Toplevel, ButtonsEntry
 
 
 class FindReplace(Toplevel):

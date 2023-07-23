@@ -7,36 +7,30 @@ from ....utils import Scrollbar
 from ..panelview import PanelView
 
 
-def caller_name(skip=2):
+def caller_class_name(skip=2):
     """
-    Get the name of a caller in the format module.class.method
+    Get the name of the class of the caller.
 
-    `skip` specifies how many levels of stack to skip while getting caller
-    name. skip=1 means "who calls me", skip=2 "who calls my caller" etc.
+    `skip` specifies how many levels of stack to skip while getting the caller's class.
+    skip=1 means "who calls me", skip=2 "who calls my caller" etc.
 
-    An empty string is returned if skipped levels exceed stack height
+    An empty string is returned if skipped levels exceed the stack height.
     """
     stack = inspect.stack()
     start = 0 + skip
     if len(stack) < start + 1:
-      return ''
-    parentframe = stack[start][0]    
+        return ''
 
-    name = []
-    module = inspect.getmodule(parentframe)
-    # modname can be None when frame is executed directly in console
-    if module:
-        name.append(module.__name__)
+    parentframe = stack[start][0]
+    class_name = None
+
     # detect classname
     if 'self' in parentframe.f_locals:
-        name.append(parentframe.f_locals['self'].__class__.__name__)
-    codename = parentframe.f_code.co_name
-    if codename != '<module>': 
-        name.append(codename)
+        class_name = parentframe.f_locals['self'].__class__.__name__
 
     del parentframe, stack
 
-    return ".".join(name)
+    return class_name
 
 
 class Logs(PanelView):
@@ -89,12 +83,12 @@ class Logs(PanelView):
 
     def info(self, text):
         "info level log"
-        self.log((' [info] ', 'info'), caller_name(), text)
+        self.log((' [info] ', 'info'), caller_class_name(), text)
     
     def warning(self, text):
         "warning level log"
-        self.log((' [warning] ', 'warning'), caller_name(), text)
+        self.log((' [warning] ', 'warning'), caller_class_name(), text)
     
     def error(self, text):
         "error level log"
-        self.log((' [error] ', 'error'), caller_name(), text)
+        self.log((' [error] ', 'error'), caller_class_name(), text)

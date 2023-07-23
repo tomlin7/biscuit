@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .itembar import ItemBar
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class SidebarViewItem(Frame):

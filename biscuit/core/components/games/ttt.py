@@ -1,7 +1,7 @@
 import random
 
 from .game import BaseGame
-from core.components.utils import Button, Canvas
+from biscuit.core.components.utils import Button, Canvas
 
 
 class TicTacToe(BaseGame):

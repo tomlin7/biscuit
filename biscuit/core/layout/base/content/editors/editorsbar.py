@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.constants import *
 
 from .tabs import Tabs
-from core.components.utils import IconButton, Frame
+from biscuit.core.components.utils import IconButton, Frame
 
 
 class Editorsbar(Frame):

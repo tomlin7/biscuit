@@ -1,34 +1,19 @@
-import os, sys
+import os
 import subprocess
+import sys
 import tkinter as tk
 from ctypes import windll
 
-from core import *
-from core.components import FindReplace, register_game
-from core.settings.editor import SettingsEditor
+from biscuit.core import *
+from biscuit.core.components import FindReplace, register_game
+from biscuit.core.settings.editor import SettingsEditor
 
-import os, sys
-import subprocess
-import tkinter as tk
-from ctypes import windll
-
-from core import *
-from core.components import FindReplace, register_game
-from core.settings.editor import SettingsEditor
 
 class App(tk.Tk):
-    """
-    The App class is the main class of Biscuit. It inherits from the Tkinter Tk class and provides the main window of the application. 
-    The class is responsible for setting up the application, initializing the editor, handling events, and managing the different components of the application. 
-    It also provides methods for opening and closing directories, editors, and settings, as well as for updating the Git status and registering games. 
-    The class uses other classes from the core package, such as Root, SysInfo, Settings, Git, Palette, FindReplace, Notifications, 
-    and ExtensionManager, to provide the different functionalities of the application.
-    """
-
-    def __init__(self, dir=None, *args, **kwargs):
+    def __init__(self, appdir=None, dir=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base = self
-
+        self.setup_path(appdir)
         # TODO app is not added to taskbar
         self.overrideredirect(True)
 
@@ -44,7 +29,6 @@ class App(tk.Tk):
     
     def setup(self):
         """Sets up the Tkinter window, path, and configurations of the application."""
-        self.setup_path()
         self.setup_configs()
         self.setup_tk()
         self.setup_floating_widgets()
@@ -70,12 +54,19 @@ class App(tk.Tk):
         self.focus_set()
         self.setup_extensions()
     
-    def setup_path(self):       
+    def setup_path(self, appdir):       
         """Sets up the application directory, configuration directory, resource directory, and extensions directory."""
-        self.appdir = os.path.dirname(__file__)
-        self.configdir = os.path.join(self.appdir, 'config')
-        self.resdir = os.path.join(self.appdir, 'res')
+        self.appdir = os.path.dirname(appdir)
+        sys.path.append(self.appdir)
+        
+        self.resdir = os.path.join(getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res")
+        self.configdir = os.path.join(self.appdir, "config")
         self.extensionsdir = os.path.join(self.appdir, "extensions")
+
+        try:
+            os.makedirs(self.extensionsdir, exist_ok=True)
+        except Exception as e:
+            print(f"Extensions failed: {e}")
 
     def setup_configs(self):
         """Sets up the system information, settings, configurations, theme, events, binder, Git, palette, find and replace, and notifications of the application."""

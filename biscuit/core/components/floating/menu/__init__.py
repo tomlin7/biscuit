@@ -9,7 +9,7 @@ import tkinter as tk
 from .menuitem import MenuItem
 from .separator import Separator
 
-from core.components.utils import Toplevel, Frame
+from biscuit.core.components.utils import Toplevel, Frame
 
 
 class Menu(Toplevel):

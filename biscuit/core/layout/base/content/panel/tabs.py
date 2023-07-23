@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from .tab import Tab
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class Tabs(Frame):

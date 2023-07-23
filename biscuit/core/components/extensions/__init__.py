@@ -1,19 +1,21 @@
 import importlib
-import os, threading, sys
+import os
+import threading
 
 
 class ExtensionManager:
     def __init__(self, base):
         self.base = base
         self.extensions = {}
-        self.run_finished = {}
         
-        # #TODO file watcher for extensions directory
-
+        # TODO sandboxed execution of extensions
         # self.blocked_modules = ['os', 'sys']
         # self.imports = {module: __import__(module) for module in sys.modules}
         # sys.modules['builtins'].__import__ = self.restricted_import
 
+        self.load_extensions()
+
+    def refresh_extensions(self):
         self.load_extensions()
 
     def restricted_import(self, name, globals={}, locals={}, fromlist=[], level=0):
@@ -23,7 +25,9 @@ class ExtensionManager:
         return self.imports[name]
 
     def load_extensions(self):
-        #TODO support loading/running/unloading individual extensions
+        if not (self.base.extensionsdir and os.path.isdir(self.base.extensionsdir)):
+            return
+        
         extension_files = os.listdir(self.base.extensionsdir)
         for extension_file in extension_files:
             if extension_file.endswith(".py"):
@@ -32,9 +36,6 @@ class ExtensionManager:
                     return
 
                 self.load_extension(extension_name)
-
-    def refresh_extensions(self):
-        self.load_extensions()
 
     def load_extension(self, extension_name):
         module_name = f"extensions.{extension_name}"
@@ -48,6 +49,21 @@ class ExtensionManager:
             self.base.logger.error(f"Failed to load extension '{extension_name}': {e}")
             self.base.notifications.error(f"Extension '{extension_name}' failed: see logs.")
     
+    def run_extensions(self):
+        for name, _ in self.extensions.items():
+            self.run_extension(name)
+
+    def run_extension(self, name):
+        extension = self.extensions.get(name, None)
+        if not extension:
+            return
+        
+        try:
+            extension.run()
+        except Exception as e:
+            self.base.logger.error(e)
+            self.base.notifications.error(f"Extension '{extension}' failed: see logs.")
+
     def start_server(self):
         self.base.logger.info(f"Extensions server started.")
         self.server = threading.Thread(target=self.run_extensions)
@@ -59,15 +75,3 @@ class ExtensionManager:
     def stop_server(self):
         print(f"Extensions server stopped.")
         self.server.join()
-
-    def run_extensions(self):
-        for name, extension in self.extensions.items():
-            if name in self.run_finished.keys():
-                continue
-            
-            try:
-                extension.run()
-                self.run_finished[name] = extension
-            except Exception as e:
-                self.base.logger.error(e)
-                self.base.notifications.error(f"Extension '{extension}' failed: see logs.")

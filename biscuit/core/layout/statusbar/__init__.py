@@ -4,8 +4,8 @@ import tkinter as tk
 from .utils.button import SButton, TerminalButton
 from .utils.clock import SClock
 
-from core.components import ActionSet
-from core.components.utils import Frame
+from biscuit.core.components import ActionSet
+from biscuit.core.components.utils import Frame
 
 
 class Statusbar(Frame):

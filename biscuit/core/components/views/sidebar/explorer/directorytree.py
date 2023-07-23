@@ -5,8 +5,8 @@ from ..item import SidebarViewItem
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
 
-from core.components.floating.palette.actionset import ActionSet
-from core.components.utils import Tree
+from biscuit.core.components.floating.palette.actionset import ActionSet
+from biscuit.core.components.utils import Tree
 
 
 class DirectoryTree(SidebarViewItem):

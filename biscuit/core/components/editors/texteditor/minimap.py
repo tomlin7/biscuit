@@ -1,5 +1,5 @@
 import tkinter as tk
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 #TODO update minimap when scrollbar is used
