@@ -21,15 +21,16 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install requirements
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -r requirements.txt
+          pip install pyinstaller
 
-      - name: Build app
+      - name: Build biscuit
         run: pyinstaller scripts/windows.spec
 
-      - name: Produce artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
             name: "biscuit-nightly"
