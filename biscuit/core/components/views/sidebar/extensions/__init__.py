@@ -3,7 +3,7 @@ import tkinter as tk
 from .results import Results
 from ..sidebarview import SidebarView
 
-from core.components.utils import Entry
+from biscuit.core.components.utils import Entry
 
 
 class Extensions(SidebarView):

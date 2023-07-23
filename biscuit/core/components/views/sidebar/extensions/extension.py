@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 import requests, threading
-from core.components.utils import Frame, Label, Button
+from biscuit.core.components.utils import Frame, Label, Button
 
 
 class Extension(Frame):
@@ -21,29 +21,56 @@ class Extension(Frame):
                                   padx=10, pady=20, **self.base.theme.views.sidebar.item.content)
         self.namelbl.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        self.install = Button(self, "Install" if not self.installed else "Installed", self.run_fetch_extension, font=("Segoi UI", 8), padx=10, pady=0, height=0)
+        self.install = Button(self, "Install", self.run_fetch_extension, font=("Segoi UI", 8), padx=10, pady=0, height=0)
+        if self.installed:
+            self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
+            self.install.set_command(self.remove_extension)
+
         self.install.pack(fill=tk.BOTH, expand=True)
 
         self.bind("<Enter>", self.hoverin)
         self.bind("<Leave>", self.hoveroff)
+        self.hoveroff()
     
     def run_fetch_extension(self, *_):
+        if self.installed:
+            return
+        
         threading.Thread(target=self.fetch_extension).start()
 
     def fetch_extension(self):
-        response = requests.get(self.url)
-        if response.status_code == 200:
-            with open(self.file, 'w') as fp:
-                fp.write(response.text)
+        try:
+            response = requests.get(self.url)
+            if response.status_code == 200:
+                self.install_extension(response)
+        except:
+            self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
-            self.base.logger.info(f"Fetching extension '{self.name}' successful.")
-            self.base.notifications.info(f"Extension '{self.name}' has been installed!")
+    def install_extension(self, response):
+        with open(self.file, 'w') as fp:
+            fp.write(response.text)
+
+        self.base.logger.info(f"Fetching extension '{self.name}' successful.")
+        self.base.notifications.info(f"Extension '{self.name}' has been installed!")
+
+    def remove_extension(self, *_):
+        try:
+            os.remove(self.file)
+            self.base.logger.info(f"Uninstalling extension '{self.name}' successful.")
+            self.base.notifications.info(f"Extension '{self.name}' has been uninstalled!")
+        except Exception as e:
+            self.base.logger.error(f"Uninstalling extension '{self.name}' failed.\n{e}")
 
     def hoverin(self, *_):
-        self.config(bg=self.hbg)
-        self.namelbl.config(bg=self.hbg)
-    
+        try:
+            self.config(bg=self.hbg)
+            self.namelbl.config(bg=self.hbg)
+        except:
+            pass
+        
     def hoveroff(self, *_):
-        self.config(bg=self.bg if not self.installed else self.hbg)
-        self.namelbl.config(bg=self.bg if not self.installed else self.hbg)
-    
+        try:
+            self.config(bg=self.bg)
+            self.namelbl.config(bg=self.bg)
+        except:
+            pass
