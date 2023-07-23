@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from PIL import Image, ImageTk
+
 from ..editor import BaseEditor
 
 

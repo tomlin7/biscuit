@@ -1,10 +1,10 @@
 __author__ = "cid0rz"
 
 
-import tkinter as tk
-from tkinter import messagebox
 import random
+import tkinter as tk
 from collections import Counter
+from tkinter import messagebox
 
 from .game import BaseGame
 

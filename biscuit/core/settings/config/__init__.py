@@ -1,7 +1,11 @@
-import os, toml, sys
-from .bindings import Bindings
-from .theme import Light, Dark
+import os
+import sys
 from dataclasses import dataclass
+
+import toml
+
+from .bindings import Bindings
+from .theme import Dark, Light
 
 
 class Config:

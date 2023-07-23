@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from .items import DropdownItem, StringItem, IntegerItem, CheckboxItem
-
 from biscuit.core.components.utils import Frame
+
+from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem
 
 
 class Section(Frame):

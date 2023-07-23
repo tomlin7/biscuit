@@ -1,4 +1,6 @@
-import os, tkinter as tk
+import os
+import tkinter as tk
+
 from pygments import lex
 from pygments.lexers import get_lexer_for_filename
 from pygments.util import ClassNotFound

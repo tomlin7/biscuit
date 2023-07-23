@@ -1,6 +1,7 @@
 import sv_ttk
-from .theme import Theme
 from pygments.token import Token
+
+from .theme import Theme
 
 
 class Dark(Theme):

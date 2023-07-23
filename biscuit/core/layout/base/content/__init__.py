@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .editors import EditorsPane
-from .panel import Panel
+from core.components.utils import Frame
 
 from biscuit.core.components.utils import Frame
+
+from .editors import EditorsPane
+from .panel import Panel
 
 
 class ContentPane(Frame):

@@ -1,9 +1,11 @@
+from core.components import BaseEditor, BaseGame
+
+from biscuit.core.components import BaseEditor, BaseGame
+
 from .commands import Commands
 from .logger import Logger
 from .notifications import Notifications
 from .utils import Utils
-
-from biscuit.core.components import BaseGame, BaseEditor
 
 
 class ExtensionsAPI:

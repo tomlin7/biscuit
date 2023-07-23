@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .slots import Slots
-
-from biscuit.core.components.views.sidebar import *
 from biscuit.core.components.utils import Frame
+from biscuit.core.components.views.sidebar import *
+
+from .slots import Slots
 
 
 class Sidebar(Frame):

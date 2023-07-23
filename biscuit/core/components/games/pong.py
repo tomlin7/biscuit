@@ -3,8 +3,8 @@ __author__ = "cid0rz"
 
 import random
 
-from .game import BaseGame
 from ..utils import Canvas
+from .game import BaseGame
 
 WIDTH = 800
 HEIGHT = 400

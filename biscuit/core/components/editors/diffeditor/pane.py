@@ -1,5 +1,6 @@
 from ..texteditor import TextEditor
 
+
 # TODO currently using TextEditor, use Editor instead
 class DiffPane(TextEditor):
     def __init__(self, master, *args, **kwargs):

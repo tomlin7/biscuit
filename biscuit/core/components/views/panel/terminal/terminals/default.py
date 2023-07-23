@@ -1,7 +1,8 @@
 import os
-from ..terminal import TerminalBase
 
 from biscuit.core.components.utils import Label
+
+from ..terminal import TerminalBase
 
 
 class Default(TerminalBase):

@@ -1,11 +1,11 @@
 #TODO add actual functions to actionset
 import tkinter as tk
 
-from .utils.button import SButton, TerminalButton
-from .utils.clock import SClock
-
 from biscuit.core.components import ActionSet
 from biscuit.core.components.utils import Frame
+
+from .utils.button import SButton, TerminalButton
+from .utils.clock import SClock
 
 
 class Statusbar(Frame):

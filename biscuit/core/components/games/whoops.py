@@ -1,4 +1,5 @@
-import tkinter as tk, random
+import random
+import tkinter as tk
 
 from .game import BaseGame
 

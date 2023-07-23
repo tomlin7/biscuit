@@ -1,13 +1,15 @@
 import os
 import tkinter as tk
-import tkextrafont as extra
 
-from .config import Config, Bindings
-from .res import Resources
-from .styles import Style
+import tkextrafont as extra
+from core.components.games import get_games
 
 from biscuit.core.components.games import get_games
+
+from .config import Bindings, Config
 from .editor import SettingsEditor
+from .res import Resources
+from .styles import Style
 
 
 class Settings:

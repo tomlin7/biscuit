@@ -45,7 +45,7 @@ class ExtensionManager:
             self.extensions[extension_name] = extension_instance
 
             self.base.logger.info(f"Extension '{extension_name}' loaded.")
-        except ImportError as e:
+        except importError as e:
             self.base.logger.error(f"Failed to load extension '{extension_name}': {e}")
             self.base.notifications.error(f"Extension '{extension_name}' failed: see logs.")
     

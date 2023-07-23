@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from biscuit.core.components.utils import Entry, Frame
 
+
 class Item(Frame):
     def __init__(self, master, name="Example", *args, **kwargs):
         super().__init__(master, *args, **kwargs)

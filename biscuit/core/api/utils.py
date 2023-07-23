@@ -1,6 +1,9 @@
-from .endpoint import Endpoint
+from core.components.utils import *
 
 from biscuit.core.components.utils import *
+
+from .endpoint import Endpoint
+
 
 class Utils(Endpoint):
     def __init__(self, *a):

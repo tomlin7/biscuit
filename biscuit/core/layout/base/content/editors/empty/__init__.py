@@ -1,7 +1,8 @@
 import tkinter as tk
 
-from .shortcuts import Shortcuts
 from biscuit.core.components.utils import Frame
+
+from .shortcuts import Shortcuts
 
 
 class Empty(Frame):

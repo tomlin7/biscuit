@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ....utils import WrappingLabel, Button, Frame
+from ....utils import Button, Frame, WrappingLabel
 
 
 class ChangesTreePlaceholder(Frame):

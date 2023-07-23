@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from hintedtext import HintedEntry
+
 from biscuit.core.components.utils import Frame
 
 

@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .results import Results
-from ..sidebarview import SidebarView
+from core.components.utils import ButtonsEntry, Frame, IconButton
 
-from biscuit.core.components.utils import ButtonsEntry, IconButton, Frame
+from biscuit.core.components.utils import ButtonsEntry, Frame, IconButton
+
+from ..sidebarview import SidebarView
+from .results import Results
 
 
 class Search(SidebarView):

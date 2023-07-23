@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from hintedtext import HintedEntry
+
 from .frame import Frame
 
 

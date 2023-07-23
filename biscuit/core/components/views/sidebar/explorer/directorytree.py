@@ -1,12 +1,15 @@
 import os
 from tkinter.constants import *
 
-from ..item import SidebarViewItem
-from .placeholder import DirectoryTreePlaceholder
-from .watcher import DirectoryTreeWatcher
+from core.components.floating.palette.actionset import ActionSet
+from core.components.utils import Tree
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
 from biscuit.core.components.utils import Tree
+
+from ..item import SidebarViewItem
+from .placeholder import DirectoryTreePlaceholder
+from .watcher import DirectoryTreeWatcher
 
 
 class DirectoryTree(SidebarViewItem):
@@ -35,7 +38,7 @@ class DirectoryTree(SidebarViewItem):
         else:
             self.tree.insert('', 0, text='You have not yet opened a folder.')
 
-    # IMPORTANT
+    # importANT
     def change_path(self, path):
         self.nodes.clear()
         self.path = path
