@@ -44,7 +44,7 @@ exe = EXE(
     splash,
     splash.binaries,
     [],
-    name='__main__',
+    name='biscuit',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
