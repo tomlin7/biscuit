@@ -1,13 +1,17 @@
 import os
+import threading
 import tkinter as tk
-import requests, threading
-from biscuit.core.components.utils import Frame, Label, Button
+
+import requests
+
+from biscuit.core.components.utils import Button, Frame, Label
 
 
 class Extension(Frame):
-    def __init__(self, master, name, file, url, *args, **kwargs):
+    def __init__(self, manager, master, name, file, url, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
+        self.manager = manager
 
         self.name = name
         self.file = os.path.join(self.base.extensionsdir, file)
@@ -39,12 +43,12 @@ class Extension(Frame):
         threading.Thread(target=self.fetch_extension).start()
 
     def fetch_extension(self):
-        try:
-            response = requests.get(self.url)
-            if response.status_code == 200:
-                self.install_extension(response)
-        except:
-            self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
+        #try:
+        response = requests.get(self.url)
+        if response.status_code == 200:
+            self.install_extension(response)
+        # except:
+        #     self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
     def install_extension(self, response):
         with open(self.file, 'w') as fp:
@@ -53,9 +57,13 @@ class Extension(Frame):
         self.base.logger.info(f"Fetching extension '{self.name}' successful.")
         self.base.notifications.info(f"Extension '{self.name}' has been installed!")
 
+        self.base.extensionsmanager.run_extension(self.name)
+        self.manager.run_fetch_list()
+
     def remove_extension(self, *_):
         try:
             os.remove(self.file)
+            self.manager.run_fetch_list()
             self.base.logger.info(f"Uninstalling extension '{self.name}' successful.")
             self.base.notifications.info(f"Extension '{self.name}' has been uninstalled!")
         except Exception as e:

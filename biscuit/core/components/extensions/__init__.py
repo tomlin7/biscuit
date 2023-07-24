@@ -50,8 +50,12 @@ class ExtensionManager:
             self.base.notifications.error(f"Extension '{extension_name}' failed: see logs.")
     
     def run_extensions(self):
-        for name, _ in self.extensions.items():
-            self.run_extension(name)
+        for name, extension in self.extensions.items():
+            try:
+                extension.run()
+            except Exception as e:
+                self.base.logger.error(e)
+                self.base.notifications.error(f"Extension '{name}' failed: see logs.")
 
     def run_extension(self, name):
         extension = self.extensions.get(name, None)
@@ -63,7 +67,7 @@ class ExtensionManager:
         except Exception as e:
             self.base.logger.error(e)
             self.base.notifications.error(f"Extension '{extension}' failed: see logs.")
-
+    
     def start_server(self):
         self.base.logger.info(f"Extensions server started.")
         self.server = threading.Thread(target=self.run_extensions)
