@@ -2,7 +2,6 @@ import os
 import subprocess
 import sys
 import tkinter as tk
-from ctypes import windll
 
 from biscuit.core import *
 from biscuit.core.components import FindReplace, register_game
@@ -94,6 +93,7 @@ class App(tk.Tk):
         """Sets up the Tkinter window size, title, and scaling"""
         
         if self.sysinfo.os == "Windows":
+            from ctypes import windll
             windll.shcore.SetProcessDpiAwareness(1)
 
         self.dpi_value = self.winfo_fpixels('1i')
@@ -122,9 +122,8 @@ class App(tk.Tk):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
         self.contentpane = self.root.baseframe.contentpane
-        self.sidebar = self.root.baseframe.sidebar
-        self.explorer = self.sidebar.explorer
-        self.source_control = self.sidebar.source_control
+        self.explorer = self.root.baseframe.sidebar.explorer
+        self.source_control = self.root.baseframe.sidebar.source_control
         self.logger = self.panel.logger
 
     def setup_extensions(self):
