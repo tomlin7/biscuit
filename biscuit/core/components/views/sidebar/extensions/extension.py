@@ -43,12 +43,12 @@ class Extension(Frame):
         threading.Thread(target=self.fetch_extension).start()
 
     def fetch_extension(self):
-        #try:
-        response = requests.get(self.url)
-        if response.status_code == 200:
-            self.install_extension(response)
-        # except:
-        #     self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
+        try:
+            response = requests.get(self.url)
+            if response.status_code == 200:
+                self.install_extension(response)
+        except:
+            self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
     def install_extension(self, response):
         with open(self.file, 'w') as fp:

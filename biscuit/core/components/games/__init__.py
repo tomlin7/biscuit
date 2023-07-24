@@ -1,14 +1,13 @@
 import tkinter as tk
-from ..utils import Frame
 
-from .tetris import Tetris
+from ..utils import Frame
+from .game import BaseGame
 from .gameoflife import GameOfLife
 from .pong import Pong
 from .snake import Snake
+from .tetris import Tetris
 from .ttt import TicTacToe
 from .whoops import Whoops
-
-from .game import BaseGame
 
 games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake)}
 
