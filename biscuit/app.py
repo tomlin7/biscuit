@@ -122,8 +122,9 @@ class App(tk.Tk):
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
         self.contentpane = self.root.baseframe.contentpane
-        self.explorer = self.root.baseframe.sidebar.explorer
-        self.source_control = self.root.baseframe.sidebar.source_control
+        self.sidebar = self.root.baseframe.sidebar
+        self.explorer = self.sidebar.explorer
+        self.source_control = self.sidebar.source_control
         self.logger = self.panel.logger
 
     def setup_extensions(self):

@@ -1,10 +1,11 @@
 import os
-from ..terminal import TerminalBase
 
 from biscuit.core.components.utils import Label
 
+from ..terminal import Terminal
 
-class Default(TerminalBase):
+
+class Default(Terminal):
     """
     Default Terminal - Checks COMSPEC/SHELL environmental variables set in the host machine
     and opens that in terminal. Shows Not Detected in case variable is not set.
