@@ -1,10 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_data_files
+from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 
 datas = [('../biscuit/res/*', 'res/')]
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
 
+binaries = []
+binaries += collect_dynamic_libs('tkextrafont')
 
 block_cipher = None
 
@@ -12,7 +14,7 @@ block_cipher = None
 a = Analysis(
     ['../biscuit/__main__.py'],
     pathex=[],
-    binaries=[],
+    binaries=binaries,
     datas=datas,
     hiddenimports=[],
     hookspath=[],
