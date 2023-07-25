@@ -30,7 +30,7 @@ def register_game(game):
 
 class Game(Frame):
     """
-    responsible for picking the right game
+    Responsible for picking the right game
 
     name - name of game to opened
     """
@@ -43,12 +43,11 @@ class Game(Frame):
         self.exists = False
         self.diff = False
         self.showpath = False
-        self.content = None
 
         self.grid_columnconfigure(0, weight=1) 
         self.grid_rowconfigure(0, weight=1)
-        self.game = get_game(name=name)(self)     
-        self.game.grid(row=0, column=0, sticky=tk.NSEW)
+        self.content = get_game(name=name)(self)     
+        self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
     def focus(self):
-        self.game.focus_get()
+        self.content.focus_get()

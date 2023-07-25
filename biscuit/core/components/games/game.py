@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame
+from biscuit.core.components.utils import Frame, IconButton
 
 
 class BaseGame(Frame):
@@ -15,11 +15,13 @@ class BaseGame(Frame):
 
         self.exists = False
         self.showpath = False
-        self.content = None
         self.diff = False
         self.editable = False        
         
-        self.__buttons__ = ()
+        self.__buttons__ = (('refresh', self.reload), )
+
+    def create_buttons(self, editorbar):
+        self.__buttons__ = [IconButton(editorbar, *button) for button in self.__buttons__]
 
     def reload(self, *_):
         ...    

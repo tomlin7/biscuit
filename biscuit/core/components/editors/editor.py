@@ -1,4 +1,4 @@
-from biscuit.core.components.utils import Frame
+from biscuit.core.components.utils import Frame, IconButton
 
 
 class BaseEditor(Frame):
@@ -19,6 +19,9 @@ class BaseEditor(Frame):
         self.diff = False
 
         self.__buttons__ = ()
+
+    def create_buttons(self, editorbar):
+        self.__buttons__ = [IconButton(editorbar, *button) for button in self.__buttons__]
 
     def save(self, *_):
         ...

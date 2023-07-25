@@ -1,12 +1,11 @@
 import tkinter as tk
 
-
-from .editorsbar import Editorsbar
-from .empty import Empty
-
 from biscuit.core.components.editors import Editor
 from biscuit.core.components.games import Game
 from biscuit.core.components.utils import Frame
+
+from .editorsbar import Editorsbar
+from .empty import Empty
 
 
 class EditorsPane(Frame):
@@ -54,6 +53,8 @@ class EditorsPane(Frame):
     def add_editor(self, editor):
         "Appends a editor to list. Create a tab."
         self.editors.append(editor)
+        if editor.content:
+            editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
         
     def delete_all_editors(self):
