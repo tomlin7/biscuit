@@ -5,15 +5,12 @@ To run the app, do:
 >>> python -m biscuit
 """
 
-import platform
 import sys
 
 # The splash screen (windows specific)
 try:
-    if platform.os == "Windows" and getattr(sys, 'frozen', False):
-        import pyi_splash
-        pyi_splash.update_text("Initializing...")
-        pyi_splash.close()
+    import pyi_splash
+    pyi_splash.close()
 except:
     pass
 
