@@ -1,7 +1,8 @@
-import os, tkinter as tk
+import os
+import tkinter as tk
+
 from pygments import lex
 from pygments.lexers import get_lexer_for_filename
-from pygments.util import ClassNotFound
 
 
 class Highlighter:
@@ -11,7 +12,7 @@ class Highlighter:
 
         try:
             self.lexer = get_lexer_for_filename(os.path.basename(master.path), inencoding=master.encoding, encoding=master.encoding)
-        except ClassNotFound:
+        except:
             self.lexer = None
 
         self.tag_colors = self.base.theme.syntax

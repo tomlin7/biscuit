@@ -3,13 +3,16 @@ import tkinter as tk
 from ..utils import Frame
 from .game import BaseGame
 from .gameoflife import GameOfLife
+from .minesweeper import Minesweeper
 from .pong import Pong
 from .snake import Snake
+from .stackengineer import StackEngineer
 from .tetris import Tetris
 from .ttt import TicTacToe
 from .whoops import Whoops
 
-games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake)}
+games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake, StackEngineer, Minesweeper)}
+
 
 def get_games(base):
     "helper function to generate actionset items"

@@ -50,6 +50,7 @@ class Settings:
         )
 
     def setup_font(self):
+        
         self.iconfont = extra.Font(file=self.res.get_res_path("codicon.ttf"), family="codicon")
         self.font = tk.font.Font(
             family=self.config.font[0],

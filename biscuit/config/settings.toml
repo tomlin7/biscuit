@@ -5,7 +5,6 @@ font_size=13
 
 [testing]
 font_size=14
-font_family="firacode"
 tab_size=4
 theme="light"
 auto_save=false
