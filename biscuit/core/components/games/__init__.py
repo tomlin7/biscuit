@@ -5,13 +5,10 @@ from .game import BaseGame
 from .gameoflife import GameOfLife
 from .pong import Pong
 from .snake import Snake
+from .stackengineer import StackEngineer
 from .tetris import Tetris
 from .ttt import TicTacToe
 from .whoops import Whoops
-
-from .StackEngineer import StackEngineer
-from .whoops import Whoops
-
 
 games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake, StackEngineer)}
 

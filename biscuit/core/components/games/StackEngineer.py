@@ -1,16 +1,15 @@
 __author__ = "cid0rz"
+version = "0.1"
 
-
-import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
 import random
-from collections import Counter,deque
+import tkinter as tk
+from collections import Counter, deque
+from tkinter import messagebox, ttk
+
 from biscuit.core.components.editors import TextEditor
 
-#from .game import BaseGame
+from .game import BaseGame
 
-version = "0.1"
 
 class Stack(ttk.LabelFrame):
     stack_n = 1
@@ -53,22 +52,18 @@ class Stack(ttk.LabelFrame):
         self.update()
         return val
     
-
-    
-    
     def update(self):
         self.tw.delete(*self.tw.get_children())
         for i,val in enumerate(self.values):
             self.tw.insert("", index=i, iid=str(i), values=(i,val))
 
-
         
-class StackEngineer(tk.Frame): #has to be BaseGame
+class StackEngineer(BaseGame):
     name = "Stack Engineer"
 
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        #bg = self.base.theme.editors.background
+        self.config(**self.base.theme.editors)
         self.m_registers = {'R1' : None}
         s1 = Stack(self, values=[5,7])
         self.m_stacks = {'S1' : s1}
@@ -76,10 +71,11 @@ class StackEngineer(tk.Frame): #has to be BaseGame
         self.cost = 0
         self.score = 0
 
-        self.editor = TextEditor(self, minimalist=True)
+        self.editor = TextEditor(self, exists=False, minimalist=True)
+        self.draw()    
         
-        self.draw()
-
+        #print(se.m_stacks['S1'].pop())
+        self.m_stacks['S1'].insert(10, 1)
 
     def draw(self):
         for stack in self.m_stacks:
@@ -88,14 +84,6 @@ class StackEngineer(tk.Frame): #has to be BaseGame
             stack.grid(row=0, column=1)
         editor = self.editor
         editor.grid(row=1)
-            
 
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.geometry("400x600")
-    se = StackEngineer(root)
-    root.title(se.name)
-    se.pack()
-    #print(se.m_stacks['S1'].pop())
-    se.m_stacks['S1'].insert(10, 1)
+        # text widget functions are available under editor.text
+        # eg.  editor.text.tag_add
