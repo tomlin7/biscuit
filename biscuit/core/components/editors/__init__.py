@@ -1,17 +1,16 @@
 import os
 from tkinter.constants import *
 
-from .editor import BaseEditor
+from biscuit.core.components.games.whoops import Whoops
+from biscuit.core.settings.editor import SettingsEditor
+
 from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
-
 from .diffeditor import DiffEditor
+from .editor import BaseEditor
 from .imageviewer import ImageViewer
-from .texteditor import TextEditor
 from .misc import Welcome
-
-from biscuit.core.components.games import Whoops
-from biscuit.core.settings.editor import SettingsEditor
+from .texteditor import TextEditor
 
 editors = {f"::{i.name}":i for i in (Welcome, SettingsEditor)}
 
