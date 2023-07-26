@@ -73,7 +73,7 @@ class Settings:
         """
         Sets up the font and icon fonts.
         """
-        self.firacodefont = extra.Font(file=os.path.join(self.base.resdir, "fonts/firacode/firacode.ttf"), family="firacode")
+        #self.firacodefont = extra.Font(file=os.path.join(self.base.resdir, "fonts/firacode/firacode.ttf"), family="firacode")
         self.fixedsysfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/fixedsys/FSEX302.ttf"), family="fixedsys")
         self.iconfont = extra.Font(file=os.path.join(self.base.resdir, "fonts/codicon/codicon.ttf"), family="codicon")
         self.font = tk.font.Font(

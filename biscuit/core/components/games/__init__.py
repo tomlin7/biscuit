@@ -9,7 +9,12 @@ from .tetris import Tetris
 from .ttt import TicTacToe
 from .whoops import Whoops
 
-games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake)}
+from .StackEngineer import StackEngineer
+from .whoops import Whoops
+
+
+games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake, StackEngineer)}
+
 
 def get_games(base):
     "helper function to generate actionset items"
