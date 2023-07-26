@@ -539,13 +539,13 @@ files = [
 
 [[package]]
 name = "sv-ttk"
-version = "2.5.4"
+version = "2.5.5"
 description = "A gorgeous theme for Tkinter, based on Windows 11's UI"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sv_ttk-2.5.4-py3-none-any.whl", hash = "sha256:2ddf5b26a7a2a5d730e4efe5b81a9925748a0dcd3b1725c8d457950aedf885ea"},
-    {file = "sv_ttk-2.5.4.tar.gz", hash = "sha256:8d764d78f84383bb6fa37e5e1dbb282dd295ccbf68ab35280b3398014eb882cf"},
+    {file = "sv_ttk-2.5.5-py3-none-any.whl", hash = "sha256:49d1cd03c032728c183d1fe2318f88cdb658ef3e87157e1ca3fcf6661054965b"},
+    {file = "sv_ttk-2.5.5.tar.gz", hash = "sha256:9bbfe2aba6cc6f9fdf70d79331046543c9666fcccc78bad5ff648a9987e3cedb"},
 ]
 
 [[package]]
@@ -560,24 +560,6 @@ files = [
     {file = "tkextrafont-0.6.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:639f5baf05298b0d98b7209fef561c1961ed99adb9abe65eceaa2212d3ccb5fe"},
     {file = "tkextrafont-0.6.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5f73d9abd0c7f2fdb9a42e9a5c057f5a6125ed2d2b2df30de47832422f3b79c6"},
     {file = "tkextrafont-0.6.3-py3-none-win_amd64.whl", hash = "sha256:f139af112a941058aea9c5c57f886d7e0120d4654f79c162be24dea1ea545659"},
-]
-
-[package.dependencies]
-scikit-build = "*"
-
-[[package]]
-name = "tksvg"
-version = "0.7.4"
-description = "SVG support for PhotoImage in Tk 8.6"
-optional = false
-python-versions = "*"
-files = [
-    {file = "tksvg-0.7.4-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be180c76c4a417f5ddaa2a08e39df5177e32a1d2698f9cdc241d5e42b6bf69d7"},
-    {file = "tksvg-0.7.4-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0771586ba3bf56443185ae29fa2d49619c9d208f0dee4f2fefb4a6bad7edc7f0"},
-    {file = "tksvg-0.7.4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad6991c1a9fdca48f1a195519facb8c8a2c3cb1c3443b9910b39600e8bf63d0d"},
-    {file = "tksvg-0.7.4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2baa23b1f07cb88199a05c8bee825522520fd780ed3365bd54803407ffd03780"},
-    {file = "tksvg-0.7.4-py3-none-win_amd64.whl", hash = "sha256:1e96830e3e92d12390aee3460dab2aab169bd3b1cb59ba478329c1e6bc3edd2a"},
-    {file = "tksvg-0.7.4.tar.gz", hash = "sha256:e451c4301814306547afca80680e6db0cc6720b7d6cc3dca56beb17c2b29c0f5"},
 ]
 
 [package.dependencies]
@@ -678,4 +660,4 @@ test = ["pytest (>=6.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2b6ed8feed599d7dd17579aaf7f62bb3318aa764dc7c929a3568884823dcf567"
+content-hash = "92d3aab3bacb2ec51e92b75154cf905c1fc7e4ed810f902b90bbdc68b36a67d2"
