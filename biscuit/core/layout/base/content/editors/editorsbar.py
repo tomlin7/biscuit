@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter.constants import *
 
+from biscuit.core.components.utils import Frame, IconButton
+
 from .tabs import Tabs
-from biscuit.core.components.utils import IconButton, Frame
 
 
 class Editorsbar(Frame):
@@ -16,12 +17,11 @@ class Editorsbar(Frame):
         self.buttons = []
         self.default_buttons = (('ellipsis',),)
 
-        # TODO like panelbar, add __buttons__ to BaseEditor
-        self.buttonframe = Frame(self)
-        self.buttonframe.pack(fill=BOTH, side=RIGHT, pady=5, padx=10)
+        self.container = Frame(self, **self.base.theme.layout.base.content.editors.bar)
+        self.container.pack(fill=BOTH, side=RIGHT, padx=(0, 10))
         
         for button in self.default_buttons:
-            IconButton(self.buttonframe, *button).pack(side=RIGHT)
+            IconButton(self.container, *button).pack(side=RIGHT)
 
     def add_buttons(self, buttons):
         for button in buttons:
