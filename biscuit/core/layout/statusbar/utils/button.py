@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import Bubble, Frame, get_codicon
+from biscuit.core.components.utils import Bubble, Frame, get_codicon
 
 
 class SBubble(Bubble):

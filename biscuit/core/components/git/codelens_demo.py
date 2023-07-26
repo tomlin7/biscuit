@@ -1,7 +1,5 @@
 import tkinter as tk
-
 import git
-
 
 def get_commit_data(file_path):
     repo = git.Repo(search_parent_directories=True)

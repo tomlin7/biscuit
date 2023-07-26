@@ -1,4 +1,4 @@
-from core.components.utils import Frame
+from biscuit.core.components.utils import Frame
 
 
 class BaseEditor(Frame):

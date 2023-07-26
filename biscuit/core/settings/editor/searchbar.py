@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from core.components.utils import Frame
 from hintedtext import HintedEntry
+from biscuit.core.components.utils import Frame
 
 
 class Searchbar(Frame):

@@ -1,9 +1,9 @@
-import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter as tk
 from tkinter.constants import *
 
-from .frame import Frame
 from .scrollbar import Scrollbar
+from .frame import Frame
 
 
 class Tree(Frame):

@@ -8,9 +8,23 @@ class Bindings:
     def __init__(self, master):
         self.base = master.base
 
-        self.loader = BindingsLoader(self)
-        self.bindings = self.loader.get_loaded_bindings()
-        self.map_bindings()
+        self.new_file = "<Control-n>"
+        self.new_window = "<Control-N>"
+        self.open_file = "<Control-o>"
+        self.open_dir = "<Control-O>"
+        self.save = "<Control-s>"
+        self.save_as = "<Control-S>"
+        self.close_file = "<Control-w>"
+        self.quit = "<Control-q>"
+        self.commandpalette = "<Control-P>"
+        self.panel = "<Control-grave>"
+        self.undo="<Control-z>"
+        self.redo="<Control-y>"
+
+        # TODO loading bindings from user settings
+        # self.loader = BindingsLoader(self)
+        # self.bindings = self.loader.get_loaded_bindings()
+        # self.map_bindings()
 
     def map_bindings(self):
         self.new_file = self.bindings['newFile']

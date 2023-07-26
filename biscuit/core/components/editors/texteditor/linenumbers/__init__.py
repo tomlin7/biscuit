@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from core.components.utils import Canvas, Menubutton
-
 from .breakpoint import Breakpoint
+
+from biscuit.core.components.utils import Canvas, Menubutton
 
 
 class LineNumbers(Canvas):

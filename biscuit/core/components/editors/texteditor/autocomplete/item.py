@@ -1,9 +1,7 @@
 import tkinter as tk
 
-from core.components.utils import Frame
-
 from .kind import Kind
-
+from biscuit.core.components.utils import Frame
 
 class AutoCompleteItem(Frame):
     def __init__(self, master, text, kind=None, *args, **kwargs):

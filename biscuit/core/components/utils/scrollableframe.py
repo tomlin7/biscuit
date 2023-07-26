@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .canvas import Canvas
 from .frame import Frame
+from .canvas import Canvas
 
 
 class Scrollbar(ttk.Scrollbar):

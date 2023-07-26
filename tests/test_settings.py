@@ -1,6 +1,5 @@
 import tkinter as tk
-
-from biscuit.core.settings import Bindings, Config, Resources, Style
+from biscuit.core.settings import Config, Style, Resources, Bindings
 
 
 class TestSettings:

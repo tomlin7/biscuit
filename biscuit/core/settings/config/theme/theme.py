@@ -1,5 +1,4 @@
 from collections.abc import Mapping
-
 from pygments.token import Token
 
 

@@ -1,8 +1,8 @@
 import tkinter as tk
 
 from ..panelview import PanelView
+from .shells import Default, PowerShell
 from .tabs import Tabs
-from .terminals import Default
 
 
 class Terminal(PanelView):
@@ -21,8 +21,8 @@ class Terminal(PanelView):
 
         self.terminals = []
 
-        self.default_terminals = [Default(self)]
-        self.add_terminals(self.default_terminals)
+        self.default_terminals = Default(self)
+        self.add_terminal(self.default_terminals)
     
     def add_current_terminal(self, *_):
         "Spawns an instance of currently active terminal"

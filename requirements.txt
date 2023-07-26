@@ -2,7 +2,6 @@ gitpython
 filetype
 tkextrafont
 watchdog
-tksvg
 pygments
 Pillow
 toml

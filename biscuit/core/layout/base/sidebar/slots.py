@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from core.components.utils import Frame
-
-from .item import MenuItem
 from .slot import Slot
+from .item import MenuItem
+
+from biscuit.core.components.utils import Frame
 
 
 class Slots(Frame):

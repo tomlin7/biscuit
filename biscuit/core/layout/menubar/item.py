@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from core import Menu
-from core.components.utils import Menubutton
+from biscuit.core import Menu
+from biscuit.core.components.utils import Menubutton
 
 
 class MenubarItem(Menubutton):

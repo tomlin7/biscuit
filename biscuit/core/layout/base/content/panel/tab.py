@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import Menubutton
+from biscuit.core.components.utils import Menubutton
 
 
 class Tab(Menubutton):

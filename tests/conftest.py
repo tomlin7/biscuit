@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from dotenv import find_dotenv, load_dotenv
 
@@ -8,5 +10,5 @@ from biscuit import App
 
 @pytest.fixture(scope="session")
 def app_instance():
-    app = App()
+    app = App(os.path.abspath('biscuit/biscuit'), )
     yield app

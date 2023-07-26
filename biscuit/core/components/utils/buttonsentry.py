@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from hintedtext import HintedEntry
-
 from .frame import Frame
 from .iconbutton import IconButton
+
+from hintedtext import HintedEntry
 
 
 class ButtonsEntry(Frame):

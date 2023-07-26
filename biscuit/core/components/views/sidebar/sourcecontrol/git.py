@@ -1,10 +1,10 @@
 import tkinter as tk
 
-from core.components.utils import Button, Entry, Frame, IconButton
-
-from .changes import Changes
 from .placeholder import ChangesTreePlaceholder
+from .changes import Changes
 from .stagedchanges import StagedChanges
+
+from biscuit.core.components.utils import Frame, Button, IconButton, Entry
 
 
 class Git(Frame):

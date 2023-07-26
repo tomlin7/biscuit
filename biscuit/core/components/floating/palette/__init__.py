@@ -5,11 +5,11 @@
 
 import tkinter as tk
 
-from core.components.utils import Toplevel
-
-from .actionset import ActionSet
 from .item import MenuItem
 from .searchbar import Searchbar
+from .actionset import ActionSet
+
+from biscuit.core.components.utils import Toplevel
 
 
 class Palette(Toplevel):

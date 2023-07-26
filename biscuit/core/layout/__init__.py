@@ -1,10 +1,9 @@
 import tkinter as tk
 
-from core.components.utils import Frame
-
-from .base import BaseFrame
 from .menubar import Menubar
+from .base import BaseFrame
 from .statusbar import Statusbar
+from biscuit.core.components.utils import Frame
 
 
 class Root(Frame):

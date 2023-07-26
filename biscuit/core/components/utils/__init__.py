@@ -5,6 +5,7 @@ Various types of widgets/functions used across the editor
 from .bubble import Bubble
 from .button import Button
 from .buttonsentry import ButtonsEntry
+from .callername import caller_name
 from .canvas import Canvas
 from .codicon import get_codicon
 from .colorizer import colorize

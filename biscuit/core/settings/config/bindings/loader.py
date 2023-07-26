@@ -1,6 +1,4 @@
-import os
-
-import toml
+import toml, os
 
 
 class BindingsLoader:

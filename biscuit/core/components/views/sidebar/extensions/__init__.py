@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from core.components.utils import Entry
-
-from ..sidebarview import SidebarView
 from .results import Results
+from ..sidebarview import SidebarView
+
+from biscuit.core.components.utils import Entry
 
 
 class Extensions(SidebarView):

@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from core.components.utils import Frame
-
 from .content import ContentPane
 from .sidebar import Sidebar
+
+from biscuit.core.components.utils import Frame
 
 
 class BaseFrame(Frame):

@@ -1,10 +1,10 @@
 import tkinter as tk
 from itertools import chain
 
-from core.components.utils import Toplevel
-
-from .item import AutoCompleteItem
 from .kinds import Kinds
+from .item import AutoCompleteItem
+
+from biscuit.core.components.utils import Toplevel
 
 
 class AutoComplete(Toplevel):

@@ -1,6 +1,6 @@
 <h2 align="center">
     <img src="./.github/banner.png" width=1000><br>
-     ―――――― The uncompromising code editor ――――――<br><br>
+    The uncompromising code editor<br><br>
     <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
     <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge"> 
@@ -22,12 +22,12 @@ This project is a WIP. Bugs and missing or incomplete features will be present.
 You need **python 3.10** or above. 
 ```bash
 > pip install -r requirements.txt
-> python biscuit
+> python -m biscuit
 ```
 If you use **poetry**, this will get biscuit up and running
 ```bash
 > poetry install
-> python biscuit
+> python -m biscuit
 ```
 
 > **Note**

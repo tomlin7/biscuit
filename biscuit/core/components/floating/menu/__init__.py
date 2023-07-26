@@ -6,10 +6,10 @@
 
 import tkinter as tk
 
-from core.components.utils import Frame, Toplevel
-
 from .menuitem import MenuItem
 from .separator import Separator
+
+from biscuit.core.components.utils import Toplevel, Frame
 
 
 class Menu(Toplevel):

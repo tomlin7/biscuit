@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import Button, Frame, WrappingLabel
+from biscuit.core.components.utils import WrappingLabel, Button, Frame
 
 
 class DirectoryTreePlaceholder(Frame):

@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from core.components.utils import Frame, IconButton
-
 from .tabs import Tabs
+from biscuit.core.components.utils import IconButton, Frame
 
 
 class Editorsbar(Frame):

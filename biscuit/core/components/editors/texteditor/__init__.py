@@ -2,8 +2,9 @@ import tkinter as tk
 
 from ...utils import Scrollbar
 from ..editor import BaseEditor
-from .linenumbers import LineNumbers
+
 from .minimap import Minimap
+from .linenumbers import LineNumbers
 from .text import Text
 
 

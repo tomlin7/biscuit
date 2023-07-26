@@ -1,11 +1,12 @@
 import tkinter as tk
 
-from core.components.editors import Editor
-from core.components.games import Game
-from core.components.utils import Frame
 
 from .editorsbar import Editorsbar
 from .empty import Empty
+
+from biscuit.core.components.editors import Editor
+from biscuit.core.components.games import Game
+from biscuit.core.components.utils import Frame
 
 
 class EditorsPane(Frame):

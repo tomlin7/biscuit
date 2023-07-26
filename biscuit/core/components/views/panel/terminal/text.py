@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import Text
+from biscuit.core.components.utils import Text
 
 
 class TerminalText(Text):
