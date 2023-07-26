@@ -522,4 +522,4 @@ codicons = {
 
 def get_codicon(name):
     if name in codicons:
-        return codicons[name]
+        return codicons.get(name, name)

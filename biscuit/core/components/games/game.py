@@ -19,6 +19,9 @@ class BaseGame(Frame):
         self.editable = False        
         
         self.__buttons__ = (('refresh', self.reload), )
+    
+    def add_buttons(self, icon, event):
+        self.__buttons__.append((icon, event))
 
     def create_buttons(self, editorbar):
         self.__buttons__ = [IconButton(editorbar, *button) for button in self.__buttons__]
