@@ -6,7 +6,7 @@ import tkinter as tk
 from collections import Counter, deque
 from tkinter import messagebox, ttk
 
-from biscuit.core.components.editors import TextEditor
+from biscuit.core.components.editors.texteditor import TextEditor
 
 from .game import BaseGame
 

@@ -1,15 +1,20 @@
-import tkinter as tk
 import random
+import tkinter as tk
 from tkinter import messagebox
+
+from .game import BaseGame
+
 # Game constants
 BOARD_SIZE = 10
 NUM_MINES = 10
 
-class Minesweeper:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Minesweeper")
-        
+
+class Minesweeper(BaseGame):
+    name = "Minesweeper!"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.board = [[0 for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
         self.mine_positions = []
         self.buttons = [[None for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
@@ -28,7 +33,7 @@ class Minesweeper:
     def create_buttons(self):
         for row in range(BOARD_SIZE):
             for col in range(BOARD_SIZE):
-                button = tk.Button(self.root, width=2, height=1)
+                button = tk.Button(self, width=2, height=1)
                 button.grid(row=row, column=col)
                 button.bind("<Button-1>", lambda e, r=row, c=col: self.button_click(e, r, c))
                 self.buttons[row][col] = button
@@ -71,13 +76,3 @@ class Minesweeper:
                 self.buttons[row][col].unbind("<Button-1>")
         
         messagebox.showinfo("Game Over", "You hit a mine!")
-        self.root.destroy()
-
-# Create the main window
-root = tk.Tk()
-
-# Create the Minesweeper game
-minesweeper = Minesweeper(root)
-
-# Start the Tkinter event loop
-root.mainloop()
