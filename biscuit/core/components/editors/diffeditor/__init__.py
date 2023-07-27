@@ -2,20 +2,19 @@ import re
 import threading
 import tkinter as tk
 
-from .pane import DiffPane
-from .differ import Differ
 from ..editor import BaseEditor
+from .differ import Differ
+from .pane import DiffPane
 
 
 class DiffEditor(BaseEditor):
-    def __init__(self, master, path, kind, *args, **kwargs):
+    def __init__(self, master, path, language=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.path = path
-        self.kind = kind
         self.editable = True
 
         self.lhs_data = []
@@ -24,10 +23,10 @@ class DiffEditor(BaseEditor):
         self.lhs_last_line = 0
         self.rhs_last_line = 0
 
-        self.lhs = DiffPane(self, path)
+        self.lhs = DiffPane(self)
         self.lhs.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))
 
-        self.rhs = DiffPane(self, path)
+        self.rhs = DiffPane(self)
         self.rhs.grid(row=0, column=1, sticky=tk.NSEW)
 
         self.left = self.lhs.text
@@ -42,16 +41,15 @@ class DiffEditor(BaseEditor):
 
         self.left.tag_config("addition", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
         self.left.tag_config("removal", background=self.base.theme.editors.diff.removed)
-        self.left.tag_config("uhhh", background="red")
+        self.left.tag_config("removedword", background="red")
         
         self.right.tag_config("addition", background=self.base.theme.editors.diff.addition)
         self.right.tag_config("removal", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
-        self.right.tag_config("uhhh", background="green")
+        self.right.tag_config("addedword", background="green")
 
         self.differ = Differ(self)
+
         self.show_diff()
-        
-        self.left.set_active(False)
 
     def on_scrollbar(self, *args):
         self.left.yview(*args)
@@ -129,14 +127,14 @@ class DiffEditor(BaseEditor):
                         for match in matches:
                             start = f"{self.rhs_last_line}.{match.start()}"
                             end = f"{self.rhs_last_line}.{match.end()}"
-                            self.right.tag_add("uhhh", start, end)
+                            self.right.tag_add("addedword", start, end)
 
                     if matches := re.finditer(r'-+', content):
                         self.right.delete(str(float(self.lhs_last_line+1)), str(float(int(float(self.right.index(tk.INSERT))))))
                         for match in matches:
                             start = f"{self.lhs_last_line}.{match.start()}"
                             end = f"{self.lhs_last_line}.{match.end()}"
-                            self.left.tag_add("uhhh", start, end)
+                            self.left.tag_add("removedword", start, end)
                     
             self.left.update()
             self.right.update()
@@ -155,3 +153,5 @@ class DiffEditor(BaseEditor):
             extra_newlines = rhs_line_count - lhs_line_count
             for _ in range(extra_newlines):
                 self.left.newline()
+        
+        self.left.set_active(False)

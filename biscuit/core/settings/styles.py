@@ -35,20 +35,22 @@ class Style(ttk.Style):
         self.configure("TreeScrollbar", gripcount=0, background=bg, troughcolor=bg, bordercolor=bg, lightcolor=bg, darkcolor=bg, arrowsize=14)
         self.map("TreeScrollbar", background=[('pressed', highlight), ('!disabled', self.theme.border)])
 
-        bg, _, highlight, _ = self.theme.editors.values()
-        self.layout('Vertical.TScrollbar', [
-            ('Vertical.TScrollbar.trough', {
+        self.element_create("EditorScrollbar.trough", "from", "clam")
+        self.element_create("EditorScrollbar.thumb", "from", "clam")
+
+        self.layout('EditorScrollbar', [
+            ('EditorScrollbar.trough', {
                 'sticky': 'nsew',
                 'children': [
-                    ('Vertical.TScrollbar.thumb', {
+                    ('EditorScrollbar.thumb', {
                         'sticky': 'nsew'
                     })
                 ]
             })
             
         ])
-        self.configure("Vertical.TScrollbar", gripcount=0, background=bg, troughcolor=bg, bordercolor=bg, lightcolor=bg, darkcolor=bg)
-        self.map("Vertical.TScrollbar", background=[('pressed', highlight), ('!disabled', self.theme.border)])
+        self.configure("EditorScrollbar", gripcount=0, background=bg, troughcolor=bg, bordercolor=bg, lightcolor=bg, darkcolor=bg)
+        self.map("EditorScrollbar", background=[('pressed', highlight), ('!disabled', self.theme.border)])
 
     def config_treeview(self):
         ## TREENODE CHEVRONS -----

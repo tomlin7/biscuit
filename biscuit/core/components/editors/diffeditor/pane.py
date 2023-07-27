@@ -3,7 +3,7 @@ from ..texteditor import TextEditor
 # TODO currently using TextEditor, use Editor instead
 class DiffPane(TextEditor):
     def __init__(self, master, *args, **kwargs):
-        super().__init__(master, exists=False, minimalist=True, *args, **kwargs)
+        super().__init__(master, minimalist=True, *args, **kwargs)
 
     def load_file(self):
         self.text.load_file()

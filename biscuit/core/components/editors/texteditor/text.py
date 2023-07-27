@@ -1,17 +1,19 @@
-import re, codecs, io
+import codecs
+import os
+import queue
+import re
 import threading
 import tkinter as tk
 from collections import deque
 
-from .syntax import Syntax
-from .highlighter import Highlighter
+from ...utils import Text
 from .autocomplete import AutoComplete
-
-from biscuit.core.components.utils import Text
+from .highlighter import Highlighter
+from .syntax import Syntax
 
 
 class Text(Text):
-    def __init__(self, master, path=None, exists=True, minimalist=False, *args, **kwargs):
+    def __init__(self, master, path=None, exists=True, minimalist=False, language=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.path = path
         self.data = None
@@ -24,13 +26,11 @@ class Text(Text):
         self.current_word = None
         self.words = []
 
-        if self.exists:
-            self.load_file()
-
         self.syntax = Syntax(self)
         self.auto_completion = AutoComplete(
             self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
-        self.highlighter = Highlighter(self)
+        
+        self.highlighter = Highlighter(self, language)
 
         self.focus_set()
         self.config_tags()
@@ -72,8 +72,6 @@ class Text(Text):
 
         # self.bind("<apostrophe>", lambda e: self.surrounding_selection("\'"))
         # self.bind("<quotedbl>", lambda e: self.surrounding_selection("\""))
-
-        # self.mark_set(tk.INSERT, "insert+1c")
 
     def key_release_events(self, event):
         if event.keysym not in ("Up", "Down", "Return"):
@@ -263,10 +261,6 @@ class Text(Text):
             
             return "break"
 
-    # def handle_space(self, *args):
-    #     self.insert(tk.INSERT, "-")
-    #     return "break"
-
     def multi_selection(self, *args):
         #TODO: multi cursor editing
         return "break"
@@ -293,19 +287,40 @@ class Text(Text):
             encoding = self.detect_encoding(self.path)
             file = open(self.path, 'r', encoding=encoding)
             self.encoding = encoding
-            def load_file():
-                while True:
-                    chunk = file.read(self.buffer_size)
-                    if not chunk:
-                        file.close()
-                        break
-                    self.write(chunk)
-                    self.update()
-                self.master.on_change()
-                self.master.on_scroll()
-            threading.Thread(target=load_file).start()
+
+            self.queue = queue.Queue()
+            threading.Thread(target=self.read_file, args=(file,)).start()
+            self.process_queue()
         except Exception as e:
             self.master.unsupported_file()
+
+    def read_file(self, file):
+        while True:
+            try:
+                chunk = file.read(self.buffer_size)
+            except UnicodeDecodeError:
+                self.master.unsupported_file()
+                return
+            if not chunk:
+                file.close()
+                self.queue.put(None)  # Signal the end of reading
+                break
+            self.queue.put(chunk)
+
+    def process_queue(self):
+        try:
+            while True:
+                chunk = self.queue.get_nowait()
+                if chunk is None:
+                    self.master.on_change()
+                    self.master.on_scroll()
+                    break
+                self.write(chunk)
+                self.update()
+                self.master.on_scroll()
+        except queue.Empty:
+            # If the queue is empty, schedule the next check after a short delay
+            self.master.after(100, self.process_queue)
     
     def save_file(self, path=None):
         if path:
@@ -336,6 +351,27 @@ class Text(Text):
     def set_data(self, data):
         self.data = data
 
+
+    def clear_insert(self, text=None):
+        self.clear()
+
+        def write_with_buffer():
+            buffer = deque(maxlen=self.buffer_size)
+            for char in text:
+                buffer.append(char)
+                if len(buffer) >= self.buffer_size:
+                    chunk = ''.join(buffer)
+                    self.write(chunk)
+                    self.update()
+                    buffer.clear()
+            if buffer:
+                chunk = ''.join(buffer)
+                self.write(chunk)
+                self.update()
+
+        threading.Thread(target=write_with_buffer).start()
+        
+        
     def clear_insert(self, text=None):
         self.clear()
 
@@ -417,6 +453,8 @@ class Text(Text):
             self.configure(state=tk.DISABLED)
     
     def show_unsupported_dialog(self):
+        self.minimalist = True
+        self.highlighter.lexer = None
         self.set_wrap(True)
         self.configure(font=('Arial', 10), padx=10, pady=10)
         self.write("This file is not displayed in this editor because it is either binary or uses an unsupported text encoding.")
@@ -430,6 +468,8 @@ class Text(Text):
 
     def highlight_current_line(self, *_):
         self.tag_remove("currentline", 1.0, tk.END)
+        if self.minimalist or self.get_selected_text():
+            return
         
         line = int(self.index(tk.INSERT).split(".")[0])
         start = str(float(line))
@@ -447,20 +487,18 @@ class Text(Text):
         self.move_cursor(end)
     
     def highlight_current_word(self):
-        if self.minimalist:
+        if self.minimalist or self.get_selected_text():
             return
 
         self.tag_remove("highlight", 1.0, tk.END)
-        try:
-            if word := self.get_selected_text():
-                self.highlight_pattern(word, "highlight", end="insert-1c wordstart-1c")
-                self.highlight_pattern(word, start="insert+1c")
-            else:
-                word = re.findall(r"\w+", self.get("insert wordstart", "insert wordend"))
-                if any(word) and word[0] not in self.syntax.keywords:
-                    self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
-        except:
-            pass
+        word = re.findall(r"\w+", self.get("insert wordstart", "insert wordend"))
+        if any(word) and word[0] not in self.syntax.keywords:
+            self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+
+        # elif word := self.get_selected_text():
+        #     self.highlight_pattern(word, "highlight", end="sel.first")
+        #     self.highlight_pattern(word, start="sel.last")
+
 
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
@@ -489,8 +527,8 @@ class Text(Text):
         
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlighter.highlight()
-        self.highlight_current_word()
         self.highlight_current_line()
+        self.highlight_current_word()
 
     def create_proxy(self):
         self._orig = self._w + "_orig"

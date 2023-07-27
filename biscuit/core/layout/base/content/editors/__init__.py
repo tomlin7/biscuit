@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.editors import Editor
+from biscuit.core.components.editors import Editor, Welcome
 from biscuit.core.components.games import Game
 from biscuit.core.components.utils import Frame
 
@@ -40,7 +40,7 @@ class EditorsPane(Frame):
         self.emptytab = Empty(self)
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
-        self.default_editors = [Editor(self, '::welcome', False, False, False)]
+        self.default_editors = [Welcome(self)]
     
     def add_default_editors(self):
         self.add_editors(self.default_editors)

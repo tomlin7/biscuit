@@ -1,5 +1,5 @@
-from biscuit.core.components.views.sidebar.explorer import DirectoryTree
 from biscuit.core.components.utils import Toplevel
+from biscuit.core.components.views.sidebar.explorer import DirectoryTree
 
 
 class PathView(Toplevel):
@@ -37,8 +37,9 @@ class PathView(Toplevel):
         x = w.winfo_rootx()
         y = w.winfo_rooty() + w.winfo_height()
         
+        if not w.path:
+            return
         self.tree.change_path(w.path)
         self.geometry(f"+{x}+{y}")
         self.deiconify()
         self.focus_set()
-        

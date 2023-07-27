@@ -1,81 +1,116 @@
-import os
-from tkinter.constants import *
+"""The Cupcake Editor is an embeddable text editor with autocompletions."""
 
-from biscuit.core.components.games.whoops import Whoops
-from biscuit.core.settings.editor import SettingsEditor
+__version__ = '0.25.6'
+__version_info__ = tuple([ int(num) for num in __version__.split('.')])
+
+__all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "Config", "Languages"]
+
+
+import os
+import tkinter as tk
+from tkinter.font import Font
 
 from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
 from .diffeditor import DiffEditor
 from .editor import BaseEditor
 from .imageviewer import ImageViewer
+from .languages import Languages
 from .misc import Welcome
 from .texteditor import TextEditor
 
-editors = {f"::{i.name}":i for i in (Welcome, SettingsEditor)}
 
-def get_editors(base):
-    "helper function to generate actionset items"
-    return [(f"Open {i}", lambda i=i: base.open_game(i)) for i in editors.keys()]
-
-def register_editor(editor):
-    "registers a custome editor"
-    global editors
-    try:
-        editors[editor.name] = editor
-    except AttributeError:
-        editors[f"Editor {len(editors) + 1}"] = editor
-
-def get_editor(path, diff):
-    "picks the right editor for the given path"
+def get_editor(base, path=None, path2=None, diff=False, language=None):
+    "picks the right editor for the given values"
     if diff:
-        return DiffEditor
+        return DiffEditor(base, path, path2, language=language)
     
-    if os.path.isfile(path):
+    if path and os.path.isfile(path):
         if FileType.is_image(path):
-            return ImageViewer
+            return ImageViewer(base, path)
+        
+        return TextEditor(base, path, language=language)
     
-    if path in editors.keys():
-        return editors.get(path, Whoops)
-      
-    return TextEditor
+    return TextEditor(base, language=language)
 
 
 class Editor(Frame):
     """
     Editor class
+    Picks the right editor based on the path, path2, diff values passed. Supports showing diff, images, text files. 
+    If nothing is passed, empty text editor is opened. 
+    
+    Attributes
+    ----------
+    path : str
+        path of the file to be opened
+    exists : bool
+        if this file exists actually
+    path2 : str
+        path of file to be opened in diff, required if diff=True is passed
+    diff : bool
+        whether this is to be opened in diff editor
+    language : str
+        Use the `Languages` enum provided (eg. Languages.PYTHON, Languages.TYPESCRIPT)
+        This is given priority while picking suitable highlighter. If not passed, guesses from file extension.
+    dark_mode : str
+        Sets the editor theme to cupcake dark if True, or cupcake light by default
+        This is ignored if custom config_file path is passed
+    config_file : str
+        path to the custom config (TOML) file, uses theme defaults if not passed
+    showpath : bool
+        whether to show the breadcrumbs for editor or not
+    font : str | Font
+        Font used in line numbers, text editor, autocomplete. defaults to Consolas(11)
+    uifont : str | Font
+        Font used for other UI components (breadcrumbs, trees)
+    preview_file_callback : function(path)
+        called when files in breadcrumbs-pathview are single clicked. MUST take an argument (path)
+    open_file_callback : function(path)
+        called when files in breadcrumbs-pathview are double clicked. MUST take an argument (path)
 
-    This class is the base class for all editors. It is responsible for
-    picking the right editor based on the path & exists values passed.
+    NOTE: All the *tk.Text* methods are available under *Editor.content* (eg. Editor.content.insert, Editor.content.get)
 
-    path - the path to the file to be opened
-    exists - whether the file exists or not
-    diff - whether this is a git diff
-    showpath - whether to show the breadcrumbs or not
+    Methods
+    -------
+    save(path: str=None)
+        If the content is editable writes to the specified path.
+    focus()
+        Gives focus to the content.
     """
-    def __init__(self, master, path=None, exists=True, diff=False, showpath=True, *args, **kwargs):
+    def __init__(self, master, 
+                 path: str=None, exists: bool=False, path2: str=None, diff: bool=False, language: str=None,
+                 darkmode=True, config_file: str=None, showpath: bool=True, 
+                 font: str|Font=None, uifont: str|Font=None,
+                 preview_file_callback=None, open_file_callback=None,
+                 *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+
         self.path = path
-        self.exists = exists
+        self.path2 = path2
         self.diff = diff
         self.showpath = showpath
-        self.filename = os.path.basename(self.path) if path else None
+        self.darkmode = darkmode
+        self.config_file = config_file
+        self.preview_file_callback = preview_file_callback
+        self.open_file_callback = open_file_callback
 
+        self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
-        self.content = get_editor(path=path, diff=diff)(self, path, exists)
 
-        if self.showpath and not diff:
+        self.content = get_editor(self, path, path2, diff, language)
+        self.filename = os.path.basename(self.path) if path else None
+        if path and self.showpath and not diff:
             self.breadcrumbs = BreadCrumbs(self, path)
             self.grid_rowconfigure(1, weight=1)  
-            self.breadcrumbs.grid(row=0, column=0, sticky=EW, pady=(0, 1))
-            self.content.grid(row=1, column=0, sticky=NSEW)
+            self.breadcrumbs.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
+            self.content.grid(row=1, column=0, sticky=tk.NSEW)
         else:
             self.grid_rowconfigure(0, weight=1)
-            self.content.grid(row=0, column=0, sticky=NSEW)
+            self.content.grid(row=0, column=0, sticky=tk.NSEW)
     
-    def save(self, path=None):
+    def save(self, path: str=None) -> None:
         self.content.save(path)
     
-    def focus(self):
+    def focus(self) -> None:
         self.content.focus()

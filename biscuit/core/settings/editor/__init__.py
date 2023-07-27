@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import ScrollableFrame, Frame, Button
 from biscuit.core.components.editors.editor import BaseEditor
+from biscuit.core.components.utils import Button, Frame, ScrollableFrame
 
 from .searchbar import Searchbar
 from .section import Section
@@ -10,7 +10,7 @@ from .section import Section
 class SettingsEditor(BaseEditor):
     name = "settings"
     def __init__(self, master, exists=False, editable=False, *args, **kwargs):
-        super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
+        super().__init__(master, *args, **kwargs)
         self.config(padx=100, pady=20, **self.base.theme.editors)
         self.filename = 'Settings'
 

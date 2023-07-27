@@ -1,12 +1,12 @@
 import os
 from tkinter.constants import *
 
+from biscuit.core.components.floating.palette.actionset import ActionSet
+from biscuit.core.components.utils import Tree
+
 from ..item import SidebarViewItem
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
-
-from biscuit.core.components.floating.palette.actionset import ActionSet
-from biscuit.core.components.utils import Tree
 
 
 class DirectoryTree(SidebarViewItem):

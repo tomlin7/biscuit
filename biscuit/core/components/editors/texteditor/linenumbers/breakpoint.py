@@ -7,8 +7,9 @@ class Breakpoint(tk.Label):
         self.master = master
         self.base = master.base
 
-        self.config(text="●", font=("Consolas", 14), fg="#1e1e1e", cursor="hand2", **self.base.theme.editors.linenumbers,
-            borderwidth=0, width=2, height=1, pady=0, padx=0, relief=tk.FLAT)
+        self.config(text="●", font=("Consolas", 14), fg="#1e1e1e", cursor="hand2", 
+                    bg=self.base.theme.linenumbers["background"], borderwidth=0, 
+                    width=2, height=1, pady=0, padx=0, relief=tk.FLAT)
 
         self.active = False
         self.hovered = False

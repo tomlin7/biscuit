@@ -2,19 +2,28 @@ import os
 import tkinter as tk
 
 from pygments import lex
-from pygments.lexers import get_lexer_for_filename
+from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
 
 
 class Highlighter:
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, language=None, *args, **kwargs):
         self.text = master
         self.base = master.base
-
-        try:
-            self.lexer = get_lexer_for_filename(os.path.basename(master.path), inencoding=master.encoding, encoding=master.encoding)
-        except:
-            self.lexer = None
-
+        self.language = language
+        
+        if language:
+            try:
+                self.lexer = get_lexer_by_name(language)
+            except:
+                self.lexer = None
+                return
+        else:
+            try:
+                self.lexer = get_lexer_for_filename(os.path.basename(master.path), inencoding=master.encoding, encoding=master.encoding)
+            except:
+                self.lexer = None
+                return
+                
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
 

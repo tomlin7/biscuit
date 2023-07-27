@@ -1,10 +1,9 @@
 import tkinter as tk
 from itertools import chain
 
-from .kinds import Kinds
+from ....utils import Toplevel
 from .item import AutoCompleteItem
-
-from biscuit.core.components.utils import Toplevel
+from .kinds import Kinds
 
 
 class AutoComplete(Toplevel):
@@ -26,11 +25,11 @@ class AutoComplete(Toplevel):
         self.row = 0
         self.selected = 0
         if items:
+            # TODO this should be a dict
             self.items = items # [(completion, type), ...]
             self.add_all_items()
             self.refresh_selected()
     
-    # filter
     def update_completions(self):
         self.refresh_geometry()
         self.update_idletasks()
@@ -151,6 +150,9 @@ class AutoComplete(Toplevel):
         self.reset_selection()
     
     def choose(self, this=None, *_):
+        if not self.active_items:
+            return
+        
         if not this:
             this = self.active_items[self.selected]
         

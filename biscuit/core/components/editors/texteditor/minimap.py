@@ -1,5 +1,6 @@
 import tkinter as tk
-from biscuit.core.components.utils import Frame
+
+from ...utils import Frame
 
 
 #TODO update minimap when scrollbar is used
@@ -41,12 +42,14 @@ class Minimap(Frame):
         self.text = self.tw.get('1.0', tk.END)
         self.cw.create_text(5, 0, text=self.text, anchor=tk.NW, font=self.font, fill="grey", tag="redrawn")
 
-        y = int(self.tw.index(tk.INSERT).split(".")[0]) * 2
-        self.cw.create_line(0, y, 100, y, fill="#dc8c34", width=2, tag="redrawn")
-
         self.y_bottom_lim = int(self.tw.index(tk.END).split(".")[0]) * 2 + 10
         # self.y_bottom_lim = self.tw.yview()[1] * self.cw.winfo_height()
     
+    def redraw_cursor(self):
+        self.cw.delete("cursor")
+        y = int(self.tw.index(tk.INSERT).split(".")[0]) * 2
+        self.cw.create_line(0, y, 100, y, fill="#dc8c34", width=2, tag="cursor")
+
     def drag_start(self, event):
         self._drag_data["item"] = self.cw.find_closest(event.x, event.y)[0]
         self._drag_data["y"] = event.y

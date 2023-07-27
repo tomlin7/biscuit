@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...utils import IconLabelButton, Frame, Label
+from ...utils import Frame, IconLabelButton, Label
 from ..editor import BaseEditor
 
 
@@ -8,7 +8,7 @@ class Welcome(BaseEditor):
     name = "welcome"
     
     def __init__(self, master, exists=False, editable=False, *args, **kwargs):
-        super().__init__(master, exists=exists, editable=editable, *args, **kwargs)
+        super().__init__(master, *args, **kwargs)
         self.config(padx=100, pady=50, **self.base.theme.editors)
 
         self.filename = "Welcome"
