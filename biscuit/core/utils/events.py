@@ -57,7 +57,7 @@ class Events:
         self.base.destroy()
     
     def toggle_maximize(self, *_):
-        if self.base.sysinfo.os == "Windows":
+        if self.base.sysinfo.os != "Linux":
             self.base.wm_state('normal' if self.maximized else 'zoomed')
         else:
             self.base.wm_attributes('-zoomed', self.maximized)
