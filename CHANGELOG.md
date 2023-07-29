@@ -8,10 +8,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.9.2...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.20.0...HEAD)</small>
 
 ### Fixed
 
+- fix: Revert `./__init__.py` ([bf7ef4a](https://github.com/billyeatcookies/Biscuit/commit/bf7ef4acc9d4417c6ec04cec276849c2a3cee7e4) by Billy).
+- fix: Update cupcake core - merge cupcake updates - consider https://github.com/billyeatcookies/cupcake/pull/37 ([beff32b](https://github.com/billyeatcookies/Biscuit/commit/beff32b1458c85284c48a869e64cca11494a7ad0) by Billy).
+- fix: ModuleNotFoundError: No module named `biscuit.core.components.games.stackengineer'` ([ca1ab38](https://github.com/billyeatcookies/Biscuit/commit/ca1ab38fe1ef01b96acb0f5fd22c3c9582613fc3) by Billy).
+- fix: fixes minesweeper, circular import (this better work) ([8a79bcc](https://github.com/billyeatcookies/Biscuit/commit/8a79bcc8ae463f8925428e6b13991934114ac211) by Billy).
+- fix: add stackengineer to games ([b98cba7](https://github.com/billyeatcookies/Biscuit/commit/b98cba74f18b0e29ba99e5e5a940886560cc1d8a) by Billy).
+
+<!-- insertion marker -->
+## [v2.20.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.20.0) - 2023-07-25
+
+<small>[Compare with v2.9.2](https://github.com/billyeatcookies/Biscuit/compare/v2.9.2...v2.20.0)</small>
+
+### Fixed
+
+- fix: NIghtly build errors fixed ([06a2fea](https://github.com/billyeatcookies/Biscuit/commit/06a2feaf841c3aa6899dc973fdc69de7ba414137) by Billy).
+- fix: Splash screen not hiding after startup ([405f7f9](https://github.com/billyeatcookies/Biscuit/commit/405f7f9fa34bbfa5cf064670f0af77cbb9ccf5aa) by Billy).
+- fix: sidebar reference errors ([f3f6ed6](https://github.com/billyeatcookies/Biscuit/commit/f3f6ed6344c0753e80b56e588c9bc307417214ed) by Billy).
+- fix: Include binaries for tkextrafont (linux) ([176981c](https://github.com/billyeatcookies/Biscuit/commit/176981c7173dccfd592cbad0c8f711250eb6c03a) by Billy).
+- fix: Make splashscreen windows specific ([b9bd8f3](https://github.com/billyeatcookies/Biscuit/commit/b9bd8f37897d9acd971bf75084f80c5c2537abb2) by Billy).
+- fix: windll notfounderr in linux ([6b0c40b](https://github.com/billyeatcookies/Biscuit/commit/6b0c40b46277027583f2da01ccdb31f33643033c) by Billy).
+- fix: Disable directory watcher for extensions/ - manually refresh extensions list ([9f4530e](https://github.com/billyeatcookies/Biscuit/commit/9f4530e099099a72d5f39d7ba5f47677f23664e9) by Billy).
+- fix: Fix build output name ([4d4801f](https://github.com/billyeatcookies/Biscuit/commit/4d4801f98a0b8ea9417f897a4e9106fc655c701e) by Billy).
+- fix: Remove merge conflicts ([b57f3a9](https://github.com/billyeatcookies/Biscuit/commit/b57f3a9359f68343b2ba69805d61bebbd86ba1f4) by Billy).
+- fix: Extensionmanager fetching error handling ([f70bde8](https://github.com/billyeatcookies/Biscuit/commit/f70bde85f06bfd8bb0c9016c639b07026c30ed6d) by Billy).
+- fix: Sort all imports using isort #86 ([1532478](https://github.com/billyeatcookies/Biscuit/commit/1532478d15e85132762a0e9f94631f9009845e28) by Billy).
+- fix: SetProcessDpiAwareness should be windows specific configuration #86 ([56023d4](https://github.com/billyeatcookies/Biscuit/commit/56023d4856d37a31451d04aed560d3e2b401cb5b) by Billy).
+- fix: Hide panel when no terminals are deleted ([38ceba3](https://github.com/billyeatcookies/Biscuit/commit/38ceba3429542b1b66d678d8a2db3125f803e94a) by Billy).
 - fix: Handling deleted/untracked files in diff viewer ([47c1a7b](https://github.com/billyeatcookies/Biscuit/commit/47c1a7b55dd140402eb00dac55121a903ea140eb) by Billy).
 - fix: Optimizations done for diff viewer ([e5789db](https://github.com/billyeatcookies/Biscuit/commit/e5789dbbaa5212a8d67b1121bc60c45cd1639982) by Billy).
 - fix: Git integration - hide changes/staged changes when there arent any ([5447380](https://github.com/billyeatcookies/Biscuit/commit/5447380d260147e77495e717fdcbbed553aaf502) by Billy).
@@ -23,7 +49,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix: Remove cells in game of life, fix tetris bindings - show instructions for game of life ([6b7b88c](https://github.com/billyeatcookies/Biscuit/commit/6b7b88c4fec51800a8b7a4248d4297da8f12d4f2) by Billy).
 - fix: Restrict resizing with minimum width/height ([bea7d47](https://github.com/billyeatcookies/Biscuit/commit/bea7d47d6825094a12201cec2464b13ae61ccc4c) by Billy).
 
-<!-- insertion marker -->
 ## [v2.9.2](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.9.2) - 2023-07-13
 
 <small>[Compare with v2.5.2](https://github.com/billyeatcookies/Biscuit/compare/v2.5.2...v2.9.2)</small>

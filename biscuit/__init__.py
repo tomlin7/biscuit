@@ -1,4 +1,4 @@
-__version__ = '2.20.0'
+__version__ = '2.20.2'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 
 # For tests to run successfully
