@@ -44,6 +44,8 @@ To contribute to the biscuit project, check our [contributing guidelines](./CONT
 </a>
 
 ## Screenshots ✨
+![python_MolICK4FSV](https://github.com/billyeatcookies/Biscuit/assets/70792552/6875cb5c-627c-4bae-9fcc-2a15d2a4b2ce)
+![python_haGYWbGzcX](https://github.com/billyeatcookies/Biscuit/assets/70792552/9e75f2c2-6a24-43e4-a3a2-fcaa1728d18c)
 ![python_s8THu31T0Q](https://github.com/billyeatcookies/Biscuit/assets/70792552/032fac52-3f2f-4b1e-8908-a7b7c42aee13)
 ![python_k6yohhbuck](https://github.com/billyeatcookies/Biscuit/assets/70792552/e34ae3ca-7767-4210-a446-41a517af0e76)
 
