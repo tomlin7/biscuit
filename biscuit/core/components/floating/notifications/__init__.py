@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ...utils import IconButton, Toplevel, Label, Icon
+from ...utils import Icon, IconButton, Label, Toplevel
 
 
 class Notifications(Toplevel):
@@ -36,16 +36,19 @@ class Notifications(Toplevel):
     
     def info(self, text):
         self.icon.set_icon("info")
+        self.icon.config(fg=self.base.theme.biscuit)
         self.label.configure(text=text)
         self.show()
     
     def warning(self, text):
         self.icon.set_icon("warning")
+        self.icon.config(fg="yellow")
         self.label.configure(text=text)
         self.show()
     
     def error(self, text):
         self.icon.set_icon("error")
+        self.icon.config(fg="red")
         self.label.configure(text=text)
         self.show()
     
