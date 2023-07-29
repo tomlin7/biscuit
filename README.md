@@ -45,7 +45,7 @@ To compile Biscuit for your platform, see [compiling guide](https://github.com/b
 
 
 ## ❤ Contributors 
-To contribute to the biscuit project, check our [contributing guidelines](./CONTRIBUTING.md). Your contributions and support are greatly appreciated! 🧡 
+Our project aims to foster a vibrant open-source community of Python enthusiasts, your contributions and support are greatly appreciated! 🧡 check our [contributing guidelines](./CONTRIBUTING.md) for any questions! 
 
 <a href="https://github.com/billyeatcookies/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg?width=890" />
