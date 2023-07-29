@@ -7,14 +7,13 @@
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
 </h2>
 
-The main aim of the **Biscuit project**, when it started off was to break down the complex processes behind popular code editors that power today, and develop a comparable tool that is as capable, efficient, and well-optimized as the existing ones. The current codebase of Biscuit is written in **pure Python** and draws a lot of inspiration from esteemed code editors like Visual Studio Code, Atom, and Emacs.
-
-Our project also aims to foster a vibrant open-source community of Python enthusiasts and software developers, working together to create a truly innovative tool. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletion, and Git integration.
+🚀<b>A</b> magnificent project that brings together the best elements of eminent code editors while adding its own unique flair. Compact, yet compelling; comprehensive, yet concise – Biscuit has set its sights on conquering the realm of code editing, capturing the hearts of developers and enthusiasts alike. Biscuit is here to reshape your coding universe!
+<br><br>
+❤ <b>Our</b> project aims to foster a vibrant open-source community of Python enthusiasts, working together to create a truly innovative tool. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletion, and Git integration.
 
 <h1></h1>
 <h3>
-    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/0e596550-22fe-42bc-a4e7-7e028155387a />
-    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/ce31691d-a45d-442c-9f54-16cebe02ef7a />
+    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/cb7c2cb2-f595-4708-b4cd-f75dcf481313 />
 </h3>
 
 ## Running biscuit 💿
