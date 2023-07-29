@@ -3,7 +3,9 @@
     The uncompromising code editor<br><br>
     <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
     <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
-    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/billyeatcookies/Biscuit?style=for-the-badge"> 
+    <a href=https://github.com/billyeatcookies/Biscuit/releases> 
+        <img alt="Download Latest" src="https://img.shields.io/github/v/release/billyeatcookies/biscuit?style=for-the-badge"> 
+    </a>
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
 </h2>
 
@@ -16,18 +18,23 @@
     <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/cb7c2cb2-f595-4708-b4cd-f75dcf481313 />
 </h3>
 
-## Running biscuit 💿
-This project is a WIP. Bugs and missing or incomplete features will be present.
-You need **python 3.10** or above. 
+## 💿 Installing Biscuit 
+[![GitHub release (with filter)](https://img.shields.io/github/v/release/billyeatcookies/biscuit?style=for-the-badge)](https://github.com/billyeatcookies/Biscuit/releases)
+
+You can download the latest compiled pre-release of Biscuit for Windows and Linux from [Releases](https://github.com/billyeatcookies/Biscuit/releases)!
+
+### 🛠 Building from Source
+The project is a WIP. Bugs and missing or incomplete features will be present in the current unreleased version.
+> **Note**
+> You need **python 3.10** or above.
+
+Download the project source or clone this repo, in the project directory run:
 ```bash
 > pip install -r requirements.txt
 > python -m biscuit
 ```
-If you use **poetry**, this will get biscuit up and running
-```bash
-> poetry install
-> python -m biscuit
-```
+To run in a separate virtual environment, you can use [python poetry](https://python-poetry.org/).
+To compile Biscuit for your platform, see [compiling guide](https://github.com/billyeatcookies/Biscuit/tree/main/scripts).
 
 > **Note**
 > If you are getting an error during installation in **Linux**, install following dependencies and try again:
@@ -36,20 +43,21 @@ If you use **poetry**, this will get biscuit up and running
 > > pip install scikit-build
 > ```
 
-## Contributors
+
+## ❤ Contributors 
 To contribute to the biscuit project, check our [contributing guidelines](./CONTRIBUTING.md). Your contributions and support are greatly appreciated! 🧡 
 
 <a href="https://github.com/billyeatcookies/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg?width=890" />
 </a>
 
-## Screenshots ✨
-![python_MolICK4FSV](https://github.com/billyeatcookies/Biscuit/assets/70792552/6875cb5c-627c-4bae-9fcc-2a15d2a4b2ce)
+## 📸 Screenshots 
+![python_33z3mLyKaj](https://github.com/billyeatcookies/Biscuit/assets/70792552/acb36423-65f3-46a0-b4a0-9e381b5d1995)
+![python_fOxALHL7iv](https://github.com/billyeatcookies/Biscuit/assets/70792552/db279b28-859a-4376-a60e-10890235c729)
 ![python_haGYWbGzcX](https://github.com/billyeatcookies/Biscuit/assets/70792552/9e75f2c2-6a24-43e4-a3a2-fcaa1728d18c)
-![python_s8THu31T0Q](https://github.com/billyeatcookies/Biscuit/assets/70792552/032fac52-3f2f-4b1e-8908-a7b7c42aee13)
-![python_k6yohhbuck](https://github.com/billyeatcookies/Biscuit/assets/70792552/e34ae3ca-7767-4210-a446-41a517af0e76)
+![python_MolICK4FSV](https://github.com/billyeatcookies/Biscuit/assets/70792552/6875cb5c-627c-4bae-9fcc-2a15d2a4b2ce)
 
-## Features
+## ✨ Features
 - **Palette** which works based on various prompts used 
   (`Ctrl` + `shift` + `p` for command palette)
 
