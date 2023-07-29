@@ -1,7 +1,6 @@
 import tkinter as tk
 
 from .codicon import get_codicon
-
 from .menubutton import Menubutton
 
 
@@ -21,8 +20,11 @@ class IconButton(Menubutton):
 
         self.bind("<Button-1>", self.onclick)
     
-    def onclick(self, *_):
-        self.event()
+    def onclick(self, *args):
+        try:
+            self.event(*args)
+        except:
+            self.event()
         if not self.icon2:
             return
         

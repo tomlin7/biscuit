@@ -3,6 +3,7 @@ from tkinter.constants import *
 
 from biscuit.core.components.utils import Frame, IconButton
 
+from .menu import EditorsbarMenu
 from .tabs import Tabs
 
 
@@ -14,8 +15,13 @@ class Editorsbar(Frame):
         self.tabs = Tabs(self)
         self.tabs.pack(fill=BOTH, side=LEFT, expand=True)
 
+        self.menu = EditorsbarMenu(self, "tabs")
+        self.menu.add_item("Show Opened Editors")
+        self.menu.add_separator(10)
+        self.menu.add_item("Close All")
+
         self.buttons = []
-        self.default_buttons = (('ellipsis',),)
+        self.default_buttons = (('ellipsis', self.menu.show),)
 
         self.container = Frame(self, **self.base.theme.layout.base.content.editors.bar)
         self.container.pack(fill=BOTH, side=RIGHT, padx=(0, 10))

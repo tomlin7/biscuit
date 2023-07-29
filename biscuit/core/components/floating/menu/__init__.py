@@ -6,10 +6,10 @@
 
 import tkinter as tk
 
+from biscuit.core.components.utils import Frame, Toplevel
+
 from .menuitem import MenuItem
 from .separator import Separator
-
-from biscuit.core.components.utils import Toplevel, Frame
 
 
 class Menu(Toplevel):
@@ -37,14 +37,14 @@ class Menu(Toplevel):
         self.bind("<FocusOut>" , self.hide)
         self.bind("<Escape>", self.hide)
     
-    def get_coords(self):
+    def get_coords(self, *e):
         return self.master.winfo_rootx(), self.master.winfo_rooty() + self.master.winfo_height()
 
-    def show(self, *args):
+    def show(self, *e):
         self.active = True
         self.update_idletasks()
 
-        x, y = self.get_coords()
+        x, y = self.get_coords(*e)
         self.wm_geometry(f"+{x}+{y}")
         
         self.deiconify()
@@ -61,8 +61,8 @@ class Menu(Toplevel):
 
         self.row += 1
 
-    def add_separator(self):
-        new_sep = Separator(self.container)
+    def add_separator(self, length=18):
+        new_sep = Separator(self.container, length)
         new_sep.grid(row=self.row, sticky=tk.EW, pady=0)
         self.menu_items.append(new_sep)
 

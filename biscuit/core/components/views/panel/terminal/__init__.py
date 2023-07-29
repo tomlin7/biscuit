@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from ..panelview import PanelView
+from .menu import TerminalMenu
 from .shells import Default, PowerShell
 from .tabs import Tabs
 
@@ -8,13 +9,16 @@ from .tabs import Tabs
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (('add', self.add_current_terminal), ('trash', self.delete_active_terminal))
+        self.__buttons__ = [('add', self.add_current_terminal), ('trash', self.delete_active_terminal)]
 
         self.config(bg=self.base.theme.border)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-
         self.grid_propagate(False)
+
+        self.menu = TerminalMenu(self, "terminal")
+        self.menu.add_item("Clear Terminal")
+        self.add_button('ellipsis', self.menu.show)
 
         self.tabs = Tabs(self)
         self.tabs.grid(row=0, column=1, padx=(1, 0), sticky=tk.NS)
