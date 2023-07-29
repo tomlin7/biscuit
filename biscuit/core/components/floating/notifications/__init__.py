@@ -13,6 +13,8 @@ class Notifications(Toplevel):
         self.config(bg=self.base.theme.border, padx=1, pady=1)
         self.active = False
 
+        self.count = 0
+
         self.overrideredirect(True)
 
         self.xoffset = 5 * self.base.scale
@@ -38,18 +40,21 @@ class Notifications(Toplevel):
         self.icon.set_icon("info")
         self.icon.config(fg=self.base.theme.biscuit)
         self.label.configure(text=text)
+        self.count += 1
         self.show()
     
     def warning(self, text):
         self.icon.set_icon("warning")
         self.icon.config(fg="yellow")
         self.label.configure(text=text)
+        self.count += 1
         self.show()
     
     def error(self, text):
         self.icon.set_icon("error")
         self.icon.config(fg="red")
         self.label.configure(text=text)
+        self.count += 1
         self.show()
     
     def _follow_root(self):
@@ -67,6 +72,7 @@ class Notifications(Toplevel):
         self._follow_root()
         self.deiconify()
         self.lift()
+        self.base.statusbar.update_notifications()
     
     def hide(self, *_):
         self.active = False
@@ -74,3 +80,4 @@ class Notifications(Toplevel):
     
     def clear(self, *_):
         self.label.configure(text="NO NEW NOTIFICATIONS")
+        self.count = 0

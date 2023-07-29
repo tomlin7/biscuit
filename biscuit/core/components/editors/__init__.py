@@ -20,7 +20,7 @@ from .misc import Welcome
 from .texteditor import TextEditor
 
 
-def get_editor(base, path=None, path2=None, diff=False, language=None):
+def get_editor(base, path=None, exists=True, path2=None, diff=False, language=None):
     "picks the right editor for the given values"
     if diff:
         return DiffEditor(base, path, path2, language=language)
@@ -29,9 +29,9 @@ def get_editor(base, path=None, path2=None, diff=False, language=None):
         if FileType.is_image(path):
             return ImageViewer(base, path)
         
-        return TextEditor(base, path, language=language)
+        return TextEditor(base, path, exists, language=language)
     
-    return TextEditor(base, language=language)
+    return TextEditor(base, exists=exists, language=language)
 
 
 class Editor(Frame):
@@ -87,6 +87,7 @@ class Editor(Frame):
         super().__init__(master, *args, **kwargs)
 
         self.path = path
+        self.exists = exists
         self.path2 = path2
         self.diff = diff
         self.showpath = showpath
@@ -98,7 +99,7 @@ class Editor(Frame):
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
 
-        self.content = get_editor(self, path, path2, diff, language)
+        self.content = get_editor(self, path, exists, path2, diff, language)
         self.filename = os.path.basename(self.path) if path else None
         if path and self.showpath and not diff:
             self.breadcrumbs = BreadCrumbs(self, path)

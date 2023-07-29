@@ -66,8 +66,11 @@ class SButton(Frame):
     def change_text(self, text):
         self.text_label.config(text=text)
     
+    def change_description(self, text):
+        self.bubble.change_text(text)
+    
     def change_icon(self, icon):
-        self.icon_label.config(text=icon)
+        self.icon_label.config(text=get_codicon(icon))
 
     def set_pack_data(self, **kwargs):
         self.pack_data = kwargs

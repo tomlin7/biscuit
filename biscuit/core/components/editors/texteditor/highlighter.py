@@ -7,6 +7,9 @@ from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
 
 class Highlighter:
     def __init__(self, master, language=None, *args, **kwargs):
+        self.master = master
+        self.base = master.base
+
         self.text = master
         self.base = master.base
         self.language = language
@@ -14,19 +17,51 @@ class Highlighter:
         if language:
             try:
                 self.lexer = get_lexer_by_name(language)
+                self.text.language = self.lexer.name
             except:
                 self.lexer = None
+                self.text.language = "Plain Text"
+                self.base.notifications.info("Selected lexer is not available.")
                 return
         else:
             try:
-                self.lexer = get_lexer_for_filename(os.path.basename(master.path), inencoding=master.encoding, encoding=master.encoding)
+                if os.path.basename(master.path).endswith("txt"):
+                    raise Exception()
+                
+                self.lexer = get_lexer_for_filename(os.path.basename(master.path), encoding=master.encoding)
+                self.text.language = self.lexer.name
             except:
                 self.lexer = None
+                self.text.language = "Plain Text"
+                self.base.notifications.info("No lexers are available for opened file type.")
                 return
                 
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
-
+    
+    def change_language(self, language):
+        if language:
+            try:
+                self.lexer = get_lexer_by_name(language)
+                self.text.language = self.lexer.name
+            except:
+                self.lexer = None
+                self.text.language = "Plain Text"
+                self.base.notifications.info("Selected lexer is not available.")
+                return
+        else:
+            try:
+                if os.path.basename(self.master.path).endswith("txt"):
+                    raise Exception()
+                
+                self.lexer = get_lexer_for_filename(os.path.basename(self.master.path), encoding=self.master.encoding)
+                self.text.language = self.lexer.name
+            except:
+                self.lexer = None
+                self.text.language = "Plain Text"
+                self.base.notifications.info("No lexers are available for opened file type.")
+                return
+            
     def setup_highlight_tags(self):
         for token, color in self.tag_colors.items():
             self.text.tag_configure(str(token), foreground=color)

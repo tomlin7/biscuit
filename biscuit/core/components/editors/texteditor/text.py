@@ -18,8 +18,10 @@ class Text(Text):
         self.path = path
         self.data = None
         self.encoding = 'utf-8'
+        self.eol = "CRLF"
         self.exists = exists
         self.minimalist = minimalist
+        self.language = language
         
         self.buffer_size = 1000
         self.bom = True
@@ -31,6 +33,7 @@ class Text(Text):
             self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
         
         self.highlighter = Highlighter(self, language)
+        self.base.statusbar.on_open_file(self)
 
         self.focus_set()
         self.config_tags()
@@ -282,9 +285,29 @@ class Text(Text):
         self.bom = False
         return 'utf-8'
 
+    def detect_eol(self, path):
+        with open(path, 'rb') as file:
+            chunk = file.read(1024)
+        
+            # Check for '\r\n' to detect Windows-style EOL
+            if b'\r\n' in chunk:
+                return "CRLF"
+            
+            # Check for '\n' to detect Unix-style EOL
+            elif b'\n' in chunk:
+                return "LF"
+            
+            # Check for '\r' to detect Mac-style EOL (older Macs)
+            elif b'\r' in chunk:
+                return "CR"
+            
+            else:
+                return "UNKNOWN"
+
     def load_file(self):
         try:
             encoding = self.detect_encoding(self.path)
+            self.detect_eol(self.path)
             file = open(self.path, 'r', encoding=encoding)
             self.encoding = encoding
 
@@ -293,6 +316,8 @@ class Text(Text):
             self.process_queue()
         except Exception as e:
             self.master.unsupported_file()
+        
+        self.base.statusbar.on_open_file(self)
 
     def read_file(self, file):
         while True:

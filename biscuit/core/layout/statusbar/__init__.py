@@ -1,11 +1,11 @@
 #TODO add actual functions to actionset
 import tkinter as tk
 
-from .utils.button import SButton, TerminalButton
-from .utils.clock import SClock
-
 from biscuit.core.components import ActionSet
 from biscuit.core.components.utils import Frame
+
+from .utils.button import SButton, TerminalButton
+from .utils.clock import SClock
 
 
 class Statusbar(Frame):
@@ -123,6 +123,19 @@ class Statusbar(Frame):
             self.git_actionset.update([(str(branch), lambda e=None: self.base.git.checkout(str(branch))) for branch in self.base.git.repo.branches])
         else:
             self.branch.hide()
+    
+    def on_open_file(self, text):
+        self.file_type.change_text(text.language)
+        self.encoding.change_text(text.encoding)
+        self.eol.change_text(text.eol)
+    
+    def update_notifications(self):
+        if n := self.base.notifications.count:
+            self.notif.change_icon('bell-dot')
+            self.notif.change_description(f'{n} notifications')
+        else:
+            self.notif.change_icon('bell')
+            self.notif.change_description(f'No notifications')
 
     def set_line_col_info(self, line, col, selected):
         self.line_col_info.change_text(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))
