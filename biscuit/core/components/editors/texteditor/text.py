@@ -13,6 +13,17 @@ from .syntax import Syntax
 
 
 class Text(Text):
+    """Text widget
+
+    Attributes
+    ----------
+    - master: parent tkinter widget
+    - path: path of the file to open in editor
+    - exists: flag indicating whether the path exists
+    - minimalist: minimalist mode disables autocompletions, pair compleotins. syntax hilghighting works.
+    - language: language of the lexer to be used to highlight file content
+    """
+    
     def __init__(self, master, path=None, exists=True, minimalist=False, language=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.path = path
@@ -22,9 +33,12 @@ class Text(Text):
         self.exists = exists
         self.minimalist = minimalist
         self.language = language
-        
+
+        # buffer size used when loading files
         self.buffer_size = 1000
         self.bom = True
+
+        # data used for word-autocomplete
         self.current_word = None
         self.words = []
 
@@ -43,14 +57,20 @@ class Text(Text):
 
         self.update_words()
 
-    def config_tags(self):
+    def config_tags(self) -> None:
+        "Configures all tags used in editor"
+        
         self.tag_config(tk.SEL, background=self.base.theme.primary_background_highlight)
         self.tag_config("highlight", background=self.base.theme.primary_background_highlight)
         self.tag_config("currentline", background=self.base.theme.border)
+
+        # find-replace
         self.tag_config("found", background="green")
         self.tag_config("foundcurrent", background="orange")
 
-    def config_bindings(self):
+    def config_bindings(self) -> None:
+        "Configures all bindings for editor"
+
         self.bind("<KeyRelease>", self.key_release_events) 
 
         self.bind("<Control-f>", self.open_find_replace)
@@ -76,7 +96,9 @@ class Text(Text):
         # self.bind("<apostrophe>", lambda e: self.surrounding_selection("\'"))
         # self.bind("<quotedbl>", lambda e: self.surrounding_selection("\""))
 
-    def key_release_events(self, event):
+    def key_release_events(self, event) -> None:
+        "Handles key release events more efficiently"
+        
         if event.keysym not in ("Up", "Down", "Return"):
             self.show_autocomplete(event)
 
@@ -108,69 +130,112 @@ class Text(Text):
             case _:
                 pass
 
-    def enter_key_events(self, *_):
+    def enter_key_events(self, *_) -> str:
+        """Handles enter key events
+        If autocomplete window is active, chooses the selected item.
+        Otherwise handles auto indentation.
+        """
+        
         if not self.minimalist and self.auto_completion.active:        
             self.auto_completion.choose()
             return "break"
         
         return self.check_indentation()
         
-    def tab_key_events(self, *_):
+    def tab_key_events(self, *_) -> str:
+        """Handles tab key events
+        If autocomplete window is active, chooses the selected item.
+        Otherwise handles tabbing.
+        """
+        
         if self.auto_completion.active:        
             self.auto_completion.choose()
             return "break"
-    
+
+        # TOO: If there iss election avaailble, indent the selected lines inu blk
         self.insert(tk.INSERT, " "*4)
         return "break"
     
-    def get_all_text(self, *args):
+    def get_all_text(self, *args) -> str:
+        "returns all texit n the editor"
         return self.get(1.0, tk.END)
 
-    def get_all_text_ac(self, *args):
-        """
-        Helper function for autocomplete.show
-        extracts all text except the current word.
+    def get_all_text_ac(self, *args) -> str:
+        """Helper function for autocomplete.show
+        returns all text except the current word.
         """
         return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
     
-    def get_current_word(self):
+    def get_current_word(self) -> str:
+        "returns the word at cursor stripped"
         return self.current_word.strip()
     
-    def update_words(self, *_):
+    def update_words(self, *_) -> None:
+        """Helper function for updating autocompletions
+        Extracts all unique words in editor and updates completions.
+        """
         if self.minimalist:
             return
         
         self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
         self.after(1000, self.update_words)
     
-    def update_completions(self):
+    def update_completions(self) -> None:
+        "Helper function for updating autocompletions"
         if self.minimalist:
             return
         
         self.auto_completion.update_completions()   
     
-    def confirm_autocomplete(self, text):
+    def confirm_autocomplete(self, text: str) -> None:
+        """Helper function for the autocomplete
+        Called from autocomeplete component to confirm the slected item for completion.
+
+        Parameters
+        ----------
+        text : str
+            the completion item to replace the current word with
+        """
+        
         self.replace_current_word(text)
         
-    def replace_current_word(self, new_word):
+    def replace_current_word(self, new_word: str) -> None:
+        """Helper function for the autocomplete
+        Replaces word at cursor pos with passed word
+
+        Parameters
+        ----------
+        new_word : str
+            the word to be replaced for the mouse at cursor
+        """
+
+        # if the wo rdstarts with a newline character, delete from +c to avoid deleting line
+      #   case when theword is at margin
         if self.current_word.startswith("\n"):
             self.delete("insert-1c wordstart+1c", "insert")
         else:
             self.delete("insert-1c wordstart", "insert")
+            
         self.insert("insert", new_word)
     
-    def check_autocomplete_keys(self, event):
-        """
-        Helper function for autocomplete.show to check triggers
+    def check_autocomplete_keys(self, event) -> None:
+        """Helper function for autocomplete
+        to check triggers for autocomplete.show
+
+        Parameters
+        ----------
+        event
+            keypress event
         """
         return True if event.keysym not in [
             "BackSpace", "Escape", "Return", "Tab", "space", 
             "Up", "Down", "Control_L", "Control_R"] else False 
     
-    def cursor_screen_location(self):
+    def cursor_screen_location(self) -> tuple:
+        """Helper function for autocomplete
+        to detect the cursor location for autocomplete.show
         """
-        Helper function for autocomplete.show to detect cursor location
-        """
+        
         pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
 
         cursor = tk.INSERT
@@ -181,13 +246,24 @@ class Text(Text):
         bbx_x, bbx_y, _, bbx_h = bbox
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
     
-    def hide_autocomplete(self, *_):
+    def hide_autocomplete(self, *_) -> None:
+        "Hide the auctoomplete window"
+        
         if self.minimalist:
             return
         
         self.auto_completion.hide()
     
-    def show_autocomplete(self, event):
+    def show_autocomplete(self, event) -> None:
+        """Show the auctoomplete window
+
+        Parameters
+        ----------
+        envet
+          the key press event
+        """
+
+        # check if keys shall trigger autocomplete
         if self.minimalist or not self.check_autocomplete_keys(event):
             return
 
@@ -204,11 +280,28 @@ class Text(Text):
             if self.auto_completion.active:
                 self.hide_autocomplete()
 
-    def complete_pair(self, char):
+    def complete_pair(self, char: str) -> None:
+        """Pair completion
+        completes pair punctuators like (, [, {, ", '
+
+        Parameters
+        ----------
+        char : str
+            the character to pair complete
+        """
         self.insert(tk.INSERT, char)
         self.mark_set(tk.INSERT, "insert-1c")
     
-    def surrounding_selection(self, char):
+    def surrounding_selection(self, char: str) -> None:
+        """Surround with quotes or quote pair complete
+        If there is a selection, surrounds the selection with quotes
+        Otherwise completes the pair for quotes and apostrophes
+
+        Parameters
+        ----------
+        char
+            the character to surround with/pair complete
+        """
         next_char = self.get("insert", "insert+1c")
         if next_char == char:
             self.mark_set(tk.INSERT, "insert+1c")
@@ -224,6 +317,7 @@ class Text(Text):
         return "break"
 
     def move_to_next_word(self):
+        "Skip cursor to next word"
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
 
     def move_to_previous_word(self):
@@ -547,11 +641,11 @@ class Text(Text):
             self.tag_add(tag, "matchStart", "matchEnd")
 
     def refresh(self, *args):
+        self.highlighter.highlight()
         if self.minimalist:
             return
         
         self.current_word = self.get("insert-1c wordstart", "insert")
-        self.highlighter.highlight()
         self.highlight_current_line()
         self.highlight_current_word()
 
