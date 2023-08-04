@@ -9,7 +9,7 @@
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
 </h2>
 
-🚀<b>A</b> magnificent project that brings together the best elements of eminent code editors while adding its own unique flair. Compact, yet compelling; comprehensive, yet concise – Biscuit has set its sights on conquering the realm of code editing, capturing the hearts of developers and enthusiasts alike. Biscuit is here to reshape your coding universe!
+🚀 <b>A</b> magnificent project that brings together the best elements of eminent code editors while adding its own unique flair. Compact, yet compelling; comprehensive, yet concise – Biscuit is here to reshape your coding universe!
 <br><br>
 ❤ <b>Our</b> project aims to foster a vibrant open-source community of Python enthusiasts, working together to create a truly innovative tool. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletion, and Git integration.
 
