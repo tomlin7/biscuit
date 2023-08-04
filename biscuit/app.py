@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 import sys
 import tkinter as tk
@@ -13,10 +14,7 @@ class App(tk.Tk):
         super().__init__(*args, **kwargs)
         self.base = self
         self.setup_path(appdir)
-        # TODO app is not added to taskbar
-        self.overrideredirect(True)
-
-        self.withdraw()
+        
         self.setup()
         self.late_setup()
         self.initialize_editor()        
@@ -92,9 +90,24 @@ class App(tk.Tk):
     def setup_tk(self):
         """Sets up the Tkinter window size, title, and scaling"""
         
-        if self.sysinfo.os == "Windows":
+        if platform.system() == "Windows":
+            print("hii")
             from ctypes import windll
             windll.shcore.SetProcessDpiAwareness(1)
+
+            self.overrideredirect(True)
+            self.update_idletasks()
+
+            GWL_EXSTYLE=-20
+            WS_EX_APPWINDOW=0x00040000
+            WS_EX_TOOLWINDOW=0x00000080
+            hwnd = windll.user32.GetParent(self.winfo_id())
+            style = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+            style = style & ~WS_EX_TOOLWINDOW
+            style = style | WS_EX_APPWINDOW
+            windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
+            self.withdraw()
+            self.after(10, lambda:self.wm_deiconify())
 
         self.dpi_value = self.winfo_fpixels('1i')
         self.scale = self.dpi_value / 72
@@ -142,7 +155,6 @@ class App(tk.Tk):
         self.logger.info('Initializing editor finished.')
         
         self.update_idletasks()
-        self.deiconify()
     
     def open_directory(self, dir):
         """Opens a directory in the explorer and updates the Git status."""
