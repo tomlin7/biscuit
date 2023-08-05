@@ -1,8 +1,9 @@
+import platform
 import tkinter as tk
 
-from .item import MenubarItem
-
 from biscuit.core.components.utils import Frame, IconButton
+
+from .item import MenubarItem
 
 
 class Menubar(Frame):
@@ -18,18 +19,19 @@ class Menubar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.menus = []
+        self.events = self.base.events
 
-        close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.base.events.quit)
-        close.config(activebackground='#e81123', activeforeground="white")
-        close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-        
-        IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.base.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-        IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.base.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+        if platform.system() == 'Windows':
+            close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.events.quit)
+            close.config(activebackground='#e81123', activeforeground="white")
+            close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            
+            IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            self.config_bindings()
 
         self.config(bg=self.base.theme.layout.menubar.background)
-        self.events = self.base.events
         self.add_menus()
-        self.config_bindings()
 
     def config_bindings(self):
         self.bind('<Map>', self.events.window_mapped)
