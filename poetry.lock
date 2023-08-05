@@ -144,13 +144,13 @@ files = [
 
 [[package]]
 name = "git-changelog"
-version = "2.0.0"
+version = "2.1.0"
 description = "Automatic Changelog generator using Jinja2 templates."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "git_changelog-2.0.0-py3-none-any.whl", hash = "sha256:a5259065a4670e6bfb81e1bc95fa6182b871dbd10892df26eb087808cd00c6db"},
-    {file = "git_changelog-2.0.0.tar.gz", hash = "sha256:57bf99ad1beb84ed4ef0bdd7ca5dec246e78f3f8878edc2d45ced8eafa56d27a"},
+    {file = "git_changelog-2.1.0-py3-none-any.whl", hash = "sha256:179ab128837cb2fefc6958cb2e938478d08e79e6b4a709b2d10c2903ea7c3f48"},
+    {file = "git_changelog-2.1.0.tar.gz", hash = "sha256:e5c62fcd67b6ffc262cb165c65ea5ad0410ce1ecd418357f5091152fc3ba1395"},
 ]
 
 [package.dependencies]
@@ -660,4 +660,4 @@ test = ["pytest (>=6.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "92d3aab3bacb2ec51e92b75154cf905c1fc7e4ed810f902b90bbdc68b36a67d2"
+content-hash = "e07491a5cf86316d276e4b3dd7e26158a8b7b6a2bcf3763ca1b80703791c7d77"
