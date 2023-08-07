@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .item import ChangeItem
 from ..item import SidebarViewItem
+from .item import ChangeItem
 
 
 class Changes(SidebarViewItem):

@@ -91,7 +91,6 @@ class App(tk.Tk):
         """Sets up the Tkinter window size, title, and scaling"""
         
         if platform.system() == "Windows":
-            print("hii")
             from ctypes import windll
             windll.shcore.SetProcessDpiAwareness(1)
 
