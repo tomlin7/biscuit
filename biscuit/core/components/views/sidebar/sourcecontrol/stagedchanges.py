@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .stageditem import StagedChangeItem
 from ..item import SidebarViewItem
+from .stageditem import StagedChangeItem
 
 
 class StagedChanges(SidebarViewItem):
