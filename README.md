@@ -1,7 +1,9 @@
 <h2 align="center">
     <img src="./.github/banner.png" width=1000><br>
     The uncompromising code editor<br><br>
-    <img src=https://forthebadge.com/images/badges/made-with-python.svg height=28> 
+    <a href=https://github.com/billyeatcookies/Biscuit/actions/workflows/artifact-windows.yml> 
+        <img src="https://img.shields.io/github/actions/workflow/status/billyeatcookies/biscuit/artifact-windows.yml?style=for-the-badge"> 
+    </a> 
     <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
     <a href=https://github.com/billyeatcookies/Biscuit/releases> 
         <img alt="Download Latest" src="https://img.shields.io/github/v/release/billyeatcookies/biscuit?style=for-the-badge"> 
