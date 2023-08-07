@@ -8,13 +8,14 @@ from .pane import DiffPane
 
 
 class DiffEditor(BaseEditor):
-    def __init__(self, master, path, language=None, *args, **kwargs):
+    def __init__(self, master, path, kind, language=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.path = path
+        self.kind = kind
         self.editable = True
 
         self.lhs_data = []
@@ -155,3 +156,5 @@ class DiffEditor(BaseEditor):
                 self.left.newline()
         
         self.left.set_active(False)
+
+

@@ -305,6 +305,9 @@ class Text(Text):
                 return "UNKNOWN"
 
     def load_file(self):
+        if not self.path:
+            return
+        
         try:
             encoding = self.detect_encoding(self.path)
             self.detect_eol(self.path)
@@ -315,6 +318,7 @@ class Text(Text):
             threading.Thread(target=self.read_file, args=(file,)).start()
             self.process_queue()
         except Exception as e:
+            print(e)
             self.master.unsupported_file()
         
         self.base.statusbar.on_open_file(self)

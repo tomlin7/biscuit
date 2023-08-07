@@ -23,7 +23,7 @@ from .texteditor import TextEditor
 def get_editor(base, path=None, exists=True, path2=None, diff=False, language=None):
     "picks the right editor for the given values"
     if diff:
-        return DiffEditor(base, path, path2, language=language)
+        return DiffEditor(base, path, exists, language=language)
     
     if path and os.path.isfile(path):
         if FileType.is_image(path):
@@ -115,3 +115,5 @@ class Editor(Frame):
     
     def focus(self) -> None:
         self.content.focus()
+
+

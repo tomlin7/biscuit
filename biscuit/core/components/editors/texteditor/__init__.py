@@ -40,7 +40,8 @@ class TextEditor(BaseEditor):
         self.text.bind("<<Scroll>>", self.on_scroll)
 
         self.on_scroll()
-        self.minimap.redraw_cursor()
+        if not self.minimalist:
+            self.minimap.redraw_cursor()
 
     def on_change(self, *_):
         self.text.refresh()
@@ -244,3 +245,4 @@ class TextEditor(BaseEditor):
 
     def yview_scroll(self, n, what):
         self.text.yview_scroll(n, what)
+
