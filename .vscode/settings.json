@@ -12,5 +12,4 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
-    "git.enableCommitSigning": true
 }
