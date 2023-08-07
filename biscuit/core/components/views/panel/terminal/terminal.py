@@ -120,3 +120,6 @@ class Terminal(PanelView):
         #self.terminal.tag_add("prompt", "insert linestart", "insert")
         self.terminal.see(tk.END)
         self.terminal.mark_set('input', 'insert')
+
+    def clear(self):
+        self.terminal.clear()

@@ -17,7 +17,7 @@ class Terminal(PanelView):
         self.grid_propagate(False)
 
         self.menu = TerminalMenu(self, "terminal")
-        self.menu.add_item("Clear Terminal")
+        self.menu.add_item("Clear Terminal", self.clear_terminal)
         self.add_button('ellipsis', self.menu.show)
 
         self.tabs = Tabs(self)
@@ -63,6 +63,10 @@ class Terminal(PanelView):
         for tab in self.tabs.tabs:
             if tab.terminal == terminal:
                 self.tabs.set_active_tab(tab)
+    
+    def clear_terminal(self, *_):
+        if active := self.active_terminal:
+            active.clear()
     
     @property
     def pwsh(self):
