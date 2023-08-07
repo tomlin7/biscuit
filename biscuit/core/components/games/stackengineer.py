@@ -47,6 +47,12 @@ class TestLabel(tk.Label):
             self.config(fg='red')
         
 
+class Solution():
+    sols = {1 : {'result':[1,2,3,4,5], "s1":[5,4,3,2,1,0]}}
+    def __init__(self, level=1):
+        self.result = self.sols[level]['result']
+        self.s1 = self.sols[level]['s1']
+        
 
 class Stack(ttk.LabelFrame):
 
@@ -73,8 +79,8 @@ class Stack(ttk.LabelFrame):
         self.index = index
 
         
-    def read(self):
-        return self.values[self.index]
+    def read(self, index):
+        return self.values[index]
     def write(self, value, index):
         self.values[index] = value
         self.update()
@@ -85,6 +91,8 @@ class Stack(ttk.LabelFrame):
         self.values.appendleft(value)
         self.update()
     def pop(self):
+        if len(self.values) < 1:
+            return 0
         val = self.values.popleft()
         self.update()
         return val
@@ -225,14 +233,20 @@ class StackEngineer(BaseGame):
         self.mark_line(self.line_pos)
         self.number_register.set(0)
         self.text_register.set("")
+        for stack in self.stacks.values():
+            stack.empty()
+        self.result_stack.load(self.solution.result)
+        self.stacks["S1"].load(self.solution.s1)
         
 
     def start_level(self, level=1):
         """Set up the solution and initial conditions, reset cost"""
         self.cost = 0
-        self.labels = {}
-        self.line_pos = 1
-        self.mark_line(self.line_pos)
+        self.solution = Solution(level=level)
+        self.stacks = {}
+        self.stack_id = 0
+        self.add_stack()
+        self.reset_program()
         #load solution
 
     def interpret_line(self, line):
@@ -268,24 +282,140 @@ class StackEngineer(BaseGame):
 
             elif inst == "POP":
                 stack_n = linelist[1] #stack to pop from
+                reg = linelist[2] #register to pop into
                 if stack_n not in self.stacks:
                     self.show_error(error_msg=f"{stack_n} is not a valid stack")
                 else:
                     val = self.stacks[linelist[1]].pop()
-                    print(val, type(val))
-                    self.number_register.set(val)
+                    if reg == "NR":
+                        try:
+                            val = int(val)
+                            self.number_register.set(val)
+                        except ValueError as ve:
+                            self.show_error("Value must be a number for the number register")
+                    elif reg == "TR":
+                        self.text_register.set(val)
 
         elif len(linelist) == 2:
             inst = linelist[0] #command to execute
+            val = linelist[1] #argument of the command
+            operand = None
+            if val.startswith("*S"):
+                operand = self.stacks[val[1:]].read(0)
+            elif val.startswith("S"):
+                operand = self.stacks[val].pop()
+            elif val in self.labels:
+                operand = self.labels[val]
+            else:
+                operand = val
+                
             if inst == "ADD":
-                val = linelist[1] #thing to add
-                print(val, type(val))
+                #add a number to the NR register
+                try:
+                    operand = int(operand)
+                    nr = int(self.number_register.get()) + operand
+                    self.number_register.set(nr)
+                except ValueError as ve:
+                    self.show_error(str(ve))
+                    
             elif inst == "SUB":
-                pass
+                #substract a number from the NR register
+                try:
+                    operand = int(operand)
+                    nr = int(self.number_register.get()) - operand
+                    self.number_register.set(nr)
+                except ValueError as ve:
+                    self.show_error(str(ve))
+                
             elif inst == "MUL":
-                pass
+                #multiply the NR register by a number
+                try:
+                    operand = int(operand)
+                    nr = int(self.number_register.get()) * operand
+                    self.number_register.set(nr)
+                except ValueError as ve:
+                    self.show_error(str(ve))
+                    
             elif inst == "DIV":
-                pass
+                #perform integer division of the NR register by a number
+                try:
+                    operand = int(operand)
+                    nr = int(self.number_register.get()) // operand
+                    self.number_register.set(nr)
+                except ValueError as ve:
+                    self.show_error(str(ve))
+
+            elif inst == "CCL":
+                self.text_register = str(operand) + self.text_register
+            elif inst == "CCR":
+                self.text_register = self.text_register + str(operand)
+            
+            elif inst == "TEQ":
+                try:
+                    operand = int(operand)
+                    tst = int(self.number_register.get()) == operand
+                    if tst:
+                        self.test_register.set('TRUE')
+                except ValueError as ve:
+                    self.show_error(str(ve))
+            elif inst == "TGT":
+                try:
+                    operand = int(operand)
+                    tst = int(self.number_register.get()) > operand
+                    if tst:
+                        self.test_register.set('TRUE')
+                except ValueError as ve:
+                    self.show_error(str(ve))
+            elif inst == "TGE":
+                try:
+                    operand = int(operand)
+                    tst = int(self.number_register.get()) >= operand
+                    if tst:
+                        self.test_register.set('TRUE')
+                except ValueError as ve:
+                    self.show_error(str(ve))
+            elif inst == "TLT":
+                
+                try:
+                    operand = int(operand)
+                    tst = int(self.number_register.get()) < operand
+                    if tst:
+                        self.test_register.set('TRUE')
+                except ValueError as ve:
+                    self.show_error(str(ve))
+
+            elif inst == "TLE":
+                 try:
+                    operand = int(operand)
+                    tst = int(self.number_register.get()) <= operand
+                    if tst:
+                        self.test_register.set('TRUE')
+                 except ValueError as ve:
+                    self.show_error(str(ve))
+            elif inst == "JMP":
+                if self.test_register.get() != 'TRUE':
+                    self.line_pos += 1
+                    return
+                try:
+                    operand = int(operand)
+                    if operand > self.get_last_line():
+                        self.show_error(f"Line {operand} does not exist in the program.")
+                    self.line_pos = operand
+                    self.mark_line(self.line_pos)
+                    self.test_register.set('FALSE')
+                except ValueError as ve:
+                    self.show_error(str(ve))
+
+        elif len(linelist) == 1:
+            inst = linelist[0]
+            if inst == "RCL":
+                self.text_register = self.text_register[1:]
+            elif inst == "RCR":
+                self.text_register = self.text_register[:-1]
+            elif inst == "CLNR":
+                self.number_register.set(0)
+            elif inst == "CLTR":
+                self.text_register.set("")
             
         self.line_pos += 1
 
