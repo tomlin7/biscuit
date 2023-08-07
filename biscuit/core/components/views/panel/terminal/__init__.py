@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 
 from ..panelview import PanelView
@@ -6,6 +7,13 @@ from .shells import Default, PowerShell
 from .tabs import Tabs
 
 
+def get_home_directory():
+    if os.name == 'nt':
+        return os.path.expandvars("%USERPROFILE%")
+    if os.name == 'posix':
+        return os.path.expanduser("~")
+    return '.'
+print(get_home_directory())
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -25,12 +33,12 @@ class Terminal(PanelView):
 
         self.terminals = []
 
-        self.default_terminals = Default(self)
-        self.add_terminal(self.default_terminals)
+        self.default_terminal = Default(self, cwd=self.base.active_directory or get_home_directory())
+        self.add_terminal(self.default_terminal)
     
     def add_current_terminal(self, *_):
         "Spawns an instance of currently active terminal"
-        self.add_terminal(self.active_terminal_type(self))
+        self.add_terminal(self.active_terminal_type(self, cwd=self.base.active_directory or get_home_directory()))
 
     def add_terminals(self, terminals):
         "Append terminals to list. Create tabs for them."
@@ -41,12 +49,16 @@ class Terminal(PanelView):
         "Appends a terminal to list. Create a tab."
         self.terminals.append(terminal)
         self.tabs.add_tab(terminal)
+    
+    def open_terminal(self, path=None):
+        self.add_terminal(self.active_terminal_type(self, cwd=path or self.base.active_directory or get_home_directory()))
 
     def delete_all_terminals(self):
         "Permanently delete all terminals."
         for terminal in self.terminals:
             terminal.destroy()
 
+        self.tabs.clear_all_tabs()
         self.terminals.clear()
     
     def delete_terminal(self, terminal):
@@ -68,17 +80,17 @@ class Terminal(PanelView):
         if active := self.active_terminal:
             active.clear()
     
-    @property
-    def pwsh(self):
-        return self.default_terminals[0]
+    # @property
+    # def pwsh(self):
+    #     return self.default_terminals[0]
     
-    @property
-    def cmd(self):
-        return self.default_terminals[1]
+    # @property
+    # def cmd(self):
+    #     return self.default_terminals[1]
 
-    @property
-    def python(self):
-        return self.default_terminals[1]
+    # @property
+    # def python(self):
+    #     return self.default_terminals[1]
 
     @property
     def active_terminal_type(self):

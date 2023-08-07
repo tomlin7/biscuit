@@ -133,6 +133,7 @@ class App(tk.Tk):
         self.statusbar = self.root.statusbar
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
+        self.terminalmanager = self.panel.terminal
         self.contentpane = self.root.baseframe.contentpane
         self.sidebar = self.root.baseframe.sidebar
         self.explorer = self.sidebar.explorer
@@ -163,6 +164,11 @@ class App(tk.Tk):
         self.active_directory = dir
         self.explorer.directory.change_path(dir)
         self.set_title(os.path.basename(self.active_directory))
+
+        self.editorsmanager.delete_all_editors()
+        self.terminalmanager.delete_all_terminals()
+        self.terminalmanager.open_terminal()
+
         self.git.check_git()
         self.update_git()
     
