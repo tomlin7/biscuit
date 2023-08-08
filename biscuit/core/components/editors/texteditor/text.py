@@ -44,11 +44,11 @@ class Text(Text):
         self.update_words()
 
     def config_tags(self):
-        self.tag_config(tk.SEL, background=self.base.theme.primary_background_highlight)
-        self.tag_config("highlight", background=self.base.theme.primary_background_highlight)
-        self.tag_config("currentline", background=self.base.theme.border)
-        self.tag_config("found", background="green")
-        self.tag_config("foundcurrent", background="orange")
+        self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
+        self.tag_config("currentline", background=self.base.theme.editors.currentline)
+        self.tag_config("currentword", background=self.base.theme.editors.currentword)
+        self.tag_config("found", background=self.base.theme.editors.found)
+        self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
@@ -519,13 +519,13 @@ class Text(Text):
         if self.minimalist or self.get_selected_text():
             return
 
-        self.tag_remove("highlight", 1.0, tk.END)
+        self.tag_remove("currentword", 1.0, tk.END)
         word = re.findall(r"\w+", self.get("insert wordstart", "insert wordend"))
         if any(word) and word[0] not in self.syntax.keywords:
-            self.highlight_pattern(f"\\y{word[0]}\\y", "highlight", regexp=True)
+            self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", regexp=True)
 
         # elif word := self.get_selected_text():
-        #     self.highlight_pattern(word, "highlight", end="sel.first")
+        #     self.highlight_pattern(word, "currentword", end="sel.first")
         #     self.highlight_pattern(word, start="sel.last")
 
 

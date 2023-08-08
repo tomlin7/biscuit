@@ -1,6 +1,7 @@
 import sv_ttk
-from .theme import Theme
 from pygments.token import Token
+
+from .theme import Theme
 
 
 class Dark(Theme):
@@ -37,6 +38,9 @@ class Dark(Theme):
         self.editors.diff.not_exist = "#424242"
         self.editors.diff.removed = "#452323"
         self.editors.diff.addition = "#203423"
+
+        self.editors.currentword = "#474747"
+        self.editors.found = "#203423"
 
         self.views.panel.logs.time = "#6a9955"
         self.views.panel.logs.caller = "#569cd6"

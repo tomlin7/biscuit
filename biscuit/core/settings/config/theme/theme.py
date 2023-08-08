@@ -1,4 +1,5 @@
 from collections.abc import Mapping
+
 from pygments.token import Token
 
 
@@ -124,6 +125,7 @@ class Layout(FrameThemeObject):
         super().__init__(*args, **kwargs)
         self.menubar = FrameThemeObject(self)
         self.menubar.item = HighlightableThemeObject(self.menubar)
+        self.menubar.title = ThemeObject(self)
 
         self.base = BasePane(self)
 
@@ -190,6 +192,12 @@ class Editors(FrameThemeObject):
         self.button = HighlightableThemeObject(self)
         self.section = HighlightableThemeObject(self) # settings
         self.labels = ThemeObject(self)
+
+        self.selection = theme.primary_background_highlight
+        self.currentline = theme.border
+        self.currentword = "#d5d5d5"
+        self.found = "#dbe6c2"
+        self.foundcurrent = "green"
 
         self.text = ThemeObject(self)
         self.minimap = FrameThemeObject(self)
