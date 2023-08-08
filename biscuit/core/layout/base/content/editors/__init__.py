@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 
 from biscuit.core.components.editors import Editor, Welcome
@@ -118,6 +119,7 @@ class EditorsPane(Frame):
     def refresh(self):
         if not len(self.editors) and self.empty:
             self.emptytab.grid()
+            self.base.set_title(os.path.basename(self.base.active_directory) if self.base.active_directory else None)
         elif len(self.editors) and not self.empty:
             self.emptytab.grid_remove()
         self.empty = not self.empty

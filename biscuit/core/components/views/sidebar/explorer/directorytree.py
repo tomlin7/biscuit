@@ -1,4 +1,5 @@
 import os
+import threading
 from tkinter.constants import *
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
@@ -18,7 +19,7 @@ class DirectoryTree(SidebarViewItem):
         self.nodes = {}
         
         self.actionset = ActionSet("Search files", "file:", [])
-        self.ignore_dirs = [".git", "__pycache__"]
+        self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
         self.ignore_exts = [".pyc"]
 
         self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
@@ -53,6 +54,11 @@ class DirectoryTree(SidebarViewItem):
             self.set_title('No folder opened')
     
     def create_root(self):
+        t = threading.Thread(target=self.run_create_root)
+        t.daemon = True
+        t.start()
+
+    def run_create_root(self):
         self.files = []
         self.update_treeview([(p, os.path.join(self.path, p)) for p in os.listdir(self.path)])
 

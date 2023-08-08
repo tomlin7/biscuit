@@ -1,7 +1,8 @@
 import platform
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame, IconButton
+from biscuit import __version__
+from biscuit.core.components.utils import Frame, IconButton, Label
 
 from .item import MenubarItem
 
@@ -30,8 +31,24 @@ class Menubar(Frame):
             IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             self.config_bindings()
 
-        self.config(bg=self.base.theme.layout.menubar.background)
+        self.title_lbl = Label(self, **self.base.theme.layout.menubar.title)
+        self.update_idletasks()
+        self.set_title()
+
+        self.config(**self.base.theme.layout.menubar)
         self.add_menus()
+    
+    def set_title(self, title=None):
+        self.title_lbl.config(text=f"{title} - Biscuit (v{__version__})" 
+                              if title else f"Biscuit (v{__version__})")
+        self.reposition_title()
+    
+    def reposition_title(self):
+        x = self.winfo_x() + (self.winfo_width() - self.title_lbl.winfo_width())/2
+        y = self.winfo_y() + (self.winfo_height() - self.title_lbl.winfo_height())/2
+        
+        self.title_lbl.place_forget()
+        self.title_lbl.place(x=x, y=y)
 
     def config_bindings(self):
         self.bind('<Map>', self.events.window_mapped)

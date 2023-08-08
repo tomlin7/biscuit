@@ -26,6 +26,7 @@ class App(tk.Tk):
     
     def setup(self):
         """Sets up the Tkinter window, path, and configurations of the application."""
+        self.initialized = False
         self.setup_configs()
         self.setup_tk()
         self.setup_floating_widgets()
@@ -121,7 +122,6 @@ class App(tk.Tk):
         y = int((self.winfo_screenheight() - app_height) / 2)
 
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
-        self.title("Biscuit")
 
     def setup_floating_widgets(self):
         self.palette = Palette(self)
@@ -130,6 +130,7 @@ class App(tk.Tk):
 
     def setup_references(self):
         """Sets up the editors manager, panel, content pane, status bar, explorer, source control, and logger of the application."""
+        self.menubar = self.root.menubar
         self.statusbar = self.root.statusbar
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
@@ -155,6 +156,10 @@ class App(tk.Tk):
         self.logger.info('Initializing editor finished.')
         
         self.update_idletasks()
+        self.initialized = True
+
+        self.menubar.update()
+        self.set_title()
     
     def open_directory(self, dir):
         """Opens a directory in the explorer and updates the Git status."""
@@ -222,12 +227,6 @@ class App(tk.Tk):
         """Opens a new window."""
         subprocess.Popen(["python", sys.argv[0]])
 
-    def set_title(self, name=None):
-        """Sets the title of the application window."""
-        if name:
-            return self.title("Biscuit")
-        self.title(f"{name} - Biscuit")
-    
     def toggle_terminal(self):
         """Toggles the terminal panel."""
         self.panel.set_active_view(self.panel.terminal)
@@ -269,6 +268,13 @@ class App(tk.Tk):
             except tk.TclError:
                 pass
     
+    def set_title(self, title=None):
+        """Sets the title of the application window."""
+        if not self.initialized:
+            return
+        self.menubar.set_title(title)
+        self.menubar.reposition_title()
+    
     def resize(self, mode):
         abs_x = self.winfo_pointerx() - self.winfo_rootx()
         abs_y = self.winfo_pointery() - self.winfo_rooty()
@@ -295,3 +301,5 @@ class App(tk.Tk):
                 height = height - (height - abs_y)
                 if height > self.min_height and width > self.min_width:
                     return self.geometry(f"{width}x{height}+{x}+{y}")
+        
+        self.menubar.reposition_title()

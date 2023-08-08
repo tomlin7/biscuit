@@ -13,7 +13,7 @@ def get_home_directory():
     if os.name == 'posix':
         return os.path.expanduser("~")
     return '.'
-print(get_home_directory())
+
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

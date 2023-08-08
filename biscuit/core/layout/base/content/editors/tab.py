@@ -1,5 +1,7 @@
+import os
 import tkinter as tk
-from biscuit.core.components.utils import IconButton, Frame
+
+from biscuit.core.components.utils import Frame, IconButton
 
 
 class Tab(Frame):
@@ -52,6 +54,10 @@ class Tab(Frame):
     def select(self, *_):
         if not self.selected:
             self.master.set_active_tab(self)
+            if self.base.active_directory and self.editor.filename:
+                self.base.set_title(f"{self.editor.filename} - {os.path.basename(self.base.active_directory)}")
+            elif self.editor.filename:
+                self.base.set_title(self.editor.filename)
             self.editor.grid(column=0, row=1, sticky=tk.NSEW)
             self.name.config(bg=self.hbg)
             self.config(bg=self.hbg)
