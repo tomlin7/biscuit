@@ -44,10 +44,7 @@ class Settings:
         """
         from biscuit.core.components import ActionSet
         self._actionset = ActionSet(
-            "Show and run commands", ">",
-            [
-                ("Open settings", self.base.open_settings),
-            ] + self.commands + get_games(self.base)
+            "Show and run commands", ">", self.commands + get_games(self.base)
         )
 
     def setup_font(self):
