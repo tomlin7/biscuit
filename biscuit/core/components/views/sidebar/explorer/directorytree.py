@@ -108,7 +108,7 @@ class DirectoryTree(SidebarViewItem):
                 self.nodes[path] = item
 
                 # for the actionset
-                self.files.append((name, lambda: print(path)))
+                self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
     
     #TODO insert file/folder
     def add_node(self): ...

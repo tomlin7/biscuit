@@ -141,7 +141,7 @@ class Palette(Toplevel):
     def show_no_results(self):
         self.hide_all_items()
         self.reset_selection()
-        self.add_item("No results found", lambda:...)
+        self.add_item("No results found", lambda _:...)
 
     def select(self, delta):
         self.selected += delta
