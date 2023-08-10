@@ -45,7 +45,7 @@ class Searchbar(Frame):
     
     def filter(self, *args):
         term = self.get_search_term()
-
+        print(term)
         prompt_found = False
         for actionset in self.master.actionsets:
             actionset = actionset()
@@ -57,18 +57,21 @@ class Searchbar(Frame):
     
         if not prompt_found:
             self.master.pick_file_search()
+        
         self.term = term
         exact, starts, includes = [], [], []
-        for i in self.master.active_set:
-            item = i[0]
-            if item == term:
-                exact.append(i)
-            elif item.startswith(term):
-                starts.append(i)
-            elif term in item:
-                includes.append(i)
-        new = list(chain(exact, starts, includes))
 
+        temp = term.lower()
+        for i in self.master.active_set:
+            item = i[0].lower()
+            if item == temp:
+                exact.append(i)
+            elif item.startswith(temp):
+                starts.append(i)
+            elif temp in item:
+                includes.append(i)
+
+        new = list(chain(exact, starts, includes))
         if any(new):
             self.master.show_items(new)
         else:
