@@ -57,6 +57,10 @@ class Settings:
             family=self.config.font[0],
             size=self.config.font[1]
         )
+        self.uifont = tk.font.Font(
+            family=self.config.uifont[0],
+            size=self.config.uifont[1]
+        )
 
     @property
     def actionset(self):

@@ -1,7 +1,7 @@
 class ActionSet(list):
-    def __init__(self, id, prompt, items=[], permitems=[], *args, **kwargs):
+    def __init__(self, description, prompt, items=[], permitems=[], *args, **kwargs):
         super().__init__(items, *args, **kwargs)
-        self.id = id
+        self.description = description
         self.prompt = prompt
 
         self.permitems = permitems # [[command, callback], ...]

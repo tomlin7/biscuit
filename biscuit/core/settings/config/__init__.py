@@ -1,7 +1,11 @@
-import os, toml, sys
-from .bindings import Bindings
-from .theme import Light, Dark
+import os
+import sys
 from dataclasses import dataclass
+
+import toml
+
+from .bindings import Bindings
+from .theme import Dark, Light
 
 
 class Config:
@@ -13,7 +17,7 @@ class Config:
         
         self.theme=Dark()
         self.font=("Consolas", 13)
-        self.ui_font = ("Segoi UI", 10)
+        self.uifont = ("Segoi UI", 10)
 
         # TODO loading config from user settings
         # self.config = self.load_config()

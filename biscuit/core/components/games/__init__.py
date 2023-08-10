@@ -16,7 +16,7 @@ games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake, StackEng
 
 def get_games(base):
     "helper function to generate actionset items"
-    return [(f"Play {i}", lambda i=i: base.open_game(i)) for i in games.keys()]
+    return [(f"Play {i}", lambda _, i=i: base.open_game(i)) for i in games.keys()]
 
 def get_game(name):
     "picks the game for the name"
