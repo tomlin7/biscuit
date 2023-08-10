@@ -5,11 +5,11 @@
 
 import tkinter as tk
 
-from .item import MenuItem
-from .searchbar import Searchbar
-from .actionset import ActionSet
-
 from biscuit.core.components.utils import Toplevel
+
+from .actionset import ActionSet
+from .item import PaletteItem
+from .searchbar import Searchbar
 
 
 class Palette(Toplevel):
@@ -57,14 +57,14 @@ class Palette(Toplevel):
         self.actionsets.append(actionset)
     
     def generate_help_actionset(self):
-        actionset = ActionSet("Help", "?", [("? Help", lambda e=None:print("Help e"))])
+        actionset = ActionSet("Help", "?", [])
         for i in self.actionsets:
             i = i() # get the actionset
             if i.prompt:
-                actionset.append((f"{i.prompt} {i.id}", lambda e=None:print(f"Help {i.id}")))
+                actionset.append((f"{i.prompt} {i.id}", lambda _: print(f"Help {i.id}")))
 
     def add_item(self, text, command):
-        new_item = MenuItem(self, text, command)
+        new_item = PaletteItem(self, text, command)
         new_item.grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
         
         self.shown_items.append(new_item)
@@ -74,8 +74,8 @@ class Palette(Toplevel):
         return new_item
 
     def add_search_bar(self):
-        self.search_bar = Searchbar(self)
-        self.search_bar.grid(row=0, sticky=tk.EW, pady=5, padx=5)
+        self.searchbar = Searchbar(self)
+        self.searchbar.grid(row=0, sticky=tk.EW, pady=5, padx=5)
     
     def configure_bindings(self):
         self.bind("<FocusOut>", self.hide)
@@ -92,7 +92,7 @@ class Palette(Toplevel):
         
     def choose(self, *_):
         #TODO pass the term to the function as argument (for input requiring commands)
-        self.shown_items[self.selected].command()
+        self.shown_items[self.selected].command(self.searchbar.term)
         self.hide()
         
     def get_items(self):
@@ -126,7 +126,7 @@ class Palette(Toplevel):
             self.base.logger.error(f"Command '{self.selected}' doesnt exist")
     
     def reset(self):
-        self.search_bar.clear()
+        self.searchbar.clear()
         self.reset_selection()
 
     def search_bar_enter(self, *args):
@@ -158,5 +158,5 @@ class Palette(Toplevel):
         self.geometry(f"+{x}+{y}")
         self.deiconify()
         self.focus_set()
-        self.search_bar.focus()
-        self.search_bar.add_prompt(prompt)
+        self.searchbar.focus()
+        self.searchbar.add_prompt(prompt)

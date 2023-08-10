@@ -201,7 +201,7 @@ class App(tk.Tk):
         """Opens a diff editor for a file path."""
         self.editorsmanager.open_diff_editor(path, kind)
     
-    def open_settings(self):
+    def open_settings(self, *_):
         """Opens the settings editor."""
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
     

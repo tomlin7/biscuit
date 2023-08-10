@@ -3,7 +3,7 @@ import tkinter as tk
 from biscuit.core.components.utils import Menubutton
 
 
-class MenuItem(Menubutton):
+class PaletteItem(Menubutton):
     def __init__(self, master, text, command, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.text = text

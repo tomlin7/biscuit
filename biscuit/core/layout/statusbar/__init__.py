@@ -40,7 +40,7 @@ class Statusbar(Frame):
         # line and column info
         self.lc_actionset = ActionSet(
             "GOTO", ":",
-            [("goto line", lambda e=None: print("goto line (WIP not implemented)", e)),],
+            [("goto line", lambda line: print("goto line (WIP not implemented)", line)),],
         )
         self.base.palette.register_actionset(lambda: self.lc_actionset)
         self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'), description="Go to Line/Column")

@@ -76,7 +76,7 @@ class DirectoryTree(SidebarViewItem):
         files = []
         for item in self.tree.get_children():
             if self.tree.item_type(item) == 'file':
-                files.append((self.tree.item(item, "text"), lambda _ : print(self.tree.item_fullpath(item))))
+                files.append((self.tree.item(item, "text"), lambda _, item=item: print(self.tree.item_fullpath(item))))
         
         return files
     

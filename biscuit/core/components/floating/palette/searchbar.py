@@ -22,6 +22,8 @@ class Searchbar(Frame):
         self.search_bar.grid(sticky=tk.EW, padx=5, pady=5)
         self.configure_bindings()
 
+        self.term: str
+
     def configure_bindings(self):
         self.search_bar.bind("<Return>", self.master.search_bar_enter)
 
@@ -51,10 +53,11 @@ class Searchbar(Frame):
                 self.master.pick_actionset(actionset)
                 term = term[len(actionset.prompt):]
                 prompt_found = True
-
+                break
+    
         if not prompt_found:
             self.master.pick_file_search()
-
+        self.term = term
         exact, starts, includes = [], [], []
         for i in self.master.active_set:
             item = i[0]
