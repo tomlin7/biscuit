@@ -39,7 +39,7 @@ class Text(Text):
         self.config_tags()
         self.create_proxy()
         self.config_bindings()
-        self.configure(wrap=tk.NONE, relief=tk.FLAT, **self.base.theme.editors.text)
+        self.configure(wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
         self.update_words()
 

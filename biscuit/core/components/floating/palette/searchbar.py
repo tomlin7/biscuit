@@ -45,7 +45,7 @@ class Searchbar(Frame):
     
     def filter(self, *args):
         term = self.get_search_term()
-        print(term)
+
         prompt_found = False
         for actionset in self.master.actionsets:
             actionset = actionset()
