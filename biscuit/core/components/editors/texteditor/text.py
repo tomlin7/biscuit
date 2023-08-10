@@ -422,6 +422,11 @@ class Text(Text):
         
     def clear(self):
         self.delete(1.0, tk.END)
+    
+    def goto(self, line):
+        line = f"{line}.0"
+        self.move_cursor(line)
+        self.see(line)
 
     def write(self, text, *args):
         self.insert(tk.END, text, *args)

@@ -81,7 +81,10 @@ class TextEditor(BaseEditor):
     def copy(self, *_):
         if self.editable:
             self.text.copy()
-        
+
+    def goto(self, line):
+        self.text.goto(line)
+            
     def paste(self, *_):
         if self.editable:
             self.text.paste()

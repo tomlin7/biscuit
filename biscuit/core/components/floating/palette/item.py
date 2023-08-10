@@ -19,7 +19,7 @@ class PaletteItem(Menubutton):
         self.hovered = False
     
     def on_click(self, *args):
-        self.command()
+        self.command(self.master.searchbar.term)
         self.master.hide()
 
     def toggle_selection(self):

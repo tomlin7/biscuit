@@ -52,6 +52,7 @@ class Searchbar(Frame):
             if term.startswith(actionset.prompt):
                 self.master.pick_actionset(actionset)
                 term = term[len(actionset.prompt):]
+                
                 prompt_found = True
                 break
     
@@ -71,7 +72,7 @@ class Searchbar(Frame):
             elif temp in item:
                 includes.append(i)
 
-        new = list(chain(exact, starts, includes))
+        new = list(chain(actionset.get_permitems(term), exact, starts, includes))
         if any(new):
             self.master.show_items(new)
         else:
