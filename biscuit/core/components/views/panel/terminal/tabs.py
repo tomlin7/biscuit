@@ -6,7 +6,7 @@ from .tab import Tab
 
 
 class Tabs(Frame):
-    def __init__(self, master, width=150, *args, **kwargs):
+    def __init__(self, master, width=170, *args, **kwargs):
         super().__init__(master, width=width, *args, **kwargs)
         self.pack_propagate(False)
         self.config(**self.base.theme.views.panel.terminal)

@@ -5,20 +5,20 @@ from biscuit.core.components.utils import Label
 from ..terminal import Terminal
 
 
-class PowerShell(Terminal):
+class CommandPrompt(Terminal):
     """
-    PowerShell - Checks for powershell executable in path and opens that in terminal. 
+    Command Prompt - Checks for Command Prompt executable in path and opens that in terminal. 
     Shows Not Available in case variable is not set.
 
     """
-    shell = "powershell"
-    name = "PowerShell"
-    icon = "powershell"
+    shell = "cmd"
+    name = "Command Prompt"
+    icon = "cmd"
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
         if not self.shell:
-            Label(self, text="PowerShell not available, report an issue otherwise.").grid()
+            Label(self, text="Command Prompt not available, report an issue otherwise.").grid()
             self.name = "Not Available"
             self.icon = "error"
             return

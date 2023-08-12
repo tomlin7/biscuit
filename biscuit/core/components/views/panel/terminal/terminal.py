@@ -27,22 +27,21 @@ class Terminal(PanelView):
     name: str
     icon: str
     
-    def __init__(self, master, shell=None, cwd=".", *args, **kwargs):
+    def __init__(self, master, cwd=".", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (('add',),('trash', self.destroy))
+        self.__buttons__ = (('add',), ('trash', self.destroy))
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.alive = False
-        self.shell = shell
         self.cwd = cwd
 
         self.terminal = TerminalText(self, relief=tk.FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
         self.terminal.bind("<Return>", self.enter)
 
-        self.terminal_scrollbar = Scrollbar(self)
+        self.terminal_scrollbar = Scrollbar(self, style="EditorScrollbar")
         self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
 
         self.terminal.config(yscrollcommand=self.terminal_scrollbar.set)

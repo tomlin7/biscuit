@@ -1,9 +1,10 @@
 import os
+import platform
 import tkinter as tk
 
 from ..panelview import PanelView
 from .menu import TerminalMenu
-from .shells import Default, PowerShell
+from .shells import SHELLS, Default
 from .tabs import Tabs
 
 
@@ -17,16 +18,20 @@ def get_home_directory():
 class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = [('add', self.add_current_terminal), ('trash', self.delete_active_terminal)]
 
         self.config(bg=self.base.theme.border)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_propagate(False)
 
+        self.addmenu = TerminalMenu(self, "addterminal")
+        for i in SHELLS:
+            self.addmenu.add_item(i.name, lambda i=i: self.open_shell(i))
+
         self.menu = TerminalMenu(self, "terminal")
         self.menu.add_item("Clear Terminal", self.clear_terminal)
-        self.add_button('ellipsis', self.menu.show)
+        
+        self.__buttons__ = [('add', self.addmenu.show), ('trash', self.delete_active_terminal), ('ellipsis', self.menu.show)]
 
         self.tabs = Tabs(self)
         self.tabs.grid(row=0, column=1, padx=(1, 0), sticky=tk.NS)
@@ -49,6 +54,9 @@ class Terminal(PanelView):
         "Appends a terminal to list. Create a tab."
         self.terminals.append(terminal)
         self.tabs.add_tab(terminal)
+    
+    def open_shell(self, shell):
+        self.add_terminal(shell(self, cwd=self.base.active_directory or get_home_directory()))
     
     def open_terminal(self, path=None):
         self.add_terminal(self.active_terminal_type(self, cwd=path or self.base.active_directory or get_home_directory()))

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ....utils import WrappingLabel, Button, Frame
+from ....utils import Button, Frame, WrappingLabel
 
 
 class ChangesTreePlaceholder(Frame):
@@ -24,4 +24,4 @@ class ChangesTreePlaceholder(Frame):
         self.base.events.open_directory()
 
     def clone_repo(self, *_):
-        pass
+        self.base.palette.show_prompt("clone")
