@@ -1,6 +1,5 @@
 <h2 align="center">
-    <img src="./.github/banner.png" width=1000><br>
-    The uncompromising code editor<br><br>
+    <img src="https://github.com/billyeatcookies/Biscuit/assets/70792552/0ea8e958-92de-4659-b1c9-ab5a72f05d7d" width=700><br>
     <a href=https://github.com/billyeatcookies/Biscuit/actions/workflows/artifact-windows.yml> 
         <img src="https://img.shields.io/github/actions/workflow/status/billyeatcookies/biscuit/artifact-windows.yml?style=for-the-badge"> 
     </a> 
@@ -10,24 +9,18 @@
     </a>
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/billyeatcookies/Biscuit?style=for-the-badge">
 </h2>
+<h1>
+    <img src="https://github.com/billyeatcookies/Biscuit/assets/70792552/a990845c-bd71-49d2-9d51-58153215c871" width=2000><br>
+</h1>
 
-🚀 <b>A</b> magnificent project that brings together the best elements of eminent code editors while adding its own unique flair. Compact, yet compelling; comprehensive, yet concise – Biscuit is here to reshape your coding universe!
-<br><br>
-❤ <b>Our</b> project aims to foster a vibrant open-source community of Python enthusiasts, working together to create a truly innovative tool. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletion, and Git integration.
+Biscuit brings together the best elements from many popular code editors while adding its own unique flair. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletions, and **Git integration**. Biscuit supports extensions, see the documentation on [Extension API](https://billyeatcookies.github.io/biscuit) to learn further.
 
-<h1></h1>
-<h3>
-    <img src=https://github.com/billyeatcookies/Biscuit/assets/70792552/cb7c2cb2-f595-4708-b4cd-f75dcf481313 />
-</h3>
-
-## 💿 Installing Biscuit 
-[![GitHub release (with filter)](https://img.shields.io/github/v/release/billyeatcookies/biscuit?style=for-the-badge)](https://github.com/billyeatcookies/Biscuit/releases)
-
+## Installing Biscuit 💿 
 You can download the latest compiled pre-release of Biscuit for Windows and Linux from [Releases](https://github.com/billyeatcookies/Biscuit/releases)!
 
-### 🛠 Building from Source
+### Building from Source
 The project is a WIP. Bugs and missing or incomplete features will be present in the current unreleased version.
-> **Note**
+> **Note:**
 > You need **python 3.10** or above.
 
 Download the project source or clone this repo, in the project directory run:
@@ -45,21 +38,20 @@ To compile Biscuit for your platform, see [compiling guide](https://github.com/b
 > > pip install scikit-build
 > ```
 
-
-## ❤ Contributors 
-Our project aims to foster a vibrant open-source community of Python enthusiasts, your contributions and support are greatly appreciated! 🧡 check our [contributing guidelines](./CONTRIBUTING.md) for any questions! 
+## Contributing ❤ 
+The project aims to foster a vibrant open-source community of Python enthusiasts, your contributions and support are greatly appreciated! 🧡 check our [contributing guidelines](./CONTRIBUTING.md) for any questions! 
 
 <a href="https://github.com/billyeatcookies/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg?width=890" />
 </a>
 
-## 📸 Screenshots 
+## Screenshots 📸
 ![python_33z3mLyKaj](https://github.com/billyeatcookies/Biscuit/assets/70792552/acb36423-65f3-46a0-b4a0-9e381b5d1995)
 ![python_fOxALHL7iv](https://github.com/billyeatcookies/Biscuit/assets/70792552/db279b28-859a-4376-a60e-10890235c729)
 ![python_haGYWbGzcX](https://github.com/billyeatcookies/Biscuit/assets/70792552/9e75f2c2-6a24-43e4-a3a2-fcaa1728d18c)
 ![python_MolICK4FSV](https://github.com/billyeatcookies/Biscuit/assets/70792552/6875cb5c-627c-4bae-9fcc-2a15d2a4b2ce)
 
-## ✨ Features
+## Features ✨ 
 - **Palette** which works based on various prompts used 
   (`Ctrl` + `shift` + `p` for command palette)
 
