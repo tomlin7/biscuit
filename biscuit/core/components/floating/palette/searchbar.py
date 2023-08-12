@@ -37,7 +37,7 @@ class Searchbar(Frame):
         self.search_bar.focus()
     
     def add_prompt(self, prompt):
-        self.text_variable.set(prompt)
+        self.text_variable.set(prompt + " ")
         self.search_bar.icursor(tk.END)
     
     def get_search_term(self):
@@ -51,7 +51,7 @@ class Searchbar(Frame):
             actionset = actionset()
             if term.startswith(actionset.prompt):
                 self.master.master.pick_actionset(actionset)
-                term = term[len(actionset.prompt):]
+                term = term[len(actionset.prompt):].strip()
                 
                 prompt_found = True
                 break
@@ -72,7 +72,7 @@ class Searchbar(Frame):
             elif temp in item:
                 includes.append(i)
 
-        new = list(chain(actionset.get_permitems(term), exact, starts, includes))
+        new = list(chain(actionset.get_pinned(term), exact, starts, includes))
         if any(new):
             self.master.master.show_items(new)
         else:

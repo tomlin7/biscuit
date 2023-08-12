@@ -1,4 +1,5 @@
 import os
+import re
 import tkinter as tk
 
 import tkextrafont as extra
@@ -10,6 +11,16 @@ from .editor import SettingsEditor
 from .res import Resources
 from .styles import Style
 
+URL = re.compile(r'^(?:http)s?://')
+
+
+class Formattable(str):
+    def format(self, term):
+        default = 'https://github.com/'
+        if not term or URL.match(term):
+            return super().format(term)
+        
+        return super().format(f'{default}{term}')
 
 class Settings:
     def __init__(self, base):
@@ -48,8 +59,11 @@ class Settings:
         )
 
     def setup_font(self):
+        try:
+            self.iconfont = extra.Font(file=self.res.get_res_path("codicon.ttf"), family="codicon")
+        except tk.TclError:
+            pass
         
-        self.iconfont = extra.Font(file=self.res.get_res_path("codicon.ttf"), family="codicon")
         self.font = tk.font.Font(
             family=self.config.font[0],
             size=self.config.font[1]
@@ -58,6 +72,15 @@ class Settings:
             family=self.config.uifont[0],
             size=self.config.uifont[1]
         )
+
+    def late_setup(self):
+        self.base.palette.register_actionset(lambda: self.actionset)
+        
+        from biscuit.core.components import ActionSet
+        clone_actionset = ActionSet(
+            "Clone git repository", "clone", pinned=[[Formattable("clone {}"), lambda url: self.base.events.clone_repo(url)]]
+        )
+        self.base.palette.register_actionset(lambda: clone_actionset)
 
     @property
     def actionset(self):

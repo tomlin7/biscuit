@@ -57,6 +57,10 @@ class Events:
     def quit(self, *_):
         self.base.destroy()
     
+    def clone_repo(self, url):
+        if path := filedialog.askdirectory():
+            self.base.clone_repo(url, path)
+    
     def toggle_maximize(self, *_):
         match platform.system():
             case "Windows" | "Darwin":

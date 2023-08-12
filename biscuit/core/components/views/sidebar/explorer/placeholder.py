@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import WrappingLabel, Button, Frame
+from biscuit.core.components.utils import Button, Frame, WrappingLabel
 
 
 class DirectoryTreePlaceholder(Frame):
@@ -25,4 +25,4 @@ class DirectoryTreePlaceholder(Frame):
         self.base.events.open_directory()
 
     def clone_repo(self, *_):
-        pass
+        self.base.palette.show_prompt("clone")

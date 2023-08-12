@@ -75,7 +75,7 @@ class Logs(PanelView):
 
     def log(self, type, caller, text):
         self.write(
-            '[', (datetime.now(), 'time'), ']', 
+            '[', (datetime.now().strftime("%H:%M:%S:%f"), 'time'), ']', 
             type, 
             '[', (caller, 'caller'), f']: {text}'
         )

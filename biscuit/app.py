@@ -2,10 +2,12 @@ import os
 import platform
 import subprocess
 import sys
+import threading
 import tkinter as tk
+from multiprocessing import Process
 
 from biscuit.core import *
-from biscuit.core.components import FindReplace, register_game
+from biscuit.core.components import FindReplace, Git, register_game
 from biscuit.core.settings.editor import SettingsEditor
 
 
@@ -47,8 +49,8 @@ class App(tk.Tk):
         self.setup_references()
         self.binder.late_bind_all()
         self.editorsmanager.add_default_editors()
-        self.palette.register_actionset(lambda: self.settings.actionset)
-        
+        self.settings.late_setup()
+
         self.focus_set()
         self.setup_extensions()
     
@@ -161,6 +163,21 @@ class App(tk.Tk):
         self.menubar.update()
         self.set_title()
     
+    def clone_repo(self, url, dir):
+        try:
+            def clone():
+                repodir = self.git.clone(url, dir)
+                self.open_directory(repodir)
+
+            temp = threading.Thread(target=clone)
+            temp.daemon = True
+            temp.start()
+
+        except Exception as e:
+            self.base.logger.error(f"Cloning repository failed: {e}")
+            self.base.notifications.error("Cloning repository failed: see logs")
+            return
+
     def open_directory(self, dir):
         """Opens a directory in the explorer and updates the Git status."""
         if not os.path.isdir(dir):
@@ -221,11 +238,13 @@ class App(tk.Tk):
 
     def open_in_new_window(self, dir):
         """Opens a new window for a directory."""
-        subprocess.Popen(["python", sys.argv[0], dir])
+        #Process(target=App(sys.argv[0], dir).run).start()
+        self.notifications.show("Feature not available in this version.")
     
     def open_new_window(self):
         """Opens a new window."""
-        subprocess.Popen(["python", sys.argv[0]])
+        # Process(target=App(sys.argv[0]).run).start()
+        self.notifications.show("Feature not available in this version.")
 
     def toggle_terminal(self):
         """Toggles the terminal panel."""

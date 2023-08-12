@@ -2,9 +2,9 @@ import git
 
 
 class GitRepo(git.Repo):
-    def __init__(self, master, path, *args, **kwargs):
+    def __init__(self, master=None, path=None, *args, **kwargs):
         super().__init__(path, *args, **kwargs)
-        self.base = master.base
+        self.master = master
         self.path = path
         self.config = self.config_reader()
 
@@ -71,4 +71,4 @@ class GitRepo(git.Repo):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
-            self.base.notifications.error(e) 
+            self.master.base.notifications.error(e) 

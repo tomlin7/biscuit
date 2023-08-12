@@ -101,7 +101,7 @@ class Editor(Frame):
 
         self.content = get_editor(self, path, exists, path2, diff, language)
         self.filename = os.path.basename(self.path) if path else None
-        if path and self.showpath and not diff:
+        if path and exists and self.showpath and not diff:
             self.breadcrumbs = BreadCrumbs(self, path)
             self.grid_rowconfigure(1, weight=1)  
             self.breadcrumbs.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
