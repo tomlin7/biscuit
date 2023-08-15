@@ -102,8 +102,44 @@ class TestLabel(tk.Label):
             self.config(fg='red')
         
 
-sols = {1 : {'result':[1,2,3,4,5], "s1":[5,4,3,2,1,0]},
-        2 : {'result':[10,20,30,40], "s1":[1,2,3,4]}}
+sols = {1 : {'result':[1,2,3,4,5], "s1":[5,4,3,2,1,0], "sample_sol": """loop:
+    pop s1 nr
+    push nr s2
+    pop s3 NR
+    tle 3
+    add 1
+    push NR s3
+    jmp loop
+
+pop S1 nr
+swp s2 4
+pop s2 nr
+swp s2 2
+push nr s1
+pop s2 nr
+push nr s1
+
+loop2:
+    pop s2 nr
+    push nr s1
+    pop s3 nr
+    sub 1
+    tge 3
+    push nr s3
+    jmp loop2"""},
+        2 : {'result':[10,20,30,40], "s1":[1,2,3,4]}, "sample_sol":"""loop:
+    pop s1 nr
+    mul 10
+    push nr s2
+    len s1
+    tgt 0
+    jmp loop
+loop2:
+    pop s2 nr
+    push nr s1
+    len s2
+    tgt 0
+    jmp loop2"""}
 def get_solution(level=1):
     if level not in sols:
         return False
@@ -417,6 +453,14 @@ class StackEngineer(BaseGame):
         elif len(linelist) == 2:
             inst = linelist[0] #command to execute
             val = linelist[1] #argument of the command
+
+            if inst == "LEN":
+                st = val
+                self.number_register.set(len(self.stacks[st]))
+                self.line_pos += 1
+                self.cost += 1
+                return
+            
             operand = None
             read_pattern = r'^\*?S\d+$'
             pop_pattern =  r'^S\d+$'
@@ -541,6 +585,7 @@ class StackEngineer(BaseGame):
                     self.text_register.set(self.text_register.get()[:-operand])
                 except ValueError as ve:
                     self.show_error(error_msg=str(ve))
+                    
             else:
                 self.show_error(error_msg=f"Incorrect number of parameters for funcion {inst}")
 
