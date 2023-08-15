@@ -102,11 +102,12 @@ class TestLabel(tk.Label):
             self.config(fg='red')
         
 
-class Solution():
-    sols = {1 : {'result':[1,2,3,4,5], "s1":[5,4,3,2,1,0]}}
-    def __init__(self, level=1):
-        self.result = self.sols[level]['result']
-        self.s1 = self.sols[level]['s1']
+sols = {1 : {'result':[1,2,3,4,5], "s1":[5,4,3,2,1,0]},
+        2 : {'result':[10,20,30,40], "s1":[1,2,3,4]}}
+def get_solution(level=1):
+    if level not in sols:
+        return False
+    return sols[level]
         
 
 class Stack(ttk.LabelFrame):
@@ -169,6 +170,9 @@ class Stack(ttk.LabelFrame):
         self.update()
     def __len__(self):
         return len(self.values)
+
+    def __eq__(self, other_stack):
+        return self.values == other_stack.values
         
         
 class StackEngineer(BaseGame):
@@ -271,6 +275,15 @@ class StackEngineer(BaseGame):
 
     def end_round(self):
         """Calculate score and offer to retry or go to next level or exit"""
+
+        if self.stacks['S1'] != self.result_stack:
+            self.show_error("Solution is not correct")
+            return
+        instruction_cost = self.cost
+        lines_cost = self.get_last_line()
+        stack_cost = self.stack_id*5
+        self.cost += lines_cost
+        self.cost += stack_cost
         dialog = tk.Toplevel(self)
         dialog_font = ("Arial", 15)
         dialog.title("Round Finished")
@@ -278,10 +291,16 @@ class StackEngineer(BaseGame):
         level_lbl.grid(row=0, column=0)
         cost_lbl = tk.Label(dialog, text=f"Cost: {self.cost} ", font=dialog_font)
         cost_lbl.grid(row=0, column=1)
-        retry_btn = tk.Button(dialog, text="Retry Level", font=dialog_font)
+        retry_btn = tk.Button(dialog, text="Retry Level", font=dialog_font, command=partial(self.reset_program, dialog=dialog))
         retry_btn.grid(row=1, column=0)
-        next_btn = tk.Button(dialog, text="Next Level", font=dialog_font)
+        next_btn = tk.Button(dialog, text="Next Level", font=dialog_font, command=partial(self.start_next_level, dialog=dialog))
         next_btn.grid(row=1, column=1)
+
+    def start_next_level(self, dialog=None):
+        if dialog:
+            dialog.destroy()
+        self.level += 1
+        self.start_level(level=self.level)
 
     def show_error(self, error_msg="No error msg provided."):
         """Show an error when a problem is encountered and offer to restart the execution"""
@@ -300,19 +319,26 @@ class StackEngineer(BaseGame):
         self.labels = {}
         self.line_pos = 1
         self.error = False
+        self.cost = 0
         self.mark_line(self.line_pos)
         self.number_register.set(0)
         self.text_register.set("")
         for stack in self.stacks.values():
             stack.empty()
-        self.result_stack.load(self.solution.result)
-        self.stacks["S1"].load(self.solution.s1)
+        self.result_stack.load(self.solution_result)
+        self.stacks["S1"].load(self.solution_s1)     
         
 
     def start_level(self, level=1):
-        """Set up the solution and initial conditions, reset cost"""
-        self.cost = 0
-        self.solution = Solution(level=level)
+        """Set up the solution and initial conditions"""
+        self.solution = get_solution(level=level)
+        if not self.solution:
+            self.show_error(error_msg=f"There is no information for level {level}")
+        self.solution_result = self.solution['result']
+        self.solution_s1 = self.solution['s1']
+        for stack in self.stacks:
+            self.stacks[stack].destroy()
+        self.editor.clear()
         self.stacks = {}
         self.stack_id = 0
         self.add_stack()
@@ -327,7 +353,7 @@ class StackEngineer(BaseGame):
         line = line.split("#",1)[0]
         linelist = line.upper().split()
         
-        print(linelist)
+        #print(linelist)
         if len(linelist) == 0:
             pass
         elif len(linelist) == 1 and linelist[0][-1] == ":":
@@ -368,6 +394,8 @@ class StackEngineer(BaseGame):
 
             elif inst == "SWP":
                 stack_n = linelist[1] #stack to operate in
+                if linelist[2] == 'NR':
+                    linelist[2] = self.number_register.get()
                 try:
                     idx = int(linelist[2]) #index to swap
                 except ValueError as ve:
@@ -380,6 +408,7 @@ class StackEngineer(BaseGame):
                     if len(st) < idx or idx < 0:
                         self.show_error(error_msg=f"index {idx} not found in stack {stack_n}")
                     st.swap(idx)
+                    self.cost += 1
                 
                 
             else:
@@ -494,6 +523,8 @@ class StackEngineer(BaseGame):
                     self.line_pos = operand
                     self.mark_line(self.line_pos)
                     self.test_register.set('FALSE')
+                    self.cost += 1
+                    
                 except ValueError as ve:
                     self.show_error(error_msg=str(ve))
 
@@ -524,5 +555,6 @@ class StackEngineer(BaseGame):
                 self.show_error(error_msg=f"Incorrect number of parameters for funcion {inst}")
             
         self.line_pos += 1
+        self.cost += 1
 
         
