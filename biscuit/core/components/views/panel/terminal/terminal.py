@@ -15,6 +15,7 @@ class Terminal(PanelView):
     
     args:
         shell - the shell executable
+        cwd - current directory
     
     methods: 
         start_service - start the terminal service
@@ -26,21 +27,21 @@ class Terminal(PanelView):
     name: str
     icon: str
     
-    def __init__(self, master, shell=None, *args, **kwargs):
+    def __init__(self, master, cwd=".", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (('add',),('trash', self.destroy))
+        self.__buttons__ = (('add',), ('trash', self.destroy))
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.alive = False
-        self.shell = shell
-        
+        self.cwd = cwd
+
         self.terminal = TerminalText(self, relief=tk.FLAT, padx=10, pady=10, font=("Consolas", 11))
         self.terminal.grid(row=0, column=0, sticky=tk.NSEW)
         self.terminal.bind("<Return>", self.enter)
 
-        self.terminal_scrollbar = Scrollbar(self)
+        self.terminal_scrollbar = Scrollbar(self, style="EditorScrollbar")
         self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
 
         self.terminal.config(yscrollcommand=self.terminal_scrollbar.set)
@@ -54,7 +55,7 @@ class Terminal(PanelView):
         self.last_command = None
 
         self.p = subprocess.Popen(
-            self.shell, stdout=subprocess.PIPE,
+            self.shell, stdout=subprocess.PIPE, cwd=self.cwd,
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
         self.out_queue = queue.Queue()
@@ -120,3 +121,6 @@ class Terminal(PanelView):
         #self.terminal.tag_add("prompt", "insert linestart", "insert")
         self.terminal.see(tk.END)
         self.terminal.mark_set('input', 'insert')
+
+    def clear(self):
+        self.terminal.clear()

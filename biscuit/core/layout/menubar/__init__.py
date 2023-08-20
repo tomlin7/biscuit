@@ -1,8 +1,10 @@
+import platform
 import tkinter as tk
 
-from .item import MenubarItem
+from biscuit import __version__
+from biscuit.core.components.utils import Frame, IconButton, Label
 
-from biscuit.core.components.utils import Frame, IconButton
+from .item import MenubarItem
 
 
 class Menubar(Frame):
@@ -18,18 +20,35 @@ class Menubar(Frame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.menus = []
-
-        close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.base.events.quit)
-        close.config(activebackground='#e81123', activeforeground="white")
-        close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-        
-        IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.base.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-        IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.base.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-
-        self.config(bg=self.base.theme.layout.menubar.background)
         self.events = self.base.events
+
+        if platform.system() == 'Windows':
+            close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.events.quit)
+            close.config(activebackground='#e81123', activeforeground="white")
+            close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            
+            IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            self.config_bindings()
+
+        self.title_lbl = Label(self, **self.base.theme.layout.menubar.title)
+        self.update_idletasks()
+        self.set_title()
+
+        self.config(**self.base.theme.layout.menubar)
         self.add_menus()
-        self.config_bindings()
+    
+    def set_title(self, title=None):
+        self.title_lbl.config(text=f"{title} - Biscuit (v{__version__})" 
+                              if title else f"Biscuit (v{__version__})")
+        self.reposition_title()
+    
+    def reposition_title(self):
+        x = self.winfo_x() + (self.winfo_width() - self.title_lbl.winfo_width())/2
+        y = self.winfo_y() + (self.winfo_height() - self.title_lbl.winfo_height())/2
+        
+        self.title_lbl.place_forget()
+        self.title_lbl.place(x=x, y=y)
 
     def config_bindings(self):
         self.bind('<Map>', self.events.window_mapped)

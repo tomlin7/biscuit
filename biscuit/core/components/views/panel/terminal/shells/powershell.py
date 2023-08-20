@@ -11,14 +11,14 @@ class PowerShell(Terminal):
     Shows Not Available in case variable is not set.
 
     """
+    shell = "powershell"
+    name = "PowerShell"
+    icon = "powershell"
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
-        self.shell = "powershell"
-        self.name = "PowerShell"
-        self.icon = "terminal-powershell"
         if not self.shell:
-            Label(self, text="PowerShell not available, report an issue otherwise.").pack()
+            Label(self, text="PowerShell not available, report an issue otherwise.").grid()
             self.name = "Not Available"
             self.icon = "error"
             return

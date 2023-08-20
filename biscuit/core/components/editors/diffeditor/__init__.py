@@ -1,3 +1,4 @@
+import os
 import re
 import threading
 import tkinter as tk
@@ -8,13 +9,14 @@ from .pane import DiffPane
 
 
 class DiffEditor(BaseEditor):
-    def __init__(self, master, path, language=None, *args, **kwargs):
+    def __init__(self, master, path, kind, language=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.path = path
+        self.kind = kind
         self.editable = True
 
         self.lhs_data = []
@@ -23,10 +25,10 @@ class DiffEditor(BaseEditor):
         self.lhs_last_line = 0
         self.rhs_last_line = 0
 
-        self.lhs = DiffPane(self)
+        self.lhs = DiffPane(self, path, exists=False)
         self.lhs.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))
 
-        self.rhs = DiffPane(self)
+        self.rhs = DiffPane(self, path, exists=False)
         self.rhs.grid(row=0, column=1, sticky=tk.NSEW)
 
         self.left = self.lhs.text
@@ -67,26 +69,31 @@ class DiffEditor(BaseEditor):
         threading.Thread(target=self.show_diff).start()
     
     def show_diff(self):
-        # case: deleted file
-        if not self.kind:
-            self.left.write(self.base.git.repo.get_commit_filedata(self.path))
-            self.left.update()
-            self.left.highlighter.highlight()
-            return
-
-        # case: new/untracked file
-        if self.kind in (1, 3):
-            with open(self.path, 'r') as f:
-                self.right.write(f.read())
-                self.right.update()
-                self.right.highlighter.highlight()
+        try:
+            # case: deleted file
+            if not self.kind:
+                self.left.write(self.base.git.repo.get_commit_filedata(self.path), 'removal')
+                self.left.update()
+                self.left.highlighter.highlight()
                 return
-    
-        # case: modified file
-        lhs_data = self.base.git.repo.get_commit_filedata(self.path)
-        with open(self.path, 'r') as f:
-            rhs_data = f.read()
 
+            # case: new/untracked file
+            if self.kind in (1, 3):
+                with open(os.path.join(self.base.active_directory, self.path), 'r') as f:
+                    self.right.write(f.read(), 'addition')
+                    self.right.update()
+                    self.right.highlighter.highlight()
+                return
+        
+            # case: modified file
+            lhs_data = self.base.git.repo.get_commit_filedata(self.path)
+            with open(os.path.join(self.base.active_directory, self.path), 'r') as f:
+                rhs_data = f.read()
+
+        except Exception as e:
+            self.base.notifications.error(f"Failed to load diff, see logs")
+            self.base.logger.error(f"Failed to load diff: {self.path}\n{e}")
+            return
         
         lhs_lines = [line+"\n" for line in lhs_data.split('\n')]
         rhs_lines = [line+"\n" for line in rhs_data.split('\n')]
@@ -109,7 +116,7 @@ class DiffEditor(BaseEditor):
 
                     # TODO this check is done to make sure if this is a line with modifications
                     # and not a newly added line, but this is not done right.
-                    self.left.newline("addition")
+                    self.right.newline("removal")
 
                 case "+":
                     # line is only on the right
@@ -155,3 +162,5 @@ class DiffEditor(BaseEditor):
                 self.left.newline()
         
         self.left.set_active(False)
+
+

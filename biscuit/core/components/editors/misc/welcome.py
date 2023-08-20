@@ -27,9 +27,12 @@ class Welcome(BaseEditor):
 
         self.create_start_group()
 
-        self.logo = Label(self.right, image=self.base.settings.res.logo, **self.base.theme.editors.biscuit_labels)
-        self.logo.grid(row=0, column=0, sticky=tk.NSEW)
-    
+        try:
+            self.logo = Label(self.right, image=self.base.settings.res.logo, **self.base.theme.editors.biscuit_labels)
+            self.logo.grid(row=0, column=0, sticky=tk.NSEW)
+        except tk.TclError:
+            pass
+        
     def create_start_group(self):
         Label(self.left, text="Start", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
         start_group = Frame(self.left, **self.base.theme.editors)

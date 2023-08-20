@@ -29,7 +29,7 @@ class Statusbar(Frame):
 
         # git info
         self.git_actionset = ActionSet(
-            "GIT", "branch:",
+            "Manage git branches", "branch:",  #TODO pinned `create new branch` item
             [("main", lambda e=None: print("main", e)), 
              ("rewrite", lambda e=None: print("rewrite", e))],
         )
@@ -39,8 +39,7 @@ class Statusbar(Frame):
 
         # line and column info
         self.lc_actionset = ActionSet(
-            "GOTO", ":",
-            [("goto line", lambda e=None: print("goto line (WIP not implemented)", e)),],
+            "Goto line in active editor", ":", pinned=[["goto line: {}", lambda line=None: self.base.editorsmanager.active_editor.content.goto(int(line)) if line and line.isnumeric() else print("failed goto line", line)]]
         )
         self.base.palette.register_actionset(lambda: self.lc_actionset)
         self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'), description="Go to Line/Column")
@@ -48,7 +47,7 @@ class Statusbar(Frame):
 
         # indentation
         self.indent_actionset = ActionSet(
-            "INDENT", "indent:",
+            "Change indentation", "indent:",
             [("2", lambda e=None: print("indent 2", e)),
             ("4", lambda e=None: print("indent 2", e))],
         )
@@ -58,7 +57,7 @@ class Statusbar(Frame):
 
         # encoding
         self.encoding_actionset = ActionSet(
-            "ENCODING", "encoding:",
+            "Change file encoding", "encoding:",
             [("UTF-8", lambda e=None: print("encoding UTF-8", e))],
         )
         self.base.palette.register_actionset(lambda: self.encoding_actionset)
@@ -67,7 +66,7 @@ class Statusbar(Frame):
 
         # end of line
         self.eol_actionset = ActionSet(
-            "EOL", "eol:",
+            "Change End of Line sequence", "eol:",
             [("LF", lambda e=None: print("eol lf", e)),
             ("CRLF", lambda e=None: print("eol crlf", e))],
         )
@@ -90,7 +89,7 @@ class Statusbar(Frame):
         self.notif.pack(side=tk.RIGHT, padx=(0, 10))
 
         self.filetype_actionset = ActionSet(
-            "TIME", "time:",
+            "Configure clock format", "time:",
             [("12 hours", lambda e=None: print("time 12 hours", e)),
             ("24 hours", lambda e=None: print("time 24 hours", e)),],
         )

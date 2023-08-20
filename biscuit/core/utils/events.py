@@ -1,4 +1,4 @@
-import os
+import platform
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
@@ -9,6 +9,7 @@ class Events:
         self.count = 1
         self.maximized = False
         self.minimized = False
+        self.previous_pos = None
 
     def new_file(self, *_):
         self.base.open_editor(f"Untitled-{self.count}", exists=False)
@@ -56,25 +57,49 @@ class Events:
     def quit(self, *_):
         self.base.destroy()
     
+    def clone_repo(self, url):
+        if path := filedialog.askdirectory():
+            self.base.clone_repo(url, path)
+    
     def toggle_maximize(self, *_):
-        if self.base.sysinfo.os != "Linux":
-            self.base.wm_state('normal' if self.maximized else 'zoomed')
-        else:
-            self.base.wm_attributes('-zoomed', self.maximized)
+        match platform.system():
+            case "Windows" | "Darwin":
+                self.base.wm_state('normal' if self.maximized else 'zoomed')
+            # TODO windows specific maximizing
+            # case "Windows":
+            #     from ctypes import windll
+            #     if not self.maximized:
+            #         hwnd = windll.user32.GetParent(self.base.winfo_id())
+            #         SWP_SHOWWINDOW = 0x40
+            #         windll.user32.SetWindowPos(hwnd, 0, 0, 0, int(self.base.winfo_screenwidth()), int(self.base.winfo_screenheight()-48),SWP_SHOWWINDOW)
+            #     else:
+            #         hwnd = windll.user32.GetParent(self.base.winfo_id())
+            #         SWP_SHOWWINDOW = 0x40
+            #         windll.user32.SetWindowPos(hwnd, 0, self.previous_pos[0], self.previous_pos[1], int(self.base.minsize()[0]), int(self.base.minsize()[1]), SWP_SHOWWINDOW)
+            case _:
+                self.base.wm_attributes('-zoomed', self.maximized)
+
         self.maximized = not self.maximized
+        
     
     def minimize(self, *_):
         self.base.update_idletasks()
-        self.base.overrideredirect(False)
-        self.base.state('iconic')
+
+        if platform.system() == 'Windows':
+            from ctypes import windll
+            hwnd = windll.user32.GetParent(self.base.winfo_id())
+            windll.user32.ShowWindow(hwnd, 6)
+        else:
+            self.base.withdraw()
+
         self.minimized = True
     
     def window_mapped(self, *_):
+        self.base.update_idletasks()
         if self.minimized:
-            self.base.update_idletasks()
-            self.base.overrideredirect(True)
-            self.base.state('normal')
-
+            self.base.deiconify()
+            self.minimized = False
+        
     #TODO implement undo-redo
     def undo(self, *_):
         print('undo event')

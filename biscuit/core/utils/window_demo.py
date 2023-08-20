@@ -2,8 +2,8 @@
 #https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
 
 import tkinter as tk
-from tkinter import ttk
 from ctypes import windll
+from tkinter import ttk
 
 
 def set_appwindow():
@@ -163,7 +163,5 @@ move_window_bindings(status=True)
 #ctype
 hasstyle = False
 root.update_idletasks()
-root.withdraw()
-set_appwindow()
 
 root.mainloop()

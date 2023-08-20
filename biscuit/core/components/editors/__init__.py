@@ -23,7 +23,7 @@ from .texteditor import TextEditor
 def get_editor(base, path=None, exists=True, path2=None, diff=False, language=None):
     "picks the right editor for the given values"
     if diff:
-        return DiffEditor(base, path, path2, language=language)
+        return DiffEditor(base, path, exists, language=language)
     
     if path and os.path.isfile(path):
         if FileType.is_image(path):
@@ -101,7 +101,7 @@ class Editor(Frame):
 
         self.content = get_editor(self, path, exists, path2, diff, language)
         self.filename = os.path.basename(self.path) if path else None
-        if path and self.showpath and not diff:
+        if path and exists and self.showpath and not diff:
             self.breadcrumbs = BreadCrumbs(self, path)
             self.grid_rowconfigure(1, weight=1)  
             self.breadcrumbs.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
@@ -115,3 +115,5 @@ class Editor(Frame):
     
     def focus(self) -> None:
         self.content.focus()
+
+

@@ -5,11 +5,11 @@
 
 import tkinter as tk
 
-from .item import MenuItem
-from .searchbar import Searchbar
-from .actionset import ActionSet
+from biscuit.core.components.utils import Frame, Toplevel
 
-from biscuit.core.components.utils import Toplevel
+from .actionset import ActionSet
+from .item import PaletteItem
+from .searchbar import Searchbar
 
 
 class Palette(Toplevel):
@@ -29,18 +29,21 @@ class Palette(Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=60,*args, **kwargs):
+    def __init__(self, master, items=None, width=60, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(pady=1, bg=self.base.theme.border)
-        
+        self.config(pady=1, padx=1, bg=self.base.theme.border)
+
+        self.container = Frame(self, **self.base.theme.palette, padx=5, pady=5)
+        self.container.pack(fill=tk.BOTH)
+
         self.width = round(width * self.base.scale)
         self.active = False
 
         self.withdraw()
         self.overrideredirect(True)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
 
         self.row = 1
         self.selected = 0
@@ -57,15 +60,17 @@ class Palette(Toplevel):
         self.actionsets.append(actionset)
     
     def generate_help_actionset(self):
-        actionset = ActionSet("Help", "?", [("? Help", lambda e=None:print("Help e"))])
+        self.help_actionset = ActionSet("Help", "?")
         for i in self.actionsets:
             i = i() # get the actionset
             if i.prompt:
-                actionset.append((f"{i.prompt} {i.id}", lambda e=None:print(f"Help {i.id}")))
+                self.help_actionset.append((i.prompt, lambda _, i=i: self.after(50, self.show_prompt, i.prompt), i.description))
+    
+        self.register_actionset(lambda: self.help_actionset)
 
-    def add_item(self, text, command):
-        new_item = MenuItem(self, text, command)
-        new_item.grid(row=self.row, sticky=tk.EW, padx=1, pady=(0, 0))
+    def add_item(self, text, command, *args, **kwargs):
+        new_item = PaletteItem(self.container, text, command, *args, **kwargs)
+        new_item.grid(row=self.row, sticky=tk.EW)
         
         self.shown_items.append(new_item)
 
@@ -74,8 +79,8 @@ class Palette(Toplevel):
         return new_item
 
     def add_search_bar(self):
-        self.search_bar = Searchbar(self)
-        self.search_bar.grid(row=0, sticky=tk.EW, pady=5, padx=5)
+        self.searchbar = Searchbar(self.container)
+        self.searchbar.grid(row=0, sticky=tk.EW, pady=(1, 7), padx=1)
     
     def configure_bindings(self):
         self.bind("<FocusOut>", self.hide)
@@ -92,7 +97,7 @@ class Palette(Toplevel):
         
     def choose(self, *_):
         #TODO pass the term to the function as argument (for input requiring commands)
-        self.shown_items[self.selected].command()
+        self.shown_items[self.selected].command(self.searchbar.term)
         self.hide()
         
     def get_items(self):
@@ -122,11 +127,11 @@ class Palette(Toplevel):
         
         try:
             self.shown_items[self.selected].select()
-        except IndexError:
-            self.base.logger.error(f"Command '{self.selected}' doesnt exist")
+        except IndexError as e:
+            self.base.logger.error(f"Command '{self.selected}' doesnt exist: {e}")
     
     def reset(self):
-        self.search_bar.clear()
+        self.searchbar.clear()
         self.reset_selection()
 
     def search_bar_enter(self, *args):
@@ -136,7 +141,7 @@ class Palette(Toplevel):
     def show_no_results(self):
         self.hide_all_items()
         self.reset_selection()
-        self.add_item("No results found", lambda:...)
+        self.add_item("No results found", lambda _:...)
 
     def select(self, delta):
         self.selected += delta
@@ -147,16 +152,19 @@ class Palette(Toplevel):
         self.hide_all_items()
 
         for i in items[:10]:
-            self.add_item(*i)
+            item = self.add_item(*i)
+            item.mark_term(self.searchbar.term)
 
         self.reset_selection()
 
     def show_prompt(self, prompt):
         self.update_idletasks()
+        
         x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)
-        y = self.master.winfo_rooty()
+        y = self.master.winfo_rooty() + self.base.menubar.winfo_height()
         self.geometry(f"+{x}+{y}")
         self.deiconify()
+        
         self.focus_set()
-        self.search_bar.focus()
-        self.search_bar.add_prompt(prompt)
+        self.searchbar.focus()
+        self.searchbar.add_prompt(prompt)

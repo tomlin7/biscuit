@@ -1,12 +1,17 @@
+import os
+import re
 from tkinter import messagebox
 
 git_available = True
 try:
     import git
+
     from .repo import GitRepo
 except ImportError:
     messagebox.showerror("Git not found", "Git is not installed on your PC. Install Git and add Git to the PATH to use Biscuit")
     git_available = False
+
+URL = re.compile(r'^(?:http)s?://')
 
 class Git(git.Git):
     def __init__(self, master, *args, **kwargs):
@@ -40,3 +45,21 @@ class Git(git.Git):
 
     def checkout(self, branch):
         self.repo.index.checkout(branch)
+    
+    def clone(self, url, dir):    
+        if not URL.match(url):
+            # assumes github as repo host
+            url = f'http://github.com/{url}'
+
+        if name := self.repo_name(url):
+            dir = os.path.join(dir, name)
+            GitRepo.clone_from(url, dir)
+            return dir
+            
+        else:
+            raise Exception(f'The url `{url}` does not point to a git repo')
+
+    def repo_name(self, url):
+        match = re.search(r'/([^/]+?)(\.git)?$', url)
+        if match:
+            return match.group(1)

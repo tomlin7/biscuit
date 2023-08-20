@@ -1,10 +1,13 @@
 import os
+import platform
 import subprocess
 import sys
+import threading
 import tkinter as tk
+from multiprocessing import Process
 
 from biscuit.core import *
-from biscuit.core.components import FindReplace, register_game
+from biscuit.core.components import FindReplace, Git, register_game
 from biscuit.core.settings.editor import SettingsEditor
 
 
@@ -13,10 +16,7 @@ class App(tk.Tk):
         super().__init__(*args, **kwargs)
         self.base = self
         self.setup_path(appdir)
-        # TODO app is not added to taskbar
-        self.overrideredirect(True)
-
-        self.withdraw()
+        
         self.setup()
         self.late_setup()
         self.initialize_editor()        
@@ -28,6 +28,7 @@ class App(tk.Tk):
     
     def setup(self):
         """Sets up the Tkinter window, path, and configurations of the application."""
+        self.initialized = False
         self.setup_configs()
         self.setup_tk()
         self.setup_floating_widgets()
@@ -48,8 +49,8 @@ class App(tk.Tk):
         self.setup_references()
         self.binder.late_bind_all()
         self.editorsmanager.add_default_editors()
-        self.palette.register_actionset(lambda: self.settings.actionset)
-        
+        self.settings.late_setup()
+
         self.focus_set()
         self.setup_extensions()
     
@@ -92,9 +93,23 @@ class App(tk.Tk):
     def setup_tk(self):
         """Sets up the Tkinter window size, title, and scaling"""
         
-        if self.sysinfo.os == "Windows":
+        if platform.system() == "Windows":
             from ctypes import windll
             windll.shcore.SetProcessDpiAwareness(1)
+
+            self.overrideredirect(True)
+            self.update_idletasks()
+
+            GWL_EXSTYLE=-20
+            WS_EX_APPWINDOW=0x00040000
+            WS_EX_TOOLWINDOW=0x00000080
+            hwnd = windll.user32.GetParent(self.winfo_id())
+            style = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+            style = style & ~WS_EX_TOOLWINDOW
+            style = style | WS_EX_APPWINDOW
+            windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
+            self.withdraw()
+            self.after(10, lambda:self.wm_deiconify())
 
         self.dpi_value = self.winfo_fpixels('1i')
         self.scale = self.dpi_value / 72
@@ -109,7 +124,6 @@ class App(tk.Tk):
         y = int((self.winfo_screenheight() - app_height) / 2)
 
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
-        self.title("Biscuit")
 
     def setup_floating_widgets(self):
         self.palette = Palette(self)
@@ -118,9 +132,11 @@ class App(tk.Tk):
 
     def setup_references(self):
         """Sets up the editors manager, panel, content pane, status bar, explorer, source control, and logger of the application."""
+        self.menubar = self.root.menubar
         self.statusbar = self.root.statusbar
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
         self.panel = self.root.baseframe.contentpane.panel
+        self.terminalmanager = self.panel.terminal
         self.contentpane = self.root.baseframe.contentpane
         self.sidebar = self.root.baseframe.sidebar
         self.explorer = self.sidebar.explorer
@@ -142,8 +158,26 @@ class App(tk.Tk):
         self.logger.info('Initializing editor finished.')
         
         self.update_idletasks()
-        self.deiconify()
+        self.initialized = True
+
+        self.menubar.update()
+        self.set_title()
     
+    def clone_repo(self, url, dir):
+        try:
+            def clone():
+                repodir = self.git.clone(url, dir)
+                self.open_directory(repodir)
+
+            temp = threading.Thread(target=clone)
+            temp.daemon = True
+            temp.start()
+
+        except Exception as e:
+            self.base.logger.error(f"Cloning repository failed: {e}")
+            self.base.notifications.error("Cloning repository failed: see logs")
+            return
+
     def open_directory(self, dir):
         """Opens a directory in the explorer and updates the Git status."""
         if not os.path.isdir(dir):
@@ -152,6 +186,11 @@ class App(tk.Tk):
         self.active_directory = dir
         self.explorer.directory.change_path(dir)
         self.set_title(os.path.basename(self.active_directory))
+
+        self.editorsmanager.delete_all_editors()
+        self.terminalmanager.delete_all_terminals()
+        self.terminalmanager.open_terminal()
+
         self.git.check_git()
         self.update_git()
     
@@ -179,7 +218,7 @@ class App(tk.Tk):
         """Opens a diff editor for a file path."""
         self.editorsmanager.open_diff_editor(path, kind)
     
-    def open_settings(self):
+    def open_settings(self, *_):
         """Opens the settings editor."""
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
     
@@ -199,18 +238,14 @@ class App(tk.Tk):
 
     def open_in_new_window(self, dir):
         """Opens a new window for a directory."""
-        subprocess.Popen(["python", sys.argv[0], dir])
+        #Process(target=App(sys.argv[0], dir).run).start()
+        self.notifications.show("Feature not available in this version.")
     
     def open_new_window(self):
         """Opens a new window."""
-        subprocess.Popen(["python", sys.argv[0]])
+        # Process(target=App(sys.argv[0]).run).start()
+        self.notifications.show("Feature not available in this version.")
 
-    def set_title(self, name=None):
-        """Sets the title of the application window."""
-        if name:
-            return self.title("Biscuit")
-        self.title(f"{name} - Biscuit")
-    
     def toggle_terminal(self):
         """Toggles the terminal panel."""
         self.panel.set_active_view(self.panel.terminal)
@@ -252,6 +287,13 @@ class App(tk.Tk):
             except tk.TclError:
                 pass
     
+    def set_title(self, title=None):
+        """Sets the title of the application window."""
+        if not self.initialized:
+            return
+        self.menubar.set_title(title)
+        self.menubar.reposition_title()
+    
     def resize(self, mode):
         abs_x = self.winfo_pointerx() - self.winfo_rootx()
         abs_y = self.winfo_pointery() - self.winfo_rooty()
@@ -278,3 +320,5 @@ class App(tk.Tk):
                 height = height - (height - abs_y)
                 if height > self.min_height and width > self.min_width:
                     return self.geometry(f"{width}x{height}+{x}+{y}")
+        
+        self.menubar.reposition_title()

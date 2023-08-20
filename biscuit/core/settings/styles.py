@@ -11,7 +11,12 @@ class Style(ttk.Style):
         
         self.configure("TCheckbutton", background=self.theme.editors.background)
         self.gen_fileicons()
-        self.config_treeview()
+        
+        try:
+            self.config_treeview()
+        except tk.TclError:
+            pass
+
         self.config_tree_scrollbar()
     
     def config_tree_scrollbar(self):
