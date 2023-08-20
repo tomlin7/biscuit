@@ -102,44 +102,22 @@ class TestLabel(tk.Label):
             self.config(fg='red')
         
 
-sols = {1 : {'result':[1,2,3,4,5], "s1":[5,4,3,2,1,0], "sample_sol": """loop:
-    pop s1 nr
-    push nr s2
-    pop s3 NR
-    tle 3
-    add 1
-    push NR s3
-    jmp loop
+sols = {1 : {'result':[1,2,3,4,5],
+             "s1":[5,4,3,2,1,0],
+             "sample_sol":"""loop:\n    pop s1 nr\n    push nr s2\n    pop s3 NR\n    tle 3\n    add 1\n    push NR s3\n    jmp loop\n\npop S1 nr\nswp s2 4\npop s2 nr\nswp s2 2\npush nr s1\npop s2 nr\npush nr s1\n\nloop2:\n    pop s2 nr\n    push nr s1\n    pop s3 nr\n    sub 1\n    tge 3\n    push nr s3\n    jmp loop2""",
+             "goal":"Sort the numbers in ascending order in S1." },
+        2 : {'result':[10,20,30,40],
+             "s1":[1,2,3,4],\
+             "sample_sol":"""loop:\n    pop s1 nr\n    mul 10\n    push nr s2\n    len s1\n    tgt 0\n    jmp loop\nloop2:\n    pop s2 nr\n    push nr s1\n    len s2\n    tgt 0\n    jmp loop2""",
+             "goal":"Multiply by 10 all the values in S1."},
+        3 : {'result': [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100],
+             's1': [],
+             'goal': "Return all the odd Numbers from 0 to 100"},
+        4 : {'result' : [1, 2, 5, 7, 8, 10, 17, 18, 23, 34, 35, 38, 41, 42, 45, 55, 59, 62, 65, 67, 68, 70, 82, 91, 92, 95, 96, 98, 107, 108, 113, 118, 119, 122, 123, 127, 132, 133, 135, 136, 137, 139, 140, 144, 148, 155, 156, 165, 170, 177, 179, 181, 188, 189, 192, 195, 199, 201, 202, 203, 204, 206, 209, 210, 213, 214, 224, 228, 230, 236, 237, 241, 247, 258, 261, 262, 267, 268, 278, 279, 280, 282, 284, 287, 292, 294],
+             's1' : [189, 113, 148, 267, 204, 136, 213, 96, 132, 140, 133, 261, 165, 119, 236, 202, 2, 67, 206, 17, 179, 118, 139, 123, 82, 279, 45, 195, 203, 127, 188, 237, 1, 68, 284, 122, 224, 156, 55, 98, 34, 35, 228, 62, 268, 5, 214, 230, 65, 192, 7, 23, 59, 91, 8, 41, 181, 262, 282, 177, 108, 278, 38, 144, 241, 258, 42, 92, 70, 10, 201, 210, 209, 95, 137, 155, 170, 294, 292, 280, 135, 18, 287, 107, 199, 247],
+             'goal' : "Sort the numbers in ascending order"}
+        }
 
-pop S1 nr
-swp s2 4
-pop s2 nr
-swp s2 2
-push nr s1
-pop s2 nr
-push nr s1
-
-loop2:
-    pop s2 nr
-    push nr s1
-    pop s3 nr
-    sub 1
-    tge 3
-    push nr s3
-    jmp loop2"""},
-        2 : {'result':[10,20,30,40], "s1":[1,2,3,4]}, "sample_sol":"""loop:
-    pop s1 nr
-    mul 10
-    push nr s2
-    len s1
-    tgt 0
-    jmp loop
-loop2:
-    pop s2 nr
-    push nr s1
-    len s2
-    tgt 0
-    jmp loop2"""}
 def get_solution(level=1):
     if level not in sols:
         return False
@@ -238,15 +216,24 @@ class StackEngineer(BaseGame):
         self.editor.grid(row=1, column=0)
 
         self.buttons = tk.Frame(self)
-        self.buttons.grid(row=1, column=11)
+        self.buttons.grid(row=1, column=11, padx=5, pady=5)
         self.add_stack_btn = tk.Button(self.buttons,text="Add Stack", command=self.add_stack)
-        self.add_stack_btn.grid(row=0, column=0)
+        self.add_stack_btn.grid(row=0, column=0, sticky="ew")
         self.step_once_btn = tk.Button(self.buttons,text="Step Once", command=self.step_once)
-        self.step_once_btn.grid(row=1,column=0)
+        self.step_once_btn.grid(row=1,column=0, sticky="ew")
         self.run_program_btn = tk.Button(self.buttons,text="Run", command=self.run_program)
-        self.run_program_btn.grid(row=2, column=0)
+        self.run_program_btn.grid(row=2, column=0, sticky="ew")
         self.reset_program_btn = tk.Button(self.buttons, text="Reset program", command=self.reset_program)
-        self.reset_program_btn.grid(row=3, column=0)
+        self.reset_program_btn.grid(row=3, column=0, sticky="ew")
+        self.select_level_btn = tk.Button(self.buttons, text="Select level", command=self.select_level)
+        self.select_level_btn.grid(row=4, column=0, sticky="ew")
+        
+        self.level_description_frame = ttk.Labelframe(self, text="Level", borderwidth=1)
+        
+        self.level_description = tk.StringVar()
+        self.level_description_lbl = tk.Label(self.level_description_frame, textvariable=self.level_description)
+        self.level_description_lbl.grid(row=0, column=0)
+        self.level_description_frame.grid(row=1, column=12)
 
         self.registers = tk.Frame(self)
         self.registers.grid(row=3, column=0, sticky="ew")
@@ -333,10 +320,25 @@ class StackEngineer(BaseGame):
         next_btn.grid(row=1, column=1)
 
     def start_next_level(self, dialog=None):
-        if dialog:
-            dialog.destroy()
         self.level += 1
-        self.start_level(level=self.level)
+        self.start_level(level=self.level, dialog=dialog)
+
+    def select_level(self):
+        levels = [f"Level {k}" for k in sols.keys()]
+        dialog = tk.Toplevel(self)
+        dialog.title("Level Selection")
+
+        self.level_combo = ttk.Combobox(dialog, state='readonly', values=levels)
+        self.level_combo.grid(row=0, column=0, padx=5, pady=5)
+        select_btn = tk.Button(dialog, text="Select", command=partial(self.start_selected, dialog=dialog))
+        select_btn.grid(row=1, column=0, padx=5, pady=5)
+
+    def start_selected(self, dialog=None):
+        sel = self.level_combo.get()
+        if sel == "":
+            return
+        sel = int(sel[6:])
+        self.start_level(level=sel, dialog=dialog)
 
     def show_error(self, error_msg="No error msg provided."):
         """Show an error when a problem is encountered and offer to restart the execution"""
@@ -365,21 +367,35 @@ class StackEngineer(BaseGame):
         self.stacks["S1"].load(self.solution_s1)     
         
 
-    def start_level(self, level=1):
+    def start_level(self, level=1, dialog=None):
         """Set up the solution and initial conditions"""
+        if dialog:
+            dialog.destroy()
         self.solution = get_solution(level=level)
         if not self.solution:
             self.show_error(error_msg=f"There is no information for level {level}")
         self.solution_result = self.solution['result']
         self.solution_s1 = self.solution['s1']
+        self.solution_sample = self.solution.get('sample_sol')
+        if self.solution_sample:
+            self.sol_sample_btn = tk.Button(self.buttons, text="Show sample", command=self.load_sample)
+            self.sol_sample_btn.grid(row=int(self.buttons.grid_info()["row"])+5, column=0, sticky='ew')
+        else:
+            self.sol_sample_btn.grid_forget()
         for stack in self.stacks:
             self.stacks[stack].destroy()
         self.editor.clear()
+        self.level = level
         self.stacks = {}
         self.stack_id = 0
         self.add_stack()
+        self.level_description_frame.config(text=f"Level {self.level}")
+        self.level_description.set(self.solution.get('goal'))
         self.reset_program()
-        #load solution
+
+    def load_sample(self):
+        self.editor.clear()
+        self.editor.insert("end", self.solution_sample)
 
     def interpret_line(self, line):
         """get a line of code an process it"""
@@ -394,7 +410,7 @@ class StackEngineer(BaseGame):
             pass
         elif len(linelist) == 1 and linelist[0][-1] == ":":
             self.labels[linelist[0][:-1]] = self.line_pos
-            print(self.labels)
+            #print(self.labels)
         elif len(linelist) == 3:
             inst = linelist[0] #command to execute
             if inst == "PUSH":
