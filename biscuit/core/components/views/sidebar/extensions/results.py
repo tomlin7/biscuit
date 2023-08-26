@@ -28,8 +28,6 @@ class Results(SidebarViewItem):
 
         self.fetching_list = threading.Event()
         self.extensions_lock = threading.Lock()
-
-        self.refresh()
     
     def refresh(self):
         if self.base.testing:

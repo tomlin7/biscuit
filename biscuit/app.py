@@ -112,8 +112,8 @@ class App(tk.Tk):
             self.after(10, lambda:self.wm_deiconify())
 
         self.dpi_value = self.winfo_fpixels('1i')
-        self.scale = self.dpi_value / 72
-        self.tk.call('tk', 'scaling', self.scale)
+        self.scale = self.dpi_value / 96.11191135734073
+        #self.tk.call('tk', 'scaling', self.scale)
 
         self.min_width = round(500 * self.scale)
         self.min_height = round(500 * self.scale)
@@ -141,6 +141,7 @@ class App(tk.Tk):
         self.sidebar = self.root.baseframe.sidebar
         self.explorer = self.sidebar.explorer
         self.source_control = self.sidebar.source_control
+        self.extensionsGUI = self.sidebar.extensions
         self.logger = self.panel.logger
 
     def setup_extensions(self):
@@ -151,6 +152,7 @@ class App(tk.Tk):
         self.api = ExtensionsAPI(self)
         self.extensionsmanager = ExtensionManager(self)
         self.extensionsmanager.start_server()
+        self.extensionsGUI.initialize()
 
     def initialize_editor(self):
         """Generates the help action set and initializes the editor of the application."""
