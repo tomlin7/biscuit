@@ -78,3 +78,8 @@ class Sidebar(Frame):
     def source_control(self):
         "Get source control view."
         return self.default_views[2]
+
+    @property
+    def extensions(self):
+        "Get source control view."
+        return self.default_views[3]

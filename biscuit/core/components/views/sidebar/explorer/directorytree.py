@@ -12,7 +12,7 @@ from .watcher import DirectoryTreeWatcher
 
 class DirectoryTree(SidebarViewItem):
     def __init__(self, master, startpath=None, observe_changes=False, itembar=True, *args, **kwargs):
-        self.__buttons__ = (('new-file',), ('new-folder',), ('refresh',), ('collapse-all',))
+        self.__buttons__ = (('new-file', lambda: self.base.palette.show_prompt('newfile:')), ('new-folder', lambda: self.base.palette.show_prompt('newfolder:')), ('refresh',), ('collapse-all',))
         self.title = 'No folder opened'
         super().__init__(master, itembar, *args, **kwargs)
 
@@ -110,18 +110,29 @@ class DirectoryTree(SidebarViewItem):
                 # for the actionset
                 self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
     
-    #TODO insert file/folder
-    def add_node(self): ...
-        #name = enterbox("Enter file name")
-        # selected = self.focus() or ''
-        # parent = self.parent(selected)
-        # if parent == '':
-        #     parent = self.path
-        # path = os.path.join(self.item_fullpath(selected), name)
-        # fullpath = os.path.join(parent_path, name)
-        # with open(path, 'w') as f:
-        #     f.write("")
-        # self.update_node(selected)
+    def new_file(self, filename):
+        if not filename:
+            return
+
+        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.parent_selected()
+        path = os.path.join(parent, filename)
+        with open(path, 'w+') as f:
+            f.write("")
+        self.create_root()
+    
+    def new_folder(self, foldername):
+        if not foldername:
+            return
+
+        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.parent_selected()
+        path = os.path.join(parent, foldername)
+        try:
+            os.makedirs(path, exist_ok=True)
+        except:
+            self.base.logger.error(f"Creating folder failed: no permission to write ('{path}')")
+            self.base.notifications.error("Creating folder failed: see logs")
+            return
+        self.create_root()
 
     def close_directory(self):
         self.change_path(None)

@@ -19,3 +19,6 @@ class Extensions(SidebarView):
         
         self.results = Results(self)
         self.add_widget(self.results)
+
+    def initialize(self):
+        self.results.refresh()

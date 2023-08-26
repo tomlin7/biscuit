@@ -71,6 +71,12 @@ class Tree(Frame):
     
     def item_fullpath(self, item):
         return self.set(item, "fullpath")
+    
+    def parent(self, *args, **kwargs):
+        return self.tree.parent(*args, **kwargs)
+    
+    def parent_selected(self):
+        return self.parent(self.focus())
 
     def selected_path(self):
         return self.item_fullpath(self.focus())
