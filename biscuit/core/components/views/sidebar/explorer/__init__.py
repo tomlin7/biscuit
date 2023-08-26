@@ -17,7 +17,7 @@ class Explorer(SidebarView):
         self.menu.add_item("Folders")
         self.add_button('ellipsis', self.menu.show)
 
-        self.directory = DirectoryTree(self)
+        self.directory = DirectoryTree(self, observe_changes=True)
         self.add_widget(self.directory)
     
         self.newfile_actionset = ActionSet(

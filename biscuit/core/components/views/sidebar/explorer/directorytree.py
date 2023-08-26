@@ -17,6 +17,7 @@ class DirectoryTree(SidebarViewItem):
         super().__init__(master, itembar, *args, **kwargs)
 
         self.nodes = {}
+        self.empty_dirs = []
         
         self.actionset = ActionSet("Search files", "file:", [])
         self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
@@ -31,6 +32,8 @@ class DirectoryTree(SidebarViewItem):
 
         self.path = startpath
         self.watcher = DirectoryTreeWatcher(self, self.tree, observe_changes)
+        self.loading = False
+
         if startpath:
             self.change_path(startpath)
         else:
@@ -54,6 +57,10 @@ class DirectoryTree(SidebarViewItem):
             self.set_title('No folder opened')
     
     def create_root(self):
+        if self.loading:
+            return
+
+        self.loading = True
         t = threading.Thread(target=self.run_create_root)
         t.daemon = True
         t.start()
@@ -68,6 +75,7 @@ class DirectoryTree(SidebarViewItem):
                 self.nodes.pop(path)
                 
         self.actionset = ActionSet("Search files by name", "file:", self.files)
+        self.loading = False
 
     def get_actionset(self):
         return self.actionset
@@ -87,12 +95,17 @@ class DirectoryTree(SidebarViewItem):
         return entries
 
     def update_treeview(self, entries, parent=""):
+        if not (entries or parent in self.empty_dirs):
+            self.empty_dirs.append(parent)
+        elif parent in self.empty_dirs:
+            self.empty_dirs.remove(parent)
+
         entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
         for name, path in entries:
             if os.path.isdir(path):
                 if name in self.ignore_dirs:
                     continue
-                if path in self.nodes.keys():    
+                if path in self.nodes.keys() and path not in self.empty_dirs:    
                     continue
                 item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
                 self.nodes[path] = item
