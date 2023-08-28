@@ -17,7 +17,6 @@ class DirectoryTree(SidebarViewItem):
         super().__init__(master, itembar, *args, **kwargs)
 
         self.nodes = {}
-        self.empty_dirs = []
         
         self.actionset = ActionSet("Search files", "file:", [])
         self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
@@ -42,13 +41,14 @@ class DirectoryTree(SidebarViewItem):
     # IMPORTANT
     def change_path(self, path):
         self.nodes.clear()
-        self.path = path
+        self.path = os.path.abspath(path)
+        self.nodes[self.path] = ''
         if self.path:
             self.placeholder.grid_remove()
             self.tree.grid()
-            self.watcher.watch()
             self.tree.clear_tree()
-            self.create_root()
+            self.create_root(self.path)
+            self.watcher.watch()
             
             self.set_title(os.path.basename(self.path))
         else:
@@ -56,24 +56,20 @@ class DirectoryTree(SidebarViewItem):
             self.placeholder.grid()
             self.set_title('No folder opened')
     
-    def create_root(self):
+    def create_root(self, path, parent=''):
         if self.loading:
             return
 
         self.loading = True
-        t = threading.Thread(target=self.run_create_root)
+        t = threading.Thread(target=self.run_create_root, args=(path, parent))
         t.daemon = True
         t.start()
 
-    def run_create_root(self):
+    def run_create_root(self, path, parent=''):
         self.files = []
-        self.update_treeview([(p, os.path.join(self.path, p)) for p in os.listdir(self.path)])
+        
+        self.update_treeview(path, parent)
 
-        for path, item in list(self.nodes.items()):
-            if not os.path.exists(path):
-                self.tree.delete(item)
-                self.nodes.pop(path)
-                
         self.actionset = ActionSet("Search files by name", "file:", self.files)
         self.loading = False
 
@@ -91,34 +87,38 @@ class DirectoryTree(SidebarViewItem):
     def scandir(self, path):
         entries = []
         for entry in os.scandir(path):
-            entries.append((entry.name, entry.path))
+            entries.append((entry.name, os.path.join(self.path, entry.path)))
         return entries
+    
+    def update_path(self, path):
+        if any(path.endswith(i) for i in self.ignore_dirs):
+            return
 
-    def update_treeview(self, entries, parent=""):
-        if not (entries or parent in self.empty_dirs):
-            self.empty_dirs.append(parent)
-        elif parent in self.empty_dirs:
-            self.empty_dirs.remove(parent)
+        node = self.nodes.get(os.path.abspath(path)) 
+        for i in self.tree.get_children(node):
+            self.tree.delete(i)
+            
+        self.create_root(path, node)
+
+    def update_treeview(self, parent_path, parent=""):
+        entries = self.scandir(parent_path)
 
         entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
         for name, path in entries:
             if os.path.isdir(path):
                 if name in self.ignore_dirs:
                     continue
-                if path in self.nodes.keys() and path not in self.empty_dirs:    
-                    continue
-                item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
-                self.nodes[path] = item
-                self.update_treeview(self.scandir(path), item)
+                
+                node = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
+                self.nodes[os.path.abspath(path)] = node
+                self.update_treeview(path, node)
             else:
                 if name.split(".")[-1] in self.ignore_exts:
                     continue
-                if path in self.nodes.keys():    
-                    continue
                     
                 #TODO check filetype and get matching icon, cases
-                item = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
-                self.nodes[path] = item
+                node = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
+                self.nodes[os.path.abspath(path)] = node
 
                 # for the actionset
                 self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
@@ -131,7 +131,7 @@ class DirectoryTree(SidebarViewItem):
         path = os.path.join(parent, filename)
         with open(path, 'w+') as f:
             f.write("")
-        self.create_root()
+        self.create_root(parent, self.nodes[parent])
     
     def new_folder(self, foldername):
         if not foldername:
@@ -145,7 +145,7 @@ class DirectoryTree(SidebarViewItem):
             self.base.logger.error(f"Creating folder failed: no permission to write ('{path}')")
             self.base.notifications.error("Creating folder failed: see logs")
             return
-        self.create_root()
+        self.create_root(parent, self.nodes[parent])
 
     def close_directory(self):
         self.change_path(None)

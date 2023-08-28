@@ -21,16 +21,11 @@ class DirectoryTreeWatcher(FileSystemEventHandler):
         self.observer.stop()
 
     def on_created(self, event):
-        self.master.create_root()
+        self.master.update_path(os.path.dirname(event.src_path))
 
     def on_deleted(self, event):
-        self.master.create_root()
+        self.master.update_path(os.path.dirname(event.src_path))
 
-    def on_modified(self, event):
-        self.master.create_root()
+    def on_modified(self, event): ...
+        #self.master.update_path(os.path.dirname(event.src_path))
     
-    async def async_scandir(self, path):
-        entries = []
-        for entry in os.scandir(path):
-            entries.append((entry.name, entry.path))
-        return entries
