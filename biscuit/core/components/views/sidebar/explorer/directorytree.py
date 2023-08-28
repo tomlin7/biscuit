@@ -12,8 +12,10 @@ from .watcher import DirectoryTreeWatcher
 
 class DirectoryTree(SidebarViewItem):
     def __init__(self, master, startpath=None, observe_changes=False, itembar=True, *args, **kwargs):
-        self.__buttons__ = (('new-file', lambda: self.base.palette.show_prompt('newfile:')), ('new-folder', lambda: self.base.palette.show_prompt('newfolder:')), ('refresh',), ('collapse-all',))
         self.title = 'No folder opened'
+        self.__buttons__ = (('new-file', lambda: self.base.palette.show_prompt('newfile:')), 
+                            ('new-folder', lambda: self.base.palette.show_prompt('newfolder:')), 
+                            ('refresh', self.refresh_root), ('collapse-all', self.collapse_all))
         super().__init__(master, itembar, *args, **kwargs)
 
         self.nodes = {}
@@ -131,7 +133,7 @@ class DirectoryTree(SidebarViewItem):
         if not filename:
             return
 
-        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.parent_selected()
+        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path()
         path = os.path.join(parent, filename)
         with open(path, 'w+') as f:
             f.write("")
@@ -141,7 +143,7 @@ class DirectoryTree(SidebarViewItem):
         if not foldername:
             return
 
-        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.parent_selected()
+        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path()
         path = os.path.join(parent, foldername)
         try:
             os.makedirs(path, exist_ok=True)
@@ -150,11 +152,21 @@ class DirectoryTree(SidebarViewItem):
             self.base.notifications.error("Creating folder failed: see logs")
             return
         self.create_root(parent, self.nodes[parent])
+    
+    def collapse_all(self, *_):
+        for node in self.tree.get_children(''):
+            self.tree.item(node, open=False)
+    
+    def refresh_selected_parent(self, *_):
+        self.update_path(self.tree.selected_parent_path())
+
+    def refresh_root(self, *_):
+        self.update_path(self.path)
 
     def close_directory(self):
         self.change_path(None)
     
-    def toggle_node(self, _):
+    def toggle_node(self, *_):
         node = self.tree.focus()
         for i in self.tree.get_children(node):
             self.tree.delete(i)

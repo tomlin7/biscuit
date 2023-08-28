@@ -78,6 +78,9 @@ class Tree(Frame):
     def parent_selected(self):
         return self.parent(self.focus())
 
+    def selected_parent_path(self):
+        return self.item_fullpath(self.parent_selected())
+
     def selected_path(self):
         return self.item_fullpath(self.focus())
 
