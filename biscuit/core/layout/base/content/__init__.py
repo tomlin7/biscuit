@@ -32,6 +32,10 @@ class ContentPane(Frame):
 
         self.editorspane.pack(fill=BOTH, expand=True)
     
+    def show_panel(self):
+        if not self._panel_enabled:
+            self.toggle_panel()
+    
     def toggle_panel(self, *_):
         if self._panel_enabled:
             self.panel.pack_forget()

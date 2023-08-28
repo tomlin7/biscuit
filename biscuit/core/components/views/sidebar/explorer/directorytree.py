@@ -1,4 +1,7 @@
 import os
+import platform
+import subprocess
+import pyperclip
 import threading
 from tkinter.constants import *
 
@@ -133,11 +136,15 @@ class DirectoryTree(SidebarViewItem):
                 # for the actionset
                 self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
     
+    @property
+    def selected_directory(self):
+        return os.path.abspath(self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path()) or self.path
+    
     def new_file(self, filename):
         if not filename:
             return
 
-        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path()
+        parent = self.selected_directory
         path = os.path.join(parent, filename)
         with open(path, 'w+') as f:
             f.write("")
@@ -157,11 +164,39 @@ class DirectoryTree(SidebarViewItem):
             return
         self.create_root(parent, self.nodes[parent])
     
-    def reveal_in_explorer(self, *_):
-        ...
+    def copy_path(self, *_):
+        pyperclip.copy(self.tree.selected_path())
     
+    def copy_relpath(self, *_):
+        pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
+    
+    def reveal_in_explorer(self, *_):
+        path = self.selected_directory
+        try:
+            if platform.system() == 'Windows':
+                subprocess.Popen(['start', path], shell=True)
+            elif platform.system() == 'Linux':
+                try:
+                    subprocess.Popen(['xdg-open', path])
+                except OSError:
+                    subprocess.Popen(['nautilus', path, '&'])
+            else:
+                subprocess.Popen(['open', path])
+        except OSError as e:
+            self.base.notifications.warning("No File Explorer executable detected, see logs")
+            self.base.logger.error(f"Explorer: {e}\n(Mostly because no File explorer executable detected)")
+            return
+        
     def open_in_terminal(self, *_):
-        ...
+        if path := self.selected_directory:
+            self.base.terminalmanager.open_terminal(path)
+            self.base.panel.show_panel()
+    
+    def rename_item(self):
+        self.base.notifications.info("Feature is not available")
+    
+    def delete_item(self):
+        self.base.notifications.info("Feature is not available")
     
     def collapse_all(self, *_):
         for node in self.tree.get_children(''):

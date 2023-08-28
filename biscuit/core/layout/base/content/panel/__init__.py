@@ -76,3 +76,6 @@ class Panel(Frame):
 
     def toggle_panel(self):
         self.master.toggle_panel()
+    
+    def show_panel(self):
+        self.master.show_panel()

@@ -8,3 +8,4 @@ toml
 hintedtext
 sv-ttk
 requests
+pyperclip

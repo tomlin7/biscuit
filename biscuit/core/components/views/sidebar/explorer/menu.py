@@ -8,8 +8,8 @@ class ExplorerMenu(Menu):
 class ExplorerContextMenu(Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_item("New file...", self.master.new_file)
-        self.add_item("New Folder...", self.master.new_folder)
+        self.add_item("New file...", lambda: self.base.palette.show_prompt('newfile:'))
+        self.add_item("New Folder...", lambda: self.base.palette.show_prompt('newfolder:'))
         self.add_item("Reveal in File Explorer", self.master.reveal_in_explorer)
         self.add_item("Open in Integrated Terminal", self.master.open_in_terminal)
         # self.add_separator()
@@ -17,11 +17,11 @@ class ExplorerContextMenu(Menu):
         # self.add_item("Cut", self.master.new_file)
         # self.add_item("Paste", self.master.new_file)
         self.add_separator()
-        self.add_item("Copy Path")
-        self.add_item("Copy Relative Path")
+        self.add_item("Copy Path", self.master.copy_path)
+        self.add_item("Copy Relative Path", self.master.copy_relpath)
         self.add_separator()
-        self.add_item("Rename...")
-        self.add_item("Delete")
+        self.add_item("Rename...", self.master.rename_item)
+        self.add_item("Delete", self.master.delete_item)
         
     def get_coords(self, e):
         return e.x_root, e.y_root
