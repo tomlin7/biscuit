@@ -28,8 +28,11 @@ class Tree(Frame):
         self.tree.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.tree.yview)
         
-        self.tree.bind("<Double-Button-1>", self.doubleclick)
-        self.tree.bind("<<TreeviewSelect>>", self.check_singleclick)
+        self.bind("<Double-Button-1>", self.doubleclick)
+        self.bind("<<TreeviewSelect>>", self.check_singleclick)
+    
+    def bind(self, *args, **kwargs):
+        self.tree.bind(*args, **kwargs)
 
     def check_singleclick(self, _):
         if self.item_type(self.focus()) == 'file':
@@ -96,4 +99,4 @@ class Tree(Frame):
                 self.tree.item(node, open=False)
             else:
                 self.tree.item(node, open=True)
-                self.event_generate("<<Open>>")
+                self.tree.event_generate("<<Open>>")

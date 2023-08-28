@@ -8,6 +8,7 @@ from biscuit.core.components.utils import Tree
 from ..item import SidebarViewItem
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
+from .menu import ExplorerContextMenu
 
 
 class DirectoryTree(SidebarViewItem):
@@ -19,7 +20,7 @@ class DirectoryTree(SidebarViewItem):
         super().__init__(master, itembar, *args, **kwargs)
 
         self.nodes = {}
-        
+
         self.actionset = ActionSet("Search files", "file:", [])
         self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
         self.ignore_exts = [".pyc"]
@@ -35,6 +36,9 @@ class DirectoryTree(SidebarViewItem):
         self.path = startpath
         self.watcher = DirectoryTreeWatcher(self, self.tree, observe_changes)
         self.loading = False
+
+        self.ctxmenu = ExplorerContextMenu(self, "ExplorerContextMenu")
+        self.tree.bind('<Button-3>', self.ctxmenu.show)
 
         if startpath:
             self.change_path(startpath)
@@ -153,6 +157,12 @@ class DirectoryTree(SidebarViewItem):
             return
         self.create_root(parent, self.nodes[parent])
     
+    def reveal_in_explorer(self, *_):
+        ...
+    
+    def open_in_terminal(self, *_):
+        ...
+    
     def collapse_all(self, *_):
         for node in self.tree.get_children(''):
             self.tree.item(node, open=False)
@@ -183,3 +193,4 @@ class DirectoryTree(SidebarViewItem):
     def preview_file(self, _):
         #TODO preview editors -- extra preview param for editors
         return
+    
