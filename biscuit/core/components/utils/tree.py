@@ -93,3 +93,4 @@ class Tree(Frame):
                 self.tree.item(node, open=False)
             else:
                 self.tree.item(node, open=True)
+                self.event_generate("<<Open>>")

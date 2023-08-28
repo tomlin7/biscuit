@@ -25,6 +25,7 @@ class DirectoryTree(SidebarViewItem):
         self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
         self.tree.grid(row=0, column=0, sticky=NSEW)
         self.tree.grid_remove()
+        self.tree.bind("<<Open>>", self.toggle_node)
 
         self.placeholder = DirectoryTreePlaceholder(self.content)
         self.placeholder.grid(row=0, column=0, sticky=NSEW)
@@ -109,15 +110,18 @@ class DirectoryTree(SidebarViewItem):
                 if name in self.ignore_dirs:
                     continue
                 
-                node = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
+                node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
                 self.nodes[os.path.abspath(path)] = node
-                self.update_treeview(path, node)
+                self.tree.insert(node, "end", text="loading...")
+
+                # recursive mode loading (not good for large projects)
+                #self.update_treeview(path, node)
             else:
                 if name.split(".")[-1] in self.ignore_exts:
                     continue
                     
                 #TODO check filetype and get matching icon, cases
-                node = self.tree.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
+                node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
                 self.nodes[os.path.abspath(path)] = node
 
                 # for the actionset
@@ -149,6 +153,13 @@ class DirectoryTree(SidebarViewItem):
 
     def close_directory(self):
         self.change_path(None)
+    
+    def toggle_node(self, _):
+        node = self.tree.focus()
+        for i in self.tree.get_children(node):
+            self.tree.delete(i)
+            
+        self.create_root(self.tree.selected_path(), node)
     
     def openfile(self, _):
         if self.tree.selected_type() != 'file':
