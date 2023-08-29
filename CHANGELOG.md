@@ -8,17 +8,58 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.20.0...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.21.0...HEAD)</small>
+
+### Added
+
+- add a develop menu, and undo/repo edit ([6646723](https://github.com/billyeatcookies/Biscuit/commit/66467236a23677e6fb0aa4fae3f0939d3beb2c69) by Mo Norman).
 
 ### Fixed
 
+- fix: Minimap should added before loading text ([8ffa267](https://github.com/billyeatcookies/Biscuit/commit/8ffa2677cbbc74f8f13d87ecd8dca31567055437) by billy).
+- fix: Load extensions GUI after initialization ([bc1a3d4](https://github.com/billyeatcookies/Biscuit/commit/bc1a3d44db5443fac819b5f854f077051336e1c2) by billy).
+
+<!-- insertion marker -->
+## [v2.21.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.21.0) - 2023-08-11
+
+<small>[Compare with v2.20.7](https://github.com/billyeatcookies/Biscuit/compare/v2.20.7...v2.21.0)</small>
+
+### Fixed
+
+- fix: Palette settings, command clean up ([0d5ad05](https://github.com/billyeatcookies/Biscuit/commit/0d5ad0595646cbd06b33df487ba8f3934c447f62) by Billy).
+- fix: Breadcrumbs are shown properly for POSIX paths ([b4695f6](https://github.com/billyeatcookies/Biscuit/commit/b4695f65603a9287dddd2c6a7183562fa2f20b1b) by Billy).
+- fix: Palette filter not working properly ([c030994](https://github.com/billyeatcookies/Biscuit/commit/c030994eb826dcfd775a2fee1bc99a35c9f9aad8) by Billy).
+
+## [v2.20.7](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.20.7) - 2023-08-08
+
+<small>[Compare with v2.20.2](https://github.com/billyeatcookies/Biscuit/compare/v2.20.2...v2.20.7)</small>
+
+### Fixed
+
+- fix: Currentword highlights are not visible due to currentline highlights (fixed order) ([eb0a1e8](https://github.com/billyeatcookies/Biscuit/commit/eb0a1e8eafb0fb69b00f4c6ac60eb304e2563ddf) by Billy).
+- fix: Diff viewer can also open deleted/new files ([6ecb4fb](https://github.com/billyeatcookies/Biscuit/commit/6ecb4fb1741b6a477d83139146a4510b9f3e1511) by Billy).
+- fix: Diff editor not opening ([23d625e](https://github.com/billyeatcookies/Biscuit/commit/23d625eaea3bc0621a85333fa262c934cc91f32f) by Billy).
+- fix: Custom titlebar will be windows specific feature ([2449d19](https://github.com/billyeatcookies/Biscuit/commit/2449d19dc6aaeabdcd4240f7157202d50d7d16f4) by Billy).
+- fix: Not showing up in taskbar (windows specific) - window decorations are not removed for linux, mac ([0f8a358](https://github.com/billyeatcookies/Biscuit/commit/0f8a3583dc2af30618f24f8665bf65944276c7d1) by Billy).
+
+## [v2.20.2](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.20.2) - 2023-07-29
+
+<small>[Compare with v2.20.0](https://github.com/billyeatcookies/Biscuit/compare/v2.20.0...v2.20.2)</small>
+
+### Added
+
+- Add compiling guidelines ([747a223](https://github.com/billyeatcookies/Biscuit/commit/747a22354c8dfdc891ee100a7199d4c35fc143b6) by Billy).
+- Add screenshots ([0dce695](https://github.com/billyeatcookies/Biscuit/commit/0dce6951a11e942e1b238f10a1c1e28a13e18fe7) by Billy).
+
+### Fixed
+
+- fix: Linux compatibility for maximizing ([e60ce47](https://github.com/billyeatcookies/Biscuit/commit/e60ce47c367e6f7dc7a7372a4a8dcdb0c4f31537) by Billy).
 - fix: Revert `./__init__.py` ([bf7ef4a](https://github.com/billyeatcookies/Biscuit/commit/bf7ef4acc9d4417c6ec04cec276849c2a3cee7e4) by Billy).
 - fix: Update cupcake core - merge cupcake updates - consider https://github.com/billyeatcookies/cupcake/pull/37 ([beff32b](https://github.com/billyeatcookies/Biscuit/commit/beff32b1458c85284c48a869e64cca11494a7ad0) by Billy).
 - fix: ModuleNotFoundError: No module named `biscuit.core.components.games.stackengineer'` ([ca1ab38](https://github.com/billyeatcookies/Biscuit/commit/ca1ab38fe1ef01b96acb0f5fd22c3c9582613fc3) by Billy).
 - fix: fixes minesweeper, circular import (this better work) ([8a79bcc](https://github.com/billyeatcookies/Biscuit/commit/8a79bcc8ae463f8925428e6b13991934114ac211) by Billy).
 - fix: add stackengineer to games ([b98cba7](https://github.com/billyeatcookies/Biscuit/commit/b98cba74f18b0e29ba99e5e5a940886560cc1d8a) by Billy).
 
-<!-- insertion marker -->
 ## [v2.20.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.20.0) - 2023-07-25
 
 <small>[Compare with v2.9.2](https://github.com/billyeatcookies/Biscuit/compare/v2.9.2...v2.20.0)</small>
