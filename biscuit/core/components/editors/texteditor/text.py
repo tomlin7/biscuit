@@ -43,6 +43,53 @@ class Text(Text):
 
         self.update_words()
 
+        # modified event
+        self.clearModifiedFlag()
+        self.bind_all('<<Modified>>', self._beenModified)
+        self._user_edit = True
+        self._edit_stack = []
+        self._edit_stack_index = -1
+
+    def stack_undo(self):
+        if self._edit_stack_index > 0:
+            self._edit_stack_index = self._edit_stack_index - 1
+            self._user_edit = False
+            self.clear()
+            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
+            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
+
+    def stack_redo(self):
+        if self._edit_stack_index + 1 < len(self._edit_stack):
+            self._edit_stack_index = self._edit_stack_index + 1
+            self._user_edit = False
+            self.clear()
+            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
+            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
+
+    def _beenModified(self, event=None):
+        if self._user_edit:
+            text = self.get_all_text()
+            if (not self._edit_stack) or (text != self._edit_stack[self._edit_stack_index][0]):
+                # real modified
+                cursor_index = self.index(tk.INSERT)
+                if (self._edit_stack_index + 1) != len(self._edit_stack):
+                    self._edit_stack = self._edit_stack[:self._edit_stack_index+1]
+                self._edit_stack.append([text, cursor_index])
+                self._edit_stack_index = self._edit_stack_index + 1
+                if self._edit_stack_index > 200:
+                    self._edit_stack = self._edit_stack[self._edit_stack_index-50:self._edit_stack_index+1]
+                    self._edit_stack_index = len(self._edit_stack)-1
+        if self._resetting_modified_flag:
+            return
+        self.clearModifiedFlag()
+
+    def clearModifiedFlag(self):
+        self._resetting_modified_flag = True
+        try:
+            self.tk.call(self._w, 'edit', 'modified', 0)
+        finally:
+            self._resetting_modified_flag = False
+
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
         self.tag_config("currentline", background=self.base.theme.editors.currentline)
@@ -77,6 +124,8 @@ class Text(Text):
         # self.bind("<quotedbl>", lambda e: self.surrounding_selection("\""))
 
     def key_release_events(self, event):
+        self._user_edit = True
+
         if event.keysym not in ("Up", "Down", "Return"):
             self.show_autocomplete(event)
 
