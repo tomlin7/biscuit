@@ -100,12 +100,16 @@ class Events:
             self.base.deiconify()
             self.minimized = False
         
-    #TODO implement undo-redo
+    #TODO not fast but work ; may not good for a big file edit
     def undo(self, *_):
-        print('undo event')
-    
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.edit_undo()
+                    
     def redo(self, *_):
-        print('redo event')
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.edit_redo()
     
     def cut(self, *_):
         if editor := self.base.editorsmanager.active_editor:

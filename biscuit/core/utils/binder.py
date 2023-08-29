@@ -16,6 +16,8 @@ class Binder:
         self.bind(self.bindings.save_as, self.events.save_as)
         self.bind(self.bindings.close_file, self.events.close_file)
         self.bind(self.bindings.quit, self.events.quit)
+        self.bind(self.bindings.undo, self.events.undo)
+        self.bind(self.bindings.redo, self.events.redo)
 
     def late_bind_all(self):
         self.bind(self.bindings.commandpalette, lambda e: self.base.palette.show_prompt(">"))
