@@ -21,9 +21,6 @@ class TextEditor(BaseEditor):
         self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist, language=language)
         self.linenumbers = LineNumbers(self, self.text, self.font)
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview, style="EditorScrollbar")
-
-        if self.exists:
-            self.text.load_file()
         
         self.text.config(font=self.font)
         self.text.configure(yscrollcommand=self.scrollbar.set)
@@ -35,6 +32,9 @@ class TextEditor(BaseEditor):
         self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
+
+        if self.exists:
+            self.text.load_file()
 
         self.text.bind("<<Change>>", self.on_change)
         self.text.bind("<<Scroll>>", self.on_scroll)
