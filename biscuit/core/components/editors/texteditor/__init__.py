@@ -123,8 +123,8 @@ class TextEditor(BaseEditor):
 
     def edit_redo(self):
         if self.editable:
-            self.text.edit_redo()
-    
+            self.text.stack_redo()
+
     def edit_reset(self):
         if self.editable:
          self.text.edit_reset()
@@ -135,7 +135,7 @@ class TextEditor(BaseEditor):
 
     def edit_undo(self):
         if self.editable:
-            self.text.edit_undo()
+            self.text.stack_undo()
 
     def image_create(self, index, **kwargs):
         if self.editable:
