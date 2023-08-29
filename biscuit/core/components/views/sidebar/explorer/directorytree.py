@@ -1,9 +1,11 @@
 import os
 import platform
+import shutil
 import subprocess
 import pyperclip
 import threading
-from tkinter.constants import *
+import tkinter as tk
+from tkinter.messagebox import askyesno
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
 from biscuit.core.components.utils import Tree
@@ -29,12 +31,12 @@ class DirectoryTree(SidebarViewItem):
         self.ignore_exts = [".pyc"]
 
         self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
-        self.tree.grid(row=0, column=0, sticky=NSEW)
+        self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.grid_remove()
         self.tree.bind("<<Open>>", self.toggle_node)
 
         self.placeholder = DirectoryTreePlaceholder(self.content)
-        self.placeholder.grid(row=0, column=0, sticky=NSEW)
+        self.placeholder.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.path = startpath
         self.watcher = DirectoryTreeWatcher(self, self.tree, observe_changes)
@@ -111,9 +113,13 @@ class DirectoryTree(SidebarViewItem):
         self.create_root(path, node)
 
     def update_treeview(self, parent_path, parent=""):
+        if not os.path.exists(parent_path):
+            return
+        
         entries = self.scandir(parent_path)
-
+        # sort: directories first, then files (alphabetic order)
         entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
+
         for name, path in entries:
             if os.path.isdir(path):
                 if name in self.ignore_dirs:
@@ -136,15 +142,14 @@ class DirectoryTree(SidebarViewItem):
                 # for the actionset
                 self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
     
-    @property
     def selected_directory(self):
-        return os.path.abspath(self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path()) or self.path
+        return (self.tree.selected_path().strip() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path().strip()) or self.path
     
     def new_file(self, filename):
         if not filename:
             return
 
-        parent = self.selected_directory
+        parent = self.selected_directory()
         path = os.path.join(parent, filename)
         with open(path, 'w+') as f:
             f.write("")
@@ -154,7 +159,7 @@ class DirectoryTree(SidebarViewItem):
         if not foldername:
             return
 
-        parent = self.tree.selected_path() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path()
+        parent = self.selected_directory()
         path = os.path.join(parent, foldername)
         try:
             os.makedirs(path, exist_ok=True)
@@ -163,7 +168,10 @@ class DirectoryTree(SidebarViewItem):
             self.base.notifications.error("Creating folder failed: see logs")
             return
         self.create_root(parent, self.nodes[parent])
-    
+
+    def rename(self, path, new_name):
+        shutil.move(path, os.path.join(self.tree.selected_parent_path(), new_name))
+
     def copy_path(self, *_):
         pyperclip.copy(self.tree.selected_path())
     
@@ -171,7 +179,7 @@ class DirectoryTree(SidebarViewItem):
         pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
     
     def reveal_in_explorer(self, *_):
-        path = self.selected_directory
+        path = self.selected_directory()
         try:
             if platform.system() == 'Windows':
                 subprocess.Popen(['start', path], shell=True)
@@ -188,15 +196,28 @@ class DirectoryTree(SidebarViewItem):
             return
         
     def open_in_terminal(self, *_):
-        if path := self.selected_directory:
+        if path := self.selected_directory():
             self.base.terminalmanager.open_terminal(path)
             self.base.panel.show_panel()
     
-    def rename_item(self):
-        self.base.notifications.info("Feature is not available")
+    def rename_item(self, newname):
+        if path := self.tree.selected_path():
+            shutil.move(path, os.path.join(self.tree.selected_parent_path() or self.path, newname))
     
     def delete_item(self):
-        self.base.notifications.info("Feature is not available")
+        path = self.tree.selected_path()
+        if not askyesno("Delete", f"Are you sure of deleting {path}?"):
+            return
+        
+        try:
+            if self.tree.selected_type() == 'directory':
+                shutil.rmtree(path)
+                return
+            os.remove(path)
+        except OSError as e:
+            self.base.notifications.warning("Removing failed, see logs")
+            self.base.logger.error(f"Removing failed: {e}")
+            return
     
     def collapse_all(self, *_):
         for node in self.tree.get_children(''):

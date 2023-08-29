@@ -55,7 +55,7 @@ class Tree(Frame):
         self.tree.delete(*a, *kw)
     
     def focus(self):
-        return self.tree.focus()
+        return self.tree.focus() or ''
 
     def get_children(self, *a, **kw):
         return self.tree.get_children(*a, **kw)
