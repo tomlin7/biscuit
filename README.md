@@ -13,13 +13,15 @@
     <img src="https://github.com/billyeatcookies/Biscuit/assets/70792552/a990845c-bd71-49d2-9d51-58153215c871" width=2000><br>
 </h1>
 
-Biscuit brings together the best elements from many popular code editors while adding its own unique flair. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletions, and **Git integration**. Biscuit supports extensions, see the documentation on [Extension API](https://billyeatcookies.github.io/biscuit) to learn further.
+Biscuit is a text editor written fully in Python using the tkinter library. With invaluable contributions from passionate collaborators, Biscuit has made significant progress in incorporating essential features such as syntax highlighting, autocompletions, and **Git integration**. Biscuit also supports extensions, see the documentation at [Extension API](https://billyeatcookies.github.io/biscuit) to learn further. It takes inspiration from many popular code editors while also adding its own unique flair.
 
-## Installing Biscuit 💿 
-You can download the latest compiled pre-release of Biscuit for Windows and Linux from [Releases](https://github.com/billyeatcookies/Biscuit/releases)!
+## Running Biscuit 💿 
+You can download the latest compiled builds of Biscuit for Windows and Linux from [Releases](https://github.com/billyeatcookies/Biscuit/releases)!
 
-### Building from Source
-The project is a WIP. Bugs and missing or incomplete features will be present in the current unreleased version.
+For **Nightly Builds** you can check the [github actions page](https://github.com/billyeatcookies/Biscuit/actions).
+
+### Developing Biscuit ⚒
+Bugs and missing or incomplete features will be present in the current unreleased version in main branch.
 > **Note:**
 > You need **python 3.10** or above.
 
@@ -29,6 +31,7 @@ Download the project source or clone this repo, in the project directory run:
 > python -m biscuit
 ```
 To run in a separate virtual environment, you can use [python poetry](https://python-poetry.org/).
+
 To compile Biscuit for your platform, see [compiling guide](https://github.com/billyeatcookies/Biscuit/tree/main/scripts).
 
 > **Note**
