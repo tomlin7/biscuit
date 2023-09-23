@@ -1,12 +1,14 @@
 import re
 import tkinter as tk
 
+from biscuit.core.components.utils import (ButtonsEntry, Frame, IconButton,
+                                           Toplevel)
+
 from .results import FindResults
-from biscuit.core.components.utils import IconButton, Frame, Toplevel, ButtonsEntry
 
 
 class FindReplace(Toplevel):
-    def __init__(self, base, *args, **kwargs):
+    def __init__(self, base, *args, **kwargs) -> None:
         super().__init__(base, *args, **kwargs)
         self.offset = 10
         self.active = False

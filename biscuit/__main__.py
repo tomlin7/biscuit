@@ -14,7 +14,7 @@ try:
 except:
     pass
 
-from biscuit.app import App
+from biscuit.core import App
 
 dir = None
 if len(sys.argv) >= 2:

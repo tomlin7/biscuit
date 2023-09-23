@@ -10,7 +10,7 @@ class Bubble(Toplevel):
     ||      Text     ||
      +===============+
     """
-    def __init__(self, master, text, bd=1, *args, **kw):
+    def __init__(self, master, text, bd=1, *args, **kw) -> None:
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
         self.config(bg=self.base.theme.border)
@@ -18,17 +18,17 @@ class Bubble(Toplevel):
         self.label.pack(padx=bd, pady=bd)
         self.withdraw()
     
-    def get_pos(self):
+    def get_pos(self) -> str:
         return (f"+{self.master.winfo_rootx() + self.master.winfo_width() + 5}" + 
                 f"+{int(self.master.winfo_rooty() + (self.master.winfo_height() - self.winfo_height())/2)}")
 
-    def change_text(self, text):
+    def change_text(self, text) -> None:
         self.label.config(text=text)
 
-    def show(self, *_):
+    def show(self, *_) -> None:
         self.update_idletasks()
         self.geometry(self.get_pos())
         self.deiconify()
     
-    def hide(self, *_):
+    def hide(self, *_) -> None:
         self.withdraw()

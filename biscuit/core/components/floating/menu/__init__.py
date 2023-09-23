@@ -13,7 +13,7 @@ from .separator import Separator
 
 
 class Menu(Toplevel):
-    def __init__(self, master, name, *args, **kwargs):
+    def __init__(self, master, name, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.active = False
         self.name = name

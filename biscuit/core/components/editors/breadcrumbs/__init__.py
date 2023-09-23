@@ -6,13 +6,13 @@ from .pathview import PathView
 
 
 class Item(Menubutton):
-    def __init__(self, master, path, *args, **kwargs):
+    def __init__(self, master, path, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.path = path
         self.config(height=1, pady=2, padx=1, **self.base.theme.editors.breadcrumbs.item)
 
 class BreadCrumbs(Frame):
-    def __init__(self, master, path=None, *args, **kwargs):
+    def __init__(self, master, path=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(padx=10, **self.base.theme.editors.breadcrumbs)
 

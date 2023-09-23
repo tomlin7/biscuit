@@ -1,3 +1,23 @@
+"""
+Holds the editors and provides an interface to manage the editor tabs.
+
++---------------------------------+
+| File1.txt | File2.py |          |
++---------------------------------+
+| \    \    \    \    \    \    \ |
+|  \    \    \    \    \    \    \|
+|   \    \    \    \    \    \    |
+|    \    \    \    \    \    \   |
+|\    \    \    \    \    \    \  |
++---------------------------------+
+"""
+from __future__ import annotations
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from .. import ContentPane
+
 import os
 import tkinter as tk
 
@@ -12,18 +32,8 @@ from .empty import Empty
 class EditorsPane(Frame):
     """
     Tabbed container for editors.
-
-    +---------------------------------+
-    | File1.txt | File2.py |          |
-    +---------------------------------+
-    | \    \    \    \    \    \    \ |
-    |  \    \    \    \    \    \    \|
-    |   \    \    \    \    \    \    |
-    |    \    \    \    \    \    \   |
-    |\    \    \    \    \    \    \  |
-    +---------------------------------+
     """
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master: ContentPane, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
@@ -43,22 +53,23 @@ class EditorsPane(Frame):
 
         self.default_editors = [Welcome(self)]
     
-    def add_default_editors(self):
+    def add_default_editors(self) -> None:
+        "Adds all default editors"
         self.add_editors(self.default_editors)
 
-    def add_editors(self, editors):
+    def add_editors(self, editors: list[Editor]) -> None:
         "Append <Editor>s to list. Create tabs for them."
         for editor in editors:
             self.add_editor(editor)
     
-    def add_editor(self, editor):
+    def add_editor(self, editor: Editor) -> None:
         "Appends a editor to list. Create a tab."
         self.editors.append(editor)
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
         
-    def delete_all_editors(self):
+    def delete_all_editors(self) -> None:
         "Permanently delete all editors."
         for editor in self.editors:
             editor.destroy()
@@ -67,20 +78,21 @@ class EditorsPane(Frame):
         self.tabs.clear_all_tabs()
         self.editors.clear()
     
-    def open_editor(self, path, exists):
+    def open_editor(self, path: str, exists: bool) -> None:
         "open Editor with path and exists values passed"
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
         self.add_editor(Editor(self, path, exists))
     
-    def open_diff_editor(self, path, exists):
+    def open_diff_editor(self, path: str, exists: bool) -> None:
         "open Editor with path and exists values passed"
         self.add_editor(Editor(self, path, exists, diff=True))
     
-    def open_game(self, name):
+    def open_game(self, name: str) -> None:
+        "opens a game with passed id/name"
         self.add_editor(Game(self, name))
     
-    def close_editor(self, editor):
+    def close_editor(self, editor: Editor) -> None:
         "removes an editor, keeping it in cache."
         self.editors.remove(editor)
 
@@ -90,11 +102,11 @@ class EditorsPane(Frame):
         else:
             editor.destroy()
     
-    def close_active_editor(self):
+    def close_active_editor(self) -> None:
         "Closes the active tab"
         self.tabs.close_active_tab()
 
-    def delete_editor(self, editor):
+    def delete_editor(self, editor: Editor) -> None:
         "Permanently delete a editor."
         self.editors.remove(editor)
         if editor.path in self.closed_editors:
@@ -102,21 +114,21 @@ class EditorsPane(Frame):
 
         editor.destroy()
 
-    def set_active_editor(self, editor):
+    def set_active_editor(self, editor: Editor) -> None:
         "set an existing editor to currently shown one"
         for tab in self.tabs.tabs:
             if tab.editor == editor:
                 self.tabs.set_active_tab(tab)
 
     @property
-    def active_editor(self):
+    def active_editor(self) -> Editor:
         "Get active editor."
         if not self.tabs.active_tab:
             return
         
         return self.tabs.active_tab.editor
     
-    def refresh(self):
+    def refresh(self) -> None:
         if not len(self.editors) and self.empty:
             self.emptytab.grid()
             self.base.set_title(os.path.basename(self.base.active_directory) if self.base.active_directory else None)

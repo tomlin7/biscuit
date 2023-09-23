@@ -7,7 +7,7 @@ from .menu import SourceControlMenu
 
 
 class SourceControl(SidebarView):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = [('list-tree',), ('check',), ('refresh',)]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'source-control'
@@ -21,7 +21,7 @@ class SourceControl(SidebarView):
         self.tree = Git(self)
         self.add_widget(self.tree)
     
-    def refresh(self):
+    def refresh(self) -> None:
         if self.base.git_found:
             self.tree.enable_tree()
             self.tree.open_repo()

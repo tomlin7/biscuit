@@ -5,7 +5,7 @@ from .breakpoint import Breakpoint
 
 
 class LineNumbers(Canvas):
-    def __init__(self, master, text=None, font=None, *args, **kwargs):
+    def __init__(self, master, text=None, font=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.font = font
         self.config(width=65, bd=0, highlightthickness=0, **self.base.theme.editors.linenumbers)

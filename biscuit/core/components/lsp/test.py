@@ -10,22 +10,22 @@ TODO
 """
 
 class LSP:
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.master = master
 
-    def get_language(self, filename):
+    def get_language(self, filename) -> None:
         """
         Get the language of a file
         """
         ...
         
-    def get_language_name(self, language):
+    def get_language_name(self, language) -> None:
         """
         Get the name of a language
         """
         ...
     
-    def get_language_extensions(self, language):
+    def get_language_extensions(self, language) -> None:
         """
         Get the extensions of a language
         """

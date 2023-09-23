@@ -5,14 +5,14 @@ from watchdog.observers import Observer
 
 
 class ExtensionsWatcher(FileSystemEventHandler):
-    def __init__(self, master):
+    def __init__(self, master) -> None:
         self.master = master
         self.base = master.base
 
         self.observer = Observer()
         self.observer.start()
 
-    def watch(self):
+    def watch(self) -> None:
         if not (self.base.extensionsdir and os.path.isdir(self.base.extensionsdir)):
             try:
                 os.makedirs(self.base.extensionsdir, exist_ok=True)
@@ -22,11 +22,11 @@ class ExtensionsWatcher(FileSystemEventHandler):
                 return
         self.observer.schedule(self, self.base.extensionsdir, recursive=True)
     
-    def stop_watch(self):
+    def stop_watch(self) -> None:
         self.observer.stop()
 
-    def on_created(self, *_):
+    def on_created(self, *_) -> None:
         self.master.run_fetch_list()
 
-    def on_deleted(self, *_):
+    def on_deleted(self, *_) -> None:
         self.master.run_fetch_list()

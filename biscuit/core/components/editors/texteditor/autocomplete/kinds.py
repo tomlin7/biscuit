@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 class Kinds:
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.master = master
 
         self.imethods = tk.PhotoImage(data="""iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAACXBIWXMAAA7DAAAOwwHHb6hk

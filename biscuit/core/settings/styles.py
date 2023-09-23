@@ -3,7 +3,7 @@ from tkinter import ttk
 
 
 class Style(ttk.Style):
-    def __init__(self, master, theme, *args, **kwargs):
+    def __init__(self, master, theme, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base
@@ -19,7 +19,7 @@ class Style(ttk.Style):
 
         self.config_tree_scrollbar()
     
-    def config_tree_scrollbar(self):
+    def config_tree_scrollbar(self) -> None:
         self.element_create("TreeScrollbar.trough", "from", "clam")
         self.element_create("TreeScrollbar.thumb", "from", "clam")
 
@@ -57,7 +57,7 @@ class Style(ttk.Style):
         self.configure("EditorScrollbar", gripcount=0, background=bg, troughcolor=bg, bordercolor=bg, lightcolor=bg, darkcolor=bg)
         self.map("EditorScrollbar", background=[('pressed', highlight), ('!disabled', self.theme.border)])
 
-    def config_treeview(self):
+    def config_treeview(self) -> None:
         ## TREENODE CHEVRONS -----
         if self.base.testing:
             return
@@ -104,7 +104,7 @@ class Style(ttk.Style):
             })
         ])
     
-    def gen_fileicons(self):
+    def gen_fileicons(self) -> None:
         self.document_icn = tk.PhotoImage("document", data="""
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQA
         AABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADlSURBVDiNpZGxTgJBFEXPW9aGCRTYWht+wyVEEuq1md

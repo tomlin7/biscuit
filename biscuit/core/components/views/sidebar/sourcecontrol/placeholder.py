@@ -4,7 +4,7 @@ from ....utils import Button, Frame, WrappingLabel
 
 
 class ChangesTreePlaceholder(Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(padx=10, pady=10, **self.base.theme.views.sidebar.item)
         self.columnconfigure(0, weight=1)
@@ -20,8 +20,8 @@ class ChangesTreePlaceholder(Frame):
         clone_btn.bind("<Button-1>", self.clone_repo)
         clone_btn.grid(row=2, pady=5, sticky=tk.EW)
 
-    def open_folder(self, _):
+    def open_folder(self, _) -> None:
         self.base.events.open_directory()
 
-    def clone_repo(self, *_):
+    def clone_repo(self, *_) -> None:
         self.base.palette.show_prompt("clone")

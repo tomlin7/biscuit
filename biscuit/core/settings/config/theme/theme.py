@@ -11,9 +11,9 @@ class ThemeObject(Mapping):
     parent, background, foreground, highlightbackground, highlightforeground,
     selectedbackground, selectedforeground
     """
-    def __init__(self, master, background=None, foreground=None, 
-                 highlightbackground=None, highlightforeground=None,
-                 selectedbackground=None,  selectedforeground=None, **kwargs):
+    def __init__(self, master, background: str=None, foreground: str=None, 
+                 highlightbackground: str=None, highlightforeground: str=None,
+                 selectedbackground: str=None,  selectedforeground: str=None, **kwargs) -> None:
         self.master = master
         self.background = background or master.background
         self.foreground = foreground or master.foreground
@@ -63,7 +63,7 @@ class ThemeObject(Mapping):
 
 
 class HighlightableThemeObject(ThemeObject):
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             'background': self.background, 'foreground': self.foreground,
             'activebackground': self.highlightbackground,
@@ -71,19 +71,19 @@ class HighlightableThemeObject(ThemeObject):
             }
 
 class FrameThemeObject(ThemeObject):
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {'background': self.background}
 
 
 class EditorsPane(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.bar = FrameThemeObject(self)
         self.bar.tab = HighlightableThemeObject(self.bar)
         self.bar.tab.close = HighlightableThemeObject(self.bar)
 
 class PanelPane(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.bar = FrameThemeObject(self)
         self.bar.tab = HighlightableThemeObject(self.bar).remove_bg_highlight()
@@ -95,13 +95,13 @@ class ContentPane(FrameThemeObject):
     ├── EditorsPane
     └── Panel
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.editors = EditorsPane(self)
         self.panel = PanelPane(self)
 
 class SidebarPane(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.slots = FrameThemeObject(self)
         self.slots.slot = HighlightableThemeObject(self.slots).remove_bg_highlight()
@@ -114,14 +114,14 @@ class BasePane(FrameThemeObject):
      ├── Sidebar
      └── ContentPane 
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.content = ContentPane(self)
         self.sidebar = SidebarPane(self)
 
 
 class Layout(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.menubar = FrameThemeObject(self)
         self.menubar.item = HighlightableThemeObject(self.menubar)
@@ -133,7 +133,7 @@ class Layout(FrameThemeObject):
         self.statusbar.button = HighlightableThemeObject(self.statusbar)
 
 class SidebarViews(FrameThemeObject):    
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.title = ThemeObject(self)
@@ -145,7 +145,7 @@ class SidebarViews(FrameThemeObject):
         self.toggle_button = HighlightableThemeObject(self)
     
 class PanelViews(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.button = HighlightableThemeObject(self)
         
@@ -161,30 +161,30 @@ class PanelViews(FrameThemeObject):
         self.terminal.tab = HighlightableThemeObject(self)
 
 class Views(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.panel = PanelViews(self)
         self.sidebar = SidebarViews(self)
 
 class Palette(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.searchbar = ThemeObject(self)
         self.item = HighlightableThemeObject(self)
 
 class Menu(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.item = HighlightableThemeObject(self)
 
 class Notifications(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.button = HighlightableThemeObject(self)
         self.text = ThemeObject(self)
 
 class Editors(FrameThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         theme = self.master
 
@@ -219,7 +219,7 @@ class Editors(FrameThemeObject):
         self.diff.addition = "#dbe6c2"
 
 class Utils(ThemeObject):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         theme = self.master
 
@@ -269,7 +269,7 @@ class Theme:
     Punctuation = "#3b3b3b"
 
 
-    def __init__(self):
+    def __init__(self) -> None:
         primary = [self.primary_background, self.primary_foreground, self.primary_background_highlight, self.primary_foreground_highlight]
         secondary = [self.secondary_background, self.secondary_foreground, self.secondary_background_highlight, self.secondary_foreground_highlight]
         

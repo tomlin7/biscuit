@@ -14,7 +14,7 @@ class CommandPrompt(Terminal):
     shell = "cmd"
     name = "Command Prompt"
     icon = "cmd"
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         if not self.shell:

@@ -5,7 +5,7 @@ from biscuit.core.components.utils import Frame
 
 
 class Searchbar(Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.biscuit)
         
@@ -24,26 +24,26 @@ class Searchbar(Frame):
 
         self.term: str
 
-    def configure_bindings(self):
+    def configure_bindings(self) -> None:
         self.search_bar.bind("<Return>", self.master.master.search_bar_enter)
 
         self.search_bar.bind("<Down>", lambda e: self.master.master.select(1))
         self.search_bar.bind("<Up>", lambda e: self.master.master.select(-1))
     
-    def clear(self):
+    def clear(self) -> None:
         self.text_variable.set("")
     
-    def focus(self):
+    def focus(self) -> None:
         self.search_bar.focus()
     
-    def add_prompt(self, prompt):
+    def add_prompt(self, prompt: str) -> None:
         self.text_variable.set(prompt + " ")
         self.search_bar.icursor(tk.END)
     
-    def get_search_term(self):
+    def get_search_term(self) -> str:
         return self.search_bar.get().lower()
     
-    def filter(self, *args):
+    def filter(self, *args) -> None:
         term = self.get_search_term()
 
         prompt_found = False

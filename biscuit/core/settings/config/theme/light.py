@@ -28,7 +28,7 @@ class Light(Theme):
     Comment = "#098658"
     Punctuation = "#3b3b3b"
     
-    def __init__(self, *args, **kwds):
+    def __init__(self, *args, **kwds) -> None:
         super().__init__(*args, **kwds)
         sv_ttk.use_light_theme()
         

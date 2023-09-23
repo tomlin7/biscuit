@@ -4,7 +4,7 @@ from biscuit.core.components.utils import Menubutton
 
 
 class MenuItem(Menubutton):
-    def __init__(self, master, text, command=lambda *_:..., *args, **kwargs):
+    def __init__(self, master, text, command=lambda *_:..., *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.command = command
         
@@ -13,6 +13,6 @@ class MenuItem(Menubutton):
         )
         self.bind("<Button-1>", self.onclick)
     
-    def onclick(self, *_):
+    def onclick(self, *_) -> None:
         self.master.hide()
         self.command()

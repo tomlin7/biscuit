@@ -4,7 +4,7 @@ from .endpoint import Endpoint
 
 
 class Theme(Endpoint):
-    def __init__(self, *a):
+    def __init__(self, *a) -> None:
         super().__init__(*a)        
         self.__sidebar = self._Endpoint__base.sidebar
         self.__panel = self._Endpoint__base.sidebar

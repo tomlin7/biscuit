@@ -8,7 +8,7 @@ from .shells import SHELLS, Default
 from .tabs import Tabs
 
 
-def get_home_directory():
+def get_home_directory() -> str:
     if os.name == 'nt':
         return os.path.expandvars("%USERPROFILE%")
     if os.name == 'posix':
@@ -16,7 +16,7 @@ def get_home_directory():
     return '.'
 
 class Terminal(PanelView):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         self.config(bg=self.base.theme.border)
@@ -41,27 +41,27 @@ class Terminal(PanelView):
         self.default_terminal = Default(self, cwd=self.base.active_directory or get_home_directory())
         self.add_terminal(self.default_terminal)
     
-    def add_current_terminal(self, *_):
+    def add_current_terminal(self, *_) -> None:
         "Spawns an instance of currently active terminal"
         self.add_terminal(self.active_terminal_type(self, cwd=self.base.active_directory or get_home_directory()))
 
-    def add_terminals(self, terminals):
+    def add_terminals(self, terminals) -> None:
         "Append terminals to list. Create tabs for them."
         for terminal in terminals:
             self.add_terminal(terminal)
     
-    def add_terminal(self, terminal):
+    def add_terminal(self, terminal) -> None:
         "Appends a terminal to list. Create a tab."
         self.terminals.append(terminal)
         self.tabs.add_tab(terminal)
     
-    def open_shell(self, shell):
+    def open_shell(self, shell) -> None:
         self.add_terminal(shell(self, cwd=self.base.active_directory or get_home_directory()))
     
-    def open_terminal(self, path=None):
+    def open_terminal(self, path=None) -> None:
         self.add_terminal(self.active_terminal_type(self, cwd=path or self.base.active_directory or get_home_directory()))
 
-    def delete_all_terminals(self):
+    def delete_all_terminals(self) -> None:
         "Permanently delete all terminals."
         for terminal in self.terminals:
             terminal.destroy()
@@ -69,22 +69,22 @@ class Terminal(PanelView):
         self.tabs.clear_all_tabs()
         self.terminals.clear()
     
-    def delete_terminal(self, terminal):
+    def delete_terminal(self, terminal) -> None:
         "Permanently delete a terminal."
         terminal.destroy()
         self.terminals.remove(terminal)
     
-    def delete_active_terminal(self):
+    def delete_active_terminal(self) -> None:
         "Closes the active tab"
         self.tabs.close_active_tab()
    
-    def set_active_terminal(self, terminal):
+    def set_active_terminal(self, terminal) -> None:
         "set an existing terminal to currently shown one"
         for tab in self.tabs.tabs:
             if tab.terminal == terminal:
                 self.tabs.set_active_tab(tab)
     
-    def clear_terminal(self, *_):
+    def clear_terminal(self, *_) -> None:
         if active := self.active_terminal:
             active.clear()
     
@@ -115,6 +115,6 @@ class Terminal(PanelView):
         
         return self.tabs.active_tab.terminal
     
-    def refresh(self):
+    def refresh(self) -> None:
         if not len(self.terminals):
             self.master.toggle_panel()

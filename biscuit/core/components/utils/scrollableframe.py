@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .frame import Frame
 from .canvas import Canvas
+from .frame import Frame
 
 
 class Scrollbar(ttk.Scrollbar):
-    def set(self, low, high):
+    def set(self, low, high) -> None:
         if float(low) <= 0.0 and float(high) >= 1.0:
             self.pack_forget()
         else:
@@ -15,7 +15,7 @@ class Scrollbar(ttk.Scrollbar):
 
 
 class ScrollableFrame(Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         
@@ -34,12 +34,12 @@ class ScrollableFrame(Frame):
         self.content.bind("<Configure>", self._scroll)
         self.canvas.bind("<Configure>", self._configure_canvas)
 
-    def _scroll(self, event):
+    def _scroll(self, _) -> None:
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    def _configure_canvas(self, event):
+    def _configure_canvas(self, event) -> None:
         canvas_width = event.width
         self.canvas.itemconfig(self._content, width=canvas_width)
 
-    def add(self, content):
+    def add(self, content) -> None:
         content.pack(in_=self.content)

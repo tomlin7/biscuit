@@ -1,12 +1,12 @@
+from biscuit.core.components.floating.palette import ActionSet
+
 from ..sidebarview import SidebarView
 from .directorytree import DirectoryTree
 from .menu import ExplorerMenu
 
-from biscuit.core.components.floating.palette import ActionSet
-
 
 class Explorer(SidebarView):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = []
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'files'
@@ -35,5 +35,5 @@ class Explorer(SidebarView):
         )
         self.base.palette.register_actionset(lambda: self.rename_actionset)
     
-    def get_actionset(self):
+    def get_actionset(self) -> ActionSet:
         return self.directory.get_actionset() 

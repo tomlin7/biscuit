@@ -2,7 +2,7 @@ from .endpoint import Endpoint
 
 
 class Logger(Endpoint):
-    def __init__(self, *a):
+    def __init__(self, *a) -> None:
         super().__init__(*a)
         self.__logger = self._Endpoint__base.logger
 

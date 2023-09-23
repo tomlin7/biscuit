@@ -1,30 +1,37 @@
+from __future__ import annotations
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from ... import App
+
 import platform
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
 
 class Events:
-    def __init__(self, base):
+    def __init__(self, base: App) -> None:
         self.base = base
         self.count = 1
         self.maximized = False
         self.minimized = False
         self.previous_pos = None
 
-    def new_file(self, *_):
+    def new_file(self, *_) -> None:
         self.base.open_editor(f"Untitled-{self.count}", exists=False)
         self.count += 1
 
-    def new_window(self, *_):
+    def new_window(self, *_) -> None:
         self.base.open_new_window()
 
-    def open_file(self, *_):
+    def open_file(self, *_) -> None:
         self.base.open_editor(filedialog.askopenfilename())
 
-    def open_directory(self, *_):
+    def open_directory(self, *_) -> None:
         self.base.open_directory(filedialog.askdirectory())
 
-    def save(self, *_):
+    def save(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content:
                 if not editor.content.exists:
@@ -32,14 +39,14 @@ class Events:
                 if editor.content.editable:
                     editor.save()
 
-    def save_as(self, *_):
+    def save_as(self, *_) -> None:
         #TODO set initial filename to a range of text inside the editor
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):
                     editor.save(path)
 
-    def save_all(self, *_):
+    def save_all(self, *_) -> None:
         for editor in self.base.editorsmanager.editors:
             if editor.content:
                 if not editor.content.exists:
@@ -48,20 +55,20 @@ class Events:
                 if editor.content.editable:
                     editor.save()
 
-    def close_file(self, *_):
+    def close_file(self, *_) -> None:
         self.base.close_active_editor()
     
-    def close_dir(self, *_):
+    def close_dir(self, *_) -> None:
         self.base.close_active_directory()
 
-    def quit(self, *_):
+    def quit(self, *_) -> None:
         self.base.destroy()
     
-    def clone_repo(self, url):
+    def clone_repo(self, url) -> None:
         if path := filedialog.askdirectory():
             self.base.clone_repo(url, path)
     
-    def toggle_maximize(self, *_):
+    def toggle_maximize(self, *_) -> None:
         match platform.system():
             case "Windows" | "Darwin":
                 self.base.wm_state('normal' if self.maximized else 'zoomed')
@@ -82,7 +89,7 @@ class Events:
         self.maximized = not self.maximized
         
     
-    def minimize(self, *_):
+    def minimize(self, *_) -> None:
         self.base.update_idletasks()
 
         if platform.system() == 'Windows':
@@ -94,34 +101,34 @@ class Events:
 
         self.minimized = True
     
-    def window_mapped(self, *_):
+    def window_mapped(self, *_) -> None:
         self.base.update_idletasks()
         if self.minimized:
             self.base.deiconify()
             self.minimized = False
         
     #TODO not fast but work ; may not good for a big file edit
-    def undo(self, *_):
+    def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.edit_undo()
                     
-    def redo(self, *_):
+    def redo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.edit_redo()
     
-    def cut(self, *_):
+    def cut(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.cut()
 
-    def copy(self, *_):
+    def copy(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.copy()
 
-    def paste(self, *_):
+    def paste(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.paste()

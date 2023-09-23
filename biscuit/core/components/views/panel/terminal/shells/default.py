@@ -15,7 +15,7 @@ class Default(Terminal):
     shell = os.environ.get('COMSPEC') or os.environ.get('SHELL')
     name = icon = os.path.splitext(os.path.basename(shell))[0]
 
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         if not self.shell:

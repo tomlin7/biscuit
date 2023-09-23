@@ -6,7 +6,7 @@ from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
 
 
 class Highlighter:
-    def __init__(self, master, language=None, *args, **kwargs):
+    def __init__(self, master, language=None, *args, **kwargs) -> None:
         self.master = master
         self.base = master.base
 

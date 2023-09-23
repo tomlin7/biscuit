@@ -14,7 +14,7 @@ class Bash(Terminal):
     shell = "/bin/bash"
     name = "Bash"
     icon = "bash"
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         if not self.shell:

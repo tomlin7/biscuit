@@ -1,14 +1,14 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .results import Results
-from ..sidebarview import SidebarView
+from biscuit.core.components.utils import ButtonsEntry, Frame, IconButton
 
-from biscuit.core.components.utils import ButtonsEntry, IconButton, Frame
+from ..sidebarview import SidebarView
+from .results import Results
 
 
 class Search(SidebarView):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = (('refresh',), ('clear-all',), ('collapse-all',))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'search'
@@ -28,5 +28,5 @@ class Search(SidebarView):
         self.results = Results(self, **self.base.theme.views.sidebar.item)
         self.results.pack(fill=BOTH, expand=True)
 
-    def replace(self):
+    def replace(self) -> None:
         ...

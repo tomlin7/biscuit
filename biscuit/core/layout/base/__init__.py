@@ -1,15 +1,5 @@
-import tkinter as tk
-from tkinter.constants import *
-
-from .content import ContentPane
-from .sidebar import Sidebar
-
-from biscuit.core.components.utils import Frame
-
-
-class BaseFrame(Frame):
-    """
-    Main frame holds Sidebar and ContentPane
+"""
+Base container of the app
     .
     App
     └── Root
@@ -18,13 +8,31 @@ class BaseFrame(Frame):
         │    ├── Sidebar
         │    └── ContentPane 
         └── StatusBar
+"""
+from __future__ import annotations
+
+import tkinter as tk
+import typing
+
+if typing.TYPE_CHECKING:
+    from .. import Root
+
+from biscuit.core.components.utils import Frame
+
+from .content import ContentPane
+from .sidebar import Sidebar
+
+
+class BaseFrame(Frame):
     """
-    def __init__(self, master, *args, **kwargs):
+    Main frame holds Sidebar and ContentPane
+    """
+    def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
         self.sidebar = Sidebar(self)
         self.contentpane = ContentPane(master=self)
 
-        self.sidebar.pack(side=LEFT, fill=Y)
-        self.contentpane.pack(side=LEFT, fill=BOTH, expand=True)
+        self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
+        self.contentpane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)

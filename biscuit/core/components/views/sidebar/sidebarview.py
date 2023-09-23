@@ -7,7 +7,9 @@ from ..view import View
 
 
 class SidebarView(View):
-    def __init__(self, master, *args, **kwargs):
+    """Base class of Sidebar views"""
+    
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.__buttons__ = ()
         self.__icon__ = 'preview'
@@ -28,9 +30,10 @@ class SidebarView(View):
             IconButton(self.top, *i).grid(row=0, column=self.column, sticky=E)
             self.column += 1
     
-    def add_button(self, icon, event):
+    def add_button(self, icon: str, event) -> None:
         IconButton(self.top, icon, event).grid(row=0, column=self.column, sticky=E)
         self.column += 1
         
-    def add_widget(self, widget, *args, **kwargs):
+    def add_widget(self, widget, *args, **kwargs) -> None:
         widget.pack(fill=BOTH, expand=True, *args, **kwargs)
+

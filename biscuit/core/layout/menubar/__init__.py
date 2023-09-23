@@ -1,23 +1,34 @@
-import platform
-import tkinter as tk
-
-from biscuit import __version__
-from biscuit.core.components.utils import Frame, IconButton, Label
-
-from .item import MenubarItem
-
-
-class Menubar(Frame):
-    """
-    Root frame holds Menubar, BaseFrame, and Statusbar
+"""
+Menubar and the parts of the menubar
     .
     App
     └── Root
         ├── Menubar
         ├── BaseFrame
         └── Statusbar
+"""
+from __future__ import annotations
+
+import platform
+import tkinter as tk
+import typing
+
+from biscuit import __version__
+from biscuit.core.components.utils import Frame, IconButton, Label
+
+from .item import MenubarItem
+
+if typing.TYPE_CHECKING:
+    from biscuit.core.components.floating import Menu
+
+    from .. import Root
+
+
+class Menubar(Frame):
     """
-    def __init__(self, master, *args, **kwargs):
+    Root frame holds Menubar, BaseFrame, and Statusbar
+    """
+    def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.menus = []
         self.events = self.base.events
@@ -38,51 +49,54 @@ class Menubar(Frame):
         self.config(**self.base.theme.layout.menubar)
         self.add_menus()
     
-    def set_title(self, title=None):
+    def set_title(self, title: str=None) -> None:
         self.title_lbl.config(text=f"{title} - Biscuit (v{__version__})" 
                               if title else f"Biscuit (v{__version__})")
         self.reposition_title()
     
-    def reposition_title(self):
+    def reposition_title(self) -> None:
         x = self.winfo_x() + (self.winfo_width() - self.title_lbl.winfo_width())/2
         y = self.winfo_y() + (self.winfo_height() - self.title_lbl.winfo_height())/2
         
         self.title_lbl.place_forget()
         self.title_lbl.place(x=x, y=y)
 
-    def config_bindings(self):
+    def config_bindings(self) -> None:
         self.bind('<Map>', self.events.window_mapped)
         self.bind("<Button-1>", self.startMove)
         self.bind("<ButtonRelease-1>", self.stopMove)
         self.bind("<B1-Motion>", self.moving)
 
-    def startMove(self, event):
+    def startMove(self, event) -> None:
         self.x = event.x
         self.y = event.y
 
-    def stopMove(self, event):
+    def stopMove(self, _) -> None:
         self.x = None
         self.y = None
 
-    def moving(self,event):
+    def moving(self, event) -> None:
         x = (event.x_root - self.x - self.winfo_rootx() + self.winfo_rootx())
         y = (event.y_root - self.y - self.winfo_rooty() + self.winfo_rooty())
         self.base.geometry(f"+{x}+{y}")
         
-    def add_menu(self, text):
+    def add_menu(self, text: str) -> Menu:
         new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.BOTH)
         self.menus.append(new_menu.menu)
         
         return new_menu.menu
 
-    def add_menus(self):
+    def add_menus(self) -> None:
         self.add_file_menu()
         self.add_edit_menu()
-        self.add_view_menu()
+
+        #TODO implement View menu events
+        #TODO menu shall support check items
+        #self.add_view_menu()
 
     # TODO: Implement events for the menu items
-    def add_file_menu(self):
+    def add_file_menu(self) -> None:
         events = self.events
 
         file_menu = self.add_menu("File")
@@ -103,7 +117,7 @@ class Menubar(Frame):
         file_menu.add_separator()
         file_menu.add_item("Exit", events.quit)
 
-    def add_edit_menu(self):
+    def add_edit_menu(self) -> None:
         events = self.events
 
         edit_menu = self.add_menu("Edit")
@@ -117,7 +131,7 @@ class Menubar(Frame):
         edit_menu.add_item("Find",)
         edit_menu.add_item("Replace",)
     
-    def add_view_menu(self):
+    def add_view_menu(self) -> None:
         events = self.events
 
         view_menu = self.add_menu("View")
@@ -130,11 +144,11 @@ class Menubar(Frame):
         view_menu.add_item("Indentation",)
         view_menu.add_item("Line Endings",)
 
-    def close_all_menus(self, *_):
+    def close_all_menus(self, *_) -> None:
         for menu in self.menus:
             menu.hide()
 
-    def switch_menu(self, menu):
+    def switch_menu(self, menu: Menu) -> None:
         active = False
         for i in self.menus:
             if i.active:

@@ -8,7 +8,7 @@ from .text import Text
 
 
 class TextEditor(BaseEditor):
-    def __init__(self, master, path=None, exists=True, language=None, minimalist=False, *args, **kwargs):
+    def __init__(self, master, path=None, exists=True, language=None, minimalist=False, *args, **kwargs) -> None:
         super().__init__(master, path, exists, *args, **kwargs)
         self.font = self.base.settings.font
         self.minimalist = minimalist

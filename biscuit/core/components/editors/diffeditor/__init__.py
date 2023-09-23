@@ -9,7 +9,7 @@ from .pane import DiffPane
 
 
 class DiffEditor(BaseEditor):
-    def __init__(self, master, path, kind, language=None, *args, **kwargs):
+    def __init__(self, master, path, kind, language=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
@@ -53,22 +53,22 @@ class DiffEditor(BaseEditor):
 
         self.show_diff()
 
-    def on_scrollbar(self, *args):
+    def on_scrollbar(self, *args) -> None:
         self.left.yview(*args)
         self.lhs.on_scroll()
 
         self.right.yview(*args)
         self.rhs.on_scroll()
 
-    def on_textscroll(self, *args):
+    def on_textscroll(self, *args) -> None:
         self.lhs.scrollbar.set(*args)
         self.rhs.scrollbar.set(*args)
         self.on_scrollbar('moveto', args[0])
     
-    def run_show_diff(self):
+    def run_show_diff(self) -> None:
         threading.Thread(target=self.show_diff).start()
     
-    def show_diff(self):
+    def show_diff(self) -> None:
         try:
             # case: deleted file
             if not self.kind:

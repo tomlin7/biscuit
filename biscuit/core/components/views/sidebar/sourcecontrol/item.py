@@ -15,7 +15,7 @@ class ChangeItem(Frame):
         2 - modified
         3 - untracked
     """
-    def __init__(self, master, path, kind, *args, **kwargs):
+    def __init__(self, master, path, kind, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.path = path
@@ -41,13 +41,13 @@ class ChangeItem(Frame):
         self.bind('<Enter>', self.bubble.show)
         self.bind('<Leave>', self.bubble.hide)
 
-    def open_diff(self, _):
+    def open_diff(self, _) -> None:
         self.base.open_diff(self.path, self.kind)
     
-    def git_add(self, *_):
+    def git_add(self, *_) -> None:
         self.base.git.repo.stage_files((self.path, self.kind))
         self.master.master.open_repo()
     
-    def git_discard(self, *_):
+    def git_discard(self, *_) -> None:
         self.base.git.repo.discard_changes(self.path)
         self.master.master.open_repo()

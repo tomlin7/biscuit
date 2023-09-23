@@ -10,26 +10,26 @@ BOARD_SIZE = 10
 NUM_MINES = 10
 
 class Tile(IconButton):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.config(font=("Segoi UI", 13), width=2, bg=self.base.theme.biscuit, fg="white", activebackground=self.base.theme.biscuit_dark)
 
-    def reveal_count(self, count):
+    def reveal_count(self, count) -> None:
         self.config(font=("Segoi UI", 13), text=count)
         bg=self.base.theme.editors.background
         self.config(bg=bg, activebackground=bg)
 
-    def reveal_icon(self, icon, **kw):
+    def reveal_icon(self, icon, **kw) -> None:
         self.config(font=("codicon", 13), **kw)
         self.set_icon(icon)
     
-    def clear(self):
+    def clear(self) -> None:
         self.config(fg=self.base.theme.editors.background)
 
 class Minesweeper(BaseGame):
     name = "Minesweeper!"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.container = Frame(self, bg=self.base.theme.border, padx=1, pady=1)

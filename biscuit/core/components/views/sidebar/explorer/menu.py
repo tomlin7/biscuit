@@ -2,11 +2,11 @@ from biscuit.core.components.floating import Menu
 
 
 class ExplorerMenu(Menu):
-    def get_coords(self, e):
+    def get_coords(self, e) -> list:
         return e.widget.winfo_rootx(), e.widget.winfo_rooty() + e.widget.winfo_height()
 
 class ExplorerContextMenu(Menu):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.add_item("New file...", lambda: self.base.palette.show_prompt('newfile:'))
         self.add_item("New Folder...", lambda: self.base.palette.show_prompt('newfolder:'))
@@ -23,8 +23,8 @@ class ExplorerContextMenu(Menu):
         self.add_item("Rename...", lambda: self.base.palette.show_prompt('renamefile:'))
         self.add_item("Delete", self.master.delete_item)
         
-    def get_coords(self, e):
+    def get_coords(self, e) -> list:
         return e.x_root, e.y_root
     
-    def show(self, *e):
+    def show(self, *e) -> None:
         super().show(*e)

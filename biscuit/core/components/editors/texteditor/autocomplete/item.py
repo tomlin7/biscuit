@@ -5,7 +5,7 @@ from .kind import Kind
 
 
 class AutoCompleteItem(Frame):
-    def __init__(self, master, text, kind=None, *args, **kwargs):
+    def __init__(self, master, text, kind=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(width=400, **self.base.theme.editors.autocomplete)
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.editors.autocomplete.item.values()

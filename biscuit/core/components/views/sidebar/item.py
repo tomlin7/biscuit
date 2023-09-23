@@ -1,12 +1,17 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from .itembar import ItemBar
 from biscuit.core.components.utils import Frame
+
+from .itembar import ItemBar
 
 
 class SidebarViewItem(Frame):
-    def __init__(self, master, itembar=True, *args, **kwargs):
+    """Containers that fit in SidebarViews
+    These also come with an ItemBar that can maximize, minimize and manage the container
+    """
+    
+    def __init__(self, master, itembar=True, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
@@ -26,22 +31,23 @@ class SidebarViewItem(Frame):
         self.content.grid_columnconfigure(0, weight=1)
         self.content.grid(row=1 if itembar else 0, column=0, sticky=NSEW)
     
-    def set_title(self, title):
+    def set_title(self, title: str) -> None:
         if self.itembar_enabled:
             self.itembar.set_title(title)
 
-    def toggle(self, *_):
+    def toggle(self, *_) -> None:
         if not self.enabled:
             self.enable()
         else:
             self.disable()
         
-    def enable(self):
+    def enable(self) -> None:
         if not self.enabled:
             self.content.grid()
             self.enabled = True
 
-    def disable(self):
+    def disable(self) -> None:
         if self.enabled:
             self.content.grid_remove()
             self.enabled = False
+

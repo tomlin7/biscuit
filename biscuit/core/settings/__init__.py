@@ -1,6 +1,11 @@
-import os
+"""Settings
+Loads and manages the editor configurations and provides settings editor GUI
+"""
+from __future__ import annotations
+
 import re
 import tkinter as tk
+import typing
 
 import tkextrafont as extra
 
@@ -11,11 +16,15 @@ from .editor import SettingsEditor
 from .res import Resources
 from .styles import Style
 
+if typing.TYPE_CHECKING:
+    from ... import App
+
+
 URL = re.compile(r'^(?:http)s?://')
 
 
 class Formattable(str):
-    def format(self, term):
+    def format(self, term) -> str:
         default = 'https://github.com/'
         if not term or URL.match(term):
             return super().format(term)
@@ -23,7 +32,7 @@ class Formattable(str):
         return super().format(f'{default}{term}')
 
 class Settings:
-    def __init__(self, base):
+    def __init__(self, base: App) -> None:
         self.base = base
 
         self.config = Config(self)
@@ -38,18 +47,21 @@ class Settings:
         self.setup_font()
         self.gen_actionset()
     
-    def register_command(self, name, command):
+    def register_command(self, name: str, command) -> None:
         """
         Registers a new command to the action set.
 
-        Args:
-            name (str): The name of the command.
-            command (function): The function to be executed when the command is triggered.
+        Parameters
+        ----------
+        name: 
+            The name of the command.
+        command: 
+            The function to be executed when the command is triggered.
         """
         self.commands.append((name, command))
         self.gen_actionset()
 
-    def gen_actionset(self):
+    def gen_actionset(self) -> None:
         """
         Generates the action set with predefined commands and registered commands.
         """
@@ -58,7 +70,7 @@ class Settings:
             "Show and run commands", ">", self.commands + get_games(self.base)
         )
 
-    def setup_font(self):
+    def setup_font(self) -> None:
         try:
             self.iconfont = extra.Font(file=self.res.get_res_path("codicon.ttf"), family="codicon")
         except tk.TclError:
@@ -73,7 +85,7 @@ class Settings:
             size=self.config.uifont[1]
         )
 
-    def late_setup(self):
+    def late_setup(self) -> None:
         self.base.palette.register_actionset(lambda: self.actionset)
         
         from biscuit.core.components import ActionSet

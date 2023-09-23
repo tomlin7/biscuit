@@ -8,7 +8,7 @@ class IconButton(Menubutton):
     """
     Button with only an icon
     """
-    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=14, *args, **kwargs):
+    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=14, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.utils.iconbutton)
         self.icons = [icon, icon2]
@@ -20,7 +20,7 @@ class IconButton(Menubutton):
 
         self.bind("<Button-1>", self.onclick)
     
-    def onclick(self, *args):
+    def onclick(self, *args) -> None:
         try:
             self.event(*args)
         except:
@@ -32,8 +32,8 @@ class IconButton(Menubutton):
         self.config(text=get_codicon(self.icons[self.switch]))
         self.v_onclick()
     
-    def v_onclick(self):
+    def v_onclick(self) -> None:
         ...
     
-    def set_icon(self, icon):
+    def set_icon(self, icon) -> None:
         self.config(text=get_codicon(icon))

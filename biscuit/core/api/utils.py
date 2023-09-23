@@ -4,7 +4,7 @@ from .endpoint import Endpoint
 
 
 class Utils(Endpoint):
-    def __init__(self, *a):
+    def __init__(self, *a) -> None:
         super().__init__(*a)
 
         self.Button = Button

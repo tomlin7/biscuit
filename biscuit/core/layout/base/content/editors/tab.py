@@ -1,3 +1,11 @@
+from __future__ import annotations
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from .tabs import Tabs
+    from biscuit.core.components import Editor
+
 import os
 import tkinter as tk
 
@@ -5,7 +13,7 @@ from biscuit.core.components.utils import Frame, IconButton
 
 
 class Tab(Frame):
-    def __init__(self, master, editor, *args, **kwargs):
+    def __init__(self, master: Tabs, editor: Editor, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.editor = editor
         self.selected = False
@@ -26,24 +34,24 @@ class Tab(Frame):
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
     
-    def close(self, *_):
+    def close(self, *_) -> None:
         self.master.close_tab(self)
     
-    def on_hover(self, *_):
+    def on_hover(self, *_) -> None:
         if not self.selected:
             self.name.config(bg=self.hbg)
             self.config(bg=self.hbg)
             self.closebtn.config(bg=self.hbg)
             self.hovered = True
 
-    def off_hover(self, *_):
+    def off_hover(self, *_) -> None:
         if not self.selected:
             self.name.config(bg=self.bg)
             self.config(bg=self.bg)
             self.closebtn.config(bg=self.bg)
             self.hovered = False
 
-    def deselect(self, *_):
+    def deselect(self, *_) -> None:
         if self.selected:
             self.editor.grid_remove()
             self.name.config(bg=self.bg)
@@ -51,7 +59,7 @@ class Tab(Frame):
             self.closebtn.config(bg=self.bg, activeforeground=self.fg)
             self.selected = False
         
-    def select(self, *_):
+    def select(self, *_) -> None:
         if not self.selected:
             self.master.set_active_tab(self)
             if self.base.active_directory and self.editor.filename:

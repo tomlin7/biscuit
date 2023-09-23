@@ -1,14 +1,14 @@
 import tkinter as tk
 
-from .placeholder import ChangesTreePlaceholder
-from .changes import Changes
-from .stagedchanges import StagedChanges
+from biscuit.core.components.utils import Button, Entry, Frame, IconButton
 
-from biscuit.core.components.utils import Frame, Button, IconButton, Entry
+from .changes import Changes
+from .placeholder import ChangesTreePlaceholder
+from .stagedchanges import StagedChanges
 
 
 class Git(Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
@@ -29,19 +29,19 @@ class Git(Frame):
         self.placeholder = ChangesTreePlaceholder(self)
         self.placeholder.pack(fill=tk.BOTH, expand=True)
         
-    def add_staged_changes(self, changed_files=(), kind=0):
+    def add_staged_changes(self, changed_files=(), kind=0) -> None:
         for file in changed_files:
             self.staged_changes_tree.add_item(file, kind)
         
         self.staged_changes_tree.refresh()
     
-    def add_changes(self, changed_files=(), kind=0):
+    def add_changes(self, changed_files=(), kind=0) -> None:
         for file in changed_files:
             self.changes_tree.add_item(file, kind)
         
         self.changes_tree.refresh()
     
-    def open_repo(self):
+    def open_repo(self) -> None:
         self.staged_changes_tree.clear_tree()
         self.changes_tree.clear_tree()
         # self.set_title(f"{os.path.basename(self.base.active_directory)}({self.base.git.active_branch})")
@@ -55,7 +55,7 @@ class Git(Frame):
         self.add_changes(self.base.git.repo.get_modified_files(), 2)
         self.add_changes(self.base.git.repo.get_untracked_files(), 3)
 
-    def enable_tree(self):
+    def enable_tree(self) -> None:
         self.placeholder.pack_forget()
         self.commitbox.pack(padx=(15, 10), pady=5, fill=tk.BOTH)
         self.staged_changes_tree.pack(fill=tk.BOTH)
@@ -65,14 +65,14 @@ class Git(Frame):
         self.changes_tree.clear_tree()
         self.open_repo()
 
-    def disable_tree(self):
+    def disable_tree(self) -> None:
         self.commitbox.pack_forget()
         self.staged_changes_tree.pack_forget()
         self.changes_tree.pack_forget()
         self.placeholder.pack(fill=tk.BOTH, expand=True)
 
-    def get_commit_message(self):
+    def get_commit_message(self) -> str:
         return self.commit_message.get()
 
-    def commit(self, *_):
+    def commit(self, *_) -> None:
         self.base.git.repo.commit_files(self.get_commit_message())

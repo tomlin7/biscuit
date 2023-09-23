@@ -4,7 +4,7 @@ from ....utils import Label
 
 
 class Kind(Label):
-    def __init__(self, master, kinds, kind="text", *args, **kwargs):
+    def __init__(self, master, kinds, kind="text", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base

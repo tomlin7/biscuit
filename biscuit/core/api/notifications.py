@@ -2,7 +2,7 @@ from .endpoint import Endpoint
 
 
 class Notifications(Endpoint):
-    def __init__(self, *a):
+    def __init__(self, *a) -> None:
         super().__init__(*a)        
         self.__notifications = self._Endpoint__base.notifications
 

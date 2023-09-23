@@ -28,7 +28,7 @@ class Dark(Theme):
     Comment = "#7ca668"
     Punctuation = "#808080"
 
-    def __init__(self, *args, **kwds):
+    def __init__(self, *args, **kwds) -> None:
         super().__init__(*args, **kwds)
         sv_ttk.use_dark_theme()
 

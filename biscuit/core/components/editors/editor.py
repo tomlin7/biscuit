@@ -5,7 +5,7 @@ class BaseEditor(Frame):
     """
     Base class for editors.
     """
-    def __init__(self, master, path=None, path2=None, editable=True, *args, **kwargs):
+    def __init__(self, master, path=None, path2=None, editable=True, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.editors)
 

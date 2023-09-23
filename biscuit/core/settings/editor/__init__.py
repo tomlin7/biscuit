@@ -9,7 +9,8 @@ from .section import Section
 
 class SettingsEditor(BaseEditor):
     name = "settings"
-    def __init__(self, master, exists=False, editable=False, *args, **kwargs):
+
+    def __init__(self, master, exists=False, editable=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(padx=100, pady=20, **self.base.theme.editors)
         self.filename = 'Settings'

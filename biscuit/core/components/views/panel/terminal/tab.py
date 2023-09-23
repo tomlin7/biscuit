@@ -9,7 +9,7 @@ ICONS = {
 }
 
 class Tab(Frame):
-    def __init__(self, master, terminal, *args, **kwargs):
+    def __init__(self, master, terminal, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.terminal = terminal
         self.selected = False
@@ -34,10 +34,10 @@ class Tab(Frame):
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
     
-    def close(self, *_):
+    def close(self, *_) -> None:
         self.master.close_tab(self)
     
-    def on_hover(self, *_):
+    def on_hover(self, *_) -> None:
         if not self.selected:
             self.icon.config(bg=self.hbg)
             self.name.config(bg=self.hbg)
@@ -46,7 +46,7 @@ class Tab(Frame):
 
             self.hovered = True
 
-    def off_hover(self, *_):
+    def off_hover(self, *_) -> None:
         if not self.selected:
             self.icon.config(bg=self.bg)
             self.name.config(bg=self.bg)
@@ -54,7 +54,7 @@ class Tab(Frame):
             self.closebtn.config(bg=self.bg)
             self.hovered = False
 
-    def deselect(self, *_):
+    def deselect(self, *_) -> None:
         if self.selected:
             self.terminal.grid_remove()
 
@@ -64,7 +64,7 @@ class Tab(Frame):
             self.closebtn.config(bg=self.bg, activeforeground=self.fg)
             self.selected = False
         
-    def select(self, *_):
+    def select(self, *_) -> None:
         if not self.selected:
             self.master.set_active_tab(self)
             self.terminal.grid(column=0, row=0, sticky=tk.NSEW)

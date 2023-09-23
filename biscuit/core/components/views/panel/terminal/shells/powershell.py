@@ -14,7 +14,7 @@ class PowerShell(Terminal):
     shell = "powershell"
     name = "PowerShell"
     icon = "powershell"
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         if not self.shell:

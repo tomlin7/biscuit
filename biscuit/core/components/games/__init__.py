@@ -14,15 +14,15 @@ from .whoops import Whoops
 games = {i.name:i for i in (Tetris, GameOfLife, Pong, TicTacToe, Snake, Minesweeper)}
 
 
-def get_games(base):
+def get_games(base) -> list:
     "helper function to generate actionset items"
     return [(f"Play {i}", lambda _, i=i: base.open_game(i)) for i in games.keys()]
 
-def get_game(name):
+def get_game(name) -> str:
     "picks the game for the name"
     return games.get(name, Whoops)
 
-def register_game(game):
+def register_game(game) -> None:
     "registers a game"
     global games
     try:
@@ -37,7 +37,7 @@ class Game(Frame):
 
     name - name of game to opened
     """
-    def __init__(self, master, name, *args, **kwargs):
+    def __init__(self, master, name, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.filename = name
@@ -52,5 +52,5 @@ class Game(Frame):
         self.content = get_game(name=name)(self)     
         self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
-    def focus(self):
+    def focus(self) -> None:
         self.content.focus_get()

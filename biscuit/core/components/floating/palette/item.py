@@ -4,7 +4,7 @@ from biscuit.core.components.utils import Text
 
 
 class PaletteItem(Text):
-    def __init__(self, master, text, command, description="", *args, **kwargs):
+    def __init__(self, master, text, command, description="", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.text = text
         self.description = description
@@ -28,11 +28,11 @@ class PaletteItem(Text):
         self.selected = False
         self.hovered = False
     
-    def on_click(self, *args):
+    def on_click(self, *args) -> None:
         self.command(self.master.master.searchbar.term)
         self.master.master.hide()
 
-    def toggle_selection(self):
+    def toggle_selection(self) -> None:
         if self.selected:
             self.select()
         else:
@@ -41,32 +41,32 @@ class PaletteItem(Text):
     def get_kind(self):
         return self.kind
 
-    def mark_term(self, term):
+    def mark_term(self, term: str) -> None:
         start_pos = self.text.lower().find(term.lower())
         end_pos = start_pos + len(term)
         self.tag_remove("term", 1.0, tk.END)
         self.tag_add("term", f"1.{start_pos}", f"1.{end_pos}")
     
-    def on_hover(self, *args):
+    def on_hover(self, *args) -> None:
         if not self.selected:
             self.config(bg=self.hbg)
             self.hovered = True
 
-    def off_hover(self, *args):
+    def off_hover(self, *args) -> None:
         if not self.selected:
             self.config(bg=self.bg)
             self.hovered = False
     
-    def toggle_selection(self):
+    def toggle_selection(self) -> None:
         if self.selected:
             self.select()
         else:
             self.deselect()
 
-    def select(self):
+    def select(self) -> None:
         self.config(bg=self.hbg, fg=self.hfg)
         self.selected = True
     
-    def deselect(self):
+    def deselect(self) -> None:
         self.config(bg=self.bg, fg=self.fg)
         self.selected = False

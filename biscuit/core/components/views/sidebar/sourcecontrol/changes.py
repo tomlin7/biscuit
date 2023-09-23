@@ -5,21 +5,21 @@ from .item import ChangeItem
 
 
 class Changes(SidebarViewItem):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = (('discard',), ('add', self.git_add_all))
         self.title = "Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.items = {}
     
-    def refresh(self):
+    def refresh(self) -> None:
         if not self.items:
             self.itembar.hide_content()
         else:
             self.itembar.show_content()
         # self.update()
 
-    def clear_tree(self, *_):
+    def clear_tree(self, *_) -> None:
         for item, _ in self.items.values():
             try:
                 item.pack_forget()
@@ -29,7 +29,7 @@ class Changes(SidebarViewItem):
         
         self.items.clear()
             
-    def add_item(self, path, kind):
+    def add_item(self, path, kind) -> None:
         if path in self.items.keys():
             return
 
@@ -38,11 +38,11 @@ class Changes(SidebarViewItem):
         new_item.pack(fill=tk.X)
         self.items[path] = (new_item, kind)
     
-    def git_add_all(self, *_):
+    def git_add_all(self, *_) -> None:
         if unstaged := [(path, item[1]) for path, item in self.items.items()]:
             self.base.git.repo.stage_files(*unstaged)
             self.master.open_repo()
     
-    def git_discard_all(self, *_):
+    def git_discard_all(self, *_) -> None:
         self.base.git.repo.discard_changes(self.path)
         self.master.master.open_repo()

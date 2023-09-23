@@ -7,7 +7,7 @@ from .kinds import Kinds
 
 
 class AutoComplete(Toplevel):
-    def __init__(self, master, items=None, active=False, *args, **kwargs):
+    def __init__(self, master, items=None, active=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.autocomplete_kinds = Kinds(self)
         self.config(padx=1, pady=1, bg=self.base.theme.border)

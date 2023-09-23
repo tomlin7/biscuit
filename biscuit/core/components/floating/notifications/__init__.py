@@ -8,7 +8,7 @@ class Notifications(Toplevel):
     Floating notifications, shown on bottom right corner
     NOTE: Currently only supports showing one notification at a time
     """
-    def __init__(self, base):
+    def __init__(self, base) -> None:
         super().__init__(base)
         self.config(bg=self.base.theme.border, padx=1, pady=1)
         self.active = False
@@ -36,28 +36,28 @@ class Notifications(Toplevel):
         self.base.register_onfocus(self.lift)
         self.base.register_onupdate(self._follow_root)
     
-    def info(self, text):
+    def info(self, text) -> None:
         self.icon.set_icon("info")
         self.icon.config(fg=self.base.theme.biscuit)
         self.label.configure(text=text)
         self.count += 1
         self.show()
     
-    def warning(self, text):
+    def warning(self, text) -> None:
         self.icon.set_icon("warning")
         self.icon.config(fg="yellow")
         self.label.configure(text=text)
         self.count += 1
         self.show()
     
-    def error(self, text):
+    def error(self, text) -> None:
         self.icon.set_icon("error")
         self.icon.config(fg="red")
         self.label.configure(text=text)
         self.count += 1
         self.show()
     
-    def _follow_root(self):
+    def _follow_root(self) -> None:
         if not self.active:
             return
         
@@ -67,17 +67,17 @@ class Notifications(Toplevel):
         
         self.geometry(f"+{int(x)}+{int(y)}")
     
-    def show(self, *_):
+    def show(self, *_) -> None:
         self.active = True
         self._follow_root()
         self.deiconify()
         self.lift()
         self.base.statusbar.update_notifications()
     
-    def hide(self, *_):
+    def hide(self, *_) -> None:
         self.active = False
         self.withdraw()
     
-    def clear(self, *_):
+    def clear(self, *_) -> None:
         self.label.configure(text="NO NEW NOTIFICATIONS")
         self.count = 0

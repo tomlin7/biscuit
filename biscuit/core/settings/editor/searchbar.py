@@ -1,11 +1,12 @@
 import tkinter as tk
 
 from hintedtext import HintedEntry
+
 from biscuit.core.components.utils import Frame
 
 
 class Searchbar(Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.config(bg=self.base.theme.biscuit)
@@ -21,19 +22,19 @@ class Searchbar(Frame):
         
         self.configure_bindings()
 
-    def configure_bindings(self):
+    def configure_bindings(self) -> None:
         self.text_variable.trace("w", self.filter) 
 
-    def clear(self):
+    def clear(self) -> None:
         self.text_variable.set("")
     
-    def focus(self):
+    def focus(self) -> None:
         self.searchbar.focus()
     
-    def get_search_term(self):
+    def get_search_term(self) -> str:
         return self.searchbar.get().lower()
     
-    def filter(self, *args):
+    def filter(self, *args) -> str:
         term = self.get_search_term()
         return
         new = [i for i in self.master.active_set if i[0].lower().startswith(term.lower())]

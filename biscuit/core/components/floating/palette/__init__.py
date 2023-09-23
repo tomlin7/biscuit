@@ -29,7 +29,7 @@ class Palette(Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=60, *args, **kwargs):
+    def __init__(self, master, items=None, width=60, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(pady=1, padx=1, bg=self.base.theme.border)
 
@@ -56,10 +56,10 @@ class Palette(Toplevel):
         
         self.configure_bindings()
 
-    def register_actionset(self, actionset):
+    def register_actionset(self, actionset: ActionSet) -> None:
         self.actionsets.append(actionset)
     
-    def generate_help_actionset(self):
+    def generate_help_actionset(self) -> None:
         self.help_actionset = ActionSet("Help", "?")
         for i in self.actionsets:
             i = i() # get the actionset
@@ -68,7 +68,7 @@ class Palette(Toplevel):
     
         self.register_actionset(lambda: self.help_actionset)
 
-    def add_item(self, text, command, *args, **kwargs):
+    def add_item(self, text: str, command, *args, **kwargs) -> PaletteItem:
         new_item = PaletteItem(self.container, text, command, *args, **kwargs)
         new_item.grid(row=self.row, sticky=tk.EW)
         
@@ -78,47 +78,47 @@ class Palette(Toplevel):
         self.refresh_selected()
         return new_item
 
-    def add_search_bar(self):
+    def add_search_bar(self) -> None:
         self.searchbar = Searchbar(self.container)
         self.searchbar.grid(row=0, sticky=tk.EW, pady=(1, 7), padx=1)
     
-    def configure_bindings(self):
+    def configure_bindings(self) -> None:
         self.bind("<FocusOut>", self.hide)
         self.bind("<Escape>", self.hide)
 
         self.row += 1
         self.refresh_selected()
     
-    def pick_actionset(self, actionset):
+    def pick_actionset(self, actionset) -> None:
         self.active_set = actionset
     
-    def pick_file_search(self):
+    def pick_file_search(self) -> None:
         self.active_set = self.base.explorer.get_actionset()
         
-    def choose(self, *_):
+    def choose(self, *_) -> None:
         #TODO pass the term to the function as argument (for input requiring commands)
         self.shown_items[self.selected].command(self.searchbar.term)
         self.hide()
         
-    def get_items(self):
+    def get_items(self) -> ActionSet:
         return self.active_set
     
-    def hide(self, *args):
+    def hide(self, *args) -> None:
         self.withdraw()
         self.reset()
         
-    def hide_all_items(self):
+    def hide_all_items(self) -> None:
         for i in self.shown_items:
             i.destroy()
         
         self.shown_items = []
         self.row = 1
     
-    def reset_selection(self):
+    def reset_selection(self) -> None:
         self.selected = 0
         self.refresh_selected()
 
-    def refresh_selected(self):
+    def refresh_selected(self) -> None:
         if not self.shown_items:
             return
 
@@ -130,25 +130,25 @@ class Palette(Toplevel):
         except IndexError as e:
             self.base.logger.error(f"Command '{self.selected}' doesnt exist: {e}")
     
-    def reset(self):
+    def reset(self) -> None:
         self.searchbar.clear()
         self.reset_selection()
 
-    def search_bar_enter(self, *args):
+    def search_bar_enter(self, *args) -> str:
         self.choose()
         return "break"
     
-    def show_no_results(self):
+    def show_no_results(self) -> None:
         self.hide_all_items()
         self.reset_selection()
         self.add_item("No results found", lambda _:...)
 
-    def select(self, delta):
+    def select(self, delta: int) -> None:
         self.selected += delta
         self.selected = min(max(0, self.selected), len(self.shown_items) - 1)
         self.refresh_selected()
     
-    def show_items(self, items):
+    def show_items(self, items: list[PaletteItem]) -> None:
         self.hide_all_items()
 
         for i in items[:10]:
@@ -157,7 +157,8 @@ class Palette(Toplevel):
 
         self.reset_selection()
 
-    def show_prompt(self, prompt):
+    def show_prompt(self, prompt: str) -> None:
+        """Shows the palette with the passed prompt"""
         self.update_idletasks()
         
         x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)

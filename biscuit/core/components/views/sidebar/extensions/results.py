@@ -10,7 +10,7 @@ from .watcher import ExtensionsWatcher
 
 
 class Results(SidebarViewItem):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = (('discard',), ('add',))
         self.title = 'Available'
         super().__init__(master, *args, **kwargs)
@@ -29,14 +29,14 @@ class Results(SidebarViewItem):
         self.fetching_list = threading.Event()
         self.extensions_lock = threading.Lock()
     
-    def refresh(self):
+    def refresh(self) -> None:
         if self.base.testing:
             return
         
         self.update_idletasks()
         self.after(5, self.run_fetch_list())
     
-    def run_fetch_list(self, *_):
+    def run_fetch_list(self, *_) -> None:
         if self.base.testing:
             return
         
@@ -46,7 +46,7 @@ class Results(SidebarViewItem):
         with self.extensions_lock: 
             threading.Thread(target=self.fetch_list).start()
 
-    def fetch_list(self):
+    def fetch_list(self) -> None:
         try:
             response = requests.get(self.list_url)
         except Exception as e:
@@ -65,7 +65,7 @@ class Results(SidebarViewItem):
             ext = Extension(self, self.content, name, file, f"{self.repo_url}extensions/{file}")
             ext.pack(fill=tk.X)
     
-    def clear(self, *_):
+    def clear(self, *_) -> None:
         for widget in self.content.winfo_children():
             widget.destroy()
             self.content.update_idletasks()

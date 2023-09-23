@@ -8,7 +8,7 @@ from .views import Views
 
 
 class ExtensionsAPI:
-    def __init__(self, base):
+    def __init__(self, base) -> None:
         self.__base = base
 
         self.commands = Commands(self.__base)

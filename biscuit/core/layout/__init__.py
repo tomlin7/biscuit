@@ -1,22 +1,33 @@
-import tkinter as tk
+"""Layout
+Defines the layout of app.
 
-from .menubar import Menubar
-from .base import BaseFrame
-from .statusbar import Statusbar
-from biscuit.core.components.utils import Frame
-
-
-class Root(Frame):
-    """
-    Root frame holds Menubar, BaseFrame, and Statusbar
     .
     App
     └── Root
         ├── Menubar
         ├── BaseFrame
         └── StatusBar
+"""
+from __future__ import annotations
+
+import tkinter as tk
+import typing
+
+from biscuit.core.components.utils import Frame
+
+from .base import BaseFrame
+from .menubar import Menubar
+from .statusbar import Statusbar
+
+if typing.TYPE_CHECKING:
+    from ... import App
+
+
+class Root(Frame):
     """
-    def __init__(self, base, *args, **kwargs):
+    Root frame holds Menubar, BaseFrame, and Statusbar
+    """
+    def __init__(self, base: App, *args, **kwargs) -> None:
         super().__init__(base, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 

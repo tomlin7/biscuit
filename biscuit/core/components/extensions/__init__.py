@@ -4,7 +4,7 @@ import threading
 
 
 class ExtensionManager:
-    def __init__(self, base):
+    def __init__(self, base) -> None:
         self.base = base
         self.extensions = {}
         

@@ -1,10 +1,10 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import IconButton, Frame
+from biscuit.core.components.utils import Frame, IconButton
 
 
 class ItemBar(Frame):
-    def __init__(self, master, title=None, buttons=(), *args, **kwargs):
+    def __init__(self, master, title=None, buttons=(), *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.itembar)
 
@@ -26,28 +26,28 @@ class ItemBar(Frame):
 
         self.add_buttons(buttons)
 
-    def add_button(self, *args):
+    def add_button(self, *args) -> None:
         IconButton(self.buttonframe, *args).grid(row=0, column=self.buttoncolumn)
         self.buttoncolumn += 1
     
-    def add_buttons(self, buttons):
+    def add_buttons(self, buttons) -> None:
         for btn in buttons:
             self.add_button(*btn)
 
-    def set_title(self, title):
+    def set_title(self, title) -> None:
         self.title.set(title.upper())
     
-    def toggle_content(self, *_):
+    def toggle_content(self, *_) -> None:
         if not self.master.enabled:
             self.toggle.set_icon('chevron-down')
         else:
             self.toggle.set_icon('chevron-right')
         self.master.toggle()
     
-    def hide_content(self, *_):
+    def hide_content(self, *_) -> None:
         self.toggle.set_icon('chevron-right')
         self.master.disable()
     
-    def show_content(self, *_):
+    def show_content(self, *_) -> None:
         self.toggle.set_icon('chevron-down')
         self.master.enable()

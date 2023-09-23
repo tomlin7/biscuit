@@ -2,22 +2,23 @@ import os
 import platform
 import shutil
 import subprocess
-import pyperclip
 import threading
 import tkinter as tk
 from tkinter.messagebox import askyesno
+
+import pyperclip
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
 from biscuit.core.components.utils import Tree
 
 from ..item import SidebarViewItem
+from .menu import ExplorerContextMenu
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
-from .menu import ExplorerContextMenu
 
 
 class DirectoryTree(SidebarViewItem):
-    def __init__(self, master, startpath=None, observe_changes=False, itembar=True, *args, **kwargs):
+    def __init__(self, master, startpath=None, observe_changes=False, itembar=True, *args, **kwargs) -> None:
         self.title = 'No folder opened'
         self.__buttons__ = (('new-file', lambda: self.base.palette.show_prompt('newfile:')), 
                             ('new-folder', lambda: self.base.palette.show_prompt('newfolder:')), 
@@ -51,9 +52,9 @@ class DirectoryTree(SidebarViewItem):
             self.tree.insert('', 0, text='You have not yet opened a folder.')
 
     # IMPORTANT
-    def change_path(self, path):
+    def change_path(self, path: str) -> None:
         self.nodes.clear()
-        self.path = os.path.abspath(path)
+        self.path = os.path.abspath(path) if path else path
         self.nodes[self.path] = ''
         if self.path:
             self.placeholder.grid_remove()
@@ -68,7 +69,7 @@ class DirectoryTree(SidebarViewItem):
             self.placeholder.grid()
             self.set_title('No folder opened')
     
-    def create_root(self, path, parent=''):
+    def create_root(self, path: str, parent='') -> None:
         if self.loading:
             return
 
@@ -77,7 +78,7 @@ class DirectoryTree(SidebarViewItem):
         t.daemon = True
         t.start()
 
-    def run_create_root(self, path, parent=''):
+    def run_create_root(self, path: str, parent='') -> None:
         self.files = []
         
         self.update_treeview(path, parent)
@@ -85,10 +86,10 @@ class DirectoryTree(SidebarViewItem):
         self.actionset = ActionSet("Search files by name", "file:", self.files)
         self.loading = False
 
-    def get_actionset(self):
+    def get_actionset(self) -> ActionSet:
         return self.actionset
 
-    def get_all_files(self):
+    def get_all_files(self) -> list:
         files = []
         for item in self.tree.get_children():
             if self.tree.item_type(item) == 'file':
@@ -96,13 +97,13 @@ class DirectoryTree(SidebarViewItem):
         
         return files
     
-    def scandir(self, path):
+    def scandir(self, path) -> list:
         entries = []
         for entry in os.scandir(path):
             entries.append((entry.name, os.path.join(self.path, entry.path)))
         return entries
     
-    def update_path(self, path):
+    def update_path(self, path) -> None:
         if any(path.endswith(i) for i in self.ignore_dirs):
             return
 
@@ -112,7 +113,7 @@ class DirectoryTree(SidebarViewItem):
             
         self.create_root(path, node)
 
-    def update_treeview(self, parent_path, parent=""):
+    def update_treeview(self, parent_path, parent="") -> None:
         if not os.path.exists(parent_path):
             return
         
@@ -142,10 +143,10 @@ class DirectoryTree(SidebarViewItem):
                 # for the actionset
                 self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
     
-    def selected_directory(self):
+    def selected_directory(self) -> str:
         return (self.tree.selected_path().strip() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path().strip()) or self.path
     
-    def new_file(self, filename):
+    def new_file(self, filename) -> None:
         if not filename:
             return
 
@@ -155,7 +156,7 @@ class DirectoryTree(SidebarViewItem):
             f.write("")
         self.create_root(parent, self.nodes[parent])
     
-    def new_folder(self, foldername):
+    def new_folder(self, foldername) -> None:
         if not foldername:
             return
 
@@ -169,16 +170,16 @@ class DirectoryTree(SidebarViewItem):
             return
         self.create_root(parent, self.nodes[parent])
 
-    def rename(self, path, new_name):
+    def rename(self, path, new_name) -> None:
         shutil.move(path, os.path.join(self.tree.selected_parent_path(), new_name))
 
-    def copy_path(self, *_):
+    def copy_path(self, *_) -> None:
         pyperclip.copy(self.tree.selected_path())
     
-    def copy_relpath(self, *_):
+    def copy_relpath(self, *_) -> None:
         pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
     
-    def reveal_in_explorer(self, *_):
+    def reveal_in_explorer(self, *_) -> None:
         path = self.selected_directory()
         try:
             if platform.system() == 'Windows':
@@ -195,16 +196,16 @@ class DirectoryTree(SidebarViewItem):
             self.base.logger.error(f"Explorer: {e}\n(Mostly because no File explorer executable detected)")
             return
         
-    def open_in_terminal(self, *_):
+    def open_in_terminal(self, *_) -> None:
         if path := self.selected_directory():
             self.base.terminalmanager.open_terminal(path)
             self.base.panel.show_panel()
     
-    def rename_item(self, newname):
+    def rename_item(self, newname: str) -> None:
         if path := self.tree.selected_path():
             shutil.move(path, os.path.join(self.tree.selected_parent_path() or self.path, newname))
     
-    def delete_item(self):
+    def delete_item(self) -> None:
         path = self.tree.selected_path()
         if not askyesno("Delete", f"Are you sure of deleting {path}?"):
             return
@@ -219,34 +220,34 @@ class DirectoryTree(SidebarViewItem):
             self.base.logger.error(f"Removing failed: {e}")
             return
     
-    def collapse_all(self, *_):
+    def collapse_all(self, *_) -> None:
         for node in self.tree.get_children(''):
             self.tree.item(node, open=False)
     
-    def refresh_selected_parent(self, *_):
+    def refresh_selected_parent(self, *_) -> None:
         self.update_path(self.tree.selected_parent_path())
 
-    def refresh_root(self, *_):
+    def refresh_root(self, *_) -> None:
         self.update_path(self.path)
 
-    def close_directory(self):
+    def close_directory(self) -> None:
         self.change_path(None)
     
-    def toggle_node(self, *_):
+    def toggle_node(self, *_) -> None:
         node = self.tree.focus()
         for i in self.tree.get_children(node):
             self.tree.delete(i)
             
         self.create_root(self.tree.selected_path(), node)
     
-    def openfile(self, _):
+    def openfile(self, _) -> None:
         if self.tree.selected_type() != 'file':
             return
 
         path = self.tree.selected_path()
         self.base.open_editor(path)
 
-    def preview_file(self, _):
+    def preview_file(self, _) -> None:
         #TODO preview editors -- extra preview param for editors
         return
     

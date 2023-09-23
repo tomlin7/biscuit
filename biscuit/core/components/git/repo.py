@@ -2,7 +2,7 @@ import git
 
 
 class GitRepo(git.Repo):
-    def __init__(self, master=None, path=None, *args, **kwargs):
+    def __init__(self, master=None, path=None, *args, **kwargs) -> None:
         super().__init__(path, *args, **kwargs)
         self.master = master
         self.path = path
@@ -12,34 +12,34 @@ class GitRepo(git.Repo):
         self.author_email = self.config.get_value("user", "email")
         self.author = git.Actor(self.author_name, self.author_email)
     
-    def get_untracked_files(self):
+    def get_untracked_files(self) -> list:
         return [item for item in self.untracked_files]
 
-    def get_added_files(self):
+    def get_added_files(self) -> list:
         return [item.a_path for item in self.index.diff(None).iter_change_type('A')]
 
-    def get_deleted_files(self):
+    def get_deleted_files(self) -> list:
         return [item.a_path for item in self.index.diff(None).iter_change_type('D')]
     
-    def get_modified_files(self):
+    def get_modified_files(self) -> list:
         return [item.a_path for item in self.index.diff(None).iter_change_type('M')]
 
-    def get_staged_added_files(self):
+    def get_staged_added_files(self) -> list:
         return [item.a_path for item in self.index.diff("HEAD").iter_change_type('D')]
 
-    def get_staged_deleted_files(self):
+    def get_staged_deleted_files(self) -> list:
         return [item.a_path for item in self.index.diff("HEAD").iter_change_type('A')]
     
-    def get_staged_modified_files(self):
+    def get_staged_modified_files(self) -> list:
         return [item.a_path for item in self.index.diff("HEAD").iter_change_type('M')]
     
     def get_latest_commit(self):
         return self.head.commit
     
-    def get_commit_filedata(self, filename):
+    def get_commit_filedata(self, filename) -> str:
         return self.head.commit.tree[filename].data_stream.read().decode('utf-8')
 
-    def stage_files(self, *paths):
+    def stage_files(self, *paths) -> None:
         for path, change_type in paths:
             # change type can be 0, 1, 2, 3
             # respectively represents Deleted, Added, Modified, Untracked
@@ -48,10 +48,10 @@ class GitRepo(git.Repo):
             else:
                 self.do(self.index.add, [path])
 
-    def unstage_files(self, *paths):
+    def unstage_files(self, *paths) -> None:
         self.index.reset(paths=paths)
     
-    def discard_changes(self, *path):
+    def discard_changes(self, *path) -> None:
         self.git.checkout("--", *path)
 
     def commit_files(self, message=None, **kwargs):

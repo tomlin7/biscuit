@@ -5,7 +5,7 @@ from ...utils import Frame
 
 #TODO update minimap when scrollbar is used
 class Minimap(Frame):
-    def __init__(self, master, textw, *args, **kwargs):
+    def __init__(self, master, textw, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.tw = textw
         self.font = ("Arial", 1, "bold")

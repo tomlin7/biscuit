@@ -7,7 +7,7 @@ from ..editor import BaseEditor
 class Welcome(BaseEditor):
     name = "welcome"
     
-    def __init__(self, master, exists=False, editable=False, *args, **kwargs):
+    def __init__(self, master, exists=False, editable=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(padx=100, pady=50, **self.base.theme.editors)
 

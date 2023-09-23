@@ -1,13 +1,13 @@
-import tkinter.ttk as ttk
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter.constants import *
 
-from .scrollbar import Scrollbar
 from .frame import Frame
+from .scrollbar import Scrollbar
 
 
 class Tree(Frame):
-    def __init__(self, master, startpath=None, doubleclick=lambda _: None, singleclick=lambda _: None, *args, **kwargs):
+    def __init__(self, master, startpath=None, doubleclick=lambda _: None, singleclick=lambda _: None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.utils.tree)
 
@@ -31,33 +31,33 @@ class Tree(Frame):
         self.bind("<Double-Button-1>", self.doubleclick)
         self.bind("<<TreeviewSelect>>", self.check_singleclick)
     
-    def bind(self, *args, **kwargs):
+    def bind(self, *args, **kwargs) -> None:
         self.tree.bind(*args, **kwargs)
 
-    def check_singleclick(self, _):
+    def check_singleclick(self, _) -> None:
         if self.item_type(self.focus()) == 'file':
             if self.singleclick:
                 self.singleclick(self.item_fullpath(self.focus()))
         else:
             self.toggle_node(self.focus())
     
-    def clear_node(self, node):
+    def clear_node(self, node) -> None:
         self.tree.delete(*self.tree.get_children(node))
 
-    def clear_tree(self):
+    def clear_tree(self) -> None:
         self.clear_node('')
 
-    def collapse_all(self):
+    def collapse_all(self) -> None:
         for node in self.tree.get_children():
             self.tree.item(node, open=False)
     
-    def delete(self, *a, **kw):
+    def delete(self, *a, **kw) -> None:
         self.tree.delete(*a, *kw)
     
-    def focus(self):
+    def focus(self) -> str:
         return self.tree.focus() or ''
 
-    def get_children(self, *a, **kw):
+    def get_children(self, *a, **kw) -> str:
         return self.tree.get_children(*a, **kw)
 
     def insert(self, *args, **kwargs):
@@ -93,7 +93,7 @@ class Tree(Frame):
     def set(self, *args, **kwargs):
         return self.tree.set(*args, **kwargs)
 
-    def toggle_node(self, node):
+    def toggle_node(self, node) -> None:
         if self.item_type(node) == 'directory':
             if self.is_open(node):
                 self.tree.item(node, open=False)

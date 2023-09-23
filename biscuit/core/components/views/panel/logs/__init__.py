@@ -34,7 +34,7 @@ def caller_class_name(skip=2):
 
 
 class Logs(PanelView):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.__buttons__ = (('clear-all',),('unlock',),('go-to-file',))
 
@@ -60,7 +60,7 @@ class Logs(PanelView):
         self.text.tag_config('warning', foreground=self.base.theme.views.panel.logs.warning)
         self.text.tag_config('error', foreground=self.base.theme.views.panel.logs.error, font=fontbold)
 
-    def write(self, *args):
+    def write(self, *args) -> None:
         self.text.config(state=NORMAL)
         for i in args:
             if isinstance(i, tuple):
@@ -70,10 +70,10 @@ class Logs(PanelView):
         self.text.config(state=DISABLED)
         self.text.see(END)
     
-    def newline(self):
+    def newline(self) -> None:
         self.write('\n')
 
-    def log(self, type, caller, text):
+    def log(self, type, caller, text) -> None:
         self.write(
             '[', (datetime.now().strftime("%H:%M:%S:%f"), 'time'), ']', 
             type, 
@@ -81,14 +81,14 @@ class Logs(PanelView):
         )
         self.newline()
 
-    def info(self, text):
+    def info(self, text) -> None:
         "info level log"
         self.log((' [info] ', 'info'), caller_class_name(), text)
     
-    def warning(self, text):
+    def warning(self, text) -> None:
         "warning level log"
         self.log((' [warning] ', 'warning'), caller_class_name(), text)
     
-    def error(self, text):
+    def error(self, text) -> None:
         "error level log"
         self.log((' [error] ', 'error'), caller_class_name(), text)

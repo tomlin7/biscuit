@@ -13,7 +13,11 @@ from .syntax import Syntax
 
 
 class Text(Text):
-    def __init__(self, master, path=None, exists=True, minimalist=False, language=None, *args, **kwargs):
+    """
+    Improved Text widget
+
+    """
+    def __init__(self, master, path=None, exists=True, minimalist=False, language=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.path = path
         self.data = None

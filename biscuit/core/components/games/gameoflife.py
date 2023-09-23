@@ -3,8 +3,8 @@ __author__ = "billyeatcookies"
 import random
 import tkinter as tk
 
-from .game import BaseGame
 from ..utils import Button
+from .game import BaseGame
 
 GRID_WIDTH = 50
 GRID_HEIGHT = 50
@@ -15,7 +15,7 @@ INITIAL_ALIVE_PROBABILITY = 0.2
 class GameOfLife(BaseGame):
     name = "Game of Life"
     
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, None, None, *args, **kwargs)
 
         self.start_stop_button = Button(self, text="Start", command=self.toggle_start_stop, padx=20, pady=20, font=("Fixedsys", 15))
@@ -37,13 +37,13 @@ class GameOfLife(BaseGame):
 
         self.base.notifications.info("INSTRUCTIONS: Left click to add cells, Right click to remove cells!")
 
-    def randomize_grid(self):
+    def randomize_grid(self) -> None:
         for row in range(GRID_HEIGHT):
             for col in range(GRID_WIDTH):
                 if random.random() < INITIAL_ALIVE_PROBABILITY:
                     self._grid[row][col] = 1
     
-    def draw_gridlines(self):
+    def draw_gridlines(self) -> None:
         for col in range(GRID_WIDTH + 1):
             x = col * CELL_SIZE
             self.canvas.create_line(x, 0, x, GRID_HEIGHT * CELL_SIZE, fill=self.base.theme.border, tags="grid")
@@ -52,7 +52,7 @@ class GameOfLife(BaseGame):
             self.canvas.create_line(0, y, GRID_WIDTH * CELL_SIZE, y, fill=self.base.theme.border, tags="grid")
 
 
-    def toggle_start_stop(self, *_):
+    def toggle_start_stop(self, *_) -> None:
         if self.is_running:
             self.is_running = False
             self.start_stop_button.config(text="Start")
@@ -61,19 +61,19 @@ class GameOfLife(BaseGame):
             self.start_stop_button.config(text="Stop")
             self.update()
 
-    def add_cell(self, event):
+    def add_cell(self, event) -> None:
         col = event.x // CELL_SIZE
         row = event.y // CELL_SIZE
         self._grid[row][col] = not self._grid[row][col]
         self.draw_cell(row, col)
     
-    def remove_cell(self, event):
+    def remove_cell(self, event) -> None:
         col = event.x // CELL_SIZE
         row = event.y // CELL_SIZE
         self._grid[row][col] = 0
         self.erase_cell(row, col)
 
-    def update(self):
+    def update(self) -> None:
         if not self.is_running:
             return
 
@@ -97,7 +97,7 @@ class GameOfLife(BaseGame):
         self.draw_grid()
         self.after(100, self.update)
 
-    def count_alive_neighbors(self, row, col):
+    def count_alive_neighbors(self, row, col) -> None:
         count = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -108,21 +108,21 @@ class GameOfLife(BaseGame):
         count -= self._grid[row][col]
         return count
 
-    def draw_grid(self):
+    def draw_grid(self) -> None:
         self.canvas.delete("cell")
         for row in range(GRID_HEIGHT):
             for col in range(GRID_WIDTH):
                 if self._grid[row][col] == 1:
                     self.draw_cell(row, col)
 
-    def draw_cell(self, row, col):
+    def draw_cell(self, row, col) -> None:
         x1 = col * CELL_SIZE
         y1 = row * CELL_SIZE
         x2 = x1 + CELL_SIZE
         y2 = y1 + CELL_SIZE
         self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.base.theme.biscuit, outline="", tags="cell")
 
-    def erase_cell(self, row, col):
+    def erase_cell(self, row, col) -> None:
         x1 = col * CELL_SIZE
         y1 = row * CELL_SIZE
         x2 = x1 + CELL_SIZE

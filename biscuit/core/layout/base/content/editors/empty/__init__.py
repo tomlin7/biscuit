@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from .. import EditorsPane
+
 import tkinter as tk
 
 from biscuit.core.components.utils import Frame
@@ -6,7 +13,7 @@ from .shortcuts import Shortcuts
 
 
 class Empty(Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master: EditorsPane, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bd=0, relief=tk.FLAT, **self.base.theme.editors)
 

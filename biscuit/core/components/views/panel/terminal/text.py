@@ -4,7 +4,7 @@ from biscuit.core.components.utils import Text
 
 
 class TerminalText(Text):
-    def __init__(self, master=None, **kw):
+    def __init__(self, master=None, **kw) -> None:
         super().__init__(master, **kw)
         self.mark_set('input', 'insert')
         self.mark_gravity('input', 'left')
@@ -16,7 +16,7 @@ class TerminalText(Text):
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
     
-    def clear(self, *_):
+    def clear(self, *_) -> None:
         self.proxy_enabled = False
 
         lastline = self.get('input linestart', 'input')
@@ -25,7 +25,7 @@ class TerminalText(Text):
 
         self.proxy_enabled = True
         
-    def _proxy(self, *args):
+    def _proxy(self, *args) -> None:
         if not self.proxy_enabled:
             return self.tk.call((self._orig,) + args)
 

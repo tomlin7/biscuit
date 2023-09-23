@@ -1,12 +1,19 @@
+from __future__ import annotations
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from .. import Sidebar
+
 import tkinter as tk
-from tkinter.constants import *
+
+from biscuit.core.components.utils import Bubble, Menubutton, get_codicon
 
 from .menu import ActionbarMenu
-from biscuit.core.components.utils import get_codicon, Bubble, Menubutton
 
 
 class MenuItem(Menubutton):
-    def __init__(self, master, icon, text, *args, **kwargs):
+    def __init__(self, master: Sidebar, icon: str, text: str, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.bubble = Bubble(self, text=text)
         self.config(text=get_codicon(icon), relief=tk.FLAT, font=("codicon", 20), 
@@ -18,6 +25,6 @@ class MenuItem(Menubutton):
         self.bind("<Enter>", self.hover)
         self.bind('<Leave>', self.bubble.hide)
     
-    def hover(self, *_):
+    def hover(self, *_) -> None:
         self.master.switch_menu(self.menu)
         self.bubble.show()

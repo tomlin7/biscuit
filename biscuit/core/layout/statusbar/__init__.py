@@ -1,5 +1,17 @@
+"""
+Statusbar and the further info shown on statusbar
+    .
+    App
+    └── Root
+        ├── Menubar
+        ├── BaseFrame
+        └── Statusbar
+"""
 #TODO add actual functions to actionset
+from __future__ import annotations
+
 import tkinter as tk
+import typing
 
 from biscuit.core.components import ActionSet
 from biscuit.core.components.utils import Frame
@@ -7,19 +19,17 @@ from biscuit.core.components.utils import Frame
 from .utils.button import SButton, TerminalButton
 from .utils.clock import SClock
 
+if typing.TYPE_CHECKING:
+    from ...components.editors.texteditor import Text
+    from .. import Root
+
 
 class Statusbar(Frame):
     """
     Status bar holds various widgets that are used to display information about the current file
     and the current state of the editor.
-    .
-    App
-    └── Root
-        ├── Menubar
-        ├── BaseFrame
-        └── Statusbar
     """
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.layout.statusbar.background)
 
@@ -97,10 +107,10 @@ class Statusbar(Frame):
         self.clock.set_pack_data(side=tk.RIGHT)
         self.clock.show()
 
-    def toggle_terminal(self):
+    def toggle_terminal(self) -> None:
         self.base.toggle_terminal()
 
-    def toggle_editmode(self, state):
+    def toggle_editmode(self, state: bool) -> None:
         if state:
             self.clock.show()
             self.file_type.show()
@@ -115,7 +125,7 @@ class Statusbar(Frame):
             self.indentation.hide()
             self.line_col_info.hide()
     
-    def update_git_info(self):
+    def update_git_info(self) -> None:
         if self.base.git_found:
             self.branch.show()
             self.branch.change_text("{0}".format(self.base.git.active_branch))
@@ -123,12 +133,12 @@ class Statusbar(Frame):
         else:
             self.branch.hide()
     
-    def on_open_file(self, text):
+    def on_open_file(self, text: Text) -> None:
         self.file_type.change_text(text.language)
         self.encoding.change_text(text.encoding)
         self.eol.change_text(text.eol)
     
-    def update_notifications(self):
+    def update_notifications(self) -> None:
         if n := self.base.notifications.count:
             self.notif.change_icon('bell-dot')
             self.notif.change_description(f'{n} notifications')
@@ -136,8 +146,8 @@ class Statusbar(Frame):
             self.notif.change_icon('bell')
             self.notif.change_description(f'No notifications')
 
-    def set_line_col_info(self, line, col, selected):
+    def set_line_col_info(self, line: int, col: int, selected: int) -> None:
         self.line_col_info.change_text(text="Ln {0}, Col {1}{2}".format(line, col, f" ({selected} selected)" if selected else ""))
 
-    def set_encoding(self, encoding):
+    def set_encoding(self, encoding: str) -> None:
         self.encoding.change_text(text=encoding.upper())

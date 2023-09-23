@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+import typing
+
 from .loader import BindingsLoader
 
+if typing.TYPE_CHECKING:
+    from ... import Settings
 
 class Bindings:
     """
-    Loads and manages bindings for biscuit.
+    Loads and manages bindings
+    ...
     """
-    def __init__(self, master):
+    def __init__(self, master: Settings) -> None:
         self.base = master.base
 
         self.new_file = "<Control-n>"
@@ -26,7 +33,7 @@ class Bindings:
         # self.bindings = self.loader.get_loaded_bindings()
         # self.map_bindings()
 
-    def map_bindings(self):
+    def map_bindings(self) -> None:
         self.new_file = self.bindings['newFile']
         self.new_window = self.bindings['newWindow']
         self.open_file = self.bindings['openFile']

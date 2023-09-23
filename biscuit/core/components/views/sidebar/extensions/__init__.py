@@ -1,13 +1,13 @@
 import tkinter as tk
 
-from .results import Results
-from ..sidebarview import SidebarView
-
 from biscuit.core.components.utils import Entry
+
+from ..sidebarview import SidebarView
+from .results import Results
 
 
 class Extensions(SidebarView):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = (('refresh',), ('clear-all',), ('collapse-all',))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'extensions'
@@ -20,5 +20,5 @@ class Extensions(SidebarView):
         self.results = Results(self)
         self.add_widget(self.results)
 
-    def initialize(self):
+    def initialize(self) -> None:
         self.results.refresh()

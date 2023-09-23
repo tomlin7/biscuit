@@ -8,7 +8,7 @@ from biscuit.core.components.utils import Button, Frame, Label
 
 
 class Extension(Frame):
-    def __init__(self, manager, master, name, file, url, *args, **kwargs):
+    def __init__(self, manager, master, name, file, url, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.manager = manager
@@ -36,13 +36,13 @@ class Extension(Frame):
         self.bind("<Leave>", self.hoveroff)
         self.hoveroff()
     
-    def run_fetch_extension(self, *_):
+    def run_fetch_extension(self, *_) -> None:
         if self.installed:
             return
         
         threading.Thread(target=self.fetch_extension).start()
 
-    def fetch_extension(self):
+    def fetch_extension(self) -> None:
         try:
             response = requests.get(self.url)
             if response.status_code == 200:
@@ -50,7 +50,7 @@ class Extension(Frame):
         except:
             self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
-    def install_extension(self, response):
+    def install_extension(self, response) -> None:
         with open(self.file, 'w') as fp:
             fp.write(response.text)
 
@@ -60,7 +60,7 @@ class Extension(Frame):
         self.base.extensionsmanager.run_extension(self.name)
         self.manager.run_fetch_list()
 
-    def remove_extension(self, *_):
+    def remove_extension(self, *_) -> None:
         try:
             os.remove(self.file)
             self.manager.run_fetch_list()
@@ -69,14 +69,14 @@ class Extension(Frame):
         except Exception as e:
             self.base.logger.error(f"Uninstalling extension '{self.name}' failed.\n{e}")
 
-    def hoverin(self, *_):
+    def hoverin(self, *_) -> None:
         try:
             self.config(bg=self.hbg)
             self.namelbl.config(bg=self.hbg)
         except:
             pass
         
-    def hoveroff(self, *_):
+    def hoveroff(self, *_) -> None:
         try:
             self.config(bg=self.bg)
             self.namelbl.config(bg=self.bg)

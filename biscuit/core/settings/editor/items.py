@@ -3,8 +3,9 @@ from tkinter import ttk
 
 from biscuit.core.components.utils import Entry, Frame
 
+
 class Item(Frame):
-    def __init__(self, master, name="Example", *args, **kwargs):
+    def __init__(self, master, name="Example", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         self.name = name
@@ -28,7 +29,7 @@ class Item(Frame):
     #     self.lbl.config(bg=self.bg)
 
 class DropdownItem(Item):
-    def __init__(self, master, name="Example", options=["True", "False"], default=0, *args, **kwargs):
+    def __init__(self, master, name="Example", options=["True", "False"], default=0, *args, **kwargs) -> None:
         super().__init__(master, name, *args, **kwargs)
 
         self.var = tk.StringVar(self, value=options[default])
@@ -37,12 +38,12 @@ class DropdownItem(Item):
         m.pack(side=tk.LEFT)
         
     @property
-    def value(self):
+    def value(self) -> str:
         return self.var.get()
     
     
 class IntegerItem(Item):
-    def __init__(self, master, name="Example", default="0", *args, **kwargs):
+    def __init__(self, master, name="Example", default="0", *args, **kwargs) -> None:
         super().__init__(master, name, *args, **kwargs)
         self.base.register(self.validate)
 
@@ -50,19 +51,19 @@ class IntegerItem(Item):
         self.entry.insert(0, default)
         self.entry.pack(side=tk.LEFT)
 
-    def validate(self, value):
+    def validate(self, value) -> None:
         if value.isdigit() or value == "":
             return True
         else:
             return False
 
     @property
-    def value(self):
+    def value(self) -> str:
         return self.entry.get()
 
 
 class StringItem(Item):
-    def __init__(self, master, name="Example", default="placeholder", *args, **kwargs):
+    def __init__(self, master, name="Example", default="placeholder", *args, **kwargs) -> None:
         super().__init__(master, name, *args, **kwargs)
 
         self.entry = ttk.Entry(self, font=("Segoi UI", 11), width=30)
@@ -70,19 +71,19 @@ class StringItem(Item):
         self.entry.pack(side=tk.LEFT)
 
     @property
-    def value(self):
+    def value(self) -> str:
         return self.entry.get()
 
 
 class CheckboxItem(Item):
-    def __init__(self, master, name="Example", default=True, *args, **kwargs):
+    def __init__(self, master, name="Example", default=True, *args, **kwargs) -> None:
         super().__init__(master, name, *args, **kwargs)
 
         self.var = tk.BooleanVar(self, value=default)
         ttk.Checkbutton(self, text=name, variable=self.var).pack(fill=tk.X, anchor=tk.W)
 
     @property
-    def value(self):
+    def value(self) -> str:
         return self.var.get()
 
 
