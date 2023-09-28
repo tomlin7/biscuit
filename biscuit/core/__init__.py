@@ -143,8 +143,8 @@ class App(tk.Tk):
         self.min_width = round(500 * self.scale)
         self.min_height = round(500 * self.scale)
 
-        app_width = round(1000 * self.scale)
-        app_height = round(650 * self.scale)
+        app_width = round(1150 * self.scale)
+        app_height = round(700 * self.scale)
         x = int((self.winfo_screenwidth() - app_width) / 2)
         y = int((self.winfo_screenheight() - app_height) / 2)
 
@@ -174,7 +174,6 @@ class App(tk.Tk):
         
         self.api = ExtensionsAPI(self)
         self.extensionsmanager = ExtensionManager(self)
-        self.extensionsmanager.start_server()
         self.extensionsGUI.initialize()
 
     def initialize_editor(self, dir: str) -> None:
