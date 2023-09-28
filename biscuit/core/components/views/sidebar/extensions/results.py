@@ -59,11 +59,11 @@ class Results(SidebarViewItem):
         self.clear()
         self.extensions = toml.loads(response.text)
 
-        for name, file in self.extensions.items():
+        for name, data in self.extensions.items():
             #TODO add further loops for folders
             #TODO add author, description
-            ext = Extension(self, self.content, name, file, f"{self.repo_url}extensions/{file}")
-            ext.pack(fill=tk.X)
+            ext = Extension(self, name, data)
+            ext.pack(in_=self.content, fill=tk.X)
     
     def clear(self, *_) -> None:
         for widget in self.content.winfo_children():

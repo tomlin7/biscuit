@@ -18,7 +18,7 @@ class Notifications(Toplevel):
         self.overrideredirect(True)
 
         self.xoffset = 5 * self.base.scale
-        self.yoffset = 25 * self.base.scale
+        self.yoffset = 30 * self.base.scale
         
         self.minsize(width=round(300*self.base.scale), height=round(15*self.base.scale))
 
