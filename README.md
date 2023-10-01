@@ -30,8 +30,7 @@ Download the project source or clone this repo, in the project directory run:
 > pip install -r requirements.txt
 > python -m biscuit
 ```
-To run in a separate virtual environment, you can use [python poetry](https://python-poetry.org/).
-
+To run in a separate virtual environment, you can use [python poetry](https://python-poetry.org/). 
 To compile Biscuit for your platform, see [compiling guide](https://github.com/billyeatcookies/Biscuit/tree/main/scripts).
 
 > **Note**
@@ -40,6 +39,8 @@ To compile Biscuit for your platform, see [compiling guide](https://github.com/b
 > > sudo apt install fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential
 > > pip install scikit-build
 > ```
+
+For feature suggestions and bug reports, please check [**issue tracker**](https://github.com/billyeatcookies/Biscuit/issues).
 
 ## Contributing ❤ 
 The project aims to foster a vibrant open-source community of Python enthusiasts, your contributions and support are greatly appreciated! 🧡 check our [contributing guidelines](./CONTRIBUTING.md) for any questions! 
@@ -67,8 +68,3 @@ The project aims to foster a vibrant open-source community of Python enthusiasts
 - **PathView** for the **Breadcrumbs!**
 
 ![pathview](https://imgur.com/CztWtni.jpg)
-
-
-## Issues :bug: 
-
-If something doesn’t work, please [file an issue](https://github.com/billyeatcookies/Biscuit/issues/new).
