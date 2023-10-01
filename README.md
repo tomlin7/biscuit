@@ -68,3 +68,7 @@ The project aims to foster a vibrant open-source community of Python enthusiasts
 
 ![pathview](https://imgur.com/CztWtni.jpg)
 
+
+## Issues :bug: 
+
+If something doesn’t work, please [file an issue](https://github.com/billyeatcookies/Biscuit/issues/new).
