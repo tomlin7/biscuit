@@ -24,7 +24,7 @@ class BreadCrumbs(Frame):
             path = os.path.abspath(path).split(os.path.sep)
             for i, item in enumerate(path):
                 text = item if item == path[-1] else f"{item} ›"
-                self.additem(os.path.join(*path[:i]), text)
+                self.additem(os.path.join(*path[:i] or os.path.sep), text)
         else:
             # otherwise use the relative path to active directory
             path = os.path.relpath(path, self.base.active_directory).split(os.path.sep)        
