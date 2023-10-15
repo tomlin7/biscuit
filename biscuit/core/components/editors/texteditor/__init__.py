@@ -43,6 +43,9 @@ class TextEditor(BaseEditor):
         if not self.minimalist:
             self.minimap.redraw_cursor()
 
+        if self.base.settings.config.auto_save_enabled:
+            self.auto_save()
+
     def on_change(self, *_):
         self.text.refresh()
         self.linenumbers.redraw()
@@ -73,7 +76,11 @@ class TextEditor(BaseEditor):
     def save(self, path=None):
         if self.editable:
             self.text.save_file(path)
-    
+
+    def auto_save(self):
+        self.save()
+        self.base.after(self.base.settings.config.auto_save_timer_ms, self.auto_save)
+
     def cut(self, *_):
         if self.editable:
             self.text.cut()
@@ -248,4 +255,3 @@ class TextEditor(BaseEditor):
 
     def yview_scroll(self, n, what):
         self.text.yview_scroll(n, what)
-

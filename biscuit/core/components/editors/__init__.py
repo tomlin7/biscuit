@@ -115,5 +115,3 @@ class Editor(Frame):
     
     def focus(self) -> None:
         self.content.focus()
-
-

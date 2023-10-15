@@ -24,6 +24,7 @@ requests = "^2.31.0"
 pytest = "^7.4.2"
 pytest-dotenv = "^0.5.2"
 git-changelog = "^2.3.1"
+pyperclip = "^1.8.2"
 
 [build-system]
 requires = ["poetry-core"]
