@@ -19,7 +19,7 @@ class Config:
         self.font=("Consolas", 13)
         self.uifont = ("Segoi UI", 10)
         
-        self.auto_save_enabled = True
+        self.auto_save_enabled = False
         self.auto_save_timer_ms = 10000
 
         # TODO loading config from user settings
