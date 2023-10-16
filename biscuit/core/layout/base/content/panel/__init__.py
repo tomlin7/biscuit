@@ -75,6 +75,7 @@ class Panel(Frame):
         for tab in self.tabs.tabs:
             if tab.view == view:
                 self.tabs.set_active_tab(tab)
+                tab.select()
     
     @property
     def logger(self) -> Logs:

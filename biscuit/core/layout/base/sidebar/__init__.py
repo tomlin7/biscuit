@@ -94,7 +94,11 @@ class Sidebar(Frame):
 
     def show_view(self, view: SidebarView) -> None:
         "Show a view."
-        self.slots.set_active_slot(view)
+        for i in self.slots.slots:
+            if i.view == view:
+                self.slots.set_active_slot(i)
+                i.enable()
+                break
     
     def show_explorer(self) -> None:
         "Show explorer view."

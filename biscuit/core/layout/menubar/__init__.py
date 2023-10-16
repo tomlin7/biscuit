@@ -93,7 +93,7 @@ class Menubar(Frame):
         self.add_file_menu()
         self.add_edit_menu()
         self.add_selection_menu()
-        self.add_view_menu
+        self.add_view_menu()
 
     def add_file_menu(self) -> None:
         events = self.events
@@ -143,7 +143,6 @@ class Menubar(Frame):
         selection_menu.add_item("Move Line Up", events.move_line_up)
         selection_menu.add_item("Move Line Down", events.move_line_down)
         selection_menu.add_item("Duplicate Selection", events.duplicate_selection)
-
     
     def add_view_menu(self) -> None:
         events = self.events
