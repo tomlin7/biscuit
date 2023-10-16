@@ -55,6 +55,7 @@ class Menubar(Frame):
         self.reposition_title()
     
     def reposition_title(self) -> None:
+        "Reposition the title label to the center of the menubar"
         x = self.winfo_x() + (self.winfo_width() - self.title_lbl.winfo_width())/2
         y = self.winfo_y() + (self.winfo_height() - self.title_lbl.winfo_height())/2
         
@@ -88,14 +89,12 @@ class Menubar(Frame):
         return new_menu.menu
 
     def add_menus(self) -> None:
+        #TODO menu shall support check items
         self.add_file_menu()
         self.add_edit_menu()
+        self.add_selection_menu()
+        self.add_view_menu
 
-        #TODO implement View menu events
-        #TODO menu shall support check items
-        #self.add_view_menu()
-
-    # TODO: Implement events for the menu items
     def add_file_menu(self) -> None:
         events = self.events
 
@@ -128,21 +127,36 @@ class Menubar(Frame):
         edit_menu.add_item("Copy", events.copy)
         edit_menu.add_item("Paste", events.paste)
         edit_menu.add_separator()
-        edit_menu.add_item("Find",)
-        edit_menu.add_item("Replace",)
+        edit_menu.add_item("Find", events.find)
+        edit_menu.add_item("Replace", events.replace)
+    
+    def add_selection_menu(self) -> None:
+        events = self.events
+
+        selection_menu = self.add_menu("Selection")
+        selection_menu.add_item("Select All", events.select_all)
+        selection_menu.add_item("Select Line", events.select_line)
+        selection_menu.add_item("Delete Line", events.delete_line)
+        selection_menu.add_separator()
+        selection_menu.add_item("Copy Line Up", events.copy_line_up)
+        selection_menu.add_item("Copy Line Down", events.copy_line_down)
+        selection_menu.add_item("Move Line Up", events.move_line_up)
+        selection_menu.add_item("Move Line Down", events.move_line_down)
+        selection_menu.add_item("Duplicate Selection", events.duplicate_selection)
+
     
     def add_view_menu(self) -> None:
         events = self.events
 
         view_menu = self.add_menu("View")
-        view_menu.add_item("Side Bar",)
-        view_menu.add_item("Console",)
-        view_menu.add_item("Status Bar",)
-        view_menu.add_item("Menu",)
+        view_menu.add_item("Command Palette...", lambda: self.base.palette.show_prompt(">"))
+        view_menu.add_item("Explorer", events.show_explorer)
+        view_menu.add_item("Search", events.show_search)
+        view_menu.add_item("Source Control", events.show_source_control)
+        view_menu.add_item("Extensions", events.show_extensions)
         view_menu.add_separator()
-        view_menu.add_item("Syntax",)
-        view_menu.add_item("Indentation",)
-        view_menu.add_item("Line Endings",)
+        view_menu.add_item("Terminal", events.show_terminal)
+        view_menu.add_item("Log", events.show_logs)
 
     def close_all_menus(self, *_) -> None:
         for menu in self.menus:
