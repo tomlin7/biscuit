@@ -16,14 +16,6 @@ class Results(Frame):
         self.treeview = Tree(self)
         self.treeview.pack(fill=X, side=LEFT, anchor=N, expand=True)
 
-        self.searchbox = master.searchbox
-        self.replacebox = master.replacebox
-
-        self.searchbox.children["!iconbutton"].bind("<Button-1>", self.search_casesensitive)
-        self.searchbox.children["!iconbutton2"].bind("<Button-1>", self.search_wholeword)
-        self.searchbox.children["!iconbutton3"].bind("<Button-1>", self.search_regex)
-        self.searchbox.children["!iconbutton4"].bind("<Button-1>", self.search)
-
         # self.replacebox.children["!iconbutton"].bind("<Button-1>", self.replace)
         # self.replacebox.children["!iconbutton"].bind("<Button-1>", self.replace_matchcase)
         
@@ -81,7 +73,7 @@ class Results(Frame):
 
             found_files = []
             total_occurrences = 0
-            search_string = self.searchbox.get()
+            search_string = self.master.searchbox.get()
 
             self.clear_tree() # Remove all items from the tree
 
