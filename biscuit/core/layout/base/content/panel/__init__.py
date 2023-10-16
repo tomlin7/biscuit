@@ -75,6 +75,7 @@ class Panel(Frame):
         for tab in self.tabs.tabs:
             if tab.view == view:
                 self.tabs.set_active_tab(tab)
+                tab.select()
     
     @property
     def logger(self) -> Logs:
@@ -83,6 +84,16 @@ class Panel(Frame):
     @property
     def terminal(self) -> Terminal:
         return self.default_views[1]
+    
+    def show_terminal(self) -> None:
+        "shows the terminal if its hidden/minimized"
+        self.set_active_view(self.terminal)
+        self.show_panel()
+
+    def show_logs(self) -> None:
+        "shows the logs if its hidden/minimized"
+        self.set_active_view(self.logger)
+        self.show_panel()
 
     def toggle_panel(self) -> None:
         "toggles the current visible state of panel"

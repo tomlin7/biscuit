@@ -110,8 +110,14 @@ class Text(Text):
 
         self.bind("<Control-f>", self.open_find_replace)
         self.bind("<Control-d>", self.multi_selection)
-        self.bind("<Control-Left>", lambda e: self.handle_ctrl_hmovement())
-        self.bind("<Control-Right>", lambda e: self.handle_ctrl_hmovement(True))
+        self.bind("<Control-g>", lambda _: self.base.palette.show_prompt(':'))
+        self.bind("<Control-Left>", lambda _: self.handle_ctrl_hmovement())
+        self.bind("<Control-Right>", lambda _: self.handle_ctrl_hmovement(True))
+
+        self.bind("<Shift-Alt-Up>", self.copy_line_up)
+        self.bind("<Shift-Alt-Down>", self.copy_line_down)
+        self.bind("<Alt-Up>", self.move_line_up)
+        self.bind("<Alt-Down>", self.move_line_down)
 
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
@@ -123,13 +129,6 @@ class Text(Text):
         self.bind("<Button-1>", self.hide_autocomplete)
         self.bind("<Up>", self.auto_completion.move_up)
         self.bind("<Down>", self.auto_completion.move_down)
-
-        # self.bind("<braceleft>", lambda e: self.complete_pair("}"))
-        # self.bind("<bracketleft>", lambda e: self.complete_pair("]"))
-        # self.bind("<parenleft>", lambda e: self.complete_pair(")"))
-
-        # self.bind("<apostrophe>", lambda e: self.surrounding_selection("\'"))
-        # self.bind("<quotedbl>", lambda e: self.surrounding_selection("\""))
 
     def key_release_events(self, event):
         self._user_edit = True
@@ -484,6 +483,45 @@ class Text(Text):
         line = f"{line}.0"
         self.move_cursor(line)
         self.see(line)
+    
+    def copy_line_up(self, *_) -> None:
+        "copies the line cursor is in below"
+        line = self.line
+        next_line = str(int(line) + 1)
+        self.insert(f"{next_line}.0", self.get(f"{line}.0", f"{line}.end"))
+        return "break"
+
+    def copy_line_down(self, *_) -> None:
+        "copies the line cursor is in above"
+        line = self.line
+        prev_line = str(int(line) - 1)
+        self.insert(f"{prev_line}.end", self.get(f"{line}.0", f"{line}.end"))
+        return "break"
+
+    def delete_line(self, *_) -> None:
+        "deletes the line cursor is in"
+        line = self.line
+        self.delete(f"{line}.0", f"{line}.end")
+
+    def move_line_up(self, *_) -> None:
+        "moves the line cursor is in below"
+        line = self.line
+        next_line = str(int(line) + 1)
+        self.insert(f"{next_line}.0", self.get(f"{line}.0", f"{line}.end"))
+        self.delete(f"{line}.0", f"{line}.end")
+        return "break"
+
+    def move_line_down(self, *_) -> None:
+        "moves the line cursor is in above"
+        line = self.line
+        prev_line = str(int(line) - 1)
+        self.insert(f"{prev_line}.end", self.get(f"{line}.0", f"{line}.end"))
+        self.delete(f"{line}.0", f"{line}.end")
+        return "break"
+    
+    def duplicate_selection(self, *_) -> None:
+        "duplicates the current selection"
+        self.insert(tk.INSERT, self.get_selected_text())
 
     def write(self, text, *args):
         self.insert(tk.END, text, *args)

@@ -91,3 +91,27 @@ class Sidebar(Frame):
     def extensions(self) -> Extensions:
         "Get source control view."
         return self.default_views[3]
+
+    def show_view(self, view: SidebarView) -> None:
+        "Show a view."
+        for i in self.slots.slots:
+            if i.view == view:
+                self.slots.set_active_slot(i)
+                i.enable()
+                break
+    
+    def show_explorer(self) -> None:
+        "Show explorer view."
+        self.show_view(self.default_views[0])
+
+    def show_search(self) -> None:
+        "Show search view."
+        self.show_view(self.default_views[1])
+
+    def show_source_control(self) -> None:
+        "Show source control view."
+        self.show_view(self.default_views[2])
+
+    def show_extensions(self) -> None:
+        "Show extensions view."
+        self.show_view(self.default_views[3])

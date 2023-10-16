@@ -6,6 +6,7 @@ if typing.TYPE_CHECKING:
     from ... import App
 
 import platform
+import tkinter as tk
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
@@ -132,3 +133,70 @@ class Events:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.paste()
+    def find(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.open_find_replace()
+
+    def replace(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.open_find_replace()
+
+    def select_all(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.tag_add("sel", "1.0", "end")
+    
+    def select_line(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.select_line(editor.content.text.index(tk.INSERT))
+
+    def delete_line(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.delete_line()
+
+    def copy_line_up(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.copy_line_up()
+
+    def copy_line_down(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.copy_line_down()
+
+    def move_line_up(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.move_line_up()
+
+    def move_line_down(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.move_line_down()
+
+    def duplicate_selection(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.duplicate_selection()
+
+    def show_explorer(self, *_) -> None:
+        self.base.sidebar.show_explorer()
+
+    def show_search(self, *_) -> None:
+        self.base.sidebar.show_search()
+
+    def show_source_control(self, *_) -> None:
+        self.base.sidebar.show_source_control()
+
+    def show_extensions(self, *_) -> None:
+        self.base.sidebar.show_extensions()
+
+    def show_terminal(self, *_) -> None:
+        self.base.panel.show_terminal()
+
+    def show_logs(self, *_) -> None:
+        self.base.panel.show_logs()
