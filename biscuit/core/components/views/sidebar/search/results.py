@@ -1,7 +1,6 @@
 import os
 import re
 import tkinter as tk
-from tkinter.constants import *
 
 from biscuit.core.components.utils import Frame, Label, Tree
 
@@ -10,11 +9,11 @@ class Results(Frame):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
-        self.label = Label(self, text="Search", width=100)
-        self.label.pack(fill=X, expand=True, anchor=W)
+        self.label = Label(self, text="Search")
+        self.label.pack(fill=tk.X)
 
         self.treeview = Tree(self)
-        self.treeview.pack(fill=X, side=LEFT, anchor=N, expand=True)
+        self.treeview.pack(fill=tk.BOTH, expand=True)
 
         # self.replacebox.children["!iconbutton"].bind("<Button-1>", self.replace)
         # self.replacebox.children["!iconbutton"].bind("<Button-1>", self.replace_matchcase)
