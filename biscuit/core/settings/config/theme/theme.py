@@ -180,6 +180,7 @@ class Menu(FrameThemeObject):
 class Notifications(FrameThemeObject):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.title = ThemeObject(self)
         self.button = HighlightableThemeObject(self)
         self.text = ThemeObject(self)
 

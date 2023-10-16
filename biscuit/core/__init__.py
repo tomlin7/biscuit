@@ -52,7 +52,6 @@ class App(tk.Tk):
         self.extensionsmanager.stop_server()
     
     def setup(self) -> None:
-
         # flag that all components have been added
         self.initialized = False
 
@@ -156,6 +155,7 @@ class App(tk.Tk):
         self.notifications = Notifications(self)
 
     def setup_references(self) -> None:
+        "References to various components of the editor"
         self.menubar = self.root.menubar
         self.statusbar = self.root.statusbar
         self.editorsmanager = self.root.baseframe.contentpane.editorspane
