@@ -106,12 +106,14 @@ class Statusbar(Frame):
         self.notif.pack(side=tk.RIGHT, padx=(0, 10))
 
         # clock
+        self.clock = SClock(self, text="H:M:S", description="Time")
         self.time_actionset = ActionSet(
             "Configure clock format", "time:",
-            [("12 hours", lambda e=None: print("time 12 hours", e)),
-            ("24 hours", lambda e=None: print("time 24 hours", e)),],
+            [("12 hours", lambda e=None: self.clock.use_24_hour_format(False)),
+            ("24 hours", lambda e=None: self.clock.use_24_hour_format(True)),],
         )
-        self.clock = SClock(self, text="H:M:S", function=lambda: self.base.palette.show_prompt('time:'), description="Time")
+        self.base.palette.register_actionset(lambda: self.time_actionset)
+        self.clock.change_function(function=lambda: self.base.palette.show_prompt('time:'))
         self.clock.set_pack_data(side=tk.RIGHT)
         self.clock.show()
 
