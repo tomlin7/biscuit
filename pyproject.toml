@@ -16,7 +16,7 @@ tkextrafont = "^0.6.3"
 Pygments = "^2.16.1"
 toml = "^0.10.2"
 sv-ttk = "^2.5.5"
-Pillow = "^10.0.1"
+Pillow = "^10.1.0"
 requests = "^2.31.0"
 
 
