@@ -1,17 +1,32 @@
+from __future__ import annotations
+
 import os
+import threading
 import tkinter as tk
+import typing
 
 from pygments import lex
 from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
 
+if typing.TYPE_CHECKING:
+    from .text import Text
 
 class Highlighter:
-    def __init__(self, master, language=None, *args, **kwargs) -> None:
-        self.master = master
-        self.base = master.base
+    def __init__(self, text: Text, language: str=None, *args, **kwargs) -> None:
+        """Highlighter based on pygments lexers
+        If language is not given, it will try to detect the language from the file extension.
+        If the file extension is not recognized, it will default to plain text.
 
-        self.text = master
-        self.base = master.base
+        Attributes
+        ----------
+        text : Text
+            Text widget to highlight
+        language : str, optional
+            Language to highlight, by default None
+        """
+
+        self.text: Text = text
+        self.base = text.base
         self.language = language
         
         if language:
@@ -25,10 +40,10 @@ class Highlighter:
                 return
         else:
             try:
-                if os.path.basename(master.path).endswith("txt"):
+                if os.path.basename(text.path).endswith("txt"):
                     raise Exception()
                 
-                self.lexer = get_lexer_for_filename(os.path.basename(master.path), encoding=master.encoding)
+                self.lexer = get_lexer_for_filename(os.path.basename(text.path), encoding=text.encoding)
                 self.text.language = self.lexer.name
             except:
                 self.lexer = None
@@ -39,7 +54,16 @@ class Highlighter:
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
     
-    def change_language(self, language):
+    def change_language(self, language: str) -> None:
+        """Change the language of the highlighter
+        If language is not given, it will try to detect the language from the file extension.
+        If the file extension is not recognized, it will default to plain text.
+
+        Parameters
+        ----------
+        language : str
+            Language to highlight
+        """
         if language:
             try:
                 self.lexer = get_lexer_by_name(language)
@@ -51,22 +75,26 @@ class Highlighter:
                 return
         else:
             try:
-                if os.path.basename(self.master.path).endswith("txt"):
+                if os.path.basename(self.text.path).endswith("txt"):
                     raise Exception()
                 
-                self.lexer = get_lexer_for_filename(os.path.basename(self.master.path), encoding=self.master.encoding)
+                self.lexer = get_lexer_for_filename(os.path.basename(self.text.path), encoding=self.text.encoding)
                 self.text.language = self.lexer.name
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
                 self.base.notifications.info("No lexers are available for opened file type.")
                 return
-            
-    def setup_highlight_tags(self):
+        
+        threading.Thread(target=self.text.refresh, daemon=True).start()
+        
+    def setup_highlight_tags(self) -> None:
+        "Setup the tags for highlighting"
         for token, color in self.tag_colors.items():
             self.text.tag_configure(str(token), foreground=color)
 
-    def highlight(self):
+    def highlight(self) -> None:
+        "Highlights the text content of attached Editor instance"
         if not self.lexer:
             return
         

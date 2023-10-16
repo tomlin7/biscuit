@@ -13,6 +13,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
+from pygments.lexers._mapping import LEXERS
+
 from biscuit.core.components import ActionSet
 from biscuit.core.components.utils import Frame
 
@@ -28,7 +30,13 @@ class Statusbar(Frame):
     """
     Status bar holds various widgets that are used to display information about the current file
     and the current state of the editor.
+
+    Attributes
+    ----------
+    base : Root
+        Root window
     """
+
     def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.layout.statusbar.background)
@@ -84,21 +92,21 @@ class Statusbar(Frame):
         self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'), description="Select End of Line sequence")
         self.eol.set_pack_data(side=tk.RIGHT)
 
-        # TODO use pygments to list out? 
-        self.filetype_actionset = ActionSet(
-            "FILETYPE", "syntax:",
-            [("Plain Text", lambda e=None: print("filetype Plain Text", e)),
-            ("python", lambda e=None: print("filetype python", e)),
-            ("c++", lambda e=None: print("filetype c++", e))],
+        # language mode
+        items = [(aliases[0], lambda _, lang=aliases[0]: self.base.editorsmanager.active_editor.content.text.highlighter.change_language(lang)) for _, _, aliases, _, _ in LEXERS.values() if aliases]
+        self.language_actionset = ActionSet(
+            "Change Language Mode", "language:", items
         )
-        self.base.palette.register_actionset(lambda: self.filetype_actionset)
-        self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('syntax:'), description="Select Language Mode")
+        self.base.palette.register_actionset(lambda: self.language_actionset)
+        self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('language:'), description="Select Language Mode")
         self.file_type.set_pack_data(side=tk.RIGHT)
 
+        # show/hide notifications
         self.notif = SButton(self, icon="bell", function=self.base.notifications.show, description="No notifications")
         self.notif.pack(side=tk.RIGHT, padx=(0, 10))
 
-        self.filetype_actionset = ActionSet(
+        # clock
+        self.time_actionset = ActionSet(
             "Configure clock format", "time:",
             [("12 hours", lambda e=None: print("time 12 hours", e)),
             ("24 hours", lambda e=None: print("time 24 hours", e)),],

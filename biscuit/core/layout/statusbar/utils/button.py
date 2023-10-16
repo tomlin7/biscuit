@@ -78,6 +78,9 @@ class SButton(Frame):
     
     def change_icon(self, icon: str) -> None:
         self.icon_label.config(text=get_codicon(icon))
+    
+    def change_function(self, function: typing.Callable) -> None:
+        self.function = function
 
     def set_pack_data(self, **kwargs) -> None:
         self.pack_data = kwargs
