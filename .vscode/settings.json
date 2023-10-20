@@ -12,4 +12,5 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
+    "python.analysis.autoImportCompletions": true,
 }

@@ -14,6 +14,7 @@ class TextEditor(BaseEditor):
         self.minimalist = minimalist
         self.language = language
         self.exists = exists
+        self.editable = True
         
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)

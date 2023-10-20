@@ -26,13 +26,19 @@ if typing.TYPE_CHECKING:
 
 class Menubar(Frame):
     """
-    Root frame holds Menubar, BaseFrame, and Statusbar
+    Menubar of the application
+
+    Attributes
+    ----------
+    master 
+        Root window frame
     """
     def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.menus = []
         self.events = self.base.events
 
+        # make this custom titlebar for windows
         if platform.system() == 'Windows':
             close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.events.quit)
             close.config(activebackground='#e81123', activeforeground="white")
@@ -64,15 +70,15 @@ class Menubar(Frame):
 
     def config_bindings(self) -> None:
         self.bind('<Map>', self.events.window_mapped)
-        self.bind("<Button-1>", self.startMove)
-        self.bind("<ButtonRelease-1>", self.stopMove)
+        self.bind("<Button-1>", self.start_move)
+        self.bind("<ButtonRelease-1>", self.stop_move)
         self.bind("<B1-Motion>", self.moving)
 
-    def startMove(self, event) -> None:
+    def start_move(self, event) -> None:
         self.x = event.x
         self.y = event.y
 
-    def stopMove(self, _) -> None:
+    def stop_move(self, _) -> None:
         self.x = None
         self.y = None
 
@@ -98,64 +104,64 @@ class Menubar(Frame):
     def add_file_menu(self) -> None:
         events = self.events
 
-        file_menu = self.add_menu("File")
-        file_menu.add_item("New File", events.new_file)
-        file_menu.add_item("New Window", events.new_window)
-        file_menu.add_separator()
-        file_menu.add_item("Open File", events.open_file)
-        file_menu.add_item("Open Folder", events.open_directory)
+        self.file_menu = self.add_menu("File")
+        self.file_menu.add_item("New File", events.new_file)
+        self.file_menu.add_item("New Window", events.new_window)
+        self.file_menu.add_separator()
+        self.file_menu.add_item("Open File", events.open_file)
+        self.file_menu.add_item("Open Folder", events.open_directory)
         # TODO open recent files 
-        file_menu.add_separator()
-        file_menu.add_item("Close Editor", events.close_file)
-        file_menu.add_item("Close Folder", events.close_dir)
-        file_menu.add_item("Close Window", events.quit)
-        file_menu.add_separator()
-        file_menu.add_item("Save", events.save)
-        file_menu.add_item("Save As...", events.save_as)
-        file_menu.add_item("Save All", events.save_all)
-        file_menu.add_separator()
-        file_menu.add_item("Exit", events.quit)
+        self.file_menu.add_separator()
+        self.file_menu.add_item("Close Editor", events.close_file)
+        self.file_menu.add_item("Close Folder", events.close_dir)
+        self.file_menu.add_item("Close Window", events.quit)
+        self.file_menu.add_separator()
+        self.file_menu.add_item("Save", events.save)
+        self.file_menu.add_item("Save As...", events.save_as)
+        self.file_menu.add_item("Save All", events.save_all)
+        self.file_menu.add_separator()
+        self.file_menu.add_item("Exit", events.quit)
 
     def add_edit_menu(self) -> None:
         events = self.events
 
-        edit_menu = self.add_menu("Edit")
-        edit_menu.add_item("Undo", events.undo)
-        edit_menu.add_item("Redo", events.redo)
-        edit_menu.add_separator()
-        edit_menu.add_item("Cut", events.cut)
-        edit_menu.add_item("Copy", events.copy)
-        edit_menu.add_item("Paste", events.paste)
-        edit_menu.add_separator()
-        edit_menu.add_item("Find", events.find)
-        edit_menu.add_item("Replace", events.replace)
+        self.edit_menu = self.add_menu("Edit")
+        self.edit_menu.add_item("Undo", events.undo)
+        self.edit_menu.add_item("Redo", events.redo)
+        self.edit_menu.add_separator()
+        self.edit_menu.add_item("Cut", events.cut)
+        self.edit_menu.add_item("Copy", events.copy)
+        self.edit_menu.add_item("Paste", events.paste)
+        self.edit_menu.add_separator()
+        self.edit_menu.add_item("Find", events.find)
+        self.edit_menu.add_item("Replace", events.replace)
     
     def add_selection_menu(self) -> None:
         events = self.events
 
-        selection_menu = self.add_menu("Selection")
-        selection_menu.add_item("Select All", events.select_all)
-        selection_menu.add_item("Select Line", events.select_line)
-        selection_menu.add_item("Delete Line", events.delete_line)
-        selection_menu.add_separator()
-        selection_menu.add_item("Copy Line Up", events.copy_line_up)
-        selection_menu.add_item("Copy Line Down", events.copy_line_down)
-        selection_menu.add_item("Move Line Up", events.move_line_up)
-        selection_menu.add_item("Move Line Down", events.move_line_down)
-        selection_menu.add_item("Duplicate Selection", events.duplicate_selection)
+        self.selection_menu = self.add_menu("Selection")
+        self.selection_menu.add_item("Select All", events.select_all)
+        self.selection_menu.add_item("Select Line", events.select_line)
+        self.selection_menu.add_item("Delete Line", events.delete_line)
+        self.selection_menu.add_separator()
+        self.selection_menu.add_item("Copy Line Up", events.copy_line_up)
+        self.selection_menu.add_item("Copy Line Down", events.copy_line_down)
+        self.selection_menu.add_item("Move Line Up", events.move_line_up)
+        self.selection_menu.add_item("Move Line Down", events.move_line_down)
+        self.selection_menu.add_item("Duplicate Selection", events.duplicate_selection)
     
     def add_view_menu(self) -> None:
         events = self.events
 
-        view_menu = self.add_menu("View")
-        view_menu.add_item("Command Palette...", lambda: self.base.palette.show_prompt(">"))
-        view_menu.add_item("Explorer", events.show_explorer)
-        view_menu.add_item("Search", events.show_search)
-        view_menu.add_item("Source Control", events.show_source_control)
-        view_menu.add_item("Extensions", events.show_extensions)
-        view_menu.add_separator()
-        view_menu.add_item("Terminal", events.show_terminal)
-        view_menu.add_item("Log", events.show_logs)
+        self.view_menu = self.add_menu("View")
+        self.view_menu.add_item("Command Palette...", lambda: self.base.palette.show_prompt(">"))
+        self.view_menu.add_item("Explorer", events.show_explorer)
+        self.view_menu.add_item("Search", events.show_search)
+        self.view_menu.add_item("Source Control", events.show_source_control)
+        self.view_menu.add_item("Extensions", events.show_extensions)
+        self.view_menu.add_separator()
+        self.view_menu.add_item("Terminal", events.show_terminal)
+        self.view_menu.add_item("Log", events.show_logs)
 
     def close_all_menus(self, *_) -> None:
         for menu in self.menus:
