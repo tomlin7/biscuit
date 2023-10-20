@@ -6,8 +6,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Biscuit',
-  tagline: 'Embeddable Code Editor with Autocomplete',
+  title: 'Biscuit Docs',
+  tagline: 'Developer guide, Extensions API documentation',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -44,14 +44,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/billyeatcookies/cupcake/tree/main/docs/docs/',
+            'https://github.com/billyeatcookies/biscuit/tree/main/docs/docs/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/billyeatcookies/cupcake/tree/main/docs/blogs/',
+            'https://github.com/billyeatcookies/biscuit/tree/main/docs/blogs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -66,9 +66,9 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Cupcake Docs',
+        title: 'Biscuit Docs',
         logo: {
-          alt: 'Cupcake logo',
+          alt: 'Biscuit logo',
           src: 'img/logo.png',
         },
         items: [
@@ -80,7 +80,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/billyeatcookies/cupcake',
+            href: 'https://github.com/billyeatcookies/biscuit',
             label: 'GitHub',
             position: 'right',
           },
@@ -93,7 +93,15 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'Developer Guide',
+                to: '/docs/intro',
+              },
+              {
+                label: 'Extensions API',
+                to: '/docs/intro',
+              },
+              {
+                label: 'User Guide',
                 to: '/docs/intro',
               },
             ],
@@ -102,12 +110,20 @@ const config = {
             title: 'Links',
             items: [
               {
+                label: 'Biscuit',
+                href: 'https://github.com/billyeatcookies/biscuit',
+              },
+              {
+                label: 'Extensions',
+                href: 'https://github.com/billyeatcookies/biscuit-extensions',
+              },
+              {
                 label: 'Cupcake',
                 href: 'https://github.com/billyeatcookies/cupcake',
               },
               {
                 label: 'Cupcake on Pypi',
-                href: 'https://pypi.org/project/cupcake-editor',
+                href: 'https://pypi.org/project/biscuit-editor',
               },
             ],
           },

@@ -2,20 +2,19 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+Welcome to the contributing guidelines for Biscuit. This document will help you get started with contributing to Biscuit.
 
-Let's discover **Docusaurus in less than 5 minutes**.
+## Setting up Environment
 
-## Getting Started
-
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+[**Fork**](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Biscuit repository and clone locally. 
+```bash
+git clone http://github.com/billyeatcookies/biscuit
+```
+Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to run biscuit once with `python -m biscuit` and make sure everything looks good.
 
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- [Python](https://python.org/en/download/) 3.10 or above
 
 ## Generate a new site
 

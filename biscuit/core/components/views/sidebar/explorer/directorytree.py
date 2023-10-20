@@ -104,7 +104,7 @@ class DirectoryTree(SidebarViewItem):
         return entries
     
     def update_path(self, path) -> None:
-        if any(path.endswith(i) for i in self.ignore_dirs):
+        if not path or any(path.endswith(i) for i in self.ignore_dirs):
             return
 
         node = self.nodes.get(os.path.abspath(path)) 
