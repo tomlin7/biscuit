@@ -54,8 +54,7 @@ def minimize(hide=False):
 
 def maximizeToggle():
     global maximized
-    global previousPosition
-    if maximized is False:
+    if not maximized:
         #maximize current window
         maximize_btn.config(text="❐")
         hwnd = windll.user32.GetParent(root.winfo_id())
