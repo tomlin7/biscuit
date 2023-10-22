@@ -54,8 +54,7 @@ class IntegerItem(Item):
     def validate(self, value) -> None:
         if value.isdigit() or value == "":
             return True
-        else:
-            return False
+        return False
 
     @property
     def value(self) -> str:

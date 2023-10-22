@@ -180,10 +180,9 @@ class Piece:
     def move(self, x, y):
         if not self.is_move_allowed(x, y):
             return False
-        else:
-            for square in self.squares:
-                self.canvas.move(square, x * SIDE, y * SIDE)
-            return True
+        for square in self.squares:
+            self.canvas.move(square, x * SIDE, y * SIDE)
+        return True
 
     def rotate(self):
         squares = self.squares[:]
