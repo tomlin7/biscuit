@@ -19,13 +19,10 @@ class Search(SidebarView):
 
         self.container = Frame(self, **self.base.theme.views.sidebar)
         self.searchbox = ButtonsEntry(self.container, hint="Search", buttons=(('case-sensitive', self.results.search_casesensitive), ('whole-word', self.results.search_wholeword), ('regex', self.results.search_regex), ('search', self.results.search),))
-        self.replacebox = ButtonsEntry(self.container, hint="Replace", buttons=(('preserve-case',), ('replace-all',),))
+        self.replacebox = ButtonsEntry(self.container, hint="Replace", buttons=(('preserve-case', self.results.replace_matchcase), ('replace-all', self.results.replace_normal),))
 
         self.container.pack(fill=BOTH, padx=10, pady=5)
         self.searchbox.pack(fill=X, anchor=N, pady=2)
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
         
         self.results.pack(fill=BOTH, expand=True, anchor=N)
-
-    def replace(self) -> None:
-        ...
