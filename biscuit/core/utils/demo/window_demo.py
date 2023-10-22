@@ -18,7 +18,7 @@ def set_appwindow():
         style = style | WS_EX_APPWINDOW
         res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
         root.withdraw()
-        root.after(10, lambda:root.wm_deiconify())
+        root.after(10, root.wm_deiconify)
         hasstyle=True
 
 def get_pos(event):

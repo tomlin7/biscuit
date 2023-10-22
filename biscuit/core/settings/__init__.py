@@ -88,7 +88,7 @@ class Settings:
         
         from biscuit.core.components import ActionSet
         clone_actionset = ActionSet(
-            "Clone git repository", "clone", pinned=[[Formattable("clone {}"), lambda url: self.base.events.clone_repo(url)]]
+            "Clone git repository", "clone", pinned=[[Formattable("clone {}"), self.base.events.clone_repo]]
         )
         self.base.palette.register_actionset(lambda: clone_actionset)
 
