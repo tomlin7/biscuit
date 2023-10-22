@@ -28,7 +28,7 @@ class StagedChanges(SidebarViewItem):
         self.items.clear()
             
     def add_item(self, path, kind) -> None:
-        if path in self.items.keys():
+        if path in self.items:
             return
         
         new_item = StagedChangeItem(self.content, path, kind)

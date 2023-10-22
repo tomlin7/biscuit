@@ -194,7 +194,7 @@ class FindReplace(Toplevel):
 
     def is_on_match(self):
         """tells if the editor is currently pointing to a match"""
-        if self.current in self.matches.keys():
+        if self.current in self.matches:
             return True
         else:
             return False
