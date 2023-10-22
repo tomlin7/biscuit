@@ -1,3 +1,5 @@
+__author__ = 'nfoert'
+
 import os
 import re
 import tkinter as tk
@@ -16,6 +18,11 @@ class Results(Frame):
         self.treeview = Tree(self)
         self.treeview.pack(fill=tk.BOTH, expand=True)
 
+        self.ignore_folders = [
+            ".git", "__pycache__", "venv", "node_modules", "docs", 
+            "build", "dist", "bin", "obj", "out", "target"]
+        self.ignore_exts = []
+
         self.results = []
 
         self.searching = False
@@ -26,10 +33,10 @@ class Results(Frame):
         self.replacing = False
         self.r_matchcase = False
 
-    def add_item(self, parent: str, index: str, text: str) -> str:
+    def add_item(self, parent: str, index: str, text: str, open=False) -> str:
         "Add an item to the tree for the search"
         try:
-            result = self.treeview.insert(parent=parent, index=index, text=text)
+            result = self.treeview.insert(parent=parent, index=index, text=text, open=open)
             return result
 
         except Exception as e:
@@ -98,11 +105,13 @@ class Results(Frame):
 
             if self.base.active_directory:
                 for root, _, files in os.walk(self.base.active_directory):
+                    if root in self.ignore_folders:
+                        continue
+
                     for file in files:
                         file_path = os.path.join(root, file)
 
-                        # TODO: Create ignore system?
-                        if file.endswith(".pyc"):
+                        if any(file.endswith(ext) for ext in self.ignore_exts):
                             continue
 
                         result = self.search_in_file(file_path, search_string)
@@ -141,42 +150,45 @@ class Results(Frame):
         occurrences = 0
         result_lines = []
 
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                for line_number, line in enumerate(f, start=1):
+                    if self.case_sensitive:
+                        if search_string in line:
+                            found = True
+                            occurrences += line.count(search_string)
+                            result_lines.append((line_number, line.strip()))
+                            text = search_string
 
-            for line_number, line in enumerate(f, start=1):
-                if self.case_sensitive:
-                    if search_string in line:
-                        found = True
-                        occurrences += line.count(search_string)
-                        result_lines.append((line_number, line.strip()))
-                        text = search_string
+                    elif self.whole_word:
+                        result = re.search(r"\b" + search_string + r"\b", line)
+                        if result:
+                            found = True
+                            occurrences += len(re.findall(r"\b" + search_string + r"\b", line))
+                            result_lines.append((line_number, line.strip()))
+                            text = result.group()
 
-                elif self.whole_word:
-                    result = re.search(r"\b" + search_string + r"\b", line)
-                    if result:
-                        found = True
-                        occurrences += len(re.findall(r"\b" + search_string + r"\b", line))
-                        result_lines.append((line_number, line.strip()))
-                        text = result.group()
+                    elif self.regex:
+                        result = re.search(search_string, line)
 
-                elif self.regex:
-                    result = re.search(search_string, line)
+                        if result:
+                            found = True
+                            occurrences += len(re.findall(search_string, line))
+                            result_lines.append((line_number, line.strip()))
+                            text = result.group()
 
-                    if result:
-                        found = True
-                        occurrences += len(re.findall(search_string, line))
-                        result_lines.append((line_number, line.strip()))
-                        text = result.group()
-
-                else:
-                    if search_string.lower() in line.lower():
-                        found = True
-                        occurrences += line.count(search_string.lower())
-                        result_lines.append((line_number, line.strip()))
-                        text = search_string
+                    else:
+                        if search_string.lower() in line.lower():
+                            found = True
+                            occurrences += line.count(search_string.lower())
+                            result_lines.append((line_number, line.strip()))
+                            text = search_string
+        except UnicodeDecodeError:
+            # case: file is non-text
+            return
 
         if found:
-            parent = self.add_item(parent="", index=tk.END,
+            parent = self.add_item(parent="", index=tk.END, open=True,
                                    text=f"{os.path.basename(file_path)} | {file_path}")
 
             for line_number, line in result_lines:

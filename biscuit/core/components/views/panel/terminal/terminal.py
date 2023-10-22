@@ -84,7 +84,7 @@ class Terminal(PanelView):
         self.write(command, "command")
         self.enter()
         
-    def enter(self, _) -> None:
+    def enter(self, *_) -> None:
         command = self.terminal.get('input', 'end')
         self.last_command = command
         

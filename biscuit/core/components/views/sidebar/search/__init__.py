@@ -21,6 +21,8 @@ class Search(SidebarView):
         self.searchbox = ButtonsEntry(self.container, hint="Search", buttons=(('case-sensitive', self.results.search_casesensitive), ('whole-word', self.results.search_wholeword), ('regex', self.results.search_regex), ('search', self.results.search),))
         self.replacebox = ButtonsEntry(self.container, hint="Replace", buttons=(('replace-all', self.results.replace_normal),))
 
+        #TODO add ignore folders & extensions boxes
+
         self.container.pack(fill=BOTH, padx=10, pady=5)
         self.searchbox.pack(fill=X, anchor=N, pady=2)
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
