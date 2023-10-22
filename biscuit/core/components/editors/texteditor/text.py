@@ -211,9 +211,9 @@ class Text(Text):
     
     def check_autocomplete_keys(self, event):
         """Helper function for autocomplete.show to check triggers"""
-        return True if event.keysym not in [
+        return event.keysym not in [
             "BackSpace", "Escape", "Return", "Tab", "space", 
-            "Up", "Down", "Control_L", "Control_R"] else False 
+            "Up", "Down", "Control_L", "Control_R"] 
     
     def cursor_screen_location(self):
         """Helper function for autocomplete.show to detect cursor location"""
