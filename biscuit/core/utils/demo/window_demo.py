@@ -33,7 +33,7 @@ def move_window(event):
     previousPosition = [root.winfo_x(), root.winfo_y()]
 
 def move_window_bindings(*args, status=True):
-    if status == True:
+    if status is True:
         title_bar.bind("<B1-Motion>", move_window)
         title_bar.bind("<Button-1>", get_pos)
         title_name.bind("<B1-Motion>", move_window)
@@ -55,7 +55,7 @@ def minimize(hide=False):
 def maximizeToggle():
     global maximized
     global previousPosition
-    if maximized == False:
+    if maximized is False:
         #maximize current window
         maximize_btn.config(text="❐")
         hwnd = windll.user32.GetParent(root.winfo_id())
