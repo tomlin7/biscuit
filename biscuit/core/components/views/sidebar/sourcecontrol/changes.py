@@ -30,7 +30,7 @@ class Changes(SidebarViewItem):
         self.items.clear()
             
     def add_item(self, path, kind) -> None:
-        if path in self.items.keys():
+        if path in self.items:
             return
 
         new_item = ChangeItem(self.content, path, kind)
