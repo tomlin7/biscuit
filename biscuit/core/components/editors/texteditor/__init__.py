@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.font import Font
 
 from ...utils import Scrollbar
 from ..editor import BaseEditor
@@ -10,7 +11,7 @@ from .text import Text
 class TextEditor(BaseEditor):
     def __init__(self, master, path=None, exists=True, language=None, minimalist=False, *args, **kwargs) -> None:
         super().__init__(master, path, exists, *args, **kwargs)
-        self.font = self.base.settings.font
+        self.font: Font = self.base.settings.font
         self.minimalist = minimalist
         self.language = language
         self.exists = exists
@@ -53,11 +54,13 @@ class TextEditor(BaseEditor):
         self.base.update_statusbar()
         if not self.minimalist:
             self.minimap.redraw_cursor()
+        self.event_generate("<<Change>>")
 
     def on_scroll(self, *_):
         self.linenumbers.redraw()
         if not self.minimalist:
             self.minimap.redraw()
+        self.event_generate("<<Scroll>>")
 
     def unsupported_file(self):
         self.text.show_unsupported_dialog()

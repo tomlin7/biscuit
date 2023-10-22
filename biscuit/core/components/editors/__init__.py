@@ -1,4 +1,7 @@
-"""The Cupcake Editor is an embeddable text editor with autocompletions."""
+"""Cupcake Editor 0.25.6
+
+NOTE: Cupcake is extracted and published as an embeddable editor from biscuit
+"""
 
 __version__ = '0.25.6'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
@@ -8,7 +11,6 @@ __all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "C
 
 import os
 import tkinter as tk
-from tkinter.font import Font
 
 from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
@@ -16,11 +18,13 @@ from .diffeditor import DiffEditor
 from .editor import BaseEditor
 from .imageviewer import ImageViewer
 from .languages import Languages
+from .markdown import MDEditor
 from .misc import Welcome
 from .texteditor import TextEditor
 
 
-def get_editor(base, path=None, exists=True, path2=None, diff=False, language=None):
+def get_editor(base, path: str=None, exists: bool=True, path2: str=None, 
+               diff: bool=False, language: str=None) -> BaseEditor:
     "picks the right editor for the given values"
     if diff:
         return DiffEditor(base, path, exists, language=language)
@@ -28,6 +32,8 @@ def get_editor(base, path=None, exists=True, path2=None, diff=False, language=No
     if path and os.path.isfile(path):
         if FileType.is_image(path):
             return ImageViewer(base, path)
+        elif any(path.endswith(i) for i in ('.md', '.markdown', '.mdown', '.rst', '.mkd')):
+            return MDEditor(base, path, exists=exists)
         
         return TextEditor(base, path, exists, language=language)
     
@@ -81,7 +87,6 @@ class Editor(Frame):
     def __init__(self, master, 
                  path: str=None, exists: bool=False, path2: str=None, diff: bool=False, language: str=None,
                  darkmode=True, config_file: str=None, showpath: bool=True, 
-                 font: str|Font=None, uifont: str|Font=None,
                  preview_file_callback=None, open_file_callback=None,
                  *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
