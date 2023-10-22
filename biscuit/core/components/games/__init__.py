@@ -24,7 +24,6 @@ def get_game(name) -> str:
 
 def register_game(game) -> None:
     "registers a game"
-    global games
     try:
         games[game.name] = game
     except AttributeError:

@@ -120,7 +120,7 @@ class Snake(BaseGame):
             ):
                 self.direction = key
         else:
-            if key == "r" or key == "R":
+            if key in ("r", "R"):
                 self.restart_game()
 
     def show_game_over_text(self):

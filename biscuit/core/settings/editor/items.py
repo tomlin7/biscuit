@@ -52,10 +52,7 @@ class IntegerItem(Item):
         self.entry.pack(side=tk.LEFT)
 
     def validate(self, value) -> None:
-        if value.isdigit() or value == "":
-            return True
-        else:
-            return False
+        return bool(value.isdigit() or value == "")
 
     @property
     def value(self) -> str:

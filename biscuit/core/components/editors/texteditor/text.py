@@ -211,9 +211,9 @@ class Text(Text):
     
     def check_autocomplete_keys(self, event):
         """Helper function for autocomplete.show to check triggers"""
-        return True if event.keysym not in [
+        return event.keysym not in [
             "BackSpace", "Escape", "Return", "Tab", "space", 
-            "Up", "Down", "Control_L", "Control_R"] else False 
+            "Up", "Down", "Control_L", "Control_R"] 
     
     def cursor_screen_location(self):
         """Helper function for autocomplete.show to detect cursor location"""
@@ -323,9 +323,9 @@ class Text(Text):
 
         if bom.startswith(codecs.BOM_UTF8):
             return 'utf-8'
-        elif bom.startswith(codecs.BOM_LE) or bom.startswith(codecs.BOM_BE):
+        if bom.startswith(codecs.BOM_LE) or bom.startswith(codecs.BOM_BE):
             return 'utf-16'
-        elif bom.startswith(codecs.BOM32_BE) or bom.startswith(codecs.BOM32_LE):
+        if bom.startswith(codecs.BOM32_BE) or bom.startswith(codecs.BOM32_LE):
             return 'utf-32'
 
         self.bom = False
@@ -340,15 +340,13 @@ class Text(Text):
                 return "CRLF"
             
             # Check for '\n' to detect Unix-style EOL
-            elif b'\n' in chunk:
+            if b'\n' in chunk:
                 return "LF"
             
             # Check for '\r' to detect Mac-style EOL (older Macs)
-            elif b'\r' in chunk:
+            if b'\r' in chunk:
                 return "CR"
-            
-            else:
-                return "UNKNOWN"
+            return "UNKNOWN"
 
     def load_file(self):
         if not self.path:

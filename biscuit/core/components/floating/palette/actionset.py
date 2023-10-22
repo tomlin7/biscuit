@@ -18,7 +18,6 @@ class ActionSet(list):
         pinned : List[Tuple[str, Callable]]
             The pinned items in the actionset.
         """
-        
         super().__init__(items, *args, **kwargs)
         self.description: str = description
         self.prompt: str = prompt

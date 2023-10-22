@@ -90,8 +90,7 @@ class FindReplace(Toplevel):
     def current(self):
         if not self.text.count("1.0", self.text.index(tk.INSERT), "chars"):
             return 0
-        else:
-            return self.text.count("1.0", self.text.index(tk.INSERT), "chars")[0]
+        return self.text.count("1.0", self.text.index(tk.INSERT), "chars")[0]
     
     def highlight_matches(self):
         self.text.tag_remove("found", "1.0", "end")
@@ -194,10 +193,7 @@ class FindReplace(Toplevel):
 
     def is_on_match(self):
         """tells if the editor is currently pointing to a match"""
-        if self.current in self.matches.keys():
-            return True
-        else:
-            return False
+        return self.current in self.matches()
 
     def replace_all(self, *_):
         """replaces all occurences of the string for the replace string, it will even replace partial words."""

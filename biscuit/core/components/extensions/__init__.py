@@ -25,7 +25,7 @@ class ExtensionManager:
         for extension_file in os.listdir(self.base.extensionsdir):
             if extension_file.endswith(".py"):
                 extension_name = os.path.splitext(extension_file)[0]
-                if extension_name in self.extensions.keys():
+                if extension_name in self.extensions:
                     return
                 self.queue.put(extension_name)
 
@@ -72,7 +72,7 @@ class ExtensionManager:
             extension_name = os.path.splitext(file)[0]
 
             # if an extension with same name is already loaded, skip
-            if extension_name in self.extensions.keys():
+            if extension_name in self.extensions:
                 return
             self.queue.put(extension_name)
         

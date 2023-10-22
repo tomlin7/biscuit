@@ -18,7 +18,7 @@ def set_appwindow():
         style = style | WS_EX_APPWINDOW
         res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
         root.withdraw()
-        root.after(10, lambda:root.wm_deiconify())
+        root.after(10, root.wm_deiconify)
         hasstyle=True
 
 def get_pos(event):
@@ -33,7 +33,7 @@ def move_window(event):
     previousPosition = [root.winfo_x(), root.winfo_y()]
 
 def move_window_bindings(*args, status=True):
-    if status == True:
+    if status is True:
         title_bar.bind("<B1-Motion>", move_window)
         title_bar.bind("<Button-1>", get_pos)
         title_name.bind("<B1-Motion>", move_window)
@@ -54,8 +54,7 @@ def minimize(hide=False):
 
 def maximizeToggle():
     global maximized
-    global previousPosition
-    if maximized == False:
+    if not maximized:
         #maximize current window
         maximize_btn.config(text="❐")
         hwnd = windll.user32.GetParent(root.winfo_id())
