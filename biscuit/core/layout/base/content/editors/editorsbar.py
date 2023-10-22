@@ -17,14 +17,15 @@ class Editorsbar(Frame):
     def __init__(self, master: EditorsPane, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.layout.base.content.editors.bar)
+        self.master = master
 
         self.tabs = Tabs(self)
         self.tabs.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         self.menu = EditorsbarMenu(self, "tabs")
-        self.menu.add_item("Show Opened Editors")
+        self.menu.add_item("Show Opened Editors", lambda: self.base.palette.show_prompt("active:"))
         self.menu.add_separator(10)
-        self.menu.add_item("Close All")
+        self.menu.add_item("Close All", self.master.delete_all_editors)
 
         self.buttons = []
         self.default_buttons = (('ellipsis', self.menu.show),)

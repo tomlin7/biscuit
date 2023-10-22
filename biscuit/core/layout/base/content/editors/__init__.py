@@ -14,6 +14,9 @@ Holds the editors and provides an interface to manage the editor tabs.
 from __future__ import annotations
 
 import typing
+from typing import List
+
+from biscuit.core.components.floating.palette.actionset import ActionSet
 
 if typing.TYPE_CHECKING:
     from .. import ContentPane
@@ -45,13 +48,21 @@ class EditorsPane(Frame):
         self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0,1))
         self.tabs = self.editorsbar.tabs
 
-        self.editors = []
-        self.closed_editors = {}
+        self.editors: List[Editor] = []
+        self.closed_editors: List[Editor] = {}
+
         self.empty = True
         self.emptytab = Empty(self)
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
-        self.default_editors = [Welcome(self)]
+        self.default_editors: List[Editor] = [Welcome(self)]
+        self.actionset = ActionSet("Switch to active editors", "active:", [])
+        self.base.palette.register_actionset(self.get_active_actionset)
+    
+    def get_active_actionset(self) -> ActionSet:
+        "Generates the active editors actionset"
+        self.actionset.update([(editor.filename, editor) for editor in self.editors])
+        return self.actionset
     
     def add_default_editors(self) -> None:
         "Adds all default editors"
