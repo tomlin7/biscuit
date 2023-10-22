@@ -24,7 +24,6 @@ class Highlighter:
         language : str, optional
             Language to highlight, by default None
         """
-
         self.text: Text = text
         self.base = text.base
         self.language = language
