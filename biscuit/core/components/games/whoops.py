@@ -107,7 +107,7 @@ class Whoops(BaseGame):
                 self.obstacles.remove(obstacle)
 
         # spawn a new obstacle if there's enough gap between the last one and the right side of the canvas
-        if not len(self.obstacles) or self.obstacle_spawnpoint - (self.obstacles[-1].x + self.obstacles[-1].width) >= self.min_obstacle_gap:
+        if not self.obstacles or self.obstacle_spawnpoint - (self.obstacles[-1].x + self.obstacles[-1].width) >= self.min_obstacle_gap:
             self.spawn_obstacle()
 
         self.after(10, self.update_obstacles)

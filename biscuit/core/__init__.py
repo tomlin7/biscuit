@@ -133,7 +133,7 @@ class App(tk.Tk):
             style = style | WS_EX_APPWINDOW
             windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
             self.withdraw()
-            self.after(10, lambda:self.wm_deiconify())
+            self.after(10, self.wm_deiconify)
 
         self.dpi_value = self.winfo_fpixels('1i')
         self.scale = self.dpi_value / 96.11191135734073

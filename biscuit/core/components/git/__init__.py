@@ -56,8 +56,7 @@ class Git(git.Git):
             GitRepo.clone_from(url, dir)
             return dir
             
-        else:
-            raise Exception(f'The url `{url}` does not point to a git repo')
+        raise Exception(f'The url `{url}` does not point to a git repo')
 
     def repo_name(self, url: str) -> None:
         match = re.search(r'/([^/]+?)(\.git)?$', url)
