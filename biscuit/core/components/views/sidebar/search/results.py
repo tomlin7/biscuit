@@ -28,6 +28,9 @@ class Results(Frame):
         self.r_matchcase = False
 
     def add_item(self, parent, index, text):
+        '''
+        Add an item to the tree for the search
+        '''
         try:
             result = self.treeview.insert(parent=parent, index=index, text=text)
             return result
@@ -36,12 +39,21 @@ class Results(Frame):
             print("Failed to add item", e)
 
     def clear_tree(self):
+        '''
+        Clear all items from the tree
+        '''
         self.treeview.delete(*self.treeview.get_children())
 
     def delete_item(self, item):
+        '''
+        Remove an item from the tree
+        '''
         self.treeview.delete(item)
 
     def click(self, event):
+        '''
+        Event run when an item is clicked in the tree
+        '''
         # Thanks to tobias_k's answer here https://stackoverflow.com/questions/30614279/tkinter-treeview-get-selected-item-values
         item = self.treeview.focus()
 
@@ -53,30 +65,49 @@ class Results(Frame):
             print("You clicked on a parent item")
 
     def search_casesensitive(self, event):
+        '''
+        Do a case sensitive search
+        '''
         self.case_sensitive = True
         self.search()
         self.case_sensitive = False
 
     def search_wholeword(self, event):
+        '''
+        Do a whole word search
+        '''
         self.whole_word = True
         self.search()
         self.whole_word = False
 
     def search_regex(self, event):
+        '''
+        Do a regex search
+        '''
         self.regex = True
         self.search()
         self.regex = False
 
     # Thanks to pythontutorial.net/tkinter/tkinter-askyesno
     def replace_normal(self, event):
+        '''
+        Do a normal replace
+        '''
         self.replace()
 
     def replace_matchcase(self, event):
+        '''
+        Do a match case replace
+        TODO: Not implemented yet
+        '''
         self.r_matchcase = True
         self.replace()
         self.r_matchcase = False
 
     def search(self, *args, **kwargs):
+        '''
+        Find every file in the selected directory and then search for occurrences in it
+        '''
         if self.searching == False:
             self.searching = True
 
@@ -86,7 +117,7 @@ class Results(Frame):
             found_files = []
             search_string = self.master.searchbox.get()
 
-            self.clear_tree() # Remove all items from the tree
+            self.clear_tree()
             self.results = []
 
             if self.base.active_directory:
@@ -94,21 +125,16 @@ class Results(Frame):
                     for file in files:
                         file_path = os.path.join(root, file)
 
-                        # # TODO: Create ignore system?
+                        # TODO: Create ignore system?
                         if file.endswith(".pyc"):
                             continue
-
-                        # if ".venv" in file_path or ".git" in file_path or ".github" in file_path: 
-                        #     continue
 
                         result = self.search_in_file(file_path, search_string)
 
                         if result:
                             found_files.append(result[0])
-
                             self.label.config(text=f"Searching {len(found_files)} files...")
 
-                        
                         self.base.root.update()
 
                 if len(found_files) > 0:
@@ -128,6 +154,13 @@ class Results(Frame):
 
 
     def search_in_file(self, file_path, search_string):
+        '''
+        Search a file for occurrences
+        - Case insensitive
+        - Case sensitive
+        - Whole word
+        - Regex
+        '''
         found = False
         occurrences = 0
         result_lines = []
@@ -181,16 +214,16 @@ class Results(Frame):
                     "text": text
                 })
 
-
             return [file_path, occurrences, line_number]
         
 
     def replace(self):
-        # TODO: It looks like files aren't refreshed after the replace happens. Opening a file which had contents replaced shows the old contents
-        # TODO: Doesn't work with match case replace
-        # TODO: Doesn't work with all searches? (regex?)
+        '''
+        Replace all occurrences from the search with new text
 
-        search_string = self.master.searchbox.get()
+        TODO: It looks like files aren't refreshed after the replace happens. Opening a file which had contents replaced shows the old contents
+        TODO: Doesn't work with match case replace
+        '''
         replace_string = self.master.replacebox.get()
 
         if self.searching == True:
@@ -227,7 +260,7 @@ class Results(Frame):
                                 file.writelines(data)
 
                         self.label.config(text="Done replacing.")
-                        self.clear_tree() # Remove all items from the tree
+                        self.clear_tree()
                         self.results = []
 
 
