@@ -33,9 +33,7 @@ from .empty import Empty
 
 
 class EditorsPane(Frame):
-    """
-    Tabbed container for editors.
-    """
+    """Tabbed container for editors."""
     def __init__(self, master: ContentPane, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)

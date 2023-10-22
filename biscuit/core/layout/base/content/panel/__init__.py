@@ -26,9 +26,7 @@ from .panelbar import Panelbar
 
 
 class Panel(Frame):
-    """
-    Tabbed container for views.
-    """
+    """Tabbed container for views."""
     def __init__(self, master: ContentPane, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.grid_rowconfigure(1, weight=1)

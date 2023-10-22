@@ -12,18 +12,14 @@ class Label(tk.Label):
 
 
 class WrappingLabel(Label):
-    """
-    a type of Label that automatically adjusts the wrap to the size
-    """
+    """a type of Label that automatically adjusts the wrap to the size"""
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.bind('<Configure>', lambda e: self.config(wraplength=self.winfo_width()))
 
 
 class TruncatedLabel(Frame):
-    """
-    NOTE: Doesnt work currently
-    """
+    """NOTE: Doesnt work currently"""
     def __init__(self, master, text, *args, **kwargs) -> None:
         super().__init__(master)
         self.text = text

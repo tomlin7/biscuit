@@ -31,9 +31,7 @@ from .slots import Slots
 
 
 class Sidebar(Frame):
-    """
-    Vertically slotted container for views.
-    """
+    """Vertically slotted container for views."""
     def __init__(self, master: BaseFrame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
