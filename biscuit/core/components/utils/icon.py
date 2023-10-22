@@ -5,9 +5,7 @@ from .label import Label
 
 
 class Icon(Label):
-    """
-    Button with only an icon
-    """
+    """Button with only an icon"""
     def __init__(self, master, icon, iconsize=14, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.icon = icon

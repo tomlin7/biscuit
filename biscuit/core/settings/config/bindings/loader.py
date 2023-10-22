@@ -4,9 +4,7 @@ import toml
 
 
 class BindingsLoader:
-    """
-    Loads bindings for biscuit from json file.
-    """
+    """Loads bindings for biscuit from json file."""
     def __init__(self, master) -> None:
         self.base = master.base
 

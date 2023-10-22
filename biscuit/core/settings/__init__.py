@@ -62,9 +62,7 @@ class Settings:
         self.gen_actionset()
 
     def gen_actionset(self) -> None:
-        """
-        Generates the action set with predefined commands and registered commands.
-        """
+        """Generates the action set with predefined commands and registered commands."""
         from biscuit.core.components import ActionSet
         self._actionset = ActionSet(
             "Show and run commands", ">", self.commands + get_games(self.base)
@@ -96,7 +94,5 @@ class Settings:
 
     @property
     def actionset(self):
-        """
-        Returns the generated action set.
-        """
+        """Returns the generated action set."""
         return self._actionset

@@ -1,6 +1,4 @@
-"""
-Various types of widgets/functions used across the editor
-"""
+"""Various types of widgets/functions used across the editor"""
 
 from .bubble import Bubble
 from .button import Button

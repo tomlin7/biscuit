@@ -14,9 +14,7 @@ from .tab import Tab
 
 
 class Tabs(Frame):
-    """
-    Holder for the tabs shown in panelbar
-    """
+    """Holder for the tabs shown in panelbar"""
     def __init__(self, master: Panelbar, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.layout.base.content.panel.bar)

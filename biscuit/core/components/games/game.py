@@ -4,9 +4,7 @@ from biscuit.core.components.utils import Frame, IconButton
 
 
 class BaseGame(Frame):
-    """
-    Base class for games.
-    """
+    """Base class for games."""
     def __init__(self, master, path=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.editors)
