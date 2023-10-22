@@ -194,10 +194,7 @@ class FindReplace(Toplevel):
 
     def is_on_match(self):
         """tells if the editor is currently pointing to a match"""
-        if self.current in self.matches:
-            return True
-        else:
-            return False
+        return self.current in self.matches()
 
     def replace_all(self, *_):
         """replaces all occurences of the string for the replace string, it will even replace partial words."""
