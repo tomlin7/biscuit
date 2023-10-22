@@ -90,8 +90,7 @@ class FindReplace(Toplevel):
     def current(self):
         if not self.text.count("1.0", self.text.index(tk.INSERT), "chars"):
             return 0
-        else:
-            return self.text.count("1.0", self.text.index(tk.INSERT), "chars")[0]
+        return self.text.count("1.0", self.text.index(tk.INSERT), "chars")[0]
     
     def highlight_matches(self):
         self.text.tag_remove("found", "1.0", "end")
