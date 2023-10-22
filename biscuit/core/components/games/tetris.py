@@ -80,7 +80,7 @@ class Tetris(BaseGame):
         lines = 0
 
         all_squares = self.board.find_all()
-        all_squares_h = {k : v for k,v in zip(all_squares, [self.board.coords(sq)[3] for sq in all_squares])}
+        all_squares_h = dict(zip(all_squares, [self.board.coords(sq)[3] for sq in all_squares]))
         count = Counter()
         for sq in all_squares_h.values(): count[sq] += 1
         full_lines = [k for k,v in count.items() if v == WIDTH/SIDE]

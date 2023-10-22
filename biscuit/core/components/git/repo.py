@@ -13,7 +13,7 @@ class GitRepo(git.Repo):
         self.author = git.Actor(self.author_name, self.author_email)
     
     def get_untracked_files(self) -> list:
-        return [item for item in self.untracked_files]
+        return list(self.untracked_files)
 
     def get_added_files(self) -> list:
         return [item.a_path for item in self.index.diff(None).iter_change_type('A')]
