@@ -9,9 +9,7 @@ from .theme import Dark, Light
 
 
 class Config:
-    """
-    Loads and manages configurations for biscuit.
-    """
+    """Loads and manages configurations for biscuit."""
     def __init__(self, master) -> None:
         self.base = master.base
         

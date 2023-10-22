@@ -13,10 +13,7 @@ from .syntax import Syntax
 
 
 class Text(Text):
-    """
-    Improved Text widget
-
-    """
+    """Improved Text widget"""
     def __init__(self, master, path=None, exists=True, minimalist=False, language=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.path = path
@@ -216,17 +213,13 @@ class Text(Text):
         self.insert("insert", new_word)
     
     def check_autocomplete_keys(self, event):
-        """
-        Helper function for autocomplete.show to check triggers
-        """
+        """Helper function for autocomplete.show to check triggers"""
         return True if event.keysym not in [
             "BackSpace", "Escape", "Return", "Tab", "space", 
             "Up", "Down", "Control_L", "Control_R"] else False 
     
     def cursor_screen_location(self):
-        """
-        Helper function for autocomplete.show to detect cursor location
-        """
+        """Helper function for autocomplete.show to detect cursor location"""
         pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
 
         cursor = tk.INSERT

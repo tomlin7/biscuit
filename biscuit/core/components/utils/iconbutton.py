@@ -5,9 +5,7 @@ from .menubutton import Menubutton
 
 
 class IconButton(Menubutton):
-    """
-    Button with only an icon
-    """
+    """Button with only an icon"""
     def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=14, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.utils.iconbutton)

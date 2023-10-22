@@ -24,9 +24,7 @@ if typing.TYPE_CHECKING:
 
 
 class Root(Frame):
-    """
-    Root frame holds Menubar, BaseFrame, and Statusbar
-    """
+    """Root frame holds Menubar, BaseFrame, and Statusbar"""
     def __init__(self, base: App, *args, **kwargs) -> None:
         super().__init__(base, *args, **kwargs)
         self.config(bg=self.base.theme.border)

@@ -27,9 +27,7 @@ from .panel import Panel
 
 
 class ContentPane(Frame):
-    """
-    Main frame holds ContentPane and Panel
-    """
+    """Main frame holds ContentPane and Panel"""
     def __init__(self, master: BaseFrame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)

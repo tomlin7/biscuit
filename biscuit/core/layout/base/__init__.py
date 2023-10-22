@@ -24,9 +24,7 @@ from .sidebar import Sidebar
 
 
 class BaseFrame(Frame):
-    """
-    Main frame holds Sidebar and ContentPane
-    """
+    """Main frame holds Sidebar and ContentPane"""
     def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
