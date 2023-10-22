@@ -175,9 +175,6 @@ class Text(Text):
     
         self.insert(tk.INSERT, " "*4)
         return "break"
-    
-    def get_all_text(self, *args):
-        return self.get(1.0, tk.END)
 
     def get_all_text_ac(self, *args):
         """
@@ -429,27 +426,6 @@ class Text(Text):
     def set_data(self, data):
         self.data = data
 
-
-    def clear_insert(self, text=None):
-        self.clear()
-
-        def write_with_buffer():
-            buffer = deque(maxlen=self.buffer_size)
-            for char in text:
-                buffer.append(char)
-                if len(buffer) >= self.buffer_size:
-                    chunk = ''.join(buffer)
-                    self.write(chunk)
-                    self.update()
-                    buffer.clear()
-            if buffer:
-                chunk = ''.join(buffer)
-                self.write(chunk)
-                self.update()
-
-        threading.Thread(target=write_with_buffer).start()
-        
-        
     def clear_insert(self, text=None):
         self.clear()
 
@@ -531,9 +507,6 @@ class Text(Text):
         except Exception:
             return ""
         
-    def add_newline(self, count=1):
-        self.insert(tk.INSERT, "\n" * count)
-
     def get_selected_count(self):
         return len(self.get_selected_text())
         
