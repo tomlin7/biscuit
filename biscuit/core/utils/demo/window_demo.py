@@ -54,7 +54,6 @@ def minimize(hide=False):
 
 def maximizeToggle():
     global maximized
-    global previousPosition
     if maximized == False:
         #maximize current window
         maximize_btn.config(text="❐")
