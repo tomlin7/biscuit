@@ -116,5 +116,5 @@ class Terminal(PanelView):
         return self.tabs.active_tab.terminal
     
     def refresh(self) -> None:
-        if not len(self.terminals):
+        if not self.terminals:
             self.master.toggle_panel()
