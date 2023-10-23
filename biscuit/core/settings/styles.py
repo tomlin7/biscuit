@@ -10,6 +10,7 @@ class Style(ttk.Style):
         self.theme = theme
         
         self.configure("TCheckbutton", background=self.theme.editors.background)
+        self.configure("TFrame", background=self.theme.editors.background)
         self.gen_fileicons()
         
         try:

@@ -9,3 +9,5 @@ hintedtext
 sv-ttk
 requests
 pyperclip
+tkinterweb
+mistune
