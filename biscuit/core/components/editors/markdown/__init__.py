@@ -29,7 +29,7 @@ class MDEditor(BaseEditor):
         self.editor.scrollbar['command'] = self.on_scrollbar
         self.renderer.scrollbar['command'] = self.on_scrollbar
         self.left['yscrollcommand'] = self.on_textscroll
-        self.right['yscrollcommand'] = self.on_textscroll
+        #self.right['yscrollcommand'] = self.on_textscroll
 
         self.editor.bind("<<Change>>", self.on_change)
         self.edit_undo = self.editor.edit_undo
