@@ -24,7 +24,6 @@ jobs:
       
       - name: Install prerequisites
         run: |
-          sudo apt install python3-dev tcl-dev tk-dev fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential
           pip install scikit-build
 
       - name: Install requirements
