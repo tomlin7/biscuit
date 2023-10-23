@@ -4,6 +4,7 @@ from PyInstaller.utils.hooks import collect_data_files
 datas = [('../biscuit/res/*', 'res/')]
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
+datas += collect_data_files('tkinterweb')
 
 
 block_cipher = None
