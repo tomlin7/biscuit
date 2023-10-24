@@ -59,14 +59,14 @@ class App(tk.Tk):
         self.setup_tk()
         self.setup_floating_widgets()
 
-        grip_w = tk.Frame(self, bg=self.base.theme.biscuit, cursor='left_side')
+        grip_w = tk.Frame(self, bg=self.base.theme.primary_background, cursor='left_side')
         grip_w.bind("<B1-Motion>", lambda e: self.resize('w'))
         grip_w.pack(fill=tk.Y, side=tk.LEFT)
 
         self.root = Root(self)
         self.root.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
-        grip_e = tk.Frame(self, bg=self.base.theme.biscuit, cursor='right_side')
+        grip_e = tk.Frame(self, bg=self.base.theme.primary_background, cursor='right_side')
         grip_e.bind("<B1-Motion>", lambda e: self.resize('e'))
         grip_e.pack(fill=tk.Y, side=tk.LEFT)
 
