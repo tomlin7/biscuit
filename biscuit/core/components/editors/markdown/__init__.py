@@ -17,7 +17,7 @@ class MDEditor(BaseEditor):
         self.exists = exists
         self.editable = True
 
-        self.editor = TextEditor(self, path, exists=exists, minimalist=True)
+        self.editor = TextEditor(self, path, exists=exists)
         self.editor.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))
 
         self.renderer = Renderer(self, editor=self.editor)

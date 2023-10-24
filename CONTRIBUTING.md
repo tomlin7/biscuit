@@ -3,15 +3,16 @@
 Welcome to the contributing guidelines for Biscuit. This document will help you get started with contributing to Biscuit.
 
 ### Setting up Environment
-1. [**Fork**](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Biscuit repository and clone that repo locally.
-2. Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to run biscuit, `python -m biscuit`.
-2. **Open an issue** in the [issue tracker](https://github.com/billyeatcookies/Biscuit/issues) if the issue has not been opened yet. 
-3. Checkout new branch for your fix/addition
-    ```
-    git checkout -b xyz
-    ```
-4. Run the app, if looking good commit and push with a proper message regarding what has been fixed.
-5. Go to your repo and create a pull request. 
+
+[**Fork**](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Biscuit repository and clone locally. 
+```bash
+git clone http://github.com/billyeatcookies/biscuit
+```
+Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to launch biscuit once with `python -m biscuit` and make sure everything looks good.
+
+> [!NOTE]
+> [Python](https://python.org/en/download/) 3.10 or above
+
 
 # Project Structure
 The codebase of Biscuit is divided into 3 main parts:
