@@ -16,8 +16,7 @@ class Renderer(Frame):
         self.editor = editor
         self.config(bg=self.base.theme.border)
 
-
-        self.text = HtmlFrame(self, messages_enabled=False)
+        self.text = HtmlFrame(self, messages_enabled=False, vertical_scrollbar=False)
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview, style="EditorScrollbar")
         
         self.rowconfigure(0, weight=1)
