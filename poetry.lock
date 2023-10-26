@@ -155,20 +155,20 @@ files = [
 
 [[package]]
 name = "git-changelog"
-version = "2.3.1"
+version = "2.3.2"
 description = "Automatic Changelog generator using Jinja2 templates."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "git_changelog-2.3.1-py3-none-any.whl", hash = "sha256:76a4125e2d25eac48996eb8f97b4b01bc9913a6bc0e4748413e7ca8789c0b6e6"},
-    {file = "git_changelog-2.3.1.tar.gz", hash = "sha256:3f25fbb1227d6a43c4b083403857db45b15d65aa563ccfe1ebb0c27c2b1f91b3"},
+    {file = "git_changelog-2.3.2-py3-none-any.whl", hash = "sha256:8a402831f836e9948d34db7c7500dd663af9c22a3654f581b9313c16c5b22378"},
+    {file = "git_changelog-2.3.2.tar.gz", hash = "sha256:bf0da607fd02ff7395013771544d7cee65708605017a09b677962461ddc4f1e0"},
 ]
 
 [package.dependencies]
-appdirs = "*"
-Jinja2 = ">=2.10,<4"
+appdirs = ">=1.4"
+Jinja2 = ">=2.10"
 semver = ">=2.13"
-toml = ">=0.10"
+tomli = {version = ">=2.0", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "gitdb"
@@ -439,13 +439,13 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "7.4.2"
+version = "7.4.3"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.4.2-py3-none-any.whl", hash = "sha256:1d881c6124e08ff0a1bb75ba3ec0bfd8b5354a01c194ddd5a0a870a48d99b002"},
-    {file = "pytest-7.4.2.tar.gz", hash = "sha256:a766259cfab564a2ad52cb1aae1b881a75c3eb7e34ca3779697c23ed47c47069"},
+    {file = "pytest-7.4.3-py3-none-any.whl", hash = "sha256:0d009c083ea859a71b76adf7c1d502e4bc170b80a8ef002da5806527b9591fac"},
+    {file = "pytest-7.4.3.tar.gz", hash = "sha256:d989d136982de4e3b29dabcc838ad581c64e8ed52c11fbe86ddebd9da0818cd5"},
 ]
 
 [package.dependencies]
@@ -694,4 +694,4 @@ test = ["pytest (>=6.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a90646bbbc651199ef28d83effbef61cadce71b5b3b284e447a9aeb1993748bc"
+content-hash = "d8d9c21907be77234903f234fc75723c570cfd5d0ff041b842d48ee4409081af"
