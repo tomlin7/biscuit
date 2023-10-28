@@ -34,7 +34,7 @@ class Pong(BaseGame):
         self.score1_text = self.canvas.create_text(WIDTH/4, 50, text=self.score1, fill=self.base.theme.biscuit_dark, font=('Fixedsys', 30, 'bold'))
         self.canvas.create_text(2 * WIDTH/4, 50, text="|", fill=self.base.theme.biscuit_dark, font=('Fixedsys', 30, 'bold'))
         self.score2_text = self.canvas.create_text(3 * WIDTH/4, 50, text=self.score2, fill=self.base.theme.biscuit_dark, font=('Fixedsys', 30, 'bold'))
-        
+
         self.canvas.create_rectangle(0, 0, 1000, 10, outline="", fill=self.base.theme.biscuit_dark)
         self.canvas.create_rectangle(0, HEIGHT, 1000, HEIGHT+10, outline="", fill=self.base.theme.biscuit_dark)
 
@@ -47,7 +47,7 @@ class Pong(BaseGame):
         self.canvas.move(self.paddle2, 0, self.paddle2_dy)
 
         self.canvas.move(self.ball, self.ball_dx, self.ball_dy)
-        
+
         self.ball_pos = self.canvas.coords(self.ball)
         self.paddle1_pos = self.canvas.coords(self.paddle1)
         self.paddle2_pos = self.canvas.coords(self.paddle2)

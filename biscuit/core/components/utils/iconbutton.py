@@ -17,7 +17,7 @@ class IconButton(Menubutton):
         self.config(text=get_codicon(icon), font=("codicon", iconsize))
 
         self.bind("<Button-1>", self.onclick)
-    
+
     def onclick(self, *args) -> None:
         try:
             self.event(*args)
@@ -25,13 +25,13 @@ class IconButton(Menubutton):
             self.event()
         if not self.icon2:
             return
-        
+
         self.switch = not self.switch
         self.config(text=get_codicon(self.icons[self.switch]))
         self.v_onclick()
-    
+
     def v_onclick(self) -> None:
         ...
-    
+
     def set_icon(self, icon) -> None:
         self.config(text=get_codicon(icon))

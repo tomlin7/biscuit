@@ -21,6 +21,6 @@ class MenubarItem(Menubutton):
         self.menu = Menu(self, self.name)
         self.bind("<Button-1>", self.menu.show)
         self.bind("<Enter>", self.hover)
-    
+
     def hover(self, *_):
         self.master.switch_menu(self.menu)

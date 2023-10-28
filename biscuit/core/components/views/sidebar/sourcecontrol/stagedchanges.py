@@ -11,7 +11,7 @@ class StagedChanges(SidebarViewItem):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.items = {}
-    
+
     def refresh(self) -> None:
         if not self.items:
             self.itembar.hide_content()
@@ -24,18 +24,18 @@ class StagedChanges(SidebarViewItem):
                 item.destroy()
             except:
                 pass
-        
+
         self.items.clear()
-            
+
     def add_item(self, path, kind) -> None:
         if path in self.items:
             return
-        
+
         new_item = StagedChangeItem(self.content, path, kind)
         new_item.master = self
         new_item.pack(fill=tk.X)
         self.items[path] = new_item
-    
+
     def git_remove_all(self, *_) -> None:
         if staged := list(self.items.keys()):
             self.base.git.repo.unstage_files(*staged)

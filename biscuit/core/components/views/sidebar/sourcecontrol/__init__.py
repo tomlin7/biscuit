@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.constants import *
 
 from ..sidebarview import SidebarView
 from .git import Git

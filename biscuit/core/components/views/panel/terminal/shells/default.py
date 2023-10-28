@@ -23,5 +23,5 @@ class Default(Terminal):
             self.name = "Not Detected"
             self.icon = "error"
             return
-        
+
         self.start_service()

@@ -1,4 +1,5 @@
-import tkinter as tk, random
+import tkinter as tk
+import random
 
 from .game import BaseGame
 
@@ -49,7 +50,7 @@ class PhysicsObject:
 
 class Whoops(BaseGame):
     name = "404"
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config(bg='#22223b')
@@ -86,7 +87,7 @@ class Whoops(BaseGame):
 
         self.car.check_collision(self.ground)
         self.after(10, self.update_game)
-        
+
     def spawn_obstacle(self):
         obstacle_width = random.randint(40, 80)
         obstacle_height = random.randint(80, 200)

@@ -44,7 +44,7 @@ class DiffEditor(BaseEditor):
         self.left.tag_config("addition", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
         self.left.tag_config("removal", background=self.base.theme.editors.diff.removed)
         self.left.tag_config("removedword", background="red")
-        
+
         self.right.tag_config("addition", background=self.base.theme.editors.diff.addition)
         self.right.tag_config("removal", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
         self.right.tag_config("addedword", background="green")
@@ -64,10 +64,10 @@ class DiffEditor(BaseEditor):
         self.lhs.scrollbar.set(*args)
         self.rhs.scrollbar.set(*args)
         self.on_scrollbar('moveto', args[0])
-    
+
     def run_show_diff(self) -> None:
         threading.Thread(target=self.show_diff).start()
-    
+
     def show_diff(self) -> None:
         try:
             # case: deleted file
@@ -84,7 +84,7 @@ class DiffEditor(BaseEditor):
                     self.right.update()
                     self.right.highlighter.highlight()
                 return
-        
+
             # case: modified file
             lhs_data = self.base.git.repo.get_commit_filedata(self.path)
             with open(os.path.join(self.base.active_directory, self.path), 'r') as f:
@@ -94,10 +94,10 @@ class DiffEditor(BaseEditor):
             self.base.notifications.error(f"Failed to load diff, see logs")
             self.base.logger.error(f"Failed to load diff: {self.path}\n{e}")
             return
-        
+
         lhs_lines = [line+"\n" for line in lhs_data.split('\n')]
         rhs_lines = [line+"\n" for line in rhs_data.split('\n')]
-        
+
         self.diff = list(self.differ.get_diff(lhs_lines, rhs_lines))
         for i, line in enumerate(self.diff):
             marker = line[0]
@@ -122,7 +122,7 @@ class DiffEditor(BaseEditor):
                     # line is only on the right
                     self.rhs_last_line = int(float(self.right.index(tk.INSERT)))
                     self.right.write(content, "addition")
-                    
+
                     # TODO this check is done to make sure if this is a line with modifications
                     # and not a newly added line, but this is not done right.
                     self.left.newline("addition")
@@ -142,10 +142,10 @@ class DiffEditor(BaseEditor):
                             start = f"{self.lhs_last_line}.{match.start()}"
                             end = f"{self.lhs_last_line}.{match.end()}"
                             self.left.tag_add("removedword", start, end)
-                    
+
             self.left.update()
             self.right.update()
-        
+
         self.left.highlighter.highlight()
         self.right.highlighter.highlight()
 
@@ -160,7 +160,7 @@ class DiffEditor(BaseEditor):
             extra_newlines = rhs_line_count - lhs_line_count
             for _ in range(extra_newlines):
                 self.left.newline()
-        
+
         self.left.set_active(False)
 
 

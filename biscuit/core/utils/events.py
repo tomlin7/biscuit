@@ -58,17 +58,17 @@ class Events:
 
     def close_file(self, *_) -> None:
         self.base.close_active_editor()
-    
+
     def close_dir(self, *_) -> None:
         self.base.close_active_directory()
 
     def quit(self, *_) -> None:
         self.base.destroy()
-    
+
     def clone_repo(self, url) -> None:
         if path := filedialog.askdirectory():
             self.base.clone_repo(url, path)
-    
+
     def toggle_maximize(self, *_) -> None:
         match platform.system():
             case "Windows" | "Darwin":
@@ -88,8 +88,8 @@ class Events:
                 self.base.wm_attributes('-zoomed', self.maximized)
 
         self.maximized = not self.maximized
-        
-    
+
+
     def minimize(self, *_) -> None:
         self.base.update_idletasks()
 
@@ -101,24 +101,24 @@ class Events:
             self.base.withdraw()
 
         self.minimized = True
-    
+
     def window_mapped(self, *_) -> None:
         self.base.update_idletasks()
         if self.minimized:
             self.base.deiconify()
             self.minimized = False
-        
+
     #TODO not fast but work ; may not good for a big file edit
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.edit_undo()
-                    
+
     def redo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.edit_redo()
-    
+
     def cut(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
@@ -147,7 +147,7 @@ class Events:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.tag_add("sel", "1.0", "end")
-    
+
     def select_line(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:

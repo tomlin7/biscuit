@@ -16,22 +16,22 @@ class LineNumbers(Canvas):
 
     def attach(self, text):
         self.text = text
-    
+
     def mark_line(self, line):
         dline = self.text.dlineinfo(line)
-        
+
         if not dline:
             return
-        
+
         y = dline[1]
         btn = Menubutton(self, 
             text=">", font=self.font, cursor="hand2", borderwidth=0,
             width=2, height=1, pady=0, padx=0, relief=tk.FLAT, **self.base.theme.linenumbers)
         self.create_window(70, y-2, anchor=tk.NE, window=btn)
-    
+
     def set_bar_width(self, width):
         self.configure(width=width)
-        
+
     def redraw(self, *_):
         self.delete(tk.ALL)
 
@@ -52,9 +52,9 @@ class LineNumbers(Canvas):
 
             # TODO drawing breakpoints - need optimisations
             # self.draw_breakpoint(y)
-            
+
             i = self.text.index(f"{i}+1line")
-    
+
     def draw_breakpoint(self, y):
         bp = Breakpoint(self)
         self.create_window(21, y-2, anchor=tk.NE, window=bp)

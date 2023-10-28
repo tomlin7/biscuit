@@ -44,6 +44,6 @@ class MDEditor(BaseEditor):
         self.editor.scrollbar.set(*args)
         self.renderer.scrollbar.set(*args)
         self.on_scrollbar('moveto', args[0])
-    
+
     def on_change(self, *_):
         self.renderer.refresh()

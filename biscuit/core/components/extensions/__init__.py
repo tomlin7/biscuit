@@ -12,7 +12,7 @@ class ExtensionManager:
         self.interval = 5
         # stores loaded instances
         self.extensions = {}
-        
+
         # TODO sandboxed execution of extensions
         # self.blocked_modules = ['os', 'sys']
         # self.imports = {module: __import__(module) for module in sys.modules}
@@ -20,7 +20,7 @@ class ExtensionManager:
 
         if not (self.base.extensionsdir and os.path.isdir(self.base.extensionsdir)):
             return
-        
+
         self.queue = Queue()
         for extension_file in os.listdir(self.base.extensionsdir):
             if extension_file.endswith(".py"):
@@ -55,7 +55,7 @@ class ExtensionManager:
                 extension_module = importlib.import_module(module_name)
                 extension_instance = extension_module.Extension(self.base.api)
                 self.extensions[ext] = extension_instance
-                
+
                 try:
                     extension_instance.run()
                 except:
@@ -75,14 +75,14 @@ class ExtensionManager:
             if extension_name in self.extensions:
                 return
             self.queue.put(extension_name)
-        
+
     def start_server(self):
         self.server = threading.Thread(target=self._load_extensions, daemon=True)
         self.alive = True
         self.server.start()
-        
+
         self.base.logger.info(f"Extensions server started.")
-    
+
     def restart_server(self):
         self.alive = False
         self.base.after(1000, self.start_server)

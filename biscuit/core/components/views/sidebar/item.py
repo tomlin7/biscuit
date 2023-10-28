@@ -10,7 +10,7 @@ class SidebarViewItem(Frame):
     """Containers that fit in SidebarViews
     These also come with an ItemBar that can maximize, minimize and manage the container
     """
-    
+
     def __init__(self, master, itembar=True, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
@@ -30,7 +30,7 @@ class SidebarViewItem(Frame):
         self.content.grid_rowconfigure(0, weight=1)
         self.content.grid_columnconfigure(0, weight=1)
         self.content.grid(row=1 if itembar else 0, column=0, sticky=NSEW)
-    
+
     def set_title(self, title: str) -> None:
         if self.itembar_enabled:
             self.itembar.set_title(title)
@@ -40,7 +40,7 @@ class SidebarViewItem(Frame):
             self.enable()
         else:
             self.disable()
-        
+
     def enable(self) -> None:
         if not self.enabled:
             self.content.grid()

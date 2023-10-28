@@ -48,12 +48,12 @@ class Panel(Frame):
         "Append views to list. Create tabs for them."
         for view in views:
             self.add_view(view)
-    
+
     def add_view(self, view: PanelView) -> None:
         "Appends a view to list. Create a tab."
         self.views.append(view)
         view.create_buttons(self.panelbar)
-        
+
         self.tabs.add_tab(view)
 
     def delete_all_views(self) -> None:
@@ -62,27 +62,27 @@ class Panel(Frame):
             view.destroy()
 
         self.views.clear()
-    
+
     def delete_view(self, view: PanelView) -> None:
         "Permanently delete a view."
         view.destroy()
         self.views.remove(view)
-    
+
     def set_active_view(self, view: PanelView) -> None:
         "set an existing editor to currently shown one"
         for tab in self.tabs.tabs:
             if tab.view == view:
                 self.tabs.set_active_tab(tab)
                 tab.select()
-    
+
     @property
     def logger(self) -> Logs:
         return self.default_views[0]
-    
+
     @property
     def terminal(self) -> Terminal:
         return self.default_views[1]
-    
+
     def show_terminal(self) -> None:
         "shows the terminal if its hidden/minimized"
         self.set_active_view(self.terminal)
@@ -96,7 +96,7 @@ class Panel(Frame):
     def toggle_panel(self) -> None:
         "toggles the current visible state of panel"
         self.master.toggle_panel()
-    
+
     def show_panel(self) -> None:
         "shows the panel if its hidden/minimized"
         self.master.show_panel()

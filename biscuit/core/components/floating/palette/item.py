@@ -20,14 +20,14 @@ class PaletteItem(Text):
         self.insert(tk.END, text)
         self.insert(tk.END, f" {description}", "description")
         self.config(state=tk.DISABLED)
-        
+
         self.bind("<Button-1>", self.on_click)
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
-        
+
         self.selected = False
         self.hovered = False
-    
+
     def on_click(self, *args) -> None:
         self.command(self.master.master.searchbar.term)
         self.master.master.hide()
@@ -46,7 +46,7 @@ class PaletteItem(Text):
         end_pos = start_pos + len(term)
         self.tag_remove("term", 1.0, tk.END)
         self.tag_add("term", f"1.{start_pos}", f"1.{end_pos}")
-    
+
     def on_hover(self, *args) -> None:
         if not self.selected:
             self.config(bg=self.hbg)
@@ -56,7 +56,7 @@ class PaletteItem(Text):
         if not self.selected:
             self.config(bg=self.bg)
             self.hovered = False
-    
+
     def toggle_selection(self) -> None:
         if self.selected:
             self.select()
@@ -66,7 +66,7 @@ class PaletteItem(Text):
     def select(self) -> None:
         self.config(bg=self.hbg, fg=self.hfg)
         self.selected = True
-    
+
     def deselect(self) -> None:
         self.config(bg=self.bg, fg=self.fg)
         self.selected = False

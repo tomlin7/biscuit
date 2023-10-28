@@ -19,7 +19,7 @@ class Empty(Frame):
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        
+
         try:
             self.logo = tk.Label(self, image=self.base.settings.res.logo, **self.base.theme.editors.labels)
             self.logo.grid(row=0, column=0)

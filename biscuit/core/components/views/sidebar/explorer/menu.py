@@ -22,9 +22,9 @@ class ExplorerContextMenu(Menu):
         self.add_separator()
         self.add_item("Rename...", lambda: self.base.palette.show_prompt('renamefile:'))
         self.add_item("Delete", self.master.delete_item)
-        
+
     def get_coords(self, e) -> list:
         return e.x_root, e.y_root
-    
+
     def show(self, *e) -> None:
         super().show(*e)

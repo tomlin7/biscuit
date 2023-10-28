@@ -30,19 +30,19 @@ class Tabs(Frame):
     def clear_all_tabs(self) -> None:
         for tab in self.tabs:
             tab.destroy()
-        
+
         self.tabs.clear()
 
     def close_active_tab(self) -> None:
         self.close_tab(self.active_tab)
-    
+
     def close_tab(self, tab) -> None:
         i = self.tabs.index(tab)
         self.tabs.remove(tab)
         tab.terminal.grid_forget()
         self.master.delete_terminal(tab.terminal)
         tab.destroy()
-        
+
         if self.tabs:
             if i < len(self.tabs):
                 self.tabs[i].select()

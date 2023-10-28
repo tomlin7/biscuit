@@ -6,7 +6,7 @@ NOTE: Cupcake is extracted and published as an embeddable editor from biscuit
 __version__ = '0.25.6'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 
-__all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "Config", "Languages"]
+__all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "Languages"]
 
 
 import os
@@ -28,24 +28,24 @@ def get_editor(base, path: str=None, exists: bool=True, path2: str=None,
     "picks the right editor for the given values"
     if diff:
         return DiffEditor(base, path, exists, language=language)
-    
+
     if path and os.path.isfile(path):
         if FileType.is_image(path):
             return ImageViewer(base, path)
-        elif any(path.endswith(i) for i in ('.md', '.markdown', '.mdown', '.rst', '.mkd')):
+        if any(path.endswith(i) for i in ('.md', '.markdown', '.mdown', '.rst', '.mkd')):
             return MDEditor(base, path, exists=exists)
-        
+
         return TextEditor(base, path, exists, language=language)
-    
+
     return TextEditor(base, exists=exists, language=language)
 
 
 class Editor(Frame):
     """
     Editor class
-    Picks the right editor based on the path, path2, diff values passed. Supports showing diff, images, text files. 
-    If nothing is passed, empty text editor is opened. 
-    
+    Picks the right editor based on the path, path2, diff values passed. Supports showing diff, images, text files.
+    If nothing is passed, empty text editor is opened.
+
     Attributes
     ----------
     path : str
@@ -114,9 +114,9 @@ class Editor(Frame):
         else:
             self.grid_rowconfigure(0, weight=1)
             self.content.grid(row=0, column=0, sticky=tk.NSEW)
-    
+
     def save(self, path: str=None) -> None:
         self.content.save(path)
-    
+
     def focus(self) -> None:
         self.content.focus()

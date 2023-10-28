@@ -18,7 +18,7 @@ class ScrollableFrame(Frame):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
-        
+
         self.scrollbar = Scrollbar(self)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 

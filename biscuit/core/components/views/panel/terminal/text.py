@@ -6,7 +6,7 @@ from biscuit.core.components.utils import Text
 class TerminalText(Text):
     """TerminalText is a Text widget that is used to display the terminal
     output and to get the user input.
-    
+
     It is a proxy widget that limits the editable area to text after the input mark
     and prevents deletion before the input mark.
 
@@ -35,13 +35,13 @@ class TerminalText(Text):
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
-    
+
     def history_up(self, *_) -> None:
         "moves up the history"
 
         if not self._history:
             return "break"
-            
+
         self._history_level = max(self._history_level - 1, 0)
         self.mark_set('insert', 'input')
         self.delete('input', 'end')
@@ -54,14 +54,14 @@ class TerminalText(Text):
 
         if not self._history:
             return "break"
-        
+
         self._history_level = min(self._history_level + 1, len(self._history) - 1)
         self.mark_set('insert', 'input')
         self.delete('input', 'end')
         self.insert('input', self._history[self._history_level])
 
         return "break"
-    
+
     def register_history(self, command: str) -> None:
         "registers a command in the history"
 
@@ -72,7 +72,7 @@ class TerminalText(Text):
 
     def clear(self, *_) -> None:
         "clears all previously used commands and results"
-        
+
         self.proxy_enabled = False
 
         lastline = self.get('input linestart', 'input')
@@ -80,12 +80,12 @@ class TerminalText(Text):
         self.insert('end', lastline)
 
         self.proxy_enabled = True
-        
+
     def _proxy(self, *args) -> None:
         """proxy limits the editable area to text after the input mark
         and prevents deletion before the input mark.
         """
-        
+
         if not self.proxy_enabled:
             return self.tk.call((self._orig,) + args)
 

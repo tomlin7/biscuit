@@ -1,6 +1,5 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter.constants import *
 
 from .frame import Frame
 from .scrollbar import Scrollbar
@@ -20,7 +19,7 @@ class Tree(Frame):
 
         self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), 
                                  displaycolumns='', selectmode=tk.BROWSE)
-        self.tree.grid(row=0, column=0, sticky=NSEW)
+        self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview, style="TreeScrollbar")
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)

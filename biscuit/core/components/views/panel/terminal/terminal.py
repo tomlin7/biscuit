@@ -12,12 +12,12 @@ from .text import TerminalText
 class Terminal(PanelView):
     """
     Base component for terminals, all terminals should inherit this class.
-    
+
     args:
         shell - the shell executable
         cwd - current directory
-    
-    methods: 
+
+    methods:
         start_service - start the terminal service
         destroy - kill the terminal service
         command - run custom commands
@@ -26,7 +26,7 @@ class Terminal(PanelView):
     """
     name: str
     icon: str
-    
+
     def __init__(self, master, cwd=".", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.__buttons__ = (('add',), ('trash', self.destroy))
@@ -72,23 +72,23 @@ class Terminal(PanelView):
         self.write_loop()
 
         self.bind("<Destroy>", self.destroy)
-    
+
     def show_prompt(self) -> None:
         if self.base.sysinfo.os == "Linux":
             self.write("->>", "prompt")
 
     def destroy(self, *_) -> None:
         self.alive = False
-    
+
     def run_command(self, command) -> None:
         self.write(command, "command")
         self.enter()
-        
+
     def enter(self, *_) -> None:
         command = self.terminal.get('input', 'end')
         self.last_command = command
         self.terminal.register_history(command)
-        
+
         self.p.stdin.write(command.encode())
         self.p.stdin.flush()
 
@@ -96,7 +96,7 @@ class Terminal(PanelView):
         while self.alive:
             data = self.p.stdout.raw.read(1024)
             self.out_queue.put(data)
-        
+
     def process_err(self) -> None:
         while self.alive:
             data = self.p.stderr.raw.read(1024)

@@ -14,7 +14,7 @@ class Breakpoint(tk.Label):
         self.active = False
         self.hovered = False
         self.config_bindings()
-    
+
     def config_bindings(self):
         self.bind("<Button-1>", self.on_click)
         self.bind("<Enter>", self.on_enter)
@@ -24,16 +24,16 @@ class Breakpoint(tk.Label):
         if self.active:
             self.config(fg="#e51400")
             return 
-        
+
         if self.hovered:
             self.config(fg="#6e1911")
         else:
             self.config(fg="#1e1e1e")
-        
+
     def on_click(self, event):
         self.active = not self.active
         self.redraw()
-    
+
     def on_enter(self, event):
         self.hovered = True
         self.redraw()

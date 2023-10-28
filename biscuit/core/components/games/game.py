@@ -15,9 +15,9 @@ class BaseGame(Frame):
         self.showpath = False
         self.diff = False
         self.editable = False        
-        
+
         self.__buttons__ = (('refresh', self.reload), )
-    
+
     def add_buttons(self, icon, event) -> None:
         self.__buttons__.append((icon, event))
 
@@ -26,6 +26,6 @@ class BaseGame(Frame):
 
     def reload(self, *_) -> None:
         ...    
-        
+
     def save(self, *_) -> None:
         ...
