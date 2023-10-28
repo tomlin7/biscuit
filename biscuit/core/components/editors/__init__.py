@@ -32,7 +32,7 @@ def get_editor(base, path: str=None, exists: bool=True, path2: str=None,
     if path and os.path.isfile(path):
         if FileType.is_image(path):
             return ImageViewer(base, path)
-        elif any(path.endswith(i) for i in ('.md', '.markdown', '.mdown', '.rst', '.mkd')):
+        if any(path.endswith(i) for i in ('.md', '.markdown', '.mdown', '.rst', '.mkd')):
             return MDEditor(base, path, exists=exists)
         
         return TextEditor(base, path, exists, language=language)
