@@ -1,9 +1,9 @@
-import React from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
+import React from 'react';
 
 import styles from './index.module.css';
 
@@ -23,7 +23,7 @@ function HomepageHeader() {
             </Link>
           </div>
         </div>
-        <img style={{float: "left", padding: "0 7rem 0 5rem"}} src="https://github.com/billyeatcookies/Biscuit/assets/70792552/844000b3-c28c-4a76-a780-70790dd27844" />
+        <img className="animate" style={{float: "left", padding: "1rem 7rem 1 5rem"}} src="https://github.com/billyeatcookies/Biscuit/assets/70792552/844000b3-c28c-4a76-a780-70790dd27844" />
       </div>
       
     </header>
