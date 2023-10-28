@@ -234,7 +234,7 @@ class Text(Text):
         self.auto_completion.hide()
     
     def show_autocomplete(self, event):
-        if self.minimalist or not self.check_autocomplete_keys(event):
+        if self.minimalist or not self.check_autocomplete_keys(event) or not self.current_word:
             return
 
         if self.current_word.strip() not in ["{", "}", ":", "", None, "\""] and not self.current_word.strip()[0].isdigit():
