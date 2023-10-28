@@ -1,6 +1,5 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter.constants import *
 
 from .frame import Frame
 from .scrollbar import Scrollbar
@@ -20,17 +19,17 @@ class Tree(Frame):
 
         self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), 
                                  displaycolumns='', selectmode=tk.BROWSE)
-        self.tree.grid(row=0, column=0, sticky=NSEW)
-
+        self.tree.grid(row=0, column=0, sticky=tk.NSEW)
+        
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview, style="TreeScrollbar")
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
 
         self.tree.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.tree.yview)
-
+        
         self.bind("<Double-Button-1>", self.doubleclick)
         self.bind("<<TreeviewSelect>>", self.check_singleclick)
-
+    
     def bind(self, *args, **kwargs) -> None:
         self.tree.bind(*args, **kwargs)
 
@@ -40,7 +39,7 @@ class Tree(Frame):
                 self.singleclick(self.item_fullpath(self.focus()))
         else:
             self.toggle_node(self.focus())
-
+    
     def clear_node(self, node) -> None:
         self.tree.delete(*self.tree.get_children(node))
 
@@ -50,10 +49,10 @@ class Tree(Frame):
     def collapse_all(self) -> None:
         for node in self.tree.get_children():
             self.tree.item(node, open=False)
-
+    
     def delete(self, *a, **kw) -> None:
         self.tree.delete(*a, *kw)
-
+    
     def focus(self) -> str:
         return self.tree.focus() or ''
 
@@ -62,22 +61,22 @@ class Tree(Frame):
 
     def insert(self, *args, **kwargs):
         return self.tree.insert(*args, **kwargs)
-
+        
     def is_open(self, node):
         return self.tree.item(node, "open")
-
+    
     def item(self, *a, **kw):
         return self.tree.item(*a, **kw)
-
+        
     def item_type(self, item):
         return self.set(item, "type")
-
+    
     def item_fullpath(self, item):
         return self.set(item, "fullpath")
-
+    
     def parent(self, *args, **kwargs):
         return self.tree.parent(*args, **kwargs)
-
+    
     def parent_selected(self):
         return self.parent(self.focus())
 
