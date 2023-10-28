@@ -138,7 +138,7 @@ class TextEditor(BaseEditor):
 
     def edit_reset(self):
         if self.editable:
-         self.text.edit_reset()
+            self.text.edit_reset()
 
     def edit_separator(self):
         if self.editable:
