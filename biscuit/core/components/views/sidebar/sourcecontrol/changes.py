@@ -11,7 +11,7 @@ class Changes(SidebarViewItem):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.items = {}
-    
+
     def refresh(self) -> None:
         if not self.items:
             self.itembar.hide_content()
@@ -26,9 +26,9 @@ class Changes(SidebarViewItem):
                 item.destroy()
             except:
                 pass
-        
+
         self.items.clear()
-            
+
     def add_item(self, path, kind) -> None:
         if path in self.items:
             return
@@ -37,12 +37,12 @@ class Changes(SidebarViewItem):
         new_item.master = self
         new_item.pack(fill=tk.X)
         self.items[path] = (new_item, kind)
-    
+
     def git_add_all(self, *_) -> None:
         if unstaged := [(path, item[1]) for path, item in self.items.items()]:
             self.base.git.repo.stage_files(*unstaged)
             self.master.open_repo()
-    
+
     def git_discard_all(self, *_) -> None:
         self.base.git.repo.discard_changes(self.path)
         self.master.master.open_repo()

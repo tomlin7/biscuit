@@ -34,14 +34,14 @@ class SettingsEditor(BaseEditor):
         self.container.pack(fill=tk.BOTH, expand=True)
 
         self.add_sections()
-    
+
     def add_sections(self):
         self.add_commonly_used()
         self.add_text_editor()
 
     def add_commonly_used(self):
         commonly_used = self.add_section(f"Commonly Used")
-        
+
         commonly_used.add_dropdown("Color Theme", ("dark", "light"))
         commonly_used.add_intvalue("Font Size", 14)
         commonly_used.add_stringvalue("Font Family", "Consolas")
@@ -55,7 +55,7 @@ class SettingsEditor(BaseEditor):
         commonly_used.add_checkbox("Auto Indent", True)
         commonly_used.add_checkbox("Auto Surround", True)
         commonly_used.add_checkbox("Word Wrap", False)
-    
+
     def add_section(self, name):
         section = Section(self.container.content, name)
         section.pack(fill=tk.X, expand=True)
@@ -65,10 +65,10 @@ class SettingsEditor(BaseEditor):
         shortcut.pack(fill=tk.X)
         shortcut.config(**self.base.theme.editors.button)
         return section
-    
+
     def show_result(self, items):
         if not any(items):
             return self.show_no_results()
-    
+
     def show_no_results(self):
         ...

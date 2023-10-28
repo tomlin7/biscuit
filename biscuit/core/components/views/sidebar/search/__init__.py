@@ -26,5 +26,5 @@ class Search(SidebarView):
         self.container.pack(fill=BOTH, padx=10, pady=5)
         self.searchbox.pack(fill=X, anchor=N, pady=2)
         self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
-        
+
         self.results.pack(fill=BOTH, expand=True, anchor=N)

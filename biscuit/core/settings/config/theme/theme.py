@@ -27,12 +27,12 @@ class ThemeObject(Mapping):
 
     def values(self):
         return self.background, self.foreground, self.highlightbackground, self.highlightforeground
-    
+
     def to_dict(self):
         return {
             'background': self.background, 'foreground': self.foreground,
             }
-    
+
     def __getitem__(self, key):
         return self.to_dict()[key]
 
@@ -45,7 +45,7 @@ class ThemeObject(Mapping):
     def remove_bg_highlight(self):
         self.highlightbackground = self.background
         return self
-    
+
     # TODO update child theme objects if parent's color values are altered after initialization
     # NOTE experimental code for updating child themeobjects
     # def update_child_colors(self, color_name, color_value):
@@ -143,12 +143,12 @@ class SidebarViews(FrameThemeObject):
         self.item.content = ThemeObject(self)
         self.item.button = HighlightableThemeObject(self)
         self.toggle_button = HighlightableThemeObject(self)
-    
+
 class PanelViews(FrameThemeObject):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.button = HighlightableThemeObject(self)
-        
+
         self.logs = ThemeObject(self)
         self.logs.time = "#008000"
         self.logs.caller = "#0000ff"
@@ -243,11 +243,11 @@ class Theme:
     layout, views, editors, palette, menu, notifications, utils
     """
     name = "default"
-    
+
     biscuit = "#dc8c34"
     biscuit_light = "#ecb464"
     biscuit_dark = "#B56711"
-    
+
     border = "#dfdfdf"
 
     primary_background = "#f8f8f8"
@@ -273,7 +273,7 @@ class Theme:
     def __init__(self) -> None:
         primary = [self.primary_background, self.primary_foreground, self.primary_background_highlight, self.primary_foreground_highlight]
         secondary = [self.secondary_background, self.secondary_foreground, self.secondary_background_highlight, self.secondary_foreground_highlight]
-        
+
         self.layout = Layout(self, *primary)
         self.views = Views(self, *primary)
         self.utils = Utils(self, *primary)

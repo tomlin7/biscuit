@@ -134,7 +134,7 @@ class Statusbar(Frame):
             self.encoding.hide()
             self.indentation.hide()
             self.line_col_info.hide()
-    
+
     def update_git_info(self) -> None:
         if self.base.git_found:
             self.branch.show()
@@ -142,12 +142,12 @@ class Statusbar(Frame):
             self.git_actionset.update([(str(branch), lambda e=None: self.base.git.checkout(str(branch))) for branch in self.base.git.repo.branches])
         else:
             self.branch.hide()
-    
+
     def on_open_file(self, text: Text) -> None:
         self.file_type.change_text(text.language)
         self.encoding.change_text(text.encoding)
         self.eol.change_text(text.eol)
-    
+
     def update_notifications(self) -> None:
         if n := self.base.notifications.count:
             self.notif.change_icon('bell-dot')

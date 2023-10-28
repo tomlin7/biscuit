@@ -15,7 +15,7 @@ HEIGHT = 20 * SIDE
 
 class Tetris(BaseGame):
     name = "Tetris!"
-    
+
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
         bg = self.base.theme.editors.background
@@ -27,7 +27,7 @@ class Tetris(BaseGame):
 
         self.board = tk.Canvas(self, width=WIDTH, height=HEIGHT, bg=bg)
         self.board.pack(side='left', padx=(40, 20), expand=True)
-        
+
         self.preview = tk.Canvas(self, width=5*SIDE, height=5*SIDE, bg=bg)
         self.preview.pack(padx=(0, 40), expand=True, side=tk.TOP)
 
@@ -71,7 +71,7 @@ class Tetris(BaseGame):
             self.start()
         else:
             return
-        
+
     def destroy(self):
         self.after_cancel(self.loop)
         return super().destroy()
@@ -84,7 +84,7 @@ class Tetris(BaseGame):
         count = Counter()
         for sq in all_squares_h.values(): count[sq] += 1
         full_lines = [k for k,v in count.items() if v == WIDTH/SIDE]
-        
+
         if full_lines:
             lines = len(full_lines)
             remaining_squares_h = {}
@@ -112,7 +112,7 @@ class Tetris(BaseGame):
             self.falling_piece.move(0, 1)
         if event.keysym in ("Up", "w"):
             self.falling_piece.rotate()
-        
+
         return "break"
 
     def update_status(self):

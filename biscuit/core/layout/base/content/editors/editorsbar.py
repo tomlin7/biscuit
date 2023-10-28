@@ -32,7 +32,7 @@ class Editorsbar(Frame):
 
         self.container = Frame(self, **self.base.theme.layout.base.content.editors.bar)
         self.container.pack(fill=tk.BOTH, side=tk.RIGHT, padx=(0, 10))
-        
+
         for button in self.default_buttons:
             IconButton(self.container, *button).pack(side=tk.RIGHT)
 
@@ -40,11 +40,11 @@ class Editorsbar(Frame):
         for button in buttons:
             button.pack(side=tk.LEFT)
             self.buttons.append(button)
-    
+
     def replace_buttons(self, buttons: list[IconButton]) -> None:
         self.clear()
         self.add_buttons(buttons)
-        
+
     def clear(self) -> None:
         for button in self.buttons:
             button.pack_forget()

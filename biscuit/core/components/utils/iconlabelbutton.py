@@ -18,7 +18,7 @@ class IconLabelButton(Frame):
             self.icon_label = tk.Label(self, text=get_codicon(self.icon), anchor=tk.CENTER, 
                 bg=self.bg, fg=self.fg, font=("codicon", 14))
             self.icon_label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        
+
         if text:
             self.text_label = tk.Label(self, text=self.text, anchor=tk.CENTER, pady=2,
                     bg=self.bg, fg=self.fg, font=("Segoe UI", 10))
@@ -30,7 +30,7 @@ class IconLabelButton(Frame):
     def config_bindings(self) -> None:
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
-        
+
         self.bind("<Button-1>", self.on_click)
         if self.text:
             self.text_label.bind("<Button-1>", self.on_click)
@@ -56,7 +56,7 @@ class IconLabelButton(Frame):
 
     def change_text(self, text) -> None:
         self.text_label.config(text=text)
-    
+
     def change_icon(self, icon) -> None:
         self.icon_label.config(text=icon)
 
@@ -70,7 +70,7 @@ class IconLabelButton(Frame):
         if not self.visible:
             self.visible = True
             self.pack(**self.get_pack_data())
-    
+
     def hide(self) -> None:
         if self.visible:
             self.visible = False

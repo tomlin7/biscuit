@@ -56,12 +56,12 @@ class EditorsPane(Frame):
         self.default_editors: List[Editor] = [Welcome(self)]
         self.actionset = ActionSet("Switch to active editors", "active:", [])
         self.base.palette.register_actionset(self.get_active_actionset)
-    
+
     def get_active_actionset(self) -> ActionSet:
         "Generates the active editors actionset"
         self.actionset.update([(editor.filename, editor) for editor in self.editors])
         return self.actionset
-    
+
     def add_default_editors(self) -> None:
         "Adds all default editors"
         self.add_editors(self.default_editors)
@@ -70,14 +70,14 @@ class EditorsPane(Frame):
         "Append <Editor>s to list. Create tabs for them."
         for editor in editors:
             self.add_editor(editor)
-    
+
     def add_editor(self, editor: Editor) -> None:
         "Appends a editor to list. Create a tab."
         self.editors.append(editor)
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
-        
+
     def delete_all_editors(self) -> None:
         "Permanently delete all editors."
         for editor in self.editors:
@@ -86,21 +86,21 @@ class EditorsPane(Frame):
         self.editorsbar.clear()
         self.tabs.clear_all_tabs()
         self.editors.clear()
-    
+
     def open_editor(self, path: str, exists: bool) -> None:
         "open Editor with path and exists values passed"
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
         self.add_editor(Editor(self, path, exists))
-    
+
     def open_diff_editor(self, path: str, exists: bool) -> None:
         "open Editor with path and exists values passed"
         self.add_editor(Editor(self, path, exists, diff=True))
-    
+
     def open_game(self, name: str) -> None:
         "opens a game with passed id/name"
         self.add_editor(Game(self, name))
-    
+
     def close_editor(self, editor: Editor) -> None:
         "removes an editor, keeping it in cache."
         self.editors.remove(editor)
@@ -110,7 +110,7 @@ class EditorsPane(Frame):
             self.closed_editors[editor.path] = editor
         else:
             editor.destroy()
-    
+
     def close_active_editor(self) -> None:
         "Closes the active tab"
         self.tabs.close_active_tab()
@@ -134,9 +134,9 @@ class EditorsPane(Frame):
         "Get active editor."
         if not self.tabs.active_tab:
             return
-        
+
         return self.tabs.active_tab.editor
-    
+
     def refresh(self) -> None:
         if not self.editors and self.empty:
             self.emptytab.grid()

@@ -32,7 +32,7 @@ class SButton(Frame):
             self.icon_label = tk.Label(self, text=get_codicon(self.icon), anchor=tk.CENTER, 
                 bg=self.bg, fg=self.fg, font=("codicon", 12))
             self.icon_label.pack(side=tk.LEFT, fill=tk.Y, expand=True)
-        
+
         if text:
             self.text_label = tk.Label(self, text=self.text, anchor=tk.CENTER, 
                     bg=self.bg, fg=self.fg, pady=2, font=("Segoe UI", 9))
@@ -44,7 +44,7 @@ class SButton(Frame):
     def config_bindings(self) -> None:
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
-        
+
         self.bind("<Button-1>", self.on_click)
         if self.text:
             self.text_label.bind("<Button-1>", self.on_click)
@@ -72,13 +72,13 @@ class SButton(Frame):
 
     def change_text(self, text: str) -> None:
         self.text_label.config(text=text)
-    
+
     def change_description(self, text: str) -> None:
         self.bubble.change_text(text)
-    
+
     def change_icon(self, icon: str) -> None:
         self.icon_label.config(text=get_codicon(icon))
-    
+
     def change_function(self, function: typing.Callable) -> None:
         self.function = function
 
@@ -93,7 +93,7 @@ class SButton(Frame):
             self.lift()
             self.visible = True
             self.pack(**self.get_pack_data())
-    
+
     def hide(self) -> None:
         if self.visible:
             self.visible = False

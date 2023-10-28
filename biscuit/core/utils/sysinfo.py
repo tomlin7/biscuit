@@ -14,7 +14,7 @@ from dataclasses import dataclass
 class SysInfo:
     def __init__(self, base: App) -> None:
         self.base = base
-        
+
         self.os = platform.system()
         self.version = platform.version()
         self.release = platform.release()

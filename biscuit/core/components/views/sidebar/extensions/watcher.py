@@ -21,7 +21,7 @@ class ExtensionsWatcher(FileSystemEventHandler):
                 self.base.notifications.error("Extensions failed: see logs")
                 return
         self.observer.schedule(self, self.base.extensionsdir, recursive=True)
-    
+
     def stop_watch(self) -> None:
         self.observer.stop()
 

@@ -20,20 +20,20 @@ class Slot(Menubutton):
         self.bubble = Bubble(self, text=view.__icon__)
         self.bind('<Enter>', self.bubble.show)
         self.bind('<Leave>', self.bubble.hide)
-        
+
         self.config(text=get_codicon(view.__icon__), relief=tk.FLAT, font=("codicon", 20), 
                     padx=13, pady=11, **self.base.theme.layout.base.sidebar.slots.slot)
         self.pack(fill=tk.X, side=tk.TOP)
-        
+
         self.bind('<Button-1>', self.toggle)
-        
+
     def toggle(self, *_) -> None:
         if not self.enabled:
             self.master.set_active_slot(self)
             self.enable()
         else:
             self.disable()
-        
+
     def enable(self) -> None:
         if not self.enabled:
             self.view.grid(column=1, row=0, sticky=tk.NSEW, padx=(0, 1))

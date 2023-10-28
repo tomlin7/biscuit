@@ -10,7 +10,7 @@ class Minimap(Frame):
         self.tw = textw
         self.font = ("Arial", 1, "bold")
         self.config(highlightthickness=0, bg=self.base.theme.border)
-        
+
         self.cw = tk.Canvas(self, width=100, highlightthickness=0, **self.base.theme.editors.minimap)
         self.cw.pack(fill=tk.BOTH, expand=True, side=tk.LEFT, padx=(1, 0))
 
@@ -44,7 +44,7 @@ class Minimap(Frame):
 
         self.y_bottom_lim = int(self.tw.index(tk.END).split(".")[0]) * 2 + 10
         # self.y_bottom_lim = self.tw.yview()[1] * self.cw.winfo_height()
-    
+
     def redraw_cursor(self):
         self.cw.delete("cursor")
         y = int(self.tw.index(tk.INSERT).split(".")[0]) * 2

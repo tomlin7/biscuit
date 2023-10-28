@@ -16,7 +16,7 @@ class Snake(BaseGame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         self.bg = self.base.theme.editors.background
         self.ui = self.base.theme.biscuit_dark
         self.head_color = self.base.theme.biscuit

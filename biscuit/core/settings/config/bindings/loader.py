@@ -14,6 +14,6 @@ class BindingsLoader:
         with open(os.path.join(self.base.configdir, 'bindings.toml'), 'r') as bindings_file:
             bindings_data = toml.load(bindings_file)
         return bindings_data
-    
+
     def get_loaded_bindings(self) -> dict:
         return self.bindings_data

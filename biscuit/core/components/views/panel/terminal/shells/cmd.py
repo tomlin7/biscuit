@@ -22,5 +22,5 @@ class CommandPrompt(Terminal):
             self.name = "Not Available"
             self.icon = "error"
             return
-        
+
         self.start_service()

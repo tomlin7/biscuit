@@ -43,11 +43,11 @@ class ChangeItem(Frame):
 
     def open_diff(self, _) -> None:
         self.base.open_diff(self.path, self.kind)
-    
+
     def git_add(self, *_) -> None:
         self.base.git.repo.stage_files((self.path, self.kind))
         self.master.master.open_repo()
-    
+
     def git_discard(self, *_) -> None:
         self.base.git.repo.discard_changes(self.path)
         self.master.master.open_repo()

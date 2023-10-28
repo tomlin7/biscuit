@@ -32,10 +32,10 @@ class Stack(ttk.LabelFrame):
             self.tw.heading(col[0], text=col[0])
 
         self.twscroll.config(command=self.tw.yview)
-        
+
         self.values = deque(values)
         self.index = index
-        
+
     def read(self):
         return self.values[self.index]
     def write(self, value, index):
@@ -51,13 +51,13 @@ class Stack(ttk.LabelFrame):
         val = self.values.popleft()
         self.update()
         return val
-    
+
     def update(self):
         self.tw.delete(*self.tw.get_children())
         for i,val in enumerate(self.values):
             self.tw.insert("", index=i, iid=str(i), values=(i,val))
 
-        
+
 class StackEngineer(BaseGame):
     name = "Stack Engineer"
 
@@ -73,7 +73,7 @@ class StackEngineer(BaseGame):
 
         self.editor = TextEditor(self, exists=False, minimalist=True)
         self.draw()    
-        
+
         #print(se.m_stacks['S1'].pop())
         self.m_stacks['S1'].insert(10, 1)
 

@@ -18,7 +18,7 @@ class Renderer(Frame):
 
         self.text = HtmlFrame(self, messages_enabled=False, vertical_scrollbar=False)
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview, style="EditorScrollbar")
-        
+
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
@@ -45,4 +45,3 @@ class Renderer(Frame):
                 color: tcl(::tkhtml::if_disabled {t.primary_background}{t.primary_foreground_highlight});
             }}
             """)
-        

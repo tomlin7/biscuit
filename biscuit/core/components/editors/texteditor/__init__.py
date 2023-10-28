@@ -16,21 +16,21 @@ class TextEditor(BaseEditor):
         self.language = language
         self.exists = exists
         self.editable = True
-        
+
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
         self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist, language=language)
         self.linenumbers = LineNumbers(self, self.text, self.font)
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview, style="EditorScrollbar")
-        
+
         self.text.config(font=self.font)
         self.text.configure(yscrollcommand=self.scrollbar.set)
-        
+
         if not self.minimalist:
             self.minimap = Minimap(self, self.text)
             self.minimap.grid(row=0, column=2, sticky=tk.NS)
-        
+
         self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
@@ -76,7 +76,7 @@ class TextEditor(BaseEditor):
         self.font.configure(size=size)
         self.linenumbers.set_bar_width(size * 3)
         self.on_change()
-    
+
     def save(self, path=None):
         if self.editable:
             self.text.save_file(path)
@@ -88,18 +88,18 @@ class TextEditor(BaseEditor):
     def cut(self, *_):
         if self.editable:
             self.text.cut()
-    
+
     def copy(self, *_):
         if self.editable:
             self.text.copy()
 
     def goto(self, line):
         self.text.goto(line)
-            
+
     def paste(self, *_):
         if self.editable:
             self.text.paste()
-    
+
     def write(self, *args, **kwargs):
         if self.editable:
             self.text.write(*args, **kwargs)
@@ -111,14 +111,14 @@ class TextEditor(BaseEditor):
     def get(self, *args, **kwargs):
         if self.editable:
             self.text.get(*args, **kwargs)
-    
+
     def clear(self):
         self.delete("1.0", tk.END)
 
     def delete(self, *args, **kwargs):
         if self.editable:
             self.text.delete(*args, **kwargs)
-    
+
     def mark_set(self, *args, **kwargs):
         if self.editable:
             self.text.mark_set(*args, **kwargs)
@@ -158,7 +158,7 @@ class TextEditor(BaseEditor):
     def image_configure(self, index, **kwargs):
         if self.editable:
             return self.text.image_configure(index, **kwargs)
-    
+
     def image_names(self):
         return self.text.image_names()
 
@@ -170,7 +170,7 @@ class TextEditor(BaseEditor):
 
     def mark_names(self):
         return self.text.mark_names()
-        
+
     def mark_next(self, index):
         return self.text.mark_next(index)
 

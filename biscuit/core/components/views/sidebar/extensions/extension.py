@@ -37,7 +37,7 @@ class Extension(Frame):
                                **self.base.theme.views.sidebar.item.content)
         self.authorlbl.config(fg="grey")
         self.authorlbl.pack(in_=self.topholder, side=tk.RIGHT, fill=tk.X)
-       
+
         self.descriptionlbl = Label(self, text=self.description, font=("Segoi UI", 9), anchor=tk.W, 
                                **self.base.theme.views.sidebar.item.content)
         self.descriptionlbl.config(fg="grey")
@@ -53,11 +53,11 @@ class Extension(Frame):
         self.bind("<Enter>", self.hoverin)
         self.bind("<Leave>", self.hoveroff)
         self.hoveroff()
-    
+
     def run_fetch_extension(self, *_) -> None:
         if self.installed:
             return
-        
+
         threading.Thread(target=self.fetch_extension).start()
 
     def fetch_extension(self) -> None:
@@ -71,10 +71,10 @@ class Extension(Frame):
     def install_extension(self, response) -> None:
         with open(self.file, 'w') as fp:
             fp.write(response.text)
-        
+
         self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
         self.install.set_command(self.remove_extension)
-            
+
         self.base.logger.info(f"Fetching extension '{self.name}' successful.")
         self.base.notifications.info(f"Extension '{self.name}' has been installed!")
 
@@ -86,7 +86,7 @@ class Extension(Frame):
 
             self.install.config(text="Install", bg=self.base.theme.biscuit)
             self.install.set_command(self.run_fetch_extension)
-            
+
             self.base.logger.info(f"Uninstalling extension '{self.name}' successful.")
             self.base.notifications.info(f"Extension '{self.name}' has been uninstalled!")
         except Exception as e:
@@ -102,7 +102,7 @@ class Extension(Frame):
             self.topholder.config(bg=self.hbg)
         except:
             pass
-        
+
     def hoveroff(self, *_) -> None:
         try:
             self.config(bg=self.bg)

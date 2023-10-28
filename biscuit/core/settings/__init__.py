@@ -28,7 +28,7 @@ class Formattable(str):
         default = 'https://github.com/'
         if not term or URL.match(term):
             return super().format(term)
-        
+
         return super().format(f'{default}{term}')
 
 class Settings:
@@ -43,10 +43,10 @@ class Settings:
         self.commands = [
             ("Open settings", self.base.open_settings),
         ]
-        
+
         self.setup_font()
         self.gen_actionset()
-    
+
     def register_command(self, name: str, command) -> None:
         """
         Registers a new command to the action set.
@@ -73,7 +73,7 @@ class Settings:
             self.iconfont = extra.Font(file=self.res.get_res_path("codicon.ttf"), family="codicon")
         except tk.TclError:
             pass
-        
+
         self.font = tk.font.Font(
             family=self.config.font[0],
             size=self.config.font[1]
@@ -85,7 +85,7 @@ class Settings:
 
     def late_setup(self) -> None:
         self.base.palette.register_actionset(lambda: self.actionset)
-        
+
         from biscuit.core.components import ActionSet
         clone_actionset = ActionSet(
             "Clone git repository", "clone", pinned=[[Formattable("clone {}"), self.base.events.clone_repo]]

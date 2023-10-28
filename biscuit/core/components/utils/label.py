@@ -24,12 +24,12 @@ class TruncatedLabel(Frame):
         super().__init__(master)
         self.text = text
         self.pack_propagate(False)
-        
+
         self.label = Label(self, text=text, *args, **kwargs)
         self.label.pack(fill="both", expand=True)
-        
+
         self.bind("<Configure>", self._wrap_text)
-        
+
     def _wrap_text(self, event=None):
         width = self.winfo_width() * (len(self.text)/self.label.winfo_width())
 

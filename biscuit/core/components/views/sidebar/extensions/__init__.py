@@ -16,7 +16,7 @@ class Extensions(SidebarView):
 
         self.searchbox = Entry(self, hint="Search extensions")
         self.searchbox.pack(fill=tk.X, anchor=tk.N, padx=10, pady=7)
-        
+
         self.results = Results(self)
         self.add_widget(self.results)
 

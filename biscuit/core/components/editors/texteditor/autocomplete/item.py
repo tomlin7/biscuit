@@ -21,7 +21,7 @@ class AutoCompleteItem(Frame):
         self.textw.config(state=tk.DISABLED)
 
         self.textw.tag_config("term", foreground=self.base.theme.biscuit)
-        
+
         self.kindw.bind("<Button-1>", self.on_click)
         self.textw.bind("<Button-1>", self.on_click)
 
@@ -36,10 +36,10 @@ class AutoCompleteItem(Frame):
 
         self.kindw.grid(row=0, column=0, sticky=tk.NSEW)
         self.textw.grid(row=0, column=1, sticky=tk.NSEW)
-    
+
     def get_text(self):
         return self.text
-    
+
     def get_kind(self):
         return self.kind
 
@@ -48,10 +48,10 @@ class AutoCompleteItem(Frame):
         end_pos = start_pos + len(term)
         self.textw.tag_remove("term", 1.0, tk.END)
         self.textw.tag_add("term", f"1.{start_pos}", f"1.{end_pos}")
-    
+
     def on_click(self, *args):
         self.master.choose(self)
-    
+
     def on_hover(self, *args):
         if not self.selected:
             self.kindw.config(bg=self.hbg)
@@ -63,7 +63,7 @@ class AutoCompleteItem(Frame):
             self.kindw.config(bg=self.bg)
             self.textw.config(bg=self.bg)
             self.hovered = False
-    
+
     def toggle_selection(self):
         if self.selected:
             self.select()
@@ -74,7 +74,7 @@ class AutoCompleteItem(Frame):
         self.kindw.config(bg=self.hbg)
         self.textw.config(bg=self.hbg, fg=self.hfg)
         self.selected = True
-    
+
     def deselect(self):
         self.kindw.config(bg=self.bg)
         self.textw.config(bg=self.bg, fg=self.fg)

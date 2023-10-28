@@ -8,18 +8,18 @@ class Style(ttk.Style):
         self.master = master
         self.base = master.base
         self.theme = theme
-        
+
         self.configure("TCheckbutton", background=self.theme.editors.background)
         self.configure("TFrame", background=self.theme.editors.background)
         self.gen_fileicons()
-        
+
         try:
             self.config_treeview()
         except tk.TclError:
             pass
 
         self.config_tree_scrollbar()
-    
+
     def config_tree_scrollbar(self) -> None:
         self.element_create("TreeScrollbar.trough", "from", "clam")
         self.element_create("TreeScrollbar.thumb", "from", "clam")
@@ -36,7 +36,7 @@ class Style(ttk.Style):
             })
         ])
 
-        
+
         bg, _, highlight, _ = self.theme.utils.scrollbar.values()
         self.configure("TreeScrollbar", gripcount=0, background=bg, troughcolor=bg, bordercolor=bg, lightcolor=bg, darkcolor=bg, arrowsize=14)
         self.map("TreeScrollbar", background=[('pressed', highlight), ('!disabled', self.theme.border)])
@@ -53,7 +53,7 @@ class Style(ttk.Style):
                     })
                 ]
             })
-            
+
         ])
         self.configure("EditorScrollbar", gripcount=0, background=bg, troughcolor=bg, bordercolor=bg, lightcolor=bg, darkcolor=bg)
         self.map("EditorScrollbar", background=[('pressed', highlight), ('!disabled', self.theme.border)])
@@ -62,7 +62,7 @@ class Style(ttk.Style):
         ## TREENODE CHEVRONS -----
         if self.base.testing:
             return
-        
+
         self.img_tree_close = tk.PhotoImage("img_tree_close", data="""
                 iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d
                 2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAALBJREFUGJVjYIACExMTfxMTk8WhoaHMDDgAE4zx69ev4////ze4d+
@@ -104,7 +104,7 @@ class Style(ttk.Style):
                 ]
             })
         ])
-    
+
     def gen_fileicons(self) -> None:
         self.document_icn = tk.PhotoImage("document", data="""
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAJ2AAACdgBx6C5rQA

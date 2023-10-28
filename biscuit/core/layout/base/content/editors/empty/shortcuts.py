@@ -11,7 +11,7 @@ class Shortcuts(Frame):
     def add_shortcut(self, name: str, value: list) -> None:
         name = tk.Label(self, text=name, font=("Segoi UI", 10), anchor=tk.E, **self.base.theme.editors.labels)
         value = Shortcut(self, shortcuts=value, **self.base.theme.editors)
-        
+
         name.grid(row=self.row, column=0, sticky=tk.EW, pady=5, padx=5)
         value.grid(row=self.row, column=1, sticky=tk.EW, pady=5, padx=5)
 

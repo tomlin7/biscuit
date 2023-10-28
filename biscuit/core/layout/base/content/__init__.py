@@ -31,18 +31,18 @@ class ContentPane(Frame):
     def __init__(self, master: BaseFrame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
-        
+
         self.editorspane = EditorsPane(self)
         self.panel = Panel(self)
         self._panel_enabled = False
         self._panel_maxed = False
 
         self.editorspane.pack(fill=tk.BOTH, expand=True)
-    
+
     def show_panel(self) -> None:
         if not self._panel_enabled:
             self.toggle_panel()
-    
+
     def toggle_panel(self, *_) -> None:
         if self._panel_enabled:
             self.panel.pack_forget()
@@ -55,7 +55,7 @@ class ContentPane(Frame):
                 self.panel.pack(fill=tk.BOTH, pady=(1, 0))
 
         self._panel_enabled = not self._panel_enabled
-    
+
     def toggle_max_panel(self, *_) -> None:
         if self._panel_maxed:
             self.panel.pack_forget()
@@ -64,5 +64,5 @@ class ContentPane(Frame):
         else:
             self.editorspane.pack_forget()
             self.panel.pack(fill=tk.BOTH, pady=(1, 0), expand=True)
-        
+
         self._panel_maxed = not self._panel_maxed
