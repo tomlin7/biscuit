@@ -87,6 +87,7 @@ class Terminal(PanelView):
     def enter(self, *_) -> None:
         command = self.terminal.get('input', 'end')
         self.last_command = command
+        self.terminal.register_history(command)
         
         self.p.stdin.write(command.encode())
         self.p.stdin.flush()
