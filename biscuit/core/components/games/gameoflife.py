@@ -14,7 +14,7 @@ INITIAL_ALIVE_PROBABILITY = 0.2
 
 class GameOfLife(BaseGame):
     name = "Game of Life"
-    
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, None, None, *args, **kwargs)
 
@@ -42,7 +42,7 @@ class GameOfLife(BaseGame):
             for col in range(GRID_WIDTH):
                 if random.random() < INITIAL_ALIVE_PROBABILITY:
                     self._grid[row][col] = 1
-    
+
     def draw_gridlines(self) -> None:
         for col in range(GRID_WIDTH + 1):
             x = col * CELL_SIZE
@@ -66,7 +66,7 @@ class GameOfLife(BaseGame):
         row = event.y // CELL_SIZE
         self._grid[row][col] = not self._grid[row][col]
         self.draw_cell(row, col)
-    
+
     def remove_cell(self, event) -> None:
         col = event.x // CELL_SIZE
         row = event.y // CELL_SIZE

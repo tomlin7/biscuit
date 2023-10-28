@@ -14,6 +14,6 @@ class Theme(Endpoint):
 
     def register_theme(self, theme):
         ...
-    
+
     def set_theme(self, theme):
         ...

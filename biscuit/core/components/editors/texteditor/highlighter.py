@@ -27,7 +27,7 @@ class Highlighter:
         self.text: Text = text
         self.base = text.base
         self.language = language
-        
+
         if language:
             try:
                 self.lexer = get_lexer_by_name(language)
@@ -41,7 +41,7 @@ class Highlighter:
             try:
                 if os.path.basename(text.path).endswith("txt"):
                     raise Exception()
-                
+
                 self.lexer = get_lexer_for_filename(os.path.basename(text.path), encoding=text.encoding)
                 self.text.language = self.lexer.name
             except:
@@ -49,10 +49,10 @@ class Highlighter:
                 self.text.language = "Plain Text"
                 self.base.notifications.info("No lexers are available for opened file type.")
                 return
-                
+
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
-    
+
     def change_language(self, language: str) -> None:
         """Change the language of the highlighter
         If language is not given, it will try to detect the language from the file extension.
@@ -76,7 +76,7 @@ class Highlighter:
             try:
                 if os.path.basename(self.text.path).endswith("txt"):
                     raise Exception()
-                
+
                 self.lexer = get_lexer_for_filename(os.path.basename(self.text.path), encoding=self.text.encoding)
                 self.text.language = self.lexer.name
             except:
@@ -84,9 +84,9 @@ class Highlighter:
                 self.text.language = "Plain Text"
                 self.base.notifications.info("No lexers are available for opened file type.")
                 return
-        
+
         threading.Thread(target=self.text.refresh, daemon=True).start()
-        
+
     def setup_highlight_tags(self) -> None:
         "Setup the tags for highlighting"
         for token, color in self.tag_colors.items():
@@ -96,10 +96,10 @@ class Highlighter:
         "Highlights the text content of attached Editor instance"
         if not self.lexer:
             return
-        
+
         for token, _ in self.tag_colors.items():
             self.text.tag_remove(str(token), '1.0', tk.END)
-            
+
         text = self.text.get_all_text()
 
         # NOTE:  Highlighting only visible area
@@ -116,7 +116,7 @@ class Highlighter:
             self.text.mark_set("range_end", f"range_start + {len(content)}c")
             self.text.tag_add(str(token), "range_start", "range_end")
             self.text.mark_set("range_start", "range_end")
-            
+
             # DEBUG
             # print(f"{content} is recognized as a <{str(token)}>")
         # print("==================================")

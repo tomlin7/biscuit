@@ -10,6 +10,6 @@ class Icon(Label):
         super().__init__(master, *args, **kwargs)
         self.icon = icon
         self.config(text=get_codicon(icon), font=("codicon", iconsize))
-    
+
     def set_icon(self, icon) -> None:
         self.config(text=get_codicon(icon))

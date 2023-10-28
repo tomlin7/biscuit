@@ -16,14 +16,14 @@ class Item(Frame):
 
         self.lbl = tk.Label(self, text=self.name, font=("Segoi UI", 11, "bold"), anchor=tk.W, bg=self.bg, fg=self.fg)
         self.lbl.pack(fill=tk.X, expand=True)
-        
+
     #     self.bind("<Enter>", self.hoverin)
     #     self.bind("<Leave>", self.hoveroff)
-    
+
     # def hoverin(self, *_):
     #     self.config(bg=self.highlightbg)
     #     self.lbl.config(bg=self.highlightbg)
-    
+
     # def hoveroff(self, *_):
     #     self.config(bg=self.bg)
     #     self.lbl.config(bg=self.bg)
@@ -36,12 +36,12 @@ class DropdownItem(Item):
         m = ttk.OptionMenu(self, self.var, options[default], *options)
         m.config(width=30)
         m.pack(side=tk.LEFT)
-        
+
     @property
     def value(self) -> str:
         return self.var.get()
-    
-    
+
+
 class IntegerItem(Item):
     def __init__(self, master, name="Example", default="0", *args, **kwargs) -> None:
         super().__init__(master, name, *args, **kwargs)

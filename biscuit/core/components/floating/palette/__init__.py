@@ -53,26 +53,26 @@ class Palette(Toplevel):
         self.actionsets = []
         self.active_set = None
         self.add_search_bar()
-        
+
         self.configure_bindings()
 
     def register_actionset(self, actionset: ActionSet) -> None:
         "Expects a lambda returning the actionset instead of the actionset itself"
         self.actionsets.append(actionset)
-    
+
     def generate_help_actionset(self) -> None:
         self.help_actionset = ActionSet("Help", "?")
         for i in self.actionsets:
             i = i() # get the actionset
             if i.prompt:
                 self.help_actionset.append((i.prompt, lambda _, i=i: self.after(50, self.show_prompt, i.prompt), i.description))
-    
+
         self.register_actionset(lambda: self.help_actionset)
 
     def add_item(self, text: str, command, *args, **kwargs) -> PaletteItem:
         new_item = PaletteItem(self.container, text, command, *args, **kwargs)
         new_item.grid(row=self.row, sticky=tk.EW)
-        
+
         self.shown_items.append(new_item)
 
         self.row += 1
@@ -82,39 +82,39 @@ class Palette(Toplevel):
     def add_search_bar(self) -> None:
         self.searchbar = Searchbar(self.container)
         self.searchbar.grid(row=0, sticky=tk.EW, pady=(1, 7), padx=1)
-    
+
     def configure_bindings(self) -> None:
         self.bind("<FocusOut>", self.hide)
         self.bind("<Escape>", self.hide)
 
         self.row += 1
         self.refresh_selected()
-    
+
     def pick_actionset(self, actionset) -> None:
         self.active_set = actionset
-    
+
     def pick_file_search(self) -> None:
         self.active_set = self.base.explorer.get_actionset()
-        
+
     def choose(self, *_) -> None:
         #TODO pass the term to the function as argument (for input requiring commands)
         self.shown_items[self.selected].command(self.searchbar.term)
         self.hide()
-        
+
     def get_items(self) -> ActionSet:
         return self.active_set
-    
+
     def hide(self, *args) -> None:
         self.withdraw()
         self.reset()
-        
+
     def hide_all_items(self) -> None:
         for i in self.shown_items:
             i.destroy()
-        
+
         self.shown_items = []
         self.row = 1
-    
+
     def reset_selection(self) -> None:
         self.selected = 0
         self.refresh_selected()
@@ -125,12 +125,12 @@ class Palette(Toplevel):
 
         for i in self.shown_items:
             i.deselect()
-        
+
         try:
             self.shown_items[self.selected].select()
         except IndexError as e:
             self.base.logger.error(f"Command '{self.selected}' doesnt exist: {e}")
-    
+
     def reset(self) -> None:
         self.searchbar.clear()
         self.reset_selection()
@@ -138,7 +138,7 @@ class Palette(Toplevel):
     def search_bar_enter(self, *args) -> str:
         self.choose()
         return "break"
-    
+
     def show_no_results(self) -> None:
         self.hide_all_items()
         self.reset_selection()
@@ -148,7 +148,7 @@ class Palette(Toplevel):
         self.selected += delta
         self.selected = min(max(0, self.selected), len(self.shown_items) - 1)
         self.refresh_selected()
-    
+
     def show_items(self, items: list[PaletteItem]) -> None:
         self.hide_all_items()
 
@@ -161,12 +161,12 @@ class Palette(Toplevel):
     def show_prompt(self, prompt: str) -> None:
         """Shows the palette with the passed prompt"""
         self.update_idletasks()
-        
+
         x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)
         y = self.master.winfo_rooty() + self.base.menubar.winfo_height()
         self.geometry(f"+{x}+{y}")
         self.deiconify()
-        
+
         self.focus_set()
         self.searchbar.focus()
         self.searchbar.add_prompt(prompt)

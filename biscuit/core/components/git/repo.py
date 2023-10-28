@@ -11,7 +11,7 @@ class GitRepo(git.Repo):
         self.author_name = self.config.get_value("user", "name")
         self.author_email = self.config.get_value("user", "email")
         self.author = git.Actor(self.author_name, self.author_email)
-    
+
     def get_untracked_files(self) -> list:
         return list(self.untracked_files)
 
@@ -20,7 +20,7 @@ class GitRepo(git.Repo):
 
     def get_deleted_files(self) -> list:
         return [item.a_path for item in self.index.diff(None).iter_change_type('D')]
-    
+
     def get_modified_files(self) -> list:
         return [item.a_path for item in self.index.diff(None).iter_change_type('M')]
 
@@ -29,13 +29,13 @@ class GitRepo(git.Repo):
 
     def get_staged_deleted_files(self) -> list:
         return [item.a_path for item in self.index.diff("HEAD").iter_change_type('A')]
-    
+
     def get_staged_modified_files(self) -> list:
         return [item.a_path for item in self.index.diff("HEAD").iter_change_type('M')]
-    
+
     def get_latest_commit(self):
         return self.head.commit
-    
+
     def get_commit_filedata(self, filename) -> str:
         return self.head.commit.tree[filename].data_stream.read().decode('utf-8')
 
@@ -50,14 +50,14 @@ class GitRepo(git.Repo):
 
     def unstage_files(self, *paths) -> None:
         self.index.reset(paths=paths)
-    
+
     def discard_changes(self, *path) -> None:
         self.git.checkout("--", *path)
 
     def commit_files(self, message=None, **kwargs):
         if not message:
             message = "Commit changes"
-    
+
         return self.index.commit(message, author=self.author, **kwargs)
 
     def push_files(self, remote=None, branch=None, **kwargs):
@@ -66,7 +66,7 @@ class GitRepo(git.Repo):
         if not branch:
             branch = self.active_branch.name
         return self.do(self.remotes[remote].push, branch, **kwargs)
-    
+
     def do(self, fn, *args, **kwargs):
         try:
             return fn(*args, **kwargs)

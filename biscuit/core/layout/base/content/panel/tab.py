@@ -23,7 +23,7 @@ class Tab(Menubutton):
         super().__init__(master, *args, **kwargs)
         self.view = view
         self.selected = False
-        
+
         self.config(text=view.__class__.__name__, padx=5, pady=5,
             font=("Segoe UI", 10), **self.base.theme.layout.base.content.panel.bar.tab)
 
@@ -35,7 +35,7 @@ class Tab(Menubutton):
             self.view.grid_remove()
             self.config(fg=self.base.theme.layout.base.content.panel.bar.tab.foreground)
             self.selected = False
-        
+
     def select(self, *_) -> None:
         "selects this tab and shows attached to this tab"
         if not self.selected:

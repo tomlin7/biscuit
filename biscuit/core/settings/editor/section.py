@@ -17,7 +17,7 @@ class Section(Frame):
         dropdown = DropdownItem(self, name, options, default)
         dropdown.pack(fill=tk.X, expand=True)
         self.items.append(dropdown)
-        
+
     def add_stringvalue(self, name="Example", default="placeholder") -> None:
         string = StringItem(self, name, default)
         string.pack(fill=tk.X, expand=True)
@@ -27,7 +27,7 @@ class Section(Frame):
         int = IntegerItem(self, name, default)
         int.pack(fill=tk.X, expand=True)
         self.items.append(int)
-    
+
     def add_checkbox(self, name="Example", default=True) -> None:
         dropdown = CheckboxItem(self, name, default)
         dropdown.pack(fill=tk.X, expand=True)

@@ -7,7 +7,7 @@ class Commands(Endpoint):
         self.__settings = self._Endpoint__base.settings
 
         self.register_command = self.__settings.register_command
-    
+
     @property
     def commands(self) -> None:
         return self.__settings.commands.copy()

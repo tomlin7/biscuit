@@ -28,19 +28,19 @@ class Git(Frame):
 
         self.placeholder = ChangesTreePlaceholder(self)
         self.placeholder.pack(fill=tk.BOTH, expand=True)
-        
+
     def add_staged_changes(self, changed_files=(), kind=0) -> None:
         for file in changed_files:
             self.staged_changes_tree.add_item(file, kind)
-        
+
         self.staged_changes_tree.refresh()
-    
+
     def add_changes(self, changed_files=(), kind=0) -> None:
         for file in changed_files:
             self.changes_tree.add_item(file, kind)
-        
+
         self.changes_tree.refresh()
-    
+
     def open_repo(self) -> None:
         self.staged_changes_tree.clear_tree()
         self.changes_tree.clear_tree()

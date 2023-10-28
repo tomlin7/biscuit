@@ -52,24 +52,24 @@ class Sidebar(Frame):
         "Append views to list. Create tabs for them."
         for view in views:
             self.add_view(view)
-    
+
     def add_view(self, view: SidebarView) -> None:
         "Appends a view to list. Create a tab."
         self.views.append(view)
         self.slots.add_slot(view)
-        
+
     def delete_all_views(self) -> None:
         "Permanently delete all views."
         for view in self.views:
             view.destroy()
 
         self.views.clear()
-    
+
     def delete_view(self, view: SidebarView) -> None:
         "Permanently delete a view."
         view.destroy()
         self.views.remove(view)
-    
+
     @property
     def explorer(self) -> Explorer:
         "Get explorer view."
@@ -97,7 +97,7 @@ class Sidebar(Frame):
                 self.slots.set_active_slot(i)
                 i.enable()
                 break
-    
+
     def show_explorer(self) -> None:
         "Show explorer view."
         self.show_view(self.default_views[0])

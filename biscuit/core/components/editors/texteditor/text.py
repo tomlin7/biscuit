@@ -23,7 +23,7 @@ class Text(Text):
         self.exists = exists
         self.minimalist = minimalist
         self.language = language
-        
+
         self.buffer_size = 1000
         self.bom = True
         self.current_word = None
@@ -32,7 +32,7 @@ class Text(Text):
         self.syntax = Syntax(self)
         self.auto_completion = AutoComplete(
             self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
-        
+
         self.highlighter = Highlighter(self, language)
         self.base.statusbar.on_open_file(self)
 
@@ -138,7 +138,7 @@ class Text(Text):
                 self.hide_autocomplete()
             case "rightarrow" | "leftarrow":
                 self.update_completions()
-            
+
             # bracket pair completions
             case "braceleft":
                 return self.complete_pair("}")
@@ -164,14 +164,14 @@ class Text(Text):
         if not self.minimalist and self.auto_completion.active:        
             self.auto_completion.choose()
             return "break"
-        
+
         return self.check_indentation()
-        
+
     def tab_key_events(self, *_):
         if self.auto_completion.active:        
             self.auto_completion.choose()
             return "break"
-    
+
         self.insert(tk.INSERT, " "*4)
         return "break"
 
@@ -181,39 +181,39 @@ class Text(Text):
         extracts all text except the current word.
         """
         return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
-    
+
     def get_current_word(self):
         return self.current_word.strip()
-    
+
     def update_words(self, *_):
         if self.minimalist:
             return
-        
+
         self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
         self.after(1000, self.update_words)
-    
+
     def update_completions(self):
         if self.minimalist:
             return
-        
+
         self.auto_completion.update_completions()   
-    
+
     def confirm_autocomplete(self, text):
         self.replace_current_word(text)
-        
+
     def replace_current_word(self, new_word):
         if self.current_word.startswith("\n"):
             self.delete("insert-1c wordstart+1c", "insert")
         else:
             self.delete("insert-1c wordstart", "insert")
         self.insert("insert", new_word)
-    
+
     def check_autocomplete_keys(self, event):
         """Helper function for autocomplete.show to check triggers"""
         return event.keysym not in [
             "BackSpace", "Escape", "Return", "Tab", "space", 
             "Up", "Down", "Control_L", "Control_R"] 
-    
+
     def cursor_screen_location(self):
         """Helper function for autocomplete.show to detect cursor location"""
         pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
@@ -222,16 +222,16 @@ class Text(Text):
         bbox = self.bbox(cursor)
         if not bbox:
             return (0, 0)
-        
+
         bbx_x, bbx_y, _, bbx_h = bbox
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
-    
+
     def hide_autocomplete(self, *_):
         if self.minimalist:
             return
-        
+
         self.auto_completion.hide()
-    
+
     def show_autocomplete(self, event):
         if self.minimalist or not self.check_autocomplete_keys(event) or not self.current_word:
             return
@@ -252,7 +252,7 @@ class Text(Text):
     def complete_pair(self, char):
         self.insert(tk.INSERT, char)
         self.mark_set(tk.INSERT, "insert-1c")
-    
+
     def surrounding_selection(self, char):
         next_char = self.get("insert", "insert+1c")
         if next_char == char:
@@ -264,7 +264,7 @@ class Text(Text):
             self.insert(char, tk.SEL_LAST)
             self.insert(char, tk.SEL_FIRST)
             return
-        
+
         self.complete_pair(char)
         return "break"
 
@@ -279,7 +279,7 @@ class Text(Text):
             self.move_to_next_word()
         else:
             self.move_to_previous_word()
-        
+
         return "break"
 
     def update_current_indent(self):
@@ -290,10 +290,10 @@ class Text(Text):
     def update_current_line(self):
         self.current_line = self.get("insert linestart", "insert lineend")
         return self.current_line
-    
+
     def add_newline(self, count=1):
         self.insert(tk.INSERT, "\n" * count)
-    
+
     def check_indentation(self, *args):
         self.update_current_indent()
         if self.update_current_line():
@@ -301,12 +301,12 @@ class Text(Text):
                 self.current_indent += 4
             elif self.current_line[-1] in ["}", "]", ")"]:
                 self.current_indent -= 4
-            
+
             self.add_newline()
             self.insert(tk.INSERT, " " * self.current_indent)
 
             self.update_current_indent()
-            
+
             return "break"
 
     def multi_selection(self, *args):
@@ -333,15 +333,15 @@ class Text(Text):
     def detect_eol(self, path):
         with open(path, 'rb') as file:
             chunk = file.read(1024)
-        
+
             # Check for '\r\n' to detect Windows-style EOL
             if b'\r\n' in chunk:
                 return "CRLF"
-            
+
             # Check for '\n' to detect Unix-style EOL
             if b'\n' in chunk:
                 return "LF"
-            
+
             # Check for '\r' to detect Mac-style EOL (older Macs)
             if b'\r' in chunk:
                 return "CR"
@@ -350,7 +350,7 @@ class Text(Text):
     def load_file(self):
         if not self.path:
             return
-        
+
         try:
             encoding = self.detect_encoding(self.path)
             self.detect_eol(self.path)
@@ -363,7 +363,7 @@ class Text(Text):
         except Exception as e:
             print(e)
             self.master.unsupported_file()
-        
+
         self.base.statusbar.on_open_file(self)
 
     def read_file(self, file):
@@ -393,7 +393,7 @@ class Text(Text):
         except queue.Empty:
             # If the queue is empty, schedule the next check after a short delay
             self.master.after(100, self.process_queue)
-    
+
     def save_file(self, path=None):
         if path:
             try:
@@ -401,22 +401,22 @@ class Text(Text):
                     fp.write(self.get_all_text())
             except Exception:
                 return
-            
+
             self.path = path
             #TODO update tab name
-        
+
         try:
             with open(self.path, 'w') as fp:
                 fp.write(self.get_all_text())
         except Exception:
             return
-             
+
     def copy(self, *_):
         self.event_generate("<<Copy>>")
 
     def cut(self, *_):
         self.event_generate("<<Cut>>")
-    
+
     def paste(self, *_):
         self.event_generate("<<Paste>>")
 
@@ -441,15 +441,15 @@ class Text(Text):
                 self.update()
 
         threading.Thread(target=write_with_buffer).start()
-        
+
     def clear(self):
         self.delete(1.0, tk.END)
-    
+
     def goto(self, line):
         line = f"{line}.0"
         self.move_cursor(line)
         self.see(line)
-    
+
     def copy_line_up(self, *_) -> None:
         "copies the line cursor is in below"
         line = self.line
@@ -484,33 +484,33 @@ class Text(Text):
         self.insert(f"{prev_line}.end", self.get(f"{line}.0", f"{line}.end"))
         self.delete(f"{line}.0", f"{line}.end")
         return "break"
-    
+
     def duplicate_selection(self, *_) -> None:
         "duplicates the current selection"
         self.insert(tk.INSERT, self.get_selected_text())
 
     def write(self, text, *args):
         self.insert(tk.END, text, *args)
-    
+
     def newline(self, *args):
         self.write("\n", *args)
-    
+
     def get_all_text(self):
         return self.get(1.0, tk.END)
-    
+
     def get_selected_text(self):
         try:
             return self.selection_get()
         except Exception:
             return ""
-        
+
     def get_selected_count(self):
         return len(self.get_selected_text())
-        
+
     @property
     def line(self):
         return int(self.index(tk.INSERT).split('.')[0])
-    
+
     @property
     def column(self):
         return int(self.index(tk.INSERT).split('.')[1]) + 1
@@ -523,27 +523,27 @@ class Text(Text):
     def scroll_to_end(self):
         self.mark_set(tk.INSERT, tk.END)
         self.see(tk.INSERT)
-    
+
     def scroll_to_start(self):
         self.mark_set(tk.INSERT, 1.0)
         self.see(tk.INSERT)
-    
+
     def scroll_to_line(self, line):
         self.mark_set(tk.INSERT, line)
         self.see(tk.INSERT)
-    
+
     def set_wrap(self, flag=True):
         if flag:
             self.configure(wrap=tk.WORD)
         else:
             self.configure(wrap=tk.NONE)
-    
+
     def set_active(self, flag=True):
         if flag:
             self.configure(state=tk.NORMAL)
         else:
             self.configure(state=tk.DISABLED)
-    
+
     def show_unsupported_dialog(self):
         self.minimalist = True
         self.highlighter.lexer = None
@@ -562,7 +562,7 @@ class Text(Text):
         self.tag_remove("currentline", 1.0, tk.END)
         if self.minimalist or self.get_selected_text():
             return
-        
+
         line = int(self.index(tk.INSERT).split(".")[0])
         start = str(float(line))
         end = str(float(line + 1))
@@ -570,14 +570,14 @@ class Text(Text):
 
     def select_line(self, line):
         self.clear_all_selection()
-        
+
         line = int(line.split(".")[0])
         start = str(float(line))
         end = str(float(line + 1))
         self.tag_add(tk.SEL, start, end)
 
         self.move_cursor(end)
-    
+
     def highlight_current_word(self):
         if self.minimalist or self.get_selected_text():
             return
@@ -595,13 +595,13 @@ class Text(Text):
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
         end = self.index(end)
-        
+
         self.mark_set("matchStart", start)
         self.mark_set("matchEnd", start)
         self.mark_set("searchLimit", end)
 
         self.tag_remove(tag, start, end)
-        
+
         count = tk.IntVar()
         while True:
             index = self.search(pattern, "matchEnd", "searchLimit", count=count, regexp=regexp)
@@ -616,7 +616,7 @@ class Text(Text):
     def refresh(self, *args):
         if self.minimalist:
             return
-        
+
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlighter.highlight()
         self.highlight_current_line()
@@ -638,9 +638,9 @@ class Text(Text):
 
         if (args[0] in ("insert", "replace", "delete") or args[0:3] == ("mark", "set", "insert")):
             self.event_generate("<<Change>>", when="tail")
-        
+
         elif (args[0:2] == ("xview", "moveto") or args[0:2] == ("yview", "moveto") or 
               args[0:2] == ("xview", "scroll") or args[0:2] == ("yview", "scroll")):
             self.event_generate("<<Scroll>>", when="tail")
-            
+
         return result

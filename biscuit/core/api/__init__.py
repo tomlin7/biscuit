@@ -19,5 +19,5 @@ class ExtensionsAPI:
 
         self.Game = BaseGame
         self.Editor = BaseEditor
-        
+
         self.register_game = self.__base.register_game

@@ -6,7 +6,7 @@ from .theme import Theme
 
 class Light(Theme):
     name = "biscuit light"
-    
+
     border = "#dfdfdf"
 
     primary_background = "#f8f8f8"
@@ -27,8 +27,8 @@ class Light(Theme):
     Number = "#098658"
     Comment = "#098658"
     Punctuation = "#3b3b3b"
-    
+
     def __init__(self, *args, **kwds) -> None:
         super().__init__(*args, **kwds)
         sv_ttk.use_light_theme()
-        
+

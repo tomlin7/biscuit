@@ -25,16 +25,16 @@ class Slots(Frame):
 
         self.menus = []
         self.add_menus()
-        
+
     # --- SLOTS ---
     def add_slot(self, view: SidebarView) -> None:
         slot = Slot(self, view)
         slot.pack(fill=tk.Y)
         self.slots.append(slot)
-    
+
     def toggle_first_slot(self) -> None:
         self.slots[0].toggle()
-    
+
     def set_active_slot(self, selected_slot: Slot) -> None:
         self.active_slot = selected_slot
         for slot in self.slots:
@@ -44,7 +44,7 @@ class Slots(Frame):
     # --- MENUS ---
     def add_menus(self) -> None:
         self.add_settings_menu()
-    
+
     def add_settings_menu(self) -> None:
         file_menu = self.add_menu("settings-gear", "manage")
         file_menu.add_item("Command Palette", lambda *_: self.base.palette.show_prompt(">"))
@@ -55,7 +55,7 @@ class Slots(Frame):
         new_menu = MenuItem(self, icon, text)
         new_menu.pack(side=tk.BOTTOM, fill=tk.X, padx=0)
         self.menus.append(new_menu.menu)
-        
+
         return new_menu.menu
 
     def close_all_menus(self, *_) -> None:
@@ -69,6 +69,6 @@ class Slots(Frame):
                 active = True
             if i != menu:
                 i.hide()
-        
+
         if active:
             menu.show()

@@ -36,7 +36,7 @@ class StagedChangeItem(Frame):
 
     def open_diff(self, _) -> None:
         self.base.open_diff(self.path, self.kind)
-    
+
     def git_remove(self, *_) -> None:
         self.base.git.repo.unstage_files(self.path)
         self.master.master.open_repo()

@@ -6,7 +6,7 @@ class ActionSet(list):
                     pinned: List[Tuple[str, Callable]] = [], *args, **kwargs) -> None:
         """Palette Actionset
         A list of items that can be searched through.
-        
+
         Attributes
         ----------
         description : str
@@ -23,15 +23,15 @@ class ActionSet(list):
         self.prompt: str = prompt
 
         self.pinned: List[Tuple[str, Callable]] = pinned # [[command, callback], ...]
-    
+
     def update(self, items) -> None:
         "Clear and update the items in the actionset."
         self.clear()
         self += items
-    
+
     def get_pinned(self, term) -> list:
         "Returns the pinned items with the term formatted."
         if not self.pinned:
             return []
-        
+
         return [[item[0].format(term)] + item[1:] for item in self.pinned]

@@ -17,7 +17,7 @@ class DirectoryTreeWatcher(FileSystemEventHandler):
         self.observer.unschedule_all()
         if self.master.path and self.observe_changes:
             self.observer.schedule(self, self.master.path, recursive=True)
-    
+
     def stop_watch(self) -> None:
         self.observer.stop()
 
@@ -29,4 +29,4 @@ class DirectoryTreeWatcher(FileSystemEventHandler):
 
     def on_modified(self, event) -> None: ...
         #self.master.update_path(os.path.dirname(event.src_path))
-    
+

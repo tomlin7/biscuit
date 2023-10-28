@@ -33,10 +33,10 @@ class Tab(Frame):
 
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
-    
+
     def close(self, *_) -> None:
         self.master.close_tab(self)
-    
+
     def on_hover(self, *_) -> None:
         if not self.selected:
             self.icon.config(bg=self.hbg)
@@ -63,7 +63,7 @@ class Tab(Frame):
             self.config(bg=self.bg)
             self.closebtn.config(bg=self.bg, activeforeground=self.fg)
             self.selected = False
-        
+
     def select(self, *_) -> None:
         if not self.selected:
             self.master.set_active_tab(self)

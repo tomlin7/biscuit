@@ -47,7 +47,7 @@ class Logs(PanelView):
 
         self.scrollbar = Scrollbar(self)
         self.scrollbar.grid(sticky=NSEW, row=0, column=1)
-        
+
         self.text.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.text.yview)
 
@@ -69,7 +69,7 @@ class Logs(PanelView):
                 self.text.insert(END, i)
         self.text.config(state=DISABLED)
         self.text.see(END)
-    
+
     def newline(self) -> None:
         self.write('\n')
 
@@ -84,11 +84,11 @@ class Logs(PanelView):
     def info(self, text) -> None:
         "info level log"
         self.log((' [info] ', 'info'), caller_class_name(), text)
-    
+
     def warning(self, text) -> None:
         "warning level log"
         self.log((' [warning] ', 'warning'), caller_class_name(), text)
-    
+
     def error(self, text) -> None:
         "error level log"
         self.log((' [error] ', 'error'), caller_class_name(), text)

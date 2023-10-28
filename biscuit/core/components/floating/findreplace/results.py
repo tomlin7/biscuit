@@ -17,7 +17,7 @@ class FindResults(tk.Label):
         else:
             self.config(text=f"{n} results")
             self.config(fg=self.base.theme.findreplace.label.foreground)
-        
+
     def init(self):
         self.config(text="No results")
         self.config(fg=self.base.theme.editors.foreground)

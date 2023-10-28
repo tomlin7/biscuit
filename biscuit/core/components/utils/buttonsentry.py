@@ -28,7 +28,7 @@ class ButtonsEntry(Frame):
     def add_buttons(self, buttons):
         for btn in buttons:
             self.add_button(*btn)
-    
+
     def get(self, *args):
         return self.entry.get(*args)
 

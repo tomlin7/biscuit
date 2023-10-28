@@ -36,7 +36,7 @@ class Menu(Toplevel):
     def config_bindings(self):
         self.bind("<FocusOut>" , self.hide)
         self.bind("<Escape>", self.hide)
-    
+
     def get_coords(self, *e):
         return self.master.winfo_rootx(), self.master.winfo_rooty() + self.master.winfo_height()
 
@@ -46,10 +46,10 @@ class Menu(Toplevel):
 
         x, y = self.get_coords(*e)
         self.wm_geometry(f"+{x}+{y}")
-        
+
         self.deiconify()
         self.focus_set()
-    
+
     def hide(self, *args):
         self.active = False
         self.withdraw()

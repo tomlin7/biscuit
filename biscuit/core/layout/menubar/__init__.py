@@ -43,7 +43,7 @@ class Menubar(Frame):
             close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.events.quit)
             close.config(activebackground='#e81123', activeforeground="white")
             close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-            
+
             IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             self.config_bindings()
@@ -54,17 +54,17 @@ class Menubar(Frame):
 
         self.config(**self.base.theme.layout.menubar)
         self.add_menus()
-    
+
     def set_title(self, title: str=None) -> None:
         self.title_lbl.config(text=f"{title} - Biscuit (v{__version__})" 
                               if title else f"Biscuit (v{__version__})")
         self.reposition_title()
-    
+
     def reposition_title(self) -> None:
         "Reposition the title label to the center of the menubar"
         x = self.winfo_x() + (self.winfo_width() - self.title_lbl.winfo_width())/2
         y = self.winfo_y() + (self.winfo_height() - self.title_lbl.winfo_height())/2
-        
+
         self.title_lbl.place_forget()
         self.title_lbl.place(x=x, y=y)
 
@@ -86,12 +86,12 @@ class Menubar(Frame):
         x = (event.x_root - self.x - self.winfo_rootx() + self.winfo_rootx())
         y = (event.y_root - self.y - self.winfo_rooty() + self.winfo_rooty())
         self.base.geometry(f"+{x}+{y}")
-        
+
     def add_menu(self, text: str) -> Menu:
         new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.BOTH)
         self.menus.append(new_menu.menu)
-        
+
         return new_menu.menu
 
     def add_menus(self) -> None:
@@ -135,7 +135,7 @@ class Menubar(Frame):
         self.edit_menu.add_separator()
         self.edit_menu.add_item("Find", events.find)
         self.edit_menu.add_item("Replace", events.replace)
-    
+
     def add_selection_menu(self) -> None:
         events = self.events
 
@@ -149,7 +149,7 @@ class Menubar(Frame):
         self.selection_menu.add_item("Move Line Up", events.move_line_up)
         self.selection_menu.add_item("Move Line Down", events.move_line_down)
         self.selection_menu.add_item("Duplicate Selection", events.duplicate_selection)
-    
+
     def add_view_menu(self) -> None:
         events = self.events
 
@@ -174,6 +174,6 @@ class Menubar(Frame):
                 active = True
             if i != menu:
                 i.hide()
-        
+
         if active:
             menu.show()

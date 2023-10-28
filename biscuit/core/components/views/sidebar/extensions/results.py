@@ -28,21 +28,21 @@ class Results(SidebarViewItem):
 
         self.fetching_list = threading.Event()
         self.extensions_lock = threading.Lock()
-    
+
     def refresh(self) -> None:
         if self.base.testing:
             return
-        
+
         self.update_idletasks()
         self.after(5, self.run_fetch_list())
-    
+
     def run_fetch_list(self, *_) -> None:
         if self.base.testing:
             return
-        
+
         if self.fetching_list.is_set():
             self.fetching_list.wait()
-        
+
         with self.extensions_lock: 
             threading.Thread(target=self.fetch_list).start()
 
@@ -52,10 +52,10 @@ class Results(SidebarViewItem):
         except Exception as e:
             self.base.logger.error(f"Fetching extensions failed: {e}")
             return
-        
+
         if not response.status_code == 200:
             return
-        
+
         self.clear()
         self.extensions = toml.loads(response.text)
 
@@ -64,7 +64,7 @@ class Results(SidebarViewItem):
             #TODO add author, description
             ext = Extension(self, name, data)
             ext.pack(in_=self.content, fill=tk.X)
-    
+
     def clear(self, *_) -> None:
         for widget in self.content.winfo_children():
             widget.destroy()

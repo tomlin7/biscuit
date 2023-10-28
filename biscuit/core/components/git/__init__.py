@@ -23,7 +23,7 @@ class Git(git.Git):
         if not (git_available and self.base.active_directory):
             self.base.git_found = False
             return
-        
+
         try:
             self.repo = GitRepo(self, self.base.active_directory)
             self.base.git_found = True
@@ -35,7 +35,7 @@ class Git(git.Git):
             return
 
         return self.version()
-    
+
     @property
     def active_branch(self) -> str:
         if not git_available:
@@ -45,7 +45,7 @@ class Git(git.Git):
 
     def checkout(self, branch: str) -> None:
         self.repo.index.checkout(branch)
-    
+
     def clone(self, url: str, dir: str) -> None:    
         if not URL.match(url):
             # assumes github as repo host
@@ -55,7 +55,7 @@ class Git(git.Git):
             dir = os.path.join(dir, name)
             GitRepo.clone_from(url, dir)
             return dir
-            
+
         raise Exception(f'The url `{url}` does not point to a git repo')
 
     def repo_name(self, url: str) -> None:
