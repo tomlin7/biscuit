@@ -2,13 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)        
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.21.0...HEAD)</small>
+<small>[Compare with latest](https://github.com/billyeatcookies/Biscuit/compare/v2.31.0...HEAD)</small>
+
+### Fixed
+
+- fix: import errors from last pr ([821de74](https://github.com/billyeatcookies/Biscuit/commit/821de74ea6b8db245eec09f539fd119a75ce6f6c) by billy).
+- fix: dont import all of tkinter.constants ([a8ded25](https://github.com/billyeatcookies/Biscuit/commit/a8ded254ae58ac0285304b30fb3ca9737b2cc044) by Dheeraj Charaungonath).
+- fix indentation errors ([211c906](https://github.com/billyeatcookies/Biscuit/commit/211c90636ced628b51b68be2860685c03b46139a) by Dheeraj Charaungonath).
+- fix: Remove double scrollbar isssue for markdown renderer ([f7f131c](https://github.com/billyeatcookies/Biscuit/commit/f7f131c30368f057af6653683296bae3a07851a6) by billy).
+- fix: Remove highlight borders (this looks better) ([658705d](https://github.com/billyeatcookies/Biscuit/commit/658705d0c1a2aa8055e17b2b59b85446a0b6d723) by billy).
+- fix: Disable minimalist mode for markdown editors ([2f7b691](https://github.com/billyeatcookies/Biscuit/commit/2f7b6916dbf3eea59986eed98bedc658029b8dc3) by billy).
+
+### Removed
+
+- Remove non-existent 'Config' from __all_ ([31b3604](https://github.com/billyeatcookies/Biscuit/commit/31b3604a080df0896bff026a6d4be5d22501f905) by Dheeraj Charaungonath).
+
+<!-- insertion marker -->
+## [v2.31.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.31.0) - 2023-10-22
+
+<small>[Compare with v2.0.0](https://github.com/billyeatcookies/Biscuit/compare/v2.0.0...v2.31.0)</small>
+
+## [v2.0.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.0.0) - 2023-10-22
+
+<small>[Compare with v2.26.0](https://github.com/billyeatcookies/Biscuit/compare/v2.26.0...v2.0.0)</small>
+
+### Added
+
+- Add codecov ([2caaec4](https://github.com/billyeatcookies/Biscuit/commit/2caaec4c1421bb9b3691ff110e932d4395d63532) by Billy ビリ
+アム).
+- Add selection, view menus and callbacks ([9dae4f2](https://github.com/billyeatcookies/Biscuit/commit/9dae4f2be80b2723f52c50e012b70f5fbd722ea4) by billy).
+
+### Fixed
+
+- fix: Toggling sidebar-panel views from menu ([95e8e6b](https://github.com/billyeatcookies/Biscuit/commit/95e8e6b7ec17f16163bfcc367187c43f38a272af) by billy).
+- fix(tests): breadcrumbs tests failing ([8aa052c](https://github.com/billyeatcookies/Biscuit/commit/8aa052c614b767bd35c8ebab94090d3c9847587e) by Kristofer Soler).
+- fix(requirements): missing package pyperclip during `pytest` execution ([4be50d4](https://github.com/billyeatcookies/Biscuit/commit/4be50d4676ac9fa4621eae3945a92782a0512e36) by Kristofer Soler).
+
+### Changed
+
+- Change language mode from statusbar ([9a38016](https://github.com/billyeatcookies/Biscuit/commit/9a3801632545983efa71afe100ef440d39fa7d45) by Billy ビリアム).
+
+## [v2.26.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.26.0) - 2023-10-02
+
+<small>[Compare with v2.21.0](https://github.com/billyeatcookies/Biscuit/compare/v2.21.0...v2.26.0)</small>
 
 ### Added
 
@@ -19,7 +61,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix: Minimap should added before loading text ([8ffa267](https://github.com/billyeatcookies/Biscuit/commit/8ffa2677cbbc74f8f13d87ecd8dca31567055437) by billy).
 - fix: Load extensions GUI after initialization ([bc1a3d4](https://github.com/billyeatcookies/Biscuit/commit/bc1a3d44db5443fac819b5f854f077051336e1c2) by billy).
 
-<!-- insertion marker -->
 ## [v2.21.0](https://github.com/billyeatcookies/Biscuit/releases/tag/v2.21.0) - 2023-08-11
 
 <small>[Compare with v2.20.7](https://github.com/billyeatcookies/Biscuit/compare/v2.20.7...v2.21.0)</small>
@@ -48,7 +89,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Add compiling guidelines ([747a223](https://github.com/billyeatcookies/Biscuit/commit/747a22354c8dfdc891ee100a7199d4c35fc143b6) by Billy).
+- Add compiling guidelines ([747a223](https://github.com/billyeatcookies/Biscuit/commit/747a22354c8dfdc891ee100a7199d4c35fc143b6) 
+by Billy).
 - Add screenshots ([0dce695](https://github.com/billyeatcookies/Biscuit/commit/0dce6951a11e942e1b238f10a1c1e28a13e18fe7) by Billy).
 
 ### Fixed
@@ -127,7 +169,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added `requests` in dependency list ([56f92e5](https://github.com/billyeatcookies/Biscuit/commit/56f92e5f66a8a7f0c12674dccff511621e29dde5) by Satakun Utama).
 - Added further checks to handle git not found exceptions ([c0bb977](https://github.com/billyeatcookies/Biscuit/commit/c0bb977459392a045c02a01cd7c65b0db311ab46) by Billy).
-- Add poetry to project ([c490824](https://github.com/billyeatcookies/Biscuit/commit/c490824ad53124ee0527d52f66c41ff188bd706a) by Billy).
+- Add poetry to project ([c490824](https://github.com/billyeatcookies/Biscuit/commit/c490824ad53124ee0527d52f66c41ff188bd706a) by 
+Billy).
 - Add games/game of life implementation - games/game of life ([fae2067](https://github.com/billyeatcookies/Biscuit/commit/fae2067b34add88467d5b23c887ba4481eb5627d) by Billy).
 - Add sv-ttk to requirements ([9757ad7](https://github.com/billyeatcookies/Biscuit/commit/9757ad7909d141092b93358df2602f835c796b87) by Billy).
 
@@ -157,21 +200,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Add badges ([4a1afc7](https://github.com/billyeatcookies/Biscuit/commit/4a1afc79561a90dd603c2f2343225d29911c4b57) by Billy).
-- Add TODOs ([8b2eb6a](https://github.com/billyeatcookies/Biscuit/commit/8b2eb6ab0da4600ced42f044eba44093b63045d5) by Billy).
-- Added panelbar ([d84f536](https://github.com/billyeatcookies/Biscuit/commit/d84f53660be41281234fb46c952d6f19ad622ae5) by Billy).
-- add a games folder and start to work in tetris ([5d3bb23](https://github.com/billyeatcookies/Biscuit/commit/5d3bb239839deaea9a235a539fd8a1ff193b4922) by cid0rz).
+- Add badges ([4a1afc7](https://github.com/billyeatcookies/Biscuit/commit/4a1afc79561a90dd603c2f2343225d29911c4b57) by Billy).    
+- Add TODOs ([8b2eb6a](https://github.com/billyeatcookies/Biscuit/commit/8b2eb6ab0da4600ced42f044eba44093b63045d5) by Billy).     
+- Added panelbar ([d84f536](https://github.com/billyeatcookies/Biscuit/commit/d84f53660be41281234fb46c952d6f19ad622ae5) by Billy).- add a games folder and start to work in tetris ([5d3bb23](https://github.com/billyeatcookies/Biscuit/commit/5d3bb239839deaea9a235a539fd8a1ff193b4922) by cid0rz).
 - Add documentation for layout and configs ([c53749a](https://github.com/billyeatcookies/Biscuit/commit/c53749af199e9844b805c73a9635d1c91c9f1f7b) by Billy).
 
 ### Fixed
 
-- Fix for directorytree ([443e833](https://github.com/billyeatcookies/Biscuit/commit/443e833a4f96bfa4b5c57b3e980b2cbcd124dc34) by Billy).
+- Fix for directorytree ([443e833](https://github.com/billyeatcookies/Biscuit/commit/443e833a4f96bfa4b5c57b3e980b2cbcd124dc34) by 
+Billy).
 - Fix file searching feature in palette, fix explorer ([1685a53](https://github.com/billyeatcookies/Biscuit/commit/1685a53fdab015453d6622cf8ad91b29b71f5a4a) by Billy).
 - Fix terminal Fix bug where command line output was being pasted repeatedly Temporarily remove bash prompts ([928f0a8](https://github.com/billyeatcookies/Biscuit/commit/928f0a80289781f7a681682575b05a2d564da52f) by Billy).
 - Fix sizing of panel, editors, menubar ([710e4f3](https://github.com/billyeatcookies/Biscuit/commit/710e4f3ebca894012cb609047e553d6a24576d05) by Billy).
 - Fix bug: menubar and statusbar are not visible ([2e82a58](https://github.com/billyeatcookies/Biscuit/commit/2e82a580ae05533eae20028c3fbb2836cad6ef10) by Billy).
 - Fix Sidebar slots, Panel tabs, Editor tabs ([f3c95af](https://github.com/billyeatcookies/Biscuit/commit/f3c95afe2b8c5874bc4395de224735d23d28938f) by Billy).
-- fix preferred editors ([c321dcb](https://github.com/billyeatcookies/Biscuit/commit/c321dcb88da653744f4d1c5e6ee1fc1bde5f35ae) by cid0rz).
+- fix preferred editors ([c321dcb](https://github.com/billyeatcookies/Biscuit/commit/c321dcb88da653744f4d1c5e6ee1fc1bde5f35ae) by 
+cid0rz).
 
 ### Changed
 
@@ -180,9 +224,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 
-- remove unmatched bracket ([94ee2a6](https://github.com/billyeatcookies/Biscuit/commit/94ee2a6ad54f0fb221ad6ec4f472bc6c3a427aaf) by Billy).
-- Remove unnecessary files ([ec4aa07](https://github.com/billyeatcookies/Biscuit/commit/ec4aa076c8ceff0d8abc8b2a09f2762f995030c8) by Billy).
-- Remove tkdnd temporarily ([259b408](https://github.com/billyeatcookies/Biscuit/commit/259b4081f5891c4dedc44635f03e2eb81f7a9187) by Billy).
+- remove unmatched bracket ([94ee2a6](https://github.com/billyeatcookies/Biscuit/commit/94ee2a6ad54f0fb221ad6ec4f472bc6c3a427aaf) 
+by Billy).
+- Remove unnecessary files ([ec4aa07](https://github.com/billyeatcookies/Biscuit/commit/ec4aa076c8ceff0d8abc8b2a09f2762f995030c8) 
+by Billy).
+- Remove tkdnd temporarily ([259b408](https://github.com/billyeatcookies/Biscuit/commit/259b4081f5891c4dedc44635f03e2eb81f7a9187) 
+by Billy).
 - remove some debug statements ([6faa20c](https://github.com/billyeatcookies/Biscuit/commit/6faa20c7755ab6317d7b68b3dfdd57c8a972750b) by cid0rz).
 - Remove unnecessary image resources ([84a934a](https://github.com/billyeatcookies/Biscuit/commit/84a934ac64c6f77b8bbef6e53f0220bd20f2dcfe) by Billy).
 
@@ -200,7 +247,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add filetype library to dependencies, new filetype class ([7d195bc](https://github.com/billyeatcookies/Biscuit/commit/7d195bcb0666b30c8475a5c9ed0ced5de2839bea) by billyeatcookies).
 - Add toolbar containing dirname, refresh, newfile elements ([c7670b4](https://github.com/billyeatcookies/Biscuit/commit/c7670b45f7e968cc4971fcb0b4a8f630591a9eec) by billyeatcookies).
 - Add issue templates ([dbecdfd](https://github.com/billyeatcookies/Biscuit/commit/dbecdfda5a532144607bbff61b6e367ec5a080d3) by Billy).
-- Add LICENSE ([ee8e244](https://github.com/billyeatcookies/Biscuit/commit/ee8e244bd583a53101751f82154187725b38a3de) by Billy).
+- Add LICENSE ([ee8e244](https://github.com/billyeatcookies/Biscuit/commit/ee8e244bd583a53101751f82154187725b38a3de) by Billy).   
 - Add README for repository ([6d46770](https://github.com/billyeatcookies/Biscuit/commit/6d46770ae86e520b53771d7df331bab0f14aa323) by billyeatcookies).
 - Add Contributing guidelines ([321b06f](https://github.com/billyeatcookies/Biscuit/commit/321b06f1254c710cfc036b144ee1ca2cecc3f53a) by billyeatcookies).
 - Add CODE OF CONDUCT ([f9d09e6](https://github.com/billyeatcookies/Biscuit/commit/f9d09e6e6441e3d3ea341f0a650ad0fb07ad784e) by billyeatcookies).
@@ -213,8 +260,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add statusbar to the application ([4fcaa7e](https://github.com/billyeatcookies/Biscuit/commit/4fcaa7ee891736fe07ca6aa147892e987477e66e) by billyeatcookies).
 - Add `python-tkdnd` to requirements ([0cfaa5b](https://github.com/billyeatcookies/Biscuit/commit/0cfaa5b963bf4fe36cbda427de943b509cd9f0f3) by billyeatcookies).
 - Add requirements.txt ([b8dfdfa](https://github.com/billyeatcookies/Biscuit/commit/b8dfdfadd1d5de217c0e493b2dcca6f954b7aca7) by billyeatcookies).
-- Add pytest to project ([8eed5a2](https://github.com/billyeatcookies/Biscuit/commit/8eed5a23937931c90006eb0dfc6b05d61a0461ee) by billyeatcookies).
-- Add tkterminal submodule ([4ae5821](https://github.com/billyeatcookies/Biscuit/commit/4ae5821b80eeef4a26fd8453262a2756a76d4ee7) by billyeatcookies).
+- Add pytest to project ([8eed5a2](https://github.com/billyeatcookies/Biscuit/commit/8eed5a23937931c90006eb0dfc6b05d61a0461ee) by 
+billyeatcookies).
+- Add tkterminal submodule ([4ae5821](https://github.com/billyeatcookies/Biscuit/commit/4ae5821b80eeef4a26fd8453262a2756a76d4ee7) 
+by billyeatcookies).
 - Add default settings, basic bindings, default theme ([c1fd236](https://github.com/billyeatcookies/Biscuit/commit/c1fd236060a6207ca32bcbc4611ca94483dbf36a) by billyeatcookies).
 - Add config files ([88c8dbb](https://github.com/billyeatcookies/Biscuit/commit/88c8dbb21ecad87624526c8dc6c24dc362246ab2) by billyeatcookies).
 - Add run API method for root ([e0551de](https://github.com/billyeatcookies/Biscuit/commit/e0551de5aacfe0f65155e85ba01b72026e6d13e2) by billyeatcookies).
@@ -225,16 +274,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix scrollbar in terminal ([ee4bf12](https://github.com/billyeatcookies/Biscuit/commit/ee4bf12c103cfad268291aa7f9885e46662647a9) by cid0rz).
 - Fix linux version ([cfe3e9c](https://github.com/billyeatcookies/Biscuit/commit/cfe3e9c058bb146b74364f55d0958cc4c6b114c7) by cid0rz).
 - Fix for windows ([aff6080](https://github.com/billyeatcookies/Biscuit/commit/aff608071f8918c32e01073390fb5725ab10eafc) by Billy).
-- Fix working directory ([7262d7f](https://github.com/billyeatcookies/Biscuit/commit/7262d7fd667e12632557094e68f72f079dcdc3ee) by Billy).
+- Fix working directory ([7262d7f](https://github.com/billyeatcookies/Biscuit/commit/7262d7fd667e12632557094e68f72f079dcdc3ee) by 
+Billy).
 - Fix empty tab shortcuts with t for terminal and imprved readability ([a2ce28b](https://github.com/billyeatcookies/Biscuit/commit/a2ce28b8bbdefbb4c0151455b58c44634b85ecd3) by cid0rz).
-- Fix running instructions ([95cf8ad](https://github.com/billyeatcookies/Biscuit/commit/95cf8ada0afcefd19af554376573acd34ebde0c9) by Billy).
+- Fix running instructions ([95cf8ad](https://github.com/billyeatcookies/Biscuit/commit/95cf8ada0afcefd19af554376573acd34ebde0c9) 
+by Billy).
 - Fix command palette sizing, Update preview ([b57e4c5](https://github.com/billyeatcookies/Biscuit/commit/b57e4c5aee6013812887f7088e2718da80380ac7) by billyeatcookies).
 - Fix sizes ([06f18ef](https://github.com/billyeatcookies/Biscuit/commit/06f18ef5b1e9900a53dd034db672f016451b2a74) by billyeatcookies).
 - Fix bug in diff, decoding content properly ([5a2e6d3](https://github.com/billyeatcookies/Biscuit/commit/5a2e6d3444bc6bc99f1ff5de6cfbbbfca252f5da) by billyeatcookies).
 - Fix zooming of editor affects editor pane size ([a2c9c76](https://github.com/billyeatcookies/Biscuit/commit/a2c9c765f8cb4d8a6b55aeedb27a9912f505c15b) by billyeatcookies).
 - fix show_unsupported_dialog ([fb71e08](https://github.com/billyeatcookies/Biscuit/commit/fb71e08020bf7cc0830ce967d7998f09dcc29f56) by billyeatcookies).
 - Fix bindings ([b541956](https://github.com/billyeatcookies/Biscuit/commit/b54195635ac174b66e47a2ef5091af2dcff68b53) by billyeatcookies).
-- fix in theme settings ([af69d7b](https://github.com/billyeatcookies/Biscuit/commit/af69d7b74528f6ce2e78bac680863572ca3c0bd2) by billyeatcookies).
+- fix in theme settings ([af69d7b](https://github.com/billyeatcookies/Biscuit/commit/af69d7b74528f6ce2e78bac680863572ca3c0bd2) by 
+billyeatcookies).
 - fix in theme loader, default value for theme parameter ([0eb2806](https://github.com/billyeatcookies/Biscuit/commit/0eb2806e2e1b6d330f33a5a6b832918abb5e6509) by billyeatcookies).
 - fix bug in bindings loader ([648e0da](https://github.com/billyeatcookies/Biscuit/commit/648e0da0d79271516008e67e2405852b5d16f86d) by billyeatcookies).
 
@@ -245,11 +297,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Change GitWindow to GitPane ([c8a6d96](https://github.com/billyeatcookies/Biscuit/commit/c8a6d96083edf55a54500eac9a6be64be698ef62) by billyeatcookies).
 - change binding of command pallette to ctrl-shift-p ([02b316f](https://github.com/billyeatcookies/Biscuit/commit/02b316f5790e4181fdd1c00582b5830fd32480f8) by billyeatcookies).
 - Change font of editorpath ([7abc775](https://github.com/billyeatcookies/Biscuit/commit/7abc775ed5bfe032bfbf2aa51b13779ea31fc21f) by billyeatcookies).
-- changes in tkterminal ([8151a2c](https://github.com/billyeatcookies/Biscuit/commit/8151a2c1a1e4245da01e147b0881ee7d7961ef75) by billyeatcookies).
+- changes in tkterminal ([8151a2c](https://github.com/billyeatcookies/Biscuit/commit/8151a2c1a1e4245da01e147b0881ee7d7961ef75) by 
+billyeatcookies).
 
 ### Removed
 
-- Removed some comments ([a326d45](https://github.com/billyeatcookies/Biscuit/commit/a326d459ebb596e679fb7a9df3fa4436d22f5027) by Billy).
+- Removed some comments ([a326d45](https://github.com/billyeatcookies/Biscuit/commit/a326d459ebb596e679fb7a9df3fa4436d22f5027) by 
+Billy).
 - Remove path argument ([eb47ee9](https://github.com/billyeatcookies/Biscuit/commit/eb47ee9bd86deece3de75e988b29b86e03857926) by Billy).
 - Remove appdir from root ([0981cb1](https://github.com/billyeatcookies/Biscuit/commit/0981cb141e2a5a8f368fc4d0baf0f314089434e1) by Billy).
 - Remove unused dnd class ([bdf6be6](https://github.com/billyeatcookies/Biscuit/commit/bdf6be66a5de9a2bff4fe73da0f189d05f606672) by billyeatcookies).
@@ -258,11 +312,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove test.py ([5e67841](https://github.com/billyeatcookies/Biscuit/commit/5e678410d826f249a8fe2b72e589ae3797ed8728) by billyeatcookies).
 - Remove sample external font test ([0226955](https://github.com/billyeatcookies/Biscuit/commit/022695561fa40f974e4fc561c08a6351094ae86e) by Billy).
 - Remove unnecessary details from git toolbar ([5638f41](https://github.com/billyeatcookies/Biscuit/commit/5638f41f22962aa1f56b08ff1472496a992b66bd) by billyeatcookies).
-- Remove tree headings ([5705dae](https://github.com/billyeatcookies/Biscuit/commit/5705dae563e62024dcb39e13c1e544a986e3155a) by billyeatcookies).
-- Remove obsolete left container ([a9a645e](https://github.com/billyeatcookies/Biscuit/commit/a9a645e6b47012fa7769d867100b4a45b8752a8e) by billyeatcookies).
-- Remove sidebar test application ([c507753](https://github.com/billyeatcookies/Biscuit/commit/c507753a5d340671650738da3ad35a11b629a647) by billyeatcookies).
+- Remove tree headings ([5705dae](https://github.com/billyeatcookies/Biscuit/commit/5705dae563e62024dcb39e13c1e544a986e3155a) by b- Remove obsolete left container ([a9a645e](https://github.com/billyeatcookies/Biscuit/commit/a9a645e6b47012fa7769d867100b4a45b875- Remove sidebar test application ([c507753](https://github.com/billyeatcookies/Biscuit/commit/c507753a5d340671650738da3ad35a11b629a647) by billyeatcookies).
 - Remove test editor components ([81a05e2](https://github.com/billyeatcookies/Biscuit/commit/81a05e2f0e94455f045e91c489909825d4592485) by billyeatcookies).
 - Remove editor bindings for now ([9a088a0](https://github.com/billyeatcookies/Biscuit/commit/9a088a0b87b33e95003b0d3dec17ee7c79021f21) by billyeatcookies).
-- remove statusbar for now ([89667e2](https://github.com/billyeatcookies/Biscuit/commit/89667e2e8090696fa52891b128abe4cc0489bf53) by billyeatcookies).
+- remove statusbar for now ([89667e2](https://github.com/billyeatcookies/Biscuit/commit/89667e2e8090696fa52891b128abe4cc0489bf53) 
+by billyeatcookies).
 - remove cache dirs and files ([d95110c](https://github.com/billyeatcookies/Biscuit/commit/d95110c0f4a2f4b5a3b499b07a9a4567dac3801e) by billyeatcookies).
 
