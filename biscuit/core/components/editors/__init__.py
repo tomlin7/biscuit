@@ -6,7 +6,7 @@ NOTE: Cupcake is extracted and published as an embeddable editor from biscuit
 __version__ = '0.25.6'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 
-__all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "Config", "Languages"]
+__all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "Languages"]
 
 
 import os
