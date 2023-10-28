@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.constants import *
 
 from ..sidebarview import SidebarView
 from .git import Git
@@ -20,7 +19,7 @@ class SourceControl(SidebarView):
 
         self.tree = Git(self)
         self.add_widget(self.tree)
-
+    
     def refresh(self) -> None:
         if self.base.git_found:
             self.tree.enable_tree()

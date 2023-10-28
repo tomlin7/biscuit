@@ -1,7 +1,6 @@
 import inspect
 import tkinter as tk
 from datetime import datetime
-from tkinter.constants import *
 
 from ....utils import Scrollbar
 from ..panelview import PanelView
@@ -41,13 +40,13 @@ class Logs(PanelView):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.text = tk.Text(self, relief=FLAT, padx=10, pady=10, 
+        self.text = tk.Text(self, relief=tk.FLAT, padx=10, pady=10, 
                             font=("Consolas", 11), **self.base.theme.views.panel.logs)
-        self.text.grid(row=0, column=0, sticky=NSEW)
+        self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.scrollbar = Scrollbar(self)
-        self.scrollbar.grid(sticky=NSEW, row=0, column=1)
-
+        self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
+        
         self.text.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.text.yview)
 
@@ -61,15 +60,15 @@ class Logs(PanelView):
         self.text.tag_config('error', foreground=self.base.theme.views.panel.logs.error, font=fontbold)
 
     def write(self, *args) -> None:
-        self.text.config(state=NORMAL)
+        self.text.config(state=tk.NORMAL)
         for i in args:
             if isinstance(i, tuple):
-                self.text.insert(END, i[0], i[1])
+                self.text.insert(tk.END, i[0], i[1])
             else:
-                self.text.insert(END, i)
-        self.text.config(state=DISABLED)
-        self.text.see(END)
-
+                self.text.insert(tk.END, i)
+        self.text.config(state=tk.DISABLED)
+        self.text.see(tk.END)
+    
     def newline(self) -> None:
         self.write('\n')
 
@@ -84,11 +83,11 @@ class Logs(PanelView):
     def info(self, text) -> None:
         "info level log"
         self.log((' [info] ', 'info'), caller_class_name(), text)
-
+    
     def warning(self, text) -> None:
         "warning level log"
         self.log((' [warning] ', 'warning'), caller_class_name(), text)
-
+    
     def error(self, text) -> None:
         "error level log"
         self.log((' [error] ', 'error'), caller_class_name(), text)
