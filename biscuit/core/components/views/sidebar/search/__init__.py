@@ -1,6 +1,5 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter.constants import *
 
 from biscuit.core.components.utils import ButtonsEntry, Frame, IconButton, Tree
 
@@ -23,8 +22,8 @@ class Search(SidebarView):
 
         #TODO add ignore folders & extensions boxes
 
-        self.container.pack(fill=BOTH, padx=10, pady=5)
-        self.searchbox.pack(fill=X, anchor=N, pady=2)
-        self.replacebox.pack(fill=X, side=LEFT, anchor=N, expand=True)
-
-        self.results.pack(fill=BOTH, expand=True, anchor=N)
+        self.container.pack(fill=tk.BOTH, padx=10, pady=5)
+        self.searchbox.pack(fill=tk.X, anchor=tk.N, pady=2)
+        self.replacebox.pack(fill=tk.X, side=tk.LEFT, anchor=tk.N, expand=True)
+        
+        self.results.pack(fill=tk.BOTH, expand=True, anchor=tk.N)
