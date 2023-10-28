@@ -86,7 +86,6 @@ class Text(Text):
             self.clearModifiedFlag()
         except:
             self.base.notifications.error("Edit stack error: please restart biscuit")
-            pass
 
     def clearModifiedFlag(self):
         self._resetting_modified_flag = True
