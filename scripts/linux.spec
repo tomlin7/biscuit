@@ -9,7 +9,7 @@ datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
 hiddenimports = []
 binaries = []
-binaries += collect_dynamic_libs('tkextrafont)
+binaries += collect_dynamic_libs('tkextrafont')
 tmp_ret = collect_all('tkinterweb')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
