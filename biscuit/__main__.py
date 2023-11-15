@@ -1,13 +1,6 @@
-"""
-Entry point for the main app.
-To run the app, do:
-
->>> python -m biscuit
-"""
-
 import sys
 
-# The splash screen (windows specific)
+# splash screen (windows specific)
 try:
     import pyi_splash
     pyi_splash.close()

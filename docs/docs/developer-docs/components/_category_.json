@@ -1,0 +1,8 @@
+{
+  "label": "core/components",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Components of biscuit such as the editors, views, git, etc."
+  }
+}

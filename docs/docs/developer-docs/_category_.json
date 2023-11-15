@@ -1,0 +1,8 @@
+{
+  "label": "Developer Docs",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Biscuit developer's documentation to get started with contributing your ideas."
+  }
+}

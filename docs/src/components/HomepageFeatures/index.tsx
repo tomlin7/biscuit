@@ -1,5 +1,5 @@
-import React from 'react';
 import clsx from 'clsx';
+import React from 'react';
 import styles from './styles.module.css';
 
 type FeatureItem = {
@@ -31,7 +31,7 @@ const FeatureList: FeatureItem[] = [
     title: 'Customizable',
     description: (
       <>
-        Biscuit is built to be customized. You can change the theme, the
+        Biscuit is lightweight and built to be customized. You can change the theme, the
         keybindings, the layout, and more.
       </>
     ),

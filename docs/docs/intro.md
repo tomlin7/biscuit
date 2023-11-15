@@ -2,7 +2,12 @@
 sidebar_position: 1
 ---
 
-Welcome to the contributing guidelines for Biscuit. This document will help you get started with contributing to Biscuit.
+Welcome to the developer's documentation for Biscuit. This is a work in progress, so please be patient. If you have any questions, feel free to join the [tkinter discord community](https://dsc.gg/tkinter) and ask in the `#biscuit` channel. 
+
+
+## What is Biscuit?
+
+Biscuit is a lightweight, easy to use code editor for any language. We wrote it in python, using only tkinter for GUI. It's a great alternative to [insert funny thing here]!
 
 ## Setting up Environment
 
@@ -15,32 +20,4 @@ Run `pip install -r requirements.txt` or `poetry install`, your preference. Try 
 ### What you'll need
 
 - [Python](https://python.org/en/download/) 3.10 or above
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- [Poetry](https://python-poetry.org/docs/#installation) (optional)

@@ -17,7 +17,7 @@
     <img src="https://github.com/billyeatcookies/Biscuit/assets/70792552/a990845c-bd71-49d2-9d51-58153215c871" width=2000><br>
 </h1>
 
-Biscuit is a lightweight code editor written in Python using tkinter. Features such as syntax highlighting, autocompletions, and **Git integration** are supported and it also supports extensions. It takes inspiration from many popular code editors while also adding its own unique flair.
+Biscuit is a lightweight, easy to use code editor for any language. We wrote it in python, using only tkinter for GUI. It's a great alternative to [insert funny thing here]! Scroll down to see [some of the features](https://github.com/billyeatcookies/Biscuit/tree/main?tab=readme-ov-file#features).
 
 ## Installing  
 - Download latest **stable builds** from [**releases page**](https://github.com/billyeatcookies/Biscuit/releases).
