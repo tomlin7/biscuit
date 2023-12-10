@@ -14,8 +14,9 @@ Holds the editors and provides an interface to manage the editor tabs.
 from __future__ import annotations
 
 import typing
-from typing import List
+from typing import List, Union
 
+from biscuit.core.components.editors.editor import BaseEditor
 from biscuit.core.components.floating.palette.actionset import ActionSet
 
 if typing.TYPE_CHECKING:
@@ -71,7 +72,7 @@ class EditorsPane(Frame):
         for editor in editors:
             self.add_editor(editor)
 
-    def add_editor(self, editor: Editor) -> None:
+    def add_editor(self, editor: Union[Editor,BaseEditor]) -> None:
         "Appends a editor to list. Create a tab."
         self.editors.append(editor)
         if editor.content:

@@ -8,13 +8,14 @@ from collections import deque
 
 from ...utils import Text
 from .autocomplete import AutoComplete
+from .changes import Change
 from .highlighter import Highlighter
 from .syntax import Syntax
 
 
 class Text(Text):
     """Improved Text widget"""
-    def __init__(self, master, path=None, exists=True, minimalist=False, language=None, *args, **kwargs) -> None:
+    def __init__(self, master, path: str=None, exists: bool=True, minimalist: bool=False, language: str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.path = path
         self.data = None
@@ -36,6 +37,9 @@ class Text(Text):
         self.highlighter = Highlighter(self, language)
         self.base.statusbar.on_open_file(self)
 
+        self.last_change = Change(None, None, None, None, None)
+        self.lsp = None
+
         self.focus_set()
         self.config_tags()
         self.create_proxy()
@@ -45,54 +49,10 @@ class Text(Text):
         self.update_words()
 
         # modified event
-        self.clearModifiedFlag()
-        self.bind_all('<<Modified>>', self._beenModified)
+        self.clear_modified_flag()
         self._user_edit = True
         self._edit_stack = []
         self._edit_stack_index = -1
-
-    def stack_undo(self):
-        if self._edit_stack_index > 0:
-            self._edit_stack_index = self._edit_stack_index - 1
-            self._user_edit = False
-            self.clear()
-            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
-            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
-
-    def stack_redo(self):
-        if self._edit_stack_index + 1 < len(self._edit_stack):
-            self._edit_stack_index = self._edit_stack_index + 1
-            self._user_edit = False
-            self.clear()
-            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
-            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
-
-    def _beenModified(self, event=None):
-        try:
-            if self._user_edit:
-                text = self.get_all_text()
-                if (not self._edit_stack) or (text != self._edit_stack[self._edit_stack_index][0]):
-                    # real modified
-                    cursor_index = self.index(tk.INSERT)
-                    if (self._edit_stack_index + 1) != len(self._edit_stack):
-                        self._edit_stack = self._edit_stack[:self._edit_stack_index+1]
-                    self._edit_stack.append([text, cursor_index])
-                    self._edit_stack_index = self._edit_stack_index + 1
-                    if self._edit_stack_index > 200:
-                        self._edit_stack = self._edit_stack[self._edit_stack_index-50:self._edit_stack_index+1]
-                        self._edit_stack_index = len(self._edit_stack)-1
-            if self._resetting_modified_flag:
-                return
-            self.clearModifiedFlag()
-        except:
-            self.base.notifications.error("Edit stack error: please restart biscuit")
-
-    def clearModifiedFlag(self):
-        self._resetting_modified_flag = True
-        try:
-            self.tk.call(self._w, 'edit', 'modified', 0)
-        finally:
-            self._resetting_modified_flag = False
 
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
@@ -118,6 +78,8 @@ class Text(Text):
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
 
+        self.bind_all('<<Modified>>', self._been_modified)
+
         if self.minimalist:
             return
 
@@ -125,6 +87,9 @@ class Text(Text):
         self.bind("<Button-1>", self.hide_autocomplete)
         self.bind("<Up>", self.auto_completion.move_up)
         self.bind("<Down>", self.auto_completion.move_down)
+        self.bind("<Map>", self.event_mapped)
+        self.bind("<Unmap>", self.event_unmapped)
+        self.bind("<Destroy>", self.event_destroy)
 
     def key_release_events(self, event):
         self._user_edit = True
@@ -172,8 +137,21 @@ class Text(Text):
             self.auto_completion.choose()
             return "break"
 
+        # TODO if there is text selected, indent the selected text
         self.insert(tk.INSERT, " "*4)
         return "break"
+
+    def refresh(self, *args):
+        """Refresh all tags and highlights, called on every change made to content.
+        ignored if the editor is set to minimalist mode"""
+
+        if self.minimalist:
+            return
+
+        self.current_word = self.get("insert-1c wordstart", "insert")
+        self.highlighter.highlight()
+        self.highlight_current_line()
+        self.highlight_current_word()
 
     def get_all_text_ac(self, *args):
         """
@@ -410,7 +388,16 @@ class Text(Text):
                 fp.write(self.get_all_text())
         except Exception:
             return
+    
+    def event_mapped(self, _):
+        self.base.languageservermanager.tab_opened(self)
+    
+    def event_destroy(self, _):
+        self.base.languageservermanager.request_removal(self)
 
+    def event_unmapped(self, _):
+        self.base.languageservermanager.tab_closed(self)
+        
     def copy(self, *_):
         self.event_generate("<<Copy>>")
 
@@ -612,15 +599,49 @@ class Text(Text):
             self.mark_set("matchEnd", f"{index}+{count.get()}c")
 
             self.tag_add(tag, "matchStart", "matchEnd")
+    
+    def stack_undo(self):
+        if self._edit_stack_index > 0:
+            self._edit_stack_index = self._edit_stack_index - 1
+            self._user_edit = False
+            self.clear()
+            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
+            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
-    def refresh(self, *args):
-        if self.minimalist:
-            return
+    def stack_redo(self):
+        if self._edit_stack_index + 1 < len(self._edit_stack):
+            self._edit_stack_index = self._edit_stack_index + 1
+            self._user_edit = False
+            self.clear()
+            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
+            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
-        self.current_word = self.get("insert-1c wordstart", "insert")
-        self.highlighter.highlight()
-        self.highlight_current_line()
-        self.highlight_current_word()
+    def _been_modified(self, event=None):
+        try:
+            if self._user_edit:
+                text = self.get_all_text()
+                if (not self._edit_stack) or (text != self._edit_stack[self._edit_stack_index][0]):
+                    # real modified
+                    cursor_index = self.index(tk.INSERT)
+                    if (self._edit_stack_index + 1) != len(self._edit_stack):
+                        self._edit_stack = self._edit_stack[:self._edit_stack_index+1]
+                    self._edit_stack.append([text, cursor_index])
+                    self._edit_stack_index = self._edit_stack_index + 1
+                    if self._edit_stack_index > 200:
+                        self._edit_stack = self._edit_stack[self._edit_stack_index-50:self._edit_stack_index+1]
+                        self._edit_stack_index = len(self._edit_stack)-1
+            if self._resetting_modified_flag:
+                return
+            self.clear_modified_flag()
+        except:
+            self.base.notifications.error("Edit stack error: please restart biscuit")
+
+    def clear_modified_flag(self):
+        self._resetting_modified_flag = True
+        try:
+            self.tk.call(self._w, 'edit', 'modified', 0)
+        finally:
+            self._resetting_modified_flag = False
 
     def create_proxy(self):
         self._orig = self._w + "_orig"
@@ -642,5 +663,28 @@ class Text(Text):
         elif (args[0:2] == ("xview", "moveto") or args[0:2] == ("yview", "moveto") or 
               args[0:2] == ("xview", "scroll") or args[0:2] == ("yview", "scroll")):
             self.event_generate("<<Scroll>>", when="tail")
+
+        if args[0] == 'insert':
+            start_index = self.index(args[1])
+            end_index = self.index(args[1] + "+%dc" % len(args[2]))
+            self.last_change.update(
+                start=[int(i) for i in start_index.split('.')],
+                old_end=[int(i) for i in start_index.split('.')],
+                new_end=[int(i) for i in end_index.split('.')],
+                old_text='',
+                new_text=args[2]
+            )
+            
+        elif args[0] == 'delete':
+            start_index = self.index(args[1])
+            end_index = self.index(args[2])
+            deleted_text = self.get(args[1], args[2])
+            self.last_change.update(
+                start=[int(i) for i in start_index.split('.')],
+                old_end=[int(i) for i in end_index.split('.')],
+                new_end=[int(i) for i in start_index.split('.')],
+                old_text=deleted_text,
+                new_text=''
+            )
 
         return result

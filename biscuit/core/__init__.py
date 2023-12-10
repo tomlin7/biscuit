@@ -36,7 +36,7 @@ class App(tk.Tk):
         optional argument to open a folder from cli
 
     """
-    def __init__(self, appdir: str=None, dir: str=None, *args, **kwargs) -> None:
+    def __init__(self, appdir: str="", dir: str="", *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.base = self
         self.setup_path(appdir)
@@ -115,6 +115,8 @@ class App(tk.Tk):
         self.events = Events(self)
         self.binder = Binder(self)
         self.git = Git(self)
+
+        self.languageservermanager = LanguageServerManager(self)
 
     def setup_tk(self) -> None:
         if platform.system() == "Windows":
@@ -236,7 +238,7 @@ class App(tk.Tk):
         self.editorsmanager.open_editor(path, exists)
 
     def open_diff(self, path: str, kind: str) -> None:
-        self.editorsmanager.open_diff_editor(path, kind)
+        self.editorsmanager.open_diff_editor(path, kind) # type: ignore
 
     def open_settings(self, *_) -> None:
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))

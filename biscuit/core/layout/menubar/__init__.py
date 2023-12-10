@@ -83,8 +83,8 @@ class Menubar(Frame):
         self.y = None
 
     def moving(self, event) -> None:
-        x = (event.x_root - self.x - self.winfo_rootx() + self.winfo_rootx())
-        y = (event.y_root - self.y - self.winfo_rooty() + self.winfo_rooty())
+        x = (event.x_root - self.x)
+        y = (event.y_root - self.y)
         self.base.geometry(f"+{x}+{y}")
 
     def add_menu(self, text: str) -> Menu:
