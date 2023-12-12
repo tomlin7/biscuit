@@ -52,6 +52,7 @@ class TextEditor(BaseEditor):
         self.linenumbers.redraw()
         self.base.update_statusbar()
         if not self.minimalist:
+            self.text.refresh()
             self.minimap.redraw_cursor()
         self.event_generate("<<Change>>")
 

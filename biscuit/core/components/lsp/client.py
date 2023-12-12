@@ -41,8 +41,8 @@ class LangServerClient:
 
         # requests
         self._autocomplete_req: dict[int, tuple[Text, CompletionRequest]] = {}
-        self._hover_request: tuple[int, Text, str] = ()
-        self._gotodef_request: tuple[int, Text] = ()
+        self._hover_requests: dict[int, tuple[Text, str]] = {}
+        self._gotodef_requests: dict[int, Text] = {}
 
     def run_loop(self) -> None:
         if self.run():
@@ -128,11 +128,11 @@ class LangServerClient:
         request_id = self.client.hover(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_cursor_pos()),
+                position=encode_position(tab.get_mouse_pos()),
             )
         )
         print(f">>>> HOVER REQUESTED {tab.path} at {tab.get_cursor_pos()}")
-        self._hover_requests = (request_id, tab, tab.get_cursor_pos())
+        self._hover_requests[request_id] = (tab, tab.get_cursor_pos())
     
     def request_jump_to_definition(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
@@ -141,12 +141,11 @@ class LangServerClient:
         request_id = self.client.definition(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_cursor_pos()),
+                position=encode_position(tab.get_mouse_pos()),
             )
         )
         print(f">>>> JUMPTODEF REQUESTED {tab.path} at {tab.index(tk.INSERT)}")
-
-        self._gotodef_request = (request_id, tab)
+        self._gotodef_requests[request_id] = tab
 
     def send_change_events(self, tab: Text) -> None:
         if self.client.state != lsp.ClientState.NORMAL:

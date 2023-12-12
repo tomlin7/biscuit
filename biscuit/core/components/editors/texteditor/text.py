@@ -13,16 +13,17 @@ from biscuit.core.settings import res
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.lsp.data import Completions
+    from . import TextEditor
 
-from ...utils import Text
+from ...utils import Text as BaseText
 from .changes import Change
 from .highlighter import Highlighter
 from .hoverpopup import HoverPopup
 
 
-class Text(Text):
+class Text(BaseText):
     """Improved Text widget"""
-    def __init__(self, master, path: str=None, exists: bool=True, minimalist: bool=False, language: str=None, *args, **kwargs) -> None:
+    def __init__(self, master: TextEditor, path: str=None, exists: bool=True, minimalist: bool=False, language: str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.path = path
         self.data = None
@@ -62,20 +63,19 @@ class Text(Text):
         self.hover_after = None
         self.last_hovered = None
 
-        self.tag_config('hyperlink', foreground=self.base.theme.editors.hyperlink, underline=True)
 
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
-        self.tag_config("currentline", background=self.base.theme.editors.currentline)
-        self.tag_config("currentword", background=self.base.theme.editors.currentword)
+        self.tag_config('hyperlink', foreground=self.base.theme.editors.hyperlink, underline=True)
         self.tag_config("found", background=self.base.theme.editors.found)
         self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
+        self.tag_config("currentword", background=self.base.theme.editors.currentword)
+        self.tag_config("currentline", background=self.base.theme.editors.currentline)
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
 
         self.bind("<Control-f>", self.open_find_replace)
-        self.bind("<Control-d>", self.multi_selection)
         self.bind("<Control-g>", lambda _: self.base.palette.show_prompt(':'))
         self.bind("<Control-Left>", lambda _: self.handle_ctrl_hmovement())
         self.bind("<Control-Right>", lambda _: self.handle_ctrl_hmovement(True))
@@ -88,19 +88,29 @@ class Text(Text):
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
 
+        # undo-redo
         self.bind_all('<<Modified>>', self._been_modified)
+
+        # pair completion
+        self.bind("<braceleft>", self.complete_pair)
+        self.bind("<bracketleft>", self.complete_pair)
+        self.bind("<parenleft>", self.complete_pair)
+        self.bind("<apostrophe>", self.complete_pair)
+        self.bind("<quotedbl>", self.complete_pair)
 
         if self.minimalist:
             return
 
+        # autocomplete
         self.bind("<FocusOut>", self.hide_autocomplete) 
         self.bind("<Button-1>", self.hide_autocomplete)
         self.bind("<Up>", self.autocomplete.move_up)
         self.bind("<Down>", self.autocomplete.move_down)
+
+        # lspc
         self.bind("<Map>", self.event_mapped)
         self.bind("<Unmap>", self.event_unmapped)
         self.bind("<Destroy>", self.event_destroy)
-
         self.bind("<Motion>", self.request_hover)
         self.bind("<Control-KeyRelease>", self.clear_hyperlink)
         self.bind("<Control-Motion>", self.underline_for_jump)
@@ -109,34 +119,61 @@ class Text(Text):
 
     def key_release_events(self, event):
         self._user_edit = True
-        self.show_autocomplete(event)
-        match event.keysym:
-            # autocompletion keys
-            case "Button-2" | "BackSpace" | "Escape" | "Control_L" | "Control_R" | "space":
+        
+        match event.keysym.lower():
+            case "button-2" | "backspace" | "escape" | "control_l" | "control_r" | "space" | "return" | "tab":
                 self.hide_autocomplete()
-            case "rightarrow" | "leftarrow":
+            case "right" | "left":
                 self.update_completions()
 
-            # bracket pair completions
-            case "braceleft":
-                return self.complete_pair("}")
-            case "bracketleft":
-                return self.complete_pair("]")
-            case "parenleft":
-                return self.complete_pair(")")
-
-            # surroundings for selection
-            case "apostrophe":
-                return self.surrounding_selection("\'")
-            case "quotedbl":
-                return self.surrounding_selection("\"")
+            case "up" | "down" | "shift_l" | "shift_r" | "alt_l" | "alt_r" | "meta_l" | "meta_r" | "shift" | "alt" | "meta":
+                pass
+            case "braceleft" | "bracketleft" | "parenleft" | "apostrophe" | "quotedbl":
+                pass
 
             # extra spaces
             case ":" | ",":
                 self.insert(tk.INSERT, " ")
-
             case _:
-                pass
+                self.show_autocomplete(event)
+    
+    def complete_pair(self, e):
+        end = {"(": ")", "{": "}", "[": "]", "\"": "\"", "'": "'"}.get(e.char)
+        
+        # if there is selection, surround the selection with character
+        if self.tag_ranges(tk.SEL):
+            self.insert(tk.SEL_LAST, end)
+            self.insert(tk.SEL_FIRST, e.char)
+            return "break"
+        
+        if e.char in ("\"", "'") and self.get("insert-1c", "insert").strip():
+            return
+        
+        # if there is no selection, insert the character and move cursor inside the pair
+        self.insert(tk.INSERT, e.char + end)
+        self.mark_set(tk.INSERT, "insert-1c")
+        return "break"
+
+    def hide_autocomplete(self, *_):
+        if self.minimalist:
+            return
+
+        self.autocomplete.hide()
+
+    def show_autocomplete(self, event):
+        if (self.minimalist or not self.current_word or event.keysym in ["Down", "Up"]): return
+
+        if self.lsp:
+            if self.current_word.strip() == ".":
+                self.base.languageservermanager.request_completions(self)
+            return
+
+        if not self.current_word.strip().isalpha() or self.current_word.strip() != ".":
+            self.hide_autocomplete()
+
+        pos = self.cursor_screen_location()             
+        self.autocomplete.show(self, pos)
+        self.update_completions()
 
     def enter_key_events(self, *_):
         if not self.minimalist and self.autocomplete.active:        
@@ -154,15 +191,13 @@ class Text(Text):
         self.insert(tk.INSERT, " "*4)
         return "break"
 
-    def refresh(self, args):
-        """Refresh all tags and highlights, called on every change made to content.
-        ignored if the editor is set to minimalist mode"""
-
+    def refresh(self):
         if self.minimalist:
             return
 
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlighter.highlight()
+        
         self.highlight_current_line()
         self.highlight_current_word()
 
@@ -287,14 +322,13 @@ class Text(Text):
         # self.base.languageservermanager.hover(response)
 
     def get_all_text_ac(self, *args):
-        """
-        Helper function for autocomplete.show
-        extracts all text except the current word.
-        """
         return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
+
+    def get_mouse_pos(self):
+        return self.index(tk.CURRENT)
 
     def get_current_word(self):
         return self.current_word.strip()
@@ -304,10 +338,11 @@ class Text(Text):
             return
 
         self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
-        self.after(1000, self.update_words)
+        if not self.lsp:
+            self.after(1000, self.update_words)
 
     def update_completions(self):
-        if self.minimalist:
+        if self.minimalist or self.lsp:
             return
 
         self.autocomplete.update_completions(self)
@@ -323,7 +358,6 @@ class Text(Text):
         self.insert("insert", new_word)
 
     def cursor_screen_location(self):
-        """Helper function for autocomplete.show to detect cursor location"""
         pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
 
         cursor = tk.INSERT
@@ -333,52 +367,6 @@ class Text(Text):
 
         bbx_x, bbx_y, _, bbx_h = bbox
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
-
-    def hide_autocomplete(self, *_):
-        if self.minimalist:
-            return
-
-        self.autocomplete.hide()
-
-    def show_autocomplete(self, event):
-        if (self.minimalist or not self.current_word or event.keysym in ["BackSpace", "Escape", "Return", "Tab", "space", "Up", 
-            "Down", "Left", "Right", "Control_L", "Control_R"]): return
-
-        if self.current_word.strip() not in [":", "", None, "\""] and not self.current_word.strip()[0].isdigit():
-            if not self.autocomplete.active:
-                pos = self.cursor_screen_location()
-                # self.autocomplete.show(self, pos)
-                if self.lsp and self.current_word.strip() in [".", "("]:
-                    self.base.languageservermanager.request_completions(self)
-                self.update_completions()
-            else:
-                self.update_completions()
-        else:
-            if self.autocomplete.active:
-                self.hide_autocomplete()
-
-    def complete_pair(self, char):
-        if not self.get("insert", "insert+1c").strip() in [char, ""]:
-            return
-        
-        self.insert(tk.INSERT, char)
-        self.mark_set(tk.INSERT, "insert-1c")
-
-    def surrounding_selection(self, char):
-        if self.tag_ranges(tk.SEL):
-            self.insert(char, tk.SEL_LAST)
-            self.insert(char, tk.SEL_FIRST)
-            return
-
-        self.complete_pair(char)
-    
-    def surrounding_selection(self, char):
-        if self.tag_ranges(tk.SEL):
-            self.insert(char, tk.SEL_LAST)
-            self.insert(char, tk.SEL_FIRST)
-            return
-        
-        self.complete_pair(char)
 
     def move_to_next_word(self):
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
@@ -693,7 +681,7 @@ class Text(Text):
 
     def highlight_current_line(self, *_):
         self.tag_remove("currentline", 1.0, tk.END)
-        if self.minimalist or self.get_selected_text():
+        if self.minimalist or self.tag_ranges(tk.SEL):
             return
 
         line = int(self.index(tk.INSERT).split(".")[0])
@@ -712,11 +700,10 @@ class Text(Text):
         self.move_cursor(end)
 
     def highlight_current_word(self):
-        if self.minimalist or self.get_selected_text():
+        self.tag_remove("currentword", 1.0, tk.END)
+        if self.minimalist or self.tag_ranges(tk.SEL):
             return
 
-        self.tag_remove("currentword", 1.0, tk.END)
-        
         if word := re.findall(r"\w+", self.get("insert wordstart", "insert wordend")):
             # TODO: do not highlight keywords, parts of strings, etc.
             self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", regexp=True)
@@ -804,7 +791,6 @@ class Text(Text):
         
         if (args[0] in ("insert", "replace", "delete") or args[0:3] == ("mark", "set", "insert")):
             self.event_generate("<<Change>>", when="tail")
-            self.refresh(args)
 
         elif (args[0:2] == ("xview", "moveto") or args[0:2] == ("yview", "moveto") or 
               args[0:2] == ("xview", "scroll") or args[0:2] == ("yview", "scroll")):

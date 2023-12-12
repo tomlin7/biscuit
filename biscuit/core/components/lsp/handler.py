@@ -97,14 +97,10 @@ class EventHandler:
             )
         
         if isinstance(e, lsp.Definition):
-            request_id, tab = self.master._gotodef_request
-
-            if e.message_id != request_id:
-                # if not latest, discard
-                return
+            tab = self.master._gotodef_requests.pop(e.message_id)
 
             tab.lsp_goto_definition(
-                data=Jump(
+                Jump(
                     [
                         JumpLocationRange(
                             file_path=str(path),
@@ -118,11 +114,6 @@ class EventHandler:
             return
 
         if isinstance(e, lsp.Hover):
-            request_id, tab, location = self.master._hover_request
-            if request_id != e.message_id:
-                # if not latest, discard
-                return
-            
-            tab.lsp_hover(Hover(location, filter_hover_content(e.contents)))
+            requesting_tab, location = self.master._hover_requests.pop(e.message_id)
+            requesting_tab.lsp_hover(Hover(location, filter_hover_content(e.contents)))
             return
-        print(e)

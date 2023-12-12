@@ -197,7 +197,7 @@ class Editors(FrameThemeObject):
         self.hoverpopup = FrameThemeObject(self)
         self.hyperlink = "#4583b6"
 
-        self.selection = theme.primary_background_highlight
+        self.selection = "#264f78"
         self.currentline = theme.border
         self.currentword = "#d5d5d5"
         self.found = "#dbe6c2"
