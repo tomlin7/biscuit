@@ -1,16 +1,23 @@
+from __future__ import annotations
+
 import codecs
-import os
 import queue
 import re
 import threading
 import tkinter as tk
+import typing
 from collections import deque
 
+from biscuit.core.components.lsp.data import Underlines
+from biscuit.core.settings import res
+
+if typing.TYPE_CHECKING:
+    from biscuit.core.components.lsp.data import Completions
+
 from ...utils import Text
-from .autocomplete import AutoComplete
 from .changes import Change
 from .highlighter import Highlighter
-from .syntax import Syntax
+from .hoverpopup import HoverPopup
 
 
 class Text(Text):
@@ -28,17 +35,14 @@ class Text(Text):
         self.buffer_size = 1000
         self.bom = True
         self.current_word = None
-        self.words = []
+        self.words: list[str] = []
+        self.lsp: bool = False
 
-        self.syntax = Syntax(self)
-        self.auto_completion = AutoComplete(
-            self, items=self.syntax.get_autocomplete_list()) if not minimalist else None
-
-        self.highlighter = Highlighter(self, language)
-        self.base.statusbar.on_open_file(self)
-
+        self.hover_popup = HoverPopup(self)
         self.last_change = Change(None, None, None, None, None)
-        self.lsp = None
+        self.highlighter = Highlighter(self, language)
+        self.autocomplete = self.base.autocomplete
+        self.base.statusbar.on_open_file(self)
 
         self.focus_set()
         self.config_tags()
@@ -53,6 +57,12 @@ class Text(Text):
         self._user_edit = True
         self._edit_stack = []
         self._edit_stack_index = -1
+        self._last_selection: list[str, str] = [None, None]
+        self._last_cursor: list[str, str] = [None, None]
+        self.hover_after = None
+        self.last_hovered = None
+
+        self.tag_config('hyperlink', foreground=self.base.theme.editors.hyperlink, underline=True)
 
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
@@ -85,18 +95,21 @@ class Text(Text):
 
         self.bind("<FocusOut>", self.hide_autocomplete) 
         self.bind("<Button-1>", self.hide_autocomplete)
-        self.bind("<Up>", self.auto_completion.move_up)
-        self.bind("<Down>", self.auto_completion.move_down)
+        self.bind("<Up>", self.autocomplete.move_up)
+        self.bind("<Down>", self.autocomplete.move_down)
         self.bind("<Map>", self.event_mapped)
         self.bind("<Unmap>", self.event_unmapped)
         self.bind("<Destroy>", self.event_destroy)
 
+        self.bind("<Motion>", self.request_hover)
+        self.bind("<Control-KeyRelease>", self.clear_hyperlink)
+        self.bind("<Control-Motion>", self.underline_for_jump)
+        self.bind("<Control-Button-1>", self.request_goto_definition)
+        self.bind("<Control-period>", lambda _: self.base.languageservermanager.request_completions(self))
+
     def key_release_events(self, event):
         self._user_edit = True
-
-        if event.keysym not in ("Up", "Down", "Return"):
-            self.show_autocomplete(event)
-
+        self.show_autocomplete(event)
         match event.keysym:
             # autocompletion keys
             case "Button-2" | "BackSpace" | "Escape" | "Control_L" | "Control_R" | "space":
@@ -126,22 +139,22 @@ class Text(Text):
                 pass
 
     def enter_key_events(self, *_):
-        if not self.minimalist and self.auto_completion.active:        
-            self.auto_completion.choose()
+        if not self.minimalist and self.autocomplete.active:        
+            self.autocomplete.choose(self)
             return "break"
 
         return self.check_indentation()
 
     def tab_key_events(self, *_):
-        if self.auto_completion.active:        
-            self.auto_completion.choose()
+        if not self.minimalist and self.autocomplete.active:        
+            self.autocomplete.choose(self)
             return "break"
 
         # TODO if there is text selected, indent the selected text
         self.insert(tk.INSERT, " "*4)
         return "break"
 
-    def refresh(self, *args):
+    def refresh(self, args):
         """Refresh all tags and highlights, called on every change made to content.
         ignored if the editor is set to minimalist mode"""
 
@@ -153,12 +166,135 @@ class Text(Text):
         self.highlight_current_line()
         self.highlight_current_word()
 
+
+        # TODO send only portions of text on change to the LSPServer
+        # current solution is not scalable, and will cause lag on large files
+
+        # commenting this out for now, as the way of handling changes is not properly done
+        # the changes shall be recorded before they are actually made, but we can't do that from here
+        # this requires writing a custom change handler for text widget
+        # eg. in the 'delete' command below, i can get indices like ('sel.start', 'sel.end') but not actual indices
+        # these are useless as if we try to index() these indices we will get indices from the modified content, 
+        # not the old one. and since the modified content no longer have sel, this will throw an error
+
+
+        # if args[0] == tk.INSERT:
+        #     start_index = self.get_cursor_pos()
+            
+        #     end_index = self.index(tk.INSERT + f"+{len(args[2])}c")
+        #     self.last_change.update(
+        #         start=[int(i) for i in start_index.split('.')],
+        #         old_end=[int(i) for i in start_index.split('.')],
+        #         new_end=[int(i) for i in end_index.split('.')],
+        #         old_text='',
+        #         new_text=args[2]
+        #     )
+            
+        # elif args[0] == 'delete':
+        #     start_index = self.get_cursor_pos()
+        #     if len(args) == 2:
+        #         # is one char deleted
+        #         # ('delete', 'insert-1c')
+        #         start_index = self.index(tk.INSERT + f"-1c")
+        #         end_index = self.get_cursor_pos()
+        #         print(start_index, self.get(start_index, end_index), "------------------------------")
+        #     else:
+        #         # there must be selection then
+        #         # ('delete', 'sel.first', 'sel.last')
+        #         start_index = self.index(tk.SEL_FIRST)
+        #         end_index = self.index(tk.SEL_LAST)
+        #         print(start_index, self.get(start_index, end_index), "------------------------------")
+                
+        #     self.last_change.update(
+        #         start=[int(i) for i in start_index.split('.')],
+        #         old_end=[int(i) for i in start_index.split('.')],
+        #         new_end=[int(i) for i in end_index.split('.')],
+        #         old_text='',
+        #         new_text=''
+        #     )
+        # elif args[0] == 'replace':
+        #     start_index = self.get_cursor_pos()
+        #     end_index = self.index(tk.INSERT + f"+{len(args[3])}c")
+        #     self.last_change.update(
+        #         start=[int(i) for i in start_index.split('.')],
+        #         old_end=[int(i) for i in start_index.split('.')],
+        #         new_end=[int(i) for i in end_index.split('.')],
+        #         old_text=args[3],
+        #         new_text=args[2]
+        #     )
+        # else:
+        #     return
+        # self.base.languageservermanager.content_changed(self)
+    
+    def is_identifier(self, text: str) -> str:
+        return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
+
+    def clear_hyperlink(self, e):
+        self.tag_remove("hyperlink", 1.0, tk.END)
+
+    def underline_for_jump(self, _):
+        index = self.index(tk.CURRENT)
+        word = self.get(index + " wordstart", index + " wordend").strip()
+        if not word or not self.is_identifier(word):
+            return
+
+        self.tag_remove("hyperlink", 1.0, tk.END)
+        self.tag_add("hyperlink", index + " wordstart", index + " wordend")
+
+        return word
+
+    def request_goto_definition(self, e):
+        self.underline_for_jump(e)
+        if self.underline_for_jump(e):
+            self.base.languageservermanager.request_goto_definition(self)
+    
+    def request_hover(self, _):
+        index = self.index(tk.CURRENT) # f"@{e.x},{e.y}"
+        word = self.get(index + " wordstart", index + " wordend").strip()
+
+        if not word or not self.is_identifier(word):
+            self.hover_popup.hide()
+            self.last_hovered = None
+            return
+        
+        if self.last_hovered == word:
+            return
+        self.last_hovered = word
+        
+        # TODO delayed hovers
+        # if self.hover_after:
+        #     self.after_cancel(self.hover_after)
+        
+        # self.after(500, ...)
+        self.base.languageservermanager.request_hover(self)
+
+    def lsp_show_autocomplete(self, response: Completions) -> None:
+        print("LSP <<< ", response)
+
+        # self.autocomplete.update_completions(self, response)
+        # self.autocomplete.show(self, self.cursor_screen_location())
+    
+    def lsp_diagnostics(self, response: Underlines) -> None:
+        print("LSP <<< ", response)
+        # self.highlighter.highlight_diagnostics(response)
+    
+    def lsp_goto_definition(self, response: list[dict]) -> None:
+        print("LSP <<< ", response)
+        # self.base.languageservermanager.goto_definition(response)
+    
+    def lsp_hover(self, response: dict) -> None:
+        print("LSP <<< ", response)
+        # self.base.languageservermanager.hover(response)
+
     def get_all_text_ac(self, *args):
         """
         Helper function for autocomplete.show
         extracts all text except the current word.
         """
         return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
+
+    def get_cursor_pos(self):
+        return self.index(tk.INSERT)
 
     def get_current_word(self):
         return self.current_word.strip()
@@ -174,7 +310,7 @@ class Text(Text):
         if self.minimalist:
             return
 
-        self.auto_completion.update_completions()   
+        self.autocomplete.update_completions(self)
 
     def confirm_autocomplete(self, text):
         self.replace_current_word(text)
@@ -185,12 +321,6 @@ class Text(Text):
         else:
             self.delete("insert-1c wordstart", "insert")
         self.insert("insert", new_word)
-
-    def check_autocomplete_keys(self, event):
-        """Helper function for autocomplete.show to check triggers"""
-        return event.keysym not in [
-            "BackSpace", "Escape", "Return", "Tab", "space", 
-            "Up", "Down", "Control_L", "Control_R"] 
 
     def cursor_screen_location(self):
         """Helper function for autocomplete.show to detect cursor location"""
@@ -208,43 +338,47 @@ class Text(Text):
         if self.minimalist:
             return
 
-        self.auto_completion.hide()
+        self.autocomplete.hide()
 
     def show_autocomplete(self, event):
-        if self.minimalist or not self.check_autocomplete_keys(event) or not self.current_word:
-            return
+        if (self.minimalist or not self.current_word or event.keysym in ["BackSpace", "Escape", "Return", "Tab", "space", "Up", 
+            "Down", "Left", "Right", "Control_L", "Control_R"]): return
 
-        if self.current_word.strip() not in ["{", "}", ":", "", None, "\""] and not self.current_word.strip()[0].isdigit():
-            if not self.auto_completion.active:
-                if event.keysym in ["Left", "Right"]:
-                    return
+        if self.current_word.strip() not in [":", "", None, "\""] and not self.current_word.strip()[0].isdigit():
+            if not self.autocomplete.active:
                 pos = self.cursor_screen_location()
-                self.auto_completion.show(pos)
-                self.auto_completion.update_completions()
+                # self.autocomplete.show(self, pos)
+                if self.lsp and self.current_word.strip() in [".", "("]:
+                    self.base.languageservermanager.request_completions(self)
+                self.update_completions()
             else:
-                self.auto_completion.update_completions()
+                self.update_completions()
         else:
-            if self.auto_completion.active:
+            if self.autocomplete.active:
                 self.hide_autocomplete()
 
     def complete_pair(self, char):
+        if not self.get("insert", "insert+1c").strip() in [char, ""]:
+            return
+        
         self.insert(tk.INSERT, char)
         self.mark_set(tk.INSERT, "insert-1c")
 
     def surrounding_selection(self, char):
-        next_char = self.get("insert", "insert+1c")
-        if next_char == char:
-            self.mark_set(tk.INSERT, "insert+1c")
-            self.delete("insert-1c", "insert")
-            return "break"
-
         if self.tag_ranges(tk.SEL):
             self.insert(char, tk.SEL_LAST)
             self.insert(char, tk.SEL_FIRST)
             return
 
         self.complete_pair(char)
-        return "break"
+    
+    def surrounding_selection(self, char):
+        if self.tag_ranges(tk.SEL):
+            self.insert(char, tk.SEL_LAST)
+            self.insert(char, tk.SEL_FIRST)
+            return
+        
+        self.complete_pair(char)
 
     def move_to_next_word(self):
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
@@ -390,12 +524,18 @@ class Text(Text):
             return
     
     def event_mapped(self, _):
-        self.base.languageservermanager.tab_opened(self)
+        self.lsp = self.base.languageservermanager.tab_opened(self)
     
     def event_destroy(self, _):
+        try:
+            self.hide_autocomplete()
+        except:
+            # most likely because app was closed
+            pass
         self.base.languageservermanager.request_removal(self)
 
     def event_unmapped(self, _):
+        self.hide_autocomplete()
         self.base.languageservermanager.tab_closed(self)
         
     def copy(self, *_):
@@ -481,6 +621,12 @@ class Text(Text):
 
     def newline(self, *args):
         self.write("\n", *args)
+    
+    def get_begin(self):
+        return '1.0'
+    
+    def get_end(self):
+        return self.index(tk.END)
 
     def get_all_text(self):
         return self.get(1.0, tk.END)
@@ -570,14 +716,10 @@ class Text(Text):
             return
 
         self.tag_remove("currentword", 1.0, tk.END)
-        word = re.findall(r"\w+", self.get("insert wordstart", "insert wordend"))
-        if any(word) and word[0] not in self.syntax.keywords:
+        
+        if word := re.findall(r"\w+", self.get("insert wordstart", "insert wordend")):
+            # TODO: do not highlight keywords, parts of strings, etc.
             self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", regexp=True)
-
-        # elif word := self.get_selected_text():
-        #     self.highlight_pattern(word, "currentword", end="sel.first")
-        #     self.highlight_pattern(word, start="sel.last")
-
 
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
@@ -657,34 +799,15 @@ class Text(Text):
         cmd = (self._orig,) + args
         result = self.tk.call(cmd)
 
+        if self.lsp and (args[0] in ("insert", "replace", "delete") or args[0:3] == "insert"):
+            self.base.languageservermanager.content_changed(self)
+        
         if (args[0] in ("insert", "replace", "delete") or args[0:3] == ("mark", "set", "insert")):
             self.event_generate("<<Change>>", when="tail")
+            self.refresh(args)
 
         elif (args[0:2] == ("xview", "moveto") or args[0:2] == ("yview", "moveto") or 
               args[0:2] == ("xview", "scroll") or args[0:2] == ("yview", "scroll")):
             self.event_generate("<<Scroll>>", when="tail")
-
-        if args[0] == 'insert':
-            start_index = self.index(args[1])
-            end_index = self.index(args[1] + "+%dc" % len(args[2]))
-            self.last_change.update(
-                start=[int(i) for i in start_index.split('.')],
-                old_end=[int(i) for i in start_index.split('.')],
-                new_end=[int(i) for i in end_index.split('.')],
-                old_text='',
-                new_text=args[2]
-            )
-            
-        elif args[0] == 'delete':
-            start_index = self.index(args[1])
-            end_index = self.index(args[2])
-            deleted_text = self.get(args[1], args[2])
-            self.last_change.update(
-                start=[int(i) for i in start_index.split('.')],
-                old_end=[int(i) for i in end_index.split('.')],
-                new_end=[int(i) for i in start_index.split('.')],
-                old_text=deleted_text,
-                new_text=''
-            )
 
         return result

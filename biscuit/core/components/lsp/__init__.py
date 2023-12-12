@@ -6,6 +6,8 @@ from pathlib import Path
 
 import sansio_lsp_client as lsp
 
+from biscuit.core.components.lsp.utils import encode_position
+
 from .client import LangServerClient
 
 if typing.TYPE_CHECKING:
@@ -22,22 +24,43 @@ class LanguageServerManager:
 
         self.kill_thread = None    
     
-    def tab_opened(self, tab) -> None:
+    def tab_opened(self, tab: Text) -> None:
         self.latest = self.request_client_instance(tab)
         if self.latest:
             self.latest.open_tab(tab)
+        return self.latest is not None
    
     def request_removal(self, tab: Text) -> None:
-        for langserver in list(self.existing.values()):
-            langserver.close_tab(tab)
+        for instance in list(self.existing.values()):
+            instance.close_tab(tab)
 
-    def tab_closed(self, tab) -> None:
+    def tab_closed(self, tab: Text) -> None:
         if inst :=  self.request_client_instance(tab):
             inst.close_tab(tab)
 
+    def request_completions(self, tab: Text) -> str | None:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.request_completions(tab)
+
+    def request_goto_definition(self, tab: Text) -> str:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.request_jump_to_definition(tab)
+
+    def request_hover(self, tab: Text) -> str | None:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.request_hover(tab)
+
+    def content_changed(self, tab: Text) -> None:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.send_change_events(tab)
+
     def request_client_instance(self, tab: Text) -> LangServerClient | None:
         if tab.path is None or not tab.language or tab.language not in self.langservers.keys():
-            return None
+            return
         
         root_dir = self.base.active_directory or os.path.dirname(tab.path)
 
@@ -46,8 +69,9 @@ class LanguageServerManager:
         except KeyError:
             pass
 
-        print(f"-- Requesting <LSPC>({tab.language}) instance for -->> {root_dir} <<--")
+        print(f"<<-- Requesting <LSPC>({tab.language}) instance for --[{root_dir}] -->>")
 
+        # TODO multithread this process
         langserver = LangServerClient(self, tab, root_dir)
         langserver.run_loop()
         self.existing[(root_dir, tab.language)] = langserver

@@ -3,6 +3,8 @@ Loads and manages the editor configurations and provides settings editor GUI
 """
 from __future__ import annotations
 
+__all__ = ["Settings", "SettingsEditor"]
+
 import re
 import tkinter as tk
 import typing

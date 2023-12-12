@@ -17,7 +17,7 @@ class IO:
         
         self.master = master
         self.base = master.base
-        self.alive = False
+        self.alive = True
         self.cmd = cmd
         self.cwd = cwd
 
@@ -30,7 +30,17 @@ class IO:
 
     def read(self) -> None:
         "Read from stdout"
-        return self.out_queue.get()
+        buf = bytearray()
+        while True:
+            try:
+                buf += self.out_queue.get(block=False)
+            except queue.Empty:
+                break
+
+        if self.t_out.is_alive() and not buf:
+            return None
+        return bytes(buf)
+        # return self.out_queue.get()
 
     def start(self, *_) -> None:
         "Start the process"
@@ -59,19 +69,15 @@ class IO:
         while self.alive:
             try:
                 chunk = self.in_queue.get(timeout=5)
-                self._write(chunk)
             except queue.Empty:
-                continue   
+                continue
+            
+            self.p.stdin.write(chunk)
+            self.p.stdin.flush()
     
     def _process_out(self) -> None:
         while True:
-            data = self.p.stdout.raw.read(1024)
-            self.out_queue.put(data)
+            data = self.p.stdout.raw.read(1)
             if not data:
                 break
             self.out_queue.put(data)
-
-    def _write(self, input) -> None:
-        self.p.stdin.write(input)
-        self.p.stdin.flush()
-    

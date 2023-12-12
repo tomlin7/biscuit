@@ -194,6 +194,9 @@ class Editors(FrameThemeObject):
         self.section = HighlightableThemeObject(self) # settings
         self.labels = ThemeObject(self)
 
+        self.hoverpopup = FrameThemeObject(self)
+        self.hyperlink = "#4583b6"
+
         self.selection = theme.primary_background_highlight
         self.currentline = theme.border
         self.currentword = "#d5d5d5"

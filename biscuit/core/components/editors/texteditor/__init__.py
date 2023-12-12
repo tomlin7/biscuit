@@ -49,7 +49,6 @@ class TextEditor(BaseEditor):
             self.auto_save()
 
     def on_change(self, *_):
-        self.text.refresh()
         self.linenumbers.redraw()
         self.base.update_statusbar()
         if not self.minimalist:

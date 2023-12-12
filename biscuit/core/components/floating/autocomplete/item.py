@@ -1,19 +1,28 @@
-import tkinter as tk
+from __future__ import annotations
 
-from ....utils import Frame
+import tkinter as tk
+import typing
+
+from biscuit.core.components.utils import Frame
+
 from .kind import Kind
 
+if typing.TYPE_CHECKING:
+    from . import AutoComplete
 
-class AutoCompleteItem(Frame):
-    def __init__(self, master, text, kind=None, *args, **kwargs) -> None:
+
+class Completion(Frame):
+    def __init__(self, master: AutoComplete, text: str, kind: str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
+        self.master = master
+
         self.config(width=400, **self.base.theme.editors.autocomplete)
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.editors.autocomplete.item.values()
 
         self.text = text
         self.kind = kind
 
-        self.kindw = Kind(self, self.master.autocomplete_kinds, kind)
+        self.kindw = Kind(self, self.master.kinds, kind)
         self.textw = tk.Text(self, 
             font=self.base.settings.font, fg=self.fg, bg=self.bg,
             relief=tk.FLAT, highlightthickness=0, width=30, height=1)
@@ -50,7 +59,7 @@ class AutoCompleteItem(Frame):
         self.textw.tag_add("term", f"1.{start_pos}", f"1.{end_pos}")
 
     def on_click(self, *args):
-        self.master.choose(self)
+        self.master.choose(this=self)
 
     def on_hover(self, *args):
         if not self.selected:

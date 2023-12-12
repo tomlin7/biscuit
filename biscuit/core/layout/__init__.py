@@ -10,6 +10,8 @@ Defines the layout of app.
 """
 from __future__ import annotations
 
+__all__ = ["Root"]
+
 import tkinter as tk
 import typing
 

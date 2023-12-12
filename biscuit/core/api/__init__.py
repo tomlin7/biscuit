@@ -1,3 +1,5 @@
+__all__ = ["ExtensionsAPI"]
+
 from biscuit.core.components import BaseEditor, BaseGame
 
 from .commands import Commands

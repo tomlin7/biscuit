@@ -6,7 +6,6 @@ from .gameoflife import GameOfLife
 from .minesweeper import Minesweeper
 from .pong import Pong
 from .snake import Snake
-from .stackengineer import StackEngineer
 from .tetris import Tetris
 from .ttt import TicTacToe
 from .whoops import Whoops
