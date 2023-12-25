@@ -13,7 +13,7 @@
     <a href=https://github.com/billyeatcookies/Biscuit/tree/main?tab=readme-ov-file#features>Features</a> • 
     <a href=https://github.com/billyeatcookies/Biscuit/blob/main/CONTRIBUTING.md>Developer Docs</a> • 
     <a href=https://github.com/billyeatcookies/Biscuit/blob/main/CODE_OF_CONDUCT.md>Code of Conduct</a> • 
-    <a href=https://github.com/billyeatcookies/Biscuit/blob/main/CHANGELOG.md>Changelog</a><br><br>
+    <a href=https://billyeatcookies.github.io/biscuit-extensions>Marketplace</a><br><br>
     <img src="https://github.com/billyeatcookies/Biscuit/assets/70792552/a990845c-bd71-49d2-9d51-58153215c871" width=2000><br>
 </h1>
 

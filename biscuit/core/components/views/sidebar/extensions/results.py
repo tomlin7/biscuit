@@ -1,8 +1,8 @@
+import json
 import threading
 import tkinter as tk
 
 import requests
-import toml
 
 from ..item import SidebarViewItem
 from .extension import Extension
@@ -19,7 +19,7 @@ class Results(SidebarViewItem):
         self.extensions = {}
 
         self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
-        self.list_url = self.repo_url + "extensions.toml"
+        self.list_url = self.repo_url + "extensions.json"
 
         # self.watcher = ExtensionsWatcher(self)
         # self.watcher.watch()
@@ -60,11 +60,10 @@ class Results(SidebarViewItem):
             return
 
         self.clear()
-        self.extensions = toml.loads(response.text)
+        self.extensions = json.loads(response.text)
 
         for name, data in self.extensions.items():
             #TODO add further loops for folders
-            #TODO add author, description
             ext = Extension(self, name, data)
             ext.pack(in_=self.content, fill=tk.X)
 
