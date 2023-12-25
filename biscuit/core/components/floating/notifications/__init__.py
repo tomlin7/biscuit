@@ -62,7 +62,6 @@ class Notifications(Toplevel):
         if not self.active:
             return
 
-        self.update_idletasks()
         x = self.base.winfo_x() + self.base.winfo_width() - self.winfo_width() - self.xoffset 
         y = self.base.winfo_y() + self.base.winfo_height() - self.winfo_height() - self.yoffset 
 

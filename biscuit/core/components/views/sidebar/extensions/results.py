@@ -50,8 +50,11 @@ class Results(SidebarViewItem):
         try:
             response = requests.get(self.list_url)
         except Exception as e:
-            self.base.logger.error(f"Fetching extensions failed: {e}")
-            return
+            try:
+                self.base.logger.error(f"Fetching extensions failed: {e}")
+                return
+            except Exception:
+                pass
 
         if not response.status_code == 200:
             return

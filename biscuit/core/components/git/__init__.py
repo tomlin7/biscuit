@@ -46,7 +46,7 @@ class Git(git.Git):
     def checkout(self, branch: str) -> None:
         self.repo.index.checkout(branch)
 
-    def clone(self, url: str, dir: str) -> None:    
+    def clone(self, url: str, dir: str) -> str:    
         if not URL.match(url):
             # assumes github as repo host
             url = f'http://github.com/{url}'

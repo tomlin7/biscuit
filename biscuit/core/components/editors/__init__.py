@@ -120,3 +120,6 @@ class Editor(Frame):
 
     def focus(self) -> None:
         self.content.focus()
+
+    def __str__(self) -> str:
+        return self.path

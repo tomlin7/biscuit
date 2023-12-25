@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ....utils import Label
+from biscuit.core.components.utils import Label
 
 
 class Kind(Label):

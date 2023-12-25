@@ -79,6 +79,8 @@ class Terminal(PanelView):
 
     def destroy(self, *_) -> None:
         self.alive = False
+        self.p.kill()
+        super().destroy()
 
     def run_command(self, command) -> None:
         self.write(command, "command")

@@ -4,29 +4,37 @@ import sys
 import threading
 import tkinter as tk
 
-from .api import ExtensionsAPI
+from .api import *
 from .components import *
-from .components.extensions import ExtensionManager
-from .layout import Root
-from .settings import Settings
-from .settings.editor import SettingsEditor
+from .layout import *
+from .settings import *
 from .utils import *
 
 
 class App(tk.Tk):
-    """
-    BISCUIT CORE
+    """BISCUIT CORE
 
-    This class holds reference to all the important parts of the editor that are accessed
-    from various components of the editor. Every component has a reference to this `base`
-    class.
+    Main point of having this class is to have a single point of access to all the important parts of the app. This class 
+    holds reference to all the components of Biscuit and every class of biscuit have a reference back to this `base` class.
+    i.e. `self.base` is the reference to this class from any other class of biscuit.
 
     Example: In order to access the open editor from the git:
 
-        def foo(self):
-            editor = self.base.editorsmanager.active_editor
-            if editor.content and editor.content.exists:
-                print(editor.path)
+        class Git:
+            def foo(self):
+                editor = self.base.editorsmanager.active_editor 
+                if editor.content and editor.content.exists:
+                    print(editor.path)
+    
+    Example: Accessing the active editor instance from Foo class of biscuit: 
+        
+        class Foo:
+            def foo(self):
+                editor = self.base.editorsmanager.active_editor 
+                if (editor.content and editor.content.exists):
+                    print(editor.path)
+                    if (editor.content.editable):
+                        self.base.notifications.info(":)")
 
     Attributes
     ----------
@@ -36,7 +44,7 @@ class App(tk.Tk):
         optional argument to open a folder from cli
 
     """
-    def __init__(self, appdir: str=None, dir: str=None, *args, **kwargs) -> None:
+    def __init__(self, appdir: str="", dir: str="", *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.base = self
         self.setup_path(appdir)
@@ -115,6 +123,9 @@ class App(tk.Tk):
         self.events = Events(self)
         self.binder = Binder(self)
         self.git = Git(self)
+
+        self.autocomplete = AutoComplete(self)
+        self.languageservermanager = LanguageServerManager(self)
 
     def setup_tk(self) -> None:
         if platform.system() == "Windows":
@@ -236,7 +247,7 @@ class App(tk.Tk):
         self.editorsmanager.open_editor(path, exists)
 
     def open_diff(self, path: str, kind: str) -> None:
-        self.editorsmanager.open_diff_editor(path, kind)
+        self.editorsmanager.open_diff_editor(path, kind) # type: ignore
 
     def open_settings(self, *_) -> None:
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
