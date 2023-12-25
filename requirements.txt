@@ -11,3 +11,4 @@ requests
 pyperclip
 tkinterweb
 mistune
+sansio_lsp_client
