@@ -34,9 +34,9 @@ class LangServerClient:
         self.tabs_opened: set[Text] = set()
         self._count = 0
         
+        self.client = lsp.Client(root_uri=Path(self.root_dir).as_uri())
         self.io = IO(self, self.command, self.root_dir)
         self.io.start()
-        self.client = lsp.Client(root_uri=Path(self.root_dir).as_uri())
         self.handler = EventHandler(self)
 
         # requests
@@ -114,10 +114,7 @@ class LangServerClient:
                 triggerKind=lsp.CompletionTriggerKind.INVOKED
             ),
         )
-
         print(f">>>> COMPLETION REQUESTED {tab.path}({self.language})")
-
-        print(tab.get_cursor_pos(), encode_position(request.cursor))
 
         self._autocomplete_req[req_id] = (tab, request)
     
@@ -134,7 +131,7 @@ class LangServerClient:
         print(f">>>> HOVER REQUESTED {tab.path} at {tab.get_cursor_pos()}")
         self._hover_requests[request_id] = (tab, tab.get_cursor_pos())
     
-    def request_jump_to_definition(self, tab: Text) -> None:
+    def request_go_to_definition(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
             return
         
@@ -144,7 +141,7 @@ class LangServerClient:
                 position=encode_position(tab.get_mouse_pos()),
             )
         )
-        print(f">>>> JUMPTODEF REQUESTED {tab.path} at {tab.index(tk.INSERT)}")
+        print(f">>>> GOTODEF REQUESTED {tab.path} at {tab.index(tk.INSERT)}")
         self._gotodef_requests[request_id] = tab
 
     def send_change_events(self, tab: Text) -> None:

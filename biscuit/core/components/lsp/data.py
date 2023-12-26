@@ -2,20 +2,15 @@ import dataclasses
 import json
 from typing import List, Optional
 
-
-class Base:
-    def __str__(self) -> str:
-        return type(self).__name__ + json.dumps(dataclasses.asdict(self))
-    
 # Requests
 
 @dataclasses.dataclass
-class CompletionRequest(Base):
+class CompletionRequest:
     id: int
     cursor: str
 
 @dataclasses.dataclass
-class JumpRequest(Base):
+class JumpRequest:
     file_path: str
     location: str
 
@@ -29,8 +24,11 @@ class Underline:
     tooltip_text: str
     color: Optional[str] = None
 
+    def __repr__(self) -> str:
+        return self.start
+    
 @dataclasses.dataclass
-class Underlines(Base):
+class Underlines:
     id: str
     underline_list: List[Underline]
 
@@ -43,23 +41,20 @@ class Completion:
     filter_text: str
     documentation: str
     
-    def __str__(self) -> str:
-        return self.display_text
+    def __repr__(self) -> str:
+        return self.replace_text
 
 @dataclasses.dataclass
-class Completions(Base):
+class Completions:
     id: int
     completions: List[Completion]
 
-    def __str__(self) -> str:
-        return [str(i) for i in self.completions]
-
 @dataclasses.dataclass
-class Hover(Base):
+class Hover:
     location: str
     text: str
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.text
 
 @dataclasses.dataclass
@@ -68,12 +63,9 @@ class JumpLocationRange:
     start: str
     end: str
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.file_path
 
 @dataclasses.dataclass
-class Jump(Base):
+class Jump:
     location_ranges: List[JumpLocationRange]
-
-    def __str__(self) -> str:
-        return [str(i) for i in self.location_ranges]

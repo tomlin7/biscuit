@@ -19,14 +19,13 @@ class EventHandler:
         self.base = master.base
 
     def process(self, e: lsp.Event) -> None:
-        print("----", e.__class__.__name__.upper())
+        # print(e.__class__.__name__.upper())
         
         if isinstance(e, lsp.Shutdown):
             self.client.exit()
             return
         
         if isinstance(e, lsp.LogMessage):
-            print(e.type, e.message)
             return
         
         if isinstance(e, lsp.Initialized):

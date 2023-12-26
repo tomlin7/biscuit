@@ -46,7 +46,7 @@ class LanguageServerManager:
     def request_goto_definition(self, tab: Text) -> str:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
-                instance.request_jump_to_definition(tab)
+                instance.request_go_to_definition(tab)
 
     def request_hover(self, tab: Text) -> str | None:
         for instance in list(self.existing.values()):

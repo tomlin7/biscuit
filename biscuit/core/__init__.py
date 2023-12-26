@@ -282,7 +282,7 @@ class App(tk.Tk):
                 active_text = editor.content.text
                 self.statusbar.set_encoding(active_text.encoding)
                 return self.statusbar.set_line_col_info(
-                    active_text.line, active_text.column, active_text.get_selected_count())
+                    active_text.line, active_text.column, len(active_text.selection))
 
         self.statusbar.toggle_editmode(False)
 

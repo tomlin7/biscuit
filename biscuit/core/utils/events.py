@@ -156,32 +156,32 @@ class Events:
     def delete_line(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.text.delete_line()
+                editor.content.text.event_delete_line()
 
     def copy_line_up(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.text.copy_line_up()
+                editor.content.text.event_copy_line_up()
 
     def copy_line_down(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.text.copy_line_down()
+                editor.content.text.event_copy_line_down()
 
     def move_line_up(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.text.move_line_up()
+                editor.content.text.event_move_line_up()
 
     def move_line_down(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.text.move_line_down()
+                editor.content.text.event_move_line_down()
 
     def duplicate_selection(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.text.duplicate_selection()
+                editor.content.text.event_duplicate_selection()
 
     def show_explorer(self, *_) -> None:
         self.base.sidebar.show_explorer()

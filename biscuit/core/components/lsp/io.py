@@ -21,15 +21,13 @@ class IO:
         self.cmd = cmd
         self.cwd = cwd
 
-        self.out_queue = queue.Queue() # output results
         self.in_queue = queue.Queue() # input data
+        self.out_queue = queue.Queue() # output results
 
     def write(self, buf) -> None:
-        "Write to stdin"
         self.in_queue.put(buf)
 
     def read(self) -> None:
-        "Read from stdout"
         buf = bytearray()
         while True:
             try:
@@ -44,20 +42,19 @@ class IO:
 
     def start(self, *_) -> None:
         "Start the process"
-        self.alive = True
-
         self.p = subprocess.Popen(
-            self.cmd, stdout=subprocess.PIPE, cwd=self.cwd,
-            stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+            self.cmd, 
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE, 
+            stderr=subprocess.PIPE,
             startupinfo=subprocess.STARTUPINFO(
                 dwFlags=subprocess.STARTF_USESHOWWINDOW
             ))
         print(f"PID: {self.p.pid}\nCMD: {self.cmd}\nCWD: {self.cwd}")
 
+        Thread(target=self._process_in, daemon=True).start()
         self.t_out = Thread(target=self._process_out, daemon=True)
-        self.t_in = Thread(target=self._process_in, daemon=True)
         self.t_out.start()
-        self.t_in.start()
 
     def stop(self, *_) -> None:
         "Stop the process"
@@ -76,8 +73,8 @@ class IO:
             self.p.stdin.flush()
     
     def _process_out(self) -> None:
-        while True:
-            data = self.p.stdout.raw.read(1)
+        while self.alive:
+            data = self.p.stdout.read(1)
             if not data:
                 break
             self.out_queue.put(data)
