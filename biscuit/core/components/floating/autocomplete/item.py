@@ -24,11 +24,9 @@ class CompletionItem(Frame):
         self.hovered = False
 
         self.kind = None
-        self.display_text: str = ""
         self.replace_start: str = ""
         self.replace_end: str = ""
         self.replace_text: str = ""
-        self.filter_text: str = ""
         self.documentation: str = ""
 
 
@@ -50,17 +48,26 @@ class CompletionItem(Frame):
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
     
+    def set_data(self, word: str):
+        self.replace_start = ""
+        self.replace_end = ""
+        self.replace_text = word
+        self.documentation = ""
+
+        self.textw.config(state=tk.NORMAL)
+        self.textw.delete(1.0, tk.END)
+        self.textw.insert(tk.END, word)
+        self.textw.config(state=tk.DISABLED)
+    
     def lsp_set_data(self, completion: Completion):
-        self.display_text = completion.display_text
         self.replace_start = completion.replace_start
         self.replace_end = completion.replace_end
         self.replace_text = completion.replace_text
-        self.filter_text = completion.filter_text
         self.documentation = completion.documentation
 
         self.textw.config(state=tk.NORMAL)
         self.textw.delete(1.0, tk.END)
-        self.textw.insert(tk.END, self.display_text)
+        self.textw.insert(tk.END, completion.display_text)
         self.textw.config(state=tk.DISABLED)
 
     def clear_data(self):

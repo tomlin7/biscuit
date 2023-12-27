@@ -168,9 +168,45 @@ class Text(BaseText):
         if not self.current_word.strip().isalpha() or self.current_word.strip() != ".":
             self.hide_autocomplete()
 
-        pos = self.cursor_screen_location()             
-        self.autocomplete.show(self, pos)
+        self.autocomplete.show(self)
         self.update_completions()
+        
+    def update_words_list(self, *_):
+        if self.minimalist or self.lsp:
+            return
+
+        try:
+            content = self.get(1.0, "insert-1c wordstart-1c") + " " + self.get("insert+1c", tk.END)
+            self.words = list(set(re.findall(r"\w+", content)))
+        except:
+            pass
+
+    def update_completions(self):
+        if self.minimalist:
+            return
+
+        if self.lsp:
+            self.request_autocomplete(self)
+        else:
+            self.autocomplete.update_completions(self)
+            
+    def replace_current_word(self, new_word):
+        if self.current_word.startswith("\n"):
+            self.delete("insert-1c wordstart+1c", "insert")
+        else:
+            self.delete("insert-1c wordstart", "insert")
+        self.insert("insert", new_word)
+
+    def cursor_screen_location(self):
+        pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
+
+        cursor = tk.INSERT
+        bbox = self.bbox(cursor)
+        if not bbox:
+            return (0, 0)
+
+        bbx_x, bbx_y, _, bbx_h = bbox
+        return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
     def enter_key_events(self, *_):
         if not self.minimalist and self.autocomplete.active:        
@@ -325,9 +361,6 @@ class Text(BaseText):
         # print("LSP <<< ", response)
         # self.base.languageservermanager.hover(response)
 
-    def get_all_text_ac(self, *args):
-        return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
-
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
 
@@ -336,45 +369,6 @@ class Text(BaseText):
 
     def get_current_word(self):
         return self.current_word.strip()
-
-    def update_words_list(self, *_):
-        if self.minimalist or self.lsp:
-            return
-
-        try:
-            self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
-        except:
-            pass
-
-    def update_completions(self):
-        if self.minimalist:
-            return
-
-        # if not self.lsp:
-        #     self.autocomplete.update_completions(self)
-        # else:
-
-        # note: this is also called when right/left arrow keys are pressed, to update completions ofc
-        #TODO when the cursor goes out of word, and moves to next word, hide autocomplete
-        self.request_autocomplete(self)
-        
-    def replace_current_word(self, new_word):
-        if self.current_word.startswith("\n"):
-            self.delete("insert-1c wordstart+1c", "insert")
-        else:
-            self.delete("insert-1c wordstart", "insert")
-        self.insert("insert", new_word)
-
-    def cursor_screen_location(self):
-        pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
-
-        cursor = tk.INSERT
-        bbox = self.bbox(cursor)
-        if not bbox:
-            return (0, 0)
-
-        bbx_x, bbx_y, _, bbx_h = bbox
-        return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
     def move_to_next_word(self):
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))

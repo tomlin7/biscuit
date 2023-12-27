@@ -24,6 +24,7 @@ class AutoComplete(Toplevel):
         self.wm_attributes("-topmost", True)
         self.kinds = Kinds(self)
         
+        self.lsp_mode = False
         self.latest_tab = None
         self.active = False
         self.selected = 0
@@ -59,12 +60,15 @@ class AutoComplete(Toplevel):
         tab = tab or self.latest_tab
         
         this = this or self.active_items[self.selected]
-        tab.replace(this.replace_start, this.replace_end, this.replace_text)
-        
+        if self.lsp_mode:
+            tab.replace(this.replace_start, this.replace_end, this.replace_text)
+        else:
+            tab.replace_current_word(this.replace_text)
+
         self.hide()
         return "break"
     
-    def set_active_items(self, completions: list[Completion], term: str):
+    def lsp_set_active_items(self, completions: list[Completion], term: str):
         while len(self.active_items) > len(completions):
             i = self.active_items.pop()
             i.grid_forget()
@@ -83,6 +87,23 @@ class AutoComplete(Toplevel):
         
         print(f"  | (active: {len(self.active_items)} / expected: {len(completions)})",  "SUCCESS" if len(self.active_items) == len(completions) else "FAILURE")
     
+    def set_active_items(self, words: list[str], term: str):
+        while len(self.active_items) > len(words):
+            i = self.active_items.pop()
+            i.grid_forget()
+            self.menu_items.append(i)
+        
+        while len(self.active_items) < len(words):
+            i = self.menu_items.pop()
+            i.grid(row=self.row, column=0, sticky="nsew")
+            self.active_items.append(i)
+            self.row += 1
+
+        # now we have the same amount of items as words
+        for i, word in enumerate(words):
+            self.active_items[i].set_data(word)
+            self.active_items[i].mark_term(term)
+        
     def clear(self) -> None:
         while self.active_items:
             i = self.active_items.pop()
@@ -94,8 +115,8 @@ class AutoComplete(Toplevel):
 
         term = tab.get_current_word()
         if completions:
-            self.set_active_items(completions[:10], term)
-            self.show(self)
+            self.lsp_set_active_items(completions[:10], term)
+            self.show(tab)
         else:
             self.hide()
     
@@ -104,19 +125,24 @@ class AutoComplete(Toplevel):
 
         term = tab.get_current_word()
 
+        # term is too short
+        if len(term) < 2:
+            self.hide()
+            return
+
         exact, starts, includes = [], [], []
-        for i in self.menu_items:
-            if i.get_text() == term:
-                exact.append(i)
-            elif i.get_text().startswith(term):
-                starts.append(i)
-            elif term in i.get_text():
-                includes.append(i)
+        for word in tab.words:
+            if word == term:
+                exact.append(word)
+            elif word.startswith(term):
+                starts.append(word)
+            elif term in word:
+                includes.append(word)
         new = list(chain(exact, starts, includes))
 
-        self.clear()
-        if any(new):
-            self.set_active_items(new[:10] if len(new) > 10 else new, term)
+        if new:
+            self.set_active_items(new[:10], term)
+            self.show(tab)
         else:
             self.hide()
 
