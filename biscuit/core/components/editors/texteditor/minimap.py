@@ -50,15 +50,15 @@ class Minimap(Frame):
         y = int(self.tw.index(tk.INSERT).split(".")[0]) * 2
         self.cw.create_line(0, y, 100, y, fill="#dc8c34", width=2, tag="cursor")
 
-    def drag_start(self, event):
+    def drag_start(self, event: tk.Event):
         self._drag_data["item"] = self.cw.find_closest(event.x, event.y)[0]
         self._drag_data["y"] = event.y
 
-    def drag_stop(self, event):
+    def drag_stop(self, event: tk.Event):
         self._drag_data["item"] = None
         self._drag_data["y"] = 0
 
-    def drag(self, event):
+    def drag(self, event: tk.Event):
         item = self._drag_data["item"]
         if item != 1:
             return

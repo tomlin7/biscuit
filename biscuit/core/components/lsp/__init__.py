@@ -2,11 +2,8 @@ from __future__ import annotations
 
 import os
 import typing
-from pathlib import Path
 
 import sansio_lsp_client as lsp
-
-from biscuit.core.components.lsp.utils import encode_position
 
 from .client import LangServerClient
 
@@ -46,7 +43,7 @@ class LanguageServerManager:
     def request_goto_definition(self, tab: Text) -> str:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
-                instance.request_jump_to_definition(tab)
+                instance.request_go_to_definition(tab)
 
     def request_hover(self, tab: Text) -> str | None:
         for instance in list(self.existing.values()):

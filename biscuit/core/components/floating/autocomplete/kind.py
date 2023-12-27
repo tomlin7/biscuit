@@ -1,10 +1,16 @@
-import tkinter as tk
+from __future__ import annotations
+
+import typing
+
+if typing.TYPE_CHECKING:
+    from .item import CompletionItem
+    from biscuit.core.components.floating.autocomplete.kinds import Kinds
 
 from biscuit.core.components.utils import Label
 
 
 class Kind(Label):
-    def __init__(self, master, kinds, kind="text", *args, **kwargs) -> None:
+    def __init__(self, master: CompletionItem, kinds: Kinds, kind: str="text", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base = master.base

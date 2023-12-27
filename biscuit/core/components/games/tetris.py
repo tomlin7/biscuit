@@ -1,10 +1,10 @@
 __author__ = "cid0rz"
 
 
-import tkinter as tk
-from tkinter import messagebox
 import random
+import tkinter as tk
 from collections import Counter
+from tkinter import messagebox
 
 from .game import BaseGame
 
@@ -103,7 +103,7 @@ class Tetris(BaseGame):
         self.lines_cleared.append(lines)
         self.total_lines += lines
 
-    def handle_events(self, event):
+    def handle_events(self, event: tk.Event):
         if event.keysym in ("Left", "a"):
             self.falling_piece.move(-1, 0)
         if event.keysym in ("Right", "d"):

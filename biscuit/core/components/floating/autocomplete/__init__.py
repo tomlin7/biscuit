@@ -1,15 +1,17 @@
 from __future__ import annotations
 
+import re
 import tkinter as tk
 import typing
 from itertools import chain
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.editors.texteditor import Text
+    from biscuit.core.components.lsp.data import Completion, Completions
 
 from biscuit.core.components.utils import Toplevel
 
-from .item import Completion
+from .item import CompletionItem
 from .kinds import Kinds
 
 
@@ -20,28 +22,125 @@ class AutoComplete(Toplevel):
         self.withdraw()
         self.overrideredirect(True)
         self.wm_attributes("-topmost", True)
-        self.grid_columnconfigure(0, weight=1)
-        
-        self.active = False
         self.kinds = Kinds(self)
-        self.menu_items: list[Completion] = []
-        self.active_items: list[Completion] = []
-        self.row = 0
+        
+        self.lsp_mode = False
         self.latest_tab = None
+        self.active = False
         self.selected = 0
+        self.row = 0
 
-    def add_item(self, text, kind=None):
-        new_item = Completion(self, text, kind=kind)
-        new_item.grid(row=self.row, sticky=tk.EW)
+        self.menu_items: list[CompletionItem] = [CompletionItem(self) for _ in range(10)]
+        self.active_items: list[CompletionItem] = []
 
-        self.menu_items.append(new_item)
-        self.row += 1
+        self.row = 1
 
-    def remove_item(self, item: Completion):
-        self.menu_items
-        item.grid_forget()
-        self.menu_items.remove(item)
-        self.row -= 1
+    def refresh_geometry(self, tab: Text):
+        self.update_idletasks()
+        self.geometry("+{}+{}".format(*tab.cursor_screen_location()))
+
+    def show(self, tab: Text):
+        self.latest_tab = tab 
+        self.active = True
+        self.update_idletasks()
+        self.deiconify()
+
+    def hide(self, *_):
+        self.active = False
+        self.withdraw()
+        self.reset()
+
+    def reset(self):
+        self.reset_selection()
+    
+    def choose(self, tab: Text=None, this=None):
+        if not self.active_items:
+            return
+        
+        tab = tab or self.latest_tab
+        
+        this = this or self.active_items[self.selected]
+        if self.lsp_mode:
+            tab.replace(this.replace_start, this.replace_end, this.replace_text)
+        else:
+            tab.replace_current_word(this.replace_text)
+
+        self.hide()
+        return "break"
+    
+    def lsp_set_active_items(self, completions: list[Completion], term: str):
+        while len(self.active_items) > len(completions):
+            i = self.active_items.pop()
+            i.grid_forget()
+            self.menu_items.append(i)
+        
+        while len(self.active_items) < len(completions):
+            i = self.menu_items.pop()
+            i.grid(row=self.row, column=0, sticky="nsew")
+            self.active_items.append(i)
+            self.row += 1
+
+        # now we have the same amount of items as completions
+        for i, completion in enumerate(completions):
+            self.active_items[i].lsp_set_data(completion, term)
+    
+    def set_active_items(self, words: list[str], term: str):
+        while len(self.active_items) > len(words):
+            i = self.active_items.pop()
+            i.grid_forget()
+            self.menu_items.append(i)
+        
+        while len(self.active_items) < len(words):
+            i = self.menu_items.pop()
+            i.grid(row=self.row, column=0, sticky="nsew")
+            self.active_items.append(i)
+            self.row += 1
+
+        # now we have the same amount of items as words
+        for i, word in enumerate(words):
+            self.active_items[i].set_data(word, term)
+        
+    def clear(self) -> None:
+        while self.active_items:
+            i = self.active_items.pop()
+            i.grid_forget()
+            self.menu_items.append(i)
+
+    def lsp_update_completions(self, tab: Text, completions: Completions) -> None:
+        self.refresh_geometry(tab)
+
+        term = tab.get_current_word()
+        if completions:
+            self.lsp_set_active_items(completions[:10], term)
+            self.show(tab)
+        else:
+            self.hide()
+    
+    def update_completions(self, tab: Text):
+        self.refresh_geometry(tab)
+
+        term = tab.get_current_word()
+
+        # term is too short
+        if len(term) < 2:
+            self.hide()
+            return
+
+        exact, starts, includes = [], [], []
+        for word in tab.words:
+            if word == term:
+                exact.append(word)
+            elif word.startswith(term):
+                starts.append(word)
+            elif term in word:
+                includes.append(word)
+        new = list(chain(exact, starts, includes))
+
+        if new:
+            self.set_active_items(new[:10], term)
+            self.show(tab)
+        else:
+            self.hide()
 
     def select(self, delta):
         self.selected += delta
@@ -60,92 +159,7 @@ class AutoComplete(Toplevel):
             i.deselect()
         if self.selected < len(self.active_items):
             self.active_items[self.selected].select()
-
-    def get_items_text(self):
-        return [i.get_text() for i in self.menu_items]
-
-    def hide_all_items(self):
-        for i in self.menu_items:
-            i.grid_forget()
-
-        self.active_items = []
-        self.row = 1
-
-    def show_items(self, items, term):
-        self.active_items = items
-        for i in items:
-            i.grid(row=self.row, sticky=tk.EW)
-            self.row += 1
-
-            i.mark_term(term)
-
-        self.reset_selection()
-
-    def refresh_geometry(self, tab):
-        self.update_idletasks()
-        self.geometry("+{}+{}".format(*tab.cursor_screen_location()))
-
-    def show(self, tab, pos):
-        self.latest_tab = tab 
-        self.active = True
-        self.update_idletasks()
-        self.geometry("+{}+{}".format(*pos))
-        self.deiconify()
-
-    def hide(self, *_):
-        self.active = False
-        self.withdraw()
-        self.reset()
-
-    def reset(self):
-        self.reset_selection()
-
-    def choose(self, tab=None, this=None):
-        if not self.active_items:
-            return
-        
-        tab = tab or self.latest_tab
-        this = this or self.active_items[self.selected]
-        tab.confirm_autocomplete(this.get_text())
-        
-        self.hide()
-        return "break"
-
-    def lsp_update_completions(self, tab: Text, completions):
-        self.refresh_geometry(tab)
-        self.update_idletasks()
-
-        term = tab.get_current_word()
-        self.hide_all_items()
-
-        if any(completions):
-            self.show_items(completions[:10] if len(completions) > 10 else completions, term)
-        else:
-            self.hide()
     
-    def update_completions(self, tab):
-        self.refresh_geometry(tab)
-        self.update_idletasks()
-        self.update_all_words(tab)
-
-        term = tab.get_current_word()
-
-        exact, starts, includes = [], [], []
-        for i in self.menu_items:
-            if i.get_text() == term:
-                exact.append(i)
-            elif i.get_text().startswith(term):
-                starts.append(i)
-            elif term in i.get_text():
-                includes.append(i)
-        new = list(chain(exact, starts, includes))
-
-        self.hide_all_items()
-        if any(new):
-            self.show_items(new[:10] if len(new) > 10 else new, term)
-        else:
-            self.hide()
-
     def move_up(self, *_):
         if self.active:
             self.select(-1)
@@ -155,12 +169,3 @@ class AutoComplete(Toplevel):
         if self.active:
             self.select(1)
             return "break"
-
-    def update_all_words(self, tab):
-        for word in tab.words:
-            if word not in self.get_items_text():
-                self.add_item(word, "word")
-
-        for word in self.menu_items:
-            if word.get_text() not in tab.words and word.get_kind() == "word":
-                self.remove_item(word)

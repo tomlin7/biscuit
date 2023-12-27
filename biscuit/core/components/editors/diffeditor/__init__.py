@@ -116,7 +116,7 @@ class DiffEditor(BaseEditor):
 
                     # TODO this check is done to make sure if this is a line with modifications
                     # and not a newly added line, but this is not done right.
-                    self.right.newline("removal")
+                    self.right.insert_newline("removal")
 
                 case "+":
                     # line is only on the right
@@ -125,7 +125,7 @@ class DiffEditor(BaseEditor):
 
                     # TODO this check is done to make sure if this is a line with modifications
                     # and not a newly added line, but this is not done right.
-                    self.left.newline("addition")
+                    self.left.insert_newline("addition")
 
                 case "?":
                     # the above line has changes
@@ -155,11 +155,11 @@ class DiffEditor(BaseEditor):
         if lhs_line_count > rhs_line_count:
             extra_newlines = lhs_line_count - rhs_line_count
             for _ in range(extra_newlines):
-                self.right.newline()
+                self.right.insert_newline()
         elif rhs_line_count > lhs_line_count:
             extra_newlines = rhs_line_count - lhs_line_count
             for _ in range(extra_newlines):
-                self.left.newline()
+                self.left.insert_newline()
 
         self.left.set_active(False)
 

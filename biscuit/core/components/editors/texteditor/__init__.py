@@ -87,18 +87,18 @@ class TextEditor(BaseEditor):
 
     def cut(self, *_):
         if self.editable:
-            self.text.cut()
+            self.text.event_cut()
 
     def copy(self, *_):
         if self.editable:
-            self.text.copy()
+            self.text.event_copy()
 
     def goto(self, line):
         self.text.goto(line)
 
     def paste(self, *_):
         if self.editable:
-            self.text.paste()
+            self.text.event_paste()
 
     def write(self, *args, **kwargs):
         if self.editable:

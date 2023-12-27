@@ -30,14 +30,14 @@ class Breakpoint(tk.Label):
         else:
             self.config(fg="#1e1e1e")
 
-    def on_click(self, event):
+    def on_click(self, event: tk.Event):
         self.active = not self.active
         self.redraw()
 
-    def on_enter(self, event):
+    def on_enter(self, event: tk.Event):
         self.hovered = True
         self.redraw()
 
-    def on_leave(self, event):
+    def on_leave(self, event: tk.Event):
         self.hovered = False
         self.redraw()

@@ -1,5 +1,7 @@
 import tkinter as tk
+
 import git
+
 
 def get_commit_data(file_path):
     repo = git.Repo(search_parent_directories=True)
@@ -7,7 +9,7 @@ def get_commit_data(file_path):
     commit_data = [commit.message.strip() for commit in commits]
     return commit_data
 
-def handle_codelens_click(event):
+def handle_codelens_click(event: tk.Event):
     line_number = int(event.widget.tag_names(tk.CURRENT)[0])  # Extract the line number from the tag
     commit_data = get_commit_data("your_file_path_here")
     if len(commit_data) >= line_number:

@@ -24,7 +24,7 @@ from .texteditor import TextEditor
 
 
 def get_editor(base, path: str=None, exists: bool=True, path2: str=None, 
-               diff: bool=False, language: str=None) -> BaseEditor:
+               diff: bool=False, language: str=None) -> TextEditor | DiffEditor | MDEditor | ImageViewer:
     "picks the right editor for the given values"
     if diff:
         return DiffEditor(base, path, exists, language=language)

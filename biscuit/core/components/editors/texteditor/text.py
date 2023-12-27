@@ -9,7 +9,6 @@ import typing
 from collections import deque
 
 from biscuit.core.components.lsp.data import Underlines
-from biscuit.core.settings import res
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.lsp.data import Completions
@@ -23,10 +22,11 @@ from .hoverpopup import HoverPopup
 
 class Text(BaseText):
     """Improved Text widget"""
+
     def __init__(self, master: TextEditor, path: str=None, exists: bool=True, minimalist: bool=False, language: str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
+        self.master = master
         self.path = path
-        self.data = None
         self.encoding = 'utf-8'
         self.eol = "CRLF"
         self.exists = exists
@@ -51,8 +51,6 @@ class Text(BaseText):
         self.config_bindings()
         self.configure(wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
-        self.update_words()
-
         # modified event
         self.clear_modified_flag()
         self._user_edit = True
@@ -62,7 +60,6 @@ class Text(BaseText):
         self._last_cursor: list[str, str] = [None, None]
         self.hover_after = None
         self.last_hovered = None
-
 
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
@@ -80,10 +77,10 @@ class Text(BaseText):
         self.bind("<Control-Left>", lambda _: self.handle_ctrl_hmovement())
         self.bind("<Control-Right>", lambda _: self.handle_ctrl_hmovement(True))
 
-        self.bind("<Shift-Alt-Up>", self.copy_line_up)
-        self.bind("<Shift-Alt-Down>", self.copy_line_down)
-        self.bind("<Alt-Up>", self.move_line_up)
-        self.bind("<Alt-Down>", self.move_line_down)
+        self.bind("<Shift-Alt-Up>", self.event_copy_line_up)
+        self.bind("<Shift-Alt-Down>", self.event_copy_line_down)
+        self.bind("<Alt-Up>", self.event_move_line_up)
+        self.bind("<Alt-Down>", self.event_move_line_down)
 
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
@@ -117,14 +114,15 @@ class Text(BaseText):
         self.bind("<Control-Button-1>", self.request_goto_definition)
         self.bind("<Control-period>", lambda _: self.base.languageservermanager.request_completions(self))
 
-    def key_release_events(self, event):
+    def key_release_events(self, event: tk.Event):
         self._user_edit = True
         
         match event.keysym.lower():
             case "button-2" | "backspace" | "escape" | "control_l" | "control_r" | "space" | "return" | "tab":
                 self.hide_autocomplete()
             case "right" | "left":
-                self.update_completions()
+                if self.autocomplete.active:
+                    self.update_completions()
 
             case "up" | "down" | "shift_l" | "shift_r" | "alt_l" | "alt_r" | "meta_l" | "meta_r" | "shift" | "alt" | "meta":
                 pass
@@ -135,9 +133,14 @@ class Text(BaseText):
             case ":" | ",":
                 self.insert(tk.INSERT, " ")
             case _:
-                self.show_autocomplete(event)
+                if self.lsp:
+                    self.request_autocomplete(event)
+                else:
+                    self.show_autocomplete(event)
+
+        self.update_words_list()
     
-    def complete_pair(self, e):
+    def complete_pair(self, e: tk.Event):
         end = {"(": ")", "{": "}", "[": "]", "\"": "\"", "'": "'"}.get(e.char)
         
         # if there is selection, surround the selection with character
@@ -160,20 +163,50 @@ class Text(BaseText):
 
         self.autocomplete.hide()
 
-    def show_autocomplete(self, event):
+    def show_autocomplete(self, event: tk.Event):
         if (self.minimalist or not self.current_word or event.keysym in ["Down", "Up"]): return
-
-        if self.lsp:
-            if self.current_word.strip() == ".":
-                self.base.languageservermanager.request_completions(self)
-            return
-
         if not self.current_word.strip().isalpha() or self.current_word.strip() != ".":
             self.hide_autocomplete()
 
-        pos = self.cursor_screen_location()             
-        self.autocomplete.show(self, pos)
+        self.autocomplete.show(self)
         self.update_completions()
+        
+    def update_words_list(self, *_):
+        if self.minimalist or self.lsp:
+            return
+
+        try:
+            content = self.get(1.0, "insert-1c wordstart-1c") + " " + self.get("insert+1c", tk.END)
+            self.words = list(set(re.findall(r"\w+", content)))
+        except:
+            pass
+
+    def update_completions(self):
+        if self.minimalist:
+            return
+
+        if self.lsp:
+            self.request_autocomplete(self)
+        else:
+            self.autocomplete.update_completions(self)
+            
+    def replace_current_word(self, new_word):
+        if self.current_word.startswith("\n"):
+            self.delete("insert-1c wordstart+1c", "insert")
+        else:
+            self.delete("insert-1c wordstart", "insert")
+        self.insert("insert", new_word)
+
+    def cursor_screen_location(self):
+        pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
+
+        cursor = tk.INSERT
+        bbox = self.bbox(cursor)
+        if not bbox:
+            return (0, 0)
+
+        bbx_x, bbx_y, _, bbx_h = bbox
+        return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
     def enter_key_events(self, *_):
         if not self.minimalist and self.autocomplete.active:        
@@ -264,7 +297,7 @@ class Text(BaseText):
     def is_identifier(self, text: str) -> str:
         return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
 
-    def clear_hyperlink(self, e):
+    def clear_hyperlink(self, e: tk.Event):
         self.tag_remove("hyperlink", 1.0, tk.END)
 
     def underline_for_jump(self, _):
@@ -278,7 +311,7 @@ class Text(BaseText):
 
         return word
 
-    def request_goto_definition(self, e):
+    def request_goto_definition(self, e: tk.Event):
         self.underline_for_jump(e)
         if self.underline_for_jump(e):
             self.base.languageservermanager.request_goto_definition(self)
@@ -303,26 +336,29 @@ class Text(BaseText):
         # self.after(500, ...)
         self.base.languageservermanager.request_hover(self)
 
-    def lsp_show_autocomplete(self, response: Completions) -> None:
-        print("LSP <<< ", response)
+    def request_autocomplete(self, _):
+        if self.minimalist:
+            return
+        
+        if self.current_word.isalpha() or self.current_word.strip() == ".":
+            return self.base.languageservermanager.request_completions(self)
+        
+        self.hide_autocomplete()
 
-        # self.autocomplete.update_completions(self, response)
-        # self.autocomplete.show(self, self.cursor_screen_location())
+    def lsp_show_autocomplete(self, response: Completions) -> None:
+        self.autocomplete.lsp_update_completions(self, response.completions)
     
-    def lsp_diagnostics(self, response: Underlines) -> None:
-        print("LSP <<< ", response)
+    def lsp_diagnostics(self, response: Underlines) -> None: ...
+        # print("LSP <<< ", response)
         # self.highlighter.highlight_diagnostics(response)
     
-    def lsp_goto_definition(self, response: list[dict]) -> None:
-        print("LSP <<< ", response)
+    def lsp_goto_definition(self, response: list[dict]) -> None: ...
+        # print("LSP <<< ", response)
         # self.base.languageservermanager.goto_definition(response)
     
-    def lsp_hover(self, response: dict) -> None:
-        print("LSP <<< ", response)
+    def lsp_hover(self, response: dict) -> None: ...
+        # print("LSP <<< ", response)
         # self.base.languageservermanager.hover(response)
-
-    def get_all_text_ac(self, *args):
-        return self.get(1.0, "insert-1c wordstart-1c") + self.get("insert+1c", tk.END)
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
@@ -332,41 +368,6 @@ class Text(BaseText):
 
     def get_current_word(self):
         return self.current_word.strip()
-
-    def update_words(self, *_):
-        if self.minimalist:
-            return
-
-        self.words = list(set(re.findall(r"\w+", self.get_all_text_ac())))
-        if not self.lsp:
-            self.after(1000, self.update_words)
-
-    def update_completions(self):
-        if self.minimalist or self.lsp:
-            return
-
-        self.autocomplete.update_completions(self)
-
-    def confirm_autocomplete(self, text):
-        self.replace_current_word(text)
-
-    def replace_current_word(self, new_word):
-        if self.current_word.startswith("\n"):
-            self.delete("insert-1c wordstart+1c", "insert")
-        else:
-            self.delete("insert-1c wordstart", "insert")
-        self.insert("insert", new_word)
-
-    def cursor_screen_location(self):
-        pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
-
-        cursor = tk.INSERT
-        bbox = self.bbox(cursor)
-        if not bbox:
-            return (0, 0)
-
-        bbx_x, bbx_y, _, bbx_h = bbox
-        return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
     def move_to_next_word(self):
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
@@ -466,6 +467,25 @@ class Text(BaseText):
 
         self.base.statusbar.on_open_file(self)
 
+    def load_text(self, text: str=""):
+        self.clear()
+
+        def write_with_buffer():
+            buffer = deque(maxlen=self.buffer_size)
+            for char in text:
+                buffer.append(char)
+                if len(buffer) >= self.buffer_size:
+                    chunk = ''.join(buffer)
+                    self.write(chunk)
+                    self.update()
+                    buffer.clear()
+            if buffer:
+                chunk = ''.join(buffer)
+                self.write(chunk)
+                self.update()
+
+        threading.Thread(target=write_with_buffer).start()
+
     def read_file(self, file):
         while True:
             try:
@@ -526,65 +546,47 @@ class Text(BaseText):
         self.hide_autocomplete()
         self.base.languageservermanager.tab_closed(self)
         
-    def copy(self, *_):
+    def event_copy(self, *_):
         self.event_generate("<<Copy>>")
 
-    def cut(self, *_):
+    def event_cut(self, *_):
         self.event_generate("<<Cut>>")
 
-    def paste(self, *_):
+    def event_paste(self, *_):
         self.event_generate("<<Paste>>")
 
-    def set_data(self, data):
-        self.data = data
+    def clear(self) -> None:
+        """Clear the entire text content"""
 
-    def clear_insert(self, text=None):
-        self.clear()
-
-        def write_with_buffer():
-            buffer = deque(maxlen=self.buffer_size)
-            for char in text:
-                buffer.append(char)
-                if len(buffer) >= self.buffer_size:
-                    chunk = ''.join(buffer)
-                    self.write(chunk)
-                    self.update()
-                    buffer.clear()
-            if buffer:
-                chunk = ''.join(buffer)
-                self.write(chunk)
-                self.update()
-
-        threading.Thread(target=write_with_buffer).start()
-
-    def clear(self):
         self.delete(1.0, tk.END)
 
-    def goto(self, line):
+    def goto(self, line: str) -> None:
+        """Moves cursor to the line passed as argument"""
+
         line = f"{line}.0"
         self.move_cursor(line)
         self.see(line)
 
-    def copy_line_up(self, *_) -> None:
+    def event_copy_line_up(self, *_) -> None:
         "copies the line cursor is in below"
         line = self.line
         next_line = str(int(line) + 1)
         self.insert(f"{next_line}.0", self.get(f"{line}.0", f"{line}.end"))
         return "break"
 
-    def copy_line_down(self, *_) -> None:
+    def event_copy_line_down(self, *_) -> None:
         "copies the line cursor is in above"
         line = self.line
         prev_line = str(int(line) - 1)
         self.insert(f"{prev_line}.end", self.get(f"{line}.0", f"{line}.end"))
         return "break"
 
-    def delete_line(self, *_) -> None:
+    def event_delete_line(self, *_) -> None:
         "deletes the line cursor is in"
         line = self.line
         self.delete(f"{line}.0", f"{line}.end")
 
-    def move_line_up(self, *_) -> None:
+    def event_move_line_up(self, *_) -> None:
         "moves the line cursor is in below"
         line = self.line
         next_line = str(int(line) + 1)
@@ -592,7 +594,7 @@ class Text(BaseText):
         self.delete(f"{line}.0", f"{line}.end")
         return "break"
 
-    def move_line_down(self, *_) -> None:
+    def event_move_line_down(self, *_) -> None:
         "moves the line cursor is in above"
         line = self.line
         prev_line = str(int(line) - 1)
@@ -600,14 +602,14 @@ class Text(BaseText):
         self.delete(f"{line}.0", f"{line}.end")
         return "break"
 
-    def duplicate_selection(self, *_) -> None:
+    def event_duplicate_selection(self, *_) -> None:
         "duplicates the current selection"
-        self.insert(tk.INSERT, self.get_selected_text())
+        self.insert(tk.INSERT, self.selection)
 
     def write(self, text, *args):
         self.insert(tk.END, text, *args)
 
-    def newline(self, *args):
+    def insert_newline(self, *args):
         self.write("\n", *args)
     
     def get_begin(self):
@@ -619,15 +621,13 @@ class Text(BaseText):
     def get_all_text(self):
         return self.get(1.0, tk.END)
 
-    def get_selected_text(self):
+    @property
+    def selection(self) -> str:
         try:
             return self.selection_get()
         except Exception:
             return ""
-
-    def get_selected_count(self):
-        return len(self.get_selected_text())
-
+        
     @property
     def line(self):
         return int(self.index(tk.INSERT).split('.')[0])
@@ -786,12 +786,16 @@ class Text(BaseText):
         cmd = (self._orig,) + args
         result = self.tk.call(cmd)
 
-        if self.lsp and (args[0] in ("insert", "replace", "delete") or args[0:3] == "insert"):
-            self.base.languageservermanager.content_changed(self)
-        
-        if (args[0] in ("insert", "replace", "delete") or args[0:3] == ("mark", "set", "insert")):
+        if (args[0] in ("insert", "replace", "delete")):
             self.event_generate("<<Change>>", when="tail")
+            if self.lsp:
+                self.base.languageservermanager.content_changed(self)
 
+        # if "insert" in args[0:3] and "get" in args[0:3]:
+        #     print(temp)
+        
+        elif args[0:3] == ("mark", "set", "insert"):
+            self.event_generate("<<Change>>", when="tail")
         elif (args[0:2] == ("xview", "moveto") or args[0:2] == ("yview", "moveto") or 
               args[0:2] == ("xview", "scroll") or args[0:2] == ("yview", "scroll")):
             self.event_generate("<<Scroll>>", when="tail")
