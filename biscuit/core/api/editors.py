@@ -11,7 +11,7 @@ class Editors(Endpoint):
         self.PanelView = PanelView
         self.SidebarView = SidebarView
 
-        self.theme = self.__base.theme
+        self.theme = self.base.theme
 
     def add_editor(self, editor) -> None:
         self.__editors.add_editor(editor)

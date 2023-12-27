@@ -4,8 +4,8 @@ from .endpoint import Endpoint
 class Notifications(Endpoint):
     def __init__(self, *a) -> None:
         super().__init__(*a)        
-        self.__notifications = self._Endpoint__base.notifications
+        self.notifications = self.base.notifications
 
-        self.info = self.show = self.__notifications.info
-        self.warn = self.warning = self.__notifications.warning
-        self.error = self.__notifications.error
+        self.info = self.show = self.notifications.info
+        self.warn = self.warning = self.notifications.warning
+        self.error = self.notifications.error

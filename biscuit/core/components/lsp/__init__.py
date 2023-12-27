@@ -19,7 +19,10 @@ class LanguageServerManager:
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None
 
-        self.kill_thread = None    
+        self.kill_thread = None
+
+    def register_langserver(self, language, command) -> None:
+        self.langservers[language] = command
     
     def tab_opened(self, tab: Text) -> None:
         self.latest = self.request_client_instance(tab)

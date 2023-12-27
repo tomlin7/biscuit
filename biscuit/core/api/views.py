@@ -6,35 +6,35 @@ from .endpoint import Endpoint
 class Views(Endpoint):
     def __init__(self, *a) -> None:
         super().__init__(*a)        
-        self.__sidebar = self._Endpoint__base.sidebar
-        self.__panel = self._Endpoint__base.sidebar
+        self.sidebar = self.base.sidebar
+        self.panel = self.base.sidebar
 
         self.PanelView = PanelView
         self.SidebarView = SidebarView
 
     def add_sidebar_view(self, view):
-        self.__sidebar.add_view(view)
+        self.sidebar.add_view(view)
 
     def add_panel_view(self, view):
-        self.__panel.add_view(view)
+        self.panel.add_view(view)
 
     @property
     def explorer(self):
-        return self.__sidebar.explorer
+        return self.sidebar.explorer
 
     @property
     def search(self):
-        return self.__sidebar.search
+        return self.sidebar.search
 
     @property
     def source_control(self):
-        return self.__sidebar.source_control
+        return self.sidebar.source_control
 
     @property
     def logger(self):
-        return self.__panel.logger
+        return self.panel.logger
 
     @property
     def terminal(self):
-        return self.__panel.terminal
+        return self.panel.terminal
 

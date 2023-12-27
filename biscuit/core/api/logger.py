@@ -4,8 +4,8 @@ from .endpoint import Endpoint
 class Logger(Endpoint):
     def __init__(self, *a) -> None:
         super().__init__(*a)
-        self.__logger = self._Endpoint__base.logger
+        self.logger = self.base.logger
 
-        self.log = self.info = self.show = self.__logger.info
-        self.warn = self.warning = self.__logger.warning
-        self.error = self.__logger.error
+        self.log = self.info = self.show = self.logger.info
+        self.warn = self.warning = self.logger.warning
+        self.error = self.logger.error

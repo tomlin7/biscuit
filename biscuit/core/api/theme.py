@@ -6,12 +6,10 @@ from .endpoint import Endpoint
 class Theme(Endpoint):
     def __init__(self, *a) -> None:
         super().__init__(*a)        
-        self.__sidebar = self._Endpoint__base.sidebar
-        self.__panel = self._Endpoint__base.sidebar
-
         self.dark = Dark
         self.light = Light
 
+    # TODO themes registration, api
     def register_theme(self, theme):
         ...
 

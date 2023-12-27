@@ -256,8 +256,12 @@ class App(tk.Tk):
         self.editorsmanager.open_game(name)
 
     def register_game(self, game: BaseGame) -> None:
+        #TODO game manager class
         register_game(game)
         self.settings.gen_actionset()
+    
+    def register_langserver(self, language: str, command: str) -> None:
+        self.languageservermanager.register_langserver(language, command)
 
     def update_git(self) -> None:
         self.statusbar.update_git_info()
