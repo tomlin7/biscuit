@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import tkinter as tk
 import typing
 from itertools import chain
@@ -31,29 +32,6 @@ class AutoComplete(Toplevel):
         self.menu_items: list[CompletionItem] = [CompletionItem(self) for _ in range(10)]
         self.active_items: list[CompletionItem] = []
 
-    def select(self, delta):
-        self.selected += delta
-        if self.selected > len(self.active_items) - 1:
-            self.selected = 0
-        elif self.selected < 0:
-            self.selected = len(self.active_items) - 1
-        self.refresh_selected()
-
-    def reset_selection(self):
-        self.selected = 0
-        self.refresh_selected()
-
-    def refresh_selected(self):
-        for i in self.active_items:
-            i.deselect()
-        if self.selected < len(self.active_items):
-            self.active_items[self.selected].select()
-
-    def clear(self):
-        for i in self.menu_items:
-            i.grid_forget()
-
-        self.active_items = []
         self.row = 1
 
     def refresh_geometry(self, tab: Text):
@@ -74,6 +52,18 @@ class AutoComplete(Toplevel):
     def reset(self):
         self.reset_selection()
     
+    def choose(self, tab: Text=None, this=None):
+        if not self.active_items:
+            return
+        
+        tab = tab or self.latest_tab
+        
+        this = this or self.active_items[self.selected]
+        tab.replace(this.replace_start, this.replace_end, this.replace_text)
+        
+        self.hide()
+        return "break"
+    
     def set_active_items(self, completions: list[Completion], term: str):
         while len(self.active_items) > len(completions):
             i = self.active_items.pop()
@@ -90,26 +80,22 @@ class AutoComplete(Toplevel):
         for i, completion in enumerate(completions):
             self.active_items[i].lsp_set_data(completion)
             self.active_items[i].mark_term(term)
+        
         print(f"  | (active: {len(self.active_items)} / expected: {len(completions)})",  "SUCCESS" if len(self.active_items) == len(completions) else "FAILURE")
+    
+    def clear(self) -> None:
+        while self.active_items:
+            i = self.active_items.pop()
+            i.grid_forget()
+            self.menu_items.append(i)
 
-    def choose(self, tab: Text=None, this=None):
-        if not self.active_items:
-            return
-        
-        tab = tab or self.latest_tab
-        
-        this = this or self.active_items[self.selected]
-        tab.replace(this.replace_start, this.replace_end, this.replace_text)
-        
-        self.hide()
-        return "break"
-
-    def lsp_update_completions(self, tab: Text, completions: Completions):
+    def lsp_update_completions(self, tab: Text, completions: Completions) -> None:
         self.refresh_geometry(tab)
 
         term = tab.get_current_word()
         if completions:
             self.set_active_items(completions[:10], term)
+            self.show(self)
         else:
             self.hide()
     
@@ -134,6 +120,24 @@ class AutoComplete(Toplevel):
         else:
             self.hide()
 
+    def select(self, delta):
+        self.selected += delta
+        if self.selected > len(self.active_items) - 1:
+            self.selected = 0
+        elif self.selected < 0:
+            self.selected = len(self.active_items) - 1
+        self.refresh_selected()
+
+    def reset_selection(self):
+        self.selected = 0
+        self.refresh_selected()
+
+    def refresh_selected(self):
+        for i in self.active_items:
+            i.deselect()
+        if self.selected < len(self.active_items):
+            self.active_items[self.selected].select()
+    
     def move_up(self, *_):
         if self.active:
             self.select(-1)

@@ -63,13 +63,33 @@ class CompletionItem(Frame):
         self.textw.insert(tk.END, self.display_text)
         self.textw.config(state=tk.DISABLED)
 
+    def clear_data(self):
+        self.display_text = ""
+        self.replace_start = ""
+        self.replace_end = ""
+        self.replace_text = ""
+        self.filter_text = ""
+        self.documentation = ""
+
+        self.textw.config(state=tk.NORMAL)
+        self.textw.delete(1.0, tk.END)
+        self.textw.config(state=tk.DISABLED)
+    
+    def clear_mark(self):
+        self.textw.tag_remove("term", 1.0, tk.END)
+
     def mark_term(self, term: str):
+        self.clear_mark()
+
+        # Prioritize case sensitive match
         start_pos = self.display_text.find(term)
         if start_pos == -1:
-            return
+            # Case insensitive match
+            start_pos = self.display_text.lower().find(term)
+            if start_pos == -1:
+                return
         
         end_pos = start_pos + len(term)
-        self.textw.tag_remove("term", 1.0, tk.END)
         self.textw.tag_add("term", f"1.{start_pos}", f"1.{end_pos}")
 
     def on_click(self, *_):

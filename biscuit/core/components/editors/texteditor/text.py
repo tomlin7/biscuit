@@ -121,7 +121,8 @@ class Text(BaseText):
             case "button-2" | "backspace" | "escape" | "control_l" | "control_r" | "space" | "return" | "tab":
                 self.hide_autocomplete()
             case "right" | "left":
-                self.update_completions()
+                if self.autocomplete.active:
+                    self.update_completions()
 
             case "up" | "down" | "shift_l" | "shift_r" | "alt_l" | "alt_r" | "meta_l" | "meta_r" | "shift" | "alt" | "meta":
                 pass
@@ -164,12 +165,6 @@ class Text(BaseText):
 
     def show_autocomplete(self, event: tk.Event):
         if (self.minimalist or not self.current_word or event.keysym in ["Down", "Up"]): return
-
-        if self.lsp:
-            if self.current_word.strip() == ".":
-                self.base.languageservermanager.request_completions(self)
-            return
-
         if not self.current_word.strip().isalpha() or self.current_word.strip() != ".":
             self.hide_autocomplete()
 
@@ -306,18 +301,17 @@ class Text(BaseText):
         self.base.languageservermanager.request_hover(self)
 
     def request_autocomplete(self, _):
-        index = self.index(tk.CURRENT)
-        word = self.get(index + " wordstart", index + " wordend").strip()
-        if not word or not self.is_identifier(word):
+        if self.minimalist:
             return
-
-        self.base.languageservermanager.request_completions(self)
+        
+        if self.current_word.isalpha() or self.current_word.strip() == ".":
+            return self.base.languageservermanager.request_completions(self)
+        
+        self.hide_autocomplete()
 
     def lsp_show_autocomplete(self, response: Completions) -> None:
         print("✅ -> ", len(response.completions))
-        
         self.autocomplete.lsp_update_completions(self, response.completions)
-        self.autocomplete.show(self)
     
     def lsp_diagnostics(self, response: Underlines) -> None: ...
         # print("LSP <<< ", response)
@@ -356,11 +350,14 @@ class Text(BaseText):
         if self.minimalist:
             return
 
-        if not self.lsp:
-            self.autocomplete.update_completions(self)
-        else:
-            self.base.languageservermanager.request_completions(self)
+        # if not self.lsp:
+        #     self.autocomplete.update_completions(self)
+        # else:
 
+        # note: this is also called when right/left arrow keys are pressed, to update completions ofc
+        #TODO when the cursor goes out of word, and moves to next word, hide autocomplete
+        self.request_autocomplete(self)
+        
     def replace_current_word(self, new_word):
         if self.current_word.startswith("\n"):
             self.delete("insert-1c wordstart+1c", "insert")
