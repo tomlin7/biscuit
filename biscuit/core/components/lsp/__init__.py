@@ -15,7 +15,7 @@ class LanguageServerManager:
     def __init__(self, base: App):
         self.base = base
         
-        self.langservers: dict[str, str] = {'Python': 'pylsp', }
+        self.langservers: dict[str, str] = {}
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None
 
