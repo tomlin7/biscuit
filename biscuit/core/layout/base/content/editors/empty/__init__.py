@@ -36,7 +36,7 @@ class Empty(Frame):
         self.bind("<Double-Button-1>", self.base.events.new_file)
 
     # TODO drop to open
-    # def drop(self, event):
+    # def drop(self, event: tk.Event):
     #     if os.path.isfile(event.data):
     #         self.base.open_editor(event.data, exists=True)
     #     elif os.path.isdir(event.data):

@@ -2,11 +2,8 @@ from __future__ import annotations
 
 import os
 import typing
-from pathlib import Path
 
 import sansio_lsp_client as lsp
-
-from biscuit.core.components.lsp.utils import encode_position
 
 from .client import LangServerClient
 

@@ -31,13 +31,13 @@ class MoonlanderGame:
         self.update()
         self.window.mainloop()
 
-    def thrust(self, event):
+    def thrust(self, event: tk.Event):
         if self.fuel > 0 and not self.game_over:
             self.velocity -= THRUST_POWER
             self.fuel -= 1
             self.canvas.move(self.fuel_gauge, 1, 0)
 
-    def restart_game(self, event):
+    def restart_game(self, event: tk.Event):
         self.fuel = 100.0
         self.velocity = 0.0
         self.position = 100.0

@@ -2,9 +2,10 @@ __author__ = "cid0rz"
 
 
 import random
+import tkinter as tk
 
-from .game import BaseGame
 from ..utils import Canvas
+from .game import BaseGame
 
 WIDTH = 800
 HEIGHT = 400
@@ -74,7 +75,7 @@ class Pong(BaseGame):
 
         self.canvas.after(15, self.update_game)
 
-    def move_paddle(self, event):
+    def move_paddle(self, event: tk.Event):
         # Move paddle 1
         if event.keysym == 'w':
             self.paddle1_dy = -PADDLE_SPEED
@@ -87,7 +88,7 @@ class Pong(BaseGame):
         elif event.keysym == 'Down':
             self.paddle2_dy = PADDLE_SPEED
 
-    def stop_paddle(self, event):
+    def stop_paddle(self, event: tk.Event):
         # Stop paddle 1
         if event.keysym in ['w', 's']:
             self.paddle1_dy = 0

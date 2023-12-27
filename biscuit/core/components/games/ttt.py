@@ -1,7 +1,9 @@
 import random
+import tkinter as tk
+
+from biscuit.core.components.utils import Button, Canvas
 
 from .game import BaseGame
-from biscuit.core.components.utils import Button, Canvas
 
 
 class TicTacToe(BaseGame):
@@ -47,7 +49,7 @@ class TicTacToe(BaseGame):
                     self.canvas.create_oval(x + 15, y + 15, x + 85, y + 85, width=10, outline=self.computer)
 
 
-    def handle_click(self, event):
+    def handle_click(self, event: tk.Event):
         row = event.y // 100
         col = event.x // 100
 

@@ -21,13 +21,13 @@ def set_appwindow():
         root.after(10, root.wm_deiconify)
         hasstyle=True
 
-def get_pos(event):
+def get_pos(event: tk.Event):
     global xwin
     global ywin
     xwin = event.x
     ywin = event.y
 
-def move_window(event):
+def move_window(event: tk.Event):
     global previousPosition
     root.geometry(f'+{event.x_root - xwin}+{event.y_root - ywin}')
     previousPosition = [root.winfo_x(), root.winfo_y()]

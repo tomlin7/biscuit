@@ -1,8 +1,9 @@
-import tkinter as tk
 import random
+import tkinter as tk
+
+from biscuit.core.components.utils import Button, Canvas
 
 from .game import BaseGame
-from biscuit.core.components.utils import Canvas, Button
 
 # Constants
 WIDTH = 600
@@ -104,7 +105,7 @@ class Snake(BaseGame):
         y = random.randint(1, RAND_POS - 1) * DOT_SIZE
         return x, y
 
-    def on_key_press(self, e):
+    def on_key_press(self, e: tk.Event):
         key = e.keysym
 
         if self.in_game:

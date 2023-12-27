@@ -9,7 +9,6 @@ import typing
 from collections import deque
 
 from biscuit.core.components.lsp.data import Underlines
-from biscuit.core.settings import res
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.lsp.data import Completions
@@ -115,7 +114,7 @@ class Text(BaseText):
         self.bind("<Control-Button-1>", self.request_goto_definition)
         self.bind("<Control-period>", lambda _: self.base.languageservermanager.request_completions(self))
 
-    def key_release_events(self, event):
+    def key_release_events(self, event: tk.Event):
         self._user_edit = True
         
         match event.keysym.lower():
@@ -133,13 +132,14 @@ class Text(BaseText):
             case ":" | ",":
                 self.insert(tk.INSERT, " ")
             case _:
-                self.show_autocomplete(event)
+                if self.lsp:
+                    self.request_autocomplete(event)
+                else:
+                    self.show_autocomplete(event)
 
-        if not self.lsp:
-            self.update_words()
-            print("updated words")
+        self.update_words_list()
     
-    def complete_pair(self, e):
+    def complete_pair(self, e: tk.Event):
         end = {"(": ")", "{": "}", "[": "]", "\"": "\"", "'": "'"}.get(e.char)
         
         # if there is selection, surround the selection with character
@@ -162,7 +162,7 @@ class Text(BaseText):
 
         self.autocomplete.hide()
 
-    def show_autocomplete(self, event):
+    def show_autocomplete(self, event: tk.Event):
         if (self.minimalist or not self.current_word or event.keysym in ["Down", "Up"]): return
 
         if self.lsp:
@@ -266,7 +266,7 @@ class Text(BaseText):
     def is_identifier(self, text: str) -> str:
         return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
 
-    def clear_hyperlink(self, e):
+    def clear_hyperlink(self, e: tk.Event):
         self.tag_remove("hyperlink", 1.0, tk.END)
 
     def underline_for_jump(self, _):
@@ -280,7 +280,7 @@ class Text(BaseText):
 
         return word
 
-    def request_goto_definition(self, e):
+    def request_goto_definition(self, e: tk.Event):
         self.underline_for_jump(e)
         if self.underline_for_jump(e):
             self.base.languageservermanager.request_goto_definition(self)
@@ -305,11 +305,19 @@ class Text(BaseText):
         # self.after(500, ...)
         self.base.languageservermanager.request_hover(self)
 
-    def lsp_show_autocomplete(self, response: Completions) -> None:
-        print(response)
+    def request_autocomplete(self, _):
+        index = self.index(tk.CURRENT)
+        word = self.get(index + " wordstart", index + " wordend").strip()
+        if not word or not self.is_identifier(word):
+            return
 
-        # self.autocomplete.update_completions(self, response)
-        # self.autocomplete.show(self, self.cursor_screen_location())
+        self.base.languageservermanager.request_completions(self)
+
+    def lsp_show_autocomplete(self, response: Completions) -> None:
+        print("✅ -> ", len(response.completions))
+        
+        self.autocomplete.lsp_update_completions(self, response.completions)
+        self.autocomplete.show(self)
     
     def lsp_diagnostics(self, response: Underlines) -> None: ...
         # print("LSP <<< ", response)
@@ -335,8 +343,8 @@ class Text(BaseText):
     def get_current_word(self):
         return self.current_word.strip()
 
-    def update_words(self, *_):
-        if self.minimalist:
+    def update_words_list(self, *_):
+        if self.minimalist or self.lsp:
             return
 
         try:
@@ -345,13 +353,13 @@ class Text(BaseText):
             pass
 
     def update_completions(self):
-        if self.minimalist or self.lsp:
+        if self.minimalist:
             return
 
-        self.autocomplete.update_completions(self)
-
-    def confirm_autocomplete(self, text):
-        self.replace_current_word(text)
+        if not self.lsp:
+            self.autocomplete.update_completions(self)
+        else:
+            self.base.languageservermanager.request_completions(self)
 
     def replace_current_word(self, new_word):
         if self.current_word.startswith("\n"):
@@ -469,7 +477,7 @@ class Text(BaseText):
 
         self.base.statusbar.on_open_file(self)
 
-    def load_text(self, text=None):
+    def load_text(self, text: str=""):
         self.clear()
 
         def write_with_buffer():
