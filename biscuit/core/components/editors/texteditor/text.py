@@ -346,7 +346,6 @@ class Text(BaseText):
         self.hide_autocomplete()
 
     def lsp_show_autocomplete(self, response: Completions) -> None:
-        print("✅ -> ", len(response.completions))
         self.autocomplete.lsp_update_completions(self, response.completions)
     
     def lsp_diagnostics(self, response: Underlines) -> None: ...

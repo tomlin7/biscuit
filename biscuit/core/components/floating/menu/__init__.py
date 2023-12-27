@@ -53,6 +53,7 @@ class Menu(Toplevel):
     def hide(self, *args):
         self.active = False
         self.withdraw()
+        self.master.event_generate("<<Hide>>")
 
     def add_item(self, text, command=lambda *_:...):
         new_item = MenuItem(self.container, text, command)

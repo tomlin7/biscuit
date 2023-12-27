@@ -82,10 +82,7 @@ class AutoComplete(Toplevel):
 
         # now we have the same amount of items as completions
         for i, completion in enumerate(completions):
-            self.active_items[i].lsp_set_data(completion)
-            self.active_items[i].mark_term(term)
-        
-        print(f"  | (active: {len(self.active_items)} / expected: {len(completions)})",  "SUCCESS" if len(self.active_items) == len(completions) else "FAILURE")
+            self.active_items[i].lsp_set_data(completion, term)
     
     def set_active_items(self, words: list[str], term: str):
         while len(self.active_items) > len(words):
@@ -101,8 +98,7 @@ class AutoComplete(Toplevel):
 
         # now we have the same amount of items as words
         for i, word in enumerate(words):
-            self.active_items[i].set_data(word)
-            self.active_items[i].mark_term(term)
+            self.active_items[i].set_data(word, term)
         
     def clear(self) -> None:
         while self.active_items:

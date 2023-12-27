@@ -35,7 +35,7 @@ class Menubar(Frame):
     """
     def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.menus = []
+        self.menus: list[MenubarItem] = []
         self.events = self.base.events
 
         # make this custom titlebar for windows
@@ -90,7 +90,7 @@ class Menubar(Frame):
     def add_menu(self, text: str) -> Menu:
         new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.menus.append(new_menu.menu)
+        self.menus.append(new_menu)
 
         return new_menu.menu
 
@@ -167,13 +167,15 @@ class Menubar(Frame):
         for menu in self.menus:
             menu.hide()
 
-    def switch_menu(self, menu: Menu) -> None:
+    def switch_menu(self, item: MenubarItem) -> None:
         active = False
         for i in self.menus:
-            if i.active:
+            if i.menu.active:
                 active = True
-            if i != menu:
-                i.hide()
+            if i.menu != item.menu:
+                i.menu.hide()
+                i.deselect()
 
         if active:
-            menu.show()
+            item.select()
+            item.menu.show()

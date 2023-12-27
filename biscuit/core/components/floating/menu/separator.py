@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 class Separator(tk.Label):
-    def __init__(self, master, length=18, *args, **kwargs) -> None:
+    def __init__(self, master, length=20, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.base = master.base
         self.master = master

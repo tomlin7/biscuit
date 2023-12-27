@@ -114,7 +114,6 @@ class LangServerClient:
                 triggerKind=lsp.CompletionTriggerKind.INVOKED
             ),
         )
-        print(f">>>> COMPLETION REQUESTED {tab.path}({self.language})")
 
         self._autocomplete_req[req_id] = (tab, request)
     
