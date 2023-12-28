@@ -8,9 +8,8 @@ import tkinter as tk
 import typing
 from collections import deque
 
-from biscuit.core.components.lsp.data import Underlines
-
 if typing.TYPE_CHECKING:
+    from biscuit.core.components.lsp.data import Jump, Underlines
     from biscuit.core.components.lsp.data import Completions
     from . import TextEditor
 
@@ -109,7 +108,7 @@ class Text(BaseText):
         self.bind("<Unmap>", self.event_unmapped)
         self.bind("<Destroy>", self.event_destroy)
         self.bind("<Motion>", self.request_hover)
-        self.bind("<Control-KeyRelease>", self.clear_hyperlink)
+        self.bind_all("<Control-KeyRelease>", self.clear_hyperlink)
         self.bind("<Control-Motion>", self.underline_for_jump)
         self.bind("<Control-Button-1>", self.request_goto_definition)
         self.bind("<Control-period>", lambda _: self.base.languageservermanager.request_completions(self))
@@ -298,6 +297,7 @@ class Text(BaseText):
         return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
 
     def clear_hyperlink(self, e: tk.Event):
+        print("cleared")
         self.tag_remove("hyperlink", 1.0, tk.END)
 
     def underline_for_jump(self, _):
@@ -352,9 +352,8 @@ class Text(BaseText):
         # print("LSP <<< ", response)
         # self.highlighter.highlight_diagnostics(response)
     
-    def lsp_goto_definition(self, response: list[dict]) -> None: ...
-        # print("LSP <<< ", response)
-        # self.base.languageservermanager.goto_definition(response)
+    def lsp_goto_definition(self, response: Jump) -> None:
+        print("LSP <<< ", response)
     
     def lsp_hover(self, response: dict) -> None: ...
         # print("LSP <<< ", response)
