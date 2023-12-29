@@ -109,6 +109,7 @@ class AutoComplete(Toplevel):
 
         term = tab.get_current_word()
         if completions:
+            self.lsp_mode = True
             self.lsp_set_active_items(completions[:10], term)
             self.show(tab)
         else:
@@ -135,6 +136,7 @@ class AutoComplete(Toplevel):
         new = list(chain(exact, starts, includes))
 
         if new:
+            self.lsp_mode = False
             self.set_active_items(new[:10], term)
             self.show(tab)
         else:
