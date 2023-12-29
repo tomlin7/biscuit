@@ -520,6 +520,6 @@ codicons = {
 }
 
 
-def get_codicon(name):
+def get_codicon(name: str):
     if name in codicons:
         return codicons.get(name, name)

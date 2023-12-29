@@ -297,7 +297,6 @@ class Text(BaseText):
         return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
 
     def clear_hyperlink(self, e: tk.Event):
-        print("cleared")
         self.tag_remove("hyperlink", 1.0, tk.END)
 
     def underline_for_jump(self, _):

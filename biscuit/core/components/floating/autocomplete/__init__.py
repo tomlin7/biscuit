@@ -12,7 +12,6 @@ if typing.TYPE_CHECKING:
 from biscuit.core.components.utils import Toplevel
 
 from .item import CompletionItem
-from .kinds import Kinds
 
 
 class AutoComplete(Toplevel):
@@ -22,7 +21,6 @@ class AutoComplete(Toplevel):
         self.withdraw()
         self.overrideredirect(True)
         self.wm_attributes("-topmost", True)
-        self.kinds = Kinds(self)
         
         self.lsp_mode = False
         self.latest_tab = None

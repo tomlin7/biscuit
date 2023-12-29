@@ -34,6 +34,7 @@ class Underlines:
 
 @dataclasses.dataclass
 class Completion:
+    kind: int
     display_text: str
     replace_start: str
     replace_end: str
@@ -68,4 +69,4 @@ class JumpLocationRange:
 
 @dataclasses.dataclass
 class Jump:
-    location_ranges: List[JumpLocationRange]
+    locations: List[JumpLocationRange]

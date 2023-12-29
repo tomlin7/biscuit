@@ -80,6 +80,15 @@ class Settings:
             family=self.config.font[0],
             size=self.config.font[1]
         )
+        self.font_bold = tk.font.Font(
+            family=self.config.font[0],
+            size=self.config.font[1],
+            weight="bold"
+        )
+        self.autocomplete_font = tk.font.Font(
+            family=self.config.font[0],
+            size=self.config.font[1] - 1
+        )
         self.uifont = tk.font.Font(
             family=self.config.uifont[0],
             size=self.config.uifont[1]

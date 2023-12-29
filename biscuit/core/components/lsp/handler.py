@@ -47,6 +47,7 @@ class EventHandler:
                     id=req.id,
                     completions=[
                         Completion(
+                            kind=item.kind,
                             display_text=item.label,
                             replace_start=tab.index(f"{req.cursor} - {prefix_len} chars"),
                             replace_end=req.cursor,
