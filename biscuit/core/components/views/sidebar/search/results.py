@@ -59,7 +59,7 @@ class Results(Frame):
         try: # Click on child item
             self.base.open_editor(self.treeview.item(item)["tags"][0])
             # TODO: Seems to only scroll part of the time
-            self.base.editorsmanager.active_editor.content.goto(int(self.treeview.item(item)["tags"][1]))
+            self.base.editorsmanager.active_editor.content.goto_line(int(self.treeview.item(item)["tags"][1]))
 
         except IndexError: # Click on parent item
             print("You clicked on a parent item")

@@ -35,11 +35,9 @@ class TextEditor(BaseEditor):
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
 
-        if self.exists:
-            self.text.load_file()
-
         self.text.bind("<<Change>>", self.on_change)
         self.text.bind("<<Scroll>>", self.on_scroll)
+
 
         self.on_scroll()
         if not self.minimalist:
@@ -93,8 +91,11 @@ class TextEditor(BaseEditor):
         if self.editable:
             self.text.event_copy()
 
-    def goto(self, line):
-        self.text.goto(line)
+    def goto(self, position):
+        self.text.goto(position)
+
+    def goto_line(self, line):
+        self.text.goto_line(line)
 
     def paste(self, *_):
         if self.editable:

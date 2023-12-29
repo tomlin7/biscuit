@@ -7,6 +7,7 @@ import threading
 import tkinter as tk
 import typing
 from collections import deque
+from turtle import goto
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.lsp.data import Jump, Underlines
@@ -32,11 +33,16 @@ class Text(BaseText):
         self.minimalist = minimalist
         self.language = language
 
+        self.ctrl_down = False
         self.buffer_size = 1000
         self.bom = True
         self.current_word = None
         self.words: list[str] = []
         self.lsp: bool = False
+
+        if self.exists:
+            self.load_file()
+            self.update_idletasks()
 
         self.hover_popup = HoverPopup(self)
         self.last_change = Change(None, None, None, None, None)
@@ -108,8 +114,8 @@ class Text(BaseText):
         self.bind("<Unmap>", self.event_unmapped)
         self.bind("<Destroy>", self.event_destroy)
         self.bind("<Motion>", self.request_hover)
-        self.bind_all("<Control-KeyRelease>", self.clear_hyperlink)
-        self.bind("<Control-Motion>", self.underline_for_jump)
+        self.bind("<Control-KeyPress>", lambda _: self.set_ctrl_key(True))
+        self.bind("<Control-KeyRelease>", lambda _: self.set_ctrl_key(False))
         self.bind("<Control-Button-1>", self.request_goto_definition)
         self.bind("<Control-period>", lambda _: self.base.languageservermanager.request_completions(self))
 
@@ -296,29 +302,26 @@ class Text(BaseText):
     def is_identifier(self, text: str) -> str:
         return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
 
-    def clear_hyperlink(self, e: tk.Event):
+    def set_ctrl_key(self, flag):
+        self.ctrl_down = flag
+    
+    def clear_goto_marks(self):
         self.tag_remove("hyperlink", 1.0, tk.END)
-
-    def underline_for_jump(self, _):
-        index = self.index(tk.CURRENT)
-        word = self.get(index + " wordstart", index + " wordend").strip()
-        if not word or not self.is_identifier(word):
-            return
-
-        self.tag_remove("hyperlink", 1.0, tk.END)
-        self.tag_add("hyperlink", index + " wordstart", index + " wordend")
-
-        return word
 
     def request_goto_definition(self, e: tk.Event):
-        self.underline_for_jump(e)
-        if self.underline_for_jump(e):
-            self.base.languageservermanager.request_goto_definition(self)
+        if not self.last_hovered:
+            return
+        self.base.languageservermanager.request_goto_definition(self)
     
     def request_hover(self, _):
         index = self.index(tk.CURRENT) # f"@{e.x},{e.y}"
-        word = self.get(index + " wordstart", index + " wordend").strip()
+        start, end = index + " wordstart", index + " wordend"
+        word = self.get(start, end).strip()
 
+        self.clear_goto_marks()
+        if self.ctrl_down:
+            self.tag_add("hyperlink", start, end)
+        
         if not word or not self.is_identifier(word):
             self.hover_popup.hide()
             self.last_hovered = None
@@ -328,11 +331,13 @@ class Text(BaseText):
             return
         self.last_hovered = word
         
+
         # TODO delayed hovers
         # if self.hover_after:
         #     self.after_cancel(self.hover_after)
         
         # self.after(500, ...)
+
         self.base.languageservermanager.request_hover(self)
 
     def request_autocomplete(self, _):
@@ -352,7 +357,10 @@ class Text(BaseText):
         # self.highlighter.highlight_diagnostics(response)
     
     def lsp_goto_definition(self, response: Jump) -> None:
-        print("LSP <<< ", response)
+        if len(response.locations) == 1:
+            return self.base.goto_location(response.locations[0].file_path, response.locations[0].start)
+        
+        print("[Not implemented] multiple locations found")
     
     def lsp_hover(self, response: dict) -> None: ...
         # print("LSP <<< ", response)
@@ -511,6 +519,8 @@ class Text(BaseText):
         except queue.Empty:
             # If the queue is empty, schedule the next check after a short delay
             self.master.after(100, self.process_queue)
+        
+        self.master.master.event_generate("<<FileLoaded>>", when="tail")
 
     def save_file(self, path=None):
         if path:
@@ -558,7 +568,13 @@ class Text(BaseText):
 
         self.delete(1.0, tk.END)
 
-    def goto(self, line: str) -> None:
+    def goto(self, position: str) -> None:
+        """Moves cursor to the position passed as argument"""
+
+        self.move_cursor(position)
+        self.see(position)
+    
+    def goto_line(self, line: str) -> None:
         """Moves cursor to the line passed as argument"""
 
         line = f"{line}.0"

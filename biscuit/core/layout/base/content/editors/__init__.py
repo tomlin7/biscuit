@@ -57,6 +57,10 @@ class EditorsPane(Frame):
         self.default_editors: List[Editor] = [Welcome(self)]
         self.actionset = ActionSet("Switch to active editors", "active:", [])
         self.base.palette.register_actionset(self.get_active_actionset)
+    
+    def is_open(self, path: str) -> bool:
+        "Checks if a editor is open"
+        return any(editor.path == path for editor in self.editors)
 
     def get_active_actionset(self) -> ActionSet:
         "Generates the active editors actionset"
@@ -72,12 +76,13 @@ class EditorsPane(Frame):
         for editor in editors:
             self.add_editor(editor)
 
-    def add_editor(self, editor: Union[Editor,BaseEditor]) -> None:
+    def add_editor(self, editor: Union[Editor,BaseEditor]) -> Editor | BaseEditor:
         "Appends a editor to list. Create a tab."
         self.editors.append(editor)
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
+        return editor
 
     def delete_all_editors(self) -> None:
         "Permanently delete all editors."
@@ -88,11 +93,11 @@ class EditorsPane(Frame):
         self.tabs.clear_all_tabs()
         self.editors.clear()
 
-    def open_editor(self, path: str, exists: bool) -> None:
+    def open_editor(self, path: str, exists: bool) -> Editor | BaseEditor:
         "open Editor with path and exists values passed"
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
-        self.add_editor(Editor(self, path, exists))
+        return self.add_editor(Editor(self, path, exists))
 
     def open_diff_editor(self, path: str, exists: bool) -> None:
         "open Editor with path and exists values passed"
@@ -124,11 +129,13 @@ class EditorsPane(Frame):
 
         editor.destroy()
 
-    def set_active_editor(self, editor: Editor) -> None:
+    def set_active_editor(self, editor: Editor) -> Editor:
         "set an existing editor to currently shown one"
         for tab in self.tabs.tabs:
             if tab.editor == editor:
                 self.tabs.set_active_tab(tab)
+        
+        return editor
 
     @property
     def active_editor(self) -> Editor:

@@ -4,6 +4,8 @@ import sys
 import threading
 import tkinter as tk
 
+from click import edit
+
 from .api import *
 from .components import *
 from .layout import *
@@ -240,11 +242,19 @@ class App(tk.Tk):
     def close_active_editor(self) -> None:
         self.editorsmanager.close_active_editor()
 
-    def open_editor(self, path: str, exists: bool=True) -> None:
+    def goto_location(self, path: str, position: int) -> None:
+        if self.editorsmanager.is_open(path):
+            self.editorsmanager.set_active_editor(path).content.goto(position)
+            return
+        
+        editor = self.open_editor(path, exists=True)
+        editor.bind("<<FileLoaded>>", lambda e: editor.content.goto(position))
+
+    def open_editor(self, path: str, exists: bool=True) -> Editor | BaseEditor:
         if exists and not os.path.isfile(path):
             return
 
-        self.editorsmanager.open_editor(path, exists)
+        return self.editorsmanager.open_editor(path, exists)
 
     def open_diff(self, path: str, kind: str) -> None:
         self.editorsmanager.open_diff_editor(path, kind) # type: ignore

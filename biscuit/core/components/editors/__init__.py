@@ -87,7 +87,7 @@ class Editor(Frame):
     def __init__(self, master, 
                  path: str=None, exists: bool=False, path2: str=None, diff: bool=False, language: str=None,
                  darkmode=True, config_file: str=None, showpath: bool=True, 
-                 preview_file_callback=None, open_file_callback=None,
+                 preview_file_callback=None, open_file_callback=None, 
                  *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
