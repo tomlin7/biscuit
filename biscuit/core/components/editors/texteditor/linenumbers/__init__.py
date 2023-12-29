@@ -34,6 +34,8 @@ class LineNumbers(Canvas):
 
     def redraw(self, *_):
         self.delete(tk.ALL)
+        if not self.text:
+            return
 
         i = self.text.index("@0,0")
         while True :

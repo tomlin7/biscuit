@@ -99,6 +99,7 @@ class Text(BaseText):
         self.bind("<parenleft>", self.complete_pair)
         self.bind("<apostrophe>", self.complete_pair)
         self.bind("<quotedbl>", self.complete_pair)
+        self.bind("<BackSpace>", self.remove_pair)
 
         if self.minimalist:
             return
@@ -159,6 +160,14 @@ class Text(BaseText):
         
         # if there is no selection, insert the character and move cursor inside the pair
         self.insert(tk.INSERT, e.char + end)
+        self.mark_set(tk.INSERT, "insert-1c")
+        return "break"
+
+    def remove_pair(self, e: tk.Event):
+        if not self.get("insert-1c", "insert+1c") in ["()", "[]", "{}", "\"\"", "''"]:
+            return
+        
+        self.delete("insert-1c", "insert+1c")
         self.mark_set(tk.INSERT, "insert-1c")
         return "break"
 
@@ -455,7 +464,7 @@ class Text(BaseText):
             return "UNKNOWN"
 
     def load_file(self):
-        if not self.path:
+        if not self.path or not self.exists:
             return
 
         try:
@@ -469,7 +478,8 @@ class Text(BaseText):
             self.process_queue()
         except Exception as e:
             print(e)
-            self.master.unsupported_file()
+            if self.exists:
+                self.master.unsupported_file()
 
         self.base.statusbar.on_open_file(self)
 
@@ -496,7 +506,8 @@ class Text(BaseText):
         while True:
             try:
                 chunk = file.read(self.buffer_size)
-            except UnicodeDecodeError:
+            except UnicodeDecodeError as e:
+                print(e)
                 self.master.unsupported_file()
                 return
             if not chunk:

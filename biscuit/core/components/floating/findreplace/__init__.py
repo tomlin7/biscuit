@@ -1,8 +1,14 @@
+from __future__ import annotations
+
 import re
 import tkinter as tk
+import typing
 
 from biscuit.core.components.utils import (ButtonsEntry, Frame, IconButton,
                                            Toplevel)
+
+if typing.TYPE_CHECKING:
+    from biscuit.core.components.utils.text import Text
 
 from .results import FindResults
 
@@ -49,7 +55,7 @@ class FindReplace(Toplevel):
         IconButton(buttons, "replace", self.replace).pack(side=tk.LEFT)
         IconButton(buttons, "replace-all", self.replace_all).pack(side=tk.LEFT)
 
-        self.term.trace("w", self.find)
+        self.term.trace_add("write", self.find)
 
         self.base.register_onfocus(self.lift)
         self.base.register_onupdate(self._follow_root)
@@ -63,7 +69,7 @@ class FindReplace(Toplevel):
         y = self.text.winfo_rooty()
         self.geometry(f"+{x}+{y}")
 
-    def show(self, text):
+    def show(self, text: Text):
         self.text = text
         self.active = True
         self.update_idletasks()
@@ -134,6 +140,12 @@ class FindReplace(Toplevel):
         self.results_count.show(len(self.matches))
 
     def find(self, *_):
+        """Find all matches and highlight them"""
+        try:
+            self.text = self.base.editorsmanager.active_editor.content.text
+        except AttributeError:
+            return
+
         self.get_find_input()
         self.lift()
 
@@ -193,7 +205,7 @@ class FindReplace(Toplevel):
 
     def is_on_match(self):
         """tells if the editor is currently pointing to a match"""
-        return self.current in self.matches()
+        return self.current in self.matches
 
     def replace_all(self, *_):
         """replaces all occurences of the string for the replace string, it will even replace partial words."""

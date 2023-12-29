@@ -47,7 +47,9 @@ class Highlighter:
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
-                self.base.notifications.info("No lexers are available for opened file type.")
+                if self.text.exists:
+                    self.base.notifications.info("Unrecognized file type opened")
+                
                 return
 
         self.tag_colors = self.base.theme.syntax
@@ -82,7 +84,8 @@ class Highlighter:
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
-                self.base.notifications.info("No lexers are available for opened file type.")
+                if self.text.exists:
+                    self.base.notifications.info("Unrecognized file type opened")
                 return
 
         threading.Thread(target=self.text.refresh, daemon=True).start()
