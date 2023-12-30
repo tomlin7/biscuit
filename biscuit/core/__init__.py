@@ -127,6 +127,7 @@ class App(tk.Tk):
         self.git = Git(self)
 
         self.autocomplete = AutoComplete(self)
+        self.definitions = Definitions(self)
         self.languageservermanager = LanguageServerManager(self)
 
     def setup_tk(self) -> None:

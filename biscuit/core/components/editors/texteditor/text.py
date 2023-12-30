@@ -48,6 +48,7 @@ class Text(BaseText):
         self.last_change = Change(None, None, None, None, None)
         self.highlighter = Highlighter(self, language)
         self.autocomplete = self.base.autocomplete
+        self.definitions = self.base.definitions
         self.base.statusbar.on_open_file(self)
 
         self.focus_set()
@@ -105,8 +106,8 @@ class Text(BaseText):
             return
 
         # autocomplete
-        self.bind("<FocusOut>", self.hide_autocomplete) 
-        self.bind("<Button-1>", self.hide_autocomplete)
+        self.bind("<FocusOut>", self.event_focus_out) 
+        self.bind("<Button-1>", self.event_mouse_down)
         self.bind("<Up>", self.autocomplete.move_up)
         self.bind("<Down>", self.autocomplete.move_down)
 
@@ -163,7 +164,7 @@ class Text(BaseText):
         self.mark_set(tk.INSERT, "insert-1c")
         return "break"
 
-    def remove_pair(self, e: tk.Event):
+    def remove_pair(self, _: tk.Event):
         if not self.get("insert-1c", "insert+1c") in ["()", "[]", "{}", "\"\"", "''"]:
             return
         
@@ -366,10 +367,13 @@ class Text(BaseText):
         # self.highlighter.highlight_diagnostics(response)
     
     def lsp_goto_definition(self, response: Jump) -> None:
+        if not response.locations:
+            return
+        
         if len(response.locations) == 1:
             return self.base.goto_location(response.locations[0].file_path, response.locations[0].start)
         
-        print("[Not implemented] multiple locations found")
+        self.definitions.show(self, response)
     
     def lsp_hover(self, response: dict) -> None: ...
         # print("LSP <<< ", response)
@@ -550,6 +554,12 @@ class Text(BaseText):
         except Exception:
             return
     
+    def event_focus_out(self, _: tk.Event):
+        self.hide_autocomplete()
+
+    def event_mouse_down(self, _: tk.Event):
+        self.hide_autocomplete()
+
     def event_mapped(self, _):
         self.lsp = self.base.languageservermanager.tab_opened(self)
     
@@ -809,7 +819,10 @@ class Text(BaseText):
             return
 
         cmd = (self._orig,) + args
-        result = self.tk.call(cmd)
+        try:
+            result = self.tk.call(cmd)
+        except Exception:
+            return
 
         if (args[0] in ("insert", "replace", "delete")):
             self.event_generate("<<Change>>", when="tail")

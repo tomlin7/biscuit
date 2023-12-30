@@ -6,7 +6,7 @@ from .scrollbar import Scrollbar
 
 
 class Tree(Frame):
-    def __init__(self, master, startpath=None, doubleclick=lambda _: None, singleclick=lambda _: None, *args, **kwargs) -> None:
+    def __init__(self, master, startpath=None, doubleclick=lambda _: None, singleclick=lambda _: None, columns=("fullpath", "type"), *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.utils.tree)
 
@@ -17,7 +17,7 @@ class Tree(Frame):
         self.doubleclick = doubleclick
         self.singleclick = singleclick
 
-        self.tree = ttk.Treeview(self, show="tree", columns=("fullpath", "type"), 
+        self.tree = ttk.Treeview(self, show="tree", columns=columns, 
                                  displaycolumns='', selectmode=tk.BROWSE)
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         
