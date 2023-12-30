@@ -140,7 +140,6 @@ class LangServerClient:
                 position=encode_position(tab.get_mouse_pos()),
             )
         )
-        print(f">>>> GOTODEF REQUESTED {tab.path} at {tab.index(tk.INSERT)}")
         self._gotodef_requests[request_id] = (tab, tab.get_mouse_pos())
 
     def send_change_events(self, tab: Text) -> None:

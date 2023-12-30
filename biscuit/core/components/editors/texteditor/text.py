@@ -10,14 +10,12 @@ from collections import deque
 from turtle import goto
 
 if typing.TYPE_CHECKING:
-    from biscuit.core.components.lsp.data import Jump, Underlines
-    from biscuit.core.components.lsp.data import Completions
+    from biscuit.core.components.lsp.data import HoverResponse, Jump, Underlines, Completions
     from . import TextEditor
 
 from ...utils import Text as BaseText
 from .changes import Change
 from .highlighter import Highlighter
-from .hoverpopup import HoverPopup
 
 
 class Text(BaseText):
@@ -44,11 +42,11 @@ class Text(BaseText):
             self.load_file()
             self.update_idletasks()
 
-        self.hover_popup = HoverPopup(self)
         self.last_change = Change(None, None, None, None, None)
         self.highlighter = Highlighter(self, language)
         self.autocomplete = self.base.autocomplete
         self.definitions = self.base.definitions
+        self.hover = self.base.hover
         self.base.statusbar.on_open_file(self)
 
         self.focus_set()
@@ -108,6 +106,7 @@ class Text(BaseText):
         # autocomplete
         self.bind("<FocusOut>", self.event_focus_out) 
         self.bind("<Button-1>", self.event_mouse_down)
+        self.bind("<Leave>", self.event_leave)
         self.bind("<Up>", self.autocomplete.move_up)
         self.bind("<Down>", self.autocomplete.move_down)
 
@@ -324,7 +323,7 @@ class Text(BaseText):
         self.base.languageservermanager.request_goto_definition(self)
     
     def request_hover(self, _):
-        index = self.index(tk.CURRENT) # f"@{e.x},{e.y}"
+        index = self.index(tk.CURRENT)
         start, end = index + " wordstart", index + " wordend"
         word = self.get(start, end).strip()
 
@@ -333,14 +332,15 @@ class Text(BaseText):
             self.tag_add("hyperlink", start, end)
         
         if not word or not self.is_identifier(word):
-            self.hover_popup.hide()
+            # TODO hide with a delay, cancel hiding if mouse is on top of hover popup
+
+            self.hover.hide()
             self.last_hovered = None
             return
-        
+            
         if self.last_hovered == word:
             return
         self.last_hovered = word
-        
 
         # TODO delayed hovers
         # if self.hover_after:
@@ -375,9 +375,11 @@ class Text(BaseText):
         
         self.definitions.show(self, response)
     
-    def lsp_hover(self, response: dict) -> None: ...
-        # print("LSP <<< ", response)
-        # self.base.languageservermanager.hover(response)
+    def lsp_hover(self, response: HoverResponse) -> None:
+        if not response.text:
+            return self.hover.hide()
+        
+        self.hover.show(self, response)
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
@@ -559,6 +561,10 @@ class Text(BaseText):
 
     def event_mouse_down(self, _: tk.Event):
         self.hide_autocomplete()
+        self.hover.hide()
+    
+    def event_leave(self, _: tk.Event):
+        self.hover.hide()
 
     def event_mapped(self, _):
         self.lsp = self.base.languageservermanager.tab_opened(self)

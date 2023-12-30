@@ -9,29 +9,23 @@ from tkinterweb import HtmlFrame
 from biscuit.core.components.utils import Frame, Scrollbar
 
 if typing.TYPE_CHECKING:
-    from ..texteditor import TextEditor
+    from . import Hover
 
 
-class Renderer(Frame):
-    def __init__(self, master, editor: TextEditor, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
-        self.editor = editor
-        self.config(bg=self.base.theme.border)
+class Renderer(HtmlFrame):
+    def __init__(self, master: Hover, *args, **kwargs) -> None:
+        super().__init__(master, messages_enabled=False, vertical_scrollbar=False, *args, **kwargs)
+        self.base = master.base
+        self.html.shrink(True)
 
-        self.text = HtmlFrame(self, messages_enabled=False, vertical_scrollbar=False)
-        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.text.yview, style="EditorScrollbar")
-
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.text.grid(row=0, column=1, sticky=tk.NSEW)
-        self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
-
-    def refresh(self, *_):
-        rawmd = self.editor.text.get_all_text()
-        self.text.load_html(mistune.html(rawmd))
+    def render_markdown(self, rawmd):
+        self.load_html(mistune.html(rawmd))
         t = self.base.theme
-        self.text.add_css(f"""
+        self.add_css(f"""
             BODY {{
+                margin-top: 0px;
+                margin-bottom: 0px;
+                padding: 0px;
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground};
             }}
@@ -47,3 +41,4 @@ class Renderer(Frame):
                 color: tcl(::tkhtml::if_disabled {t.primary_background}{t.primary_foreground_highlight});
             }}
             """)
+        self.update_idletasks()

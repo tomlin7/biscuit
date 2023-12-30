@@ -128,6 +128,7 @@ class App(tk.Tk):
 
         self.autocomplete = AutoComplete(self)
         self.definitions = Definitions(self)
+        self.hover = Hover(self)
         self.languageservermanager = LanguageServerManager(self)
 
     def setup_tk(self) -> None:

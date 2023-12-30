@@ -51,7 +51,7 @@ class Completions:
     completions: List[Completion]
 
 @dataclasses.dataclass
-class Hover:
+class HoverResponse:
     location: str
     text: str
 
