@@ -1,13 +1,20 @@
+from __future__ import annotations
+
 import tkinter as tk
+import typing
 
 from ...utils import Frame
 
+if typing.TYPE_CHECKING:
+    from . import TextEditor
+    from .text import Text
 
 #TODO update minimap when scrollbar is used
+#TODO rewrite the handling with proper yview (percentage change)
 class Minimap(Frame):
-    def __init__(self, master, textw, *args, **kwargs) -> None:
+    def __init__(self, master: TextEditor, text: Text=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.tw = textw
+        self.tw = text
         self.font = ("Arial", 1, "bold")
         self.config(highlightthickness=0, bg=self.base.theme.border)
 
@@ -31,14 +38,15 @@ class Minimap(Frame):
         self.cw.tag_bind("slider", "<ButtonRelease-1>", self.drag_stop)
         self.cw.tag_bind("slider", "<B1-Motion>", self.drag)
 
-        if textw:
-            self.redraw()
-
     def attach(self, textw):
         self.tw = textw
 
     def redraw(self):
         self.cw.delete("redrawn")
+
+        if not self.tw:
+            return
+        
         self.text = self.tw.get('1.0', tk.END)
         self.cw.create_text(5, 0, text=self.text, anchor=tk.NW, font=self.font, fill="grey", tag="redrawn")
 
@@ -47,6 +55,10 @@ class Minimap(Frame):
 
     def redraw_cursor(self):
         self.cw.delete("cursor")
+        
+        if not self.tw:
+            return
+        
         y = int(self.tw.index(tk.INSERT).split(".")[0]) * 2
         self.cw.create_line(0, y, 100, y, fill="#dc8c34", width=2, tag="cursor")
 

@@ -1,3 +1,5 @@
+import tkinter as tk
+
 from biscuit.core.components.utils import Toplevel
 from biscuit.core.components.views.sidebar.explorer import DirectoryTree
 
@@ -31,7 +33,7 @@ class PathView(Toplevel):
     def hide(self, *_) -> None:
         self.withdraw()
 
-    def show(self, e) -> None:
+    def show(self, e: tk.Event) -> None:
         self.update_idletasks()
         w = e.widget
         x = w.winfo_rootx()
@@ -42,4 +44,5 @@ class PathView(Toplevel):
         self.tree.change_path(w.path)
         self.geometry(f"+{x}+{y}")
         self.deiconify()
+        self.lift()
         self.focus_set()

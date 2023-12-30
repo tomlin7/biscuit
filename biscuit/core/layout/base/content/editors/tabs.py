@@ -18,7 +18,7 @@ class Tabs(Frame):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.layout.base.content.editors.bar)
 
-        self.tabs = []
+        self.tabs: list[Tab] = []
         self.active_tab = None
 
     def add_tab(self, editor: Editor) -> None:

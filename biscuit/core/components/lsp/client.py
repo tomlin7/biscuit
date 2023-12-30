@@ -42,7 +42,7 @@ class LangServerClient:
         # requests
         self._autocomplete_req: dict[int, tuple[Text, CompletionRequest]] = {}
         self._hover_requests: dict[int, tuple[Text, str]] = {}
-        self._gotodef_requests: dict[int, Text] = {}
+        self._gotodef_requests: dict[int, tuple[Text, str]] = {}
 
     def run_loop(self) -> None:
         if self.run():
@@ -127,8 +127,8 @@ class LangServerClient:
                 position=encode_position(tab.get_mouse_pos()),
             )
         )
-        print(f">>>> HOVER REQUESTED {tab.path} at {tab.get_cursor_pos()}")
-        self._hover_requests[request_id] = (tab, tab.get_cursor_pos())
+        print(f">>>> HOVER REQUESTED {tab.path} at {tab.get_mouse_pos()}")
+        self._hover_requests[request_id] = (tab, tab.get_mouse_pos())
     
     def request_go_to_definition(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
@@ -141,7 +141,7 @@ class LangServerClient:
             )
         )
         print(f">>>> GOTODEF REQUESTED {tab.path} at {tab.index(tk.INSERT)}")
-        self._gotodef_requests[request_id] = tab
+        self._gotodef_requests[request_id] = (tab, tab.get_mouse_pos())
 
     def send_change_events(self, tab: Text) -> None:
         if self.client.state != lsp.ClientState.NORMAL:

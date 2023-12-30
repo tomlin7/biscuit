@@ -57,7 +57,7 @@ class Statusbar(Frame):
 
         # line and column info
         self.lc_actionset = ActionSet(
-            "Goto line in active editor", ":", pinned=[["goto line: {}", lambda line=None: self.base.editorsmanager.active_editor.content.goto(int(line)) if line and line.isnumeric() else print("failed goto line", line)]]
+            "Goto line in active editor", ":", pinned=[["goto line: {}", lambda line=None: self.base.editorsmanager.active_editor.content.goto_line(int(line)) if line and line.isnumeric() else print("failed goto line", line)]]
         )
         self.base.palette.register_actionset(lambda: self.lc_actionset)
         self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'), description="Go to Line/Column")

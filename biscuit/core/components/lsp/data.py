@@ -69,4 +69,5 @@ class JumpLocationRange:
 
 @dataclasses.dataclass
 class Jump:
+    pos: str
     locations: List[JumpLocationRange]

@@ -217,6 +217,9 @@ class Editors(FrameThemeObject):
         self.autocomplete = FrameThemeObject(self)
         self.autocomplete.item = ThemeObject(self.autocomplete)
 
+        self.definitions = FrameThemeObject(self)
+        self.definitions.item = HighlightableThemeObject(self.definitions)
+
         self.diff = FrameThemeObject(self)
         self.diff.not_exist = "#d3d3d3"
         self.diff.removed = "#ffa3a3"

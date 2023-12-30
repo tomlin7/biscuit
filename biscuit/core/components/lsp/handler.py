@@ -97,11 +97,12 @@ class EventHandler:
             )
         
         if isinstance(e, lsp.Definition):
-            tab = self.master._gotodef_requests.pop(e.message_id)
+            tab, pos = self.master._gotodef_requests.pop(e.message_id)
 
             tab.lsp_goto_definition(
                 Jump(
-                    [
+                    pos=pos,
+                    locations=[
                         JumpLocationRange(
                             file_path=str(path),
                             start=decode_position(range.start),
