@@ -41,5 +41,5 @@ class ScrollableFrame(Frame):
         canvas_width = event.width
         self.canvas.itemconfig(self._content, width=canvas_width)
 
-    def add(self, content) -> None:
-        content.pack(in_=self.content)
+    def add(self, content, *args, **kwargs) -> None:
+        content.pack(in_=self.content, *args, **kwargs)
