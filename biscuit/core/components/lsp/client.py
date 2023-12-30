@@ -127,7 +127,6 @@ class LangServerClient:
                 position=encode_position(tab.get_mouse_pos()),
             )
         )
-        print(f">>>> HOVER REQUESTED {tab.path} at {tab.get_mouse_pos()}")
         self._hover_requests[request_id] = (tab, tab.get_mouse_pos())
     
     def request_go_to_definition(self, tab: Text) -> None:
