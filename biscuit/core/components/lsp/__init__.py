@@ -69,21 +69,22 @@ class LanguageServerManager:
         except KeyError:
             pass
 
-        print(f"<<-- Requesting <LSPC>({tab.language}) instance for --[{root_dir}] -->>")
+
+        self.base.statusbar.process_indicator.show()
+        self.base.logger.trace(f"<<-- Requesting <LSPC>({tab.language}) instance for --[{root_dir}] -->>")
 
         # TODO multithread this process
         langserver = LangServerClient(self, tab, root_dir)
         langserver.run_loop()
         self.existing[(root_dir, tab.language)] = langserver
 
-        
         return langserver
 
     def kill(self, instance: LangServerClient) -> None:
         if not self.existing.get((instance.root_dir, instance.language), None):
             return
         
-        print(f"-- Killing LSPC({instance.language}) PID: {instance.io.p.pid} --")
+        self.base.logger.trace(f"-- Killing LSPC({instance.language}) PID: {instance.io.p.pid} --")
         
         self.existing.pop((instance.root_dir, instance.language))
         if instance.client.state == lsp.ClientState.NORMAL:

@@ -6,7 +6,7 @@ import typing
 from biscuit.core.components.utils import Bubble, Frame, get_codicon
 
 if typing.TYPE_CHECKING:
-    from .. import Statusbar
+    from . import Statusbar
 
 
 class SBubble(Bubble):

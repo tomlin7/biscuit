@@ -18,8 +18,8 @@ from pygments.lexers._mapping import LEXERS
 from biscuit.core.components import ActionSet
 from biscuit.core.components.utils import Frame
 
-from .utils.button import SButton, TerminalButton
-from .utils.clock import SClock
+from .button import SButton, TerminalButton
+from .clock import SClock
 
 if typing.TYPE_CHECKING:
     from ...components.editors.texteditor import Text
@@ -54,6 +54,10 @@ class Statusbar(Frame):
         self.base.palette.register_actionset(lambda: self.git_actionset)
         self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show_prompt('branch:'), description="Checkout branch")
         self.branch.set_pack_data(side=tk.LEFT, padx=(2, 0))
+
+        # process indicator
+        self.process_indicator = SButton(self, text="setting up environment", icon="sync", description="enabling language extensions")
+        self.process_indicator.set_pack_data(side=tk.LEFT, padx=(2, 0))
 
         # line and column info
         self.lc_actionset = ActionSet(
