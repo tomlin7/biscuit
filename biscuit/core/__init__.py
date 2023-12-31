@@ -14,12 +14,17 @@ from .utils import *
 
 
 class App(tk.Tk):
-    """BISCUIT CORE
+    """
+    BISCUIT CORE
+    ------------
 
     Main point of having this class is to have a single point of access to all the important parts of the app. This class 
     holds reference to all the components of Biscuit and every class of biscuit have a reference back to this `base` class.
     i.e. `self.base` is the reference to this class from any other class of biscuit.
 
+    Usage
+    -----
+    
     Example: In order to access the open editor from the git:
 
         class Git:

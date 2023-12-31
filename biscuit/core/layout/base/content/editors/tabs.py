@@ -54,6 +54,7 @@ class Tabs(Frame):
         for tab in self.tabs:
             if tab != selected_tab:
                 tab.deselect()
+        self.master.master.refresh()
 
     def clear_all_tabs(self) -> None:
         for tab in self.tabs:

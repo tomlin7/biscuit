@@ -37,22 +37,26 @@ class Text(BaseText):
         self.current_word = None
         self.words: list[str] = []
         self.lsp: bool = False
+        
+        self.hover_after = None
+        self.last_hovered = None
 
         if self.exists:
             self.load_file()
             self.update_idletasks()
 
-        self.last_change = Change(None, None, None, None, None)
+        # self.last_change = Change(None, None, None, None, None)
         self.highlighter = Highlighter(self, language)
+        self.base.statusbar.on_open_file(self)
         self.autocomplete = self.base.autocomplete
         self.definitions = self.base.definitions
         self.hover = self.base.hover
-        self.base.statusbar.on_open_file(self)
 
         self.focus_set()
         self.config_tags()
         self.create_proxy()
         self.config_bindings()
+        self.update_idletasks()
         self.configure(wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
         # modified event
@@ -62,8 +66,6 @@ class Text(BaseText):
         self._edit_stack_index = -1
         self._last_selection: list[str, str] = [None, None]
         self._last_cursor: list[str, str] = [None, None]
-        self.hover_after = None
-        self.last_hovered = None
 
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
@@ -371,6 +373,9 @@ class Text(BaseText):
     
     def lsp_diagnostics(self, response: Underlines) -> None:
         print("LSP <<< ", response)
+        for i in response.underline_list:
+            # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
+            print(i.start, i.color, i.tooltip_text)
     
     def lsp_goto_definition(self, response: Jump) -> None:
         if not response.locations:

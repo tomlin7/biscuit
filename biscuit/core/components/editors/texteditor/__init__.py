@@ -42,9 +42,8 @@ class TextEditor(BaseEditor):
         self.text.bind("<<Change>>", self.on_change)
         self.text.bind("<<Scroll>>", self.on_scroll)
 
+        self.on_change()
         self.on_scroll()
-        if not self.minimalist:
-            self.minimap.redraw_cursor()
 
         if self.base.settings.config.auto_save_enabled:
             self.auto_save()

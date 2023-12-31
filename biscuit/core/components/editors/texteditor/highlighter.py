@@ -36,7 +36,6 @@ class Highlighter:
                 self.lexer = None
                 self.text.language = "Plain Text"
                 self.base.notifications.info("Selected lexer is not available.")
-                return
         else:
             try:
                 if os.path.basename(text.path).endswith("txt"):
@@ -50,8 +49,6 @@ class Highlighter:
                 if self.text.exists:
                     self.base.notifications.info("Unrecognized file type opened")
                 
-                return
-
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
 
@@ -65,30 +62,18 @@ class Highlighter:
         language : str
             Language to highlight
         """
-        if language:
-            try:
-                self.lexer = get_lexer_by_name(language)
-                self.text.language = self.lexer.name
-            except:
-                self.lexer = None
-                self.text.language = "Plain Text"
-                self.base.notifications.info("Selected lexer is not available.")
-                return
-        else:
-            try:
-                if os.path.basename(self.text.path).endswith("txt"):
-                    raise Exception()
-
-                self.lexer = get_lexer_for_filename(os.path.basename(self.text.path), encoding=self.text.encoding)
-                self.text.language = self.lexer.name
-            except:
-                self.lexer = None
-                self.text.language = "Plain Text"
-                if self.text.exists:
-                    self.base.notifications.info("Unrecognized file type opened")
-                return
-
-        threading.Thread(target=self.text.refresh, daemon=True).start()
+        try:
+            self.lexer = get_lexer_by_name(language)
+        except:
+            self.lexer = None
+            self.text.language = "Plain Text"
+            self.base.notifications.info("Selected lexer is not available.")
+            return
+        
+        self.text.language = self.lexer.name
+        self.tag_colors = self.base.theme.syntax
+        self.text.master.on_change()
+        self.base.statusbar.on_open_file(self.text)
 
     def setup_highlight_tags(self) -> None:
         "Setup the tags for highlighting"
@@ -97,7 +82,7 @@ class Highlighter:
 
     def highlight(self) -> None:
         "Highlights the text content of attached Editor instance"
-        if not self.lexer:
+        if not self.lexer or not self.tag_colors:
             return
 
         for token, _ in self.tag_colors.items():
