@@ -14,7 +14,7 @@ if typing.TYPE_CHECKING:
     from . import TextEditor
 
 from ...utils import Text as BaseText
-from .changes import Change
+from ...utils import textutils
 from .highlighter import Highlighter
 
 
@@ -32,7 +32,7 @@ class Text(BaseText):
         self.language = language
 
         self.ctrl_down = False
-        self.buffer_size = 1000
+        self.buffer_size = 4096
         self.bom = True
         self.current_word = None
         self.words: list[str] = []
@@ -463,32 +463,39 @@ class Text(BaseText):
         self.bom = False
         return 'utf-8'
 
-    def detect_eol(self, path):
-        with open(path, 'rb') as file:
-            chunk = file.read(1024)
+    def change_eol(self, eol):
+        self.eol = eol
+        self.base.statusbar.on_open_file(self)
 
-            # Check for '\r\n' to detect Windows-style EOL
-            if b'\r\n' in chunk:
-                return "CRLF"
+    def reopen(self, encoding=None, eol=None) -> None:
+        if not self.path or not self.exists:
+            return
 
-            # Check for '\n' to detect Unix-style EOL
-            if b'\n' in chunk:
-                return "LF"
+        self.clear()
+        try:
+            self.encoding = encoding or self.encoding
+            self.eol = eol or self.eol
 
-            # Check for '\r' to detect Mac-style EOL (older Macs)
-            if b'\r' in chunk:
-                return "CR"
-            return "UNKNOWN"
+            file = open(self.path, 'r', buffering=self.buffer_size, encoding=self.encoding, newline=self.eol)
+
+            self.queue = queue.Queue()
+            threading.Thread(target=self.read_file, args=(file,)).start()
+            self.process_queue()
+        except Exception as e:
+            print(e)
+            if self.exists:
+                self.master.unsupported_file()
+
+        self.base.statusbar.on_open_file(self)
 
     def load_file(self):
         if not self.path or not self.exists:
             return
 
         try:
-            encoding = self.detect_encoding(self.path)
-            self.detect_eol(self.path)
-            file = open(self.path, 'r', encoding=encoding)
-            self.encoding = encoding
+            self.encoding = self.detect_encoding(self.path)
+            file = open(self.path, 'r', encoding=self.encoding, buffering=self.buffer_size)
+            self.eol = textutils.get_default_newline()
 
             self.queue = queue.Queue()
             threading.Thread(target=self.read_file, args=(file,)).start()

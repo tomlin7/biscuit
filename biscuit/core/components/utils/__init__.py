@@ -19,6 +19,7 @@ from .scrollableframe import ScrollableFrame
 from .scrollbar import Scrollbar
 from .shortcut import Shortcut
 from .text import Text
+from .textutils import *
 from .toplevel import Toplevel
 from .tree import Tree
 

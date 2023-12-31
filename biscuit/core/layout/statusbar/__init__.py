@@ -16,7 +16,7 @@ import typing
 from pygments.lexers._mapping import LEXERS
 
 from biscuit.core.components import ActionSet
-from biscuit.core.components.utils import Frame
+from biscuit.core.components.utils import Frame, textutils
 
 from .button import SButton, TerminalButton
 from .clock import SClock
@@ -89,8 +89,7 @@ class Statusbar(Frame):
         # end of line
         self.eol_actionset = ActionSet(
             "Change End of Line sequence", "eol:",
-            [("LF", lambda e=None: print("eol lf", e)),
-            ("CRLF", lambda e=None: print("eol crlf", e))],
+            [(i.upper(), lambda _, val=nl: self.base.editorsmanager.active_editor.content.text.reopen(eol=val)) for i, nl in textutils.eol_map.items()],
         )
         self.base.palette.register_actionset(lambda: self.eol_actionset)
         self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'), description="Select End of Line sequence")
@@ -150,7 +149,7 @@ class Statusbar(Frame):
     def on_open_file(self, text: Text) -> None:
         self.file_type.change_text(text.language)
         self.encoding.change_text(text.encoding)
-        self.eol.change_text(text.eol)
+        self.eol.change_text(textutils.get_eol_label(text.eol))
 
     def update_notifications(self) -> None:
         if n := self.base.notifications.count:
