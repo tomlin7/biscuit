@@ -201,6 +201,7 @@ class Editors(FrameThemeObject):
         self.currentword = "#d5d5d5"
         self.found = "#dbe6c2"
         self.foundcurrent = "green"
+        self.hovertag = "#d5d5d5"
 
         self.text = ThemeObject(self)
         self.minimap = FrameThemeObject(self)

@@ -72,6 +72,7 @@ class Text(BaseText):
         self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
         self.tag_config("currentword", background=self.base.theme.editors.currentword)
         self.tag_config("currentline", background=self.base.theme.editors.currentline)
+        self.tag_config("hover", background=self.base.theme.editors.hovertag)
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
@@ -168,7 +169,6 @@ class Text(BaseText):
             return
         
         self.delete("insert-1c", "insert+1c")
-        self.mark_set(tk.INSERT, "insert-1c")
         return "break"
 
     def hide_autocomplete(self, *_):
@@ -309,7 +309,7 @@ class Text(BaseText):
         # self.base.languageservermanager.content_changed(self)
     
     def is_identifier(self, text: str) -> str:
-        return bool(re.match("^[a-zA-Z][a-zA-Z0-9_]*$", text))
+        return bool(re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", text))
 
     def set_ctrl_key(self, flag):
         self.ctrl_down = flag
@@ -318,29 +318,36 @@ class Text(BaseText):
         self.tag_remove("hyperlink", 1.0, tk.END)
 
     def request_goto_definition(self, e: tk.Event):
-        if not self.last_hovered:
+        if not self.lsp or not self.last_hovered:
             return
         self.base.languageservermanager.request_goto_definition(self)
     
     def request_hover(self, _):
+        if not self.lsp:
+            return
+        
         index = self.index(tk.CURRENT)
         start, end = index + " wordstart", index + " wordend"
         word = self.get(start, end).strip()
 
         self.clear_goto_marks()
-        if self.ctrl_down:
-            self.tag_add("hyperlink", start, end)
-        
-        if not word or not self.is_identifier(word):
-            # TODO hide with a delay, cancel hiding if mouse is on top of hover popup
 
+        if word and self.is_identifier(word):
+            if self.ctrl_down:
+                self.tag_add("hyperlink", start, end)
+        else:
+            # TODO hide with a delay, cancel hiding if mouse is on top of hover popup
             self.hover.hide()
+            self.tag_remove("hover", 1.0, tk.END)
             self.last_hovered = None
             return
             
         if self.last_hovered == word:
             return
+        
         self.last_hovered = word
+        self.tag_remove("hover", 1.0, tk.END)
+        self.tag_add("hover", start, end)
 
         # TODO delayed hovers
         # if self.hover_after:
@@ -351,10 +358,10 @@ class Text(BaseText):
         self.base.languageservermanager.request_hover(self)
 
     def request_autocomplete(self, _):
-        if self.minimalist:
+        if self.minimalist or not self.lsp:
             return
         
-        if self.current_word.isalpha() or self.current_word.strip() == ".":
+        if self.is_identifier(self.current_word) or self.current_word.strip() == ".":
             return self.base.languageservermanager.request_completions(self)
         
         self.hide_autocomplete()
@@ -362,9 +369,8 @@ class Text(BaseText):
     def lsp_show_autocomplete(self, response: Completions) -> None:
         self.autocomplete.lsp_update_completions(self, response.completions)
     
-    def lsp_diagnostics(self, response: Underlines) -> None: ...
-        # print("LSP <<< ", response)
-        # self.highlighter.highlight_diagnostics(response)
+    def lsp_diagnostics(self, response: Underlines) -> None:
+        print("LSP <<< ", response)
     
     def lsp_goto_definition(self, response: Jump) -> None:
         if not response.locations:

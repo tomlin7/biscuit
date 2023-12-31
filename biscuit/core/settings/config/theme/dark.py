@@ -41,6 +41,11 @@ class Dark(Theme):
 
         self.editors.currentword = "#474747"
         self.editors.found = "#203423"
+        self.editors.selection = "#264f78"
+        self.editors.currentword = "#27323c"
+        self.editors.found = "#623315"
+        self.editors.foundcurrent = "#9e86b7"
+        self.editors.hovertag = "#202b35"
 
         self.views.panel.logs.time = "#6a9955"
         self.views.panel.logs.caller = "#569cd6"
