@@ -20,6 +20,14 @@ class ExtensionsAPI:
     def __init__(self, base: App) -> None:
         self.base = base
 
+        self.menubar = self.base.menubar
+        self.statusbar = self.base.statusbar
+        self.sidebar = self.base.sidebar
+        self.panel = self.base.panel
+        self.editorsmanager = self.base.editorsmanager
+        self.terminalmanager = self.base.terminalmanager
+        self.languageservermanager = self.base.languageservermanager
+
         self.commands = Commands(self.base)
         self.logger = Logger(self.base)
         self.notifications = Notifications(self.base)

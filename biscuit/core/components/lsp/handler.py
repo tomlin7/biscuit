@@ -19,19 +19,26 @@ class EventHandler:
         self.base = master.base
 
     def process(self, e: lsp.Event) -> None:
-        # print(e.__class__.__name__.upper())
+        self.base.logger.trace(e.__class__.__name__.upper())
         
         if isinstance(e, lsp.Shutdown):
             self.client.exit()
             return
         
         if isinstance(e, lsp.LogMessage):
+            self.base.logger.rawlog(e.message, e.type)
+            return
+    
+        if isinstance(e, lsp.ShowMessage):
+            self.base.notifications.notify(e.message, e.type)
             return
         
         if isinstance(e, lsp.Initialized):
-            pprint.pprint(e.capabilities)
+            self.base.logger.info("Capabilities " + pprint.pformat(e.capabilities))
             for tab in self.master.tabs_opened:
                 self.master.open_tab(tab)
+
+            self.base.statusbar.process_indicator.hide()
             return
         
         if isinstance(e, lsp.Completion):
@@ -62,6 +69,7 @@ class EventHandler:
                     ],
                 ),
             )
+            return
         
         if isinstance(e, lsp.PublishDiagnostics):
             matching_tabs = [
@@ -89,12 +97,13 @@ class EventHandler:
                         )
                         for diagnostic in sorted(
                             e.diagnostics,
-                            key=(lambda diagn: diagn.severity or lsp.DiagnosticSeverity.WARNING),
+                            key=(lambda d: d.severity or lsp.DiagnosticSeverity.WARNING),
                             reverse=True,
                         )
                     ],
                 ),
             )
+            return
         
         if isinstance(e, lsp.Definition):
             tab, pos = self.master._gotodef_requests.pop(e.message_id)

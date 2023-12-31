@@ -72,7 +72,7 @@ class Logs(PanelView):
     def newline(self) -> None:
         self.write('\n')
 
-    def log(self, type, caller, text) -> None:
+    def log(self, type: str, caller: str, text: str) -> None:
         self.write(
             '[', (datetime.now().strftime("%H:%M:%S:%f"), 'time'), ']', 
             type, 
@@ -80,14 +80,29 @@ class Logs(PanelView):
         )
         self.newline()
 
-    def info(self, text) -> None:
+    def info(self, text: str) -> None:
         "info level log"
         self.log((' [info] ', 'info'), caller_class_name(), text)
     
-    def warning(self, text) -> None:
+    def warning(self, text: str) -> None:
         "warning level log"
         self.log((' [warning] ', 'warning'), caller_class_name(), text)
     
-    def error(self, text) -> None:
+    def error(self, text: str) -> None:
         "error level log"
         self.log((' [error] ', 'error'), caller_class_name(), text)
+    
+    def trace(self, text: str) -> None:
+        "trace level log"
+        self.log((' [trace] ', 'trace'), caller_class_name(), text)
+    
+    def rawlog(self, text: str, kind: int):
+        match kind:
+            case 1:
+                self.error(text)
+            case 2:
+                self.warning(text)
+            case 3:
+                self.info(text)
+            case _:
+                self.trace(text)

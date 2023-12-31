@@ -67,7 +67,6 @@ class LangServerClient:
 
     def open_tab(self, tab: Text) -> None:
         self.tabs_opened.add(tab)
-        print(f"TAB MAPPED {tab.path}({self.language})")
 
         if self.client.state == lsp.ClientState.NORMAL:
             self.client.did_open(
@@ -101,7 +100,6 @@ class LangServerClient:
 
     def request_completions(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
-            print("LSPC: Not ready for completions")
             return
         
         request = CompletionRequest(next(self._counter), tab.get_cursor_pos())

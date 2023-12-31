@@ -54,29 +54,44 @@ class Notifications(Toplevel):
         self.base.register_onfocus(self.lift)
         self.base.register_onupdate(self.follow_root)
 
-    def info(self, text: str) -> None:
+    def info(self, text: str) -> Notification:
         instance = Notification(self, "info", text=text, fg=self.base.theme.biscuit)
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
         self.show()
+
         self.notifications.append(instance)
         self.latest = instance
+        return instance
 
-    def warning(self, text: str) -> None:
+    def warning(self, text: str) -> Notification:
         instance = Notification(self, "warning", text=text, fg="yellow")
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
         self.show()
+
         self.notifications.append(instance)
         self.latest = instance
+        return instance
 
-    def error(self, text: str) -> None:
+    def error(self, text: str) -> Notification:
         instance = Notification(self, "error", text=text, fg="red")
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
         self.show()
+        
         self.notifications.append(instance)
         self.latest = instance
+        return instance
+
+    def notify(self, text: str, kind: int) -> Notification:
+        match kind:
+            case 1:
+                self.error(text)
+            case 2:
+                self.warning(text)
+            case _:
+                self.info(text)
 
     def follow_root(self) -> None:
         if not self.active:

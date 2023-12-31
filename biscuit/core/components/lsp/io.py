@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 import queue
 import subprocess
+import typing
 from threading import Thread
+
+if typing.TYPE_CHECKING:
+    from biscuit.core import App
 
 
 class IO:
-    def __init__(self, master, cmd: str, cwd: str) -> None:
+    def __init__(self, master: App, cmd: str, cwd: str) -> None:
         """IO for LSP Client
         
         Attributes
@@ -50,7 +56,7 @@ class IO:
             startupinfo=subprocess.STARTUPINFO(
                 dwFlags=subprocess.STARTF_USESHOWWINDOW
             ))
-        print(f"PID: {self.p.pid}\nCMD: {self.cmd}\nCWD: {self.cwd}")
+        self.base.logger.info(f"PID: {self.p.pid} CMD: {self.cmd} CWD: {self.cwd}")
 
         Thread(target=self._process_in, daemon=True).start()
         self.t_out = Thread(target=self._process_out, daemon=True)
