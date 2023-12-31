@@ -22,6 +22,12 @@ class Renderer(HtmlFrame):
         self.load_html(mistune.html(rawmd))
         t = self.base.theme
         self.add_css(f"""
+            CODE, PRE {{
+                font-family: {self.base.settings.font['family']};
+                font-size: {self.base.settings.font['size']}pt;
+                background-color: {t.border};
+                padding: 2px;
+            }}
             BODY {{
                 margin-top: 0px;
                 margin-bottom: 0px;

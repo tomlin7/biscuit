@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Optional
 from urllib.request import url2pathname
 
 import sansio_lsp_client as lsp
@@ -32,12 +32,16 @@ def jump_paths_and_ranges(locations: list[lsp.Location] | lsp.Location) -> Itera
     for location in locations:
         yield (decode_path_uri(location.uri), location.range)
 
-def filter_hover_content(content: list[lsp.MarkedString | str] | lsp.MarkedString | lsp.MarkupContent | str,) -> str:
-    if isinstance(content, (lsp.MarkedString, lsp.MarkupContent)):
-        return content.value
-    if isinstance(content, list):
-        return "\n\n".join(filter_hover_content(item) for item in content)
-    return content
+def hover_filter(content: lsp.MarkupContent | str) -> list[Optional[list[str, str]], str]:
+    if not isinstance(content, lsp.MarkupContent):
+        return
+    
+    value = content.value.strip()
+    if value.startswith("```"):
+        value = [i.strip() for i in value[3:].split("```", 1)]
+        return value[0].split("\n"), value[1]
+
+    return None, value
 
 def encode_position(pos: str | list[int]) -> lsp.Position:
     if isinstance(pos, str):

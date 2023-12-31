@@ -8,20 +8,26 @@ from biscuit.core.components.utils import Toplevel
 from .renderer import Renderer
 
 if typing.TYPE_CHECKING:
+    from biscuit import App
     from biscuit.core.components.editors.texteditor.text import Text
     from biscuit.core.components.lsp.data import HoverResponse
 
 
 class Hover(Toplevel):
-    def __init__(self, master, bd=1, *args, **kw) -> None:
+    def __init__(self, master: App, bd: int=1, *args, **kw) -> None:
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
         self.maxsize(400, 200)
-        self.config(bg=self.base.theme.border, bd=1)
+        self.config(bg=self.base.theme.border, bd=bd)
 
-        self.hovered = False
+        self.label = tk.Label(self, padx=6, font=self.base.settings.font, 
+                              anchor=tk.W, justify=tk.LEFT, **self.base.theme.editors.hover.text)
+        self.label.pack(fill=tk.BOTH, expand=True)
+
         self.renderer = Renderer(self)
         self.renderer.pack(fill=tk.BOTH, expand=True)
+
+        self.hovered = False
         self.withdraw()
 
         self.bind("<Enter>", lambda _: self.set_hovered(True))
@@ -45,7 +51,18 @@ class Hover(Toplevel):
         self.geometry("+{}+{}".format(pos_x + bbx_x - 1, pos_y + bbx_y - self.winfo_height()))
 
     def show(self, tab: Text, response: HoverResponse) -> None:
-        self.renderer.render_markdown(response.text)
+        if response.text:
+            self.label.config(text=response.text[1])
+            self.label.pack(fill=tk.BOTH, expand=True)
+        else:
+            self.label.pack_forget()
+
+        if response.docs:
+            self.renderer.render_markdown(response.docs)
+            self.renderer.pack(fill=tk.BOTH, pady=(1, 0) if response.text else 0)
+        else:
+            self.renderer.pack_forget()
+
         self.update_idletasks()
         self.deiconify()
         self.update_idletasks()

@@ -7,6 +7,7 @@ __all__ = ["Settings", "SettingsEditor"]
 
 import re
 import tkinter as tk
+import tkinter.font as tkfont
 import typing
 
 import tkextrafont as extra
@@ -76,20 +77,20 @@ class Settings:
         except tk.TclError:
             pass
 
-        self.font = tk.font.Font(
+        self.font = tkfont.Font(
             family=self.config.font[0],
             size=self.config.font[1]
         )
-        self.font_bold = tk.font.Font(
+        self.font_bold = tkfont.Font(
             family=self.config.font[0],
             size=self.config.font[1],
             weight="bold"
         )
-        self.autocomplete_font = tk.font.Font(
+        self.autocomplete_font = tkfont.Font(
             family=self.config.font[0],
             size=self.config.font[1] - 1
         )
-        self.uifont = tk.font.Font(
+        self.uifont = tkfont.Font(
             family=self.config.uifont[0],
             size=self.config.uifont[1]
         )

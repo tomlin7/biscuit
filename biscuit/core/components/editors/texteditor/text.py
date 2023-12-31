@@ -376,7 +376,7 @@ class Text(BaseText):
         self.definitions.show(self, response)
     
     def lsp_hover(self, response: HoverResponse) -> None:
-        if not response.text:
+        if not (response.text or response.docs):
             return self.hover.hide()
         
         self.hover.show(self, response)

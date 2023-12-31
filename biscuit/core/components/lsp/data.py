@@ -1,6 +1,6 @@
 import dataclasses
 import json
-from typing import List, Optional
+from typing import List, Optional, Union
 
 # Requests
 
@@ -53,7 +53,8 @@ class Completions:
 @dataclasses.dataclass
 class HoverResponse:
     location: str
-    text: str
+    text: Optional[list[str, str]]
+    docs: Optional[str] = None
 
     def __repr__(self) -> str:
         return self.text

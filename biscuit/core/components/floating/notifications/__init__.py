@@ -7,7 +7,23 @@ from .notification import Notification
 class Notifications(Toplevel):
     """
     Floating notifications, shown on bottom right corner
-    NOTE: Currently only supports showing one notification at a time
+
+    Attributes:
+        active (bool): whether shown or not
+        count (int): number of notifications
+        notifications (list[Notification]): list of active notifications
+        title (Label): title bar label
+        xoffset (int): x offset
+        yoffset (int): y offset
+
+    Methods:
+        info: create info notification
+        warning: create warning notification
+        error: create error notification
+        show: show notification
+        hide: hide notification
+        clear: clear all notifications
+        delete: delete notification
     """
     def __init__(self, base) -> None:
         super().__init__(base)
@@ -21,8 +37,9 @@ class Notifications(Toplevel):
         self.xoffset = 5 * self.base.scale
         self.yoffset = 30 * self.base.scale
 
+        self.latest: Notification = None
         self.count = 0
-        self.notifications = []
+        self.notifications: list[Notification] = []
 
         topbar = Frame(self, **self.base.theme.notifications)
         topbar.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
@@ -37,26 +54,29 @@ class Notifications(Toplevel):
         self.base.register_onfocus(self.lift)
         self.base.register_onupdate(self.follow_root)
 
-    def info(self, text) -> None:
+    def info(self, text: str) -> None:
         instance = Notification(self, "info", text=text, fg=self.base.theme.biscuit)
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
         self.show()
         self.notifications.append(instance)
+        self.latest = instance
 
-    def warning(self, text) -> None:
+    def warning(self, text: str) -> None:
         instance = Notification(self, "warning", text=text, fg="yellow")
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
         self.show()
         self.notifications.append(instance)
+        self.latest = instance
 
-    def error(self, text) -> None:
+    def error(self, text: str) -> None:
         instance = Notification(self, "error", text=text, fg="red")
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
         self.show()
         self.notifications.append(instance)
+        self.latest = instance
 
     def follow_root(self) -> None:
         if not self.active:
@@ -88,7 +108,7 @@ class Notifications(Toplevel):
             i.delete()
         self.count = 0
 
-    def delete(self, notification) -> None:
+    def delete(self, notification: Notification) -> None:
         self.notifications.remove(notification)
         self.count -= 1
         notification.destroy()
@@ -96,4 +116,7 @@ class Notifications(Toplevel):
             self.hide()
         else:
             self.show()
+        
+        self.update_idletasks()
+        self.follow_root()
         self.base.statusbar.update_notifications()

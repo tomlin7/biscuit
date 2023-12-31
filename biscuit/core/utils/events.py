@@ -99,6 +99,7 @@ class Events:
             windll.user32.ShowWindow(hwnd, 6)
         else:
             self.base.withdraw()
+            self.base.notifications.hide()
 
         self.minimized = True
 
@@ -108,7 +109,6 @@ class Events:
             self.base.deiconify()
             self.minimized = False
 
-    #TODO not fast but work ; may not good for a big file edit
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:

@@ -219,6 +219,9 @@ class Editors(FrameThemeObject):
         self.definitions = FrameThemeObject(self)
         self.definitions.item = HighlightableThemeObject(self.definitions)
 
+        self.hover = FrameThemeObject(self)
+        self.hover.text = ThemeObject(self.hover)
+
         self.diff = FrameThemeObject(self)
         self.diff.not_exist = "#d3d3d3"
         self.diff.removed = "#ffa3a3"

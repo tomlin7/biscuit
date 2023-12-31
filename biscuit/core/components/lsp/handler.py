@@ -116,5 +116,5 @@ class EventHandler:
 
         if isinstance(e, lsp.Hover):
             requesting_tab, location = self.master._hover_requests.pop(e.message_id)
-            requesting_tab.lsp_hover(HoverResponse(location, filter_hover_content(e.contents)))
+            requesting_tab.lsp_hover(HoverResponse(location, *hover_filter(e.contents)))
             return
