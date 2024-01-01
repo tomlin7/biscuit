@@ -29,7 +29,7 @@ jobs:
           pip install Nuitka
 
       - name: nuitka build
-        run: python -m nuitka --standalone biscuit
+        run: echo Yes| python -m nuitka --standalone biscuit
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
