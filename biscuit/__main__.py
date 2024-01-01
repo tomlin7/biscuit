@@ -1,13 +1,13 @@
 import sys
 
-# splash screen (windows specific)
-try:
-    import pyi_splash
-    pyi_splash.close()
-except:
-    pass
-
 from biscuit.core import App
+
+# splash screen (windows specific)
+# try:
+#     import pyi_splash
+#     pyi_splash.close()
+# except:
+#     pass
 
 dir = None
 if len(sys.argv) >= 2:

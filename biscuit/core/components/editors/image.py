@@ -2,7 +2,7 @@ import tkinter as tk
 
 from PIL import Image, ImageTk
 
-from ..editor import BaseEditor
+from .editor import BaseEditor
 
 
 #TODO: zooming in and out

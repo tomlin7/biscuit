@@ -16,7 +16,7 @@ from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
 from .diffeditor import DiffEditor
 from .editor import BaseEditor
-from .imageviewer import ImageViewer
+from .image import ImageViewer
 from .languages import Languages
 from .markdown import MDEditor
 from .misc import Welcome

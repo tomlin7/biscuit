@@ -33,9 +33,8 @@ class PathView(Toplevel):
     def hide(self, *_) -> None:
         self.withdraw()
 
-    def show(self, e: tk.Event) -> None:
+    def show(self, w: tk.Widget) -> None:
         self.update_idletasks()
-        w = e.widget
         x = w.winfo_rootx()
         y = w.winfo_rooty() + w.winfo_height()
 

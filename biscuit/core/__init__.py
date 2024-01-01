@@ -128,10 +128,6 @@ class App(tk.Tk):
         self.events = Events(self)
         self.binder = Binder(self)
         self.git = Git(self)
-
-        self.autocomplete = AutoComplete(self)
-        self.definitions = Definitions(self)
-        self.hover = Hover(self)
         self.languageservermanager = LanguageServerManager(self)
 
     def setup_tk(self) -> None:
@@ -171,6 +167,11 @@ class App(tk.Tk):
         self.palette = Palette(self)
         self.findreplace = FindReplace(self)
         self.notifications = Notifications(self)
+        
+        self.autocomplete = AutoComplete(self)
+        self.definitions = Definitions(self)
+        self.pathview = PathView(self)
+        self.hover = Hover(self)
 
     def setup_references(self) -> None:
         "References to various components of the editor"

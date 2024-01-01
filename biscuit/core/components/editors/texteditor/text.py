@@ -603,6 +603,7 @@ class Text(BaseText):
     
     def event_focus_out(self, _: tk.Event):
         self.hide_autocomplete()
+        self.hover.hide()
 
     def event_mouse_down(self, _: tk.Event):
         self.hide_autocomplete()
