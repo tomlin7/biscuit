@@ -12,3 +12,4 @@ pyperclip
 tkinterweb
 mistune
 sansio_lsp_client
+chardet 
