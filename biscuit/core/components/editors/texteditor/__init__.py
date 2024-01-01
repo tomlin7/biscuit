@@ -50,7 +50,10 @@ class TextEditor(BaseEditor):
 
     def on_change(self, *_):
         self.linenumbers.redraw()
-        self.base.update_statusbar()
+        try:
+            self.base.update_statusbar()
+        except ValueError:
+            pass
         if not self.minimalist:
             self.text.refresh()
             self.minimap.redraw_cursor()

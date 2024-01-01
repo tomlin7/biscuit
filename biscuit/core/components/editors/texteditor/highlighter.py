@@ -79,6 +79,11 @@ class Highlighter:
         "Setup the tags for highlighting"
         for token, color in self.tag_colors.items():
             self.text.tag_configure(str(token), foreground=color)
+    
+    def clear(self) -> None:
+        "Clears all tags from the text"
+        for token, _ in self.tag_colors.items():
+            self.text.tag_remove(str(token), '1.0', tk.END)
 
     def highlight(self) -> None:
         "Highlights the text content of attached Editor instance"

@@ -96,6 +96,7 @@ class EditorsPane(Frame):
         self.editorsbar.clear()
         self.tabs.clear_all_tabs()
         self.active_editors.clear()
+        self.refresh()
 
     def open_editor(self, path: str, exists: bool) -> Editor | BaseEditor:
         "open Editor with path and exists values passed"
@@ -120,6 +121,7 @@ class EditorsPane(Frame):
             self.closed_editors[editor.path] = editor
         else:
             editor.destroy()
+        self.refresh()
 
     def close_active_editor(self) -> None:
         "Closes the active tab"
@@ -132,6 +134,7 @@ class EditorsPane(Frame):
             self.closed_editors.remove(editor)
 
         editor.destroy()
+        self.refresh()
 
     def set_active_editor(self, editor: Editor) -> Editor:
         "set an existing editor to currently shown one"

@@ -7,7 +7,8 @@ import threading
 import tkinter as tk
 import typing
 from collections import deque
-from turtle import goto
+
+import chardet
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.lsp.data import HoverResponse, Jump, Underlines, Completions
@@ -450,20 +451,35 @@ class Text(BaseText):
         self.base.findreplace.show(self)
 
     def detect_encoding(self, file_path):
-        with open(file_path, 'rb') as file:
-            bom = file.read(4)
-
-        if bom.startswith(codecs.BOM_UTF8):
+        if not self.exists:
             return 'utf-8'
-        if bom.startswith(codecs.BOM_LE) or bom.startswith(codecs.BOM_BE):
-            return 'utf-16'
-        if bom.startswith(codecs.BOM32_BE) or bom.startswith(codecs.BOM32_LE):
-            return 'utf-32'
+        
+        with open(file_path, 'rb') as file:
+            bomstring = file.read(8)
+        
+        detected = chardet.detect(bomstring)
+        encoding = detected['encoding'].lower()
+        if encoding == 'ascii':
+            return 'utf-8'
+        
+        return encoding
 
-        self.bom = False
-        return 'utf-8'
-
-    def change_eol(self, eol):
+    def change_eol(self, eol: str):
+        if not self.exists:
+            text = self.get_all_text()
+            if not text.strip():
+                self.eol = eol
+                self.base.statusbar.on_open_file(self)
+                return
+        self.encoding = self.encoding or self.detect_encoding(self.path)
+        if self.path and self.exists:
+            self.clear()
+            file = open(self.path, 'r', encoding=self.encoding, buffering=self.buffer_size)
+            self.queue = queue.Queue()
+            threading.Thread(target=self.read_file, args=(file,)).start()
+            self.process_queue(eol=eol)
+        else:
+            self.load_text(text, eol=eol)
         self.eol = eol
         self.base.statusbar.on_open_file(self)
 
@@ -472,6 +488,7 @@ class Text(BaseText):
             return
 
         self.clear()
+        self.highlighter.clear()
         try:
             self.encoding = encoding or self.encoding
             self.eol = eol or self.eol
@@ -486,6 +503,7 @@ class Text(BaseText):
             if self.exists:
                 self.master.unsupported_file()
 
+        self.refresh()
         self.base.statusbar.on_open_file(self)
 
     def load_file(self):
@@ -507,15 +525,16 @@ class Text(BaseText):
 
         self.base.statusbar.on_open_file(self)
 
-    def load_text(self, text: str=""):
+    def load_text(self, text: str="", eol: str=""):
         self.clear()
-
         def write_with_buffer():
             buffer = deque(maxlen=self.buffer_size)
             for char in text:
                 buffer.append(char)
                 if len(buffer) >= self.buffer_size:
                     chunk = ''.join(buffer)
+                    if eol:
+                        chunk.replace(self.eol or textutils.get_default_newline(), eol)
                     self.write(chunk)
                     self.update()
                     buffer.clear()
@@ -523,6 +542,9 @@ class Text(BaseText):
                 chunk = ''.join(buffer)
                 self.write(chunk)
                 self.update()
+            if eol:
+                self.eol = eol
+            self.base.statusbar.on_open_file(self)
 
         threading.Thread(target=write_with_buffer).start()
 
@@ -540,14 +562,19 @@ class Text(BaseText):
                 break
             self.queue.put(chunk)
 
-    def process_queue(self):
+    def process_queue(self, eol: str=None):
         try:
             while True:
                 chunk = self.queue.get_nowait()
                 if chunk is None:
-                    self.master.on_change()
-                    self.master.on_scroll()
+                    try:
+                        self.master.on_change()
+                        self.master.on_scroll()
+                    except ValueError:
+                        pass
                     break
+                if eol:
+                    chunk.replace(self.eol or textutils.get_default_newline(), eol)
                 self.write(chunk)
                 self.update()
                 self.master.on_scroll()

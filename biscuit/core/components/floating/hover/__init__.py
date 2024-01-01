@@ -52,6 +52,8 @@ class Hover(Toplevel):
 
     def show(self, tab: Text, response: HoverResponse) -> None:
         if response.text:
+            if response.docs:
+                self.renderer.pack_forget()
             self.label.config(text=response.text[1])
             self.label.pack(fill=tk.BOTH, expand=True)
         else:

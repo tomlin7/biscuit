@@ -89,7 +89,7 @@ class Statusbar(Frame):
         # end of line
         self.eol_actionset = ActionSet(
             "Change End of Line sequence", "eol:",
-            [(i.upper(), lambda _, val=nl: self.base.editorsmanager.active_editor.content.text.reopen(eol=val)) for i, nl in textutils.eol_map.items()],
+            [(i.upper(), lambda _, val=nl: self.base.editorsmanager.active_editor.content.text.change_eol(eol=val)) for i, nl in textutils.eol_map.items()],
         )
         self.base.palette.register_actionset(lambda: self.eol_actionset)
         self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'), description="Select End of Line sequence")
@@ -148,7 +148,7 @@ class Statusbar(Frame):
 
     def on_open_file(self, text: Text) -> None:
         self.file_type.change_text(text.language)
-        self.encoding.change_text(text.encoding)
+        self.encoding.change_text(text.encoding.upper())
         self.eol.change_text(textutils.get_eol_label(text.eol))
 
     def update_notifications(self) -> None:

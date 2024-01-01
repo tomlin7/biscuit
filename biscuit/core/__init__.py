@@ -4,8 +4,6 @@ import sys
 import threading
 import tkinter as tk
 
-from click import edit
-
 from .api import *
 from .components import *
 from .layout import *
