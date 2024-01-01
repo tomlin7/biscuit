@@ -35,6 +35,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: "biscuit-nightly"
-            path: |
-              "biscuit.build"
-              "biscuit.dist"
+            path: "biscuit.dist"
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+            name: "/"
