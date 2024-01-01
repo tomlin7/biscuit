@@ -48,7 +48,7 @@ class Events:
                     editor.save(path)
 
     def save_all(self, *_) -> None:
-        for editor in self.base.editorsmanager.editors:
+        for editor in self.base.editorsmanager.active_editors:
             if editor.content:
                 if not editor.content.exists:
                     if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):

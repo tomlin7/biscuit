@@ -47,10 +47,9 @@ class EditorsPane(Frame):
         self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0,1))
         self.tabs = self.editorsbar.tabs
 
-        self.editors: List[Editor] = []
+        self.active_editors: List[Editor] = []
         self.closed_editors: List[Editor] = {}
 
-        self.empty = True
         self.emptytab = Empty(self)
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
@@ -58,13 +57,17 @@ class EditorsPane(Frame):
         self.actionset = ActionSet("Switch to active editors", "active:", [])
         self.base.palette.register_actionset(self.get_active_actionset)
     
+    def is_empty(self) -> bool:
+        "Checks if the editor is empty"
+        return not self.active_editors
+
     def is_open(self, path: str) -> bool:
         "Checks if a editor is open"
-        return any(editor.path == path for editor in self.editors)
+        return any(editor.path == path for editor in self.active_editors)
 
     def get_active_actionset(self) -> ActionSet:
         "Generates the active editors actionset"
-        self.actionset.update([(editor.filename, editor) for editor in self.editors])
+        self.actionset.update([(editor.filename, editor) for editor in self.active_editors])
         return self.actionset
 
     def add_default_editors(self) -> None:
@@ -78,20 +81,21 @@ class EditorsPane(Frame):
 
     def add_editor(self, editor: Union[Editor,BaseEditor]) -> Editor | BaseEditor:
         "Appends a editor to list. Create a tab."
-        self.editors.append(editor)
+        self.active_editors.append(editor)
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
+        self.refresh()
         return editor
 
     def delete_all_editors(self) -> None:
         "Permanently delete all editors."
-        for editor in self.editors:
+        for editor in self.active_editors:
             editor.destroy()
 
         self.editorsbar.clear()
         self.tabs.clear_all_tabs()
-        self.editors.clear()
+        self.active_editors.clear()
 
     def open_editor(self, path: str, exists: bool) -> Editor | BaseEditor:
         "open Editor with path and exists values passed"
@@ -109,7 +113,7 @@ class EditorsPane(Frame):
 
     def close_editor(self, editor: Editor) -> None:
         "removes an editor, keeping it in cache."
-        self.editors.remove(editor)
+        self.active_editors.remove(editor)
 
         # not keeping diff/games in cache
         if not editor.diff and editor.content:
@@ -123,7 +127,7 @@ class EditorsPane(Frame):
 
     def delete_editor(self, editor: Editor) -> None:
         "Permanently delete a editor."
-        self.editors.remove(editor)
+        self.active_editors.remove(editor)
         if editor.path in self.closed_editors:
             self.closed_editors.remove(editor)
 
@@ -146,10 +150,9 @@ class EditorsPane(Frame):
         return self.tabs.active_tab.editor
 
     def refresh(self) -> None:
-        if not self.editors and self.empty:
+        if not self.active_editors:
             self.emptytab.grid()
             self.base.set_title(os.path.basename(self.base.active_directory) if self.base.active_directory else None)
-        elif self.editors and not self.empty:
+        elif self.active_editors:
             self.emptytab.grid_remove()
-        self.empty = not self.empty
         self.base.update_statusbar()
