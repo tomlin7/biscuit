@@ -19,8 +19,8 @@ class ButtonsEntry(Frame):
         self.column = 1
         self.add_buttons(buttons)
 
-    def add_button(self, icon, event=lambda _: None):
-        b=IconButton(self, icon, event)
+    def add_button(self, icon, event=lambda _: None, icon2):
+        b=IconButton(self, icon, event, icon2)
         b.grid(row=0, column=self.column, sticky='')
         b.config(**self.base.theme.utils.buttonsentry.button)
         self.column += 1
