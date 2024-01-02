@@ -14,6 +14,7 @@ jobs:
   deploy:
     name: pages
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'docs')
     defaults:
        run:
          working-directory: ./docs/

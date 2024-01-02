@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, pyinstaller and build executable with a version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: "Nuitka builds (windows)"
+name: "Biscuit Nuitka builds (experimental)"
 on:
   push:
     branches: [ "main" ]
@@ -10,8 +10,8 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
+    if: contains(github.event.head_commit.message, 'nightly')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -28,15 +28,11 @@ jobs:
           pip install Nuitka
 
       - name: nuitka build
-        run: echo Yes| python -m nuitka --standalone biscuit
+        run: echo Yes| python -m nuitka --include-data-dir=biscuit\\res=res --include-package-data=tkextrafont --include-package-data=sv_ttk --include-package-data=pygments --include-package-data=tkinterweb --include-package-data=mistune --follow-import-to=pygments --follow-import-to=tkextrafont --follow-import-to=mistune --follow-import-to=tkinterweb --include-package=tkextrafont --include-package=pygments --include-package=mistune --include-package=tkinterweb --include-module=pygments --include-module=mistune --include-module=tkinterweb --include-module=tkextrafont --follow-imports --standalone --enable-plugin=tk-inter biscuit
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-            name: "biscuit-nightly"
+            name: "biscuit-nuitka"
             path: "biscuit.dist"
-      
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-            name: "/"
+  
