@@ -13,3 +13,6 @@ class Icon(Label):
 
     def set_icon(self, icon: str) -> None:
         self.config(text=get_codicon(icon))
+
+    def set_color(self, color: str) -> None:
+        self.config(fg=color)
