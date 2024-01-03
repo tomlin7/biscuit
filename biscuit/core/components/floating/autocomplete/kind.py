@@ -23,4 +23,6 @@ class Kind(Icon):
         if not kind:
             return
         
-        self.set_icon(kinds[kind-1])
+        kind = kinds[kind-1]
+        self.set_icon(kind[0])
+        self.set_color(kind[1] or self.base.theme.editors.foreground)
