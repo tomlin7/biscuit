@@ -93,8 +93,8 @@ class Palette(Toplevel):
     def pick_actionset(self, actionset) -> None:
         self.active_set = actionset
 
-    def pick_file_search(self) -> None:
-        self.active_set = self.base.explorer.get_actionset()
+    def pick_file_search(self, term: str) -> None:
+        self.active_set = self.base.explorer.get_actionset(term)
 
     def choose(self, *_) -> None:
         #TODO pass the term to the function as argument (for input requiring commands)

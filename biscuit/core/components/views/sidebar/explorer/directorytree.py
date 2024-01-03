@@ -27,7 +27,6 @@ class DirectoryTree(SidebarViewItem):
 
         self.nodes = {}
 
-        self.actionset = ActionSet("Search files", "file:", [])
         self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
         self.ignore_exts = [".pyc"]
 
@@ -60,7 +59,7 @@ class DirectoryTree(SidebarViewItem):
             self.placeholder.grid_remove()
             self.tree.grid()
             self.tree.clear_tree()
-            self.create_root(self.path)
+            self.create_root(self.path, subdir=False)
             self.watcher.watch()
 
             self.set_title(os.path.basename(self.path))
@@ -69,21 +68,21 @@ class DirectoryTree(SidebarViewItem):
             self.placeholder.grid()
             self.set_title('No folder opened')
 
-    def create_root(self, path: str, parent='') -> None:
+    def create_root(self, path: str, parent='', subdir=True) -> None:
         if self.loading:
             return
 
         self.loading = True
-        t = threading.Thread(target=self.run_create_root, args=(path, parent))
+        t = threading.Thread(target=self.run_create_sub_root if subdir else self.run_create_root, args=(path, parent))
         t.daemon = True
         t.start()
 
     def run_create_root(self, path: str, parent='') -> None:
-        self.files = []
-
         self.update_treeview(path, parent)
-
-        self.actionset = ActionSet("Search files by name", "file:", self.files)
+        self.loading = False
+    
+    def run_create_sub_root(self, path: str, parent='') -> None:
+        self.update_treeview(path, parent)
         self.loading = False
 
     def get_actionset(self) -> ActionSet:
@@ -139,9 +138,6 @@ class DirectoryTree(SidebarViewItem):
                 #TODO check filetype and get matching icon, cases
                 node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
                 self.nodes[os.path.abspath(path)] = node
-
-                # for the actionset
-                self.files.append((name, lambda _, path=path: self.base.open_editor(path)))
 
     def selected_directory(self) -> str:
         return (self.tree.selected_path().strip() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path().strip()) or self.path
