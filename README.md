@@ -1,6 +1,6 @@
 <h1 align="center">
     <img src="https://github.com/billyeatcookies/Biscuit/assets/70792552/0ea8e958-92de-4659-b1c9-ab5a72f05d7d" width=700><br>
-    <a href=https://github.com/billyeatcookies/Biscuit/actions/workflows/artifact-windows.yml> 
+    <a href=https://github.com/billyeatcookies/Biscuit/actions/workflows/nightly.yml> 
         <img src="https://img.shields.io/github/actions/workflow/status/billyeatcookies/biscuit/artifact-windows.yml?style=for-the-badge"> 
     </a> 
     <img alt="Project License" src="https://img.shields.io/github/license/billyeatcookies/Biscuit?style=for-the-badge"> 
