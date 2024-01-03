@@ -1,4 +1,5 @@
 import tkinter as tk
+import typing
 
 from biscuit.core.components.utils import Frame, IconButton
 
@@ -10,7 +11,7 @@ class SidebarView(View):
     
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = ()
+        self.__buttons__: list[tuple(str, typing.Callable)] = []
         self.__icon__ = 'preview'
         self.__name__ = self.__class__.__name__
         

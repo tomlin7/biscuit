@@ -1,3 +1,5 @@
+import os
+
 from biscuit.core.components.floating.palette import ActionSet
 
 from ..sidebarview import SidebarView
@@ -20,6 +22,8 @@ class Explorer(SidebarView):
         self.directory = DirectoryTree(self, observe_changes=True)
         self.add_widget(self.directory)
 
+        self.filesearch_actionset = ActionSet("Search files", "file:", [])
+
         self.newfile_actionset = ActionSet(
             "Add new file to directory", "newfile:", pinned=[["Create new file: {}", lambda filename=None: self.directory.new_file(filename)]]
         )
@@ -35,5 +39,20 @@ class Explorer(SidebarView):
         )
         self.base.palette.register_actionset(lambda: self.rename_actionset)
 
-    def get_actionset(self) -> ActionSet:
-        return self.directory.get_actionset() 
+    def get_actionset(self, term: str) -> ActionSet:
+        self.filesearch_actionset.update(self.filesearch(term))
+        return self.filesearch_actionset 
+    
+    def filesearch(self, t):
+        if not self.base.active_directory:
+            return []
+        
+        pys = []
+        for r, d, f in os.walk(self.base.active_directory):
+            if any(i in r for i in self.directory.ignore_dirs):
+                d[:] = []
+                continue
+            for file in f:
+                if t in file:
+                    pys.append((file, lambda _, path=os.path.join(r, file): self.base.open_editor(path)))
+        return pys

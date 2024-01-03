@@ -56,12 +56,11 @@ class Searchbar(Frame):
                 prompt_found = True
                 break
 
-        if not prompt_found:
-            self.master.master.pick_file_search()
-
         self.term = term
-        exact, starts, includes = [], [], []
+        if not prompt_found:
+            self.master.master.pick_file_search(term)
 
+        exact, starts, includes = [], [], []
         temp = term.lower()
         for i in self.master.master.active_set:
             item = i[0].lower()
