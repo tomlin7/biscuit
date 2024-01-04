@@ -37,6 +37,7 @@ class EventHandler:
             self.base.logger.info("Capabilities " + pprint.pformat(e.capabilities))
             for tab in self.master.tabs_opened:
                 self.master.open_tab(tab)
+                self.master.request_outline(tab)
 
             self.base.statusbar.process_indicator.hide()
             return
@@ -126,4 +127,31 @@ class EventHandler:
         if isinstance(e, lsp.Hover):
             requesting_tab, location = self.master._hover_requests.pop(e.message_id)
             requesting_tab.lsp_hover(HoverResponse(location, *hover_filter(e.contents)))
+            return
+        
+        if isinstance(e, lsp.MDocumentSymbols):
+            tab = self.master._outline_requests.pop(e.message_id)
+            if self.base.editorsmanager.active_editor != tab.master.master:
+                return
+            
+            self.base.outline.update_symbols(
+                [
+                    OutlineItem(
+                        name=symbol.name,
+                        kind=symbol.kind,
+                        start=decode_position(symbol.range.start if isinstance(symbol, lsp.DocumentSymbol) else symbol.location.range.start),
+                        end=decode_position(symbol.range.end if isinstance(symbol, lsp.DocumentSymbol) else symbol.location.range.end),
+                        parent=symbol.containerName if isinstance(symbol, lsp.SymbolInformation) else None,
+                        children=[
+                            OutlineItem(
+                                name=child.name,
+                                kind=child.kind,
+                                start=decode_position(child.range.start),
+                                end=decode_position(child.range.end),
+                            )
+                            for child in symbol.children
+                        ] if isinstance(symbol, lsp.DocumentSymbol) else [],
+                    )
+                    for symbol in e.result
+                ])
             return

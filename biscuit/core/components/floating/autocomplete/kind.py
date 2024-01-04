@@ -4,7 +4,7 @@ import typing
 
 from biscuit.core.components.utils.icon import Icon
 
-from ...lsp.kinds import kinds
+from .kinds import kinds
 
 if typing.TYPE_CHECKING:
     from .item import CompletionItem

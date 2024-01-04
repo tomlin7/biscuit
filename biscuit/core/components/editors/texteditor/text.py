@@ -372,11 +372,11 @@ class Text(BaseText):
     def lsp_show_autocomplete(self, response: Completions) -> None:
         self.autocomplete.lsp_update_completions(self, response.completions)
     
-    def lsp_diagnostics(self, response: Underlines) -> None:
-        print("LSP <<< ", response)
-        for i in response.underline_list:
-            # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
-            print(i.start, i.color, i.tooltip_text)
+    def lsp_diagnostics(self, response: Underlines) -> None: ...
+        # print("LSP <<< ", response)
+        # for i in response.underline_list:
+        #     # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
+        #     print(i.start, i.color, i.tooltip_text)
     
     def lsp_goto_definition(self, response: Jump) -> None:
         if not response.locations:
@@ -625,7 +625,6 @@ class Text(BaseText):
 
     def event_unmapped(self, _):
         self.hide_autocomplete()
-        self.base.languageservermanager.tab_closed(self)
         
     def event_copy(self, *_):
         self.event_generate("<<Copy>>")

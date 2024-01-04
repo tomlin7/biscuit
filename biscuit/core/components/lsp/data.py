@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 import json
 from typing import List, Optional, Union
@@ -72,3 +74,15 @@ class JumpLocationRange:
 class Jump:
     pos: str
     locations: List[JumpLocationRange]
+
+@dataclasses.dataclass
+class OutlineItem:
+    name: str
+    kind: int
+    start: str
+    end: str
+    parent: Optional[str] = None
+    children: Optional[list[OutlineItem]] = None
+
+    def __repr__(self) -> str:
+        return self.name

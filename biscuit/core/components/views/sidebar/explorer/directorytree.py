@@ -85,9 +85,6 @@ class DirectoryTree(SidebarViewItem):
         self.update_treeview(path, parent)
         self.loading = False
 
-    def get_actionset(self) -> ActionSet:
-        return self.actionset
-
     def get_all_files(self) -> list:
         files = []
         for item in self.tree.get_children():

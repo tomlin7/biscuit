@@ -28,6 +28,7 @@ class LanguageServerManager:
         self.latest = self.request_client_instance(tab)
         if self.latest:
             self.latest.open_tab(tab)
+            self.latest.request_outline(tab)
         return self.latest is not None
    
     def request_removal(self, tab: Text) -> None:
@@ -53,6 +54,11 @@ class LanguageServerManager:
             if tab in instance.tabs_opened:
                 instance.request_hover(tab)
 
+    def request_outline(self, tab: Text) -> None:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.request_outline(tab)
+    
     def content_changed(self, tab: Text) -> None:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
