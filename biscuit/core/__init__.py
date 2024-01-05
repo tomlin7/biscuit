@@ -248,6 +248,11 @@ class App(tk.Tk):
 
     def close_active_editor(self) -> None:
         self.editorsmanager.close_active_editor()
+    
+    def goto_location_in_active_editor(self, position: int) -> None:
+        if editor := self.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.goto(position)
 
     def goto_location(self, path: str, position: int) -> None:
         if self.editorsmanager.is_open(path):

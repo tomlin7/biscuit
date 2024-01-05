@@ -131,27 +131,8 @@ class EventHandler:
         
         if isinstance(e, lsp.MDocumentSymbols):
             tab = self.master._outline_requests.pop(e.message_id)
-            if self.base.editorsmanager.active_editor != tab.master.master:
+            if tab not in self.master.tabs_opened:
                 return
             
-            self.base.outline.update_symbols(
-                [
-                    OutlineItem(
-                        name=symbol.name,
-                        kind=symbol.kind,
-                        start=decode_position(symbol.range.start if isinstance(symbol, lsp.DocumentSymbol) else symbol.location.range.start),
-                        end=decode_position(symbol.range.end if isinstance(symbol, lsp.DocumentSymbol) else symbol.location.range.end),
-                        parent=symbol.containerName if isinstance(symbol, lsp.SymbolInformation) else None,
-                        children=[
-                            OutlineItem(
-                                name=child.name,
-                                kind=child.kind,
-                                start=decode_position(child.range.start),
-                                end=decode_position(child.range.end),
-                            )
-                            for child in symbol.children
-                        ] if isinstance(symbol, lsp.DocumentSymbol) else [],
-                    )
-                    for symbol in e.result
-                ])
+            self.base.outline.update_symbols(tab, e.result if e.result and isinstance(e.result[0], lsp.DocumentSymbol) else to_document_symbol(e.result))
             return

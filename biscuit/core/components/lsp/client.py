@@ -62,7 +62,7 @@ class LangServerClient:
             for lsp_event in self.client.recv(r):
                 self.handler.process(lsp_event)
         except Exception as e:
-            pass
+            print(e)
 
         return True
 

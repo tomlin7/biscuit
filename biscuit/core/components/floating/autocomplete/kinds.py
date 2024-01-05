@@ -2,7 +2,7 @@ kinds = (
     ("symbol-text", None),               # text
     ("symbol-method", "#AB7CCF"),        # method
     ("symbol-function", "#AB7CCF"),      # function
-    ("symbol-constructor", "#AB7CCF"),   # constructor
+    ("symbol-constructor", "#6eb1ee"),   # constructor
     ("symbol-field", "#6eb1ee"),         # field
     ("symbol-variable", "#6eb1ee"),      # variable
     ("symbol-class", "#de9327"),         # class

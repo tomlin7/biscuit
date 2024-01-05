@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import codecs
+import os
 import queue
 import re
 import threading
@@ -26,6 +27,7 @@ class Text(BaseText):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.path = path
+        self.filename = os.path.basename(path) if path else None
         self.encoding = 'utf-8'
         self.eol = "CRLF"
         self.exists = exists
@@ -250,6 +252,7 @@ class Text(BaseText):
         
         self.highlight_current_line()
         self.highlight_current_word()
+        self.base.languageservermanager.request_outline(self)
 
 
         # TODO send only portions of text on change to the LSPServer
@@ -625,6 +628,7 @@ class Text(BaseText):
 
     def event_unmapped(self, _):
         self.hide_autocomplete()
+        self.base.outline.tree.update_symbols()
         
     def event_copy(self, *_):
         self.event_generate("<<Copy>>")

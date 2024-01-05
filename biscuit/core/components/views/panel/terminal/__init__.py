@@ -36,7 +36,7 @@ class Terminal(PanelView):
         self.tabs = Tabs(self)
         self.tabs.grid(row=0, column=1, padx=(1, 0), sticky=tk.NS)
 
-        self.terminals = []
+        self.active_terminals = []
 
         self.default_terminal = Default(self, cwd=self.base.active_directory or get_home_directory())
         self.add_terminal(self.default_terminal)
@@ -52,7 +52,7 @@ class Terminal(PanelView):
 
     def add_terminal(self, terminal) -> None:
         "Appends a terminal to list. Create a tab."
-        self.terminals.append(terminal)
+        self.active_terminals.append(terminal)
         self.tabs.add_tab(terminal)
 
     def open_shell(self, shell) -> None:
@@ -63,16 +63,16 @@ class Terminal(PanelView):
 
     def delete_all_terminals(self) -> None:
         "Permanently delete all terminals."
-        for terminal in self.terminals:
+        for terminal in self.active_terminals:
             terminal.destroy()
 
         self.tabs.clear_all_tabs()
-        self.terminals.clear()
+        self.active_terminals.clear()
 
     def delete_terminal(self, terminal) -> None:
         "Permanently delete a terminal."
         terminal.destroy()
-        self.terminals.remove(terminal)
+        self.active_terminals.remove(terminal)
 
     def delete_active_terminal(self) -> None:
         "Closes the active tab"
@@ -116,5 +116,5 @@ class Terminal(PanelView):
         return self.tabs.active_tab.terminal
 
     def refresh(self) -> None:
-        if not self.terminals:
+        if not self.active_terminals:
             self.master.toggle_panel()
