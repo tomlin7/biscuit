@@ -3,34 +3,40 @@ import tkinter as tk
 import git
 
 
+def custom_get(start, end):
+    content = text.get(start, end)
+    tag_ranges = text.tag_ranges("codelens")
+
+    for tag_start, tag_end in zip(tag_ranges[0::2], tag_ranges[1::2]):
+        content = content.replace(text.get(tag_start, tag_end), '')
+
+    return content
+
 def get_commit_data(file_path):
     repo = git.Repo(search_parent_directories=True)
     commits = repo.iter_commits(paths=file_path)
     commit_data = [commit.message.strip() for commit in commits]
     return commit_data
 
-def handle_codelens_click(event: tk.Event):
-    line_number = int(event.widget.tag_names(tk.CURRENT)[0])  # Extract the line number from the tag
-    commit_data = get_commit_data("your_file_path_here")
-    if len(commit_data) >= line_number:
-        commit = commit_data[line_number - 1]
-        print(f"Clicked CodeLens on line {line_number}. Commit data: {commit}")
+def handle_codelens_click(commit):
+    # print(f"Commit data: {commit}")
+    print(custom_get('1.0', tk.END))
 
 root = tk.Tk()
 
 text = tk.Text(root)
 text.pack()
 
-# Add sample text
-for i in range(1, 11):
-    text.insert(tk.END, f"This is line {i}\n")
+with open("SECURITY.md") as f:
+    content = f.read()
+    text.insert(tk.END, content)
 
 # Create CodeLens annotations with commit data
 commit_data = get_commit_data("SECURITY.md")
 for line_number, commit in enumerate(commit_data, start=1):
-    tag = f"line_{line_number}"
-    text.tag_configure(tag, underline=True, foreground="blue")
-    text.tag_bind(tag, "<Button-1>", handle_codelens_click)
-    text.insert(f"{line_number}.0", f"[CodeLens] {commit}\n", tag)
+    text.tag_configure("codelens", underline=True, foreground="blue")
+    text.tag_bind("codelens", "<Button-1>", lambda _, commit=commit: handle_codelens_click(commit))
+    text.insert(f"{line_number}.0", f"[CodeLens] {commit}\n", "codelens")
+
 
 root.mainloop()
