@@ -37,6 +37,7 @@ class EventHandler:
             self.base.logger.info("Capabilities " + pprint.pformat(e.capabilities))
             for tab in self.master.tabs_opened:
                 self.master.open_tab(tab)
+                self.master.request_outline(tab)
 
             self.base.statusbar.process_indicator.hide()
             return
@@ -126,4 +127,12 @@ class EventHandler:
         if isinstance(e, lsp.Hover):
             requesting_tab, location = self.master._hover_requests.pop(e.message_id)
             requesting_tab.lsp_hover(HoverResponse(location, *hover_filter(e.contents)))
+            return
+        
+        if isinstance(e, lsp.MDocumentSymbols):
+            tab = self.master._outline_requests.pop(e.message_id)
+            if tab not in self.master.tabs_opened:
+                return
+            
+            self.base.outline.update_symbols(tab, e.result if e.result and isinstance(e.result[0], lsp.DocumentSymbol) else to_document_symbol(e.result))
             return

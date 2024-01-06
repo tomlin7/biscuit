@@ -183,6 +183,7 @@ class App(tk.Tk):
         self.contentpane = self.root.baseframe.contentpane
         self.sidebar = self.root.baseframe.sidebar
         self.explorer = self.sidebar.explorer
+        self.outline = self.sidebar.outline
         self.source_control = self.sidebar.source_control
         self.extensionsGUI = self.sidebar.extensions
         self.logger = self.panel.logger
@@ -247,10 +248,15 @@ class App(tk.Tk):
 
     def close_active_editor(self) -> None:
         self.editorsmanager.close_active_editor()
+    
+    def goto_location_in_active_editor(self, position: int) -> None:
+        if editor := self.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.goto(position)
 
     def goto_location(self, path: str, position: int) -> None:
         if self.editorsmanager.is_open(path):
-            self.editorsmanager.set_active_editor(path).content.goto(position)
+            self.editorsmanager.set_active_editor_by_path(path).content.goto(position)
             return
         
         editor = self.open_editor(path, exists=True)

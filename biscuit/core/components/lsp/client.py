@@ -43,6 +43,7 @@ class LangServerClient:
         self._autocomplete_req: dict[int, tuple[Text, CompletionRequest]] = {}
         self._hover_requests: dict[int, tuple[Text, str]] = {}
         self._gotodef_requests: dict[int, tuple[Text, str]] = {}
+        self._outline_requests: dict[int, Text] = {}
 
     def run_loop(self) -> None:
         if self.run():
@@ -61,7 +62,7 @@ class LangServerClient:
             for lsp_event in self.client.recv(r):
                 self.handler.process(lsp_event)
         except Exception as e:
-            pass
+            print(e)
 
         return True
 
@@ -96,7 +97,7 @@ class LangServerClient:
             
             if self.master.kill_thread:
                 self.base.after_cancel(self.master.kill_thread)
-            self.master.kill_thread = self.base.after(5000, delayed_removal)
+            self.master.kill_thread = self.base.after(50000, delayed_removal)
 
     def request_completions(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
@@ -138,6 +139,15 @@ class LangServerClient:
             )
         )
         self._gotodef_requests[request_id] = (tab, tab.get_mouse_pos())
+    
+    def request_outline(self, tab: Text) -> None:
+        if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
+            return
+        
+        request_id = self.client.documentSymbol(
+            lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
+        )
+        self._outline_requests[request_id] = tab
 
     def send_change_events(self, tab: Text) -> None:
         if self.client.state != lsp.ClientState.NORMAL:

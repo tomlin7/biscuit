@@ -28,10 +28,15 @@ class ActionSet(list):
         "Clear and update the items in the actionset."
         self.clear()
         self += items
+    
+    def add_action(self, command: str, callback: Callable) -> None:
+        "Add an item to the actionset."
+        self.append((command, callback))
+    
+    def add_pinned_actions(self, command: str, callback: Callable) -> None:
+        "Add an item to the pinned actionset."
+        self.pinned.append((command, callback))
 
     def get_pinned(self, term) -> list:
         "Returns the pinned items with the term formatted."
-        if not self.pinned:
-            return []
-
         return [[item[0].format(term)] + item[1:] for item in self.pinned]

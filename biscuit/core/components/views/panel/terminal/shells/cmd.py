@@ -12,7 +12,7 @@ class CommandPrompt(Terminal):
 
     """
     shell = "cmd"
-    name = "Command Prompt"
+    name = "cmd"
     icon = "cmd"
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)

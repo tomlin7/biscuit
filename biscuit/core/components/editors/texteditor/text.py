@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import codecs
+import os
 import queue
 import re
 import threading
@@ -26,6 +27,7 @@ class Text(BaseText):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.path = path
+        self.filename = os.path.basename(path) if path else None
         self.encoding = 'utf-8'
         self.eol = "CRLF"
         self.exists = exists
@@ -250,6 +252,7 @@ class Text(BaseText):
         
         self.highlight_current_line()
         self.highlight_current_word()
+        self.base.languageservermanager.request_outline(self)
 
 
         # TODO send only portions of text on change to the LSPServer
@@ -372,11 +375,11 @@ class Text(BaseText):
     def lsp_show_autocomplete(self, response: Completions) -> None:
         self.autocomplete.lsp_update_completions(self, response.completions)
     
-    def lsp_diagnostics(self, response: Underlines) -> None:
-        print("LSP <<< ", response)
-        for i in response.underline_list:
-            # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
-            print(i.start, i.color, i.tooltip_text)
+    def lsp_diagnostics(self, response: Underlines) -> None: ...
+        # print("LSP <<< ", response)
+        # for i in response.underline_list:
+        #     # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
+        #     print(i.start, i.color, i.tooltip_text)
     
     def lsp_goto_definition(self, response: Jump) -> None:
         if not response.locations:
@@ -625,7 +628,7 @@ class Text(BaseText):
 
     def event_unmapped(self, _):
         self.hide_autocomplete()
-        self.base.languageservermanager.tab_closed(self)
+        self.base.outline.tree.update_symbols()
         
     def event_copy(self, *_):
         self.event_generate("<<Copy>>")

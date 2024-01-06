@@ -116,6 +116,9 @@ class EditorsPane(Frame):
         "removes an editor, keeping it in cache."
         self.active_editors.remove(editor)
 
+        if editor.content and editor.content.editable:
+            self.base.languageservermanager.tab_closed(editor.content.text)
+
         # not keeping diff/games in cache
         if not editor.diff and editor.content:
             self.closed_editors[editor.path] = editor
@@ -143,6 +146,13 @@ class EditorsPane(Frame):
                 self.tabs.set_active_tab(tab)
         
         return editor
+
+    def set_active_editor_by_path(self, path: str) -> Editor:
+        "set an existing editor to currently shown one"
+        for tab in self.tabs.tabs:
+            if tab.editor.path == path:
+                self.tabs.set_active_tab(tab)
+                return tab.editor
 
     @property
     def active_editor(self) -> Editor:
