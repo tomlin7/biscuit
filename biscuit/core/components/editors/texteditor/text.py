@@ -394,7 +394,10 @@ class Text(BaseText):
         if not (response.text or response.docs):
             return self.hover.hide()
         
-        self.hover.show(self, response)
+        try:
+            self.hover.show(self, response)
+        except Exception as e:
+            print(e)
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)

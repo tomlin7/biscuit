@@ -29,7 +29,8 @@ class TextEditor(BaseEditor):
 
         self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist, language=language)
         self.linenumbers.attach(self.text)
-        self.minimap.attach(self.text)
+        if not self.minimalist:
+            self.minimap.attach(self.text)
         self.scrollbar.config(command=self.text.yview)
 
         self.text.config(font=self.font)
