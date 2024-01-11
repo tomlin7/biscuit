@@ -11,6 +11,7 @@ class Extensions(SidebarView):
         self.__buttons__ = (('refresh',), ('clear-all',), ('collapse-all',))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'extensions'
+        self.name = 'Extensions'
 
         self.searchterm = tk.StringVar(self)
 

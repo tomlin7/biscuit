@@ -17,6 +17,7 @@ class Outline(SidebarView):
         self.__buttons__ = [('refresh',), ('collapse-all',), ('ellipsis',),]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'symbol-class'
+        self.name = 'Outline'
 
         self.tree = OutlineTree(self)
         self.add_widget(self.tree)

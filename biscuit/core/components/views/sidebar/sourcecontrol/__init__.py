@@ -10,6 +10,7 @@ class SourceControl(SidebarView):
         self.__buttons__ = [('list-tree',), ('check',), ('refresh',)]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'source-control'
+        self.name = 'Source Control'
 
         self.menu = SourceControlMenu(self, 'files')
         self.menu.add_item("Show Staged")
