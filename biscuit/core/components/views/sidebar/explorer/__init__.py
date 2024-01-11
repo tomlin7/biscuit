@@ -12,6 +12,7 @@ class Explorer(SidebarView):
         self.__buttons__ = []
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'files'
+        self.name = 'Explorer'
 
         self.menu = ExplorerMenu(self, 'files')
         self.menu.add_item("Open Editors")
