@@ -28,6 +28,11 @@ class TextEditor(BaseEditor):
             self.minimap.grid(row=0, column=2, sticky=tk.NS)
 
         self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist, language=language)
+        
+        if self.exists:
+            self.text.load_file()
+            self.text.update_idletasks()
+        
         self.linenumbers.attach(self.text)
         if not self.minimalist:
             self.minimap.attach(self.text)

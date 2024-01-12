@@ -13,6 +13,7 @@ class SidebarView(View):
         super().__init__(master, *args, **kwargs)
         self.__buttons__: list[tuple(str, typing.Callable)] = []
         self.__icon__ = 'preview'
+        self.name = "View"
         self.__name__ = self.__class__.__name__
         
         self.pack_propagate(False)
