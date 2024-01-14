@@ -1,4 +1,5 @@
 import json
+import queue
 import threading
 import tkinter as tk
 
@@ -21,18 +22,21 @@ class Results(SidebarViewItem):
         self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
         self.list_url = self.repo_url + "extensions.json"
 
+        self.queue = queue.Queue()
+
         # self.watcher = ExtensionsWatcher(self)
         # self.watcher.watch()
 
         #TODO list installed extensions separately
 
-        self.fetching_list = threading.Event()
+        self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
 
     def refresh(self) -> None:
         if self.base.testing:
             return
 
+        self.clear()
         self.update_idletasks()
         self.after(5, self.run_fetch_list())
 
@@ -40,8 +44,8 @@ class Results(SidebarViewItem):
         if self.base.testing:
             return
 
-        if self.fetching_list.is_set():
-            self.fetching_list.wait()
+        if self.fetching.is_set():
+            self.fetching.wait()
 
         with self.extensions_lock: 
             threading.Thread(target=self.fetch_list).start()
@@ -59,17 +63,23 @@ class Results(SidebarViewItem):
         if not response.status_code == 200:
             return
 
-        self.clear()
         self.extensions = json.loads(response.text)
 
         for name, data in self.extensions.items():
             #TODO add further loops for folders
+            self.queue.put((name, data))
+    
+    def gui_refresh_loop(self) -> None:
+        if not self.queue.empty():
+            name, data = self.queue.get()
             ext = Extension(self, name, data)
             ext.pack(in_=self.content, fill=tk.X)
+        
+        self.after(5, self.gui_refresh_loop)
 
     def clear(self, *_) -> None:
         for widget in self.content.winfo_children():
             widget.destroy()
             self.content.update_idletasks()
 
-        self.fetching_list.set()
+        self.fetching.set()

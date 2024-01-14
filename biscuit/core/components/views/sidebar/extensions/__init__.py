@@ -23,3 +23,4 @@ class Extensions(SidebarView):
 
     def initialize(self) -> None:
         self.results.refresh()
+        self.results.gui_refresh_loop()
