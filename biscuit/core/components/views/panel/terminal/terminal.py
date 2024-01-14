@@ -2,18 +2,16 @@ import os
 import tkinter as tk
 from threading import Thread
 
-from .ansi import replace_newline, strip_ansi_escape_sequences
-
-from biscuit.core.components.utils import Scrollbar
-
-from ..panelview import PanelView
-from .text import TerminalText
-
-import ptyprocess
 if os.name == 'nt':
     from winpty import PTY
 else:
     from ptyprocess import PtyProcessUnicode as PTY
+
+from biscuit.core.components.utils import Scrollbar
+
+from .ansi import replace_newline, strip_ansi_escape_sequences
+from .text import TerminalText
+from ..panelview import PanelView
 
 
 class Terminal(PanelView):
@@ -73,7 +71,7 @@ class Terminal(PanelView):
     def destroy(self, *_) -> None:
         self.alive = False
 
-    def run_command(self, command) -> None:
+    def run_command(self, command: str) -> None:
         self.insert(command, "command")
         self.enter()
 
@@ -97,7 +95,7 @@ class Terminal(PanelView):
                 buf = [strip_ansi_escape_sequences(i) for i in replace_newline(buf).splitlines()]
                 self.insert('\n'.join(buf))
                 
-    def insert(self, output, tag=None) -> None:
+    def insert(self, output: str, tag='') -> None:
         self.text.insert(tk.END, output, tag)
         #self.terminal.tag_add("prompt", "insert linestart", "insert")
         self.text.see(tk.END)
@@ -109,7 +107,7 @@ class Terminal(PanelView):
     def clear(self) -> None:
         self.text.clear()
 
-    def ctrl_key(self, key) -> None:
+    def ctrl_key(self, key: str) -> None:
         if key == 'c':
             self.run_command('\x03')
             
