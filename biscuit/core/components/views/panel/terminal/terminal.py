@@ -1,7 +1,6 @@
+import os
 import tkinter as tk
 from threading import Thread
-
-from requests import head
 
 from .ansi import replace_newline, strip_ansi_escape_sequences
 
@@ -9,9 +8,13 @@ from biscuit.core.components.utils import Scrollbar
 
 from ..panelview import PanelView
 from .text import TerminalText
-from winpty import PTY
-# from pty import PtyProcess
-# from ptyprocess import PtyProcess
+
+import ptyprocess
+if os.name == 'nt':
+    from winpty import PTY
+else:
+    from ptyprocess import PtyProcessUnicode as PTY
+
 
 class Terminal(PanelView):
     """
@@ -25,7 +28,7 @@ class Terminal(PanelView):
         start_service - start the terminal service
         destroy - kill the terminal service
         command - run custom commands
-        enter - flush terminal
+        enter - confirm a command at input
         write - write text to terminal
     """
     name: str
