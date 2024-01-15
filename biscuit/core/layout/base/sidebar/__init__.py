@@ -107,14 +107,18 @@ class Sidebar(Frame):
         "Show explorer view."
         self.show_view(self.default_views[0])
 
+    def show_outline(self) -> None:
+        "Show outline view."
+        self.show_view(self.default_views[1])
+
     def show_search(self) -> None:
         "Show search view."
-        self.show_view(self.default_views[1])
+        self.show_view(self.default_views[2])
 
     def show_source_control(self) -> None:
         "Show source control view."
-        self.show_view(self.default_views[2])
+        self.show_view(self.default_views[3])
 
     def show_extensions(self) -> None:
         "Show extensions view."
-        self.show_view(self.default_views[3])
+        self.show_view(self.default_views[4])

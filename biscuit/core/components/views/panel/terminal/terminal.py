@@ -3,7 +3,7 @@ import tkinter as tk
 from threading import Thread
 
 if os.name == 'nt':
-    from winpty import PTY
+    from winpty import PtyProcess as PTY
 else:
     from ptyprocess import PtyProcessUnicode as PTY
 
@@ -63,9 +63,7 @@ class Terminal(PanelView):
         self.alive = True
         self.last_command = None
         
-        self.p = PTY(80, 25)
-        self.p.spawn(self.shell)
-
+        self.p = PTY.spawn([self.shell])
         Thread(target=self.write_loop, daemon=True).start()
 
     def destroy(self, *_) -> None:
