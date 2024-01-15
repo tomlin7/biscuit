@@ -44,10 +44,6 @@ class Text(BaseText):
         self.hover_after = None
         self.last_hovered = None
 
-        if self.exists:
-            self.load_file()
-            self.update_idletasks()
-
         # self.last_change = Change(None, None, None, None, None)
         self.highlighter = Highlighter(self, language)
         self.base.statusbar.on_open_file(self)

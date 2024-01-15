@@ -11,8 +11,8 @@ class CommandPrompt(Terminal):
     Shows Not Available in case variable is not set.
 
     """
-    shell = "cmd"
-    name = "cmd"
+    shell = "C:\\windows\\system32\\cmd.exe"
+    name = "Default"
     icon = "cmd"
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)

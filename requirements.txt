@@ -13,3 +13,5 @@ tkinterweb
 mistune
 sansio_lsp_client
 chardet 
+pywinpty; platform_system == "Windows"
+ptyprocess; platform_system != "Windows"

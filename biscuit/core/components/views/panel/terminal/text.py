@@ -89,14 +89,19 @@ class TerminalText(Text):
         if not self.proxy_enabled:
             return self.tk.call((self._orig,) + args)
 
-        largs = list(args)
-        if args[0] == 'insert':
-            if self.compare('insert', '<', 'input'):
-                self.mark_set('insert', 'end')
-        elif args[0] == "delete":
-            if self.compare(largs[1], '<', 'input'):
-                if len(largs) == 2:
-                    return
-                largs[1] = 'input'
-        result = self.tk.call((self._orig,) + tuple(largs))
-        return result
+        try:
+            largs = list(args)
+            if args[0] == 'insert':
+                if self.compare('insert', '<', 'input'):
+                    self.mark_set('insert', 'end')
+            elif args[0] == "delete":
+                if self.compare(largs[1], '<', 'input'):
+                    if len(largs) == 2:
+                        return
+                    largs[1] = 'input'
+            
+            result = self.tk.call((self._orig,) + tuple(largs))
+            return result
+        except:
+            # most probably some tkinter-unhandled exception 
+            pass

@@ -12,6 +12,7 @@ class Search(SidebarView):
         self.__buttons__ = (('refresh',), ('clear-all',), ('collapse-all',))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'search'
+        self.name = 'Search'
         self.searchterm = tk.StringVar(self)
 
         self.results = Results(self, **self.base.theme.views.sidebar.item) 

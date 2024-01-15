@@ -1,4 +1,5 @@
 import inspect
+import queue
 import tkinter as tk
 from datetime import datetime
 
@@ -40,6 +41,8 @@ class Logs(PanelView):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
+        self.queue = queue.Queue()
+
         self.text = tk.Text(self, relief=tk.FLAT, padx=10, pady=10, 
                             font=("Consolas", 11), **self.base.theme.views.panel.logs)
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
@@ -59,6 +62,14 @@ class Logs(PanelView):
         self.text.tag_config('warning', foreground=self.base.theme.views.panel.logs.warning)
         self.text.tag_config('error', foreground=self.base.theme.views.panel.logs.error, font=fontbold)
 
+        self.gui_refresh_loop()
+
+    def gui_refresh_loop(self) -> None:
+        if not self.queue.empty():
+            self.write(*self.queue.get())
+            
+        self.after(10, self.gui_refresh_loop)
+
     def write(self, *args) -> None:
         self.text.config(state=tk.NORMAL)
         for i in args:
@@ -70,14 +81,14 @@ class Logs(PanelView):
         self.text.see(tk.END)
     
     def newline(self) -> None:
-        self.write('\n')
+        self.queue.put(('\n',))
 
     def log(self, type: str, caller: str, text: str) -> None:
-        self.write(
+        self.queue.put(( 
             '[', (datetime.now().strftime("%H:%M:%S:%f"), 'time'), ']', 
             type, 
             '[', (caller, 'caller'), f']: {text}'
-        )
+        ))
         self.newline()
 
     def info(self, text: str) -> None:

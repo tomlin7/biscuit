@@ -17,7 +17,7 @@ class Slot(Menubutton):
         self.view = view
         self.enabled = False
 
-        self.bubble = Bubble(self, text=view.__icon__)
+        self.bubble = Bubble(self, text=view.name)
         self.bind('<Enter>', self.bubble.show)
         self.bind('<Leave>', self.bubble.hide)
 
