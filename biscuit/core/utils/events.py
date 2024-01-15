@@ -186,6 +186,9 @@ class Events:
     def show_explorer(self, *_) -> None:
         self.base.sidebar.show_explorer()
 
+    def show_outline(self, *_) -> None:
+        self.base.sidebar.show_outline()
+
     def show_search(self, *_) -> None:
         self.base.sidebar.show_search()
 

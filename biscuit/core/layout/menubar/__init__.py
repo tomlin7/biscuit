@@ -156,6 +156,7 @@ class Menubar(Frame):
         self.view_menu = self.add_menu("View")
         self.view_menu.add_item("Command Palette...", lambda: self.base.palette.show_prompt(">"))
         self.view_menu.add_item("Explorer", events.show_explorer)
+        self.view_menu.add_item("Outline", events.show_outline)
         self.view_menu.add_item("Search", events.show_search)
         self.view_menu.add_item("Source Control", events.show_source_control)
         self.view_menu.add_item("Extensions", events.show_extensions)

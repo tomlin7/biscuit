@@ -52,10 +52,7 @@ class IO:
             self.cmd, 
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, 
-            stderr=subprocess.PIPE,
-            startupinfo=subprocess.STARTUPINFO(
-                dwFlags=subprocess.STARTF_USESHOWWINDOW
-            ))
+            stderr=subprocess.PIPE)
         self.base.logger.info(f"PID: {self.p.pid} CMD: {self.cmd} CWD: {self.cwd}")
 
         Thread(target=self._process_in, daemon=True).start()
