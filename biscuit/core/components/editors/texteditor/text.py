@@ -585,6 +585,15 @@ class Text(BaseText):
             self.master.after(100, self.process_queue)
         
         self.master.master.event_generate("<<FileLoaded>>", when="tail")
+    
+    def custom_get(self, start, end):
+        content = self.get(start, end)
+        tag_ranges = self.tag_ranges("ignore_tag")
+
+        for tag_start, tag_end in zip(tag_ranges[0::2], tag_ranges[1::2]):
+            content = content.replace(self.get(tag_start, tag_end), '')
+
+        return content
 
     def save_file(self, path=None):
         if path:

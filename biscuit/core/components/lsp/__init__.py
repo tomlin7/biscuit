@@ -58,7 +58,7 @@ class LanguageServerManager:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
                 instance.request_outline(tab)
-    
+
     def content_changed(self, tab: Text) -> None:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
