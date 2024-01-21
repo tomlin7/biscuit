@@ -1,3 +1,8 @@
+"""
+Parts of the implementation is based on and are inspired by
+Porcupine's LSP plugin https://github.com/Akuli/porcupine/
+"""
+
 from __future__ import annotations
 
 import itertools
