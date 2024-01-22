@@ -10,59 +10,7 @@ from .layout import *
 from .settings import *
 from .utils import *
 
-
-class App(tk.Tk):
-    """
-    BISCUIT CORE
-    ------------
-
-    Main point of having this class is to have a single point of access to all the important parts of the app. This class 
-    holds reference to all the components of Biscuit and every class of biscuit have a reference back to this `base` class.
-    i.e. `self.base` is the reference to this class from any other class of biscuit.
-
-    Usage
-    -----
-    
-    Example: In order to access the open editor from the git:
-
-        class Git:
-            def foo(self):
-                editor = self.base.editorsmanager.active_editor 
-                if editor.content and editor.content.exists:
-                    print(editor.path)
-    
-    Example: Accessing the active editor instance from Foo class of biscuit: 
-        
-        class Foo:
-            def foo(self):
-                editor = self.base.editorsmanager.active_editor 
-                if (editor.content and editor.content.exists):
-                    print(editor.path)
-                    if (editor.content.editable):
-                        self.base.notifications.info(":)")
-
-    Attributes
-    ----------
-    appdir
-        the directory where the app executable is at
-    dir
-        optional argument to open a folder from cli
-
-    """
-    def __init__(self, appdir: str="", dir: str="", *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.base = self
-        self.setup_path(appdir)
-
-        self.setup()
-        self.late_setup()
-        self.initialize_editor(dir)      
-
-    def run(self) -> None:
-        self.mainloop()
-
-        # after the gui mainloop ends, also stop the extension server
-        self.extensionsmanager.stop_server()
+class SetupManager:
 
     def setup(self) -> None:
         # flag that all components have been added
@@ -82,31 +30,6 @@ class App(tk.Tk):
         grip_e = tk.Frame(self, bg=self.base.theme.primary_background, cursor='right_side')
         grip_e.bind("<B1-Motion>", lambda e: self.resize('e'))
         grip_e.pack(fill=tk.Y, side=tk.LEFT)
-
-    def late_setup(self) -> None:
-        # setup after initializing base gui
-        self.setup_references()
-        self.binder.late_bind_all()
-        self.editorsmanager.add_default_editors()
-        self.settings.late_setup()
-
-        self.focus_set()
-        self.setup_extensions()
-
-    def setup_path(self, appdir: str) -> None:
-        # setup all paths used across editor     
-        self.appdir = os.path.dirname(appdir)
-        sys.path.append(self.appdir)
-
-        self.resdir = os.path.join(getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res")
-        self.configdir = os.path.join(self.appdir, "config")
-        self.extensionsdir = os.path.join(self.appdir, "extensions")
-
-        try:
-            # creates the extensions directory next to executable
-            os.makedirs(self.extensionsdir, exist_ok=True)
-        except Exception as e:
-            print(f"Extensions failed: {e}")
 
     def setup_configs(self) -> None:
         self.git_found = False
@@ -167,11 +90,38 @@ class App(tk.Tk):
         self.palette = Palette(self)
         self.findreplace = FindReplace(self)
         self.notifications = Notifications(self)
-        
+
         self.autocomplete = AutoComplete(self)
         self.definitions = Definitions(self)
         self.pathview = PathView(self)
         self.hover = Hover(self)
+
+    def setup_path(self, appdir: str) -> None:
+        # setup all paths used across editor
+        self.appdir = os.path.dirname(appdir)
+        sys.path.append(self.appdir)
+
+        self.resdir = os.path.join(getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res")
+        self.configdir = os.path.join(self.appdir, "config")
+        self.extensionsdir = os.path.join(self.appdir, "extensions")
+
+        try:
+            # creates the extensions directory next to executable
+            os.makedirs(self.extensionsdir, exist_ok=True)
+        except Exception as e:
+            print(f"Extensions failed: {e}")
+
+class LateSetupManager:
+
+    def late_setup(self) -> None:
+        # setup after initializing base gui
+        self.setup_references()
+        self.binder.late_bind_all()
+        self.editorsmanager.add_default_editors()
+        self.settings.late_setup()
+
+        self.focus_set()
+        self.setup_extensions()
 
     def setup_references(self) -> None:
         "References to various components of the editor"
@@ -196,32 +146,13 @@ class App(tk.Tk):
         self.extensionsmanager = ExtensionManager(self)
         self.extensionsGUI.initialize()
 
-    def initialize_editor(self, dir: str) -> None:
-        self.palette.generate_help_actionset()
-        self.logger.info('Initializing editor finished.')
+class Misc:
 
-        self.update_idletasks()
-        self.initialized = True
-
-        self.menubar.update()
-        self.set_title()
-
-        self.open_directory(dir)
-
-    def clone_repo(self, url: str, dir: str) -> None:
-        try:
-            def clone() -> None:
-                repodir = self.git.clone(url, dir)
-                self.open_directory(repodir)
-
-            temp = threading.Thread(target=clone)
-            temp.daemon = True
-            temp.start()
-
-        except Exception as e:
-            self.base.logger.error(f"Cloning repository failed: {e}")
-            self.base.notifications.error("Cloning repository failed: see logs")
+    def set_title(self, title: str=None) -> None:
+        if not self.initialized:
             return
+        self.menubar.set_title(title)
+        self.menubar.reposition_title()
 
     def open_directory(self, dir: str) -> None:
         if not dir or not os.path.isdir(dir):
@@ -238,6 +169,26 @@ class App(tk.Tk):
         self.git.check_git()
         self.update_git()
 
+    def update_git(self) -> None:
+        self.statusbar.update_git_info()
+        self.source_control.refresh()
+
+
+    def clone_repo(self, url: str, dir: str) -> None:
+        try:
+            def clone() -> None:
+                repodir = self.git.clone(url, dir)
+                self.open_directory(repodir)
+
+            temp = threading.Thread(target=clone)
+            temp.daemon = True
+            temp.start()
+
+        except Exception as e:
+            self.base.logger.error(f"Cloning repository failed: {e}")
+            self.base.notifications.error("Cloning repository failed: see logs")
+            return
+
     def close_active_directory(self) -> None:
         self.active_directory = None
         self.explorer.directory.close_directory()
@@ -248,7 +199,7 @@ class App(tk.Tk):
 
     def close_active_editor(self) -> None:
         self.editorsmanager.close_active_editor()
-    
+
     def goto_location_in_active_editor(self, position: int) -> None:
         if editor := self.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
@@ -258,7 +209,7 @@ class App(tk.Tk):
         if self.editorsmanager.is_open(path):
             self.editorsmanager.set_active_editor_by_path(path).content.goto(position)
             return
-        
+
         editor = self.open_editor(path, exists=True)
         editor.bind("<<FileLoaded>>", lambda e: editor.content.goto(position))
 
@@ -281,13 +232,10 @@ class App(tk.Tk):
         #TODO game manager class
         register_game(game)
         self.settings.gen_actionset()
-    
+
     def register_langserver(self, language: str, command: str) -> None:
         self.languageservermanager.register_langserver(language, command)
 
-    def update_git(self) -> None:
-        self.statusbar.update_git_info()
-        self.source_control.refresh()
 
     def open_in_new_window(self, dir: str) -> None:
         #Process(target=App(sys.argv[0], dir).run).start()
@@ -332,11 +280,6 @@ class App(tk.Tk):
             except tk.TclError:
                 pass
 
-    def set_title(self, title: str=None) -> None:
-        if not self.initialized:
-            return
-        self.menubar.set_title(title)
-        self.menubar.reposition_title()
 
     def resize(self, mode: str) -> None:
         abs_x = self.winfo_pointerx() - self.winfo_rootx()
@@ -366,3 +309,73 @@ class App(tk.Tk):
                     return self.geometry(f"{width}x{height}+{x}+{y}")
 
         self.menubar.reposition_title()
+
+class App \
+    (tk.Tk,
+     SetupManager,
+     LateSetupManager,
+     Misc):
+    """
+    BISCUIT CORE
+    ------------
+
+    Main point of having this class is to have a single point of access to all the important parts of the app. This class 
+    holds reference to all the components of Biscuit and every class of biscuit have a reference back to this `base` class.
+    i.e. `self.base` is the reference to this class from any other class of biscuit.
+
+    Usage
+    -----
+    
+    Example: In order to access the open editor from the git:
+
+        class Git:
+            def foo(self):
+                editor = self.base.editorsmanager.active_editor 
+                if editor.content and editor.content.exists:
+                    print(editor.path)
+    
+    Example: Accessing the active editor instance from Foo class of biscuit: 
+        
+        class Foo:
+            def foo(self):
+                editor = self.base.editorsmanager.active_editor 
+                if (editor.content and editor.content.exists):
+                    print(editor.path)
+                    if (editor.content.editable):
+                        self.base.notifications.info(":)")
+
+    Attributes
+    ----------
+    appdir
+        the directory where the app executable is at
+    dir
+        optional argument to open a folder from cli
+
+    """
+    def __init__(self, appdir: str="", dir: str="", *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.base = self
+        self.setup_path(appdir)
+
+        self.setup()
+        self.late_setup()
+        self.initialize_editor(dir)      
+
+    def run(self) -> None:
+        self.mainloop()
+
+        # after the gui mainloop ends, also stop the extension server
+        self.extensionsmanager.stop_server()
+
+    def initialize_editor(self, dir: str) -> None:
+        self.palette.generate_help_actionset()
+        self.logger.info('Initializing editor finished.')
+
+        self.update_idletasks()
+        self.initialized = True
+
+        self.menubar.update()
+        self.set_title()
+
+        self.open_directory(dir)
+
