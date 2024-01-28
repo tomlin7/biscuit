@@ -19,7 +19,7 @@ class FixedSizeStack:
 
     @property
     def list(self):
-        return [(i, lambda j=i: self.base.open(j)) for i in self.stack[::-1]]
+        return [(i, lambda _, i=i: self.base.open(i)) for i in self.stack[::-1]]
 
     def push(self, item):
         if len(self.stack) == self.capacity:
