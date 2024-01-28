@@ -10,7 +10,6 @@ Defines the layout of app.
 """
 from __future__ import annotations
 
-
 import tkinter as tk
 import typing
 
@@ -33,14 +32,14 @@ class Root(Frame):
         self.config(bg=self.base.theme.border)
 
         grip_w = tk.Frame(self, bg=self.base.theme.primary_background, cursor='left_side')
-        grip_w.bind("<B1-Motion>", lambda _: self.resize('w'))
+        grip_w.bind("<B1-Motion>", lambda _: self.base.resize('w'))
         grip_w.pack(fill=tk.Y, side=tk.LEFT)
 
         container = Frame(self)
         container.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         grip_e = tk.Frame(self, bg=self.base.theme.primary_background, cursor='right_side')
-        grip_e.bind("<B1-Motion>", lambda _: self.resize('e'))
+        grip_e.bind("<B1-Motion>", lambda _: self.base.resize('e'))
         grip_e.pack(fill=tk.Y, side=tk.LEFT)
 
         grip_n = tk.Frame(self, bg=self.base.theme.primary_background, cursor='top_side')
