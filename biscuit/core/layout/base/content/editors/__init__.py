@@ -13,24 +13,22 @@ Holds the editors and provides an interface to manage the editor tabs.
 """
 from __future__ import annotations
 
+import os
+import tkinter as tk
 import typing
 from typing import List, Union
 
+from biscuit.core.components.editors import Editor, Welcome
 from biscuit.core.components.editors.editor import BaseEditor
 from biscuit.core.components.floating.palette.actionset import ActionSet
-
-if typing.TYPE_CHECKING:
-    from .. import ContentPane
-
-import os
-import tkinter as tk
-
-from biscuit.core.components.editors import Editor, Welcome
 from biscuit.core.components.games import Game
 from biscuit.core.components.utils import Frame
 
 from .editorsbar import Editorsbar
 from .empty import Empty
+
+if typing.TYPE_CHECKING:
+    from .. import ContentPane
 
 
 class EditorsPane(Frame):
@@ -73,6 +71,10 @@ class EditorsPane(Frame):
     def add_default_editors(self) -> None:
         "Adds all default editors"
         self.add_editors(self.default_editors)
+    
+    def add_welcome(self) -> None:
+        "Shows welcome tab"
+        self.add_editor(Welcome(self))
 
     def add_editors(self, editors: list[Editor]) -> None:
         "Append <Editor>s to list. Create tabs for them."

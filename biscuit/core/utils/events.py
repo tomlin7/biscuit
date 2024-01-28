@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import typing
+import webbrowser as web
+from tkinter import messagebox
 
 if typing.TYPE_CHECKING:
     from ... import App
@@ -55,6 +57,9 @@ class Events:
                         return editor.save(path)
                 if editor.content.editable:
                     editor.save()
+    
+    def open_settings(self, *_) -> None:
+        self.base.open_settings()
 
     def close_file(self, *_) -> None:
         self.base.close_active_editor()
@@ -203,3 +208,31 @@ class Events:
 
     def show_logs(self, *_) -> None:
         self.base.panel.show_logs()
+    
+    def show_welcome(self, *_) -> None:
+        self.base.editorsmanager.add_welcome()
+    
+    def show_command_prompt(self, *_) -> None:
+        self.base.palette.show_prompt(">")
+    
+    def documentation(self, *_) -> None:
+        web.open("https://billyeatcookies.github.io/biscuit/")
+    
+    def release_notes(self, *_) -> None:
+        web.open("https://github.com/billyeatcookies/biscuit/blob/main/CHANGELOG.md")
+    
+    def report_bug(self, *_) -> None:
+        web.open("https://github.com/billyeatcookies/biscuit/issues/new?assignees=billyeatcookies&labels=bug&projects=&template=bug_report.md")
+
+    def request_feature(self, *_) -> None:
+        web.open("https://github.com/billyeatcookies/biscuit/issues/new?assignees=billyeatcookies&labels=enhancement&projects=&template=feature_request.md")
+
+    def code_of_conduct(self, *_) -> None:
+        web.open("https://github.com/billyeatcookies/biscuit/blob/main/CODE_OF_CONDUCT.md")
+
+    def view_license(self, *_) -> None:
+        web.open("https://github.com/billyeatcookies/biscuit/blob/main/LICENSE.md")
+    
+    def about(self, *_) -> None:
+        messagebox.showinfo("Biscuit", str(self.base.sysinfo))
+        self.base.logger.info(str(self.base.sysinfo))

@@ -100,6 +100,7 @@ class Menubar(Frame):
         self.add_edit_menu()
         self.add_selection_menu()
         self.add_view_menu()
+        self.add_help_menu()
 
     def add_file_menu(self) -> None:
         events = self.events
@@ -112,13 +113,15 @@ class Menubar(Frame):
         self.file_menu.add_item("Open Folder", events.open_directory)
         # TODO open recent files 
         self.file_menu.add_separator()
-        self.file_menu.add_item("Close Editor", events.close_file)
-        self.file_menu.add_item("Close Folder", events.close_dir)
-        self.file_menu.add_item("Close Window", events.quit)
-        self.file_menu.add_separator()
         self.file_menu.add_item("Save", events.save)
         self.file_menu.add_item("Save As...", events.save_as)
         self.file_menu.add_item("Save All", events.save_all)
+        self.file_menu.add_separator()
+        self.file_menu.add_item("Preferences", events.open_settings)
+        self.file_menu.add_separator()
+        self.file_menu.add_item("Close Editor", events.close_file)
+        self.file_menu.add_item("Close Folder", events.close_dir)
+        self.file_menu.add_item("Close Window", events.quit)
         self.file_menu.add_separator()
         self.file_menu.add_item("Exit", events.quit)
 
@@ -163,6 +166,23 @@ class Menubar(Frame):
         self.view_menu.add_separator()
         self.view_menu.add_item("Terminal", events.show_terminal)
         self.view_menu.add_item("Log", events.show_logs)
+    
+    def add_help_menu(self) -> None:
+        events = self.events
+
+        self.help_menu = self.add_menu("Help")
+        self.help_menu.add_item("Welcome", events.show_welcome)
+        self.help_menu.add_item("Show All Commands", events.show_command_prompt)
+        self.help_menu.add_item("Documentation", events.documentation)
+        self.help_menu.add_item("Show Release Notes", events.release_notes)
+        self.help_menu.add_separator()
+        self.help_menu.add_item("Report Bug", events.report_bug)
+        self.help_menu.add_item("Request Feature", events.request_feature)
+        self.help_menu.add_separator()
+        self.help_menu.add_item("View License", events.view_license)
+        self.help_menu.add_item("Code of Conduct", events.code_of_conduct)
+        self.help_menu.add_separator()
+        self.help_menu.add_item("About", events.about)
 
     def close_all_menus(self, *_) -> None:
         for menu in self.menus:

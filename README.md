@@ -15,7 +15,8 @@
     <a href=https://github.com/billyeatcookies/Biscuit/blob/main/CODE_OF_CONDUCT.md>Code of Conduct</a> • 
     <a href=https://github.com/billyeatcookies/Biscuit/releases>Downloads</a> • 
     <a href=https://billyeatcookies.github.io/biscuit-extensions>Marketplace</a><br><br>
-    <img src="https://github.com/billyeatcookies/biscuit/assets/70792552/75c1eaf8-04d1-4945-859f-52b32b36d529" width=2000><br>
+    <img src="https://github.com/billyeatcookies/biscuit/assets/70792552/75c1eaf8-04d1-4945-859f-52b32b36d529" width=2000><br><br>
+    <code>"Life is short, eat more biscuits."</code>
 </h1>
 
 Biscuit is a lightweight, awesome code editor for any language. Biscuit supports essential language features such as Smart Code Completions, Syntax highlighting, etc. We wrote it in python, using only tkinter for GUI. It's a great alternative to [insert funny thing here]! Scroll down to see [some of the features](https://github.com/billyeatcookies/Biscuit/tree/main?tab=readme-ov-file#features). 
