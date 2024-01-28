@@ -50,18 +50,18 @@ class Settings:
         self.setup_font()
         self.gen_actionset()
 
-    def register_command(self, name: str, command) -> None:
+    def register_command(self, command: str, callback: typing.Callable) -> None:
         """
         Registers a new command to the action set.
 
         Parameters
         ----------
-        name: 
-            The name of the command.
         command: 
+            The name of the command.
+        callback: 
             The function to be executed when the command is triggered.
         """
-        self.commands.append((name, command))
+        self.commands.append((command, callback))
         self.gen_actionset()
 
     def gen_actionset(self) -> None:
