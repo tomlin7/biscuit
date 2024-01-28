@@ -6,5 +6,6 @@ from .extensions import ExtensionManager
 from .floating import *
 from .games import BaseGame, register_game
 from .git import Git
+from .history import HistoryManager
 from .lsp import LanguageServerManager
 from .views import *

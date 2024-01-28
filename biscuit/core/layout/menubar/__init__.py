@@ -111,7 +111,8 @@ class Menubar(Frame):
         self.file_menu.add_separator()
         self.file_menu.add_item("Open File", events.open_file)
         self.file_menu.add_item("Open Folder", events.open_directory)
-        # TODO open recent files 
+        self.file_menu.add_item("Open Recent File...", events.open_recent_file)
+        self.file_menu.add_item("Open Recent Folder...", events.open_recent_dir)
         self.file_menu.add_separator()
         self.file_menu.add_item("Save", events.save)
         self.file_menu.add_item("Save As...", events.save_as)

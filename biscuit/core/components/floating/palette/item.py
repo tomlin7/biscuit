@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import tkinter as tk
+import typing
 
 from biscuit.core.components.utils import Text
 
+if typing.TYPE_CHECKING:
+    from . import Palette
 
 class PaletteItem(Text):
-    def __init__(self, master, text, command, description="", *args, **kwargs) -> None:
+    def __init__(self, master: Palette, text: str, command: str, description="", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.text = text
         self.description = description
@@ -29,8 +34,8 @@ class PaletteItem(Text):
         self.hovered = False
 
     def on_click(self, *args) -> None:
-        self.command(self.master.master.searchbar.term)
-        self.master.master.hide()
+        self.command(self.master.searchbar.term)
+        self.master.hide()
 
     def toggle_selection(self) -> None:
         if self.selected:

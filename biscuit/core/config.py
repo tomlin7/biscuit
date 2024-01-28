@@ -7,6 +7,7 @@ from .components import *
 from .settings import *
 from .utils import *
 
+
 class ConfigManager:
     """
     CONFIG MANAGER
@@ -42,6 +43,7 @@ class ConfigManager:
 
         self.sysinfo = SysInfo(self)
         self.settings = Settings(self)
+        self.history = HistoryManager(self)
 
         self.config = self.settings.config
         self.theme = self.config.theme
@@ -59,6 +61,12 @@ class ConfigManager:
         self.resdir = os.path.join(getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res")
         self.configdir = os.path.join(self.appdir, "config")
         self.extensionsdir = os.path.join(self.appdir, "extensions")
+        self.datadir = os.path.join(self.appdir, "data")
+        
+        try:
+            os.makedirs(self.datadir, exist_ok=True)
+        except Exception as e:
+            print(f"Data directory invalid: {e}")
 
         try:
             # creates the extensions directory next to executable

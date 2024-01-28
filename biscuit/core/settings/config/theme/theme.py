@@ -80,6 +80,7 @@ class EditorsPane(FrameThemeObject):
         super().__init__(*args, **kwargs)
         self.bar = FrameThemeObject(self)
         self.bar.tab = HighlightableThemeObject(self.bar)
+        self.bar.tab.icon = ThemeObject(self.bar.tab)
         self.bar.tab.close = HighlightableThemeObject(self.bar)
 
 class PanelPane(FrameThemeObject):

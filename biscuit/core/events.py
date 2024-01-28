@@ -1,19 +1,20 @@
 from __future__ import annotations
 
+import os
 import threading
 import typing
-import os
+
+from biscuit.core.gui import GUIManager
 
 if typing.TYPE_CHECKING:
     from .layout import *
 
 from .components import *
+from .config import ConfigManager
 from .settings import *
 
-from .config import ConfigManager
 
-
-class EventManager(ConfigManager):
+class EventManager(GUIManager, ConfigManager):
     """
     EVENT MANAGER
     -------------
@@ -43,6 +44,18 @@ class EventManager(ConfigManager):
             return
         self.menubar.set_title(title)
         self.menubar.reposition_title()
+    
+    def open(self, path: str) -> None:
+        if not path:
+            return
+        
+        if os.path.isdir(path):
+            return self.open_directory(path)
+        
+        if os.path.isfile(path):
+            return self.open_editor(path)
+        
+        self.notifications.error(f"Path does not exist: {path}")
 
     def open_directory(self, dir: str) -> None:
         if not dir or not os.path.isdir(dir):
@@ -56,8 +69,13 @@ class EventManager(ConfigManager):
         self.terminalmanager.delete_all_terminals()
         self.terminalmanager.open_terminal()
 
-        self.git.check_git()
-        self.update_git()
+        try:
+            self.git.check_git()
+            self.update_git()
+        except Exception as e:
+            self.logger.error(f"Checking git failed: {e}")
+            self.notifications.error("Checking git failed: see logs")
+            return
 
     def update_git(self) -> None:
         self.statusbar.update_git_info()

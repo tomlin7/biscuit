@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import os
 import typing
 import webbrowser as web
+from ast import arg
+from threading import Thread
 from tkinter import messagebox
 
 if typing.TYPE_CHECKING:
@@ -29,10 +32,24 @@ class Events:
         self.base.open_new_window()
 
     def open_file(self, *_) -> None:
-        self.base.open_editor(filedialog.askopenfilename())
+        path = filedialog.askopenfilename()
+        if not path or not os.path.isfile(path): 
+            return
+        self.base.open_editor(path)
+        self.base.history.register_file_history(path)
 
     def open_directory(self, *_) -> None:
-        self.base.open_directory(filedialog.askdirectory())
+        path = filedialog.askdirectory()
+        if not path or not os.path.isdir(path):  
+            return
+        self.base.open_directory(path)
+        self.base.history.register_folder_history(path)
+
+    def open_recent_file(self, *_):
+        self.base.palette.show_prompt("recentf:")
+    
+    def open_recent_dir(self, *_):
+        self.base.palette.show_prompt("recentd:")
 
     def save(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:

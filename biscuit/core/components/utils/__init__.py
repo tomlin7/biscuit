@@ -9,6 +9,7 @@ from .codicon import get_codicon
 from .colorizer import colorize
 from .entry import Entry
 from .filetype import FileType
+from .fixedstack import FixedSizeStack
 from .frame import Frame
 from .icon import Icon
 from .iconbutton import IconButton
