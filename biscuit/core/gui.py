@@ -2,9 +2,8 @@ import platform
 import tkinter as tk
 
 from .components import *
-from .layout import *
-
 from .config import ConfigManager
+from .layout import *
 
 
 class GUIManager(tk.Tk, ConfigManager):
@@ -103,6 +102,7 @@ class GUIManager(tk.Tk, ConfigManager):
         self.binder.late_bind_all()
         self.editorsmanager.add_default_editors()
         self.settings.late_setup()
+        self.history.generate_actionsets()
 
         # force set focus on this window
         self.focus_set()

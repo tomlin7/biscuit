@@ -19,8 +19,6 @@ class EventHandler:
         self.base = master.base
 
     def process(self, e: lsp.Event) -> None:
-        self.base.logger.trace(e.__class__.__name__.upper())
-        
         if isinstance(e, lsp.Shutdown):
             self.client.exit()
             return
@@ -136,3 +134,6 @@ class EventHandler:
             
             self.base.outline.update_symbols(tab, e.result if e.result and isinstance(e.result[0], lsp.DocumentSymbol) else to_document_symbol(e.result))
             return
+        
+        # ones that are not implemented yet
+        self.base.logger.trace(e.__class__.__name__.upper())

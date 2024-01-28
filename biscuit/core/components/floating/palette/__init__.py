@@ -1,9 +1,7 @@
-# TODO Palette
-#   - working commands
-#   - sub menus
-
+from __future__ import annotations
 
 import tkinter as tk
+import typing
 
 from biscuit.core.components.utils import Frame, Toplevel
 
@@ -11,7 +9,11 @@ from .actionset import ActionSet
 from .item import PaletteItem
 from .searchbar import Searchbar
 
+if typing.TYPE_CHECKING:
+    from biscuit.core import App
 
+
+#TODO Follow-up/chained commands
 class Palette(Toplevel):
     """
     Palette
@@ -29,7 +31,7 @@ class Palette(Toplevel):
     |   \    \    \    \    \    \    \    \    \  |
     +----------------------------------------------+
     """
-    def __init__(self, master, items=None, width=60, *args, **kwargs) -> None:
+    def __init__(self, master: App, width=60, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(pady=1, padx=1, bg=self.base.theme.border)
 
@@ -67,11 +69,12 @@ class Palette(Toplevel):
             if i.prompt:
                 self.help_actionset.append((i.prompt, lambda _, i=i: self.after(50, self.show_prompt, i.prompt), i.description))
 
+        # print([i() for i in self.actionsets])
         self.register_actionset(lambda: self.help_actionset)
 
     def add_item(self, text: str, command, *args, **kwargs) -> PaletteItem:
-        new_item = PaletteItem(self.container, text, command, *args, **kwargs)
-        new_item.grid(row=self.row, sticky=tk.EW)
+        new_item = PaletteItem(self, text, command, *args, **kwargs)
+        new_item.grid(row=self.row, sticky=tk.EW, in_=self.container)
 
         self.shown_items.append(new_item)
 
@@ -80,8 +83,8 @@ class Palette(Toplevel):
         return new_item
 
     def add_search_bar(self) -> None:
-        self.searchbar = Searchbar(self.container)
-        self.searchbar.grid(row=0, sticky=tk.EW, pady=(1, 7), padx=1)
+        self.searchbar = Searchbar(self)
+        self.searchbar.grid(row=0, sticky=tk.EW, pady=(1, 7), padx=1, in_=self.container)
 
     def configure_bindings(self) -> None:
         self.bind("<FocusOut>", self.hide)

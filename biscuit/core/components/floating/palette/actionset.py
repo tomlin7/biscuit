@@ -23,6 +23,9 @@ class ActionSet(list):
         self.prompt: str = prompt
 
         self.pinned: List[Tuple[str, Callable]] = pinned # [[command, callback], ...]
+    
+    def __repr__(self) -> str:
+        return self.description
 
     def update(self, items) -> None:
         "Clear and update the items in the actionset."

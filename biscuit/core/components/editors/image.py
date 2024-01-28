@@ -7,8 +7,9 @@ from .editor import BaseEditor
 
 #TODO: zooming in and out
 class ImageViewer(BaseEditor):
-    def __init__(self, master, path, exists=True, *args, **kwargs) -> None:
-        super().__init__(master, path, *args, **kwargs)
+    def __init__(self, master, path, editable=False, *args, **kwargs) -> None:
+        super().__init__(master, path, editable=editable, *args, **kwargs)
+        self.exists = True
         self.open_image()
 
     def open_image(self):

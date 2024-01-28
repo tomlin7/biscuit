@@ -3,7 +3,7 @@ from .events import EventManager
 from .gui import GUIManager
 
 
-class App(GUIManager, EventManager, ConfigManager):
+class App(EventManager, GUIManager, ConfigManager):
     """
     BISCUIT CORE
     ------------
@@ -48,7 +48,7 @@ class App(GUIManager, EventManager, ConfigManager):
         
         super().__init__(*args, **kwargs)
         self.base = self
-        self.setup_path(appdir)
+        self.appdir = appdir
 
         self.setup()
         self.late_setup()
@@ -56,13 +56,12 @@ class App(GUIManager, EventManager, ConfigManager):
 
     def run(self) -> None:
         self.mainloop()
-
-        # after the gui mainloop ends, also stop the extension server
+        self.history.dump()
         self.extensions_manager.stop_server()
 
     def setup(self) -> None:
         self.initialized = False
-
+        self.setup_path(self.appdir)
         self.setup_configs()
         self.setup_tk()
 

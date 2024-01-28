@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
 import os
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame, IconButton
+from biscuit.core.components.utils import Frame, Icon, IconButton
 
 
 class Tab(Frame):
@@ -20,6 +20,9 @@ class Tab(Frame):
 
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.layout.base.content.editors.bar.tab.values()
         self.config(bg=self.bg)
+
+        self.icon = Icon(self, 'file', **self.base.theme.layout.base.content.editors.bar.tab.icon)
+        self.icon.pack(side=tk.LEFT, padx=5, pady=5)
 
         self.name = tk.Label(self, text=f"{editor.filename} (working tree)" if editor.diff else editor.filename,
                              padx=5, pady=5, font=('Segoe UI', 10), bg=self.bg, fg=self.fg)
@@ -36,27 +39,28 @@ class Tab(Frame):
 
     def close(self, *_) -> None:
         self.master.close_tab(self)
+    
+    def apply_color(self, color: str) -> None:
+        self.icon.config(bg=color)
+        self.name.config(bg=color)
+        self.config(bg=color)
+        self.closebtn.config(bg=color)
 
     def on_hover(self, *_) -> None:
         if not self.selected:
-            self.name.config(bg=self.hbg)
-            self.config(bg=self.hbg)
-            self.closebtn.config(bg=self.hbg)
+            self.apply_color(self.hbg)
             self.hovered = True
 
     def off_hover(self, *_) -> None:
         if not self.selected:
-            self.name.config(bg=self.bg)
-            self.config(bg=self.bg)
-            self.closebtn.config(bg=self.bg)
+            self.apply_color(self.bg)
             self.hovered = False
 
     def deselect(self, *_) -> None:
         if self.selected:
             self.editor.grid_remove()
-            self.name.config(bg=self.bg)
-            self.config(bg=self.bg)
-            self.closebtn.config(bg=self.bg, activeforeground=self.fg)
+            self.apply_color(self.bg)
+            self.closebtn.config(activeforeground=self.fg)
             self.selected = False
 
     def select(self, *_) -> None:
@@ -67,7 +71,7 @@ class Tab(Frame):
             elif self.editor.filename:
                 self.base.set_title(self.editor.filename)
             self.editor.grid(column=0, row=1, sticky=tk.NSEW)
-            self.name.config(bg=self.hbg)
-            self.config(bg=self.hbg)
-            self.closebtn.config(bg=self.hbg, activeforeground=self.hfg)
+            
+            self.apply_color(self.hbg)
+            self.closebtn.config(activeforeground=self.hfg)
             self.selected = True
