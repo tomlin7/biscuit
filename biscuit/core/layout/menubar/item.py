@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import tkinter as tk
 import typing
 
-from biscuit.core import Menu
+from biscuit.core.components import Menu
 from biscuit.core.components.utils import Menubutton
 
 if typing.TYPE_CHECKING:

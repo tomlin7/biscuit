@@ -1,4 +1,4 @@
-from biscuit.core import Menu
+from biscuit.core.components import Menu
 
 
 class ActionbarMenu(Menu):

@@ -117,7 +117,7 @@ class EditorsPane(Frame):
         self.active_editors.remove(editor)
 
         if editor.content and editor.content.editable:
-            self.base.languageservermanager.tab_closed(editor.content.text)
+            self.base.language_server_manager.tab_closed(editor.content.text)
 
         # not keeping diff/games in cache
         if not editor.diff and editor.content:

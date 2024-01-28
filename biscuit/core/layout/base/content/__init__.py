@@ -14,20 +14,22 @@ Content container of the app
 from __future__ import annotations
 
 import typing
+import tkinter as tk
 
 if typing.TYPE_CHECKING:
     from .. import BaseFrame
-
-import tkinter as tk
 
 from biscuit.core.components.utils import Frame
 
 from .editors import EditorsPane
 from .panel import Panel
 
+__all__ = ["ContentPane", EditorsPane, Panel]
+
 
 class ContentPane(Frame):
-    """Main frame holds ContentPane and Panel"""
+    """Content frame holds EditorsPane and Panel"""
+
     def __init__(self, master: BaseFrame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)

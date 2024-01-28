@@ -26,7 +26,7 @@ class ExtensionsAPI:
         self.panel = self.base.panel
         self.editorsmanager = self.base.editorsmanager
         self.terminalmanager = self.base.terminalmanager
-        self.languageservermanager = self.base.languageservermanager
+        self.languageservermanager = self.base.language_server_manager
 
         self.commands = Commands(self.base)
         self.logger = Logger(self.base)
