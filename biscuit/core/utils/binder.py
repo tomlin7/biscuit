@@ -16,6 +16,8 @@ class Binder:
         self.bind_all()
 
     def bind_all(self) -> None:
+        """Bind all bindings from config"""
+        
         self.bind(self.bindings.new_file, self.events.new_file)
         self.bind(self.bindings.new_window, self.events.new_window)
         self.bind(self.bindings.open_file, self.events.open_file)
@@ -28,6 +30,8 @@ class Binder:
         self.bind(self.bindings.redo, self.events.redo)
 
     def late_bind_all(self) -> None:
+        """Bindings that require full initialization"""
+        
         self.bind(self.bindings.commandpalette, lambda e: self.base.palette.show_prompt(">"))
         self.bind(self.bindings.panel, self.base.root.baseframe.contentpane.toggle_panel)
 

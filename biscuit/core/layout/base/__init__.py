@@ -14,17 +14,19 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-if typing.TYPE_CHECKING:
-    from .. import Root
-
 from biscuit.core.components.utils import Frame
 
 from .content import ContentPane
 from .sidebar import Sidebar
 
+if typing.TYPE_CHECKING:
+    from .. import Root
+    from .content import *
+
 
 class BaseFrame(Frame):
-    """Main frame holds Sidebar and ContentPane"""
+    """Base frame holds Sidebar and ContentPane"""
+
     def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)

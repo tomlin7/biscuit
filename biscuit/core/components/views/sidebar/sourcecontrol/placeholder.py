@@ -6,7 +6,7 @@ from ....utils import Button, Frame, WrappingLabel
 class ChangesTreePlaceholder(Frame):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=10, pady=10, **self.base.theme.views.sidebar.item)
+        self.config(padx=15, pady=10, **self.base.theme.views.sidebar.item)
         self.columnconfigure(0, weight=1)
 
         WrappingLabel(self, font=("Segoe UI", 10), anchor=tk.W, **self.base.theme.views.sidebar.item.content,

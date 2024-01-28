@@ -78,7 +78,7 @@ class Extension(Frame):
         self.base.logger.info(f"Fetching extension '{self.name}' successful.")
         self.base.notifications.info(f"Extension '{self.name}' has been installed!")
 
-        self.base.extensionsmanager.load_extension(self.data[0])
+        self.base.extensions_manager.load_extension(self.data[0])
 
     def remove_extension(self, *_) -> None:
         try:

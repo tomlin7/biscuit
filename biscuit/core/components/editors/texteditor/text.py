@@ -120,7 +120,7 @@ class Text(BaseText):
         self.bind("<Control-KeyPress>", lambda _: self.set_ctrl_key(True))
         self.bind("<Control-KeyRelease>", lambda _: self.set_ctrl_key(False))
         self.bind("<Control-Button-1>", self.request_goto_definition)
-        self.bind("<Control-period>", lambda _: self.base.languageservermanager.request_completions(self))
+        self.bind("<Control-period>", lambda _: self.base.language_server_manager.request_completions(self))
 
     def key_release_events(self, event: tk.Event):
         self._user_edit = True
@@ -248,7 +248,7 @@ class Text(BaseText):
         
         self.highlight_current_line()
         self.highlight_current_word()
-        self.base.languageservermanager.request_outline(self)
+        self.base.language_server_manager.request_outline(self)
 
 
         # TODO send only portions of text on change to the LSPServer
@@ -322,7 +322,7 @@ class Text(BaseText):
     def request_goto_definition(self, e: tk.Event):
         if not self.lsp or not self.last_hovered:
             return
-        self.base.languageservermanager.request_goto_definition(self)
+        self.base.language_server_manager.request_goto_definition(self)
     
     def request_hover(self, _):
         if not self.lsp:
@@ -357,14 +357,14 @@ class Text(BaseText):
         
         # self.after(500, ...)
 
-        self.base.languageservermanager.request_hover(self)
+        self.base.language_server_manager.request_hover(self)
 
     def request_autocomplete(self, _):
         if self.minimalist or not self.lsp:
             return
         
         if self.is_identifier(self.current_word) or self.current_word.strip() == ".":
-            return self.base.languageservermanager.request_completions(self)
+            return self.base.language_server_manager.request_completions(self)
         
         self.hide_autocomplete()
 
@@ -624,7 +624,7 @@ class Text(BaseText):
         self.hover.hide()
 
     def event_mapped(self, _):
-        self.lsp = self.base.languageservermanager.tab_opened(self)
+        self.lsp = self.base.language_server_manager.tab_opened(self)
     
     def event_destroy(self, _):
         try:
@@ -632,11 +632,14 @@ class Text(BaseText):
         except:
             # most likely because app was closed
             pass
-        self.base.languageservermanager.request_removal(self)
+        self.base.language_server_manager.request_removal(self)
 
     def event_unmapped(self, _):
-        self.hide_autocomplete()
-        self.base.outline.tree.update_symbols()
+        try:
+            self.hide_autocomplete()
+            self.base.outline.tree.update_symbols()
+        except Exception:
+            pass
         
     def event_copy(self, *_):
         self.event_generate("<<Copy>>")
@@ -890,7 +893,7 @@ class Text(BaseText):
         if (args[0] in ("insert", "replace", "delete")):
             self.event_generate("<<Change>>", when="tail")
             if self.lsp:
-                self.base.languageservermanager.content_changed(self)
+                self.base.language_server_manager.content_changed(self)
 
         # if "insert" in args[0:3] and "get" in args[0:3]:
         #     print(temp)

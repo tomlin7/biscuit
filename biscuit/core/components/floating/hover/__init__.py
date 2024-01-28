@@ -71,7 +71,10 @@ class Hover(Toplevel):
         self.update_position(response.location, tab)
 
     def hide(self, *_) -> None:
-        self.withdraw()
+        try:
+            self.withdraw()
+        except Exception:
+            pass
 
     def hide_if_not_hovered(self) -> None:
         if not self.hovered:

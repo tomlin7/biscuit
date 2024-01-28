@@ -96,6 +96,8 @@ class Settings:
         )
 
     def late_setup(self) -> None:
+        """Configurations that require full initialization of editor"""
+        
         self.base.palette.register_actionset(lambda: self.actionset)
 
         from biscuit.core.components import ActionSet
