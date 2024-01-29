@@ -15,7 +15,7 @@ GitPython = "^3.1.41"
 tkextrafont = "^0.6.3"
 Pygments = "^2.17.2"
 toml = "^0.10.2"
-sv-ttk = "^2.5.5"
+sv-ttk = "^2.6.0"
 Pillow = "^10.2.0"
 requests = "^2.31.0"
 
