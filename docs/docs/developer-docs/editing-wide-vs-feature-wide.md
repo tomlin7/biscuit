@@ -6,7 +6,7 @@ slug: /editing-wide-vs-feature-wide
 sidebar_position: 0
 ---
 
-There many classes defined in biscuit sources code base. For some classes, they are defined as _**editing-wide**_ for they may be access, invoking, messageing in many difference context. Some classes are defined as _**feature-wide**_, if they are mostly about some ranged graphic area or editing feature, and may be access, invoking, messageing in some context. Normally, a feature-wide class is a visual area or part of facilities about a editing feature. For biscuit heavily focuses on a modern and graphical Human-Computer-Interaction, most classes are defined as feature-wide.
+There are many classes defined in biscuit sources code base. For some classes, they are defined as _**editing-wide**_ for they may be access, invoking, messageing in many difference context. Some classes are defined as _**feature-wide**_, if they are mostly about some ranged graphic area or editing feature, and may be access, invoking, messageing in some context. Normally, a feature-wide class is a visual area or part of facilities about a editing feature. For biscuit heavily focuses on a modern and graphical Human-Computer-Interaction, most classes are defined as feature-wide.
 
 Here are some _**editing-wide**_ classes you may want to know first:
 
