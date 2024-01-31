@@ -6,16 +6,16 @@ slug: /editing-wide-vs-feature-wide
 sidebar_position: 0
 ---
 
-There many classes defined in biscuit sources code base. For some classes, their defined as _**editing-wide**_ for their may be access, invoking, messageing in many difference context. Some classes defined as _**feature-wide**_, if their are mostly about some ranged graphic area or editing feature, and may be access, invoking, messageing in some context. Normally, a feature-wide class is a visual area or part of facilities about a editing feature. For biscuit heavily focuses on a modern and graphical Human-Computer-Interaction, most classes defined as feature-wide.
+There many classes defined in biscuit sources code base. For some classes, they are defined as _**editing-wide**_ for they may be access, invoking, messageing in many difference context. Some classes are defined as _**feature-wide**_, if they are mostly about some ranged graphic area or editing feature, and may be access, invoking, messageing in some context. Normally, a feature-wide class is a visual area or part of facilities about a editing feature. For biscuit heavily focuses on a modern and graphical Human-Computer-Interaction, most classes are defined as feature-wide.
 
-Here are some _**editing-wide**_ you may want to know first:
+Here are some _**editing-wide**_ classes you may want to know first:
 
 * core.\_\_init\_\_.App
 * core.events.EventManager
 * core.events.ConfigManager
 * core.utils.binder
 
-Here are some _**feature-wide**_ you may want to know first:
+Here are some _**feature-wide**_ classes you may want to know first:
 
 * core.gui.GUIManager -- for overall visual area facilities
 * core.components.views.sidebar.* -- for visual area in sidebar
