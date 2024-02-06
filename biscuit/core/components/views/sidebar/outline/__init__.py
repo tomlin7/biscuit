@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 from biscuit.core.components.floating.palette import ActionSet
 

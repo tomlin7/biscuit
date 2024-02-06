@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from typing import List, Optional, Union
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 # Requests
 

@@ -4,7 +4,7 @@ import pprint
 import re
 import typing
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 from .data import *
 from .utils import *

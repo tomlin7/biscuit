@@ -4,7 +4,7 @@ import tkinter as tk
 import typing
 from tkinter import ttk
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
 from biscuit.core.components.utils import Frame

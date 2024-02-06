@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 from biscuit.core.components.utils.codicon import get_codicon
 

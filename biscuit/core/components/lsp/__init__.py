@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import typing
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 from .client import LangServerClient
 

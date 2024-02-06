@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Iterator, Optional
 from urllib.request import url2pathname
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 
 def get_completion_item_doc(item: lsp.CompletionItem) -> str:

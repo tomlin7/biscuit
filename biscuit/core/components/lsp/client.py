@@ -10,7 +10,7 @@ import tkinter as tk
 import typing
 from pathlib import Path
 
-import sansio_lsp_client as lsp
+import tarts as lsp
 
 from .data import *
 from .handler import EventHandler

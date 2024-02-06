@@ -11,7 +11,7 @@ requests
 pyperclip
 tkinterweb
 mistune
-sansio_lsp_client
+tarts
 chardet 
 pywinpty; platform_system == "Windows"
 ptyprocess; platform_system != "Windows"
