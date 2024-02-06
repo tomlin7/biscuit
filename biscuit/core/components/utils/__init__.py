@@ -15,6 +15,7 @@ from .icon import Icon
 from .iconbutton import IconButton
 from .iconlabelbutton import IconLabelButton
 from .label import Label, TruncatedLabel, WrappingLabel
+from .linklabel import LinkLabel
 from .menubutton import Menubutton
 from .scrollableframe import ScrollableFrame
 from .scrollbar import Scrollbar
