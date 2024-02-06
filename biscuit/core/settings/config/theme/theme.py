@@ -235,6 +235,7 @@ class Utils(ThemeObject):
         theme = self.master
 
         self.button = HighlightableThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
+        self.linklabel = ThemeObject(self, theme.secondary_background, theme.biscuit, self.highlightbackground)
         self.colorlabel = ThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
         self.tree = FrameThemeObject(self)
         self.tree.item = ThemeObject(self.tree)

@@ -1,6 +1,7 @@
+import os
 import tkinter as tk
 
-from ...utils import Frame, IconLabelButton, Label
+from ...utils import Frame, IconLabelButton, Label, LinkLabel
 from ..editor import BaseEditor
 
 
@@ -26,6 +27,7 @@ class Welcome(BaseEditor):
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.create_start_group()
+        self.create_recent_group()
 
         try:
             self.logo = Label(self.right, image=self.base.settings.res.logo, **self.base.theme.editors.biscuit_labels)
@@ -35,14 +37,20 @@ class Welcome(BaseEditor):
 
     def create_start_group(self):
         Label(self.left, text="Start", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
-        start_group = Frame(self.left, **self.base.theme.editors)
-        start_group.grid(row=3, column=0, sticky=tk.EW)
+        start = Frame(self.left, **self.base.theme.editors)
+        start.grid(row=3, column=0, sticky=tk.EW)
 
-        IconLabelButton(start_group, "New File...", 'new-file', self.new_file).grid(row=0, column=0, sticky=tk.W, pady=2)
-        IconLabelButton(start_group, "Open File...", 'go-to-file', self.open_file).grid(row=1, column=0, sticky=tk.W, pady=2)
-        IconLabelButton(start_group, "Open Folder...", 'folder-opened', self.open_folder).grid(row=2, column=0, sticky=tk.W, pady=2)
+        IconLabelButton(start, "New File...", 'new-file', self.new_file).grid(row=0, column=0, sticky=tk.W, pady=2)
+        IconLabelButton(start, "Open File...", 'go-to-file', self.open_file).grid(row=1, column=0, sticky=tk.W, pady=2)
+        IconLabelButton(start, "Open Folder...", 'folder-opened', self.open_folder).grid(row=2, column=0, sticky=tk.W, pady=2)
+    
+    def create_recent_group(self):
+        Label(self.left, text="Recent", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))
+        recents = Frame(self.left, **self.base.theme.editors)
+        recents.grid(row=5, column=0, sticky=tk.EW)
 
-        #TODO add recents
+        for i, p in enumerate(self.base.history.folder_history.list):
+            LinkLabel(recents, os.path.basename(p[0]), p[1]).grid(row=i, column=0, sticky=tk.W, pady=2)
 
     def new_file(self, *_):
         self.base.events.new_file()
