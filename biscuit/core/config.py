@@ -4,6 +4,8 @@ import sys
 
 from .api import *
 from .components import *
+from .extensions import ExtensionManager
+from .history import HistoryManager
 from .settings import *
 from .utils import *
 

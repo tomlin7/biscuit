@@ -4,11 +4,11 @@ import os
 import sqlite3
 import typing
 
-from biscuit.core.components.floating.palette.actionset import ActionSet
-from biscuit.core.components.utils import FixedSizeStack
+from .components.floating.palette.actionset import ActionSet
+from .components.utils import FixedSizeStack
 
 if typing.TYPE_CHECKING:
-    from biscuit.core import App
+    from . import App
 
 
 class HistoryManager:
