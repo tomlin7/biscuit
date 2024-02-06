@@ -34,27 +34,27 @@ class EventManager(GUIManager, ConfigManager):
     outline: Outline
     source_control: SourceControl
     extensionsGUI: Extensions
-    
+
     panel: Panel
     terminalmanager: Terminal
     logger: Logs
 
-    def set_title(self, title: str=None) -> None:
+    def set_title(self, title: str = None) -> None:
         if not self.initialized:
             return
         self.menubar.set_title(title)
         self.menubar.reposition_title()
-    
+
     def open(self, path: str) -> None:
         if not path:
             return
-        
+
         if os.path.isdir(path):
             return self.open_directory(path)
-        
+
         if os.path.isfile(path):
             return self.open_editor(path)
-        
+
         self.notifications.error(f"Path does not exist: {path}")
 
     def open_directory(self, dir: str) -> None:
@@ -83,6 +83,7 @@ class EventManager(GUIManager, ConfigManager):
 
     def clone_repo(self, url: str, dir: str) -> None:
         try:
+
             def clone() -> None:
                 repodir = self.git.clone(url, dir)
                 self.open_directory(repodir)
@@ -120,14 +121,14 @@ class EventManager(GUIManager, ConfigManager):
         editor = self.open_editor(path, exists=True)
         editor.bind("<<FileLoaded>>", lambda e: editor.content.goto(position))
 
-    def open_editor(self, path: str, exists: bool=True) -> Editor | BaseEditor:
+    def open_editor(self, path: str, exists: bool = True) -> Editor | BaseEditor:
         if exists and not os.path.isfile(path):
             return
 
         return self.editorsmanager.open_editor(path, exists)
 
     def open_diff(self, path: str, kind: str) -> None:
-        self.editorsmanager.open_diff_editor(path, kind) # type: ignore
+        self.editorsmanager.open_diff_editor(path, kind)  # type: ignore
 
     def open_settings(self, *_) -> None:
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))
@@ -136,7 +137,7 @@ class EventManager(GUIManager, ConfigManager):
         self.editorsmanager.open_game(name)
 
     def register_game(self, game: BaseGame) -> None:
-        #TODO game manager class
+        # TODO game manager class
         register_game(game)
         self.settings.gen_actionset()
 
@@ -144,7 +145,7 @@ class EventManager(GUIManager, ConfigManager):
         self.language_server_manager.register_langserver(language, command)
 
     def open_in_new_window(self, dir: str) -> None:
-        #Process(target=App(sys.argv[0], dir).run).start()
+        # Process(target=App(sys.argv[0], dir).run).start()
         self.notifications.show("Feature not available in this version.")
 
     def open_new_window(self) -> None:
@@ -162,6 +163,8 @@ class EventManager(GUIManager, ConfigManager):
                 active_text = editor.content.text
                 self.statusbar.set_encoding(active_text.encoding)
                 return self.statusbar.set_line_col_info(
-                    active_text.line, active_text.column, len(active_text.selection))
+                    active_text.line, active_text.column, len(active_text.selection)
+                )
 
         self.statusbar.toggle_editmode(False)
+
