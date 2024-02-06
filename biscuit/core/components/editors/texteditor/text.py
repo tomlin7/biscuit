@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import codecs
 import os
 import queue
 import re
@@ -10,9 +9,10 @@ import typing
 from collections import deque
 
 import chardet
+import tarts as lsp
 
 if typing.TYPE_CHECKING:
-    from biscuit.core.components.lsp.data import HoverResponse, Jump, Underlines, Completions
+    from biscuit.core.components.lsp.data import WorkspaceEdits, HoverResponse, Jump, Underlines, Completions
     from . import TextEditor
 
 from ...utils import Text as BaseText
@@ -114,6 +114,7 @@ class Text(BaseText):
 
         # lspc
         self.bind("<Map>", self.event_mapped)
+        self.bind("<F2>", self.request_rename)
         self.bind("<Unmap>", self.event_unmapped)
         self.bind("<Destroy>", self.event_destroy)
         self.bind("<Motion>", self.request_hover)
@@ -367,6 +368,9 @@ class Text(BaseText):
             return self.base.language_server_manager.request_completions(self)
         
         self.hide_autocomplete()
+    
+    def request_rename(self, *_):
+        self.base.rename.show(self)
 
     def lsp_show_autocomplete(self, response: Completions) -> None:
         self.autocomplete.lsp_update_completions(self, response.completions)
@@ -394,6 +398,14 @@ class Text(BaseText):
             self.hover.show(self, response)
         except Exception as e:
             print(e)
+    
+    def lsp_rename(self, changes: WorkspaceEdits):
+        for i in changes.edits:
+            try:
+                self.base.open_workspace_edit(i.file_path, i.edits)
+            except:
+                # this indeed is a darn task to do so not surprised
+                pass
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
@@ -401,8 +413,18 @@ class Text(BaseText):
     def get_mouse_pos(self):
         return self.index(tk.CURRENT)
 
-    def get_current_word(self):
+    def get_current_word(self)-> str:
+        """Returns current word cut till the cursor"""
+        
         return self.current_word.strip()
+    
+    def get_current_fullword(self) -> str | None:
+        """Returns current word uncut and fully"""
+
+        index = self.index(tk.CURRENT)
+        start, end = index + " wordstart", index + " wordend"
+        word = self.get(start, end).strip()
+        return word if self.is_identifier(word) else None
 
     def move_to_next_word(self):
         self.mark_set(tk.INSERT, self.index("insert+1c wordend"))

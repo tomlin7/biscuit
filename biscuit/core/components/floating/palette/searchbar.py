@@ -15,7 +15,7 @@ class Searchbar(Frame):
         self.config(bg=self.base.theme.biscuit)
 
         self.text_variable = tk.StringVar()
-        self.text_variable.trace("w", self.filter) 
+        self.text_variable.trace_add("write", self.filter) 
 
         frame = Frame(self, **self.base.theme.palette)
         frame.pack(fill=tk.BOTH, padx=1, pady=1)

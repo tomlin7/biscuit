@@ -121,6 +121,27 @@ class EventHandler:
                 ),
             )
             return
+        
+        if isinstance(e, lsp.WorkspaceEdit):
+            tab = self.master._rename_requests.pop(e.message_id)
+            if not e.documentChanges:
+                return
+            
+            tab.lsp_rename(
+                WorkspaceEdits([
+                    WorkspaceEdit(
+                        file_path=decode_path_uri(i.textDocument.uri), 
+                        edits=[
+                            TextEdit(
+                                start=decode_position(j.range.start),
+                                end=decode_position(j.range.end),
+                                new_text=j.newText
+                            )
+                            for j in i.edits
+                        ]
+                    ) 
+                    for i in e.documentChanges
+                ]))
 
         if isinstance(e, lsp.Hover):
             requesting_tab, location = self.master._hover_requests.pop(e.message_id)

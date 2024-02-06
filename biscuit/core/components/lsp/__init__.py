@@ -39,17 +39,22 @@ class LanguageServerManager:
         if inst :=  self.request_client_instance(tab):
             inst.close_tab(tab)
 
-    def request_completions(self, tab: Text) -> str | None:
+    def request_completions(self, tab: Text) -> None:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
                 instance.request_completions(tab)
 
-    def request_goto_definition(self, tab: Text) -> str:
+    def request_goto_definition(self, tab: Text) -> None:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
                 instance.request_go_to_definition(tab)
+    
+    def request_rename(self, tab: Text, new_name: str) -> None:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.request_rename(tab, new_name)
 
-    def request_hover(self, tab: Text) -> str | None:
+    def request_hover(self, tab: Text) -> None:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
                 instance.request_hover(tab)

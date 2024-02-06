@@ -93,6 +93,7 @@ class GUIManager(tk.Tk, ConfigManager):
 
         self.autocomplete = AutoComplete(self)
         self.definitions = Definitions(self)
+        self.rename = Rename(self)
         self.pathview = PathView(self)
         self.hover = Hover(self)
     
