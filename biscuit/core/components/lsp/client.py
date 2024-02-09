@@ -153,7 +153,7 @@ class LangServerClient:
         request_id = self.client.rename(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_mouse_pos()),
+                position=encode_position(tab.get_cursor_pos()),
             ),
             new_name=new_name,
         )

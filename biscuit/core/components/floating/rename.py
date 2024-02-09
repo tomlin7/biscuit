@@ -52,7 +52,11 @@ class Rename(Toplevel):
         self.tab = tab
         self.focus()
         
-        self.text_variable.set(tab.get_current_fullword())
+        current = tab.get_current_fullword()
+        if current is None:
+            return
+        
+        self.text_variable.set()
         self.entry.selection_range(0, tk.END)
 
         self.refresh_geometry(tab)
@@ -65,4 +69,4 @@ class Rename(Toplevel):
     
     def refresh_geometry(self, tab: Text):
         self.update_idletasks()
-        self.geometry("+{}+{}".format(*tab.cursor_screen_location()))
+        self.geometry("+{}+{}".format(*tab.cursor_wordstart_screen_location()))

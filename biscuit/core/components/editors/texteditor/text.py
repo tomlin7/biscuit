@@ -224,6 +224,17 @@ class Text(BaseText):
         bbx_x, bbx_y, _, bbx_h = bbox
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
+    def cursor_wordstart_screen_location(self):
+        pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
+
+        cursor = tk.INSERT + " wordstart"
+        bbox = self.bbox(cursor)
+        if not bbox:
+            return (0, 0)
+
+        bbx_x, bbx_y, _, bbx_h = bbox
+        return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
+
     def enter_key_events(self, *_):
         if not self.minimalist and self.autocomplete.active:        
             self.autocomplete.choose(self)
@@ -331,7 +342,10 @@ class Text(BaseText):
         
         index = self.index(tk.CURRENT)
         start, end = index + " wordstart", index + " wordend"
-        word = self.get(start, end).strip()
+        word = self.get(start, end)
+        if word.startswith("\n"):
+            start = index + " linestart"
+        word = word.strip()
 
         self.clear_goto_marks()
 
@@ -421,7 +435,7 @@ class Text(BaseText):
     def get_current_fullword(self) -> str | None:
         """Returns current word uncut and fully"""
 
-        index = self.index(tk.CURRENT)
+        index = self.index(tk.INSERT)
         start, end = index + " wordstart", index + " wordend"
         word = self.get(start, end).strip()
         return word if self.is_identifier(word) else None
