@@ -65,16 +65,15 @@ class Hover(Toplevel):
         else:
             self.renderer.pack_forget()
 
-        self.update_idletasks()
+        self.update()
         self.deiconify()
-        self.update_idletasks()
-        self.update_position(response.location, tab)
+        try:
+            self.update_position(response.location, tab)
+        except:
+            pass
 
     def hide(self, *_) -> None:
-        try:
-            self.withdraw()
-        except Exception:
-            pass
+        self.withdraw()
 
     def hide_if_not_hovered(self) -> None:
         if not self.hovered:

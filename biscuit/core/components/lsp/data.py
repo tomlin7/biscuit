@@ -75,3 +75,26 @@ class JumpLocationRange:
 class Jump:
     pos: str
     locations: List[JumpLocationRange]
+
+
+@dataclasses.dataclass
+class TextEdit:
+    start: str
+    end: str
+    new_text: str
+
+    def __repr__(self) -> str:
+        return self.file_path
+
+@dataclasses.dataclass
+class WorkspaceEdit:
+    file_path: str
+    edits: list[TextEdit]
+
+    def __repr__(self) -> str:
+        return self.file_path
+
+@dataclasses.dataclass
+class WorkspaceEdits:
+    edits: List[WorkspaceEdit]
+

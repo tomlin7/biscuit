@@ -8,6 +8,8 @@ from biscuit.core.gui import GUIManager
 
 if typing.TYPE_CHECKING:
     from .layout import *
+    from .components.lsp.data import TextEdit
+    from .components.editors.texteditor import *
 
 from .components import *
 from .config import ConfigManager
@@ -120,6 +122,21 @@ class EventManager(GUIManager, ConfigManager):
 
         editor = self.open_editor(path, exists=True)
         editor.bind("<<FileLoaded>>", lambda e: editor.content.goto(position))
+
+    def open_workspace_edit(self, path: str, edits: list[TextEdit]):
+        if self.editorsmanager.is_open(path):
+            e = self.editorsmanager.set_active_editor_by_path(path).content.text
+            self.do_workspace_edits(e, edits)
+            return
+
+        editor = self.open_editor(path, exists=True)
+        editor.bind("<<FileLoaded>>", lambda _, editor=editor.content.text,edits=edits:threading.Thread(target=self.do_workspace_edits, args=(editor, edits), daemon=True).start())
+
+    def do_workspace_edits(self, tab: Text, edits: list[TextEdit]):
+        for i in edits:
+            tab.replace(i.start, i.end, i.new_text)
+            tab.update()
+            tab.update_idletasks()
 
     def open_editor(self, path: str, exists: bool = True) -> Editor | BaseEditor:
         if exists and not os.path.isfile(path):

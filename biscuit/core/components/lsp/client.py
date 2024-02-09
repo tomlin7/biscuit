@@ -48,6 +48,7 @@ class LangServerClient:
         self._autocomplete_req: dict[int, tuple[Text, CompletionRequest]] = {}
         self._hover_requests: dict[int, tuple[Text, str]] = {}
         self._gotodef_requests: dict[int, tuple[Text, str]] = {}
+        self._rename_requests: dict[int, Text] = {}
         self._outline_requests: dict[int, Text] = {}
 
     def run_loop(self) -> None:
@@ -144,6 +145,19 @@ class LangServerClient:
             )
         )
         self._gotodef_requests[request_id] = (tab, tab.get_mouse_pos())
+    
+    def request_rename(self, tab: Text, new_name: str) -> None:
+        if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
+            return
+        
+        request_id = self.client.rename(
+            lsp.TextDocumentPosition(
+                textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
+                position=encode_position(tab.get_cursor_pos()),
+            ),
+            new_name=new_name,
+        )
+        self._rename_requests[request_id] = tab
     
     def request_outline(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
