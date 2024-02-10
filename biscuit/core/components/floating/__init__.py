@@ -6,3 +6,4 @@ from .menu import Menu
 from .notifications import Notifications
 from .palette import ActionSet, Palette
 from .pathview import PathView
+from .rename import Rename

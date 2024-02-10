@@ -39,14 +39,14 @@ def get_completion_item_doc(item: lsp.CompletionItem) -> str:
         return item.label + "\n" + item.documentation.value
     return item.label + "\n" + item.documentation
 
-def decode_path_uri(file_url: str) -> Path:
+def decode_path_uri(file_url: str) -> str:
     if sys.platform == "win32":
         if file_url.startswith("file:///"):
-            return Path(url2pathname(file_url[8:]))
+            return url2pathname(file_url[8:])
         else:
-            return Path(url2pathname(file_url[5:]))
+            return url2pathname(file_url[5:])
     else:
-        return Path(url2pathname(file_url[7:]))
+        return url2pathname(file_url[7:])
 
 
 def jump_paths_and_ranges(locations: list[lsp.Location] | lsp.Location) -> Iterator[tuple[Path, lsp.Range]]:
