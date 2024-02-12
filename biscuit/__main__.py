@@ -1,6 +1,7 @@
 import sys
 
 from biscuit.core import App
+from biscuit.core.utils import check_python_installation
 
 # splash screen (windows specific)
 try:
@@ -8,6 +9,8 @@ try:
     pyi_splash.close()
 except:
     pass
+
+check_python_installation()
 
 dir = None
 if len(sys.argv) >= 2:
