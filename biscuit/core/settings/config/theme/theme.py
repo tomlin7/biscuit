@@ -195,6 +195,8 @@ class Editors(FrameThemeObject):
         self.section = HighlightableThemeObject(self) # settings
         self.labels = ThemeObject(self)
 
+        self.bracket_colors = ('ffd700', 'da70d6', '179fff')
+
         self.hyperlink = "#4583b6"
 
         self.selection = "#264f78"
