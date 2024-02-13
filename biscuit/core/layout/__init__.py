@@ -35,7 +35,7 @@ class Root(Frame):
         grip_w.bind("<B1-Motion>", lambda _: self.base.resize('w'))
         grip_w.pack(fill=tk.Y, side=tk.LEFT)
 
-        container = Frame(self)
+        container = Frame(self, bg=self.base.theme.border)
         container.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         grip_e = tk.Frame(self, bg=self.base.theme.primary_background, cursor='right_side')
