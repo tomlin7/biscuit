@@ -19,6 +19,9 @@ from ...utils import Text as BaseText
 from ...utils import textutils
 from .highlighter import Highlighter
 
+BRACKET_MAP = {"(": ")", "{": "}", "[": "]"}
+OPENING_BRACKETS = ("(", "{", "[")
+CLOSING_BRACKETS = (")", "}", "]")
 
 class Text(BaseText):
     """Improved Text widget"""
@@ -75,6 +78,10 @@ class Text(BaseText):
         self.tag_config("currentline", background=self.base.theme.editors.currentline)
         self.tag_config("hover", background=self.base.theme.editors.hovertag)
 
+        self.tag_config("red", foreground="red")
+        for i in self.base.theme.editors.bracket_colors:
+            self.tag_config(i, foreground=f"#{i}")
+
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events) 
 
@@ -95,9 +102,14 @@ class Text(BaseText):
         self.bind_all('<<Modified>>', self._been_modified)
 
         # pair completion
-        self.bind("<braceleft>", self.complete_pair)
-        self.bind("<bracketleft>", self.complete_pair)
-        self.bind("<parenleft>", self.complete_pair)
+        self.bind("<parenleft>", self.open_bracket)
+        self.bind("<braceleft>", self.open_bracket)
+        self.bind("<bracketleft>", self.open_bracket)
+
+        self.bind("<parenright>", self.close_bracket)
+        self.bind("<braceright>", self.close_bracket)
+        self.bind("<bracketright>", self.close_bracket)
+
         self.bind("<apostrophe>", self.complete_pair)
         self.bind("<quotedbl>", self.complete_pair)
         self.bind("<BackSpace>", self.remove_pair)
@@ -149,6 +161,38 @@ class Text(BaseText):
 
         self.update_words_list()
     
+    def open_bracket(self, e: tk.Event):
+        text = self.get("1.0", "insert")
+        i = 0 
+        for ch in text:
+            if ch in OPENING_BRACKETS:
+                i += 1
+            elif ch in CLOSING_BRACKETS:
+                if i > 0:
+                    i -= 1
+        self.insert(tk.INSERT, e.char, self.base.theme.editors.bracket_colors[(i%3)])
+
+        return "break"
+
+    def close_bracket(self, e: tk.Event):
+        text = self.get("1.0", "insert")
+        i = -1  
+        stack = []
+        for ch in text:
+            if ch in OPENING_BRACKETS:
+                i += 1
+                stack.append(BRACKET_MAP[ch])
+            elif ch in CLOSING_BRACKETS:
+                if i > -1:
+                    i -= 1
+                    if stack[-1] == ch:
+                        stack.pop()
+        if stack and stack[-1] == e.char:
+            self.insert(tk.INSERT, stack.pop(), self.base.theme.editors.bracket_colors[(i%3)] if i > -1 else 'red')
+        else:
+            self.insert(tk.INSERT, e.char, 'red')
+        return "break"
+
     def complete_pair(self, e: tk.Event):
         end = {"(": ")", "{": "}", "[": "]", "\"": "\"", "'": "'"}.get(e.char)
         
