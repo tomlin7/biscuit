@@ -3,12 +3,10 @@ from PyInstaller.utils.hooks import collect_data_files
 from PyInstaller.utils.hooks import collect_all
 
 datas = [('../biscuit/res/*', 'res/')]
-binaries = []
+binaries = [('bin/pylsp.exe', 'res/')]
 hiddenimports = []
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
-tmp_ret = collect_all('pylsp')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 tmp_ret = collect_all('tkinterweb')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 

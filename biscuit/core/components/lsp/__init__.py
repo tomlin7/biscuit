@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import typing
 
-import pylsp
 import tarts as lsp
 
 from .client import LangServerClient
@@ -16,7 +15,12 @@ class LanguageServerManager:
     def __init__(self, base: App):
         self.base = base
         
-        self.langservers: dict[str, str] = {"Python":"pylsp"}
+        self.langservers: dict[str, str] = {}
+        try:
+            self.langservers["python"] = os.path.join(self.base.resdir, "pylsp")
+        except:
+            print("Python extension failed, manually install from extensions")
+            
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None
 
