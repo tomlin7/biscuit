@@ -79,6 +79,11 @@ class Text(BaseText):
         self.tag_config("currentline", background=self.base.theme.editors.currentline)
         self.tag_config("hover", background=self.base.theme.editors.hovertag)
 
+        self.tag_raise(tk.SEL, "hover")
+        self.tag_raise(tk.SEL, "currentline")
+        self.tag_raise(tk.SEL, "currentword")
+        self.tag_raise("currentword", "currentline")
+
         self.tag_config("activebracket", background=self.base.theme.editors.activebracket)
         self.tag_config("red", foreground="red")
         for i in self.base.theme.editors.bracket_colors:
@@ -91,6 +96,8 @@ class Text(BaseText):
         self.bind("<Control-g>", lambda _: self.base.palette.show_prompt(':'))
         self.bind("<Control-Left>", lambda _: self.handle_ctrl_hmovement())
         self.bind("<Control-Right>", lambda _: self.handle_ctrl_hmovement(True))
+        self.bind("<Control-Shift-Left>", lambda _: self.handle_ctrl_shift_hmovement())
+        self.bind("<Control-Shift-Right>", lambda _: self.handle_ctrl_shift_hmovement(True))
 
         self.bind("<Shift-Alt-Up>", self.event_copy_line_up)
         self.bind("<Shift-Alt-Down>", self.event_copy_line_down)
@@ -132,6 +139,7 @@ class Text(BaseText):
         self.bind("<Unmap>", self.event_unmapped)
         self.bind("<Destroy>", self.event_destroy)
         self.bind("<Motion>", self.request_hover)
+        self.bind("<<Selection>>", self.on_selection)
         self.bind("<Control-KeyPress>", lambda _: self.set_ctrl_key(True))
         self.bind("<Control-KeyRelease>", lambda _: self.set_ctrl_key(False))
         self.bind("<Control-Button-1>", self.request_goto_definition)
@@ -416,7 +424,7 @@ class Text(BaseText):
         self.base.language_server_manager.request_goto_definition(self)
     
     def request_hover(self, _):
-        if not self.lsp:
+        if not self.lsp or self.tag_ranges(tk.SEL):
             return
         
         index = self.index(tk.CURRENT)
@@ -519,12 +527,6 @@ class Text(BaseText):
         word = self.get(start, end).strip()
         return word if self.is_identifier(word) else None
 
-    def move_to_next_word(self):
-        self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
-
-    def move_to_previous_word(self):
-        self.mark_set(tk.INSERT, self.index("insert-1c wordstart"))
-
     def handle_ctrl_hmovement(self, delta=False):
         if delta:
             self.move_to_next_word()
@@ -532,6 +534,31 @@ class Text(BaseText):
             self.move_to_previous_word()
 
         return "break"
+
+    def handle_ctrl_shift_hmovement(self, delta=False):
+        if delta:
+            self.select_to_next_word()
+        else:
+            self.select_to_previous_word()
+
+        return "break"
+    
+    def select_to_next_word(self):
+        self.tag_add(tk.SEL, "insert wordstart", "insert+1c wordend")
+        self.mark_set(tk.INSERT, "insert+1c wordend")
+
+    def select_to_previous_word(self):
+        self.tag_add(tk.SEL, "insert-1c wordstart", "insert wordend")
+        self.mark_set(tk.INSERT, "insert-1c wordstart")
+
+    def move_to_next_word(self):
+        self.mark_set(tk.INSERT, self.index("insert+1c wordend"))
+
+    def move_to_previous_word(self):
+        self.mark_set(tk.INSERT, self.index("insert-1c wordstart"))
+
+    def on_selection(self, *args):
+        self.tag_remove("hover", 1.0, tk.END)
 
     def update_current_indent(self):
         line = self.get("insert linestart", "insert lineend")
@@ -922,7 +949,8 @@ class Text(BaseText):
 
         if word := re.findall(r"\w+", self.get("insert wordstart", "insert wordend")):
             # TODO: do not highlight keywords, parts of strings, etc.
-            self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", regexp=True)
+            self.highlight_pattern(f"\\y{word[0]}\\y",  "currentword", regexp=True)
+            # self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", start="insert wordend", regexp=True)
 
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
