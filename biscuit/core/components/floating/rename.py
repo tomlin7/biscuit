@@ -56,7 +56,7 @@ class Rename(Toplevel):
         if current is None:
             return
         
-        self.text_variable.set()
+        self.text_variable.set(current)
         self.entry.selection_range(0, tk.END)
 
         self.refresh_geometry(tab)
