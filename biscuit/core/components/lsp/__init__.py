@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import typing
 
+import pylsp
 import tarts as lsp
 
 from .client import LangServerClient
@@ -15,7 +16,7 @@ class LanguageServerManager:
     def __init__(self, base: App):
         self.base = base
         
-        self.langservers: dict[str, str] = {}
+        self.langservers: dict[str, str] = {"Python":"pylsp"}
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None
 

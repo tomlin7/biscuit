@@ -13,5 +13,6 @@ tkinterweb
 mistune
 tarts
 chardet 
+python-lsp-server
 pywinpty; platform_system == "Windows"
 ptyprocess; platform_system != "Windows"
