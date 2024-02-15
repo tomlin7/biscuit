@@ -20,6 +20,7 @@ from ...utils import textutils
 from .highlighter import Highlighter
 
 BRACKET_MAP = {"(": ")", "{": "}", "[": "]"}
+BRACKET_MAP_REV = {v: k for k, v in BRACKET_MAP.items()}
 OPENING_BRACKETS = ("(", "{", "[")
 CLOSING_BRACKETS = (")", "}", "]")
 
@@ -78,6 +79,7 @@ class Text(BaseText):
         self.tag_config("currentline", background=self.base.theme.editors.currentline)
         self.tag_config("hover", background=self.base.theme.editors.hovertag)
 
+        self.tag_config("activebracket", background=self.base.theme.editors.activebracket)
         self.tag_config("red", foreground="red")
         for i in self.base.theme.editors.bracket_colors:
             self.tag_config(i, foreground=f"#{i}")
@@ -161,6 +163,26 @@ class Text(BaseText):
 
         self.update_words_list()
     
+    # TODO this wont work properly
+    # write a custom ast, parser for bracket matching
+    def highlight_current_brackets(self):
+        self.tag_remove("activebracket", "1.0", tk.END)
+        i = self.index(tk.INSERT)
+        start, end = None, None
+        
+        try:
+            if start := self.search(r"[{(\[]", i, i+" linestart", backwards=True, regexp=True):
+                if counter := BRACKET_MAP.get(self.get(start, start+'+1c')):
+                    end = self.search(counter, i, stopindex=i+" lineend")
+        except tk.TclError:
+            pass
+
+        if not end:
+            return
+
+        self.tag_add("activebracket", start, start + "+1c")
+        self.tag_add("activebracket", end, end + "+1c")
+    
     def open_bracket(self, e: tk.Event):
         text = self.get("1.0", "insert")
         i = 0 
@@ -170,7 +192,7 @@ class Text(BaseText):
             elif ch in CLOSING_BRACKETS:
                 if i > 0:
                     i -= 1
-        self.insert(tk.INSERT, e.char, self.base.theme.editors.bracket_colors[(i%3)])
+        self.complete_pair(e, self.base.theme.editors.bracket_colors[(i%3)])
 
         return "break"
 
@@ -193,24 +215,37 @@ class Text(BaseText):
             self.insert(tk.INSERT, e.char, 'red')
         return "break"
 
-    def complete_pair(self, e: tk.Event):
+    def complete_pair(self, e: tk.Event, tag=None):
         end = {"(": ")", "{": "}", "[": "]", "\"": "\"", "'": "'"}.get(e.char)
-        
+        char = e.char
         # if there is selection, surround the selection with character
         if self.tag_ranges(tk.SEL):
-            self.insert(tk.SEL_LAST, end)
-            self.insert(tk.SEL_FIRST, e.char)
+            if tag:
+                self.insert(tk.SEL_LAST, end, tag) 
+                self.insert(tk.SEL_FIRST, char, tag)
+            else:
+                self.insert(tk.SEL_LAST, end) 
+                self.insert(tk.SEL_FIRST, char)
             return "break"
         
-        if e.char in ("\"", "'") and self.get("insert-1c", "insert").strip():
+        if char in ("\"", "'") and self.get("insert-1c", "insert").strip():
             return
         
         # if there is no selection, insert the character and move cursor inside the pair
-        self.insert(tk.INSERT, e.char + end)
-        self.mark_set(tk.INSERT, "insert-1c")
+        if tag:
+            self.insert(tk.INSERT, char, tag)
+            self.insert(tk.INSERT, " ")
+            self.insert(tk.INSERT, end, tag)
+        else:
+            self.insert(tk.INSERT, char + end)
+        self.mark_set(tk.INSERT, "insert-2c")
         return "break"
 
     def remove_pair(self, _: tk.Event):
+        if self.tag_ranges(tk.SEL):
+            self.delete(tk.SEL_FIRST, tk.SEL_LAST)
+            return "break"
+        
         if not self.get("insert-1c", "insert+1c") in ["()", "[]", "{}", "\"\"", "''"]:
             return
         

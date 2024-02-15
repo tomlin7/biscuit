@@ -196,6 +196,7 @@ class Editors(FrameThemeObject):
         self.labels = ThemeObject(self)
 
         self.bracket_colors = ('ffd700', 'da70d6', '179fff')
+        self.activebracket = "yellow"
 
         self.hyperlink = "#4583b6"
 
