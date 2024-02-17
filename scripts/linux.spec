@@ -3,7 +3,7 @@ from PyInstaller.utils.hooks import collect_data_files
 from PyInstaller.utils.hooks import collect_all
 
 datas = [('../biscuit/res/*', 'res/')]
-binaries = [('bin/pylsp.exe', 'res/')]
+binaries = [('./bin/pylsp.exe', 'res/')]
 hiddenimports = []
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')

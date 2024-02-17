@@ -31,7 +31,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
-          pip install --target=scripts python-lsp-server
+          pip install python-lsp-server -t scripts
 
       - name: Build biscuit
         run: pyinstaller scripts/linux.spec
@@ -59,6 +59,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
+          pip install python-lsp-server -t scripts
 
       - name: Build biscuit
         run: pyinstaller scripts/windows.spec
