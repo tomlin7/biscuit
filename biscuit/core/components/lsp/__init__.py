@@ -16,10 +16,8 @@ class LanguageServerManager:
         self.base = base
         
         self.langservers: dict[str, str] = {}
-        try:
-            self.langservers["python"] = os.path.join(self.base.resdir, "pylsp")
-        except:
-            print("Python extension failed, manually install from extensions")
+        # built-in support for python-lsp-server
+        self.langservers["python"] = "pylsp"
             
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None

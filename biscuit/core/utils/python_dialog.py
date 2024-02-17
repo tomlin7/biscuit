@@ -1,4 +1,4 @@
-import subprocess
+import subprocess as sp
 import webbrowser
 from tkinter import messagebox
 
@@ -13,6 +13,12 @@ def show_python_not_installed_message():
 
 def check_python_installation():
     try:
-        subprocess.check_call(["python", "--version"])
-    except subprocess.CalledProcessError:
+        sp.check_call(["python", "--version"])
+        reqs = sp.check_output(['pip', 'freeze'])
+        if not "python-lsp-server".encode() in reqs:
+            try:
+                sp.check_call(['pip', 'install', 'python-lsp-server'])
+            except sp.CalledProcessError:
+                print("Install python extension to enable python language features.")
+    except sp.CalledProcessError:
         show_python_not_installed_message()
