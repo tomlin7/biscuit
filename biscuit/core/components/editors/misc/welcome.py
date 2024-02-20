@@ -26,6 +26,13 @@ class Welcome(BaseEditor):
         self.description = Label(self.left, text="Made with ❤", font=("Segoe UI", 20), fg=self.base.theme.biscuit_dark, **self.base.theme.editors.biscuit_labels)
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
 
+        if self.base.get_user_preset("editing.misc.welcome.lucky"):
+            lucky_word = self.base.get_user_preset("editing.misc.welcome.lucky")
+            self.lucky = Label(self.left, text=lucky_word, font=("Segoe UI", 14), fg=self.base.theme.biscuit_dark, **self.base.theme.editors.biscuit_labels)
+            self.lucky.grid(row=2, column=0, sticky=tk.W, pady=1)
+        else:
+            self.lucky = None
+
         self.create_start_group()
         self.create_recent_group()
 

@@ -1,6 +1,7 @@
 
 import os
 import sys
+import importlib.util
 
 from .api import *
 from .components import *
@@ -32,6 +33,46 @@ class ConfigManager:
     appdir: str
     extensionsdir: str
 
+    def get_user_integrated_preset_path(self):
+        return os.path.join(os.path.expanduser("~"), ".biscuit", "preset.entry.py")
+
+    def load_user_integrated_preset(self):
+        path = self.get_user_integrated_preset_path()
+        if os.path.exists(path):
+            # user integrated preset exists
+            spec = importlib.util.spec_from_file_location("user_integrated_preset", path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.user_integrated_preset = module
+        else:
+            self.user_integrated_preset = None
+
+    def has_user_preset(self, path):
+        t = self.user_integrated_preset
+        ps = path.split('.')
+        for s in ps:
+            try:
+                t = getattr(t, s)
+            except:
+                return False
+        return True
+
+    def get_user_preset(self, path):
+        t = self.user_integrated_preset
+        ps = path.split('.')
+        for s in ps:
+            try:
+                t = getattr(t, s)
+            except:
+                return None
+        return t
+
+    def check_user_preset(self, path):
+        return self.get_user_preset(path) in [True,"yes", "y"]
+
+    def check_user_preset_neither(self, path, any_):
+        return not (self.get_user_preset(path) in any_)
+
     def setup_configs(self) -> None:
         self.git_found = False
         self.active_directory = None
@@ -54,6 +95,8 @@ class ConfigManager:
         self.binder = Binder(self)
         self.git = Git(self)
         self.language_server_manager = LanguageServerManager(self)
+
+        self.load_user_integrated_preset()
 
     def setup_path(self, appdir: str) -> None:
         # setup all paths used across editor
