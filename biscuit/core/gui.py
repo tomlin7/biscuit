@@ -83,6 +83,7 @@ class GUIManager(tk.Tk, ConfigManager):
         self.panel = self.root.baseframe.contentpane.panel
         self.terminalmanager = self.panel.terminal
         self.logger = self.panel.logger
+        self.problems = self.panel.problems
 
     def setup_floating_widgets(self) -> None:
         # separate function because why not
