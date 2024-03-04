@@ -20,8 +20,8 @@ from .watcher import DirectoryTreeWatcher
 class DirectoryTree(SidebarViewItem):
     def __init__(self, master, startpath=None, observe_changes=False, itembar=True, *args, **kwargs) -> None:
         self.title = 'No folder opened'
-        self.__buttons__ = (('new-file', lambda: self.base.palette.show_prompt('newfile:')), 
-                            ('new-folder', lambda: self.base.palette.show_prompt('newfolder:')), 
+        self.__buttons__ = (('new-file', lambda: self.base.palette.show('newfile:')), 
+                            ('new-folder', lambda: self.base.palette.show('newfolder:')), 
                             ('refresh', self.refresh_root), ('collapse-all', self.collapse_all))
         super().__init__(master, itembar, *args, **kwargs)
 

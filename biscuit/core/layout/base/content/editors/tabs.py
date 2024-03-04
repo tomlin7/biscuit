@@ -32,11 +32,17 @@ class Tabs(Frame):
         self.close_tab(self.active_tab)
 
     def close_tab(self, tab: Tab) -> None:
-        i = self.tabs.index(tab)
-        self.tabs.remove(tab)
         tab.editor.grid_forget()
-        self.master.master.close_editor(tab.editor)
         tab.destroy()
+
+        try:
+            i = self.tabs.index(tab)
+        except ValueError:
+            # most probably in case of diff editors, not handled
+            return
+        
+        self.tabs.remove(tab)
+        self.master.master.close_editor(tab.editor)
 
         if self.tabs:
             if i < len(self.tabs):

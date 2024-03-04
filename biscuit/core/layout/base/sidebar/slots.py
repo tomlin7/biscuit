@@ -47,7 +47,7 @@ class Slots(Frame):
 
     def add_settings_menu(self) -> None:
         settings_menu = self.add_menu("settings-gear", "manage")
-        settings_menu.add_item("Command Palette", lambda *_: self.base.palette.show_prompt(">"))
+        settings_menu.add_item("Command Palette", lambda *_: self.base.palette.show(">"))
         settings_menu.add_separator()
         settings_menu.add_item("Settings", self.base.open_settings)
 

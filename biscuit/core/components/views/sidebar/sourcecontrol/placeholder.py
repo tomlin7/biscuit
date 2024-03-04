@@ -24,4 +24,4 @@ class ChangesTreePlaceholder(Frame):
         self.base.events.open_directory()
 
     def clone_repo(self, *_) -> None:
-        self.base.palette.show_prompt("clone")
+        self.base.palette.show("clone")

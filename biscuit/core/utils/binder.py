@@ -32,7 +32,8 @@ class Binder:
     def late_bind_all(self) -> None:
         """Bindings that require full initialization"""
         
-        self.bind(self.bindings.commandpalette, self.events.show_command_prompt)
+        self.bind(self.bindings.commandpalette, self.events.show_command_palette)
+        self.bind(self.bindings.symbolpalette, self.events.show_symbol_palette)
         self.bind(self.bindings.panel, self.base.contentpane.toggle_panel)
 
         self.bind('<Configure>', self.base.on_gui_update)

@@ -41,8 +41,8 @@ class Searchbar(Frame):
     def focus(self) -> None:
         self.search_bar.focus()
 
-    def add_prompt(self, prompt: str) -> None:
-        self.text_variable.set(prompt + " ")
+    def add_prefix(self, prefix: str) -> None:
+        self.text_variable.set(prefix + " ")
         self.search_bar.icursor(tk.END)
 
     def get_search_term(self) -> str:
@@ -51,18 +51,18 @@ class Searchbar(Frame):
     def filter(self, *args) -> None:
         term = self.get_search_term()
 
-        prompt_found = False
+        prefix_found = False
         for actionset in self.master.actionsets:
             actionset = actionset()
-            if term.startswith(actionset.prompt):
+            if term.startswith(actionset.prefix):
                 self.master.pick_actionset(actionset)
-                term = term[len(actionset.prompt):].strip()
+                term = term[len(actionset.prefix):].strip()
 
-                prompt_found = True
+                prefix_found = True
                 break
 
         self.term = term
-        if not prompt_found:
+        if not prefix_found:
             self.master.pick_file_search(term)
 
         exact, starts, includes = [], [], []
