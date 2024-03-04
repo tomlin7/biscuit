@@ -2,17 +2,18 @@ import tkinter as tk
 
 import tarts as lsp
 
-from biscuit.core.components.utils.codicon import get_codicon
+from biscuit.core.components.lsp.utils import decode_position
+from biscuit.core.components.utils import Text, get_codicon
 
 from .kinds import kinds
 
 
-class Tree(tk.Text):
+class Tree(Text):
     def __init__(self, master):
         super().__init__(master, wrap="none", borderwidth=0, highlightthickness=0)
         self.master = master
         self.base = master.base
-        self.config(**self.base.theme.views.sidebar.item.content, font=("Segoi UI", 10), padx=10, pady=10, spacing1=0, spacing2=0, spacing3=0)
+        self.config(cursor= "hand2", **self.base.theme.views.sidebar.item.content, font=("Segoi UI", 10), padx=10, pady=10, spacing1=0, spacing2=0, spacing3=0)
         
         for kind in kinds:
             if kind[1]:
@@ -37,10 +38,13 @@ class Tree(tk.Text):
         for item in items:
             if item.kind == lsp.SymbolKind.MODULE:
                 continue
+
+            tag = f"{item.name}{item.kind}"
             self.insert(tk.END, "┊" * level, "line")
             self.insert(tk.END, get_codicon(kinds[item.kind - 1][0]), kinds[item.kind - 1][0])
-            self.insert(tk.END, f" {item.name}\n")
+            self.insert(tk.END, f" {item.name}\n", tag)
             self.add_items(item.children, level + 1)
+            self.tag_bind(tag, "<Button-1>", lambda e, i=item: self.base.goto_location_in_active_editor(decode_position(i.range.start)))
     
     # def onclick(self, event: tk.Event) -> None:
     #     self.config(state=tk.NORMAL)

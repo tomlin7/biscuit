@@ -6,6 +6,7 @@ import typing
 import tarts as lsp
 
 from .client import LangServerClient
+from .utils import decode_position
 
 if typing.TYPE_CHECKING:
     from biscuit.core import App
@@ -23,6 +24,14 @@ class LanguageServerManager:
         self.latest: LangServerClient = None
 
         self.kill_thread = None
+
+    def _update_symbols(self, tab, resp) -> None:
+        try:
+            self.base.settings.symbols_actionset.update([(i.name, lambda _, i=i: self.base.goto_location_in_active_editor(decode_position(i.location.range.start))) for i in resp])
+            self.base.palette.update()
+        except:
+            #TODO: currently only supports lsp.SymbolInformation; implement this for lsp.DocumentSymbol
+            pass
 
     def register_langserver(self, language, command) -> None:
         self.langservers[language] = command

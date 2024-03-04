@@ -93,7 +93,7 @@ class Text(BaseText):
         self.bind("<KeyRelease>", self.key_release_events) 
 
         self.bind("<Control-f>", self.open_find_replace)
-        self.bind("<Control-g>", lambda _: self.base.palette.show_prompt(':'))
+        self.bind("<Control-g>", lambda _: self.base.palette.show(':'))
         self.bind("<Control-Left>", lambda _: self.handle_ctrl_hmovement())
         self.bind("<Control-Right>", lambda _: self.handle_ctrl_hmovement(True))
         self.bind("<Control-Shift-Left>", lambda _: self.handle_ctrl_shift_hmovement())

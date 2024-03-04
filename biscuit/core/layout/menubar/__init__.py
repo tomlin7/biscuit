@@ -158,7 +158,7 @@ class Menubar(Frame):
         events = self.events
 
         self.view_menu = self.add_menu("View")
-        self.view_menu.add_item("Command Palette...", lambda: self.base.palette.show_prompt(">"))
+        self.view_menu.add_item("Command Palette...", lambda: self.base.palette.show(">"))
         self.view_menu.add_item("Explorer", events.show_explorer)
         self.view_menu.add_item("Outline", events.show_outline)
         self.view_menu.add_item("Search", events.show_search)
@@ -173,7 +173,7 @@ class Menubar(Frame):
 
         self.help_menu = self.add_menu("Help")
         self.help_menu.add_item("Welcome", events.show_welcome)
-        self.help_menu.add_item("Show All Commands", events.show_command_prompt)
+        self.help_menu.add_item("Show All Commands", events.show_command_palette)
         self.help_menu.add_item("Documentation", events.documentation)
         self.help_menu.add_item("Show Release Notes", events.release_notes)
         self.help_menu.add_separator()

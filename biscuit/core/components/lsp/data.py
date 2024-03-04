@@ -97,4 +97,3 @@ class WorkspaceEdit:
 @dataclasses.dataclass
 class WorkspaceEdits:
     edits: List[WorkspaceEdit]
-

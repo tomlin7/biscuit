@@ -20,16 +20,6 @@ class Palette(Toplevel):
 
     Palette is an action menu centered horizontally and aligned to top of root.
     They contain a list of actions.
-
-    +----------------------------------------------+
-    |  \   | search                         |  \   |
-    |   \  +--------------------------------+   \  |
-    |    \    \    \    \    \    \    \    \    \ |
-    |\    \    \    \    \    \    \    \    \    \|
-    | \    \    \    \    \    \    \    \    \    |
-    |  \    \    \    \    \    \    \    \    \   |
-    |   \    \    \    \    \    \    \    \    \  |
-    +----------------------------------------------+
     """
     def __init__(self, master: App, width=60, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -59,15 +49,19 @@ class Palette(Toplevel):
         self.configure_bindings()
 
     def register_actionset(self, actionset: ActionSet) -> None:
-        "Expects a lambda returning the actionset instead of the actionset itself"
+        """Registers an actionset to the palette
+        
+        Args:
+            actionset (ActionSet): lambda returning the actionset instead of the actionset itself
+        """
         self.actionsets.append(actionset)
 
     def generate_help_actionset(self) -> None:
         self.help_actionset = ActionSet("Help", "?")
         for i in self.actionsets:
             i = i() # get the actionset
-            if i.prompt:
-                self.help_actionset.append((i.prompt, lambda _, i=i: self.after(50, self.show_prompt, i.prompt), i.description))
+            if i.prefix:
+                self.help_actionset.append((i.prefix, lambda _, i=i: self.after(50, self.show, i.prefix), i.description))
 
         # print([i() for i in self.actionsets])
         self.register_actionset(lambda: self.help_actionset)
@@ -161,8 +155,8 @@ class Palette(Toplevel):
 
         self.reset_selection()
 
-    def show_prompt(self, prompt: str) -> None:
-        """Shows the palette with the passed prompt"""
+    def show(self, prefix: str) -> None:
+        """Shows the palette with the passed prefix"""
         self.update_idletasks()
 
         x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)
@@ -172,4 +166,4 @@ class Palette(Toplevel):
 
         self.focus_set()
         self.searchbar.focus()
-        self.searchbar.add_prompt(prompt)
+        self.searchbar.add_prefix(prefix)
