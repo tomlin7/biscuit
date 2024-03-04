@@ -106,6 +106,11 @@ class Settings:
         )
         self.base.palette.register_actionset(lambda: clone_actionset)
 
+        self.symbols_actionset = ActionSet(
+            "Go to symbol in editor", "@", []
+        )
+        self.base.palette.register_actionset(lambda: self.symbols_actionset)
+    
     @property
     def actionset(self):
         """Returns the generated action set."""

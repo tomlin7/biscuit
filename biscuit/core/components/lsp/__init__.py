@@ -24,6 +24,10 @@ class LanguageServerManager:
 
         self.kill_thread = None
 
+    def _update_symbols(self, tab, resp) -> None:
+        self.base.settings.symbols_actionset.update([(i.name, lambda _, i=i: print(i)) for i in resp])
+        self.base.palette.update()
+
     def register_langserver(self, language, command) -> None:
         self.langservers[language] = command
     

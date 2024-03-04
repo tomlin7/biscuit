@@ -152,7 +152,8 @@ class EventHandler:
             tab = self.master._outline_requests.pop(e.message_id)
             if tab not in self.master.tabs_opened:
                 return
-            
+
+            self.base.language_server_manager._update_symbols(tab, e.result)
             self.base.outline.update_symbols(tab, e.result if e.result and isinstance(e.result[0], lsp.DocumentSymbol) else to_document_symbol(e.result))
             return
         

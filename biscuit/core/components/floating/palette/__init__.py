@@ -59,7 +59,11 @@ class Palette(Toplevel):
         self.configure_bindings()
 
     def register_actionset(self, actionset: ActionSet) -> None:
-        "Expects a lambda returning the actionset instead of the actionset itself"
+        """Registers an actionset to the palette
+        
+        Args:
+            actionset (ActionSet): lambda returning the actionset instead of the actionset itself
+        """
         self.actionsets.append(actionset)
 
     def generate_help_actionset(self) -> None:
