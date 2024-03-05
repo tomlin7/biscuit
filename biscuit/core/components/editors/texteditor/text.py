@@ -179,7 +179,7 @@ class Text(BaseText):
         start, end = None, None
         
         try:
-            if start := self.search(r"[{(\[]", i, i+" linestart", backwards=True, regexp=True):
+            if start := self.search(r"[\{\[\(\)\]\}]", i, i+" linestart", backwards=True, regexp=True):
                 if counter := BRACKET_MAP.get(self.get(start, start+'+1c')):
                     end = self.search(counter, i, stopindex=i+" lineend")
         except tk.TclError:
@@ -347,6 +347,7 @@ class Text(BaseText):
         
         self.highlight_current_line()
         self.highlight_current_word()
+        self.highlight_current_brackets()
         self.base.language_server_manager.request_outline(self)
 
 
