@@ -46,10 +46,10 @@ class Events:
         self.base.history.register_folder_history(path)
 
     def open_recent_file(self, *_):
-        self.base.palette.show_prompt("recentf:")
+        self.base.palette.show("recentf:")
     
     def open_recent_dir(self, *_):
-        self.base.palette.show_prompt("recentd:")
+        self.base.palette.show("recentd:")
 
     def save(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
@@ -229,9 +229,12 @@ class Events:
     def show_welcome(self, *_) -> None:
         self.base.editorsmanager.add_welcome()
     
-    def show_command_prompt(self, *_) -> None:
-        self.base.palette.show_prompt(">")
+    def show_command_palette(self, *_) -> None:
+        self.base.palette.show(">")
     
+    def show_symbol_palette(self, *_) -> None:
+        self.base.palette.show("@")
+
     def documentation(self, *_) -> None:
         web.open("https://billyeatcookies.github.io/biscuit/")
     

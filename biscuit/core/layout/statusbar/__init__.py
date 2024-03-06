@@ -52,7 +52,7 @@ class Statusbar(Frame):
              ("rewrite", lambda e=None: print("rewrite", e))],
         )
         self.base.palette.register_actionset(lambda: self.git_actionset)
-        self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show_prompt('branch:'), description="Checkout branch")
+        self.branch = SButton(self, text="master", icon="source-control", function=lambda: self.base.palette.show('branch:'), description="Checkout branch")
         self.branch.set_pack_data(side=tk.LEFT, padx=(2, 0))
 
         # process indicator
@@ -64,7 +64,7 @@ class Statusbar(Frame):
             "Goto line in active editor", ":", pinned=[["goto line: {}", lambda line=None: self.base.editorsmanager.active_editor.content.goto_line(int(line)) if line and line.isnumeric() else print("failed goto line", line)]]
         )
         self.base.palette.register_actionset(lambda: self.lc_actionset)
-        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show_prompt(':'), description="Go to Line/Column")
+        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=lambda: self.base.palette.show(':'), description="Go to Line/Column")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
 
         # indentation
@@ -74,7 +74,7 @@ class Statusbar(Frame):
             ("4", lambda e=None: print("indent 2", e))],
         )
         self.base.palette.register_actionset(lambda: self.indent_actionset)
-        self.indentation = SButton(self, text="Spaces: 4", function=lambda: self.base.palette.show_prompt('indent:'), description="Select indentation")
+        self.indentation = SButton(self, text="Spaces: 4", function=lambda: self.base.palette.show('indent:'), description="Select indentation")
         self.indentation.set_pack_data(side=tk.RIGHT)
 
         # encoding
@@ -83,7 +83,7 @@ class Statusbar(Frame):
             [("UTF-8", lambda e=None: print("encoding UTF-8", e))],
         )
         self.base.palette.register_actionset(lambda: self.encoding_actionset)
-        self.encoding = SButton(self, text="UTF-8", function=lambda: self.base.palette.show_prompt('encoding:'), description="Select encoding")
+        self.encoding = SButton(self, text="UTF-8", function=lambda: self.base.palette.show('encoding:'), description="Select encoding")
         self.encoding.set_pack_data(side=tk.RIGHT)
 
         # end of line
@@ -92,7 +92,7 @@ class Statusbar(Frame):
             [(i.upper(), lambda _, val=nl: self.base.editorsmanager.active_editor.content.text.change_eol(eol=val)) for i, nl in textutils.eol_map.items()],
         )
         self.base.palette.register_actionset(lambda: self.eol_actionset)
-        self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show_prompt('eol:'), description="Select End of Line sequence")
+        self.eol = SButton(self, text="CRLF", function=lambda: self.base.palette.show('eol:'), description="Select End of Line sequence")
         self.eol.set_pack_data(side=tk.RIGHT)
 
         # language mode
@@ -101,7 +101,7 @@ class Statusbar(Frame):
             "Change Language Mode", "language:", items
         )
         self.base.palette.register_actionset(lambda: self.language_actionset)
-        self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show_prompt('language:'), description="Select Language Mode")
+        self.file_type = SButton(self, text="Plain Text", function=lambda: self.base.palette.show('language:'), description="Select Language Mode")
         self.file_type.set_pack_data(side=tk.RIGHT)
 
         # show/hide notifications
@@ -116,7 +116,7 @@ class Statusbar(Frame):
             ("24 hours", lambda e=None: self.clock.use_24_hour_format(True)),],
         )
         self.base.palette.register_actionset(lambda: self.time_actionset)
-        self.clock.change_function(function=lambda: self.base.palette.show_prompt('time:'))
+        self.clock.change_function(function=lambda: self.base.palette.show('time:'))
         self.clock.set_pack_data(side=tk.RIGHT)
         self.clock.show()
 

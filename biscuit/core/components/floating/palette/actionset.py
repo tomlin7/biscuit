@@ -2,7 +2,7 @@ from typing import Callable, List, Tuple
 
 
 class ActionSet(list):
-    def __init__(self, description: str, prompt: str, items: List[Tuple[str, Callable]] = [], 
+    def __init__(self, description: str, prefix: str, items: List[Tuple[str, Callable]] = [], 
                     pinned: List[Tuple[str, Callable]] = [], *args, **kwargs) -> None:
         """Palette Actionset
         A list of items that can be searched through.
@@ -11,8 +11,8 @@ class ActionSet(list):
         ----------
         description : str
             The description of the actionset.
-        prompt : str
-            The prompt of the actionset.
+        prefix : str
+            The prefix of the actionset.
         items : List[Tuple[str, Callable]]
             The items in the actionset.
         pinned : List[Tuple[str, Callable]]
@@ -20,7 +20,7 @@ class ActionSet(list):
         """
         super().__init__(items, *args, **kwargs)
         self.description: str = description
-        self.prompt: str = prompt
+        self.prefix: str = prefix
 
         self.pinned: List[Tuple[str, Callable]] = pinned # [[command, callback], ...]
     
