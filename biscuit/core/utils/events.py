@@ -235,6 +235,12 @@ class Events:
     def show_symbol_palette(self, *_) -> None:
         self.base.palette.show("@")
 
+    def show_active_editors(self, *_) -> None:
+        self.base.palette.show("active:")
+    
+    def show_file_search_palette(self, *_) -> None:
+        self.base.palette.show("")
+
     def documentation(self, *_) -> None:
         web.open("https://billyeatcookies.github.io/biscuit/")
     

@@ -15,9 +15,9 @@ class Explorer(SidebarView):
         self.name = 'Explorer'
 
         self.menu = ExplorerMenu(self, 'files')
-        self.menu.add_item("Open Editors")
+        self.menu.add_item("Open Editors", self.base.events.show_active_editors)
         self.menu.add_separator(10)
-        self.menu.add_item("Folders")
+        self.menu.add_item("Search", self.base.events.show_file_search_palette)
         self.add_button('ellipsis', self.menu.show)
 
         self.directory = DirectoryTree(self, observe_changes=True)
