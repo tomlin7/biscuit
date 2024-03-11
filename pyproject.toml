@@ -21,7 +21,7 @@ requests = "^2.31.0"
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.1.0"
+pytest = "^8.1.1"
 pytest-dotenv = "^0.5.2"
 git-changelog = "^2.4.0"
 pyperclip = "^1.8.2"
