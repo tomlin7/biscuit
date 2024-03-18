@@ -874,17 +874,26 @@ class Text(BaseText):
         
     @property
     def line(self):
-        return int(self.index(tk.INSERT).split('.')[0])
+        try:
+            return int(self.index(tk.INSERT).split('.')[0])
+        except:
+            return 1
 
     @property
     def column(self):
-        return int(self.index(tk.INSERT).split('.')[1]) + 1
-
+        try:
+            return int(self.index(tk.INSERT).split('.')[1]) + 1
+        except:
+            return 1
+        
     @property
     def position(self):
-        lc = self.index(tk.INSERT).split('.')
-        return [lc[0], int(lc[1]) + 1]
-
+        try:
+            lc = self.index(tk.INSERT).split('.')
+            return [lc[0], int(lc[1]) + 1]
+        except:
+            return [1, 1]
+        
     def scroll_to_end(self):
         self.mark_set(tk.INSERT, tk.END)
         self.see(tk.INSERT)

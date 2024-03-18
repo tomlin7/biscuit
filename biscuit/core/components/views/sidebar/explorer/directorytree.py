@@ -171,6 +171,18 @@ class DirectoryTree(SidebarViewItem):
 
     def copy_relpath(self, *_) -> None:
         pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
+    
+    def reopen_editor(self, *_) -> None:
+        path = os.path.abspath(self.tree.selected_path())
+        if not askyesno("Reopen Editor", f"You will lose any unsaved changes to ({path}). Are you sure?"):
+            return
+
+        # try:
+        if self.tree.selected_type() == 'file':
+            self.base.editorsmanager.delete_editor(self.base.editorsmanager.get_editor(path))
+            self.base.editorsmanager.update()
+            self.base.open_editor(path)
+        
 
     def reveal_in_explorer(self, *_) -> None:
         path = self.selected_directory()

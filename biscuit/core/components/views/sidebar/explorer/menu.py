@@ -12,6 +12,7 @@ class ExplorerContextMenu(Menu):
         self.add_item("New Folder...", lambda: self.base.palette.show('newfolder:'))
         self.add_item("Reveal in File Explorer", self.master.reveal_in_explorer)
         self.add_item("Open in Integrated Terminal", self.master.open_in_terminal)
+        self.add_item("Reopen editor", self.master.reopen_editor)
         # self.add_separator()
         # self.add_item("Copy", self.master.new_file)
         # self.add_item("Cut", self.master.new_file)
