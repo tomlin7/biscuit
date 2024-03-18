@@ -28,7 +28,7 @@ class Editorsbar(Frame):
         self.menu.add_item("Close All", self.master.delete_all_editors)
 
         self.buttons = []
-        self.default_buttons = (('ellipsis', self.menu.show),)
+        self.default_buttons = (('ellipsis', self.menu.show), ('sync', self.master.reopen_active_editor))
 
         self.container = Frame(self, **self.base.theme.layout.base.content.editors.bar)
         self.container.pack(fill=tk.BOTH, side=tk.RIGHT, padx=(0, 10))
@@ -49,3 +49,4 @@ class Editorsbar(Frame):
         for button in self.buttons:
             button.pack_forget()
         self.buttons.clear()
+

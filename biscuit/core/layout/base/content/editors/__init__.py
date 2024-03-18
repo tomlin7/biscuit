@@ -16,6 +16,7 @@ from __future__ import annotations
 import os
 import tkinter as tk
 import typing
+from tkinter.messagebox import askyesno
 from typing import List, Union
 
 from biscuit.core.components.editors import Editor, Welcome
@@ -100,7 +101,26 @@ class EditorsPane(Frame):
         self.active_editors.clear()
         self.refresh()
 
-    def open_editor(self, path: str, exists: bool) -> Editor | BaseEditor:
+    def reopen_active_editor(self) -> None:
+        "Reopen the active editor"
+        if self.active_editor and self.active_editor.exists:
+            self.delete_editor(self.active_editor)
+            self.update()
+            self.open_editor(self.active_editor.path)
+    
+    def reopen_editor(self, path: str):
+        if not askyesno("Reopen Editor", f"You will lose any unsaved changes to ({path}). Are you sure?"):
+            return
+
+        try:
+            self.delete_editor(self.get_editor(path))
+            self.update()
+            self.open_editor(path)
+        except Exception as e:
+            self.base.logger.error(f"Reopening editor failed: {e}")
+            self.base.notifications.error("Reopening editor failed: see logs")
+
+    def open_editor(self, path: str, exists: bool=True) -> Editor | BaseEditor:
         "open Editor with path and exists values passed"
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
