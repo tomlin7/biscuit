@@ -127,6 +127,12 @@ class EditorsPane(Frame):
         else:
             editor.destroy()
         self.refresh()
+    
+    def get_editor(self, path: str) -> Editor:
+        "Get editor by path"
+        for editor in self.active_editors:
+            if editor.path == path:
+                return editor
 
     def close_active_editor(self) -> None:
         "Closes the active tab"
@@ -135,6 +141,7 @@ class EditorsPane(Frame):
     def delete_editor(self, editor: Editor) -> None:
         "Permanently delete a editor."
         self.active_editors.remove(editor)
+        self.tabs.delete_tab(editor)
         if editor.path in self.closed_editors:
             self.closed_editors.remove(editor)
 

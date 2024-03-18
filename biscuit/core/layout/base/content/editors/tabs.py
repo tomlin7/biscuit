@@ -52,6 +52,13 @@ class Tabs(Frame):
         else:
             self.active_tab = None
         self.master.master.refresh()
+    
+    def delete_tab(self, editor):
+        for tab in self.tabs:
+            if tab.editor == editor:
+                self.tabs.remove(tab)
+                tab.destroy()
+                return
 
     def set_active_tab(self, selected_tab: Tab) -> None:
         self.active_tab = selected_tab
