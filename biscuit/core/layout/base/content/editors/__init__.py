@@ -84,15 +84,11 @@ class EditorsPane(Frame):
 
     def add_editor(self, editor: Union[Editor,BaseEditor]) -> Editor | BaseEditor:
         "Appends a editor to list. Create a tab."
-        if self.is_open(editor.path):
-            self.tabs.switch_tabs(editor=editor)
-            self.refresh()
-        else:
-            self.active_editors.append(editor)
-            if editor.content:
-                editor.content.create_buttons(self.editorsbar.container)
-            self.tabs.add_tab(editor)
-            self.refresh()
+        self.active_editors.append(editor)
+        if editor.content:
+            editor.content.create_buttons(self.editorsbar.container)
+        self.tabs.add_tab(editor)
+        self.refresh()
         return editor
 
     def delete_all_editors(self) -> None:
@@ -126,6 +122,8 @@ class EditorsPane(Frame):
 
     def open_editor(self, path: str, exists: bool=True) -> Editor | BaseEditor:
         "open Editor with path and exists values passed"
+        if self.is_open(path):
+            return self.tabs.switch_tabs(path)
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
         return self.add_editor(Editor(self, path, exists))
