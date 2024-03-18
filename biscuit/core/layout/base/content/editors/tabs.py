@@ -74,3 +74,8 @@ class Tabs(Frame):
             tab.destroy()
 
         self.tabs.clear()
+    
+    def switch_tabs(self, editor) -> None:
+        for tab in self.tabs:
+            if tab.editor.path == editor.path:
+                tab.select()

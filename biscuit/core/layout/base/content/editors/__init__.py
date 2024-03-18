@@ -83,11 +83,15 @@ class EditorsPane(Frame):
 
     def add_editor(self, editor: Union[Editor,BaseEditor]) -> Editor | BaseEditor:
         "Appends a editor to list. Create a tab."
-        self.active_editors.append(editor)
-        if editor.content:
-            editor.content.create_buttons(self.editorsbar.container)
-        self.tabs.add_tab(editor)
-        self.refresh()
+        if self.is_open(editor.path):
+            self.tabs.switch_tabs(editor=editor)
+            self.refresh()
+        else:
+            self.active_editors.append(editor)
+            if editor.content:
+                editor.content.create_buttons(self.editorsbar.container)
+            self.tabs.add_tab(editor)
+            self.refresh()
         return editor
 
     def delete_all_editors(self) -> None:
