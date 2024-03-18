@@ -113,6 +113,8 @@ class EditorsPane(Frame):
 
     def open_editor(self, path: str, exists: bool=True) -> Editor | BaseEditor:
         "open Editor with path and exists values passed"
+        if self.is_open(path):
+            return self.tabs.switch_tabs(path)
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
         return self.add_editor(Editor(self, path, exists))
