@@ -11,11 +11,23 @@ Biscuit is a lightweight, easy to use code editor for any language. We wrote it 
 
 ## Setting up Environment
 
+Python 3.10 or above is required for building Biscuit.
+
 [**Fork**](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Biscuit repository and clone locally. 
 ```bash
 git clone http://github.com/billyeatcookies/biscuit
 ```
-Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to run biscuit once with `python -m biscuit` and make sure everything looks good.
+Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to launch biscuit once with `python -m biscuit` and make sure everything looks good.
+
+
+> [!IMPORTANT]
+> Linux distros require some prerequisites to be installed prior to the pip installation
+> ```bash
+>  sudo apt install python3-dev tcl-dev tk-dev \
+>    fontconfig libfontconfig1 libfontconfig1-dev \
+>    cmake cmake-data extra-cmake-modules build-essential
+>  python -m pip install scikit-build
+> ```
 
 ### What you'll need
 
