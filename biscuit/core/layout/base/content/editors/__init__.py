@@ -1,15 +1,5 @@
 """
 Holds the editors and provides an interface to manage the editor tabs.
-
-+---------------------------------+
-| File1.txt | File2.py |          |
-+---------------------------------+
-| \    \    \    \    \    \    \ |
-|  \    \    \    \    \    \    \|
-|   \    \    \    \    \    \    |
-|    \    \    \    \    \    \   |
-|\    \    \    \    \    \    \  |
-+---------------------------------+
 """
 from __future__ import annotations
 
@@ -88,6 +78,7 @@ class EditorsPane(Frame):
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
+        self.base.explorer.open_editors.add_item(editor)
         self.refresh()
         return editor
 
@@ -99,6 +90,7 @@ class EditorsPane(Frame):
         self.editorsbar.clear()
         self.tabs.clear_all_tabs()
         self.active_editors.clear()
+        self.base.explorer.open_editors.clear()
         self.refresh()
 
     def reopen_active_editor(self) -> None:
@@ -139,16 +131,24 @@ class EditorsPane(Frame):
     def close_editor(self, editor: Editor) -> None:
         "removes an editor, keeping it in cache."
         self.active_editors.remove(editor)
+        editor.grid_forget()
 
         if editor.content and editor.content.editable:
             self.base.language_server_manager.tab_closed(editor.content.text)
 
         # not keeping diff/games in cache
         if not editor.diff and editor.content:
-            self.closed_editors[editor.path] = editor
+            self.closed_editors[editor.path] = editor        
         else:
             editor.destroy()
+        self.base.explorer.open_editors.remove_item(editor)
         self.refresh()
+    
+    def close_editor_by_path(self, path: str) -> None:
+        "removes an editor by path, keeping it in cache."
+        e = self.get_editor(path)
+        self.close_editor(e)
+        return e
     
     def get_editor(self, path: str) -> Editor:
         "Get editor by path"
@@ -168,6 +168,7 @@ class EditorsPane(Frame):
             self.closed_editors.remove(editor)
 
         editor.destroy()
+        self.base.explorer.open_editors.remove_item(editor)
         self.refresh()
 
     def set_active_editor(self, editor: Editor) -> Editor:
@@ -175,6 +176,7 @@ class EditorsPane(Frame):
         for tab in self.tabs.tabs:
             if tab.editor == editor:
                 self.tabs.set_active_tab(tab)
+        self.base.explorer.open_editors.set_active(editor)
         
         return editor
 

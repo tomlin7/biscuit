@@ -11,7 +11,7 @@ class SidebarView(View):
     
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__: list[tuple(str, typing.Callable)] = []
+        self.__buttons__: list[tuple(str, typing.Callable)] = [] # type: ignore
         self.__icon__ = 'preview'
         self.name = "View"
         self.__name__ = self.__class__.__name__
