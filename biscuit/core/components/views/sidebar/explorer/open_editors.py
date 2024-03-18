@@ -44,10 +44,11 @@ class OpenEditors(SidebarViewItem):
         for node in self.nodes.values():
             node.destroy()
         self.nodes = {}
+        self.refresh()
     
     def openfile(self, path) -> None:
-        self.base.editorsmanager.set_active_editor_by_path(path)
+        self.base.editorsmanager.tabs.switch_tabs(path)
 
     def closefile(self, path) -> None:
-        self.base.editorsmanager.close_editor_by_path(path)
-    
+        e = self.base.editorsmanager.close_editor_by_path(path)
+        self.base.editorsmanager.tabs.close_tab_helper(e)

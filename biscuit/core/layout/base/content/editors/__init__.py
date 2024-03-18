@@ -90,6 +90,7 @@ class EditorsPane(Frame):
         self.editorsbar.clear()
         self.tabs.clear_all_tabs()
         self.active_editors.clear()
+        self.base.explorer.open_editors.clear()
         self.refresh()
 
     def reopen_active_editor(self) -> None:
@@ -130,13 +131,14 @@ class EditorsPane(Frame):
     def close_editor(self, editor: Editor) -> None:
         "removes an editor, keeping it in cache."
         self.active_editors.remove(editor)
+        editor.grid_forget()
 
         if editor.content and editor.content.editable:
             self.base.language_server_manager.tab_closed(editor.content.text)
 
         # not keeping diff/games in cache
         if not editor.diff and editor.content:
-            self.closed_editors[editor.path] = editor
+            self.closed_editors[editor.path] = editor        
         else:
             editor.destroy()
         self.base.explorer.open_editors.remove_item(editor)
@@ -144,7 +146,9 @@ class EditorsPane(Frame):
     
     def close_editor_by_path(self, path: str) -> None:
         "removes an editor by path, keeping it in cache."
-        self.close_editor(self.get_editor(path))
+        e = self.get_editor(path)
+        self.close_editor(e)
+        return e
     
     def get_editor(self, path: str) -> Editor:
         "Get editor by path"

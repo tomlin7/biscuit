@@ -32,9 +32,6 @@ class Tabs(Frame):
         self.close_tab(self.active_tab)
 
     def close_tab(self, tab: Tab) -> None:
-        tab.editor.grid_forget()
-        tab.destroy()
-
         try:
             i = self.tabs.index(tab)
         except ValueError:
@@ -42,6 +39,7 @@ class Tabs(Frame):
             return
         
         self.tabs.remove(tab)
+        tab.destroy()
         self.master.master.close_editor(tab.editor)
 
         if self.tabs:
@@ -52,6 +50,15 @@ class Tabs(Frame):
         else:
             self.active_tab = None
         self.master.master.refresh()
+    
+    def close_tab_helper(self, editor: str) -> None:
+        for tab in self.tabs:
+            if tab.editor == editor:
+                try:
+                    self.tabs.remove(tab)
+                    tab.destroy()  
+                except ValueError:
+                    return              
     
     def delete_tab(self, editor):
         for tab in self.tabs:
