@@ -1,15 +1,5 @@
 """
 Holds the editors and provides an interface to manage the editor tabs.
-
-+---------------------------------+
-| File1.txt | File2.py |          |
-+---------------------------------+
-| \    \    \    \    \    \    \ |
-|  \    \    \    \    \    \    \|
-|   \    \    \    \    \    \    |
-|    \    \    \    \    \    \   |
-|\    \    \    \    \    \    \  |
-+---------------------------------+
 """
 from __future__ import annotations
 
@@ -88,6 +78,7 @@ class EditorsPane(Frame):
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
         self.tabs.add_tab(editor)
+        self.base.explorer.open_editors.add_item(editor)
         self.refresh()
         return editor
 
@@ -146,6 +137,7 @@ class EditorsPane(Frame):
             self.closed_editors[editor.path] = editor
         else:
             editor.destroy()
+        self.base.explorer.open_editors.remove_item(editor)
         self.refresh()
     
     def get_editor(self, path: str) -> Editor:
@@ -166,6 +158,7 @@ class EditorsPane(Frame):
             self.closed_editors.remove(editor)
 
         editor.destroy()
+        self.base.explorer.open_editors.remove_item(editor)
         self.refresh()
 
     def set_active_editor(self, editor: Editor) -> Editor:
@@ -173,6 +166,7 @@ class EditorsPane(Frame):
         for tab in self.tabs.tabs:
             if tab.editor == editor:
                 self.tabs.set_active_tab(tab)
+        self.base.explorer.open_editors.set_active(editor)
         
         return editor
 

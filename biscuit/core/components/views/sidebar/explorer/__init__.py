@@ -1,10 +1,12 @@
 import os
+import tkinter as tk
 
 from biscuit.core.components.floating.palette import ActionSet
 
 from ..sidebarview import SidebarView
 from .directorytree import DirectoryTree
 from .menu import ExplorerMenu
+from .open_editors import OpenEditors
 
 
 class Explorer(SidebarView):
@@ -20,6 +22,8 @@ class Explorer(SidebarView):
         self.menu.add_item("Search", self.base.events.show_file_search_palette)
         self.add_button('ellipsis', self.menu.show)
 
+        self.open_editors = OpenEditors(self)
+        self.open_editors.pack(fill=tk.X)
         self.directory = DirectoryTree(self, observe_changes=True)
         self.add_widget(self.directory)
 
