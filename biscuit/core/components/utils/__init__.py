@@ -5,6 +5,7 @@ from .button import Button
 from .buttonsentry import ButtonsEntry
 from .callername import caller_name
 from .canvas import Canvas
+from .closelistitem import CloseListItem
 from .codicon import get_codicon
 from .colorizer import colorize
 from .entry import Entry

@@ -140,6 +140,10 @@ class EditorsPane(Frame):
         self.base.explorer.open_editors.remove_item(editor)
         self.refresh()
     
+    def close_editor_by_path(self, path: str) -> None:
+        "removes an editor by path, keeping it in cache."
+        self.close_editor(self.get_editor(path))
+    
     def get_editor(self, path: str) -> Editor:
         "Get editor by path"
         for editor in self.active_editors:
