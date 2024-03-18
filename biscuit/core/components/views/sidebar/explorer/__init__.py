@@ -17,11 +17,12 @@ class Explorer(SidebarView):
         self.name = 'Explorer'
 
         self.menu = ExplorerMenu(self, 'files')
-        self.menu.add_item("Open Editors", self.base.events.show_active_editors)
+        self.menu.add_item("Open Editors", self.toggle_active_editors)
         self.menu.add_separator(10)
         self.menu.add_item("Search", self.base.events.show_file_search_palette)
         self.add_button('ellipsis', self.menu.show)
 
+        self.active_editors_visible = True
         self.open_editors = OpenEditors(self)
         self.open_editors.pack(fill=tk.X)
         self.directory = DirectoryTree(self, observe_changes=True)
@@ -43,6 +44,13 @@ class Explorer(SidebarView):
             "Rename a file/folder", "rename:", pinned=[["Rename: {}", lambda newname=None: self.directory.rename_item(newname)]]
         )
         self.base.palette.register_actionset(lambda: self.rename_actionset)
+
+    def toggle_active_editors(self):
+        if self.active_editors_visible:
+            self.open_editors.pack_forget()
+        else:
+            self.open_editors.pack(fill=tk.X, before=self.directory)
+        self.active_editors_visible = not self.active_editors_visible
 
     def get_actionset(self, term: str) -> ActionSet:
         self.filesearch_actionset.update(self.filesearch(term))
