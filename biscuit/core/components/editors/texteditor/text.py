@@ -599,9 +599,13 @@ class Text(BaseText):
         if not self.exists:
             return 'utf-8'
         
-        with open(file_path, 'rb') as file:
-            bomstring = file.read(8)
-        
+        try:
+            with open(file_path, 'rb') as file:
+                bomstring = file.read(8)
+        except Exception as e:
+            # empty file
+            return 'utf-8'
+                
         detected = chardet.detect(bomstring)
         encoding = detected['encoding'].lower()
         if encoding == 'ascii':
