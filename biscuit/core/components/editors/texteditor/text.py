@@ -602,16 +602,15 @@ class Text(BaseText):
         try:
             with open(file_path, 'rb') as file:
                 bomstring = file.read(8)
+                detected = chardet.detect(bomstring)
+                encoding = detected['encoding'].lower()
+                if encoding == 'ascii':
+                    return 'utf-8'
+                
+                return encoding                
         except Exception as e:
             # empty file
             return 'utf-8'
-                
-        detected = chardet.detect(bomstring)
-        encoding = detected['encoding'].lower()
-        if encoding == 'ascii':
-            return 'utf-8'
-        
-        return encoding
 
     def change_eol(self, eol: str):
         if not self.exists:

@@ -7,7 +7,7 @@ import os
 import tkinter as tk
 import typing
 from tkinter.messagebox import askyesno
-from typing import List, Union
+from typing import Dict, List, Union
 
 from biscuit.core.components.editors import Editor, Welcome
 from biscuit.core.components.editors.editor import BaseEditor
@@ -37,7 +37,7 @@ class EditorsPane(Frame):
         self.tabs = self.editorsbar.tabs
 
         self.active_editors: List[Editor] = []
-        self.closed_editors: List[Editor] = {}
+        self.closed_editors: Dict[Editor] = {}
 
         self.emptytab = Empty(self)
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
@@ -165,7 +165,7 @@ class EditorsPane(Frame):
         self.active_editors.remove(editor)
         self.tabs.delete_tab(editor)
         if editor.path in self.closed_editors:
-            self.closed_editors.remove(editor)
+            self.closed_editors.pop(editor)
 
         editor.destroy()
         self.base.explorer.open_editors.remove_item(editor)
