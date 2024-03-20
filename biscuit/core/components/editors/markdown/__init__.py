@@ -16,12 +16,13 @@ class MDEditor(BaseEditor):
         self.path = path
         self.exists = exists
         self.editable = True
+        
+        self.__buttons__ = (('open-preview', self.toggle_preview),)
 
         self.editor = TextEditor(self, path, exists=exists)
         self.editor.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))
 
         self.renderer = Renderer(self, editor=self.editor)
-        self.renderer.grid(row=0, column=1, sticky=tk.NSEW)
 
         self.left = self.text = self.editor.text
         self.right  = self.renderer.text
@@ -34,6 +35,13 @@ class MDEditor(BaseEditor):
         self.editor.bind("<<Change>>", self.on_change)
         self.edit_undo = self.editor.edit_undo
         self.editor_redo = self.editor.edit_redo
+
+    def toggle_preview(self,*_):
+        if self.preview_enabled:
+            self.renderer.grid_forget()
+        else:
+            self.renderer.grid(row=0, column=1, sticky=tk.NSEW)
+        self.preview_enabled = not self.preview_enabled
 
     def on_scrollbar(self, *args) -> None:
         self.left.yview(*args)
