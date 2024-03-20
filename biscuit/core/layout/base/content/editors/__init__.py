@@ -198,6 +198,7 @@ class EditorsPane(Frame):
     def refresh(self) -> None:
         if not self.active_editors:
             self.emptytab.grid()
+            self.editorsbar.clear()
             self.base.set_title(os.path.basename(self.base.active_directory) if self.base.active_directory else None)
         elif self.active_editors:
             self.emptytab.grid_remove()

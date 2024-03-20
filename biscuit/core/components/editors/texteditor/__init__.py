@@ -17,6 +17,8 @@ class TextEditor(BaseEditor):
         self.exists = exists
         self.editable = True
 
+        self.__buttons__ = (('sync', self.base.editorsmanager.reopen_active_editor),)
+
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 

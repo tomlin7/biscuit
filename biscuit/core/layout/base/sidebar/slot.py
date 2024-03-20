@@ -33,6 +33,8 @@ class Slot(Menubutton):
             self.enable()
         else:
             self.disable()
+        
+        self.bubble.hide()
 
     def enable(self) -> None:
         if not self.enabled:

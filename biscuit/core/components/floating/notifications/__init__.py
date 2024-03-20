@@ -108,6 +108,9 @@ class Notifications(Toplevel):
         else:
             self.title.config(text="NO NEW NOTIFICATIONS")
 
+        if self.active:
+            return self.hide()
+
         self.active = True
         self.deiconify()
         self.follow_root()

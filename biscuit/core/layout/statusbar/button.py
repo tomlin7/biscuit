@@ -69,6 +69,7 @@ class SButton(Frame):
 
     def on_click(self, *_) -> None:
         self.function()
+        self.bubble.hide()
 
     def change_text(self, text: str) -> None:
         self.text_label.config(text=text)

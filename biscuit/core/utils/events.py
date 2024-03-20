@@ -7,6 +7,8 @@ from ast import arg
 from threading import Thread
 from tkinter import messagebox
 
+from scipy.__config__ import show
+
 if typing.TYPE_CHECKING:
     from ... import App
 
@@ -130,6 +132,12 @@ class Events:
         if self.minimized:
             self.base.deiconify()
             self.minimized = False
+    
+    def toggle_wordwrap(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                self.base.wrap_words = not self.base.wrap_words
+                editor.content.text.refresh_wrap()
 
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
@@ -237,6 +245,27 @@ class Events:
 
     def show_active_editors(self, *_) -> None:
         self.base.palette.show("active:")
+    
+    def change_language_mode(self, *_) -> None:
+        self.base.palette.show('language:')
+    
+    def change_eol(self, *_) -> None:
+        self.base.palette.show('eol:')
+    
+    def change_encoding(self, *_) -> None:
+        self.base.palette.show('encoding:')
+    
+    def change_indentation_level(self, *_) -> None:
+        self.base.palette.show('indent:')
+    
+    def show_goto_palette(self, *_) -> None:
+        self.base.palette.show(':')
+    
+    def change_git_branch(self, *_) -> None:
+        self.base.palette.show('branch:')
+    
+    def change_time_format(self, *_) -> None:
+        self.base.palette.show('time:')
     
     def show_file_search_palette(self, *_) -> None:
         self.base.palette.show("")
