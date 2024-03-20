@@ -139,6 +139,10 @@ class Menubar(Frame):
         self.edit_menu.add_separator()
         self.edit_menu.add_item("Find", events.find)
         self.edit_menu.add_item("Replace", events.replace)
+        self.edit_menu.add_item("Find in Files", events.show_file_search_palette)
+        self.edit_menu.add_item("Change Language Mode", events.change_language_mode)
+        self.edit_menu.add_separator()
+        self.edit_menu.add_item("Word Wrap", events.toggle_wordwrap)
 
     def add_selection_menu(self) -> None:
         events = self.events

@@ -34,6 +34,7 @@ class ConfigManager:
 
     def setup_configs(self) -> None:
         self.git_found = False
+        self.wrap_words = False
         self.active_directory = None
         self.active_branch_name = None
         self.onupdate_callbacks = []

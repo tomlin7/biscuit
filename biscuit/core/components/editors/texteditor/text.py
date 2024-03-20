@@ -191,6 +191,9 @@ class Text(BaseText):
         self.tag_add("activebracket", start, start + "+1c")
         self.tag_add("activebracket", end, end + "+1c")
     
+    def refresh_wrap(self):
+        self.config(wrap=tk.WORD if self.base.wrap_words else tk.NONE)
+
     def open_bracket(self, e: tk.Event):
         text = self.get("1.0", "insert")
         i = 0 
