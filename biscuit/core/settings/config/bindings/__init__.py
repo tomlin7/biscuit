@@ -24,6 +24,7 @@ class Bindings:
         self.close_file = "<Control-w>"
         self.quit = "<Control-q>"
         self.commandpalette = "<Control-P>"
+        self.filesearch = "<Control-p>"
         self.symbolpalette = "<Control-J>"
         self.panel = "<Control-grave>"
         self.undo="<Control-z>"
