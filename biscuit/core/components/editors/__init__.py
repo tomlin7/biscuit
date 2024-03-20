@@ -16,6 +16,7 @@ from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
 from .diffeditor import DiffEditor
 from .editor import BaseEditor
+from .html import HTMLEditor
 from .image import ImageViewer
 from .languages import Languages
 from .markdown import MDEditor
@@ -34,6 +35,8 @@ def get_editor(base, path: str=None, exists: bool=True, path2: str=None,
             return ImageViewer(base, path)
         if any(path.endswith(i) for i in ('.md', '.markdown', '.mdown', '.rst', '.mkd')):
             return MDEditor(base, path, exists=exists)
+        if path.endswith('.html') or path.endswith('.htm'):
+            return HTMLEditor(base, path, exists=exists)
 
         return TextEditor(base, path, exists, language=language)
 

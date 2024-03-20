@@ -6,7 +6,7 @@ from ..editor import BaseEditor
 from .renderer import Renderer
 
 
-class MDEditor(BaseEditor):
+class HTMLEditor(BaseEditor):
     def __init__(self, master, path, exists=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)

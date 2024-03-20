@@ -3,7 +3,6 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-import mistune
 from tkinterweb import HtmlFrame
 
 from biscuit.core.components.utils import Frame, Scrollbar
@@ -27,8 +26,8 @@ class Renderer(Frame):
         self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
 
     def refresh(self, *_):
-        rawmd = self.editor.text.get_all_text()
-        self.text.load_html(mistune.html(rawmd))
+        htmlcontent = self.editor.text.get_all_text()
+        self.text.load_html(htmlcontent)
         t = self.base.theme
         self.text.add_css(f"""
             CODE, PRE {{
