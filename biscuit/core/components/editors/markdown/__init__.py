@@ -16,7 +16,8 @@ class MDEditor(BaseEditor):
         self.path = path
         self.exists = exists
         self.editable = True
-        
+        self.preview_enabled = False
+
         self.__buttons__ = (('open-preview', self.toggle_preview),)
 
         self.editor = TextEditor(self, path, exists=exists)
