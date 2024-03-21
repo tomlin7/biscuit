@@ -7,8 +7,6 @@ from ast import arg
 from threading import Thread
 from tkinter import messagebox
 
-from scipy.__config__ import show
-
 if typing.TYPE_CHECKING:
     from ... import App
 
