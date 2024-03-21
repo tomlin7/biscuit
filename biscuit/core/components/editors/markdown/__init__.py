@@ -44,6 +44,7 @@ class MDEditor(BaseEditor):
             self.grid_columnconfigure(1, weight=1)
             self.renderer.grid(row=0, column=1, sticky=tk.NSEW)
         self.preview_enabled = not self.preview_enabled
+        self.on_change()
 
     def on_scrollbar(self, *args) -> None:
         self.left.yview(*args)
@@ -56,4 +57,5 @@ class MDEditor(BaseEditor):
         self.on_scrollbar('moveto', args[0])
 
     def on_change(self, *_):
-        self.renderer.refresh()
+        if self.preview_enabled:
+            self.renderer.refresh()
