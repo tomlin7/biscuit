@@ -27,6 +27,9 @@ class Renderer(Frame):
 
     def refresh(self, *_):
         htmlcontent = self.editor.text.get_all_text()
+        if '<title>' in htmlcontent and '</title>' not in htmlcontent:
+            return
+        
         self.text.load_html(htmlcontent)
         t = self.base.theme
         self.text.add_css(f"""
