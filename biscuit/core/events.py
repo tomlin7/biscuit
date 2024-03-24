@@ -38,7 +38,7 @@ class EventManager(GUIManager, ConfigManager):
     extensionsGUI: Extensions
 
     panel: Panel
-    terminalmanager: Terminal
+    terminalmanager: Terminals
     logger: Logs
 
     def set_title(self, title: str = None) -> None:
@@ -170,7 +170,7 @@ class EventManager(GUIManager, ConfigManager):
         self.notifications.show("Feature not available in this version.")
 
     def toggle_terminal(self) -> None:
-        self.panel.set_active_view(self.panel.terminal)
+        self.panel.set_active_view(self.panel.terminals)
         self.contentpane.toggle_panel()
 
     def update_statusbar(self) -> None:

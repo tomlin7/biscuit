@@ -2,6 +2,8 @@
 import os
 import sys
 
+from biscuit.core.exec import ExecManager
+
 from .api import *
 from .components import *
 from .extensions import ExtensionManager
@@ -55,6 +57,7 @@ class ConfigManager:
         self.binder = Binder(self)
         self.git = Git(self)
         self.language_server_manager = LanguageServerManager(self)
+        self.exec_manager = ExecManager(self)
 
     def setup_path(self, appdir: str) -> None:
         # setup all paths used across editor

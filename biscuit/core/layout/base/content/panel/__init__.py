@@ -41,7 +41,7 @@ class Panel(Frame):
 
         self.views = []
 
-        self.default_views = [Problems(self), Logs(self), Terminal(self)]
+        self.default_views = [Problems(self), Logs(self), Terminals(self)]
         self.add_views(self.default_views)
 
     def add_views(self, views: list[PanelView]) -> None:
@@ -84,12 +84,12 @@ class Panel(Frame):
         return self.default_views[1]
 
     @property
-    def terminal(self) -> Terminal:
+    def terminals(self) -> Terminals:
         return self.default_views[2]
 
     def show_terminal(self) -> None:
         "shows the terminal if its hidden/minimized"
-        self.set_active_view(self.terminal)
+        self.set_active_view(self.terminals)
         self.show_panel()
 
     def show_logs(self) -> None:

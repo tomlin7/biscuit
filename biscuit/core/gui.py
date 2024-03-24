@@ -81,7 +81,7 @@ class GUIManager(tk.Tk, ConfigManager):
         self.extensions_GUI = self.sidebar.extensions
         
         self.panel = self.root.baseframe.contentpane.panel
-        self.terminalmanager = self.panel.terminal
+        self.terminalmanager = self.panel.terminals
         self.logger = self.panel.logger
         self.problems = self.panel.problems
 

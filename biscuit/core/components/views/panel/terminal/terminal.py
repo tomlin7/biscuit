@@ -9,9 +9,9 @@ else:
 
 from biscuit.core.components.utils import Scrollbar
 
+from ..panelview import PanelView
 from .ansi import replace_newline, strip_ansi_escape_sequences
 from .text import TerminalText
-from ..panelview import PanelView
 
 
 class Terminal(PanelView):
@@ -70,7 +70,7 @@ class Terminal(PanelView):
         self.alive = False
 
     def run_command(self, command: str) -> None:
-        self.insert(command, "command")
+        self.text.insert("end", command, "command")
         self.enter()
 
     def enter(self, *_) -> None:
