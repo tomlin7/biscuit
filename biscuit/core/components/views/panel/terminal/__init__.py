@@ -39,8 +39,10 @@ class Terminals(PanelView):
 
         self.active_terminals = []
 
-        self.default_terminal = Default(self, cwd=self.base.active_directory or get_home_directory())
-        self.add_terminal(self.default_terminal)
+    def add_default_terminal(self) -> Default:
+        default_terminal = Default(self, cwd=self.base.active_directory or get_home_directory())
+        self.add_terminal(default_terminal)
+        return default_terminal
 
     def add_current_terminal(self, *_) -> None:
         "Spawns an instance of currently active terminal"
@@ -77,7 +79,10 @@ class Terminals(PanelView):
 
     def delete_active_terminal(self) -> None:
         "Closes the active tab"
-        self.tabs.close_active_tab()
+        try:
+            self.tabs.close_active_tab()
+        except IndexError:
+            pass
 
     def set_active_terminal(self, terminal) -> None:
         "set an existing terminal to currently shown one"
@@ -90,20 +95,22 @@ class Terminals(PanelView):
             active.clear()
         
     def run_command(self, command: str) -> None:
-        if self.active_terminal:
+        if not self.active_terminal:
+            default = self.add_default_terminal()
+            default.run_command(command)
+            # this won't work, TODO: implement a queue for commands
+        else:
             self.active_terminal.run_command(command)
 
-    # @property
-    # def pwsh(self):
-    #     return self.default_terminals[0]
+    # TODO: Implement these
+    def open_pwsh(self):
+        ...
 
-    # @property
-    # def cmd(self):
-    #     return self.default_terminals[1]
+    def open_cmd(self):
+        ...
 
-    # @property
-    # def python(self):
-    #     return self.default_terminals[1]
+    def open_python(self):
+        ...
 
     @property
     def active_terminal_type(self):

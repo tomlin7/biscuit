@@ -37,6 +37,9 @@ class Tabs(Frame):
         self.close_tab(self.active_tab)
 
     def close_tab(self, tab) -> None:
+        if not self.tabs:
+            return
+        
         i = self.tabs.index(tab)
         self.tabs.remove(tab)
         tab.terminal.grid_forget()

@@ -89,6 +89,8 @@ class Panel(Frame):
 
     def show_terminal(self) -> None:
         "shows the terminal if its hidden/minimized"
+        if not self.terminals.active_terminal:
+            self.terminals.add_default_terminal()
         self.set_active_view(self.terminals)
         self.show_panel()
 
@@ -100,6 +102,11 @@ class Panel(Frame):
     def toggle_panel(self) -> None:
         "toggles the current visible state of panel"
         self.master.toggle_panel()
+    
+    def switch_to_terminal(self) -> None:
+        if not self.terminals.active_terminal:
+            self.terminals.add_default_terminal()
+        self.set_active_view(self.terminals)
 
     def show_panel(self) -> None:
         "shows the panel if its hidden/minimized"

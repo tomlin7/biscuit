@@ -63,6 +63,7 @@ class TextEditor(BaseEditor):
     
     def run_file(self, *_):
         self.save()
+        self.base.panel.show_terminal()
         self.base.exec_manager.run_command(self)
 
     def on_change(self, *_):

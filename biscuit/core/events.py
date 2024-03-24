@@ -170,7 +170,7 @@ class EventManager(GUIManager, ConfigManager):
         self.notifications.show("Feature not available in this version.")
 
     def toggle_terminal(self) -> None:
-        self.panel.set_active_view(self.panel.terminals)
+        self.panel.switch_to_terminal()
         self.contentpane.toggle_panel()
 
     def update_statusbar(self) -> None:
