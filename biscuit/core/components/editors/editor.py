@@ -14,11 +14,16 @@ class BaseEditor(Frame):
         self.showpath = False
         self.content = None
         self.diff = False
+        self.run_command = ""
+        self.language = ""
 
-        self.__buttons__ = ()
+        self.__buttons__ = []
 
-    def create_buttons(self, panelbar):
-        self.__buttons__ = [IconButton(panelbar, *button) for button in self.__buttons__]
+    def add_button(self, *args):
+        self.__buttons__.append(args)
+
+    def create_buttons(self, editorsbar):
+        self.__buttons__ = [IconButton(editorsbar, *button) for button in self.__buttons__]
 
     def save(self, *_):
         ...

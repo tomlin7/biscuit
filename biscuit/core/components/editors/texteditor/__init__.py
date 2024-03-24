@@ -17,7 +17,7 @@ class TextEditor(BaseEditor):
         self.exists = exists
         self.editable = True
 
-        self.__buttons__ = (('sync', self.base.editorsmanager.reopen_active_editor),)
+        self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -30,11 +30,16 @@ class TextEditor(BaseEditor):
             self.minimap.grid(row=0, column=2, sticky=tk.NS)
 
         self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist, language=language)
-        
+        self.language = self.text.language
+
         if self.exists:
             self.text.load_file()
             self.text.update_idletasks()
-        
+
+            if c := self.base.exec_manager.get_command(self):
+                self.run_command = c
+                self.__buttons__.insert(0, ('run', self.run_file))
+            
         self.linenumbers.attach(self.text)
         if not self.minimalist:
             self.minimap.attach(self.text)
@@ -55,6 +60,9 @@ class TextEditor(BaseEditor):
 
         if self.base.settings.config.auto_save_enabled:
             self.auto_save()
+    
+    def run_file(self, *_):
+        self.base.exec_manager.run_command(self)
 
     def on_change(self, *_):
         self.linenumbers.redraw()

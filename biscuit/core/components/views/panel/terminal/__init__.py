@@ -6,6 +6,7 @@ from ..panelview import PanelView
 from .menu import TerminalMenu
 from .shells import SHELLS, Default
 from .tabs import Tabs
+from .terminal import Terminal
 
 
 def get_home_directory() -> str:
@@ -15,7 +16,7 @@ def get_home_directory() -> str:
         return os.path.expanduser("~")
     return '.'
 
-class Terminal(PanelView):
+class Terminals(PanelView):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
@@ -87,6 +88,10 @@ class Terminal(PanelView):
     def clear_terminal(self, *_) -> None:
         if active := self.active_terminal:
             active.clear()
+        
+    def run_command(self, command: str) -> None:
+        if self.active_terminal:
+            self.active_terminal.run_command(command)
 
     # @property
     # def pwsh(self):
@@ -108,7 +113,7 @@ class Terminal(PanelView):
         return Default
 
     @property
-    def active_terminal(self):
+    def active_terminal(self) -> Terminal:
         "Get active terminal."
         if not self.tabs.active_tab:
             return
