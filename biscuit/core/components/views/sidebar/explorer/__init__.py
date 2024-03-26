@@ -41,7 +41,7 @@ class Explorer(SidebarView):
         self.base.palette.register_actionset(lambda: self.newfolder_actionset)
 
         self.rename_actionset = ActionSet(
-            "Rename a file/folder", "rename:", pinned=[["Rename: {}", lambda newname=None: self.directory.rename_item(newname)]]
+            "Rename a file/folder", "rename:", pinned=[["Rename to: {}", lambda newname=None: self.directory.rename_item(newname)]]
         )
         self.base.palette.register_actionset(lambda: self.rename_actionset)
 

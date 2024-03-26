@@ -21,7 +21,7 @@ class ExplorerContextMenu(Menu):
         self.add_item("Copy Path", self.master.copy_path)
         self.add_item("Copy Relative Path", self.master.copy_relpath)
         self.add_separator()
-        self.add_item("Rename...", lambda: self.base.palette.show('renamefile:'))
+        self.add_item("Rename...", lambda: self.base.palette.show('rename:'))
         self.add_item("Delete", self.master.delete_item)
 
     def get_coords(self, e) -> list:

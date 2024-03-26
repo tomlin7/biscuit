@@ -51,6 +51,8 @@ class DirectoryTree(SidebarViewItem):
             self.tree.insert('', 0, text='You have not yet opened a folder.')
     
     def right_click(self, e: tk.Event) -> None:
+        """Shows the context menu on right click."""
+        
         if item := self.tree.identify_row(e.y):
             self.tree.selection_set(item)
             self.tree.focus(item)
@@ -58,6 +60,9 @@ class DirectoryTree(SidebarViewItem):
 
     # IMPORTANT
     def change_path(self, path: str) -> None:
+        """Changes the current directory and updates the treeview.
+        Main interface for changing the current directory and updating the treeview."""
+
         self.nodes.clear()
         self.path = os.path.abspath(path) if path else path
         self.nodes[self.path] = ''
@@ -75,6 +80,8 @@ class DirectoryTree(SidebarViewItem):
             self.set_title('No folder opened')
 
     def create_root(self, path: str, parent='', subdir=True) -> None:
+        """Creates the root node of the treeview."""
+
         if self.loading:
             return
 
@@ -84,14 +91,20 @@ class DirectoryTree(SidebarViewItem):
         t.start()
 
     def run_create_root(self, path: str, parent='') -> None:
+        """Updates the treeview with the contents of the given directory."""
+
         self.update_treeview(path, parent)
         self.loading = False
     
     def run_create_sub_root(self, path: str, parent='') -> None:
+        """Updates the treeview with the contents of the given directory."""
+
         self.update_treeview(path, parent)
         self.loading = False
 
     def get_all_files(self) -> list:
+        """Returns a list of all files in the treeview."""
+
         files = []
         for item in self.tree.get_children():
             if self.tree.item_type(item) == 'file':
@@ -100,12 +113,17 @@ class DirectoryTree(SidebarViewItem):
         return files
 
     def scandir(self, path) -> list:
+        """Returns a list of entries in the given directory.
+        Heloper function for updating the treeview."""
+
         entries = []
         for entry in os.scandir(path):
             entries.append((entry.name, os.path.join(self.path, entry.path)))
         return entries
 
     def update_path(self, path) -> None:
+        """Updates the treeview with the contents of the given directory."""
+
         if not path or any(path.endswith(i) for i in self.ignore_dirs):
             return
 
@@ -116,6 +134,8 @@ class DirectoryTree(SidebarViewItem):
         self.create_root(path, node)
 
     def update_treeview(self, parent_path, parent="") -> None:
+        """Updates the treeview with the contents of the given directory."""
+
         if not os.path.exists(parent_path):
             return
 
@@ -146,9 +166,13 @@ class DirectoryTree(SidebarViewItem):
             self.base.logger.error(f"Error updating treeview: {e}")
 
     def selected_directory(self) -> str:
+        """Returns the selected directory path, or the current path if no directory is selected."""
+
         return (self.tree.selected_path().strip() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path().strip()) or self.path
 
     def new_file(self, filename) -> None:
+        """Creates a new file in the selected directory."""
+
         if not filename:
             return
 
@@ -159,6 +183,8 @@ class DirectoryTree(SidebarViewItem):
         self.create_root(parent, self.nodes[parent])
 
     def new_folder(self, foldername) -> None:
+        """Creates a new folder in the selected directory."""
+
         if not foldername:
             return
 
@@ -172,21 +198,30 @@ class DirectoryTree(SidebarViewItem):
             return
         self.create_root(parent, self.nodes[parent])
 
-    def rename(self, path, new_name) -> None:
-        shutil.move(path, os.path.join(self.tree.selected_parent_path(), new_name))
-
     def copy_path(self, *_) -> None:
+        """Copies the absolute path of the selected item to the clipboard."""
+
         pyperclip.copy(self.tree.selected_path())
 
     def copy_relpath(self, *_) -> None:
+        """Copies the relative path of the selected item to the clipboard."""
+
         pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
     
     def reopen_editor(self, *_) -> None:
+        """Reopens the selected file in the editor."""
+
         path = os.path.abspath(self.tree.selected_path())
         if self.tree.selected_type() == 'file':
             self.base.editorsmanager.reopen_editor(path)
             
     def reveal_in_explorer(self, *_) -> None:
+        """Reveals the selected directory in the file explorer.
+        
+        This method is platform dependent, and uses the `subprocess` module 
+        to open the file explorer. If the file explorer executable is not found,
+        it will log the error and show a warning notification."""
+
         path = self.selected_directory()
         try:
             if platform.system() == 'Windows':
@@ -204,16 +239,27 @@ class DirectoryTree(SidebarViewItem):
             return
 
     def open_in_terminal(self, *_) -> None:
+        """Opens the selected directory in a terminal."""
+
         if path := self.selected_directory():
             self.base.terminalmanager.open_terminal(path)
             self.base.panel.show_panel()
 
     def rename_item(self, newname: str) -> None:
+        """Renames the selected item in the treeview."""
+
+        parent = self.tree.selected_parent_path()
+
         if path := self.tree.selected_path():
             shutil.move(path, os.path.join(self.tree.selected_parent_path() or self.path, newname))
+        
+        self.update_path(parent)
 
     def delete_item(self) -> None:
+        """Deletes the selected item from the treeview."""
+
         path = self.tree.selected_path()
+        parent = self.tree.selected_parent_path()
         if not askyesno("Delete", f"Are you sure of deleting {path}?"):
             return
 
@@ -226,21 +272,34 @@ class DirectoryTree(SidebarViewItem):
             self.base.notifications.warning("Removing failed, see logs")
             self.base.logger.error(f"Removing failed: {e}")
             return
+        
+        # refresh parent of the deleted item
+        self.update_path(parent)
 
     def collapse_all(self, *_) -> None:
+        """Collapses all nodes in the treeview."""
+
         for node in self.tree.get_children(''):
             self.tree.item(node, open=False)
 
     def refresh_selected_parent(self, *_) -> None:
+        """Reloads entire parent node of the selected node."""
+
         self.update_path(self.tree.selected_parent_path())
 
     def refresh_root(self, *_) -> None:
+        """Reloads entire treeview from the root."""
+
         self.update_path(self.path)
 
     def close_directory(self) -> None:
+        """Closes the current directory and clears the treeview."""
+
         self.change_path(None)
 
     def toggle_node(self, *_) -> None:
+        """Toggles the selected node, if it's a directory."""
+
         node = self.tree.focus()
         for i in self.tree.get_children(node):
             self.tree.delete(i)
@@ -248,6 +307,8 @@ class DirectoryTree(SidebarViewItem):
         self.create_root(self.tree.selected_path(), node)
 
     def openfile(self, _) -> None:
+        """Opens the selected file in an editor."""
+
         if self.tree.selected_type() != 'file':
             return
 

@@ -1,5 +1,6 @@
 import os
 
+import watchdog.events
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -28,5 +29,10 @@ class DirectoryTreeWatcher(FileSystemEventHandler):
         self.master.update_path(os.path.dirname(event.src_path))
 
     def on_modified(self, event) -> None: ...
-        #self.master.update_path(os.path.dirname(event.src_path))
-
+        # self.master.update_path(os.path.dirname(event.src_path))
+    
+    def on_moved(self, event):
+        try:
+            self.master.update_path(os.path.dirname(event.src_path))
+        except FileNotFoundError:
+            pass
