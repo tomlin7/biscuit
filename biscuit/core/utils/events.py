@@ -265,6 +265,9 @@ class Events:
     def change_time_format(self, *_) -> None:
         self.base.palette.show('time:')
     
+    def show_run_config_palette(self, command) -> None:
+        self.base.palette.show('runconf:', command)
+    
     def show_file_search_palette(self, *_) -> None:
         self.base.palette.show("")
 

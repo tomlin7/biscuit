@@ -4,6 +4,7 @@ from tkinter.font import Font
 from ...utils import Scrollbar
 from ..editor import BaseEditor
 from .linenumbers import LineNumbers
+from .menu import RunMenu
 from .minimap import Minimap
 from .text import Text
 
@@ -16,6 +17,7 @@ class TextEditor(BaseEditor):
         self.language = language
         self.exists = exists
         self.editable = True
+        self.run_command_value = None
 
         self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
 
@@ -36,9 +38,15 @@ class TextEditor(BaseEditor):
             self.text.load_file()
             self.text.update_idletasks()
 
-            if c := self.base.exec_manager.get_command(self):
-                self.run_command = c
-                self.__buttons__.insert(0, ('run', self.run_file))
+            self.run_command_value = self.base.exec_manager.get_command(self)
+            self.__buttons__.insert(0, ('run', self.run_file))
+            
+            self.runmenu = RunMenu(self, "run menu")
+            if self.run_command_value:
+                self.runmenu.add_command(f"Run {self.language} file", lambda: self.run_file())
+            self.runmenu.add_command("Configure Run...", lambda: self.base.events.show_run_config_palette(self.run_command_value))
+
+            self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
             
         self.linenumbers.attach(self.text)
         if not self.minimalist:
@@ -62,9 +70,18 @@ class TextEditor(BaseEditor):
             self.auto_save()
     
     def run_file(self, *_):
+        if not self.run_command_value:
+            self.base.notifications.show("No programs are configured to run this file.")
+            self.base.events.show_run_config_palette(self.run_command_value)
+            return
+         
         self.save()
         self.base.panel.show_terminal()
         self.base.exec_manager.run_command(self)
+
+    def set_run_command(self, command):
+        self.run_command_value = command
+        self.run_file()
 
     def on_change(self, *_):
         self.linenumbers.redraw()

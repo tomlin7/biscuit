@@ -42,7 +42,13 @@ class Searchbar(Frame):
         self.search_bar.focus()
 
     def add_prefix(self, prefix: str) -> None:
+        self.prefix = prefix
         self.text_variable.set(prefix + " " if prefix else "")
+        self.search_bar.icursor(tk.END)
+    
+    def set_search_term(self, term: str) -> None:
+        self.text_variable.set(self.search_bar.get() + term)
+        self.search_bar.select_range(len(self.prefix), tk.END)
         self.search_bar.icursor(tk.END)
 
     def get_search_term(self) -> str:

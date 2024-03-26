@@ -61,6 +61,9 @@ class Menu(Toplevel):
         self.menu_items.append(new_item)
 
         self.row += 1
+    
+    def add_command(self, *args, **kwargs):
+        self.add_item(*args, **kwargs)
 
     def add_separator(self, length=18):
         new_sep = Separator(self.container, length)

@@ -15,7 +15,8 @@ class ExecManager:
         self.commands[language] = command
 
     def run_command(self, editor: BaseEditor) -> None:
-        self.base.terminalmanager.run_command(editor.run_command)
+        self.base.terminalmanager.run_command(editor.run_command_value)
+        self.base.terminalmanager.active_terminal.enter()
 
     def get_command(self, editor: BaseEditor) -> str:
         if c := self.commands.get(editor.language, None):

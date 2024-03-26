@@ -160,6 +160,9 @@ class EventManager(GUIManager, ConfigManager):
 
     def register_langserver(self, language: str, command: str) -> None:
         self.language_server_manager.register_langserver(language, command)
+    
+    def register_run_command(self, language: str, command: str) -> None:
+        self.exec_manager.register_command(language, command)
 
     def open_in_new_window(self, dir: str) -> None:
         # Process(target=App(sys.argv[0], dir).run).start()

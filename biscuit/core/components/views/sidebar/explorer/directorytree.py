@@ -117,24 +117,27 @@ class DirectoryTree(SidebarViewItem):
         # sort: directories first, then files (alphabetic order)
         entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
 
-        for name, path in entries:
-            if os.path.isdir(path):
-                if name in self.ignore_dirs:
-                    continue
+        try:
+            for name, path in entries:
+                if os.path.isdir(path):
+                    if name in self.ignore_dirs:
+                        continue
 
-                node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
-                self.nodes[os.path.abspath(path)] = node
-                self.tree.insert(node, "end", text="loading...")
+                    node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
+                    self.nodes[os.path.abspath(path)] = node
+                    self.tree.insert(node, "end", text="loading...")
 
-                # recursive mode loading (not good for large projects)
-                #self.update_treeview(path, node)
-            else:
-                if name.split(".")[-1] in self.ignore_exts:
-                    continue
+                    # recursive mode loading (not good for large projects)
+                    #self.update_treeview(path, node)
+                else:
+                    if name.split(".")[-1] in self.ignore_exts:
+                        continue
 
-                #TODO check filetype and get matching icon, cases
-                node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
-                self.nodes[os.path.abspath(path)] = node
+                    #TODO check filetype and get matching icon, cases
+                    node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
+                    self.nodes[os.path.abspath(path)] = node
+        except Exception as e:
+            self.base.logger.error(f"Error updating treeview: {e}")
 
     def selected_directory(self) -> str:
         return (self.tree.selected_path().strip() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path().strip()) or self.path
