@@ -14,7 +14,7 @@ class BaseEditor(Frame):
         self.showpath = False
         self.content = None
         self.diff = False
-        self.run_command = ""
+        self.run_command_value = ""
         self.language = ""
 
         self.__buttons__ = []

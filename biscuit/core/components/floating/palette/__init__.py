@@ -155,7 +155,7 @@ class Palette(Toplevel):
 
         self.reset_selection()
 
-    def show(self, prefix: str) -> None:
+    def show(self, prefix: str, default: str=None) -> None:
         """Shows the palette with the passed prefix"""
         self.update_idletasks()
 
@@ -167,3 +167,6 @@ class Palette(Toplevel):
         self.focus_set()
         self.searchbar.focus()
         self.searchbar.add_prefix(prefix)
+
+        if default:
+            self.searchbar.set_search_term(default)

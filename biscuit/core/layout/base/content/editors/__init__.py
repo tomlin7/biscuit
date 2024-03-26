@@ -43,8 +43,6 @@ class EditorsPane(Frame):
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
 
         self.default_editors: List[Editor] = [Welcome(self)]
-        self.actionset = ActionSet("Switch to active editors", "active:", [])
-        self.base.palette.register_actionset(self.get_active_actionset)
     
     def is_empty(self) -> bool:
         "Checks if the editor is empty"
@@ -58,6 +56,21 @@ class EditorsPane(Frame):
         "Generates the active editors actionset"
         self.actionset.update([(editor.filename, editor) for editor in self.active_editors])
         return self.actionset
+
+    def generate_actionsets(self) -> None:
+        self.actionset = ActionSet("Switch to active editors", "active:", [])
+        self.base.palette.register_actionset(self.get_active_actionset)
+
+        self.base.palette.register_actionset(
+            lambda: ActionSet(
+                "Configure Run Command", "runconf:", 
+                pinned=[
+                    [
+                        "Run: {}", 
+                        lambda command=None, e=self.base.editorsmanager.active_editor: e.content.set_run_command(command) 
+                        if command else print("Command can't be empty!")
+                    ]]
+                ))
 
     def add_default_editors(self) -> None:
         "Adds all default editors"

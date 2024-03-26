@@ -103,6 +103,7 @@ class GUIManager(tk.Tk, ConfigManager):
 
         self.binder.late_bind_all()
         self.editorsmanager.add_default_editors()
+        self.editorsmanager.generate_actionsets()
         self.settings.late_setup()
         self.history.generate_actionsets()
 

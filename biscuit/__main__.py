@@ -11,8 +11,3 @@ if len(sys.argv) >= 2:
 
 app = App(sys.argv[0], dir=dir)
 app.run()
-
-
-
-
-
