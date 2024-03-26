@@ -4,6 +4,7 @@ from tkinter.font import Font
 from ...utils import Scrollbar
 from ..editor import BaseEditor
 from .linenumbers import LineNumbers
+from .menu import RunMenu
 from .minimap import Minimap
 from .text import Text
 
@@ -39,7 +40,13 @@ class TextEditor(BaseEditor):
 
             self.run_command_value = self.base.exec_manager.get_command(self)
             self.__buttons__.insert(0, ('run', self.run_file))
-            self.__buttons__.insert(1, ('chevron-down', lambda: self.base.events.show_run_config_palette(self.run_command_value)))
+            
+            self.runmenu = RunMenu(self, "run menu")
+            if self.run_command_value:
+                self.runmenu.add_command(f"Run {self.language} file", lambda: self.run_file())
+            self.runmenu.add_command("Configure Run...", lambda: self.base.events.show_run_config_palette(self.run_command_value))
+
+            self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
             
         self.linenumbers.attach(self.text)
         if not self.minimalist:
