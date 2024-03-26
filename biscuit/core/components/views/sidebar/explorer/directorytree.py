@@ -43,12 +43,18 @@ class DirectoryTree(SidebarViewItem):
         self.loading = False
 
         self.ctxmenu = ExplorerContextMenu(self, "ExplorerContextMenu")
-        self.tree.bind('<Button-3>', self.ctxmenu.show)
+        self.tree.bind('<Button-3>', self.right_click)
 
         if startpath:
             self.change_path(startpath)
         else:
             self.tree.insert('', 0, text='You have not yet opened a folder.')
+    
+    def right_click(self, e: tk.Event) -> None:
+        if item := self.tree.identify_row(e.y):
+            self.tree.selection_set(item)
+            self.tree.focus(item)
+            self.ctxmenu.show(e)
 
     # IMPORTANT
     def change_path(self, path: str) -> None:

@@ -53,11 +53,14 @@ class Tree(Frame):
     def delete(self, *a, **kw) -> None:
         self.tree.delete(*a, *kw)
     
-    def focus(self) -> str:
-        return self.tree.focus() or ''
+    def focus(self, *args) -> str:
+        return self.tree.focus(*args) or ''
 
     def get_children(self, *a, **kw) -> str:
         return self.tree.get_children(*a, **kw)
+
+    def identify_row(self, y) -> str:
+        return self.tree.identify_row(y)
 
     def insert(self, *args, **kwargs):
         return self.tree.insert(*args, **kwargs)
@@ -82,6 +85,9 @@ class Tree(Frame):
 
     def selected_parent_path(self):
         return self.item_fullpath(self.parent_selected())
+    
+    def selection_set(self, *args, **kwargs):
+        return self.tree.selection_set(*args, **kwargs)
 
     def selected_path(self):
         return self.item_fullpath(self.focus())
