@@ -44,6 +44,10 @@ class TextEditor(BaseEditor):
             self.runmenu = RunMenu(self, "run menu")
             if self.run_command_value:
                 self.runmenu.add_command(f"Run {self.language} file", lambda: self.run_file())
+                self.runmenu.add_separator()
+            self.runmenu.add_command("Run in dedicated terminal", lambda: self.run_file(dedicated=True))
+            self.runmenu.add_command("Run in external console", lambda: self.run_file(external=True))
+            self.runmenu.add_separator()
             self.runmenu.add_command("Configure Run...", lambda: self.base.events.show_run_config_palette(self.run_command_value))
 
             self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
@@ -69,15 +73,21 @@ class TextEditor(BaseEditor):
         if self.base.settings.config.auto_save_enabled:
             self.auto_save()
     
-    def run_file(self, *_):
+    def run_file(self, dedicated=False, external=False):
         if not self.run_command_value:
             self.base.notifications.show("No programs are configured to run this file.")
             self.base.events.show_run_config_palette(self.run_command_value)
             return
          
         self.save()
-        self.base.panel.show_terminal()
-        self.base.exec_manager.run_command(self)
+
+        # add anoter dedicated terminal if there is an active terminal
+        if self.base.terminalmanager.active_terminal and dedicated:
+            self.base.terminalmanager.add_default_terminal()
+
+        if not external:
+            self.base.panel.show_terminal()
+        self.base.exec_manager.run_command(self, external=external)
 
     def set_run_command(self, command):
         self.run_command_value = command

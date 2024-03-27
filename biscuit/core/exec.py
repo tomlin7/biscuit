@@ -14,7 +14,11 @@ class ExecManager:
     def register_command(self, language: str, command: str) -> None:
         self.commands[language] = command
 
-    def run_command(self, editor: BaseEditor) -> None:
+    def run_command(self, editor: BaseEditor, external=False) -> None:
+        if external:
+            self.base.terminalmanager.run_external_console(f"{editor.run_command_value} &")
+            return
+        
         self.base.terminalmanager.run_command(editor.run_command_value)
         self.base.terminalmanager.active_terminal.enter()
 

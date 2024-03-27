@@ -1,5 +1,7 @@
 import os
 import platform
+import subprocess
+import sys
 import tkinter as tk
 
 from ..panelview import PanelView
@@ -101,6 +103,18 @@ class Terminals(PanelView):
             # this won't work, TODO: implement a queue for commands
         else:
             self.active_terminal.run_command(command)
+    
+    def run_external_console(self, command: str) -> None:
+        "Run a command in external console."
+        match platform.system():
+            case 'Windows':
+                subprocess.Popen(['start', 'cmd', '/K', command], shell=True)
+            case 'Linux':
+                subprocess.Popen(['x-terminal-emulator', '-e', command])
+            case 'Darwin':
+                subprocess.Popen(['open', '-a', 'Terminal', command])
+            case _:
+                self.base.notifications.show("No terminal emulator detected.")
 
     # TODO: Implement these
     def open_pwsh(self):
