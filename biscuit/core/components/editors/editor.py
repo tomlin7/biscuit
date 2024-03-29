@@ -23,7 +23,10 @@ class BaseEditor(Frame):
         self.__buttons__.append(args)
 
     def create_buttons(self, editorsbar):
-        self.__buttons__ = [IconButton(editorsbar, *button) for button in self.__buttons__]
-
+        try:
+            self.__buttons__ = [IconButton(editorsbar, *button) for button in self.__buttons__]
+        except:
+            pass
+        
     def save(self, *_):
         ...

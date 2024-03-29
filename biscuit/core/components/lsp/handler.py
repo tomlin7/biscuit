@@ -157,5 +157,6 @@ class EventHandler:
             self.base.outline.update_symbols(tab, e.result if e.result and isinstance(e.result[0], lsp.DocumentSymbol) else to_document_symbol(e.result))
             return
         
-        # ones that are not implemented yet
+        # DEBUG ones that are not implemented yet
         self.base.logger.trace(e.__class__.__name__.upper())
+        # print(e)

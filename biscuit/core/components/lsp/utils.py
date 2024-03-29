@@ -56,7 +56,10 @@ def jump_paths_and_ranges(locations: list[lsp.Location] | lsp.Location) -> Itera
         locations = [locations]
 
     for location in locations:
-        yield (decode_path_uri(location.uri), location.range)
+        if isinstance(location, lsp.LocationLink):
+            yield (decode_path_uri(location.targetUri), location.targetSelectionRange)
+        else:
+            yield (decode_path_uri(location.uri), location.range)
 
 def hover_filter(content: lsp.MarkupContent | str) -> list[Optional[list[str, str]], str]:
     if not isinstance(content, lsp.MarkupContent):

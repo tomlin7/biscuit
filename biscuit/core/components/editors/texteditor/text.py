@@ -773,8 +773,13 @@ class Text(BaseText):
         self.hover.hide()
 
     def event_mapped(self, _):
-        self.lsp = self.base.language_server_manager.tab_opened(self)
-    
+        try:
+            self.lsp = self.base.language_server_manager.tab_opened(self)
+        except Exception as e:
+            self.base.notifications.warning(f"{self.language} language server failed, check logs.")
+            self.base.logger.error(f"{self.language} language server: {e}")
+            self.lsp = False
+        
     def event_destroy(self, _):
         try:
             self.hide_autocomplete()
