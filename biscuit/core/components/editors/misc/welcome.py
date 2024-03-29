@@ -40,9 +40,9 @@ class Welcome(BaseEditor):
         start = Frame(self.left, **self.base.theme.editors)
         start.grid(row=3, column=0, sticky=tk.EW)
 
-        IconLabelButton(start, "New File...", 'new-file', self.new_file).grid(row=0, column=0, sticky=tk.W, pady=2)
-        IconLabelButton(start, "Open File...", 'go-to-file', self.open_file).grid(row=1, column=0, sticky=tk.W, pady=2)
-        IconLabelButton(start, "Open Folder...", 'folder-opened', self.open_folder).grid(row=2, column=0, sticky=tk.W, pady=2)
+        IconLabelButton(start, "New File...", 'new-file', self.new_file, expandicon=False).grid(row=0, column=0, sticky=tk.EW, pady=2)
+        IconLabelButton(start, "Open File...", 'go-to-file', self.open_file, expandicon=False).grid(row=1, column=0, sticky=tk.EW, pady=2)
+        IconLabelButton(start, "Open Folder...", 'folder-opened', self.open_folder, expandicon=False).grid(row=2, column=0, sticky=tk.EW, pady=2)
     
     def create_recent_group(self):
         Label(self.left, text="Recent", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))

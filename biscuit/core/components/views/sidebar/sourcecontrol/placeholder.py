@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ....utils import Button, Frame, WrappingLabel
+from ....utils import Frame, IconLabelButton, WrappingLabel
 
 
 class ChangesTreePlaceholder(Frame):
@@ -12,12 +12,10 @@ class ChangesTreePlaceholder(Frame):
         WrappingLabel(self, font=("Segoe UI", 10), anchor=tk.W, **self.base.theme.views.sidebar.item.content,
             text="In order to use git features, you can open a folder containing a git repository or clone from a URL.").grid(row=0, sticky=tk.EW)
 
-        open_btn = Button(self, text="Open Folder")
-        open_btn.bind("<Button-1>", self.open_folder)
+        open_btn = IconLabelButton(self, text="Open Folder", icon="folder", function=self.open_folder, pady=2, highlighted=True)
         open_btn.grid(row=1, pady=5, sticky=tk.EW)
 
-        clone_btn = Button(self, text="Clone Repository")
-        clone_btn.bind("<Button-1>", self.clone_repo)
+        clone_btn = IconLabelButton(self, text="Clone Repository", icon="clone", function=self.clone_repo, pady=2, highlighted=True)
         clone_btn.grid(row=2, pady=5, sticky=tk.EW)
 
     def open_folder(self, _) -> None:
