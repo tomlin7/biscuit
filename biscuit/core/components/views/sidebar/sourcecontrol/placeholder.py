@@ -18,7 +18,7 @@ class ChangesTreePlaceholder(Frame):
         clone_btn = IconLabelButton(self, text="Clone Repository", icon="clone", function=self.clone_repo, pady=2, highlighted=True)
         clone_btn.grid(row=2, pady=5, sticky=tk.EW)
 
-    def open_folder(self, _) -> None:
+    def open_folder(self, *_) -> None:
         self.base.events.open_directory()
 
     def clone_repo(self, *_) -> None:
