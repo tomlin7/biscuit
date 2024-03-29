@@ -7,18 +7,21 @@ import requests
 
 from ..item import SidebarViewItem
 from .extension import Extension
+from .placeholder import ExtensionsPlaceholder
 from .watcher import ExtensionsWatcher
 
 
 class Results(SidebarViewItem):
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (('discard',), ('add',))
+        self.__buttons__ = (('sync', self.refresh),)
         self.title = 'Available'
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
         self.extensions = {}
 
+        self.placeholder = ExtensionsPlaceholder(self)
+        
         self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
         self.list_url = self.repo_url + "extensions.json"
 
@@ -32,7 +35,7 @@ class Results(SidebarViewItem):
         self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
 
-    def refresh(self) -> None:
+    def refresh(self, *_) -> None:
         if self.base.testing:
             return
 
@@ -48,22 +51,22 @@ class Results(SidebarViewItem):
             self.fetching.wait()
 
         with self.extensions_lock: 
-            threading.Thread(target=self.fetch_list).start()
+            threading.Thread(target=self.fetch_list, daemon=True).start()
 
     def fetch_list(self) -> None:
+        response = None
         try:
             response = requests.get(self.list_url)
         except Exception as e:
-            try:
-                self.base.logger.error(f"Fetching extensions failed: {e}")
-                return
-            except Exception:
-                pass
-
-        if not response.status_code == 200:
+            pass
+            
+        if not response or response.status_code != 200:
+            self.placeholder.pack(in_=self.content, fill=tk.BOTH, expand=True)
             return
-
+        
         self.extensions = json.loads(response.text)
+        if self.extensions:
+            self.placeholder.pack_forget()
 
         for name, data in self.extensions.items():
             #TODO add further loops for folders
