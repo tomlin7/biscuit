@@ -8,7 +8,6 @@ from .results import Results
 
 class Extensions(SidebarView):
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (('refresh',), ('clear-all',), ('collapse-all',))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'extensions'
         self.name = 'Extensions'
@@ -20,6 +19,8 @@ class Extensions(SidebarView):
 
         self.results = Results(self)
         self.add_widget(self.results)
+        self.add_button('refresh', self.results.refresh)
+        self.add_button('clear-all', self.results.clear)
 
     def initialize(self) -> None:
         self.results.refresh()

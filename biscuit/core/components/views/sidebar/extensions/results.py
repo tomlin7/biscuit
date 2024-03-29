@@ -5,6 +5,8 @@ import tkinter as tk
 
 import requests
 
+from biscuit.core.components.utils.scrollableframe import ScrollableFrame
+
 from ..item import SidebarViewItem
 from .extension import Extension
 from .placeholder import ExtensionsPlaceholder
@@ -13,7 +15,7 @@ from .watcher import ExtensionsWatcher
 
 class Results(SidebarViewItem):
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (('sync', self.refresh),)
+        self.__buttons__ = ()
         self.title = 'Available'
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
@@ -21,7 +23,9 @@ class Results(SidebarViewItem):
         self.extensions = {}
 
         self.placeholder = ExtensionsPlaceholder(self)
-        
+        self.extension_list = ScrollableFrame(self.content, bg=self.base.theme.views.sidebar.background)
+        self.extension_list.pack(fill=tk.BOTH, expand=True)
+
         self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
         self.list_url = self.repo_url + "extensions.json"
 
@@ -60,13 +64,17 @@ class Results(SidebarViewItem):
         except Exception as e:
             pass
             
+        # FAIL - network error
         if not response or response.status_code != 200:
+            self.extension_list.pack_forget()
             self.placeholder.pack(in_=self.content, fill=tk.BOTH, expand=True)
             return
         
         self.extensions = json.loads(response.text)
+        # SUCCESS
         if self.extensions:
             self.placeholder.pack_forget()
+            self.extension_list.pack(in_=self.content, fill=tk.BOTH, expand=True)
 
         for name, data in self.extensions.items():
             #TODO add further loops for folders
@@ -76,12 +84,13 @@ class Results(SidebarViewItem):
         if not self.queue.empty():
             name, data = self.queue.get()
             ext = Extension(self, name, data)
-            ext.pack(in_=self.content, fill=tk.X)
+            self.extension_list.add(ext, fill=tk.X)
         
         self.after(5, self.gui_refresh_loop)
 
     def clear(self, *_) -> None:
-        for widget in self.content.winfo_children():
+        for widget in self.extension_list.items:
+            widget.pack_forget()
             widget.destroy()
             self.content.update_idletasks()
 

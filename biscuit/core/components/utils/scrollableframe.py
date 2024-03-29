@@ -5,21 +5,12 @@ from .canvas import Canvas
 from .frame import Frame
 
 
-class Scrollbar(ttk.Scrollbar):
-    def set(self, low, high) -> None:
-        if float(low) <= 0.0 and float(high) >= 1.0:
-            self.pack_forget()
-        else:
-            self.pack(side=tk.RIGHT, fill=tk.Y)
-        ttk.Scrollbar.set(self, low, high)
-
-
 class ScrollableFrame(Frame):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
-        self.scrollbar = Scrollbar(self)
+        self.scrollbar = ttk.Scrollbar(self, style="EditorScrollbar")
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.canvas = Canvas(self, yscrollcommand=self.scrollbar.set, **self.base.theme.editors)
@@ -27,6 +18,8 @@ class ScrollableFrame(Frame):
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.scrollbar.config(command=self.canvas.yview)
+
+        self.items = []
 
         self.content = Frame(self.canvas, **self.base.theme.editors)
         self._content = self.canvas.create_window((0, 0), window=self.content, anchor="nw")
@@ -43,3 +36,4 @@ class ScrollableFrame(Frame):
 
     def add(self, content, *args, **kwargs) -> None:
         content.pack(in_=self.content, *args, **kwargs)
+        self.items.append(content)
