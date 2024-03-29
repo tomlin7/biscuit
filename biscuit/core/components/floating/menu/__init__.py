@@ -8,6 +8,7 @@ import tkinter as tk
 
 from biscuit.core.components.utils import Frame, Toplevel
 
+from .checkable import CheckableMenuItem
 from .menuitem import MenuItem
 from .separator import Separator
 
@@ -61,6 +62,15 @@ class Menu(Toplevel):
         self.menu_items.append(new_item)
 
         self.row += 1
+        return new_item
+    
+    def add_checkable(self, text, command=lambda *_:...):
+        new_item = CheckableMenuItem(self.container, text, command)
+        new_item.grid(row=self.row, sticky=tk.EW, pady=0)
+        self.menu_items.append(new_item)
+
+        self.row += 1
+        return new_item
     
     def add_command(self, *args, **kwargs):
         self.add_item(*args, **kwargs)
