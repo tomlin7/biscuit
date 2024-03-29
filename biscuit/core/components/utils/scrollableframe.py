@@ -26,13 +26,17 @@ class ScrollableFrame(Frame):
 
         self.content.bind("<Configure>", self._scroll)
         self.canvas.bind("<Configure>", self._configure_canvas)
-
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel) 
+    
     def _scroll(self, _) -> None:
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def _configure_canvas(self, event) -> None:
         canvas_width = event.width
         self.canvas.itemconfig(self._content, width=canvas_width)
+    
+    def _on_mousewheel(self, event) -> None:
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def add(self, content, *args, **kwargs) -> None:
         content.pack(in_=self.content, *args, **kwargs)
