@@ -220,7 +220,13 @@ class Text(BaseText):
                     i -= 1
                     if stack[-1] == ch:
                         stack.pop()
-        if stack and stack[-1] == e.char:
+        if stack and stack[-1] == e.char:    
+            # skip if next character is what we are closing
+            if c := self.get("insert", "insert+1c"):
+                if c == e.char:
+                    self.mark_set(tk.INSERT, "insert+1c")
+                    return "break"
+            
             self.insert(tk.INSERT, stack.pop(), self.base.theme.editors.bracket_colors[(i%3)] if i > -1 else 'red')
         else:
             self.insert(tk.INSERT, e.char, 'red')
@@ -244,12 +250,10 @@ class Text(BaseText):
         
         # if there is no selection, insert the character and move cursor inside the pair
         if tag:
-            self.insert(tk.INSERT, char, tag)
-            self.insert(tk.INSERT, " ")
-            self.insert(tk.INSERT, end, tag)
+            self.insert(tk.INSERT, char + end, tag)
         else:
             self.insert(tk.INSERT, char + end)
-        self.mark_set(tk.INSERT, "insert-2c")
+        self.mark_set(tk.INSERT, "insert-1c")
         return "break"
 
     def remove_pair(self, _: tk.Event):
