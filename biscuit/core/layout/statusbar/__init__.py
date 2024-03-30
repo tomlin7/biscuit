@@ -69,12 +69,13 @@ class Statusbar(Frame):
 
         # indentation
         self.indent_actionset = ActionSet(
-            "Change indentation", "indent:",
-            [("2", lambda e=None: print("indent 2", e)),
-            ("4", lambda e=None: print("indent 2", e))],
+            "Change indentation", "indent:", 
+            [("2 Spaces", lambda e=None: self.base.set_tab_spaces(2)),
+            ("4 Spaces", lambda e=None: self.base.set_tab_spaces(4))],
+            pinned=[["Custom: {} spaces", lambda line=None: self.base.set_tab_spaces(int(line.strip())) if line and line.strip().isnumeric() else print("failed goto line", line)]]
         )
         self.base.palette.register_actionset(lambda: self.indent_actionset)
-        self.indentation = SButton(self, text="Spaces: 4", function=self.base.events.change_indentation_level, description="Select indentation")
+        self.indentation = SButton(self, text=f"Spaces: {self.base.tab_spaces}", function=self.base.events.change_indentation_level, description="Select indentation")
         self.indentation.set_pack_data(side=tk.RIGHT)
 
         # encoding
@@ -164,3 +165,6 @@ class Statusbar(Frame):
 
     def set_encoding(self, encoding: str) -> None:
         self.encoding.change_text(text=encoding.upper())
+    
+    def set_spaces(self, spaces: int) -> None:
+        self.indentation.change_text(text=f"Spaces: {spaces}")

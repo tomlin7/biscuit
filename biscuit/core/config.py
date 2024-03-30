@@ -37,6 +37,7 @@ class ConfigManager:
     def setup_configs(self) -> None:
         self.git_found = False
         self.wrap_words = False
+        self.tab_spaces = 4
         self.active_directory = None
         self.active_branch_name = None
         self.onupdate_callbacks = []
@@ -84,4 +85,10 @@ class ConfigManager:
         # sets up the extension API & loads extensions
         self.api = ExtensionsAPI(self)
         self.extensions_manager = ExtensionManager(self)
-        
+    
+    def set_tab_spaces(self, spaces: int) -> None:
+        self.tab_spaces = spaces
+        if e := self.editorsmanager.active_editor:
+            if e.content and e.content.editable:
+                e.content.text.set_tab_size(spaces)
+                self.statusbar.set_spaces(spaces)

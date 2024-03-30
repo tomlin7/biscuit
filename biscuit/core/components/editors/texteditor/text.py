@@ -38,7 +38,6 @@ class Text(BaseText):
         self.minimalist = minimalist
         self.language = language
 
-        self.tab_spaces = 4
         self.ctrl_down = False
         self.buffer_size = 4096
         self.bom = True
@@ -61,7 +60,7 @@ class Text(BaseText):
         self.create_proxy()
         self.config_bindings()
         self.update_idletasks()
-        tab_width = self.base.settings.font.measure(' ' * self.tab_spaces)
+        tab_width = self.base.settings.font.measure(' ' * self.base.tab_spaces)
         self.configure(tabs=(tab_width,), wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
         # modified event
@@ -359,7 +358,7 @@ class Text(BaseText):
         
         for line in range(start_line, end_line+1):
             if (self.get(f"{line}.0", f"{line}.1") == "\t" or 
-                self.get(f"{line}.0", f"{line}.{self.tab_spaces}") == " "*self.tab_spaces):
+                self.get(f"{line}.0", f"{line}.{self.base.tab_spaces}") == " "*self.base.tab_spaces):
                 self.delete(f"{line}.0", f"{line}.1")
         
         self.tag_remove(tk.SEL, "1.0", tk.END)
@@ -556,7 +555,6 @@ class Text(BaseText):
         if not size:
             return
         
-        self.tab_spaces = size
         tab_width = self.base.settings.font.measure(' ' * size)
         self.configure(tabs=(tab_width,))
 
@@ -628,9 +626,9 @@ class Text(BaseText):
         self.update_current_indent()
         if self.update_current_line():
             if self.current_line[-1] in ["{", "[", ":", "("]:
-                self.current_indent += self.tab_spaces
+                self.current_indent += self.base.tab_spaces
             elif self.current_line[-1] in ["}", "]", ")"]:
-                self.current_indent -= self.tab_spaces
+                self.current_indent -= self.base.tab_spaces
 
             self.add_newline()
             self.insert(tk.INSERT, " " * self.current_indent)

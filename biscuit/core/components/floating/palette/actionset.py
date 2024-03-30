@@ -42,4 +42,4 @@ class ActionSet(list):
 
     def get_pinned(self, term) -> list:
         "Returns the pinned items with the term formatted."
-        return [[item[0].format(term)] + item[1:] for item in self.pinned]
+        return [[item[0].format(term or "...")] + item[1:] for item in self.pinned]
