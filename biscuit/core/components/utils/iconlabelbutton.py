@@ -15,7 +15,7 @@ class IconLabelButton(Frame):
         self.icon = icon
         self.codicon = get_codicon(self.icon)
 
-        self.toggle = True
+        self.toggle = toggle
 
         if icon:
             self.icon_label = tk.Label(self, text=self.codicon if self.toggle else "    ", anchor=tk.E, 
