@@ -136,6 +136,12 @@ class Events:
             if editor.content and editor.content.editable:
                 self.base.wrap_words = not self.base.wrap_words
                 editor.content.text.refresh_wrap()
+    
+    def toggle_block_cursor(self, *_) -> None:
+        self.base.block_cursor = not self.base.block_cursor
+        if e := self.base.editorsmanager.active_editor:
+            if e.content and e.content.editable:
+                e.content.text.set_block_cursor(self.base.block_cursor)
 
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:

@@ -143,6 +143,7 @@ class Menubar(Frame):
         self.edit_menu.add_item("Change Language Mode", events.change_language_mode)
         self.edit_menu.add_separator()
         self.edit_menu.add_checkable("Word Wrap", events.toggle_wordwrap)
+        self.edit_menu.add_checkable("Block Cursor", events.toggle_block_cursor)
 
     def add_selection_menu(self) -> None:
         events = self.events

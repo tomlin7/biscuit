@@ -61,15 +61,13 @@ class Text(BaseText):
         self.config_bindings()
         self.update_idletasks()
         tab_width = self.base.settings.font.measure(' ' * self.base.tab_spaces)
-        self.configure(tabs=(tab_width,), wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
+        self.configure(tabs=(tab_width,), blockcursor=self.base.block_cursor, wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
         # modified event
         self.clear_modified_flag()
         self._user_edit = True
         self._edit_stack = []
         self._edit_stack_index = -1
-        self._last_selection: list[str, str] = [None, None]
-        self._last_cursor: list[str, str] = [None, None]
 
     def config_tags(self):
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
@@ -557,6 +555,9 @@ class Text(BaseText):
         
         tab_width = self.base.settings.font.measure(' ' * size)
         self.configure(tabs=(tab_width,))
+
+    def set_block_cursor(self, flag: bool) -> None:
+        self.configure(blockcursor=flag)
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
