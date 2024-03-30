@@ -226,10 +226,11 @@ class Text(BaseText):
                 if c == e.char:
                     self.mark_set(tk.INSERT, "insert+1c")
                     return "break"
-            
-            self.insert(tk.INSERT, stack.pop(), self.base.theme.editors.bracket_colors[(i%3)] if i > -1 else 'red')
-        else:
-            self.insert(tk.INSERT, e.char, 'red')
+        
+        # TODO; coloring not done right. whatever color the last bracket has that color is spread to the next characters
+        #     self.insert(tk.INSERT, stack.pop(), self.base.theme.editors.bracket_colors[(i%3)] if i > -1 else 'red')
+        # else:
+        self.insert(tk.INSERT, e.char, 'red')
         return "break"
 
     def complete_pair(self, e: tk.Event, tag=None):
@@ -249,10 +250,11 @@ class Text(BaseText):
             return
         
         # if there is no selection, insert the character and move cursor inside the pair
-        if tag:
-            self.insert(tk.INSERT, char + end, tag)
-        else:
-            self.insert(tk.INSERT, char + end)
+        # TODO; coloring is not done properly
+        # if tag:
+        #     self.insert(tk.INSERT, char + end, tag)
+        # else:
+        self.insert(tk.INSERT, char + end)
         self.mark_set(tk.INSERT, "insert-1c")
         return "break"
 
