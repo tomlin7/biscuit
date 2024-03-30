@@ -38,6 +38,7 @@ class Text(BaseText):
         self.minimalist = minimalist
         self.language = language
 
+        self.tab_spaces = 4
         self.ctrl_down = False
         self.buffer_size = 4096
         self.bom = True
@@ -60,7 +61,8 @@ class Text(BaseText):
         self.create_proxy()
         self.config_bindings()
         self.update_idletasks()
-        self.configure(wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
+        tab_width = self.base.settings.font.measure(' ' * self.tab_spaces)
+        self.configure(tabs=(tab_width,), wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
         # modified event
         self.clear_modified_flag()
@@ -106,6 +108,7 @@ class Text(BaseText):
 
         self.bind("<Return>", self.enter_key_events)
         self.bind("<Tab>", self.tab_key_events)
+        self.bind("<Shift-Tab>", self.dedent_selection)
 
         # undo-redo
         self.bind_all('<<Modified>>', self._been_modified)
@@ -343,8 +346,39 @@ class Text(BaseText):
             self.autocomplete.choose(self)
             return "break"
 
-        # TODO if there is text selected, indent the selected text
-        self.insert(tk.INSERT, " "*4)
+        if self.tag_ranges(tk.SEL):
+            return self.indent_selection()
+    
+    def dedent_selection(self, _):
+        """Dedent the selected text by removing tabs or spaces at the start of each line"""
+
+        sel_first = self.index(tk.SEL_FIRST)
+        sel_last = self.index(tk.SEL_LAST)
+        start_line = int(float(sel_first))
+        end_line = int(float(sel_last))
+        
+        for line in range(start_line, end_line+1):
+            if (self.get(f"{line}.0", f"{line}.1") == "\t" or 
+                self.get(f"{line}.0", f"{line}.{self.tab_spaces}") == " "*self.tab_spaces):
+                self.delete(f"{line}.0", f"{line}.1")
+        
+        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.tag_add(tk.SEL, sel_first, sel_last)
+        return "break"
+
+    def indent_selection(self):
+        """Indent the selected text by adding tabs at the start of each line"""
+
+        sel_first = self.index(tk.SEL_FIRST)
+        sel_last = self.index(tk.SEL_LAST)
+        start_line = int(float(sel_first))
+        end_line = int(float(sel_last))
+        
+        for line in range(start_line, end_line+1):
+            self.insert(f"{line}.0", "\t")
+        
+        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.tag_add(tk.SEL, sel_first, sel_last)
         return "break"
 
     def refresh(self):
@@ -517,6 +551,14 @@ class Text(BaseText):
             except:
                 # this indeed is a darn task to do so not surprised
                 pass
+    
+    def set_tab_size(self, size: int) -> None:
+        if not size:
+            return
+        
+        self.tab_spaces = size
+        tab_width = self.base.settings.font.measure(' ' * size)
+        self.configure(tabs=(tab_width,))
 
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
@@ -586,9 +628,9 @@ class Text(BaseText):
         self.update_current_indent()
         if self.update_current_line():
             if self.current_line[-1] in ["{", "[", ":", "("]:
-                self.current_indent += 4
+                self.current_indent += self.tab_spaces
             elif self.current_line[-1] in ["}", "]", ")"]:
-                self.current_indent -= 4
+                self.current_indent -= self.tab_spaces
 
             self.add_newline()
             self.insert(tk.INSERT, " " * self.current_indent)
