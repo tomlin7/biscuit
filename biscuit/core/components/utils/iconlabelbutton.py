@@ -5,7 +5,7 @@ from .frame import Frame
 
 
 class IconLabelButton(Frame):
-    def __init__(self, master, text=None, icon=None, function=lambda *_: None, iconside=tk.LEFT, padx=5, pady=1, expandicon=True, highlighted=False, *args, **kwargs) -> None:
+    def __init__(self, master, text=None, icon=None, function=lambda *_: None, iconside=tk.LEFT, padx=5, pady=1, expandicon=True, highlighted=False, iconsize=14, toggle=True, *args, **kwargs) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
         self.function = function
 
@@ -13,10 +13,13 @@ class IconLabelButton(Frame):
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
+        self.codicon = get_codicon(self.icon)
+
+        self.toggle = True
 
         if icon:
-            self.icon_label = tk.Label(self, text=get_codicon(self.icon), anchor=tk.E, 
-                bg=self.bg, fg=self.fg, font=("codicon", 14))
+            self.icon_label = tk.Label(self, text=self.codicon if self.toggle else "    ", anchor=tk.E, 
+                bg=self.bg, fg=self.fg, font=("codicon", iconsize))
             self.icon_label.pack(side=iconside, fill=tk.BOTH, expand=expandicon)
 
         if text:
@@ -53,6 +56,10 @@ class IconLabelButton(Frame):
 
     def on_click(self, *_) -> None:
         self.function()
+    
+    def toggle_icon(self) -> None:
+        self.icon_label.config(text=self.codicon if not self.toggle else "    ")
+        self.toggle = not self.toggle
 
     def change_text(self, text) -> None:
         self.text_label.config(text=text)
