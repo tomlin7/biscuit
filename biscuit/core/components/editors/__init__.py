@@ -14,6 +14,7 @@ import tkinter as tk
 
 from ..utils import FileType, Frame
 from .breadcrumbs import BreadCrumbs
+from .comment_prefix import register_comment_prefix
 from .diffeditor import DiffEditor
 from .editor import BaseEditor
 from .html import HTMLEditor

@@ -161,6 +161,9 @@ class EventManager(GUIManager, ConfigManager):
     def register_langserver(self, language: str, command: str) -> None:
         self.language_server_manager.register_langserver(language, command)
     
+    def register_comment_prefix(self, language: str, prefix: str) -> None:
+        register_comment_prefix(language, prefix)
+
     def register_run_command(self, language: str, command: str) -> None:
         self.exec_manager.register_command(language, command)
 

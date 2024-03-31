@@ -43,7 +43,7 @@ class ExtensionsAPI:
 
         # Enum of supported languages
         self.LANGUAGES = Languages
-
+        self.register_comment_prefix = self.base.register_comment_prefix
         self.register_game = self.base.register_game
         self.register_langserver = self.base.register_langserver
         self.register_run_command = self.base.register_run_command

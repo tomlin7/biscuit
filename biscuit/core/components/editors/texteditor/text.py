@@ -17,7 +17,7 @@ if typing.TYPE_CHECKING:
 
 from ...utils import Text as BaseText
 from ...utils import textutils
-from ..languages import comment_prefix_map
+from ..comment_prefix import get_comment_prefix
 from .highlighter import Highlighter
 
 BRACKET_MAP = {"(": ")", "{": "}", "[": "]"}
@@ -61,7 +61,7 @@ class Text(BaseText):
         self.create_proxy()
         self.config_bindings()
         self.update_idletasks()
-        self.comment_prefix = comment_prefix_map.get(self.language.lower(), None)
+        self.comment_prefix = get_comment_prefix(self.language.lower())
         tab_width = self.base.settings.font.measure(' ' * self.base.tab_spaces)
         self.configure(tabs=(tab_width,), blockcursor=self.base.block_cursor, wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
