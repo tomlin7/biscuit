@@ -1,3 +1,6 @@
+"""List of all available languages for the Editor.
+scroll down to see the map of comment prefixes for each language as well."""
+
 class Languages:
     """Holds all available languages. To be passed to Editor during initialization."""
     ABAP = "abap"
@@ -549,6 +552,36 @@ class Languages:
     IPYTHON2 = "ipython2"
     IPYTHON3 = "ipython3"
     IPYTHONCONSOLE = "ipythonconsole"
+
+
+comment_prefix_map = {
+    Languages.PYTHON: '#',
+    Languages.JULIA: '#',
+    Languages.VB_NET: "'",
+    Languages.JAVASCRIPT: '//',
+    Languages.TYPESCRIPT: '//',
+    Languages.C: '//',
+    Languages.CPP: '//',
+    Languages.CSHARP: '//',
+    Languages.D: '//',
+    Languages.RUBY: '#',
+    Languages.PHP: '//',
+    Languages.RUST: '//',
+    Languages.SWIFT: '//',
+    Languages.GO: '//',
+    Languages.KOTLIN: '//',
+    Languages.JAVA: '//',
+    Languages.SCALA: '//',
+    Languages.HASKELL: '--',
+    Languages.SQL: '--',
+    Languages.BASH: '#',
+    Languages.POWERSHELL: '#',
+    Languages.JSON: '//',
+    Languages.YAML: '#',
+    Languages.TOML: '#',
+    Languages.LUA: '--',
+    Languages.DART: '//',
+}
 
 
 # from pygments.lexers import get_all_lexers, get_lexer_by_name
