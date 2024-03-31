@@ -17,6 +17,7 @@ if typing.TYPE_CHECKING:
 
 from ...utils import Text as BaseText
 from ...utils import textutils
+from ..languages import comment_prefix_map
 from .highlighter import Highlighter
 
 BRACKET_MAP = {"(": ")", "{": "}", "[": "]"}
@@ -60,6 +61,7 @@ class Text(BaseText):
         self.create_proxy()
         self.config_bindings()
         self.update_idletasks()
+        self.comment_prefix = comment_prefix_map.get(self.language.lower(), None)
         tab_width = self.base.settings.font.measure(' ' * self.base.tab_spaces)
         self.configure(tabs=(tab_width,), blockcursor=self.base.block_cursor, wrap=tk.NONE, relief=tk.FLAT, highlightthickness=0, bd=0, **self.base.theme.editors.text)
 
@@ -125,6 +127,8 @@ class Text(BaseText):
 
         if self.minimalist:
             return
+        
+        self.bind("<Control-slash>", self.toggle_comment)
 
         # autocomplete
         self.bind("<FocusOut>", self.event_focus_out) 
@@ -160,7 +164,7 @@ class Text(BaseText):
             case "braceleft" | "bracketleft" | "parenleft" | "apostrophe" | "quotedbl":
                 pass
 
-            # extra spaces
+            # auto space after : and ,
             case ":" | ",":
                 self.insert(tk.INSERT, " ")
             case _:
@@ -294,6 +298,11 @@ class Text(BaseText):
             pass
 
     def update_completions(self):
+        """Helper function for `AutoComplete` popup.
+        
+        If LSP is enabled, then request completions from the language server.
+        Otherwise, update the completions list with words in editor."""
+
         if self.minimalist:
             return
 
@@ -302,7 +311,10 @@ class Text(BaseText):
         else:
             self.autocomplete.update_completions(self)
             
-    def replace_current_word(self, new_word):
+    def replace_current_word(self, new_word: str):
+        """Helper function for `AutoComplete` popup.
+        Replaces the current word with the chosen word."""
+
         if self.current_word.startswith("\n"):
             self.delete("insert-1c wordstart+1c", "insert")
         else:
@@ -310,6 +322,9 @@ class Text(BaseText):
         self.insert("insert", new_word)
 
     def cursor_screen_location(self):
+        """Helper function for `AutoComplete` popup positioning.
+        Returns the screen location of the cursor."""
+
         pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
 
         cursor = tk.INSERT
@@ -321,6 +336,9 @@ class Text(BaseText):
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
     def cursor_wordstart_screen_location(self):
+        """Helper function for `Rename` popup positioning.
+        Returns the screen location of the word start at the cursor position."""
+
         pos_x, pos_y = self.winfo_rootx(), self.winfo_rooty()
 
         cursor = tk.INSERT + " wordstart"
@@ -332,6 +350,10 @@ class Text(BaseText):
         return (pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h)
 
     def enter_key_events(self, *_):
+        """Handles enter key press event.
+        - If the autocomplete is active, then choose the selected item.
+        - Otherwise check the indentation and insert a newline with proper indentation."""
+
         if not self.minimalist and self.autocomplete.active:        
             self.autocomplete.choose(self)
             return "break"
@@ -339,12 +361,73 @@ class Text(BaseText):
         return self.check_indentation()
 
     def tab_key_events(self, *_):
+        """Handles tab key press event.
+        - If the autocomplete is active, then choose the selected item.
+        - If there is a selection, then indent the selected text."""
+
         if not self.minimalist and self.autocomplete.active:        
             self.autocomplete.choose(self)
             return "break"
 
         if self.tag_ranges(tk.SEL):
             return self.indent_selection()
+    
+    def comment_selection(self):
+        """Helper function of toggle_comment(). 
+        Comments selected lines with the comment prefix of the language"""
+
+        sel_first = self.index(tk.SEL_FIRST)
+        sel_last = self.index(tk.SEL_LAST)
+        start_line = int(float(sel_first))
+        end_line = int(float(sel_last))
+        
+        for line in range(start_line, end_line+1):
+            # skip empty lines, they won't be commented
+            if not self.get(f"{line}.0", f"{line}.0 lineend").strip():
+                continue
+
+            self.insert(f"{line}.0", f"{self.comment_prefix} ")
+        
+        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.tag_add(tk.SEL, sel_first, sel_last)
+        return "break"
+
+    def uncomment_selection(self):
+        """Helper function of toggle_comment(). 
+        Uncomments selected lines with the comment prefix of the language"""
+
+        sel_first = self.index(tk.SEL_FIRST)
+        sel_last = self.index(tk.SEL_LAST)
+        start_line = int(float(sel_first))
+        end_line = int(float(sel_last))
+        
+        for line in range(start_line, end_line+1):
+            # delete comment prefix with the trailing space
+            if self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}") == f"{self.comment_prefix} ":
+                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+            # trailing space not detected, delete the comment prefix
+            elif self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)}") == f"{self.comment_prefix}":
+                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix)}")
+        
+        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.tag_add(tk.SEL, sel_first, sel_last)
+        return "break"
+
+    def toggle_comment(self, *_):
+        """Toggles comments on selected lines with the comment prefix of the language"""
+
+        if not (self.comment_prefix and self.tag_ranges(tk.SEL)):
+            return "break"
+        
+        sel_first = f"{self.index(tk.SEL_FIRST)} linestart"
+        sel_last = f"{self.index(tk.SEL_LAST)} lineend"
+
+        # if all the selected *non-empty* lines start with comment prefix, then proceed to uncomment
+        if all((i.startswith(self.comment_prefix) for i in self.get(sel_first, sel_last).split("\n") if i.strip())):
+            return self.uncomment_selection()
+    
+        # otherwise comment the selected lines
+        return self.comment_selection()
     
     def dedent_selection(self, _):
         """Dedent the selected text by removing tabs or spaces at the start of each line"""

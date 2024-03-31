@@ -10,6 +10,7 @@ if typing.TYPE_CHECKING:
 __all__ = ["ExtensionsAPI"]
 
 from biscuit.core.components import BaseEditor, BaseGame
+from biscuit.core.components.editors import Languages
 
 from .commands import Commands
 from .logger import Logger
@@ -39,6 +40,9 @@ class ExtensionsAPI:
 
         self.Game = BaseGame
         self.Editor = BaseEditor
+
+        # Enum of supported languages
+        self.LANGUAGES = Languages
 
         self.register_game = self.base.register_game
         self.register_langserver = self.base.register_langserver
