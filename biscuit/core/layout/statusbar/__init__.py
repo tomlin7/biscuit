@@ -19,7 +19,6 @@ from biscuit.core.components import ActionSet
 from biscuit.core.components.utils import Frame, textutils
 
 from .button import SButton, TerminalButton
-from .clock import SClock
 
 if typing.TYPE_CHECKING:
     from ...components.editors.texteditor import Text
@@ -108,25 +107,17 @@ class Statusbar(Frame):
         # show/hide notifications
         self.notif = SButton(self, icon="bell", function=self.base.notifications.show, description="No notifications")
         self.notif.pack(side=tk.RIGHT, padx=(0, 10))
-
-        # clock
-        self.clock = SClock(self, text="H:M:S", description="Time")
-        self.time_actionset = ActionSet(
-            "Configure clock format", "time:",
-            [("12 hours", lambda e=None: self.clock.use_24_hour_format(False)),
-            ("24 hours", lambda e=None: self.clock.use_24_hour_format(True)),],
-        )
-        self.base.palette.register_actionset(lambda: self.time_actionset)
-        self.clock.change_function(function=self.base.events.change_time_format)
-        self.clock.set_pack_data(side=tk.RIGHT)
-        self.clock.show()
+    
+    def add_button(self, text: str, icon: str=None, side: str=tk.LEFT, function: typing.Callable=None, description: str=None) -> SButton:
+        btn = SButton(self, text=text, icon=icon, function=function, description=description)
+        btn.pack(side=side)
+        return btn
 
     def toggle_terminal(self) -> None:
         self.base.toggle_terminal()
 
     def toggle_editmode(self, state: bool) -> None:
         if state:
-            self.clock.show()
             self.file_type.show()
             self.eol.show()
             self.encoding.show()

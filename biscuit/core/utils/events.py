@@ -268,9 +268,6 @@ class Events:
     def change_git_branch(self, *_) -> None:
         self.base.palette.show('branch:')
     
-    def change_time_format(self, *_) -> None:
-        self.base.palette.show('time:')
-    
     def show_run_config_palette(self, command) -> None:
         self.base.palette.show('runconf:', command)
     

@@ -16,10 +16,10 @@ class SBubble(Bubble):
 
 
 class SButton(Frame):
-    def __init__(self, master: Statusbar, text: str=None, icon: str=None, function=lambda *_: None, 
+    def __init__(self, master: Statusbar, text: str=None, icon: str=None, function=None, 
                  description: str=None, padx: int=5, pady: int=1, *args, **kwargs) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
-        self.function = function
+        self.function = function or (lambda *_: None)
 
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.layout.statusbar.button.values()
         self.config(bg=self.bg)

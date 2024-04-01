@@ -7,6 +7,8 @@ import typing
 from dataclasses import dataclass
 from textwrap import dedent
 
+import psutil
+
 if typing.TYPE_CHECKING:
     from ... import App
 
@@ -25,6 +27,16 @@ class SysInfo:
         self.processor = platform.processor()
         self.python_version = sys.version
         self.tk_version = tk.TclVersion
+    
+    def get_current_stats(self) -> str: 
+        """Get current CPU and Memory usage"""
+
+        cpu_percent = psutil.cpu_percent(interval=0)
+        memory_percent = psutil.virtual_memory().percent
+        # memory = psutil.virtual_memory()
+        # total_memory_gb = round(memory.total / (1024**3), 2)
+        # used_memory_gb = round((memory.total - memory.available) / (1024**3), 2)
+        return f"CPU: {cpu_percent}% | Mem: {memory_percent}%"
 
     def __str__(self) -> None:
         return dedent(
