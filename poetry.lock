@@ -181,18 +181,19 @@ files = [
 
 [[package]]
 name = "git-changelog"
-version = "2.4.1"
+version = "2.5.1"
 description = "Automatic Changelog generator using Jinja2 templates."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "git_changelog-2.4.1-py3-none-any.whl", hash = "sha256:faac569e4f671ff81ccda49b07081bbfb7a4e78374b27a65c3ea80678e01b41b"},
-    {file = "git_changelog-2.4.1.tar.gz", hash = "sha256:9edbe513df5671897e78782dfaf45e108b8019713eacbbefa8da68a9952f5a10"},
+    {file = "git_changelog-2.5.1-py3-none-any.whl", hash = "sha256:530697365de63c1af3532f82d879440573d7dc15e5b79febd99394510d7f6fad"},
+    {file = "git_changelog-2.5.1.tar.gz", hash = "sha256:14a800858184493608de98f1c4964f6351335046b48c326b2fa260ae4e6c8d2c"},
 ]
 
 [package.dependencies]
 appdirs = ">=1.4"
 Jinja2 = ">=2.10"
+packaging = ">=24.0"
 semver = ">=2.13"
 tomli = {version = ">=2.0", markers = "python_version < \"3.11\""}
 
@@ -870,4 +871,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a360a9bbe2c436c5beb8039022589f2f1f2662cd3538a7199cf5ae0f615d5e9a"
+content-hash = "545d96c003e0abbc3d15eeb316517c9291ee85bcd313a0eaa3843a954ecf794c"
