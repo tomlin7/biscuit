@@ -28,7 +28,7 @@ class BaseEditor(Frame):
         if not event.data:
             return
         
-        self.base.open_editor(event.data)
+        self.base.open(event.data, warn_for_directory=True)
 
     def add_button(self, *args):
         self.__buttons__.append(args)

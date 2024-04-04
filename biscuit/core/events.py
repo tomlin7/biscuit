@@ -47,7 +47,11 @@ class EventManager(GUIManager, ConfigManager):
         self.menubar.set_title(title)
         self.menubar.reposition_title()
 
-    def open(self, path: str) -> None:
+    def open(self, path: str, warn_for_directory=False) -> None:
+        """Opens file/directory based on path.
+        
+        TODO: Open directory in new window if warn_for_directory is True.
+        """
         if not path:
             return
 
