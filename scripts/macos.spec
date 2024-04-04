@@ -5,7 +5,7 @@ datas = [('../biscuit/res/*', 'res/')]
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
 datas += collect_data_files('tkinterweb')
-datas += collect_data_files('python-tkdnd')
+datas += collect_data_files('tkinterDnD')
 
 
 binaries = []
