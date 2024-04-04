@@ -26,6 +26,7 @@ chardet = "^5.2.0"
 pywinpty = {version = "^2.0.13", platform = "win32"}
 ptyprocess = {version = "^0.7.0", platform = "linux"}
 python-tkdnd = "^0.2.1"
+psutil = "^5.9.8"
 
 
 [tool.poetry.group.dev.dependencies]

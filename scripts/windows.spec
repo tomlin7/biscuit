@@ -7,6 +7,7 @@ binaries = []
 hiddenimports = []
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
+datas += collect_data_files('python-tkdnd')
 tmp_ret = collect_all('tkinterweb')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 

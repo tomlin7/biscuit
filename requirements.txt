@@ -17,3 +17,4 @@ python-lsp-server
 pywinpty; platform_system == "Windows"
 ptyprocess; platform_system != "Windows"
 python-tkdnd
+psutil
