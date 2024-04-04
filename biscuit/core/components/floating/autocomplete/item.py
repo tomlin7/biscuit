@@ -31,7 +31,7 @@ class CompletionItem(Frame):
         
         self.kind = Kind(self)
         self.text = tk.Text(self, 
-            font=self.base.settings.font, fg=self.fg, bg=self.bg,
+            font=self.base.settings.font, fg=self.fg, bg=self.bg, cursor="hand2",
             relief=tk.FLAT, highlightthickness=0, width=30, height=1)
 
         self.text.tag_config("term", foreground=self.base.theme.biscuit, font=self.base.settings.font_bold)

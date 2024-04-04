@@ -21,7 +21,7 @@ class Slot(Menubutton):
         self.bind('<Enter>', self.bubble.show)
         self.bind('<Leave>', self.bubble.hide)
 
-        self.config(text=get_codicon(view.__icon__), relief=tk.FLAT, font=("codicon", 20), 
+        self.config(text=get_codicon(view.__icon__), relief=tk.FLAT, font=("codicon", 20), cursor="hand2", 
                     padx=13, pady=11, **self.base.theme.layout.base.sidebar.slots.slot)
         self.pack(fill=tk.X, side=tk.TOP)
 

@@ -77,7 +77,7 @@ class CheckboxItem(Item):
         super().__init__(master, name, *args, **kwargs)
 
         self.var = tk.BooleanVar(self, value=default)
-        ttk.Checkbutton(self, text=name, variable=self.var).pack(fill=tk.X, anchor=tk.W)
+        ttk.Checkbutton(self, text=name, variable=self.var, cursor="hand2").pack(fill=tk.X, anchor=tk.W)
 
     @property
     def value(self) -> str:

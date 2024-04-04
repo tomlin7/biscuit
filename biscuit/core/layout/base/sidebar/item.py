@@ -16,7 +16,7 @@ class MenuItem(Menubutton):
     def __init__(self, master: Sidebar, icon: str, text: str, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.bubble = Bubble(self, text=text)
-        self.config(text=get_codicon(icon), relief=tk.FLAT, font=("codicon", 20), 
+        self.config(text=get_codicon(icon), relief=tk.FLAT, font=("codicon", 20), cursor="hand2",
                     padx=10, pady=10, **self.base.theme.layout.base.sidebar.slots.slot)
         self.pack(fill=tk.X, side=tk.TOP)
 

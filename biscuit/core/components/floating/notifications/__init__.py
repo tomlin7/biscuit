@@ -55,6 +55,8 @@ class Notifications(Toplevel):
         self.base.register_onupdate(self.follow_root)
 
     def info(self, text: str) -> Notification:
+        """Create an info notification"""
+        
         instance = Notification(self, "info", text=text, fg=self.base.theme.biscuit)
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
@@ -65,6 +67,8 @@ class Notifications(Toplevel):
         return instance
 
     def warning(self, text: str) -> Notification:
+        """Create a warning notification"""
+
         instance = Notification(self, "warning", text=text, fg="yellow")
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
@@ -75,6 +79,8 @@ class Notifications(Toplevel):
         return instance
 
     def error(self, text: str) -> Notification:
+        """Create an error notification"""
+
         instance = Notification(self, "error", text=text, fg="red")
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.count += 1
@@ -85,6 +91,15 @@ class Notifications(Toplevel):
         return instance
 
     def notify(self, text: str, kind: int) -> Notification:
+        """Create a notification based on kind
+        1: info
+        2: warning
+        3: error
+        
+        Args:
+            text (str): notification text
+            kind (int): notification kind
+        """
         match kind:
             case 1:
                 self.error(text)
@@ -94,6 +109,8 @@ class Notifications(Toplevel):
                 self.info(text)
 
     def follow_root(self) -> None:
+        """Follow root window position"""
+
         if not self.active:
             return
 
@@ -103,6 +120,9 @@ class Notifications(Toplevel):
         self.geometry(f"+{int(x)}+{int(y)}")
 
     def show(self, *_) -> None:
+        """Toggle notification visibility
+        Also updates title based on count."""
+        
         if self.count:
             self.title.config(text=f"NOTIFICATIONS ({self.count})")
         else:
@@ -118,15 +138,21 @@ class Notifications(Toplevel):
         self.base.statusbar.update_notifications()
 
     def hide(self, *_) -> None:
+        """Hide notifications"""
+
         self.active = False
         self.withdraw()
 
     def clear(self, *_) -> None:
+        """Clear all notifications"""
+
         for i in self.notifications:
             i.delete()
         self.count = 0
 
     def delete(self, notification: Notification) -> None:
+        """Delete a notification"""
+
         self.notifications.remove(notification)
         self.count -= 1
         notification.destroy()

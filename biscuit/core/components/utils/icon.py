@@ -5,7 +5,8 @@ from .label import Label
 
 
 class Icon(Label):
-    """Button with only an icon"""
+    """Label with only an icon"""
+
     def __init__(self, master, icon: str="", iconsize: int=14, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(font=("codicon", iconsize))

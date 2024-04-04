@@ -14,6 +14,8 @@ from .results import FindResults
 
 
 class FindReplace(Toplevel):
+    """Floating find and replace window"""
+    
     def __init__(self, base, *args, **kwargs) -> None:
         super().__init__(base, *args, **kwargs)
         self.offset = 10

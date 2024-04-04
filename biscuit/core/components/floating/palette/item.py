@@ -16,7 +16,7 @@ class PaletteItem(Text):
         self.command  = command
 
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.palette.item.values()
-        self.config(font=self.base.settings.uifont, fg=self.fg, bg=self.bg,
+        self.config(font=self.base.settings.uifont, fg=self.fg, bg=self.bg, cursor="hand2",
                     padx=10, pady=3, relief=tk.FLAT, highlightthickness=0, width=30, height=1)
 
         self.tag_config("term", foreground=self.base.theme.biscuit)

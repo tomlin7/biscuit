@@ -8,9 +8,11 @@ from .icon import Icon
 
 
 class CloseListItem(Frame):
+    """For implementing a list of closeable items.
+    A varient of IconLabelButton that comes with a close icon 
+    on the right side of the button.
     """
-    A varient of IconLabelButton that has a close icon on the right side of the button.
-    """
+
     def __init__(self, master, text=None, icon=None, function=lambda *_: None, closefn=lambda *_:None, iconside=tk.LEFT, padx=5, pady=1, *args, **kwargs) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
         self.function = function
@@ -68,9 +70,13 @@ class CloseListItem(Frame):
         self.function()
 
     def change_text(self, text) -> None:
+        """Change the text of the item"""
+
         self.text_label.config(text=text)
 
     def change_icon(self, icon) -> None:
+        """Change the icon of the item"""
+        
         self.icon_label.config(text=icon)
 
     def set_pack_data(self, **kwargs) -> None:
@@ -80,11 +86,15 @@ class CloseListItem(Frame):
         return self.pack_data
 
     def show(self) -> None:
+        """Show the item"""
+
         if not self.visible:
             self.visible = True
             self.pack(**self.get_pack_data())
 
     def hide(self) -> None:
+        """Hide the item"""
+
         if self.visible:
             self.visible = False
             self.pack_forget()

@@ -116,7 +116,7 @@ class Results(Frame):
 
                         if result:
                             found_files.append(result[0])
-                            self.label.config(text=f"Searching {len(found_files)} files...")
+                            self.label.config(text=f"Searched {len(found_files)} files...")
 
                         self.base.root.update()
 

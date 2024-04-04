@@ -16,7 +16,7 @@ class Kind(Icon):
         self.master = master
         self.base = master.base
 
-        self.config(**self.base.theme.editors.autocomplete.item)
+        self.config(**self.base.theme.editors.autocomplete.item, cursor="hand2")
         self.set_kind(kind)
 
     def set_kind(self, kind: int=1):

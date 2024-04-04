@@ -41,6 +41,8 @@ class Definitions(Toplevel):
         self.bind("<Escape>", self.hide)
 
     def refresh_geometry(self, pos: str, tab: Text):
+        """Refresh the geometry of the window."""
+
         tab.update_idletasks()
         
         pos_x, pos_y = tab.winfo_rootx(), tab.winfo_rooty()
@@ -54,6 +56,8 @@ class Definitions(Toplevel):
         self.geometry("+{}+{}".format(pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h))
 
     def show(self, tab: Text, jump: Jump):
+        """Show the definitions window."""
+
         self.update_locations(jump.locations)
         self.active = True
         self.latest_tab = tab 
@@ -64,20 +68,28 @@ class Definitions(Toplevel):
         self.focus_set()
 
     def hide(self, *_):
+        """Hide the definitions window."""
+        
         self.active = False
         self.withdraw()
         self.clear()
     
     def clear(self):
+        """Clear all active items."""
+
         for item in self.active_items:
             item.destroy()
         self.active_items = []
     
     def choose(self, path: str, start: JumpLocationRange):
+        """Choose a definition and go to it."""
+
         self.base.goto_location(path, start)
         self.hide()
     
     def update_locations(self, locations: list[JumpLocationRange]) -> None:
+        """Update the list of locations."""
+
         for location in locations:
             i = LocationItem(self, location)
             i.pack(fill=tk.X, expand=True)

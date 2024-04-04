@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import tkinter as tk
 from tkinter.font import Font
 
@@ -143,6 +145,7 @@ class TextEditor(BaseEditor):
             self.text.event_copy()
 
     def goto(self, position):
+        self.text.focus_set()
         self.text.goto(position)
 
     def goto_line(self, line):

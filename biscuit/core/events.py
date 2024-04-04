@@ -113,11 +113,14 @@ class EventManager(GUIManager, ConfigManager):
     def goto_location_in_active_editor(self, position: int) -> None:
         if editor := self.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
+                editor.content.text.focus_set()
                 editor.content.goto(position)
 
     def goto_location(self, path: str, position: int) -> None:
         if self.editorsmanager.is_open(path):
-            self.editorsmanager.set_active_editor_by_path(path).content.goto(position)
+            if editor := self.editorsmanager.set_active_editor_by_path(path):
+                editor.content.text.focus_set()
+                editor.content.goto(position)
             return
 
         editor = self.open_editor(path, exists=True)
