@@ -1,3 +1,5 @@
+import tkinterDnD as dnd
+
 from ..utils import Frame, IconButton
 
 
@@ -18,6 +20,15 @@ class BaseEditor(Frame):
         self.language = ""
 
         self.__buttons__ = []
+
+        self.register_drop_target(dnd.FILE)
+        self.bind("<<Drop>>", self.ondrop)
+    
+    def ondrop(self, event):
+        if not event.data:
+            return
+        
+        self.base.open_editor(event.data)
 
     def add_button(self, *args):
         self.__buttons__.append(args)

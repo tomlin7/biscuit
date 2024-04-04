@@ -1,12 +1,13 @@
 import platform
-import tkinter as tk
+
+from tkinterDnD import Tk
 
 from .components import *
 from .config import ConfigManager
 from .layout import *
 
 
-class GUIManager(tk.Tk, ConfigManager):
+class GUIManager(Tk, ConfigManager):
     """
     GUI MANAGER
     -----------
