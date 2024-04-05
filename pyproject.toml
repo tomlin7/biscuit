@@ -32,7 +32,7 @@ psutil = "^5.9.8"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
 pytest-dotenv = "^0.5.2"
-git-changelog = "^2.5.1"
+git-changelog = "^2.5.2"
 pyperclip = "^1.8.2"
 
 [build-system]
