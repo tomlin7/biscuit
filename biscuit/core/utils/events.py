@@ -216,6 +216,21 @@ class Events:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.event_duplicate_selection()
+    
+    def go_to_definition(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.request_definition(from_menu=True)
+    
+    def find_references(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.request_references(from_menu=True)
+    
+    def rename_symbol(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.request_rename()
 
     def show_explorer(self, *_) -> None:
         self.base.sidebar.show_explorer()
@@ -272,7 +287,7 @@ class Events:
         self.base.palette.show('runconf:', command)
     
     def show_file_search_palette(self, *_) -> None:
-        self.base.palette.show("")
+        self.base.palette.show()
 
     def documentation(self, *_) -> None:
         web.open("https://billyeatcookies.github.io/biscuit/")

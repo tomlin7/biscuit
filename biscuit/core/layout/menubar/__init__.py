@@ -100,6 +100,7 @@ class Menubar(Frame):
         self.add_edit_menu()
         self.add_selection_menu()
         self.add_view_menu()
+        self.add_go_menu()
         self.add_help_menu()
 
     def add_file_menu(self) -> None:
@@ -163,7 +164,7 @@ class Menubar(Frame):
         events = self.events
 
         self.view_menu = self.add_menu("View")
-        self.view_menu.add_item("Command Palette...", lambda: self.base.palette.show(">"))
+        self.view_menu.add_item("Command Palette...", events.show_command_palette)
         self.view_menu.add_item("Explorer", events.show_explorer)
         self.view_menu.add_item("Outline", events.show_outline)
         self.view_menu.add_item("Search", events.show_search)
@@ -172,6 +173,18 @@ class Menubar(Frame):
         self.view_menu.add_separator()
         self.view_menu.add_item("Terminal", events.show_terminal)
         self.view_menu.add_item("Log", events.show_logs)
+
+    def add_go_menu(self) -> None:
+        events = self.events
+
+        self.view_menu = self.add_menu("Go")
+        self.view_menu.add_item("Go to File...", events.show_file_search_palette)
+        self.view_menu.add_separator()
+        self.view_menu.add_item("Go to Symbol in Editor", events.show_symbol_palette)
+        self.view_menu.add_item("Go to Definition", events.go_to_definition)
+        self.view_menu.add_item("Go to References", events.find_references)
+        self.view_menu.add_separator()
+        self.view_menu.add_item("Go to Line/Column...", events.show_goto_palette)
     
     def add_help_menu(self) -> None:
         events = self.events

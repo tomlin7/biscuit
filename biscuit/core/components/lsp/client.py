@@ -140,34 +140,50 @@ class LangServerClient:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
             return
         
+        # very bad hack to ignore mouse and use cursor position
+        tab.focus_set()
+        pos = tab.get_mouse_pos()
+        if pos == '1.0':
+            pos = tab.get_cursor_pos()
+        
         request_id = self.client.definition(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_mouse_pos()),
+                position=encode_position(pos),
             )
         )
-        self._gotodef_requests[request_id] = (tab, tab.get_mouse_pos())
+        self._gotodef_requests[request_id] = (tab, pos)
     
     def request_references(self, tab: Text) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
             return
+    
+        tab.focus_set()
+        pos = tab.get_mouse_pos()
+        if pos == '1.0':
+            pos = tab.get_cursor_pos()
         
         request_id = self.client.references(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_cursor_pos()),
+                position=encode_position(pos),
             )
         )
-        self._ref_requests.append((tab, tab.get_mouse_pos()))
+        self._ref_requests.append((tab, pos))
 
     def request_rename(self, tab: Text, new_name: str) -> None:
         if tab.path is None or self.client.state != lsp.ClientState.NORMAL:
             return
         
+        tab.focus_set()
+        pos = tab.get_mouse_pos()
+        if pos == '1.0':
+            pos = tab.get_cursor_pos()
+        
         request_id = self.client.rename(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_cursor_pos()),
+                position=encode_position(pos),
             ),
             new_name=new_name,
         )

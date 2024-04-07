@@ -155,7 +155,7 @@ class Palette(Toplevel):
 
         self.reset_selection()
 
-    def show(self, prefix: str, default: str=None) -> None:
+    def show(self, prefix: str=None, default: str=None) -> None:
         """Shows the palette with the passed prefix"""
         self.update_idletasks()
 
