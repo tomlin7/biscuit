@@ -64,6 +64,9 @@ class Terminals(PanelView):
         self.add_terminal(shell(self, cwd=self.base.active_directory or get_home_directory()))
 
     def open_terminal(self, path=None) -> None:
+        """Open another instance of active terminal in the current directory.
+        If no active terminal, open a default terminal."""
+        
         self.add_terminal(self.active_terminal_type(self, cwd=path or self.base.active_directory or get_home_directory()))
 
     def delete_all_terminals(self) -> None:

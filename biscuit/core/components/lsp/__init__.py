@@ -61,6 +61,11 @@ class LanguageServerManager:
             if tab in instance.tabs_opened:
                 instance.request_go_to_definition(tab)
     
+    def request_references(self, tab: Text) -> None:
+        for instance in list(self.existing.values()):
+            if tab in instance.tabs_opened:
+                instance.request_references(tab)
+
     def request_rename(self, tab: Text, new_name: str) -> None:
         for instance in list(self.existing.values()):
             if tab in instance.tabs_opened:
