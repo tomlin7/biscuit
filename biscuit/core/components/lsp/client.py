@@ -176,9 +176,7 @@ class LangServerClient:
             return
         
         tab.focus_set()
-        pos = tab.get_mouse_pos()
-        if pos == '1.0':
-            pos = tab.get_cursor_pos()
+        pos = tab.get_cursor_pos()
         
         request_id = self.client.rename(
             lsp.TextDocumentPosition(
