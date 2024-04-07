@@ -121,6 +121,30 @@ class EventHandler:
                 ),
             )
             return
+    
+        if isinstance(e, lsp.References):
+            if not self.master._ref_requests:
+                return
+
+            try:
+                tab, pos = self.master._ref_requests.pop(0)
+            except Exception as e:
+                print(e)
+
+            tab.lsp_goto_definition(
+                Jump(
+                    pos=pos,
+                    locations=[
+                        JumpLocationRange(
+                            file_path=decode_path_uri(loc.uri),
+                            start=decode_position(loc.range.start),
+                            end=decode_position(loc.range.end),
+                        )
+                        for loc in e.result
+                    ]
+                ),
+            )
+            return
         
         if isinstance(e, lsp.WorkspaceEdit):
             tab = self.master._rename_requests.pop(e.message_id)

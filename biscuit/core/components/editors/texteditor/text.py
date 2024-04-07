@@ -545,7 +545,14 @@ class Text(BaseText):
     def request_goto_definition(self, e: tk.Event):
         if not self.lsp or not self.last_hovered:
             return
+        
         self.base.language_server_manager.request_goto_definition(self)
+    
+    def request_references(self, e: tk.Event):
+        if not self.lsp or not self.last_hovered:
+            return
+        
+        self.base.language_server_manager.request_references(self)
     
     def request_hover(self, _):
         if not self.lsp or self.tag_ranges(tk.SEL):
