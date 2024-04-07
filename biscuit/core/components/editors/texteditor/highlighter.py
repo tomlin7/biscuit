@@ -47,10 +47,26 @@ class Highlighter:
                 self.lexer = None
                 self.text.language = "Plain Text"
                 if self.text.exists:
-                    self.base.notifications.info("Unrecognized file type opened")
-                
+                    print("Unrecognized file type opened")
+                    
+
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
+
+    def detect_language(self) -> None:
+        """Detect the language from the file extension and set the lexer"""
+        try:
+            if os.path.basename(self.text.path).endswith("txt"):
+                raise Exception()
+
+            self.lexer = get_lexer_for_filename(os.path.basename(self.text.path), encoding=self.text.encoding)
+            self.text.language = self.lexer.name
+            self.highlight()
+        except:
+            self.lexer = None
+            self.text.language = "Plain Text"
+            if self.text.exists:
+                print("Unrecognized file type opened")
 
     def change_language(self, language: str) -> None:
         """Change the language of the highlighter

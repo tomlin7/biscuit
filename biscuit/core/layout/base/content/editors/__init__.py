@@ -178,7 +178,7 @@ class EditorsPane(Frame):
         self.active_editors.remove(editor)
         self.tabs.delete_tab(editor)
         if editor.path in self.closed_editors:
-            self.closed_editors.pop(editor)
+            self.closed_editors.pop(editor.path)
 
         editor.destroy()
         self.base.explorer.open_editors.remove_item(editor)

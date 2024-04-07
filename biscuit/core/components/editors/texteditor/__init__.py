@@ -13,16 +13,18 @@ from .text import Text
 
 
 class TextEditor(BaseEditor):
-    def __init__(self, master, path=None, exists=True, language=None, minimalist=False, *args, **kwargs) -> None:
+    def __init__(self, master, path=None, exists=True, language=None, minimalist=False, standalone=False, *args, **kwargs) -> None:
         super().__init__(master, path, exists, *args, **kwargs)
         self.font: Font = self.base.settings.font
-        self.minimalist = minimalist
+        self.standalone = standalone
+        self.minimalist = minimalist or self.standalone
         self.language = language
         self.exists = exists
         self.editable = True
         self.run_command_value = None
 
-        self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
+        if not self.standalone:
+            self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -34,26 +36,27 @@ class TextEditor(BaseEditor):
             self.minimap = Minimap(self)
             self.minimap.grid(row=0, column=2, sticky=tk.NS)
 
-        self.text = Text(self, path=self.path, exists=self.exists, minimalist=minimalist, language=language)
+        self.text = Text(self, path=self.path, exists=self.exists, minimalist=self.minimalist, standalone=self.standalone, language=self.language)
         self.language = self.text.language
 
         if self.exists:
             self.text.load_file()
             self.text.update_idletasks()
 
-            self.run_command_value = self.base.exec_manager.get_command(self)
-            self.__buttons__.insert(0, ('run', self.run_file))
-            
-            self.runmenu = RunMenu(self, "run menu")
-            if self.run_command_value:
-                self.runmenu.add_command(f"Run {self.language} file", lambda: self.run_file())
+            if not self.standalone:
+                self.run_command_value = self.base.exec_manager.get_command(self)
+                self.__buttons__.insert(0, ('run', self.run_file))
+                
+                self.runmenu = RunMenu(self, "run menu")
+                if self.run_command_value:
+                    self.runmenu.add_command(f"Run {self.language} file", lambda: self.run_file())
+                    self.runmenu.add_separator()
+                self.runmenu.add_command("Run in dedicated terminal", lambda: self.run_file(dedicated=True))
+                self.runmenu.add_command("Run in external console", lambda: self.run_file(external=True))
                 self.runmenu.add_separator()
-            self.runmenu.add_command("Run in dedicated terminal", lambda: self.run_file(dedicated=True))
-            self.runmenu.add_command("Run in external console", lambda: self.run_file(external=True))
-            self.runmenu.add_separator()
-            self.runmenu.add_command("Configure Run...", lambda: self.base.events.show_run_config_palette(self.run_command_value))
+                self.runmenu.add_command("Configure Run...", lambda: self.base.events.show_run_config_palette(self.run_command_value))
 
-            self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
+                self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
             
         self.linenumbers.attach(self.text)
         if not self.minimalist:
@@ -99,11 +102,12 @@ class TextEditor(BaseEditor):
     def on_change(self, *_):
         self.linenumbers.redraw()
         try:
-            self.base.update_statusbar()
+            if not self.standalone:
+                self.base.update_statusbar()
         except ValueError:
             pass
+        self.text.refresh()
         if not self.minimalist:
-            self.text.refresh()
             self.minimap.redraw_cursor()
         self.event_generate("<<Change>>")
 
@@ -133,6 +137,9 @@ class TextEditor(BaseEditor):
             self.text.save_file(path)
 
     def auto_save(self):
+        if self.standalone:
+            return
+        
         self.save()
         self.base.after(self.base.settings.config.auto_save_timer_ms, self.auto_save)
 

@@ -10,6 +10,8 @@ class Label(tk.Label):
         self.master = master
         self.base = master.base
 
+    def set_text(self, text: str) -> None:
+        self.config(text=text)
 
 class WrappingLabel(Label):
     """a type of Label that automatically adjusts the wrap to the size"""
