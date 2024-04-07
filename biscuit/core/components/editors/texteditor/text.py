@@ -28,7 +28,7 @@ CLOSING_BRACKETS = (")", "}", "]")
 class Text(BaseText):
     """Improved Text widget"""
 
-    def __init__(self, master: TextEditor, path: str=None, exists: bool=True, minimalist: bool=False, language: str=None, *args, **kwargs) -> None:
+    def __init__(self, master: TextEditor, path: str=None, exists: bool=True, minimalist: bool=False, standalone: bool=False, language: str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.path = path
@@ -37,6 +37,7 @@ class Text(BaseText):
         self.eol = "CRLF"
         self.exists = exists
         self.minimalist = minimalist
+        self.standalone = standalone
         self.language = language
 
         self.ctrl_down = False
@@ -51,10 +52,11 @@ class Text(BaseText):
 
         # self.last_change = Change(None, None, None, None, None)
         self.highlighter = Highlighter(self, language)
-        self.base.statusbar.on_open_file(self)
-        self.autocomplete = self.base.autocomplete
-        self.definitions = self.base.definitions
-        self.hover = self.base.hover
+        if not self.standalone and not self.minimalist:
+            self.base.statusbar.on_open_file(self)
+            self.autocomplete = self.base.autocomplete
+            self.definitions = self.base.definitions
+            self.hover = self.base.hover
 
         self.focus_set()
         self.config_tags()
@@ -125,7 +127,7 @@ class Text(BaseText):
         self.bind("<quotedbl>", self.complete_pair)
         self.bind("<BackSpace>", self.remove_pair)
 
-        if self.minimalist:
+        if self.minimalist or self.standalone:
             return
         
         self.bind("<Control-slash>", self.toggle_comment)
@@ -147,6 +149,7 @@ class Text(BaseText):
         self.bind("<Control-KeyPress>", lambda _: self.set_ctrl_key(True))
         self.bind("<Control-KeyRelease>", lambda _: self.set_ctrl_key(False))
         self.bind("<Control-Button-1>", self.request_definition)
+        self.bind("<Control-comma>", self.request_references)
         self.bind("<Control-period>", lambda _: self.base.language_server_manager.request_completions(self))
 
     def key_release_events(self, event: tk.Event):
@@ -462,14 +465,14 @@ class Text(BaseText):
         return "break"
 
     def refresh(self):
-        if self.minimalist:
-            return
-
-        self.current_word = self.get("insert-1c wordstart", "insert")
         self.highlighter.highlight()
-        
-        self.highlight_current_line()
         self.highlight_current_word()
+        
+        if self.minimalist or self.standalone:
+            return
+        
+        self.current_word = self.get("insert-1c wordstart", "insert")
+        self.highlight_current_line()
         self.highlight_current_brackets()
         self.base.language_server_manager.request_outline(self)
 
@@ -553,6 +556,7 @@ class Text(BaseText):
             return
         
         self.base.language_server_manager.request_references(self)
+        return "break"
     
     def request_hover(self, _):
         if not self.lsp or self.tag_ranges(tk.SEL):
@@ -797,7 +801,8 @@ class Text(BaseText):
     def load_file(self):
         if not self.path or not self.exists:
             return
-
+    
+        self.clear()
         try:
             self.encoding = self.detect_encoding(self.path)
             file = open(self.path, 'r', encoding=self.encoding, buffering=self.buffer_size)
@@ -811,7 +816,14 @@ class Text(BaseText):
             if self.exists:
                 self.master.unsupported_file()
 
-        self.base.statusbar.on_open_file(self)
+        if not self.standalone:
+            self.base.statusbar.on_open_file(self)
+
+    def load_new_file(self, path: str):
+        self.path = path
+        self.load_file()
+        self.highlighter.detect_language()
+        self.highlighter.highlight()
 
     def load_text(self, text: str="", eol: str=""):
         self.clear()
@@ -832,7 +844,9 @@ class Text(BaseText):
                 self.update()
             if eol:
                 self.eol = eol
-            self.base.statusbar.on_open_file(self)
+            
+            if not self.standalone:
+                self.base.statusbar.on_open_file(self)
 
         threading.Thread(target=write_with_buffer).start()
 
@@ -870,7 +884,7 @@ class Text(BaseText):
             # If the queue is empty, schedule the next check after a short delay
             self.master.after(100, self.process_queue)
         
-        self.master.master.event_generate("<<FileLoaded>>", when="tail")
+        self.master.event_generate("<<FileLoaded>>", when="tail")
     
     def custom_get(self, start, end):
         content = self.get(start, end)
@@ -951,6 +965,7 @@ class Text(BaseText):
 
         self.move_cursor(position)
         self.see(position)
+        self.focus_set()
     
     def goto_line(self, line: str) -> None:
         """Moves cursor to the line passed as argument"""
@@ -958,6 +973,7 @@ class Text(BaseText):
         line = f"{line}.0"
         self.move_cursor(line)
         self.see(line)
+        self.focus_set()
 
     def event_copy_line_up(self, *_) -> None:
         "copies the line cursor is in below"
@@ -1102,7 +1118,7 @@ class Text(BaseText):
 
     def highlight_current_word(self):
         self.tag_remove("currentword", 1.0, tk.END)
-        if self.minimalist or self.tag_ranges(tk.SEL):
+        if self.tag_ranges(tk.SEL):
             return
 
         if word := re.findall(r"\w+", self.get("insert wordstart", "insert wordend")):
