@@ -146,7 +146,7 @@ class Text(BaseText):
         self.bind("<<Selection>>", self.on_selection)
         self.bind("<Control-KeyPress>", lambda _: self.set_ctrl_key(True))
         self.bind("<Control-KeyRelease>", lambda _: self.set_ctrl_key(False))
-        self.bind("<Control-Button-1>", self.request_goto_definition)
+        self.bind("<Control-Button-1>", self.request_definition)
         self.bind("<Control-period>", lambda _: self.base.language_server_manager.request_completions(self))
 
     def key_release_events(self, event: tk.Event):
@@ -542,14 +542,14 @@ class Text(BaseText):
     def clear_goto_marks(self):
         self.tag_remove("hyperlink", 1.0, tk.END)
 
-    def request_goto_definition(self, e: tk.Event):
-        if not self.lsp or not self.last_hovered:
+    def request_definition(self, from_menu=False, *_):
+        if not from_menu and (not self.lsp or not self.last_hovered):
             return
         
         self.base.language_server_manager.request_goto_definition(self)
     
-    def request_references(self, e: tk.Event):
-        if not self.lsp or not self.last_hovered:
+    def request_references(self, from_menu=False, *_):
+        if not from_menu and (not self.lsp or not self.last_hovered):
             return
         
         self.base.language_server_manager.request_references(self)

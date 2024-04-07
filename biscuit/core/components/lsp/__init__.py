@@ -18,7 +18,7 @@ class LanguageServerManager:
         
         self.langservers: dict[str, str] = {}
         # built-in support for python-lsp-server
-        self.langservers["python"] = "pylsp"
+        self.langservers["Python"] = "pylsp"
             
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None
