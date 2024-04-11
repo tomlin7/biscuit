@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 
-from ...utils import Frame, IconLabelButton, Label, LinkLabel
+from ...utils import Frame, IconLabel, IconLabelButton, Label, LinkLabel
 from ..editor import BaseEditor
 
 
@@ -20,10 +20,10 @@ class Welcome(BaseEditor):
         self.right = Frame(self, **self.base.theme.editors)
         self.right.pack(expand=True, fill=tk.BOTH, anchor=tk.CENTER)
 
-        self.title = Label(self.left, text="Biscuit", font=("Segoe UI", 50), fg=self.base.theme.biscuit, **self.base.theme.editors.biscuit_labels)
+        self.title = Label(self.left, text="BISCUIT", font=("Segoe UI", 50, "bold"), fg=self.base.theme.biscuit, **self.base.theme.editors.biscuit_labels)
         self.title.grid(row=0, column=0, sticky=tk.W)
 
-        self.description = Label(self.left, text="Made with ❤", font=("Segoe UI", 20), fg=self.base.theme.biscuit_dark, **self.base.theme.editors.biscuit_labels)
+        self.description = IconLabel(self.left, text="Made with Love ✨", iconside=tk.RIGHT, font=("Segoe UI", 16, "bold"), fg=self.base.theme.biscuit)
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.create_start_group()

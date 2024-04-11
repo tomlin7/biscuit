@@ -14,6 +14,7 @@ from .fixedstack import FixedSizeStack
 from .frame import Frame
 from .icon import Icon
 from .iconbutton import IconButton
+from .iconlabel import IconLabel
 from .iconlabelbutton import IconLabelButton
 from .label import Label, TruncatedLabel, WrappingLabel
 from .linklabel import LinkLabel
