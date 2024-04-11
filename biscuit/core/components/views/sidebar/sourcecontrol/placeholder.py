@@ -19,7 +19,7 @@ class ChangesTreePlaceholder(Frame):
         clone_btn.grid(row=2, pady=5, sticky=tk.EW)
 
     def open_folder(self, *_) -> None:
-        self.base.events.open_directory()
+        self.base.commands.open_directory()
 
     def clone_repo(self, *_) -> None:
         self.base.palette.show("clone")

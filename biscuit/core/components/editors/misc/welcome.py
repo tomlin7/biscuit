@@ -53,10 +53,10 @@ class Welcome(BaseEditor):
             LinkLabel(recents, os.path.basename(p[0]), p[1]).grid(row=i, column=0, sticky=tk.W, pady=2)
 
     def new_file(self, *_):
-        self.base.events.new_file()
+        self.base.commands.new_file()
 
     def open_file(self, *_):
-        self.base.events.open_file()
+        self.base.commands.open_file()
 
     def open_folder(self, *_):
-        self.base.events.open_directory()
+        self.base.commands.open_directory()

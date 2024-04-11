@@ -54,7 +54,7 @@ class TextEditor(BaseEditor):
                 self.runmenu.add_command("Run in dedicated terminal", lambda: self.run_file(dedicated=True))
                 self.runmenu.add_command("Run in external console", lambda: self.run_file(external=True))
                 self.runmenu.add_separator()
-                self.runmenu.add_command("Configure Run...", lambda: self.base.events.show_run_config_palette(self.run_command_value))
+                self.runmenu.add_command("Configure Run...", lambda: self.base.commands.show_run_config_palette(self.run_command_value))
 
                 self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
             
@@ -82,7 +82,7 @@ class TextEditor(BaseEditor):
     def run_file(self, dedicated=False, external=False):
         if not self.run_command_value:
             self.base.notifications.show("No programs are configured to run this file.")
-            self.base.events.show_run_config_palette(self.run_command_value)
+            self.base.commands.show_run_config_palette(self.run_command_value)
             return
          
         self.save()

@@ -3,20 +3,25 @@ from __future__ import annotations
 import os
 import typing
 import webbrowser as web
-from ast import arg
-from threading import Thread
 from tkinter import messagebox
 
 if typing.TYPE_CHECKING:
-    from ... import App
+    from .. import App
 
 import platform
 import tkinter as tk
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
+from biscuit.core.components.utils.classdrill import *
 
-class Events:
+
+class Commands:
+    """This class contains all the commands that can be triggered by the user.
+    All the methods that are not decorated with `@command_palette_ignore` are exported to 
+    the command palette and can be triggered by the user.
+    """
+    
     def __init__(self, base: App) -> None:
         self.base = base
         self.count = 1
@@ -86,10 +91,6 @@ class Events:
 
     def quit(self, *_) -> None:
         self.base.destroy()
-
-    def clone_repo(self, url) -> None:
-        if path := filedialog.askdirectory():
-            self.base.clone_repo(url, path)
 
     def toggle_maximize(self, *_) -> None:
         match platform.system():
@@ -277,15 +278,22 @@ class Events:
     def change_indentation_level(self, *_) -> None:
         self.base.palette.show('indent:')
     
+    def clone_repo(self, *_) -> None:
+        self.base.palette.show('clone:')
+
     def show_goto_palette(self, *_) -> None:
         self.base.palette.show(':')
     
     def change_git_branch(self, *_) -> None:
         self.base.palette.show('branch:')
     
+    @command_palette_ignore
     def show_run_config_palette(self, command) -> None:
         self.base.palette.show('runconf:', command)
     
+    def configure_run_command(self, *_) -> None:
+        self.base.palette.show('runconf:')
+
     def show_file_search(self, *_) -> None:
         self.base.palette.show()
 

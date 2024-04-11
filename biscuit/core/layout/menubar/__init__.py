@@ -36,7 +36,7 @@ class Menubar(Frame):
     def __init__(self, master: Root, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.menus: list[MenubarItem] = []
-        self.events = self.base.events
+        self.events = self.base.commands
 
         # |-----left container-----|------searchbar------|------right container------|
 

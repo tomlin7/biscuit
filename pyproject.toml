@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit"
-version = "2.67.5"
+version = "2.68.0"
 description = "The uncompromising code editor"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
