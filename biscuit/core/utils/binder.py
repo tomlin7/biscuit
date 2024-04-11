@@ -33,7 +33,7 @@ class Binder:
         """Bindings that require full initialization"""
         
         self.bind(self.bindings.commandpalette, self.events.show_command_palette)
-        self.bind(self.bindings.filesearch, self.events.show_file_search_palette)
+        self.bind(self.bindings.filesearch, self.events.show_file_search)
         self.bind(self.bindings.symbolpalette, self.events.show_symbol_palette)
         self.bind(self.bindings.panel, self.base.contentpane.toggle_panel)
 

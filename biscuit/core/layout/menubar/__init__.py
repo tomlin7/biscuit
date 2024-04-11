@@ -38,35 +38,35 @@ class Menubar(Frame):
         self.menus: list[MenubarItem] = []
         self.events = self.base.events
 
+        # |-----left container-----|------searchbar------|------right container------|
+
+        self.container = Frame(self, **self.base.theme.layout.menubar)
+        self.container.pack(side=tk.LEFT, fill=tk.BOTH)
+
+        from .searchbar import Searchbar
+        self.searchbar = Searchbar(self)
+        self.searchbar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        self.container_right = Frame(self, **self.base.theme.layout.menubar)
+        self.container_right.pack(side=tk.RIGHT, fill=tk.BOTH)
+
         # make this custom titlebar for windows
         if platform.system() == 'Windows':
-            close = IconButton(self, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.events.quit)
+            close = IconButton(self.container_right, icon='chrome-close', iconsize=12, padx=15, pady=8, event=self.events.quit)
             close.config(activebackground='#e81123', activeforeground="white")
             close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
 
-            IconButton(self, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
-            IconButton(self, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            IconButton(self.container_right, icon='chrome-maximize', iconsize=12, icon2='chrome-restore', padx=15, pady=8, event=self.events.toggle_maximize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
+            IconButton(self.container_right, icon='chrome-minimize', iconsize=12, padx=15, pady=8, event=self.events.minimize).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             self.config_bindings()
-
-        self.title_lbl = Label(self, **self.base.theme.layout.menubar.title)
+        
         self.update_idletasks()
-        self.set_title()
 
         self.config(**self.base.theme.layout.menubar)
         self.add_menus()
-
-    def set_title(self, title: str=None) -> None:
-        self.title_lbl.config(text=f"{title} - Biscuit (v{__version__})" 
-                              if title else f"Biscuit (v{__version__})")
-        self.reposition_title()
-
-    def reposition_title(self) -> None:
-        "Reposition the title label to the center of the menubar"
-        x = self.winfo_x() + (self.winfo_width() - self.title_lbl.winfo_width())/2
-        y = self.winfo_y() + (self.winfo_height() - self.title_lbl.winfo_height())/2
-
-        self.title_lbl.place_forget()
-        self.title_lbl.place(x=x, y=y)
+    
+    def change_title(self, title: str) -> None:
+        self.searchbar.label.change_text(title)
 
     def config_bindings(self) -> None:
         self.bind('<Map>', self.events.window_mapped)
@@ -82,13 +82,13 @@ class Menubar(Frame):
         self.x = None
         self.y = None
 
-    def moving(self, event) -> None:
+    def moving(self, event: tk.Event) -> None:
         x = (event.x_root - self.x)
         y = (event.y_root - self.y)
         self.base.geometry(f"+{x}+{y}")
 
     def add_menu(self, text: str) -> Menu:
-        new_menu = MenubarItem(self, text)
+        new_menu = MenubarItem(self.container, text)
         new_menu.pack(side=tk.LEFT, fill=tk.BOTH)
         self.menus.append(new_menu)
 
@@ -140,7 +140,7 @@ class Menubar(Frame):
         self.edit_menu.add_separator()
         self.edit_menu.add_item("Find", events.find)
         self.edit_menu.add_item("Replace", events.replace)
-        self.edit_menu.add_item("Find in Files", events.show_file_search_palette)
+        self.edit_menu.add_item("Find in Files", events.show_file_search)
         self.edit_menu.add_item("Change Language Mode", events.change_language_mode)
         self.edit_menu.add_separator()
         self.edit_menu.add_checkable("Word Wrap", events.toggle_wordwrap)
@@ -178,7 +178,7 @@ class Menubar(Frame):
         events = self.events
 
         self.view_menu = self.add_menu("Go")
-        self.view_menu.add_item("Go to File...", events.show_file_search_palette)
+        self.view_menu.add_item("Go to File...", events.show_file_search)
         self.view_menu.add_separator()
         self.view_menu.add_item("Go to Symbol in Editor", events.show_symbol_palette)
         self.view_menu.add_item("Go to Definition", events.go_to_definition)
@@ -204,8 +204,8 @@ class Menubar(Frame):
         self.help_menu.add_item("About", events.about)
 
     def close_all_menus(self, *_) -> None:
-        for menu in self.menus:
-            menu.hide()
+        for btn in self.menus:
+            btn.menu.hide()
 
     def switch_menu(self, item: MenubarItem) -> None:
         active = False

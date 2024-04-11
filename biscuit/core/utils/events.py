@@ -286,7 +286,7 @@ class Events:
     def show_run_config_palette(self, command) -> None:
         self.base.palette.show('runconf:', command)
     
-    def show_file_search_palette(self, *_) -> None:
+    def show_file_search(self, *_) -> None:
         self.base.palette.show()
 
     def documentation(self, *_) -> None:

@@ -27,7 +27,7 @@ class MenubarItem(Menubutton):
         self.select()
 
     def hover(self, *_):
-        self.master.switch_menu(self)
+        self.master.master.switch_menu(self)
 
     def select(self):
         self.config(bg=self.base.theme.layout.menubar.item.highlightbackground)
