@@ -1,10 +1,17 @@
+from __future__ import annotations
+
+import typing
+
 import git
 
+if typing.TYPE_CHECKING:
+    from . import Git
 
 class GitRepo(git.Repo):
-    def __init__(self, master=None, path=None, *args, **kwargs) -> None:
+    def __init__(self, master: Git=None, path=None, *args, **kwargs) -> None:
         super().__init__(path, *args, **kwargs)
         self.master = master
+        self.base = master.base
         self.path = path
         self.config = self.config_reader()
 
@@ -12,6 +19,20 @@ class GitRepo(git.Repo):
         self.author_email = self.config.get_value("user", "email")
         self.author = git.Actor(self.author_name, self.author_email)
 
+    def switch_to_branch(self, branch: git.Head):
+        self.git.checkout(str(branch))
+        self.master.update_repo_info()
+        self.base.statusbar.update_git_info()
+        self.base.explorer.directory.refresh_root()
+    
+    def create_branch(self, branch: str):
+        if not branch:
+            self.base.notifications.error("Branch name cannot be empty")
+            return
+        
+        self.create_head(branch.strip())
+        self.switch_to_branch(branch)
+    
     def get_untracked_files(self) -> list:
         return list(self.untracked_files)
 
@@ -41,7 +62,7 @@ class GitRepo(git.Repo):
 
     def stage_files(self, *paths) -> None:
         for path, change_type in paths:
-            # change type can be 0, 1, 2, 3
+            # change type can be      0,       1,     2,        3
             # respectively represents Deleted, Added, Modified, Untracked
             if change_type == 0:
                 self.do(self.index.remove, [path])

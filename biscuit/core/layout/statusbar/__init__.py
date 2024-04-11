@@ -40,17 +40,10 @@ class Statusbar(Frame):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.layout.statusbar.background)
 
-        # TODO add a button for toggling panel, left side, "terminal-bash", color
-        self.branch = TerminalButton(self, icon="terminal-bash", function=self.toggle_terminal, description="Toggle terminal", padx=10)
-        self.branch.pack(side=tk.LEFT)
+        self.terminal_toggle = TerminalButton(self, icon="terminal-bash", function=self.toggle_terminal, description="Toggle terminal", padx=10)
+        self.terminal_toggle.pack(side=tk.LEFT)
 
-        # git info
-        self.git_actionset = ActionSet(
-            "Manage git branches", "branch:",  #TODO pinned `create new branch` item
-            [("main", lambda e=None: print("main", e)), 
-             ("rewrite", lambda e=None: print("rewrite", e))],
-        )
-        self.base.palette.register_actionset(lambda: self.git_actionset)
+        # git branch info
         self.branch = SButton(self, text="master", icon="source-control", function=self.base.events.change_git_branch, description="Checkout branch")
         self.branch.set_pack_data(side=tk.LEFT, padx=(2, 0))
 
@@ -134,7 +127,9 @@ class Statusbar(Frame):
         if self.base.git_found:
             self.branch.show()
             self.branch.change_text("{0}".format(self.base.git.active_branch))
-            self.git_actionset.update([(str(branch), lambda e=None: self.base.git.checkout(str(branch))) for branch in self.base.git.repo.branches])
+            
+            # following has been moved to `git.update_repo_info`
+            # self.git_actionset.update([(str(branch), lambda e=None: self.base.git.checkout(str(branch))) for branch in self.base.git.repo.branches])
         else:
             self.branch.hide()
 
