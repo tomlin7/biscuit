@@ -28,6 +28,7 @@ class DirectoryTree(SidebarViewItem):
         self.nodes = {}
 
         self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
+        self.ignore_dir_patterns = ["*/.git/*", "*/__pycache__/*", "*/.pytest_cache/*", "*/node_modules/*", "*/debug/*", "*/dist/*", "*/build/*"]
         self.ignore_exts = [".pyc"]
 
         self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)

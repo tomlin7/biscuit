@@ -7,7 +7,6 @@ from .menu import SourceControlMenu
 
 class SourceControl(SidebarView):
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = [('list-tree',), ('check',), ('refresh', self.refresh)]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'source-control'
         self.name = 'Source Control'
@@ -20,6 +19,7 @@ class SourceControl(SidebarView):
         self.menu.add_checkable("Show Staged", self.tree.toggle_staged)
         self.menu.add_separator(10)
         self.menu.add_checkable("Show Changes", self.tree.toggle_changes)
+        self.add_button('refresh', self.refresh)
         self.add_button('ellipsis', self.menu.show)
     
     def reload_tree(self, *_) -> None:

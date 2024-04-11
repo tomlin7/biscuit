@@ -45,22 +45,48 @@ class Git(Frame):
         self.changes_tree.refresh()
 
     def open_repo(self) -> None:
-        self.staged_changes_tree.clear_tree()
-        self.changes_tree.clear_tree()
+        # self.staged_changes_tree.clear_tree()
+        # self.changes_tree.clear_tree()
         # self.set_title(f"{os.path.basename(self.base.active_directory)}({self.base.git.active_branch})")
 
         if not self.base.git.repo:
             return
+        
+        staged = []
 
-        self.add_staged_changes(self.base.git.repo.get_staged_deleted_files(), 0)
-        self.add_staged_changes(self.base.git.repo.get_staged_added_files(), 1)
-        self.add_staged_changes(self.base.git.repo.get_staged_modified_files(), 2)
+        if deleted := self.base.git.repo.get_staged_deleted_files():
+            self.add_staged_changes(deleted, 0)
+            staged += deleted
+        if added := self.base.git.repo.get_staged_added_files():
+            self.add_staged_changes(added, 1)
+            staged += added
+        if modified := self.base.git.repo.get_staged_modified_files():
+            self.add_staged_changes(modified, 2)
+            staged += modified
 
-        self.add_changes(self.base.git.repo.get_deleted_files(), 0)
-        self.add_changes(self.base.git.repo.get_added_files(), 1)
-        self.add_changes(self.base.git.repo.get_modified_files(), 2)
-        self.add_changes(self.base.git.repo.get_untracked_files(), 3)
+        if staged:
+            self.staged_changes_tree.clear(otherthan=staged)
+
+        unstaged = []
     
+        if deleted := self.base.git.repo.get_deleted_files():
+            self.add_changes(deleted, 0)
+            unstaged += [(i, 0) for i in deleted]
+        if added := self.base.git.repo.get_added_files():
+            self.add_changes(added, 1)
+            unstaged += [(i, 1) for i in added]
+        if modified := self.base.git.repo.get_modified_files():
+            self.add_changes(modified, 2)
+            unstaged += [(i, 2) for i in modified]
+
+        # untracked files
+        if untracked := self.base.git.repo.get_untracked_files():
+            self.add_changes(untracked, 3)
+            unstaged += [(i, 3) for i in untracked]
+            
+        if unstaged:
+            self.changes_tree.clear(otherthan=unstaged)
+
     def toggle_staged(self, *_) -> None:
         if not self.base.git_found:
             return

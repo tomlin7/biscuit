@@ -26,6 +26,15 @@ class StagedChanges(SidebarViewItem):
                 pass
 
         self.items.clear()
+    
+    def clear(self, otherthan: list=[]) -> None:
+        if not otherthan:
+            return self.clear_tree()
+        
+        for path in list(self.items.keys()):
+            if path not in otherthan:
+                self.items[path].destroy()
+                del self.items[path]
 
     def add_item(self, path, kind) -> None:
         if path in self.items:
