@@ -23,6 +23,7 @@ class TextEditor(BaseEditor):
         self.exists = exists
         self.editable = True
         self.run_command_value = None
+        self.unsupported = False
 
         if not self.standalone:
             self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
@@ -119,6 +120,7 @@ class TextEditor(BaseEditor):
         self.event_generate("<<Scroll>>")
 
     def unsupported_file(self):
+        self.unsupported = True
         self.text.show_unsupported_dialog()
         self.linenumbers.grid_remove()
         self.scrollbar.grid_remove()

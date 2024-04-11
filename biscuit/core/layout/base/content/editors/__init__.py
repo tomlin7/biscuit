@@ -150,7 +150,7 @@ class EditorsPane(Frame):
             self.base.language_server_manager.tab_closed(editor.content.text)
 
         # not keeping diff/games in cache
-        if not editor.diff and editor.content:
+        if editor.content and not (editor.diff or editor.content.unsupported):
             self.closed_editors[editor.path] = editor        
         else:
             editor.destroy()

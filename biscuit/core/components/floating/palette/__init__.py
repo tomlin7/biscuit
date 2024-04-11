@@ -21,7 +21,7 @@ class Palette(Toplevel):
     Palette is an action menu centered horizontally and aligned to top of root.
     They contain a list of actions.
     """
-    def __init__(self, master: App, width=60, *args, **kwargs) -> None:
+    def __init__(self, master: App, width=80, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(pady=1, padx=1, bg=self.base.theme.border)
 

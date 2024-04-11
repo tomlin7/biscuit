@@ -7,6 +7,7 @@ import threading
 import tkinter as tk
 import typing
 from collections import deque
+from tkinter.messagebox import askokcancel
 
 import chardet
 import tarts as lsp
@@ -40,6 +41,7 @@ class Text(BaseText):
         self.minimalist = minimalist
         self.standalone = standalone
         self.language = language
+        self.unsupported = False
 
         self.ctrl_down = False
         self.buffer_size = 4096
@@ -802,6 +804,15 @@ class Text(BaseText):
     def load_file(self):
         if not self.path or not self.exists:
             return
+        
+        if not textutils.is_text_file(self.path):
+            if not askokcancel("Binary File", "This file is a binary file, do you want to open it anyway?"):
+                # show unsupported file message and terminate content loading process
+                return self.master.unsupported_file()
+            else:
+                # just set the flag to True so that we don't cache editor content
+                self.master.unsupported = True
+                self.unsupported = True
     
         self.clear()
         try:
@@ -810,7 +821,7 @@ class Text(BaseText):
             self.eol = textutils.get_default_newline()
 
             self.queue = queue.Queue()
-            threading.Thread(target=self.read_file, args=(file,)).start()
+            threading.Thread(target=self.read_file, args=(file,), daemon=True).start()
             self.process_queue()
         except Exception as e:
             print(e)
@@ -849,7 +860,7 @@ class Text(BaseText):
             if not self.standalone:
                 self.base.statusbar.on_open_file(self)
 
-        threading.Thread(target=write_with_buffer).start()
+        threading.Thread(target=write_with_buffer, daemon=True).start()
 
     def read_file(self, file):
         while True:
@@ -873,14 +884,19 @@ class Text(BaseText):
                     try:
                         self.master.on_change()
                         self.master.on_scroll()
-                    except ValueError:
+                    except Exception:
                         pass
                     break
                 if eol:
                     chunk.replace(self.eol or textutils.get_default_newline(), eol)
-                self.write(chunk)
-                self.update()
-                self.master.on_scroll()
+                
+                try:
+                    self.write(chunk)
+                    self.update()
+                    self.master.on_scroll()
+                except Exception:
+                    # editor was closed during file load
+                    return
         except queue.Empty:
             # If the queue is empty, schedule the next check after a short delay
             self.master.after(100, self.process_queue)
@@ -1085,6 +1101,7 @@ class Text(BaseText):
 
     def show_unsupported_dialog(self):
         self.minimalist = True
+        self.unsupported = True
         self.highlighter.lexer = None
         self.set_wrap(True)
         self.configure(font=('Arial', 10), padx=10, pady=10)

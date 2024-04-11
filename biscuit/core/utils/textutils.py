@@ -24,3 +24,22 @@ def get_default_newline():
     
     return os.linesep
 
+
+# CREDITS: https://eli.thegreenplace.net/2011/10/19/perls-guess-if-file-is-text-or-binary-implemented-in-python/
+int2byte = lambda x: bytes((x,))
+_text_characters = (
+    b''.join(int2byte(i) for i in range(32, 127)) +
+    b'\n\r\t\f\b')
+
+def is_text_file(path: str) -> bool:
+    fp = open(path, 'rb')
+    block = fp.read(512)
+    fp.close()
+
+    if b'\x00' in block:
+        return False
+    elif not block:
+        return True
+    
+    nontext = block.translate(None, _text_characters)
+    return float(len(nontext)) / len(block) <= 0.30
