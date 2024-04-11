@@ -107,6 +107,7 @@ class GUIManager(Tk, ConfigManager):
         self.editorsmanager.generate_actionsets()
         self.settings.late_setup()
         self.history.generate_actionsets()
+        self.git.late_setup()
 
         # force set focus on this window
         self.focus_set()

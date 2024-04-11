@@ -1,6 +1,11 @@
+from __future__ import annotations
+
 import os
 import re
+import typing
 from tkinter import messagebox
+
+from ..floating.palette.actionset import ActionSet
 
 git_available = True
 try:
@@ -11,13 +16,26 @@ except ImportError:
     messagebox.showerror("Git not found", "Git is not installed on your PC. Install and add Git to the PATH to use Biscuit")
     git_available = False
 
+
+if typing.TYPE_CHECKING:
+    from biscuit import App
+
 URL = re.compile(r'^(?:http)s?://')
 
 class Git(git.Git):
-    def __init__(self, master, *args, **kwargs) -> None:
+    def __init__(self, master: App, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.base = master
         self.repo = None
+        self.branches =  {}
+
+        self.actionset = ActionSet(
+            "Manage git branches", "branch:",  #TODO pinned `create new branch` item
+            self.branches,
+        )
+    
+    def late_setup(self) -> None:
+        self.base.palette.register_actionset(lambda: self.actionset)
 
     def check_git(self) -> None:
         if not (git_available and self.base.active_directory):
@@ -27,8 +45,20 @@ class Git(git.Git):
         try:
             self.repo = GitRepo(self, self.base.active_directory)
             self.base.git_found = True
+            self.update_repo_info()
         except git.exc.InvalidGitRepositoryError:
             self.base.git_found = False
+
+    def update_repo_info(self) -> None:
+        self.branches = {}
+
+        for branch in self.repo.branches:
+            latest_commit = next(self.repo.iter_commits(branch))            
+            self.branches[branch] = latest_commit.committed_datetime
+        self.branches = sorted(self.branches.items(), key=lambda x: x[1], reverse=True)
+
+        # TODO: make use of the commit_time in palette items
+        self.actionset.update([(str(branch), lambda e=None, b=branch: self.repo.switch_to_branch(b)) for branch, commit_time in self.branches])
 
     def get_version(self) -> str:
         if not git_available:
