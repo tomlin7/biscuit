@@ -47,6 +47,7 @@ class Searchbar(Frame):
         self.search_bar.icursor(tk.END)
     
     def set_search_term(self, term: str) -> None:
+        self.search_bar.focus_set()
         self.text_variable.set(self.search_bar.get() + term)
         self.search_bar.select_range(len(self.prefix), tk.END)
         self.search_bar.icursor(tk.END)

@@ -33,11 +33,11 @@ class Empty(Frame):
         self.shortcuts.add_shortcut("Toggle terminal", ["Ctrl", "`"])
         self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "o"])
 
-        self.bind("<Double-Button-1>", self.base.events.new_file)
+        self.bind("<Double-Button-1>", self.base.commands.new_file)
 
     # TODO drop to open
     # def drop(self, event: tk.Event):
     #     if os.path.isfile(event.data):
     #         self.base.open_editor(event.data, exists=True)
     #     elif os.path.isdir(event.data):
-    #         self.base.events.open_in_new_window(dir=event.data)
+    #         self.base.commands.open_in_new_window(dir=event.data)

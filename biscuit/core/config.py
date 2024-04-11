@@ -2,10 +2,11 @@
 import os
 import sys
 
-from biscuit.core.exec import ExecManager
-
 from .api import *
+from .binder import Binder
+from .commands import Commands
 from .components import *
+from .exec import ExecManager
 from .extensions import ExtensionManager
 from .history import HistoryManager
 from .settings import *
@@ -55,7 +56,7 @@ class ConfigManager:
         self.config = self.settings.config
         self.theme = self.config.theme
 
-        self.events = Events(self)
+        self.commands = Commands(self)
         self.binder = Binder(self)
         self.git = Git(self)
         self.language_server_manager = LanguageServerManager(self)

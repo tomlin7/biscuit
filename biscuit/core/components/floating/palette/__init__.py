@@ -94,9 +94,12 @@ class Palette(Toplevel):
         self.active_set = self.base.explorer.get_actionset(term)
 
     def choose(self, *_) -> None:
-        #TODO pass the term to the function as argument (for input requiring commands)
-        self.shown_items[self.selected].command(self.searchbar.term)
-        self.hide()
+        if item := self.shown_items[self.selected]:
+            picked_command = item.command
+            term = self.searchbar.term
+
+            self.hide()
+            picked_command(term)
 
     def get_items(self) -> ActionSet:
         return self.active_set
@@ -158,6 +161,7 @@ class Palette(Toplevel):
     def show(self, prefix: str=None, default: str=None) -> None:
         """Shows the palette with the passed prefix"""
         self.update_idletasks()
+        self.update()
 
         x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)
         y = self.master.winfo_rooty() + self.base.menubar.searchbar.winfo_y()

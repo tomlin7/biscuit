@@ -58,15 +58,24 @@ class IconLabelButton(Frame):
         self.function()
     
     def toggle_icon(self) -> None:
-        self.icon_label.config(text=self.codicon if not self.toggle else "    ")
-        self.toggle = not self.toggle
+        try:
+            self.icon_label.config(text=self.codicon if not self.toggle else "    ")
+            self.toggle = not self.toggle
+        except Exception:
+            pass
 
     def change_text(self, text) -> None:
-        self.text_label.config(text=text)
+        try:
+            self.text_label.config(text=text)
+        except Exception:
+            pass
 
     def change_icon(self, icon) -> None:
-        self.icon_label.config(text=icon)
-
+        try:
+            self.icon_label.config(text=icon)
+        except Exception:
+            pass
+        
     def set_pack_data(self, **kwargs) -> None:
         self.pack_data = kwargs
 

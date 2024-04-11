@@ -34,17 +34,16 @@ class PaletteItem(Text):
         self.hovered = False
 
     def on_click(self, *args) -> None:
-        self.command(self.master.searchbar.term)
+        term = self.master.searchbar.term
+
         self.master.hide()
+        self.command(term)
 
     def toggle_selection(self) -> None:
         if self.selected:
             self.select()
         else:
             self.deselect()
-
-    def get_kind(self):
-        return self.kind
 
     def mark_term(self, term: str) -> None:
         start_pos = self.text.lower().find(term.lower())

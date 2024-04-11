@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import threading
 import typing
+from tkinter import filedialog
 
 from biscuit.core.gui import GUIManager
 
@@ -86,11 +87,15 @@ class EventManager(GUIManager, ConfigManager):
         self.statusbar.update_git_info()
         self.source_control.refresh()
 
-    def clone_repo(self, url: str, dir: str) -> None:
+    def clone_repo(self, url: str) -> None:
+        path = filedialog.askdirectory()
+        if not path:
+            return
+            
         try:
 
             def clone() -> None:
-                repodir = self.git.clone(url, dir)
+                repodir = self.git.clone(url, path)
                 self.open_directory(repodir)
 
             temp = threading.Thread(target=clone)

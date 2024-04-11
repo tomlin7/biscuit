@@ -15,6 +15,6 @@ class Searchbar(Frame):
 
     def onclick(self, *_):
         if self.base.active_directory:
-            self.base.events.show_file_search()
+            self.base.commands.show_file_search()
         else:
-            self.base.events.show_command_palette()
+            self.base.commands.show_command_palette()

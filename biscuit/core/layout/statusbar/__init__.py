@@ -44,7 +44,7 @@ class Statusbar(Frame):
         self.terminal_toggle.pack(side=tk.LEFT)
 
         # git branch info
-        self.branch = SButton(self, text="master", icon="source-control", function=self.base.events.change_git_branch, description="Checkout branch")
+        self.branch = SButton(self, text="master", icon="source-control", function=self.base.commands.change_git_branch, description="Checkout branch")
         self.branch.set_pack_data(side=tk.LEFT, padx=(2, 0))
 
         # process indicator
@@ -56,7 +56,7 @@ class Statusbar(Frame):
             "Goto line in active editor", ":", pinned=[["goto line: {}", lambda line=None: self.base.editorsmanager.active_editor.content.goto_line(int(line)) if line and line.isnumeric() else print("failed goto line", line)]]
         )
         self.base.palette.register_actionset(lambda: self.lc_actionset)
-        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=self.base.events.show_goto_palette, description="Go to Line/Column")
+        self.line_col_info = SButton(self, text="Ln 1, Col 1", function=self.base.commands.show_goto_palette, description="Go to Line/Column")
         self.line_col_info.set_pack_data(side=tk.RIGHT)
 
         # indentation
@@ -67,7 +67,7 @@ class Statusbar(Frame):
             pinned=[["Custom: {} spaces", lambda line=None: self.base.set_tab_spaces(int(line.strip())) if line and line.strip().isnumeric() else print("failed goto line", line)]]
         )
         self.base.palette.register_actionset(lambda: self.indent_actionset)
-        self.indentation = SButton(self, text=f"Spaces: {self.base.tab_spaces}", function=self.base.events.change_indentation_level, description="Select indentation")
+        self.indentation = SButton(self, text=f"Spaces: {self.base.tab_spaces}", function=self.base.commands.change_indentation_level, description="Select indentation")
         self.indentation.set_pack_data(side=tk.RIGHT)
 
         # encoding
@@ -76,7 +76,7 @@ class Statusbar(Frame):
             [("UTF-8", lambda e=None: print("encoding UTF-8", e))],
         )
         self.base.palette.register_actionset(lambda: self.encoding_actionset)
-        self.encoding = SButton(self, text="UTF-8", function=self.base.events.change_encoding, description="Select encoding")
+        self.encoding = SButton(self, text="UTF-8", function=self.base.commands.change_encoding, description="Select encoding")
         self.encoding.set_pack_data(side=tk.RIGHT)
 
         # end of line
@@ -85,22 +85,29 @@ class Statusbar(Frame):
             [(i.upper(), lambda _, val=nl: self.base.editorsmanager.active_editor.content.text.change_eol(eol=val)) for i, nl in textutils.eol_map.items()],
         )
         self.base.palette.register_actionset(lambda: self.eol_actionset)
-        self.eol = SButton(self, text="CRLF", function=self.base.events.change_eol, description="Select End of Line sequence")
+        self.eol = SButton(self, text="CRLF", function=self.base.commands.change_eol, description="Select End of Line sequence")
         self.eol.set_pack_data(side=tk.RIGHT)
 
         # language mode
-        items = [(aliases[0], lambda _, lang=aliases[0]: self.base.editorsmanager.active_editor.content.text.highlighter.change_language(lang)) for _, _, aliases, _, _ in LEXERS.values() if aliases]
+        items = [(aliases[0], lambda _, lang=aliases[0]: self.change_language(lang)) 
+                 for _, _, aliases, _, _ in LEXERS.values() if aliases]
+        
         self.language_actionset = ActionSet(
             "Change Language Mode", "language:", items
         )
         self.base.palette.register_actionset(lambda: self.language_actionset)
-        self.file_type = SButton(self, text="Plain Text", function=self.base.events.change_language_mode, description="Select Language Mode")
+        self.file_type = SButton(self, text="Plain Text", function=self.base.commands.change_language_mode, description="Select Language Mode")
         self.file_type.set_pack_data(side=tk.RIGHT)
 
         # show/hide notifications
         self.notif = SButton(self, icon="bell", function=self.base.notifications.show, description="No notifications")
         self.notif.pack(side=tk.RIGHT, padx=(0, 10))
     
+    def change_language(self, language: str) -> None:
+        if e := self.base.editorsmanager.active_editor:
+            if e.content and e.content.editable:
+                e.content.text.highlighter.change_language(language)
+
     def add_button(self, text: str, icon: str=None, side: str=tk.LEFT, function: typing.Callable=None, description: str=None) -> SButton:
         btn = SButton(self, text=text, icon=icon, function=function, description=description)
         btn.pack(side=side)

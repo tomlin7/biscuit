@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 if typing.TYPE_CHECKING:
-    from ... import App
+    from .. import App
 
 
 class Binder:
@@ -11,7 +11,7 @@ class Binder:
         self.base = base
 
         self.bindings = self.base.settings.bindings
-        self.events = self.base.events
+        self.events = self.base.commands
 
         self.bind_all()
 

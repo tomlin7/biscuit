@@ -31,6 +31,9 @@ class OpenEditors(SidebarViewItem):
         self.refresh()
     
     def remove_item(self, editor):
+        if not self.nodes:
+            return
+        
         e = self.nodes.pop(editor.path)
         e.pack_forget()
         e.destroy()

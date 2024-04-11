@@ -13,7 +13,10 @@ import typing
 import tkextrafont as extra
 
 from biscuit.core.components.games import get_games
+from biscuit.core.components.utils.classdrill import (extract_commands,
+                                                      formalize_command)
 
+from ..commands import Commands
 from .config import Bindings, Config
 from .editor import SettingsEditor
 from .res import Resources
@@ -24,7 +27,6 @@ if typing.TYPE_CHECKING:
 
 
 URL = re.compile(r'^(?:http)s?://')
-
 
 class Formattable(str):
     def format(self, term) -> str:
@@ -43,9 +45,7 @@ class Settings:
         self.res = Resources(self)
         self.bindings = Bindings(self)
 
-        self.commands = [
-            ("Open settings", self.base.open_settings),
-        ]
+        self.commands = []
 
         self.setup_font()
         self.gen_actionset()
@@ -97,12 +97,15 @@ class Settings:
 
     def late_setup(self) -> None:
         """Configurations that require full initialization of editor"""
+
+        self.commands = [(formalize_command(name), lambda _, method=method: method(self.base.commands)) 
+                for name, method in extract_commands(self.base.commands)]
         
         self.base.palette.register_actionset(lambda: self.actionset)
 
         from biscuit.core.components import ActionSet
         clone_actionset = ActionSet(
-            "Clone git repository", "clone", pinned=[[Formattable("clone {}"), self.base.events.clone_repo]]
+            "Clone git repository", "clone", pinned=[[Formattable("clone {}"), self.base.clone_repo]]
         )
         self.base.palette.register_actionset(lambda: clone_actionset)
 
