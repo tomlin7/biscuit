@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
 import os
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame, Icon, IconButton
+from biscuit.core.utils import Frame, Icon, IconButton
 
 
 class Tab(Frame):

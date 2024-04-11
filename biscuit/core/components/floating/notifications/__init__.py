@@ -1,6 +1,7 @@
 import tkinter as tk
 
-from ...utils import Frame, IconButton, Label, Toplevel
+from biscuit.core.utils import Frame, IconButton, Label, Toplevel
+
 from .notification import Notification
 
 

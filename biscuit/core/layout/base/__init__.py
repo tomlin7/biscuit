@@ -14,7 +14,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.core.components.utils import Frame
+from biscuit.core.utils import Frame
 
 from .content import ContentPane
 from .sidebar import Sidebar

@@ -4,7 +4,8 @@ __author__ = "cid0rz"
 import random
 import tkinter as tk
 
-from ..utils import Canvas
+from biscuit.core.utils import Canvas
+
 from .game import BaseGame
 
 WIDTH = 800

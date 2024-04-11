@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from biscuit.core.components.utils.icon import Icon
+from biscuit.core.utils.icon import Icon
 
 from .kinds import kinds
 

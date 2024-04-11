@@ -2,7 +2,8 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
-from ..utils import Button, Frame, IconButton, Label
+from biscuit.core.utils import Button, Frame, IconButton, Label
+
 from .game import BaseGame
 
 # Game constants

@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 from biscuit.core.components import Menu
-from biscuit.core.components.utils import Menubutton
+from biscuit.core.utils import Menubutton
 
 if typing.TYPE_CHECKING:
     from . import Menubar

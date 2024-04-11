@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import Menubutton
+from biscuit.core.utils import Menubutton
 
 
 class MenuItem(Menubutton):

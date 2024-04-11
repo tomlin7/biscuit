@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame
+from biscuit.core.utils import Frame
 
 from .tab import Tab
 

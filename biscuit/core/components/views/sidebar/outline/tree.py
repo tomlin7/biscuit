@@ -3,7 +3,7 @@ import tkinter as tk
 import tarts as lsp
 
 from biscuit.core.components.lsp.utils import decode_position
-from biscuit.core.components.utils import Text, get_codicon
+from biscuit.core.utils import Text, get_codicon
 
 from .kinds import kinds
 

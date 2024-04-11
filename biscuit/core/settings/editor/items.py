@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from biscuit.core.components.utils import Entry, Frame
+from biscuit.core.utils import Entry, Frame
 
 
 class Item(Frame):

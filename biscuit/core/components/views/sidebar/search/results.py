@@ -5,7 +5,7 @@ import re
 import tkinter as tk
 from tkinter.messagebox import askyesno
 
-from biscuit.core.components.utils import Frame, Label, Tree
+from biscuit.core.utils import Frame, Label, Tree
 
 
 class Results(Frame):

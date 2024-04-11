@@ -13,13 +13,13 @@ Content container of the app
 """
 from __future__ import annotations
 
-import typing
 import tkinter as tk
+import typing
 
 if typing.TYPE_CHECKING:
     from .. import BaseFrame
 
-from biscuit.core.components.utils import Frame
+from biscuit.core.utils import Frame
 
 from .editors import EditorsPane
 from .panel import Panel

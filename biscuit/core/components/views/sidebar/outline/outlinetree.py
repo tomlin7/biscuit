@@ -7,7 +7,7 @@ from tkinter import ttk
 import tarts as lsp
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
-from biscuit.core.components.utils import Frame
+from biscuit.core.utils import Frame
 
 from .placeholder import OutlineTreePlaceholder
 from .tree import Tree

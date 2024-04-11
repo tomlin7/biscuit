@@ -4,11 +4,11 @@ import typing
 
 if typing.TYPE_CHECKING:
     from .. import Panel
-    from biscuit.core.components.utils import IconButton
+    from biscuit.core.utils import IconButton
 
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame, IconButton
+from biscuit.core.utils import Frame, IconButton
 
 from .tabs import Tabs
 

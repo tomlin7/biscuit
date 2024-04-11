@@ -13,7 +13,7 @@ import tkinter as tk
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
-from biscuit.core.components.utils.classdrill import *
+from .utils.classdrill import *
 
 
 class Commands:

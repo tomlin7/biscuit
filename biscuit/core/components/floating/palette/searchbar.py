@@ -4,7 +4,7 @@ import tkinter as tk
 import typing
 from itertools import chain
 
-from biscuit.core.components.utils import Frame
+from biscuit.core.utils import Frame
 
 if typing.TYPE_CHECKING:
     from . import Palette

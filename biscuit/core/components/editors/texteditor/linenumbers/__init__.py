@@ -1,6 +1,7 @@
 import tkinter as tk
 
-from ....utils import Canvas, Menubutton
+from biscuit.core.utils import Canvas, Menubutton
+
 from .breakpoint import Breakpoint
 
 

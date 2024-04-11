@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import IconLabelButton
+from biscuit.core.utils import IconLabelButton
 
 
 class CheckableMenuItem(IconLabelButton):

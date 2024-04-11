@@ -14,7 +14,7 @@ import tkinter as tk
 import typing
 
 from biscuit import __version__
-from biscuit.core.components.utils import Frame, IconButton, Label
+from biscuit.core.utils import Frame, IconButton, Label
 
 from .item import MenubarItem
 

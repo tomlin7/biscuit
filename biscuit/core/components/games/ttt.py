@@ -1,7 +1,7 @@
 import random
 import tkinter as tk
 
-from biscuit.core.components.utils import Button, Canvas
+from biscuit.core.utils import Button, Canvas
 
 from .game import BaseGame
 

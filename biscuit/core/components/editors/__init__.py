@@ -12,7 +12,8 @@ __all__ = ["Editor", "get_editor", "DiffEditor", "ImageViewer", "TextEditor", "L
 import os
 import tkinter as tk
 
-from ..utils import FileType, Frame
+from biscuit.core.utils import FileType, Frame
+
 from .breadcrumbs import BreadCrumbs
 from .comment_prefix import register_comment_prefix
 from .diffeditor import DiffEditor

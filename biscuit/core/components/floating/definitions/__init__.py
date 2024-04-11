@@ -5,7 +5,7 @@ import tkinter as tk
 import typing
 from collections import defaultdict
 
-from biscuit.core.components.utils import Frame, Label, Toplevel, icon
+from biscuit.core.utils import Frame, Label, Toplevel, icon
 
 from .tree import DefinitionsTree
 

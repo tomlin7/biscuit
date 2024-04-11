@@ -1,4 +1,4 @@
-from biscuit.core.components.utils import *
+from biscuit.core.utils import *
 
 from .endpoint import Endpoint
 

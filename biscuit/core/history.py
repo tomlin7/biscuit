@@ -5,7 +5,7 @@ import sqlite3
 import typing
 
 from .components.floating.palette.actionset import ActionSet
-from .components.utils import FixedSizeStack
+from .utils import FixedSizeStack
 
 if typing.TYPE_CHECKING:
     from . import App

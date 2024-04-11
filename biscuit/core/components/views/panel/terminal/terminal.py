@@ -7,7 +7,7 @@ if os.name == 'nt':
 else:
     from ptyprocess import PtyProcessUnicode as PTY
 
-from biscuit.core.components.utils import Scrollbar
+from biscuit.core.utils import Scrollbar
 
 from ..panelview import PanelView
 from .ansi import replace_newline, strip_ansi_escape_sequences

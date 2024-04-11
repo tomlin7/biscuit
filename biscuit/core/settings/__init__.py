@@ -13,8 +13,7 @@ import typing
 import tkextrafont as extra
 
 from biscuit.core.components.games import get_games
-from biscuit.core.components.utils.classdrill import (extract_commands,
-                                                      formalize_command)
+from biscuit.core.utils.classdrill import extract_commands, formalize_command
 
 from ..commands import Commands
 from .config import Bindings, Config

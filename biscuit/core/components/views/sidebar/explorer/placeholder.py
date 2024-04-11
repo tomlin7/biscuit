@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import Button, Frame, WrappingLabel
-from biscuit.core.components.utils.iconlabelbutton import IconLabelButton
+from biscuit.core.utils import Button, Frame, WrappingLabel
+from biscuit.core.utils.iconlabelbutton import IconLabelButton
 
 
 class DirectoryTreePlaceholder(Frame):

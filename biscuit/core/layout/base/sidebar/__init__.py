@@ -24,8 +24,8 @@ if typing.TYPE_CHECKING:
     from .. import BaseFrame
     from biscuit.core.components.views import SidebarView
 
-from biscuit.core.components.utils import Frame
 from biscuit.core.components.views.sidebar import *
+from biscuit.core.utils import Frame
 
 from .slots import Slots
 

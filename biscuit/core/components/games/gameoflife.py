@@ -3,7 +3,8 @@ __author__ = "billyeatcookies"
 import random
 import tkinter as tk
 
-from ..utils import Button
+from biscuit.core.utils import Button
+
 from .game import BaseGame
 
 GRID_WIDTH = 50

@@ -15,8 +15,9 @@ if typing.TYPE_CHECKING:
     from biscuit.core.components.lsp.data import WorkspaceEdits, HoverResponse, Jump, Underlines, Completions
     from . import TextEditor
 
-from ...utils import Text as BaseText
-from ...utils import textutils
+from biscuit.core.utils import Text as BaseText
+from biscuit.core.utils import textutils
+
 from ..comment_prefix import get_comment_prefix
 from .highlighter import Highlighter
 

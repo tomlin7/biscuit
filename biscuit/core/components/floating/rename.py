@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from ..utils import Frame, Toplevel
+from biscuit.core.utils import Frame, Toplevel
 
 if typing.TYPE_CHECKING:
     from biscuit.core import App

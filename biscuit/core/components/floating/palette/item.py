@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.core.components.utils import Text
+from biscuit.core.utils import Text
 
 if typing.TYPE_CHECKING:
     from . import Palette

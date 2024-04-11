@@ -3,7 +3,8 @@ import queue
 import tkinter as tk
 from datetime import datetime
 
-from ....utils import Scrollbar
+from biscuit.core.utils import Scrollbar
+
 from ..panelview import PanelView
 
 

@@ -1,6 +1,7 @@
 import tkinter as tk
 
-from ..utils import Frame
+from biscuit.core.utils import Frame
+
 from .game import BaseGame
 from .gameoflife import GameOfLife
 from .minesweeper import Minesweeper

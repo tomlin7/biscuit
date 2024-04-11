@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from biscuit.core.components.utils import ButtonsEntry, Frame, IconButton, Tree
+from biscuit.core.utils import ButtonsEntry, Frame, IconButton, Tree
 
 from ..sidebarview import SidebarView
 from .results import Results

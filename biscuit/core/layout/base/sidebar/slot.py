@@ -8,7 +8,7 @@ if typing.TYPE_CHECKING:
 
 import tkinter as tk
 
-from biscuit.core.components.utils import Bubble, Menubutton, get_codicon
+from biscuit.core.utils import Bubble, Menubutton, get_codicon
 
 
 class Slot(Menubutton):

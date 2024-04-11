@@ -3,7 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter.font import Font
 
-from ...utils import Scrollbar
+from biscuit.core.utils import Scrollbar
+
 from ..comment_prefix import register_comment_prefix
 from ..editor import BaseEditor
 from .linenumbers import LineNumbers

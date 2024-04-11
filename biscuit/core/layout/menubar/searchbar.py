@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from core.components.utils import Frame, IconLabelButton
+from core.utils import Frame, IconLabelButton
 
 from biscuit import __version__
 

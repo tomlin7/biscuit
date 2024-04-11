@@ -9,7 +9,7 @@ from tkinter.messagebox import askyesno
 import pyperclip
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
-from biscuit.core.components.utils import Tree
+from biscuit.core.utils import Tree
 
 from ..item import SidebarViewItem
 from .menu import ExplorerContextMenu

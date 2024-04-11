@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.core.components.utils import Frame, WrappingLabel
+from biscuit.core.utils import Frame, WrappingLabel
 
 if typing.TYPE_CHECKING:
     from biscuit.core.components.editors.texteditor import Text

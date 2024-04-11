@@ -15,6 +15,8 @@ def check_python_installation():
     try:
         sp.check_call(["python", "--version"])
         reqs = sp.check_output(['pip', 'freeze'])
+
+        # install python language server
         if not "python-lsp-server".encode() in reqs:
             try:
                 sp.check_call(['pip', 'install', 'python-lsp-server'])

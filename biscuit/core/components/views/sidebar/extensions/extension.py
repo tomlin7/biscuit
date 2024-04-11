@@ -4,7 +4,7 @@ import tkinter as tk
 
 import requests
 
-from biscuit.core.components.utils import Button, Frame, Label
+from biscuit.core.utils import Button, Frame, Label
 
 
 class Extension(Frame):

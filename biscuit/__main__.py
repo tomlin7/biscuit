@@ -1,7 +1,6 @@
 import sys
 
-from biscuit.core import App
-from biscuit.core.utils import check_python_installation
+from biscuit.core import App, check_python_installation
 
 check_python_installation()
 

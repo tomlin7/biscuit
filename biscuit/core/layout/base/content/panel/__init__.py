@@ -19,8 +19,8 @@ if typing.TYPE_CHECKING:
 
 import tkinter as tk
 
-from biscuit.core.components.utils import Frame
 from biscuit.core.components.views.panel import *
+from biscuit.core.utils import Frame
 
 from .panelbar import Panelbar
 

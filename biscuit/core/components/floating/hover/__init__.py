@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.core.components.utils import Toplevel
+from biscuit.core.utils import Toplevel
 
 from .renderer import Renderer
 

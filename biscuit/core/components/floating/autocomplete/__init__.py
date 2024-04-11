@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
     from biscuit.core.components.editors.texteditor import Text
     from biscuit.core.components.lsp.data import Completion, Completions
 
-from biscuit.core.components.utils import Toplevel
+from biscuit.core.utils import Toplevel
 
 from .item import CompletionItem
 

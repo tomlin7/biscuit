@@ -5,7 +5,7 @@ import tkinter as tk
 
 import requests
 
-from biscuit.core.components.utils.scrollableframe import ScrollableFrame
+from biscuit.core.utils.scrollableframe import ScrollableFrame
 
 from ..item import SidebarViewItem
 from .extension import Extension

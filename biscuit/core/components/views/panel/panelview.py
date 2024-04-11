@@ -1,6 +1,7 @@
 from tkinter.constants import *
 
-from ...utils import IconButton
+from biscuit.core.utils import IconButton
+
 from ..view import View
 
 

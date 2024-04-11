@@ -1,6 +1,6 @@
 import os
 
-from biscuit.core.components.utils import Label
+from biscuit.core.utils import Label
 
 from ..terminal import Terminal
 

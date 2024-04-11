@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils.iconbutton import IconButton
+from biscuit.core.utils.iconbutton import IconButton
 
 from .codicon import get_codicon
 from .frame import Frame

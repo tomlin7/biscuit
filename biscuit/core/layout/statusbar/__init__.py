@@ -16,7 +16,7 @@ import typing
 from pygments.lexers._mapping import LEXERS
 
 from biscuit.core.components import ActionSet
-from biscuit.core.components.utils import Frame, textutils
+from biscuit.core.utils import Frame, textutils
 
 from .button import SButton, TerminalButton
 

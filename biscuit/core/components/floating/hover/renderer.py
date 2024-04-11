@@ -6,7 +6,7 @@ import typing
 import mistune
 from tkinterweb import HtmlFrame
 
-from biscuit.core.components.utils import Frame, Scrollbar
+from biscuit.core.utils import Frame, Scrollbar
 
 if typing.TYPE_CHECKING:
     from . import Hover

@@ -1,4 +1,4 @@
-from biscuit.core.components.utils import Tree
+from biscuit.core.utils import Tree
 
 
 class DefinitionsTree(Tree):

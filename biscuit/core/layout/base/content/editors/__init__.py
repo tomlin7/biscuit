@@ -13,7 +13,7 @@ from biscuit.core.components.editors import Editor, Welcome
 from biscuit.core.components.editors.editor import BaseEditor
 from biscuit.core.components.floating.palette.actionset import ActionSet
 from biscuit.core.components.games import Game
-from biscuit.core.components.utils import Frame
+from biscuit.core.utils import Frame
 
 from .editorsbar import Editorsbar
 from .empty import Empty

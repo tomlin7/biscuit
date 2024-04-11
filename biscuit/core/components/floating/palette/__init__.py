@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.core.components.utils import Frame, Toplevel
+from biscuit.core.utils import Frame, Toplevel
 
 from .actionset import ActionSet
 from .item import PaletteItem

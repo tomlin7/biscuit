@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from biscuit.core.components.utils import Entry
+from biscuit.core.utils import Entry
 
 from ..sidebarview import SidebarView
 from .results import Results

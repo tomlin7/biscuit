@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from biscuit.core.components.floating.palette.actionset import ActionSet
-from biscuit.core.components.utils import CloseListItem, Menubutton
+from biscuit.core.utils import CloseListItem, Menubutton
 
 from ..item import SidebarViewItem
 

@@ -5,7 +5,7 @@ import typing
 
 from tkinterweb import HtmlFrame
 
-from biscuit.core.components.utils import Frame, Scrollbar
+from biscuit.core.utils import Frame, Scrollbar
 
 if typing.TYPE_CHECKING:
     from ..texteditor import TextEditor

@@ -1,6 +1,6 @@
 import tkinterDnD as dnd
 
-from ..utils import Frame, IconButton
+from biscuit.core.utils import Frame, IconButton
 
 
 class BaseEditor(Frame):
