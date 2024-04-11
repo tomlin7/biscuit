@@ -30,8 +30,9 @@ class Git(git.Git):
         self.branches =  {}
 
         self.actionset = ActionSet(
-            "Manage git branches", "branch:",  #TODO pinned `create new branch` item
+            "Manage git branches", "branch:",
             self.branches,
+            pinned=[["Create new branch: {}", lambda branch=None: self.repo.create_branch(branch)]],
         )
     
     def late_setup(self) -> None:

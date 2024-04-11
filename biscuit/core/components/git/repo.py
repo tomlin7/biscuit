@@ -20,12 +20,18 @@ class GitRepo(git.Repo):
         self.author = git.Actor(self.author_name, self.author_email)
 
     def switch_to_branch(self, branch: git.Head):
-        self.git.checkout(branch)
+        self.git.checkout(str(branch))
         self.master.update_repo_info()
         self.base.statusbar.update_git_info()
+        self.base.explorer.directory.refresh_root()
     
     def create_branch(self, branch: str):
-        self.create_head(branch)
+        if not branch:
+            self.base.notifications.error("Branch name cannot be empty")
+            return
+        
+        self.create_head(branch.strip())
+        self.switch_to_branch(branch)
     
     def get_untracked_files(self) -> list:
         return list(self.untracked_files)
