@@ -170,5 +170,3 @@ class GUIManager(Tk, ConfigManager):
                 height = height - (height - abs_y)
                 if height > self.min_height and width > self.min_width:
                     return self.geometry(f"{width}x{height}+{x}+{y}")
-
-        self.menubar.reposition_title()

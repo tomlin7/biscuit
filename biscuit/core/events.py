@@ -44,8 +44,7 @@ class EventManager(GUIManager, ConfigManager):
     def set_title(self, title: str = None) -> None:
         if not self.initialized:
             return
-        self.menubar.set_title(title)
-        self.menubar.reposition_title()
+        self.menubar.change_title(title)
 
     def open(self, path: str, warn_for_directory=False) -> None:
         """Opens file/directory based on path.

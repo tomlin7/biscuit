@@ -160,7 +160,7 @@ class Palette(Toplevel):
         self.update_idletasks()
 
         x = self.master.winfo_rootx() + int((self.master.winfo_width() - self.winfo_width())/2)
-        y = self.master.winfo_rooty() + self.base.menubar.winfo_height()
+        y = self.master.winfo_rooty() + self.base.menubar.searchbar.winfo_y()
         self.geometry(f"+{x}+{y}")
         self.deiconify()
 

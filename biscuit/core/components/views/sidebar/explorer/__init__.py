@@ -19,7 +19,7 @@ class Explorer(SidebarView):
         self.menu = ExplorerMenu(self, 'files')
         self.menu.add_checkable("Open Editors", self.toggle_active_editors)
         self.menu.add_separator(10)
-        self.menu.add_item("Search", self.base.events.show_file_search_palette)
+        self.menu.add_item("Search", self.base.events.show_file_search)
         self.add_button('ellipsis', self.menu.show)
 
         self.active_editors_visible = True
