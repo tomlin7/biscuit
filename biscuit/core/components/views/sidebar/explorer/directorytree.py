@@ -178,7 +178,25 @@ class DirectoryTree(SidebarViewItem):
             return
 
         parent = self.selected_directory()
+
+        if not parent:
+            # This condition is necessary to avoid a edge case where the user might 
+            # try to create a new file without a folder opened, causing self.selected_directory() 
+            # to return None
+
+            # TODO Let the user know that the file was not created because no folder was selected   
+
+            print("New file not created because user did not select a folder.")
+            return
+
         path = os.path.join(parent, filename)
+
+        if os.path.exists(path):
+            # If user tries to create a new file with the name of an existing file in that directory,
+            # open an editor for the existing file
+            self.base.open_editor(path)
+            return
+        
         with open(path, 'w+') as f:
             f.write("")
         self.create_root(parent, self.nodes[parent])
