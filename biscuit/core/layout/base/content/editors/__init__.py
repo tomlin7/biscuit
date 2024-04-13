@@ -74,19 +74,23 @@ class EditorsPane(Frame):
 
     def add_default_editors(self) -> None:
         "Adds all default editors"
+
         self.add_editors(self.default_editors)
     
     def add_welcome(self) -> None:
         "Shows welcome tab"
+
         self.add_editor(Welcome(self))
 
     def add_editors(self, editors: list[Editor]) -> None:
         "Append <Editor>s to list. Create tabs for them."
+        
         for editor in editors:
             self.add_editor(editor)
 
     def add_editor(self, editor: Union[Editor,BaseEditor]) -> Editor | BaseEditor:
         "Appends a editor to list. Create a tab."
+
         self.active_editors.append(editor)
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
@@ -97,9 +101,12 @@ class EditorsPane(Frame):
 
     def delete_all_editors(self) -> None:
         "Permanently delete all editors."
-        for editor in self.active_editors:
-            editor.destroy()
 
+        for tab in self.tabs.tabs:
+            if e := tab.editor:
+                self.tabs.save_unsaved_changes(e)
+                e.destroy()
+        
         self.editorsbar.clear()
         self.tabs.clear_all_tabs()
         self.active_editors.clear()
@@ -108,6 +115,7 @@ class EditorsPane(Frame):
 
     def reopen_active_editor(self) -> None:
         "Reopen the active editor"
+        
         if self.active_editor and self.active_editor.exists:
             self.delete_editor(self.active_editor)
             self.update()

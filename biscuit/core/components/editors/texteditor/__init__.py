@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+from hashlib import md5
 from tkinter.font import Font
 
 from biscuit.core.utils import Scrollbar
@@ -24,7 +25,8 @@ class TextEditor(BaseEditor):
         self.editable = True
         self.run_command_value = None
         self.unsupported = False
-
+        self.content_hash = ''
+        
         if not self.standalone:
             self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
 
@@ -81,6 +83,29 @@ class TextEditor(BaseEditor):
         if self.base.settings.config.auto_save_enabled:
             self.auto_save()
     
+    def file_loaded(self):
+        self.recalculate_content_hash()
+        self.event_generate("<<FileLoaded>>", when="tail")
+    
+    def recalculate_content_hash(self):
+        """ Recalculate the hash of the editor content """
+        
+        self.content_hash = self.calculate_content_hash()
+
+    def calculate_content_hash(self):
+        """ Calculate the hash of the editor content """
+        
+        if self.exists and self.editable:
+            text = self.text.get_all_text()
+            return md5(text.encode()).hexdigest()
+    
+    @property
+    def unsaved_changes(self):
+        """ Check if the editor content has changed """
+        
+        if self.editable:
+            return self.content_hash != self.calculate_content_hash()
+
     def run_file(self, dedicated=False, external=False):
         if not self.run_command_value:
             self.base.notifications.show("No programs are configured to run this file.")
@@ -137,6 +162,7 @@ class TextEditor(BaseEditor):
 
     def save(self, path=None):
         if self.editable:
+            self.recalculate_content_hash()
             self.text.save_file(path)
 
     def auto_save(self):

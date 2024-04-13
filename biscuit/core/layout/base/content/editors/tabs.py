@@ -6,7 +6,9 @@ if typing.TYPE_CHECKING:
     from . import Editorsbar
     from biscuit.core.components import Editor
 
+import os
 import tkinter as tk
+from tkinter.messagebox import askyesno
 
 from biscuit.core.utils import Frame
 
@@ -30,8 +32,20 @@ class Tabs(Frame):
 
     def close_active_tab(self) -> None:
         self.close_tab(self.active_tab)
+    
+    def save_unsaved_changes(self, e) -> None:
+        if e.content and e.content.editable and e.content.unsaved_changes:
+            if askyesno(f"Unsaved changes", f"Do you want to save the changes you made to {e.filename}"):
+                if e.exists:
+                    e.save()
+                else:
+                    self.base.commands.save_as()
+                print(f"Saved changes to {e.path}.")
 
     def close_tab(self, tab: Tab) -> None:
+        if e := tab.editor:
+            self.save_unsaved_changes(e)
+        
         try:
             i = self.tabs.index(tab)
         except ValueError:

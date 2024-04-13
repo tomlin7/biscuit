@@ -60,6 +60,8 @@ class GUIManager(Tk, ConfigManager):
 
         self.setup_floating_widgets()
         self.setup_root()
+
+        self.protocol("WM_DELETE_WINDOW", self.on_close_app)
         
     def setup_root(self):
         # the very parent of all GUI parts
@@ -137,6 +139,9 @@ class GUIManager(Tk, ConfigManager):
 
     def register_onfocus(self, fn) -> None:
         self.onfocus_callbacks.append(fn)
+    
+    def on_close_app(self) -> None:
+        self.editorsmanager.delete_all_editors()
 
     def on_focus(self, *_) -> None:
         for fn in self.onfocus_callbacks:

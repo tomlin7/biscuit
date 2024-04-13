@@ -32,7 +32,7 @@ class Text(BaseText):
 
     def __init__(self, master: TextEditor, path: str=None, exists: bool=True, minimalist: bool=False, standalone: bool=False, language: str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.master = master
+        self.master: TextEditor = master
         self.path = path
         self.filename = os.path.basename(path) if path else None
         self.encoding = 'utf-8'
@@ -901,7 +901,7 @@ class Text(BaseText):
             # If the queue is empty, schedule the next check after a short delay
             self.master.after(100, self.process_queue)
         
-        self.master.event_generate("<<FileLoaded>>", when="tail")
+        self.master.file_loaded()
     
     def custom_get(self, start, end):
         content = self.get(start, end)
