@@ -2,6 +2,7 @@ import tkinter as tk
 
 from biscuit.core.utils import Button, Entry, Frame, IconButton
 from biscuit.core.utils.iconlabelbutton import IconLabelButton
+from biscuit.core.utils.scrollableframe import ScrollableFrame
 
 from .changes import Changes
 from .placeholder import ChangesTreePlaceholder
@@ -26,8 +27,13 @@ class Git(Frame):
         # self.more.config(**self.base.theme.utils.button)
         # self.more.pack(fill=tk.BOTH)
 
-        self.staged_changes_tree = StagedChanges(self, *args, **kwargs)
-        self.changes_tree = Changes(self, *args, **kwargs)
+        self.container = ScrollableFrame(self, **self.base.theme.views.sidebar.item)
+        self.container.canvas.config(**self.base.theme.views.sidebar.item)
+
+        self.staged_changes_tree = StagedChanges(self.container, *args, **kwargs)
+        self.container.add(self.staged_changes_tree, fill=tk.BOTH, expand=True)
+        self.changes_tree = Changes(self.container, *args, **kwargs)
+        self.container.add(self.changes_tree, fill=tk.BOTH, expand=True)
 
         self.placeholder = ChangesTreePlaceholder(self)
         self.placeholder.pack(fill=tk.BOTH, expand=True)
@@ -102,8 +108,7 @@ class Git(Frame):
     def enable_tree(self) -> None:
         self.placeholder.pack_forget()
         self.commitbox.pack(padx=(15, 10), pady=5, fill=tk.BOTH)
-        self.staged_changes_tree.pack(fill=tk.BOTH)
-        self.changes_tree.pack(fill=tk.BOTH)
+        self.container.pack(fill=tk.BOTH, expand=True)
 
         self.staged_changes_tree.clear_tree()
         self.changes_tree.clear_tree()
@@ -111,8 +116,7 @@ class Git(Frame):
 
     def disable_tree(self) -> None:
         self.commitbox.pack_forget()
-        self.staged_changes_tree.pack_forget()
-        self.changes_tree.pack_forget()
+        self.container.pack_forget()
         self.placeholder.pack(fill=tk.BOTH, expand=True)
 
     def get_commit_message(self) -> str:
