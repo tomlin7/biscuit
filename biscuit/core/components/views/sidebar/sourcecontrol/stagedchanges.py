@@ -48,4 +48,4 @@ class StagedChanges(SidebarViewItem):
     def git_remove_all(self, *_) -> None:
         if staged := list(self.items.keys()):
             self.base.git.repo.unstage_files(*staged)
-            self.master.open_repo()
+            self.master.master.open_repo()
