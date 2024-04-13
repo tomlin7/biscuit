@@ -64,8 +64,8 @@ class Menu(Toplevel):
         self.row += 1
         return new_item
     
-    def add_checkable(self, text, command=lambda *_:...):
-        new_item = CheckableMenuItem(self.container, text, command)
+    def add_checkable(self, text, command=lambda *_:..., checked=False):
+        new_item = CheckableMenuItem(self.container, text, command, checked=checked)
         new_item.grid(row=self.row, sticky=tk.EW, pady=0)
         self.menu_items.append(new_item)
 
