@@ -8,7 +8,6 @@ if typing.TYPE_CHECKING:
 
 import os
 import tkinter as tk
-from hashlib import md5
 
 from biscuit.core.utils import Frame, Icon, IconButton
 
@@ -37,8 +36,6 @@ class Tab(Frame):
 
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
-
-        self.content_hash = ""
 
     def close(self, *_) -> None:
         self.master.close_tab(self)
@@ -78,14 +75,3 @@ class Tab(Frame):
             self.apply_color(self.hbg)
             self.closebtn.config(activeforeground=self.hfg)
             self.selected = True
-            self.content_hash = self.calculate_content_hash()
-
-    def calculate_content_hash(self):
-        """ Calculate the hash of the editor content """
-        
-        if self.editor.content: # Welcome editor returns a None value
-                 
-            # Cannot get contents when using self.editor.content.get(..),
-            # so had to directly call get()
-            editor_contents = self.editor.content.text.get(index1="1.0", index2="end-1c")
-            return md5(editor_contents.encode()).hexdigest()

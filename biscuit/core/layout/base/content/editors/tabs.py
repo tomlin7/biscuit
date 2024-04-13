@@ -34,12 +34,15 @@ class Tabs(Frame):
         self.close_tab(self.active_tab)
 
     def close_tab(self, tab: Tab) -> None:
-        
-        if self.content_has_changed():
-            if askyesno("Save File", f"You have unsaved changes. Do you want to save {tab.editor.filename}"):
-                filepath = os.path.join(self.base.active_directory, tab.editor.filename)
-                tab.editor.save(filepath)
-                print(f"Saved changes to {filepath}.")
+        if e := tab.editor:
+            # checking if its a text editor
+            if e.content and e.content.editable and e.content.unsaved_changes:
+                if askyesno(f"Unsaved changes", f"Do you want to save the changes you made to {tab.editor.filename}"):
+                    if e.exists:
+                        e.save()
+                    else:
+                        self.base.commands.save_as()
+                    print(f"Saved changes to {e.path}.")
         
         try:
             i = self.tabs.index(tab)
@@ -96,11 +99,3 @@ class Tabs(Frame):
             if tab.editor.path == path:
                 tab.select()
                 return tab.editor
-
-    def content_has_changed(self):
-        current_file_hash = self.active_tab.calculate_content_hash()
-        if current_file_hash == self.active_tab.content_hash:
-            # No changes has been made in the editor
-            return False
-        else:
-            return True
