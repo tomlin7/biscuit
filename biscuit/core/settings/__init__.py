@@ -47,7 +47,6 @@ class Settings:
         self.commands = []
 
         self.setup_font()
-        self.gen_actionset()
 
     def register_command(self, command: str, callback: typing.Callable) -> None:
         """
@@ -100,6 +99,7 @@ class Settings:
         self.commands = [(formalize_command(name), lambda _, method=method: method(self.base.commands)) 
                 for name, method in extract_commands(self.base.commands)]
         
+        self.gen_actionset()
         self.base.palette.register_actionset(lambda: self.actionset)
 
         from biscuit.core.components import ActionSet
