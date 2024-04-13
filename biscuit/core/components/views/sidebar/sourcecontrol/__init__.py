@@ -16,9 +16,9 @@ class SourceControl(SidebarView):
         self.bind('<Visibility>', self.reload_tree)
 
         self.menu = SourceControlMenu(self, 'files')
-        self.menu.add_checkable("Show Staged", self.tree.toggle_staged)
+        self.menu.add_checkable("Show Staged", self.tree.toggle_staged, checked=True)
         self.menu.add_separator(10)
-        self.menu.add_checkable("Show Changes", self.tree.toggle_changes)
+        self.menu.add_checkable("Show Changes", self.tree.toggle_changes, checked=True)
         self.add_button('refresh', self.refresh)
         self.add_button('ellipsis', self.menu.show)
     
