@@ -177,8 +177,15 @@ class DirectoryTree(SidebarViewItem):
         if not filename:
             return
 
-        parent = self.selected_directory()
+        parent = self.selected_directory() or self.base.active_directory or os.path.abspath('.')
         path = os.path.join(parent, filename)
+
+        if os.path.exists(path):
+            # If user tries to create a new file with the name of an existing file
+            # open that existing file in editor instead. 
+            self.base.open_editor(path)
+            return
+        
         with open(path, 'w+') as f:
             f.write("")
         self.create_root(parent, self.nodes[parent])

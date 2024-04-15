@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit"
-version = "2.68.0"
+version = "2.69.0"
 description = "The uncompromising code editor"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
@@ -19,7 +19,7 @@ sv-ttk = "^2.6.0"
 Pillow = "^10.3.0"
 requests = "^2.31.0"
 pyperclip = "^1.8.2"
-tkinterweb = "^3.23.5"
+tkinterweb = "^3.23.8"
 mistune = "^3.0.2"
 tarts = "^0.12.0"
 chardet = "^5.2.0"

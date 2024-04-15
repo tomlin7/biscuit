@@ -90,6 +90,7 @@ class Commands:
         self.base.close_active_directory()
 
     def quit(self, *_) -> None:
+        self.base.on_close_app()
         self.base.destroy()
 
     def toggle_maximize(self, *_) -> None:
