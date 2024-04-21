@@ -2,8 +2,6 @@ import tkinter as tk
 
 from biscuit.core.utils import Canvas, Menubutton
 
-from .breakpoint import Breakpoint
-
 
 class LineNumbers(Canvas):
     def __init__(self, master, text=None, font=None, *args, **kwargs) -> None:
@@ -14,6 +12,7 @@ class LineNumbers(Canvas):
 
         self.fg = self.base.theme.editors.linenumbers.number.foreground
         self.hfg = self.base.theme.editors.linenumbers.number.highlightforeground
+        self.breakpoints = set()
 
     def attach(self, text):
         self.text = text
@@ -33,31 +32,38 @@ class LineNumbers(Canvas):
     def set_bar_width(self, width):
         self.configure(width=width)
 
+    def toggle_breakpoint(self, line):
+        if line in self.breakpoints:
+            self.breakpoints.remove(line)
+        else:
+            self.breakpoints.add(line)
+        self.redraw()
+
     def redraw(self, *_):
         self.delete(tk.ALL)
+
         if not self.text:
             return
 
         i = self.text.index("@0,0")
-        while True :
+        while True:
             dline = self.text.dlineinfo(i)
-            if dline is None: 
+            if dline is None:
                 break
 
             y = dline[1]
-            linenum = str(i).split(".")[0]
-
+            linenum = int(float(i))
             curline = self.text.dlineinfo(tk.INSERT)
             cur_y = curline[1] if curline else None
 
-            self.create_text(40, y, anchor=tk.NE, text=linenum, font=self.font, tag=i, fill=self.hfg if y == cur_y else self.fg)
-            self.tag_bind(i, "<Button-1>", lambda _, i=i: self.text.select_line(i))
+            # Check if the current line has a breakpoint
+            has_breakpoint = linenum in self.breakpoints
 
-            # TODO drawing breakpoints - need optimisations
-            # self.draw_breakpoint(y)
+            # Create breakpoint symbol if the line has a breakpoint
+            if has_breakpoint:
+                self.create_oval(5, y+3, 15, y + 13, fill="red", outline="")
+
+            self.create_text(40, y, anchor=tk.NE, text=linenum, font=self.font, tag=i, fill=self.hfg if y == cur_y else self.fg)
+            self.tag_bind(i, "<Button-1>", lambda _, linenum=linenum: self.toggle_breakpoint(linenum))
 
             i = self.text.index(f"{i}+1line")
-
-    def draw_breakpoint(self, y):
-        bp = Breakpoint(self)
-        self.create_window(21, y-2, anchor=tk.NE, window=bp)

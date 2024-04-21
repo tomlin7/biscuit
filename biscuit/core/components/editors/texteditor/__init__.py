@@ -4,6 +4,7 @@ import tkinter as tk
 from hashlib import md5
 from tkinter.font import Font
 
+from biscuit.core.components.debugger import get_debugger
 from biscuit.core.utils import Scrollbar
 
 from ..comment_prefix import register_comment_prefix
@@ -49,7 +50,7 @@ class TextEditor(BaseEditor):
 
             if not self.standalone:
                 self.run_command_value = self.base.exec_manager.get_command(self)
-                self.__buttons__.insert(0, ('run', self.run_file))
+                self.__buttons__.insert(0, ('run', lambda: self.run_file()))
                 
                 self.runmenu = RunMenu(self, "run menu")
                 if self.run_command_value:
@@ -61,7 +62,13 @@ class TextEditor(BaseEditor):
                 self.runmenu.add_command("Configure Run...", lambda: self.base.commands.show_run_config_palette(self.run_command_value))
 
                 self.__buttons__.insert(1, ('chevron-down', self.runmenu.show))
-            
+
+                self.debugger = get_debugger(self)
+                if self.debugger:
+                    self.__buttons__.insert(2, ('bug', self.debugger.run))
+                    self.runmenu.add_separator()
+                    self.runmenu.add_command(f"Debug {self.language} file", self.debugger.run)
+        
         self.linenumbers.attach(self.text)
         if not self.minimalist:
             self.minimap.attach(self.text)
@@ -98,6 +105,10 @@ class TextEditor(BaseEditor):
         if self.exists and self.editable:
             text = self.text.get_all_text()
             return md5(text.encode()).hexdigest()
+    
+    @property
+    def breakpoints(self):
+        return self.linenumbers.breakpoints
     
     @property
     def unsaved_changes(self):
