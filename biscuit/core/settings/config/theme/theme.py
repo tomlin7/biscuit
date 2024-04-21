@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
 
 from pygments.token import Token
@@ -26,6 +28,9 @@ class ThemeObject(Mapping):
             setattr(self, key, value)
 
     def values(self):
+        """Returns a tuple of color values, order:
+        Background, Foreground, HighlightBackground, HighlightForeground"""
+
         return self.background, self.foreground, self.highlightbackground, self.highlightforeground
 
     def to_dict(self):
@@ -217,6 +222,7 @@ class Editors(FrameThemeObject):
         self.linenumbers.number = ThemeObject(self.linenumbers)
         self.linenumbers.number.foreground = "#6e7681"
         self.linenumbers.number.highlightforeground = "#171184"
+        self.linenumbers.breakpoint = HighlightableThemeObject(self.linenumbers, '#f5a199', 'white', '#e51400', 'white')
 
         self.autocomplete = FrameThemeObject(self)
         self.autocomplete.item = ThemeObject(self.autocomplete)

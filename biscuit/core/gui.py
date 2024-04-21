@@ -100,6 +100,7 @@ class GUIManager(Tk, ConfigManager):
         self.rename = Rename(self)
         self.pathview = PathView(self)
         self.hover = Hover(self)
+        self.debugger_info = DebuggerInfo(self)
     
     def late_setup(self) -> None:
         # for components that are dependant on other components (called after initialization)
