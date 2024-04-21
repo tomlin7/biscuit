@@ -1,7 +1,7 @@
 import sv_ttk
 from pygments.token import Token
 
-from .theme import Theme
+from .theme import *
 
 
 class Dark(Theme):
@@ -52,3 +52,6 @@ class Dark(Theme):
         self.views.panel.logs.info = "#b5cea8"
         self.views.panel.logs.warning = "#ce9178"
         self.views.panel.logs.error = "#ce9178"
+
+        self.editors.linenumbers.breakpoint.background = '#6e1b13' 
+        self.editors.linenumbers.breakpoint.highlightbackground = '#e51400'
