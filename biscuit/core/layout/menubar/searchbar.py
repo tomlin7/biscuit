@@ -1,8 +1,7 @@
 import tkinter as tk
 
-from core.utils import Frame, IconLabelButton
-
 from biscuit import __version__
+from biscuit.core.utils import Frame, IconLabelButton
 
 
 class Searchbar(Frame):
