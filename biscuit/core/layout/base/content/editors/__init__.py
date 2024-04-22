@@ -224,3 +224,4 @@ class EditorsPane(Frame):
         elif self.active_editors:
             self.emptytab.grid_remove()
         self.base.update_statusbar()
+        self.base.debug.refresh()

@@ -5,7 +5,6 @@ import typing
 if typing.TYPE_CHECKING:
     from biscuit.core.components.editors import TextEditor
 
-from .output import DebuggerInfo
 from .python_dbd import PythonDebugger
 
 

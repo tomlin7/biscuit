@@ -22,7 +22,8 @@ class PythonDebugger(bdb.Bdb):
         self.editor = self.master = editor
         self.base = editor.base
         self.file_path = self.editor.path
-        self.output = self.base.debugger_info
+        self.variables = self.base.sidebar.debug.variables
+        self.callstack = self.base.sidebar.debug.callstack
 
     def run(self, *_):
         """Debug the code in the editor."""
@@ -39,9 +40,6 @@ class PythonDebugger(bdb.Bdb):
         exec(code, globals(), locals())
         
     def user_line(self, frame):
-        self.output.clear()
-        self.output.show_variables(frame)
-        self.output.show_callstack(frame)
-        self.output.deiconify()
-
+        self.variables.show(frame)
+        self.callstack.show(frame)
         self.set_continue()
