@@ -1,7 +1,7 @@
 """Components
 Contains all the components of editor (Editor, Games, Git, LSP, Extensions Manager, Views, Menus and Palette)
 """
-from .debugger import DebuggerInfo, PythonDebugger, get_debugger
+from .debugger import PythonDebugger, get_debugger
 from .editors import BaseEditor, Editor
 from .floating import *
 from .games import BaseGame, register_game

@@ -1,3 +1,4 @@
+from .debug import Debug
 from .explorer import Explorer
 from .extensions import Extensions
 from .outline import Outline

@@ -64,6 +64,9 @@ class Tree(Frame):
 
     def insert(self, *args, **kwargs):
         return self.tree.insert(*args, **kwargs)
+
+    def add(self, *a, **kw):
+        return self.tree.insert('', 'end', *a, **kw)
         
     def is_open(self, node):
         return self.tree.item(node, "open")

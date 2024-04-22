@@ -80,6 +80,7 @@ class GUIManager(Tk, ConfigManager):
         self.explorer = self.sidebar.explorer
         self.search = self.sidebar.search
         self.outline = self.sidebar.outline
+        self.debug = self.sidebar.debug
         self.source_control = self.sidebar.source_control
         self.extensions_GUI = self.sidebar.extensions
         
@@ -100,7 +101,6 @@ class GUIManager(Tk, ConfigManager):
         self.rename = Rename(self)
         self.pathview = PathView(self)
         self.hover = Hover(self)
-        self.debugger_info = DebuggerInfo(self)
     
     def late_setup(self) -> None:
         # for components that are dependant on other components (called after initialization)
