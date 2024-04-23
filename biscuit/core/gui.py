@@ -143,6 +143,7 @@ class GUIManager(Tk, ConfigManager):
     
     def on_close_app(self) -> None:
         self.editorsmanager.delete_all_editors()
+        self.destroy()
 
     def on_focus(self, *_) -> None:
         for fn in self.onfocus_callbacks:
