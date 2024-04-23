@@ -91,7 +91,7 @@ class Commands:
 
     def quit(self, *_) -> None:
         self.base.on_close_app()
-        self.base.destroy()
+        # self.base.destroy()
 
     def toggle_maximize(self, *_) -> None:
         match platform.system():
