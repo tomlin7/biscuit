@@ -36,6 +36,9 @@ class GUIManager(Tk, ConfigManager):
             style = style & ~WS_EX_TOOLWINDOW
             style = style | WS_EX_APPWINDOW
             windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
+            
+            myappid = 'com.tomlin7.biscuit.2'
+            windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
         # TODO fr i still can't figure this shit out yet
         # window is going too big in low DPI, when I adjust scale for normal size in high DPI

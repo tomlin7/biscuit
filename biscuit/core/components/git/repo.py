@@ -11,7 +11,11 @@ class GitRepo(git.Repo):
     def __init__(self, master: Git=None, path=None, *args, **kwargs) -> None:
         super().__init__(path, *args, **kwargs)
         self.master = master
-        self.base = master.base
+        try:
+            self.base = master.base
+        except AttributeError:
+            self.base = master
+            
         self.path = path
         self.config = self.config_reader()
 

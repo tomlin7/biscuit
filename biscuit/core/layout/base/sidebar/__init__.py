@@ -1,20 +1,7 @@
 """
 Sidebar holds the actionbar and the sidebar-view holder frame
-+------+--------------------------+
-| Dir  |    \    \    \    \    \ |
-|------|\    \    \    \    \    \|
-| Src  | \    \    \    \    \    |
-|------|  \    \    \    \    \   |
-| Git  |   \    \    \    \    \  |
-|------|    \    \    \    \    \ |
-| Ext  |\    \    \    \    \    \|
-|------| \    \    \    \    \    |
-|      |  \    \    \    \    \   |
-|      |   \    \    \    \    \  |
-|------|    \    \    \    \    \ |
-| Sett |\    \    \    \    \    \|
-+------+--------------------------+  
 """
+
 from __future__ import annotations
 
 import tkinter as tk

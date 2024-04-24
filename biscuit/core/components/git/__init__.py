@@ -84,7 +84,7 @@ class Git(git.Git):
 
         if name := self.repo_name(url):
             dir = os.path.join(dir, name)
-            GitRepo.clone_from(url, dir)
+            GitRepo(self).clone_from(url, dir)
             return dir
 
         raise Exception(f'The url `{url}` does not point to a git repo')

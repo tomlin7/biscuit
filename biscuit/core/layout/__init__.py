@@ -8,6 +8,7 @@ Defines the layout of app.
         ├── BaseFrame
         └── StatusBar
 """
+
 from __future__ import annotations
 
 import tkinter as tk

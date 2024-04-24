@@ -1,14 +1,5 @@
 """
 Panel holds the panel views and provides an interface to close/reopen them
-+---------------------------------+
-| Logs | Terminal |               |
-+---------------------------------+
-| \    \    \    \    \    \    \ |
-|  \    \    \    \    \    \    \|
-|   \    \    \    \    \    \    |
-|    \    \    \    \    \    \   |
-|\    \    \    \    \    \    \  |
-+---------------------------------+
 """
 from __future__ import annotations
 

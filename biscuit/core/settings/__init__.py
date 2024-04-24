@@ -5,6 +5,7 @@ from __future__ import annotations
 
 __all__ = ["Settings", "SettingsEditor"]
 
+import os
 import re
 import tkinter as tk
 import tkinter.font as tkfont
@@ -47,6 +48,7 @@ class Settings:
         self.commands = []
 
         self.setup_font()
+        self.setup_icon()
 
     def register_command(self, command: str, callback: typing.Callable) -> None:
         """
@@ -68,6 +70,9 @@ class Settings:
         self._actionset = ActionSet(
             "Show and run commands", ">", self.commands + get_games(self.base)
         )
+    
+    def setup_icon(self) -> None:
+        self.base.iconbitmap(self.res.get_res_path("icon.ico"))
 
     def setup_font(self) -> None:
         try:

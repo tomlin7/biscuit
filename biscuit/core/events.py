@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
 import threading
 import typing
 from tkinter import filedialog
+from tkinter.messagebox import askyesnocancel
 
 from biscuit.core.gui import GUIManager
 
@@ -91,12 +94,18 @@ class EventManager(GUIManager, ConfigManager):
         path = filedialog.askdirectory()
         if not path:
             return
-            
-        try:
 
+        new_window = askyesnocancel("Open in new window or current", "Do you want to open the cloned repository in a new window?")
+        if new_window is None:
+            return
+        
+        try:
             def clone() -> None:
                 repodir = self.git.clone(url, path)
-                self.open_directory(repodir)
+                if new_window:
+                    self.open_in_new_window(repodir)
+                else:
+                    self.open_directory(repodir)
 
             temp = threading.Thread(target=clone)
             temp.daemon = True
@@ -179,12 +188,10 @@ class EventManager(GUIManager, ConfigManager):
         self.exec_manager.register_command(language, command)
 
     def open_in_new_window(self, dir: str) -> None:
-        # Process(target=App(sys.argv[0], dir).run).start()
-        self.notifications.show("Feature not available in this version.")
+        subprocess.Popen([sys.executable, sys.argv[0], dir])
 
     def open_new_window(self) -> None:
-        # Process(target=App(sys.argv[0]).run).start()
-        self.notifications.show("Feature not available in this version.")
+        subprocess.Popen([sys.executable, sys.argv[0]])
 
     def toggle_terminal(self) -> None:
         self.panel.switch_to_terminal()
