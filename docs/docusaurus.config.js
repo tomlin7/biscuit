@@ -11,14 +11,14 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://billyeatcookies.github.io',
+  url: 'https://tomlin7.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/biscuit/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'billyeatcookies', // Usually your GitHub org/user name.
+  organizationName: 'tomlin7', // Usually your GitHub org/user name.
   projectName: 'biscuit', // Usually your repo name.
   trailingSlash: false,
   deploymentBranch: 'docs',
@@ -44,14 +44,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/billyeatcookies/biscuit/tree/main/docs/docs/',
+            'https://github.com/tomlin7/biscuit/tree/main/docs/docs/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/billyeatcookies/biscuit/tree/main/docs/blogs/',
+            'https://github.com/tomlin7/biscuit/tree/main/docs/blogs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -80,7 +80,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/billyeatcookies/biscuit',
+            href: 'https://github.com/tomlin7/biscuit',
             label: 'GitHub',
             position: 'right',
           },
@@ -111,15 +111,15 @@ const config = {
             items: [
               {
                 label: 'Biscuit',
-                href: 'https://github.com/billyeatcookies/biscuit',
+                href: 'https://github.com/tomlin7/biscuit',
               },
               {
                 label: 'Extensions',
-                href: 'https://github.com/billyeatcookies/biscuit-extensions',
+                href: 'https://github.com/tomlin7/biscuit-extensions',
               },
               {
                 label: 'Cupcake',
-                href: 'https://github.com/billyeatcookies/cupcake',
+                href: 'https://github.com/tomlin7/cupcake',
               },
               {
                 label: 'Cupcake on Pypi',
@@ -136,12 +136,12 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/billyeatcookies/biscuit',
+                href: 'https://github.com/tomlin7/biscuit',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} billyeatcookies. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} tomlin7. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,

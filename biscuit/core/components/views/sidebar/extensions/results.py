@@ -26,7 +26,7 @@ class Results(SidebarViewItem):
         self.extension_list = ScrollableFrame(self.content, bg=self.base.theme.views.sidebar.background)
         self.extension_list.pack(fill=tk.BOTH, expand=True)
 
-        self.repo_url = "https://raw.githubusercontent.com/billyeatcookies/biscuit-extensions/main/"
+        self.repo_url = "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
         self.list_url = self.repo_url + "extensions.json"
 
         self.queue = queue.Queue()

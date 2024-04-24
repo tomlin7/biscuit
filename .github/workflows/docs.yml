@@ -43,5 +43,5 @@ jobs:
           # https://github.com/actions/checkout/issues/13#issuecomment-724415212
           # The GH actions bot is used by default if you didn't specify the two fields.
           # You can swap them out with your own user credentials.
-          user_name: billyeatcookies
+          user_name: tomlin7
           user_email: billydevbusiness@gmail.com

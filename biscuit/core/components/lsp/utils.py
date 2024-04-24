@@ -98,7 +98,7 @@ def equals_range(a: lsp.Range, b: lsp.Range) -> bool:
     return a and b and a.start.line == b.start.line and a.start.character == b.start.character and a.end.line == b.end.line and a.end.character == b.end.character
 
 
-# Copyright (c) 2021-2024 billyeatcookies
+# Copyright (c) 2021-2024 tomlin7
 def to_document_symbol(infos: list[lsp.SymbolInformation]) -> list[lsp.DocumentSymbol]:
     if not infos:
         return []

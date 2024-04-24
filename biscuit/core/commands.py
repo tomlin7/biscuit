@@ -299,22 +299,22 @@ class Commands:
         self.base.palette.show()
 
     def documentation(self, *_) -> None:
-        web.open("https://billyeatcookies.github.io/biscuit/")
+        web.open("https://tomlin7.github.io/biscuit/")
     
     def release_notes(self, *_) -> None:
-        web.open("https://github.com/billyeatcookies/biscuit/blob/main/CHANGELOG.md")
+        web.open("https://github.com/tomlin7/biscuit/blob/main/CHANGELOG.md")
     
     def report_bug(self, *_) -> None:
-        web.open("https://github.com/billyeatcookies/biscuit/issues/new?assignees=billyeatcookies&labels=bug&projects=&template=bug_report.md")
+        web.open("https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=bug&projects=&template=bug_report.md")
 
     def request_feature(self, *_) -> None:
-        web.open("https://github.com/billyeatcookies/biscuit/issues/new?assignees=billyeatcookies&labels=enhancement&projects=&template=feature_request.md")
+        web.open("https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=enhancement&projects=&template=feature_request.md")
 
     def code_of_conduct(self, *_) -> None:
-        web.open("https://github.com/billyeatcookies/biscuit/blob/main/CODE_OF_CONDUCT.md")
+        web.open("https://github.com/tomlin7/biscuit/blob/main/CODE_OF_CONDUCT.md")
 
     def view_license(self, *_) -> None:
-        web.open("https://github.com/billyeatcookies/biscuit/blob/main/LICENSE.md")
+        web.open("https://github.com/tomlin7/biscuit/blob/main/LICENSE.md")
     
     def about(self, *_) -> None:
         messagebox.showinfo("Biscuit", str(self.base.sysinfo))

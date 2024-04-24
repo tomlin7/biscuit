@@ -55,4 +55,4 @@ OS: {self.os} {self.release} ({self.version})
 Processor: {self.processor}
 
 MIT License
-Copyright (c) 2021-24 billyeatcookies""")
+Copyright (c) 2021-24 tomlin7""")

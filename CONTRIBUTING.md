@@ -8,7 +8,7 @@ Python 3.10 or above is required for building Biscuit.
 
 [**Fork**](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Biscuit repository and clone locally. 
 ```bash
-git clone http://github.com/billyeatcookies/biscuit
+git clone http://github.com/tomlin7/biscuit
 ```
 Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to launch biscuit once with `python -m biscuit` and make sure everything looks good.
 

@@ -1,4 +1,4 @@
-__author__ = "billyeatcookies"
+__author__ = "tomlin7"
 
 import random
 import tkinter as tk

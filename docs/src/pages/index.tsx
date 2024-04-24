@@ -23,7 +23,7 @@ function HomepageHeader() {
             </Link>
           </div>
         </div>
-        <img className="animate" style={{float: "left", padding: "1rem 7rem 1 5rem"}} src="https://github.com/billyeatcookies/Biscuit/assets/70792552/844000b3-c28c-4a76-a780-70790dd27844" />
+        <img className="animate" style={{float: "left", padding: "1rem 7rem 1 5rem"}} src="https://github.com/tomlin7/Biscuit/assets/70792552/844000b3-c28c-4a76-a780-70790dd27844" />
       </div>
       
     </header>
