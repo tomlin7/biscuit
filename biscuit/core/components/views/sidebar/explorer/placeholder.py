@@ -24,4 +24,4 @@ class DirectoryTreePlaceholder(Frame):
         self.base.commands.open_directory()
 
     def clone_repo(self, *_) -> None:
-        self.base.palette.show("clone")
+        self.base.palette.show("clone:")

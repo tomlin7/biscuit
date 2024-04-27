@@ -26,7 +26,7 @@ if typing.TYPE_CHECKING:
     from ... import App
 
 
-URL = re.compile(r'^(?:http)s?://')
+URL = re.compile(r'^(?:http)s?:')
 
 class Formattable(str):
     def format(self, term) -> str:
@@ -109,7 +109,7 @@ class Settings:
 
         from biscuit.core.components import ActionSet
         clone_actionset = ActionSet(
-            "Clone git repository", "clone", pinned=[[Formattable("clone {}"), self.base.clone_repo]]
+            "Clone git repository", "clone:", pinned=[[Formattable("clone {}"), self.base.clone_repo]]
         )
         self.base.palette.register_actionset(lambda: clone_actionset)
 
