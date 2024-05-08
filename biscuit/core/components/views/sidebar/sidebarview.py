@@ -37,3 +37,6 @@ class SidebarView(View):
         
     def add_widget(self, widget, *args, **kwargs) -> None:
         widget.pack(fill=tk.BOTH, expand=True, *args, **kwargs)
+
+    def remove_widget(self, widget) -> None:
+        widget.pack_forget()

@@ -32,10 +32,15 @@ class Chat(Frame):
                 You are created by master billiam. Give 'em minimal responses 
                 and be straightforward. Reply to this message from user: """
 
-        self.text = Text(self, font=("Segoe UI", 10), wrap=tk.WORD, state=tk.DISABLED, relief=tk.FLAT,
+        self.text = Text(self, font=("Segoe UI", 10), wrap=tk.WORD, relief=tk.FLAT,
                          highlightthickness=0, padx=10, pady=10, **self.base.theme.editors)
         self.text.pack(fill=tk.BOTH, expand=True)
-        self.text.tag_config("user", foreground=self.base.theme.biscuit)
+        self.text.tag_config("user", foreground=self.base.theme.biscuit_dark)
+        self.text.tag_config("bikkis", foreground=self.base.theme.biscuit)
+
+        self.text.insert(tk.END, "✨ ", "bikkis")
+        self.text.insert(tk.END, "Hello! I'm Bikkis, How can I help you today?\n\n")
+        self.text.config(state=tk.DISABLED)
 
         container = Frame(self)
         container.pack(fill=tk.X)
@@ -49,7 +54,8 @@ class Chat(Frame):
 
     def get_gemini_response(self, question: str, prompt: str) -> str:
         response = self.chat.send_message([prompt, question])
-        self.text.insert(tk.END, "✨ " + response.text + "\n\n")
+        self.text.insert(tk.END, "✨ ", "bikkis")
+        self.text.insert(tk.END, response.text + "\n\n")
         self.text.config(state=tk.DISABLED)
         
     def send(self, *_):
