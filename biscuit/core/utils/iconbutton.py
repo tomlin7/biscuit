@@ -7,9 +7,9 @@ from .menubutton import Menubutton
 class IconButton(Menubutton):
     """Button with only an icon"""
     
-    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=14, *args, **kwargs) -> None:
+    def __init__(self, master, icon, event=lambda *_:..., icon2=None, iconsize=14, highlighted=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(cursor="hand2", **self.base.theme.utils.iconbutton)
+        self.config(cursor="hand2", **(self.base.theme.utils.iconbutton if not highlighted else self.base.theme.utils.button))
         self.icons = [icon, icon2]
         self.icon2 = icon2
         self.switch = False

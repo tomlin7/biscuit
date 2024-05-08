@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import tkinter as tk
 import typing
 
 import mistune
 from tkinterweb import HtmlFrame
-
-from biscuit.core.utils import Frame, Scrollbar
 
 if typing.TYPE_CHECKING:
     from . import Hover

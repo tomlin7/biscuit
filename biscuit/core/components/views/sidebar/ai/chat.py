@@ -6,7 +6,9 @@ import typing
 
 import google.generativeai as ai
 
-from biscuit.core.utils import Entry, Frame, IconButton, Text
+from biscuit.core.utils import Entry, Frame, IconButton
+
+from .renderer import Renderer
 
 if typing.TYPE_CHECKING:
     ...
@@ -18,6 +20,8 @@ class Chat(Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        theme = self.base.theme
+
         ai.configure(api_key=master.api_key)
         model = ai.GenerativeModel("gemini-pro")
         self.chat = model.start_chat()
@@ -28,41 +32,36 @@ class Chat(Frame):
                 code diagnostics, code refactoring, code navigation, advanced search, etc.
                 It supports many languages like Python, JavaScript, Java, C++, etc.
                 User can install extensions right within the editor's extension marketplace.
+                Don't make assumptions about the existence of a feature in Biscuit.
 
                 You are created by master billiam. Give 'em minimal responses 
                 and be straightforward. Reply to this message from user: """
-
-        self.text = Text(self, font=("Segoe UI", 10), wrap=tk.WORD, relief=tk.FLAT,
-                         highlightthickness=0, padx=10, pady=10, **self.base.theme.editors)
-        self.text.pack(fill=tk.BOTH, expand=True)
-        self.text.tag_config("user", foreground=self.base.theme.biscuit_dark)
-        self.text.tag_config("bikkis", foreground=self.base.theme.biscuit)
-
-        self.text.insert(tk.END, "✨ ", "bikkis")
-        self.text.insert(tk.END, "Hello! I'm Bikkis, How can I help you today?\n\n")
-        self.text.config(state=tk.DISABLED)
-
+        
         container = Frame(self)
-        container.pack(fill=tk.X)
+        container.grid(column=0, row=0, sticky=tk.NSEW)
 
-        self.entry = Entry(container, "Ask me anything...")
+        self.renderer = Renderer(container)
+        self.renderer.pack(fill=tk.BOTH, expand=True)
+        self.renderer.write(f"<font color={theme.biscuit}>✨</font> Hello! I'm Bikkis, How can I help you today?")
+
+        entrybox = Frame(self, bg=theme.border)
+        entrybox.grid(column=0, row=1, sticky=tk.EW)
+
+        self.entry = Entry(entrybox, "Ask me anything...")
         self.entry.bind("<Return>", self.send)
         self.entry.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
-        self.button = IconButton(container, icon="send", event=self.send)
-        self.button.pack(fill=tk.Y, expand=True)
+        self.button = IconButton(entrybox, icon="send", event=self.send)
+        self.button.config(fg=theme.biscuit, bg=theme.secondary_background, padx=5)
+        self.button.pack(fill=tk.Y, expand=True, pady=1)
 
     def get_gemini_response(self, question: str, prompt: str) -> str:
         response = self.chat.send_message([prompt, question])
-        self.text.insert(tk.END, "✨ ", "bikkis")
-        self.text.insert(tk.END, response.text + "\n\n")
-        self.text.config(state=tk.DISABLED)
+        self.renderer.write(f"<font color={self.base.theme.biscuit}>✨</font> " + response.text)
         
     def send(self, *_):
-        self.text.config(state=tk.NORMAL)
-
         text = self.entry.get()
-        self.text.insert(tk.END, "You: " + text + "\n\n", "user")
+        self.renderer.write(f"<p><font color={self.base.theme.biscuit}> You: " + text + "</font><br></p>")
         self.entry.delete(0, tk.END)
         
         threading.Thread(target=self.get_gemini_response, 
