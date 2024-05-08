@@ -14,7 +14,7 @@ from .separator import Separator
 
 
 class Menu(Toplevel):
-    def __init__(self, master, name, *args, **kwargs) -> None:
+    def __init__(self, master, name:str=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.active = False
         self.name = name

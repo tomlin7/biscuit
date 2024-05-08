@@ -20,3 +20,9 @@ class Entry(Frame):
 
     def get(self, *args) -> str:
         return self.entry.get(*args)
+    
+    def delete(self, *args) -> None:
+        self.entry.delete(*args)
+
+    def bind(self, *args, **kwargs) -> None:
+        self.entry.bind(*args, **kwargs)

@@ -1,3 +1,4 @@
+from .ai import AI
 from .debug import Debug
 from .explorer import Explorer
 from .extensions import Extensions
