@@ -18,7 +18,7 @@ from .iconbutton import IconButton
 from .iconlabel import IconLabel
 from .iconlabelbutton import IconLabelButton
 from .label import Label, TruncatedLabel, WrappingLabel
-from .linklabel import LinkLabel
+from .linklabel import LinkLabel, WebLinkLabel
 from .menubutton import Menubutton
 from .python_dialog import check_python_installation
 from .scrollableframe import ScrollableFrame

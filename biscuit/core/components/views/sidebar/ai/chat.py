@@ -5,6 +5,7 @@ import tkinter as tk
 import typing
 
 import google.generativeai as ai
+from google.api_core.exceptions import InvalidArgument
 
 from biscuit.core.utils import Entry, Frame, IconButton
 
@@ -23,8 +24,8 @@ class Chat(Frame):
         theme = self.base.theme
 
         ai.configure(api_key=master.api_key)
-        model = ai.GenerativeModel("gemini-pro")
-        self.chat = model.start_chat()
+        self.model = ai.GenerativeModel("gemini-pro")
+        self.chat = self.model.start_chat()
         self.prompt = """You are an assistant part of Biscuit code editor named Bikkis. 
                 You are an expert programmer, you'll help the user with his queries.
                 
@@ -40,9 +41,11 @@ class Chat(Frame):
         container = Frame(self)
         container.grid(column=0, row=0, sticky=tk.NSEW)
 
+        self.sparkles = f"<font color={theme.biscuit}>✨</font> "
+
         self.renderer = Renderer(container)
         self.renderer.pack(fill=tk.BOTH, expand=True)
-        self.renderer.write(f"<font color={theme.biscuit}>✨</font> Hello! I'm Bikkis, How can I help you today?")
+        self.renderer.write(self.sparkles + "Hello! I'm Bikkis, How can I help you today?")
 
         entrybox = Frame(self, bg=theme.border)
         entrybox.grid(column=0, row=1, sticky=tk.EW)
@@ -56,9 +59,16 @@ class Chat(Frame):
         self.button.pack(fill=tk.Y, expand=True, pady=1)
 
     def get_gemini_response(self, question: str, prompt: str) -> str:
-        response = self.chat.send_message([prompt, question])
-        self.renderer.write(f"<font color={self.base.theme.biscuit}>✨</font> " + response.text)
-        
+        try:
+            response = self.chat.send_message([prompt, question])
+            self.renderer.write(self.sparkles + response.text)
+        except Exception as e:
+            if isinstance(e, InvalidArgument):
+                self.base.notifications.error("Bikkis: Invalid API Key")
+                self.master.add_placeholder()
+            else:
+                self.renderer.write(self.sparkles + "Sorry, something went wrong. Please try again later")
+            
     def send(self, *_):
         text = self.entry.get()
         self.renderer.write(f"<p><font color={self.base.theme.biscuit}> You: " + text + "</font><br></p>")
@@ -66,3 +76,8 @@ class Chat(Frame):
         
         threading.Thread(target=self.get_gemini_response, 
                          args=(text, self.prompt), daemon=True).start()
+
+    def new_chat(self) -> None:
+        self.chat = self.model.start_chat()
+        self.renderer.content = ""
+        self.renderer.write(self.sparkles + "Hello! I'm Bikkis, How can I help you today?")

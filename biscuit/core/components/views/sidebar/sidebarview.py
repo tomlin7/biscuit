@@ -8,10 +8,10 @@ from ..view import View
 
 class SidebarView(View):
     """Base class of Sidebar views"""
-    
+    __buttons__ = []
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__: list[tuple(str, typing.Callable)] = [] # type: ignore
         self.__icon__ = 'preview'
         self.name = "View"
         self.__name__ = self.__class__.__name__
@@ -27,6 +27,9 @@ class SidebarView(View):
                  **self.base.theme.views.sidebar.title).grid(row=0, column=0, sticky=tk.EW)
         
         self.column = 1
+        if not self.__buttons__:
+            return
+        
         for i in self.__buttons__:
             IconButton(self.top, *i).grid(row=0, column=self.column, sticky=tk.E)
             self.column += 1
