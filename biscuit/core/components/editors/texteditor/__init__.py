@@ -25,6 +25,8 @@ class TextEditor(BaseEditor):
         self.exists = exists
         self.editable = True
         self.run_command_value = None
+        self.debugger = None
+        self.runmenu = None
         self.unsupported = False
         self.content_hash = ''
         
