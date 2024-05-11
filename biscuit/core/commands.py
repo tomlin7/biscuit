@@ -291,6 +291,9 @@ class Commands:
     @command_palette_ignore
     def show_run_config_palette(self, command) -> None:
         self.base.palette.show('runconf:', command)
+
+    def show_google_search(self, *_) -> None:
+        self.base.palette.show('google:')
     
     def configure_run_command(self, *_) -> None:
         self.base.palette.show('runconf:')
