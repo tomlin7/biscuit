@@ -114,6 +114,7 @@ class GUIManager(Tk, ConfigManager):
         self.settings.late_setup()
         self.history.generate_actionsets()
         self.git.late_setup()
+        self.register_misc_palettes()
 
         # force set focus on this window
         self.focus_set()
@@ -123,6 +124,11 @@ class GUIManager(Tk, ConfigManager):
 
         self.setup_api()
         self.extensions_GUI.initialize()
+
+    def register_misc_palettes(self) -> None:
+        self.google_search = ActionSet("Search on google...", "google:", 
+                                       pinned=[["Search on Google: {}", search_google],])
+        self.palette.register_actionset(lambda:self.google_search)
     
     def set_title(self, title: str=None) -> None:
         if not self.initialized:
