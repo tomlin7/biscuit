@@ -37,16 +37,26 @@ class Sidebar(Frame):
 
     def add_views(self, views: list[SidebarView]) -> None:
         "Append views to list. Create tabs for them."
+
         for view in views:
             self.add_view(view)
 
     def add_view(self, view: SidebarView) -> None:
         "Appends a view to list. Create a tab."
+        
         self.views.append(view)
         self.slots.add_slot(view)
 
+    def create_view(self, name: str, icon: str="browser") -> SidebarView:
+        "Creates a new view from name and icon and returns it."
+
+        view = SidebarView(self, name, icon)
+        self.add_view(view)
+        return view
+
     def delete_all_views(self) -> None:
         "Permanently delete all views."
+
         for view in self.views:
             view.destroy()
 
@@ -54,46 +64,55 @@ class Sidebar(Frame):
 
     def delete_view(self, view: SidebarView) -> None:
         "Permanently delete a view."
+
         view.destroy()
         self.views.remove(view)
 
     @property
     def explorer(self) -> Explorer:
         "Get explorer view."
+
         return self.default_views[0]
 
     @property
     def outline(self) -> Outline:
         "Get outline view."
+
         return self.default_views[1]
 
     @property
     def search(self) -> Search:
         "Get search view."
+
         return self.default_views[2]
 
     @property
     def source_control(self) -> SourceControl:
         "Get source control view."
+        
         return self.default_views[3]
 
     @property
     def debug(self) -> Debug:
         "Get debugger view."
+        
         return self.default_views[4]
     
     @property
     def ai(self) -> AI:
         "Get AI view."
+        
         return self.default_views[5]
 
     @property
     def extensions(self) -> Extensions:
         "Get extensions view."
+        
         return self.default_views[6]
 
     def show_view(self, view: SidebarView) -> None:
         "Show a view."
+        
         for i in self.slots.slots:
             if i.view == view:
                 self.slots.set_active_slot(i)
@@ -102,24 +121,30 @@ class Sidebar(Frame):
 
     def show_explorer(self) -> None:
         "Show explorer view."
+        
         self.show_view(self.default_views[0])
 
     def show_outline(self) -> None:
         "Show outline view."
+        
         self.show_view(self.default_views[1])
 
     def show_search(self) -> None:
         "Show search view."
+        
         self.show_view(self.default_views[2])
 
     def show_source_control(self) -> None:
         "Show source control view."
+        
         self.show_view(self.default_views[3])
 
     def show_debug(self) -> None:
         "Show debug view."
+        
         self.show_view(self.default_views[4])
 
     def show_extensions(self) -> None:
         "Show extensions view."
+        
         self.show_view(self.default_views[5])

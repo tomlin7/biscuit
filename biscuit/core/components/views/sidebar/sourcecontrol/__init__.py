@@ -12,7 +12,7 @@ class SourceControl(SidebarView):
         self.name = 'Source Control'
 
         self.tree = Git(self)
-        self.add_widget(self.tree)
+        self.add_item(self.tree)
         self.bind('<Visibility>', self.reload_tree)
 
         self.menu = SourceControlMenu(self, 'files')

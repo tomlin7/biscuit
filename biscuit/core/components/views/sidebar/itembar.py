@@ -4,13 +4,13 @@ from biscuit.core.utils import Frame, IconButton
 
 
 class ItemBar(Frame):
-    def __init__(self, master, title=None, buttons=(), *args, **kwargs) -> None:
+    def __init__(self, master, title: str, buttons=(), *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.itembar)
 
         self.grid_columnconfigure(1, weight=1)
 
-        self.title = tk.StringVar()
+        self.title = tk.StringVar(self)
         if title:
             self.set_title(title)
 
@@ -34,7 +34,7 @@ class ItemBar(Frame):
         for btn in buttons:
             self.add_button(*btn)
 
-    def set_title(self, title) -> None:
+    def set_title(self, title: str) -> None:
         self.title.set(title.upper())
 
     def toggle_content(self, *_) -> None:

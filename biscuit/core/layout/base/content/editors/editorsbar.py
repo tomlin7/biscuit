@@ -49,4 +49,3 @@ class Editorsbar(Frame):
         for button in self.buttons:
             button.pack_forget()
         self.buttons.clear()
-

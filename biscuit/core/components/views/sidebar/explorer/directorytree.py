@@ -23,7 +23,7 @@ class DirectoryTree(SidebarViewItem):
         self.__buttons__ = (('new-file', lambda: self.base.palette.show('newfile:')), 
                             ('new-folder', lambda: self.base.palette.show('newfolder:')), 
                             ('refresh', self.refresh_root), ('collapse-all', self.collapse_all))
-        super().__init__(master, itembar, *args, **kwargs)
+        super().__init__(master, itembar=itembar, *args, **kwargs)
 
         self.nodes = {}
 

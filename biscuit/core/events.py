@@ -84,7 +84,8 @@ class EventManager(GUIManager, ConfigManager):
         except Exception as e:
             self.logger.error(f"Checking git failed: {e}")
             self.notifications.error("Checking git failed: see logs")
-            return
+        
+        self.event_generate("<<DirectoryChanged>>", data=dir)
 
     def update_git(self) -> None:
         self.statusbar.update_git_info()

@@ -37,14 +37,15 @@ class GUIManager(Tk, ConfigManager):
             style = style | WS_EX_APPWINDOW
             windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
             
-            myappid = 'com.tomlin7.biscuit.2'
+            myappid = 'com.tomlin7.biscuit'
             windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
         # TODO fr i still can't figure this shit out yet
         # window is going too big in low DPI, when I adjust scale for normal size in high DPI
         # window is going too small in high DPI, when I adjust scale for normal size in low DPI
         self.dpi_value = self.winfo_fpixels('1i')
-        self.scale = self.dpi_value / 90 
+        print(self.dpi_value)
+        self.scale = self.dpi_value / 95.90560471976401 
         self.tk.call('tk', 'scaling', self.scale)
 
         self.min_width = round(500)

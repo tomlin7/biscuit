@@ -96,4 +96,29 @@ class GitRepo(git.Repo):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
-            self.master.base.notifications.error(e) 
+            self.master.base.notifications.error(e)
+
+    def get_remote(self, name):
+        return self.remotes[name]
+    
+    def get_remote_origin(self):
+        return self.get_remote("origin")
+    
+    def get_remote_url(self, name):
+        return self.strip_github_url(self.get_remote(name).url)
+    
+    def get_remote_origin_url(self):
+        return self.get_remote_url("origin")
+    
+    def strip_github_url(self, url):
+        if url.endswith(".git"):
+            url = url[:-4]
+        return url
+    
+    def get_owner_and_repo(self, url):
+        url = self.strip_github_url(url).split("/")
+        return url[-2], url[-1]
+
+    #TODO: push, pull, fetch
+    def get_active_branch(self):
+        return self.active_branch.name
