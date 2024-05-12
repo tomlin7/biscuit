@@ -33,6 +33,8 @@ class PRs(SidebarViewItem):
     def set_url(self, owner: str, repo: str) -> None:
         """Sets the URL for the current repository."""
         
+        self.owner = owner
+        self.repo = repo
         self.url = self.url_template.format(owner, repo)
 
     def on_click(self, *_) -> None:

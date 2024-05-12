@@ -124,6 +124,7 @@ class EventManager(GUIManager, ConfigManager):
         self.set_title()
         self.git_found = False
         self.update_git()
+        self.event_generate("<<DirectoryChanged>>")
 
     def close_active_editor(self) -> None:
         self.editorsmanager.close_active_editor()
