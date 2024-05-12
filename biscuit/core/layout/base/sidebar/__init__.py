@@ -31,7 +31,7 @@ class Sidebar(Frame):
 
         self.views = []
 
-        self.default_views = [Explorer(self), Outline(self), Search(self), SourceControl(self), Debug(self), AI(self), Extensions(self)]
+        self.default_views = [Explorer(self), Outline(self), Search(self), SourceControl(self), Debug(self), AI(self), GitHub(self), Extensions(self)]
         self.add_views(self.default_views)
         self.slots.toggle_first_slot()
 
@@ -105,10 +105,16 @@ class Sidebar(Frame):
         return self.default_views[5]
 
     @property
+    def github(self) -> GitHub:
+        "Get GitHub view."
+        
+        return self.default_views[6]
+
+    @property
     def extensions(self) -> Extensions:
         "Get extensions view."
         
-        return self.default_views[6]
+        return self.default_views[7]
 
     def show_view(self, view: SidebarView) -> None:
         "Show a view."

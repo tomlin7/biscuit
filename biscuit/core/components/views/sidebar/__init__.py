@@ -2,6 +2,7 @@ from .ai import AI
 from .debug import Debug
 from .explorer import Explorer
 from .extensions import Extensions
+from .github import GitHub
 from .outline import Outline
 from .search import Search
 from .sidebarview import SidebarView
