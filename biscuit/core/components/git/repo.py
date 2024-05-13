@@ -117,6 +117,9 @@ class GitRepo(git.Repo):
     
     def get_owner_and_repo(self, url):
         url = self.strip_github_url(url).split("/")
+        if len(url) == 2:
+            # SSH url (git@github.com:username/repo.git)
+            return url[0].split(":")[1], url[1]
         return url[-2], url[-1]
 
     #TODO: push, pull, fetch
