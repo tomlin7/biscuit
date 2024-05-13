@@ -72,7 +72,7 @@ class Settings:
         )
     
     def setup_icon(self) -> None:
-        self.base.iconbitmap(self.res.get_res_path("icon.ico"))
+        self.base.call('wm', 'iconphoto', self.base._w, tk.PhotoImage(file=self.res.get_res_path("icon.png")))
 
     def setup_font(self) -> None:
         try:
