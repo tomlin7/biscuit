@@ -30,6 +30,9 @@ class PRs(SidebarViewItem):
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.tree.config(yscrollcommand=self.scrollbar.set)
 
+        self.prs_actionset = ActionSet("Search GitHub pull requests", "pr:", [])
+        self.base.palette.register_actionset(lambda: self.prs_actionset)
+
     def set_url(self, owner: str, repo: str) -> None:
         """Sets the URL for the current repository."""
         
@@ -55,10 +58,13 @@ class PRs(SidebarViewItem):
             self.base.notifications.error(f"Failed to fetch PRs from {self.owner}/{self.repo}")
             return
         
-        issues = json.loads(response.text)
-        issues = [(f"{issue['title']} #{issue['number']}", issue['html_url'], lambda _, link=issue['html_url']: print(link)) for issue in issues]
+        prs = json.loads(response.text)
+        if not prs:
+            return
+        
+        self.prs_actionset.update([(f"{pr['title']} #{pr['number']}", lambda *_, link=pr['html_url']: webbrowser.open(link)) for pr in prs])
+        prs = ((f"{pr['title']} #{pr['number']}", pr['html_url']) for pr in prs)
 
         self.tree.delete(*self.tree.get_children())
-        if issues:
-            for issue in issues:
-                self.tree.insert('', tk.END, text=issue[0], values=(issue[1],))
+        for pr in prs:
+            self.tree.insert('', tk.END, text=pr[0], values=(pr[1],))

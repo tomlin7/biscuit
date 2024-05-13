@@ -32,6 +32,9 @@ class Issues(SidebarViewItem):
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.tree.config(yscrollcommand=self.scrollbar.set)
 
+        self.issues_actionset = ActionSet("Search GitHub issues", "issue:", [])
+        self.base.palette.register_actionset(lambda: self.issues_actionset)
+
     def set_url(self, owner: str, repo: str) -> None:
         """Sets the URL for the current repository."""
         
@@ -58,9 +61,12 @@ class Issues(SidebarViewItem):
             return
         
         issues = json.loads(response.text)
-        issues = [(f"{issue['title']} #{issue['number']}", issue['html_url'], lambda _, link=issue['html_url']: print(link)) for issue in issues]
+        if not issues:
+            return
+        
+        self.issues_actionset.update([(f"{issue['title']} #{issue['number']}", lambda *_, link=issue['html_url']: webbrowser.open(link)) for issue in issues])
+        issues = ((f"{issue['title']} #{issue['number']}", issue['html_url']) for issue in issues)
 
         self.tree.delete(*self.tree.get_children())
-        if issues:
-            for issue in issues:
-                self.tree.insert('', tk.END, text=issue[0], values=(issue[1],))
+        for issue in issues:
+            self.tree.insert('', tk.END, text=issue[0], values=(issue[1],))
