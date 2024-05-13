@@ -10,10 +10,15 @@ class SidebarViewItem(Frame):
     """Containers that fit in SidebarViews
     These also come with an ItemBar that can maximize, minimize and manage the container
     """
+    __buttons__ = []
+    title = "Item"
 
-    def __init__(self, master, itembar=True, *args, **kwargs) -> None:
+    def __init__(self, master, title: str=None, itembar=True, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
+
+        if title:
+            self.title = title
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)

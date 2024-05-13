@@ -298,6 +298,12 @@ class Commands:
     def configure_run_command(self, *_) -> None:
         self.base.palette.show('runconf:')
 
+    def search_github_issues(self, *_) -> None:
+        self.base.palette.show('issue:')
+    
+    def search_github_prs(self, *_) -> None:
+        self.base.palette.show('pr:')
+
     def show_file_search(self, *_) -> None:
         self.base.palette.show()
 

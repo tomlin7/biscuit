@@ -8,11 +8,11 @@ from .layout import *
 
 
 class GUIManager(Tk, ConfigManager):
-    """
-    GUI MANAGER
-    -----------
-
-    GUI part of Biscuit core (Tkinter).
+    """GUI part of Biscuit core (Tkinter).
+    Initializes the underlying tkinter GUI and sets up the main components.
+    - This is the root of the GUI, and all major components are initialized here.
+    - DPI scaling is handled here.
+    - Also gives quick access to major components of the editor from API.
     """
 
     def __init__(self, *args, **kwargs):
@@ -37,21 +37,22 @@ class GUIManager(Tk, ConfigManager):
             style = style | WS_EX_APPWINDOW
             windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
             
-            myappid = 'com.tomlin7.biscuit.2'
+            myappid = 'com.tomlin7.biscuit'
             windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
         # TODO fr i still can't figure this shit out yet
         # window is going too big in low DPI, when I adjust scale for normal size in high DPI
         # window is going too small in high DPI, when I adjust scale for normal size in low DPI
         self.dpi_value = self.winfo_fpixels('1i')
-        self.scale = self.dpi_value / 90 
+        print(self.dpi_value)
+        self.scale = self.dpi_value / 95.90560471976401 
         self.tk.call('tk', 'scaling', self.scale)
 
         self.min_width = round(500)
         self.min_height = round(500)
 
         app_width = round(1150 * self.scale)
-        app_height = round(600 * self.scale)
+        app_height = round(650 * self.scale)
         x = int((self.winfo_screenwidth() - app_width) / 2)
         y = int((self.winfo_screenheight() - app_height) / 2)
 

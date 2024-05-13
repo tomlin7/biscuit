@@ -1,4 +1,5 @@
 import tkinter as tk
+from typing import Any
 
 from biscuit.core.components.editors.texteditor import TextEditor
 
@@ -35,6 +36,15 @@ class HTMLEditor(BaseEditor):
         self.editor.bind("<<Change>>", self.on_change)
         self.edit_undo = self.editor.edit_undo
         self.editor_redo = self.editor.edit_redo
+
+    
+    @property
+    def unsaved_changes(self) -> bool:
+        return self.editor.unsaved_changes
+    
+    @property
+    def debugger(self) -> Any:
+        return self.editor.debugger
 
     def toggle_preview(self,*_):
         if self.preview_enabled:    

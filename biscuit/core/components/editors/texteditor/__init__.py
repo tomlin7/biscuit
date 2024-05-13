@@ -31,7 +31,7 @@ class TextEditor(BaseEditor):
         self.content_hash = ''
         
         if not self.standalone:
-            self.__buttons__ = [('sync', self.base.editorsmanager.reopen_active_editor),]
+            self.__buttons__ = [('refresh', self.base.editorsmanager.reopen_active_editor),]
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)

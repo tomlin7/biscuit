@@ -18,7 +18,7 @@ class Extensions(SidebarView):
         self.searchbox.pack(fill=tk.X, anchor=tk.N, padx=10, pady=7)
 
         self.results = Results(self)
-        self.add_widget(self.results)
+        self.add_item(self.results)
         self.add_button('refresh', self.results.refresh)
         self.add_button('clear-all', self.results.clear)
 
