@@ -52,9 +52,14 @@ class Tabs(Frame):
             # most probably in case of diff editors, not handled
             return
         
-        self.tabs.remove(tab)
+        was_selected = tab == self.active_tab
+        
+        assert self.tabs.pop(i) == tab
         tab.destroy()
         self.master.master.close_editor(tab.editor)
+
+        if not was_selected:
+            return
 
         if self.tabs:
             if i < len(self.tabs):
@@ -63,7 +68,6 @@ class Tabs(Frame):
                 self.tabs[i-1].select()
         else:
             self.active_tab = None
-        self.master.master.refresh()
     
     def close_tab_helper(self, editor: str) -> None:
         for tab in self.tabs:

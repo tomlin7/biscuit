@@ -26,7 +26,7 @@ class Debug(SidebarView):
         self.callstack = CallStack(self)
 
         self.placeholder = DebugPlaceholder(self)
-        self.add_widget(self.placeholder)
+        self.add_item(self.placeholder)
 
     def refresh(self):
         """Refresh the debug view."""
@@ -41,12 +41,12 @@ class Debug(SidebarView):
         """Show the debug view."""
 
         self.placeholder.pack_forget()
-        self.add_widget(self.variables)
-        self.add_widget(self.callstack)
+        self.add_item(self.variables)
+        self.add_item(self.callstack)
 
     def hide(self):
         """Hide the debug view and show the placeholder."""
 
         self.variables.pack_forget()
         self.callstack.pack_forget()
-        self.add_widget(self.placeholder)
+        self.add_item(self.placeholder)

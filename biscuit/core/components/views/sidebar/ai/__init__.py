@@ -44,12 +44,12 @@ class AI(SidebarView):
             self.add_placeholder()
         
     def add_placeholder(self) -> None:
-        self.add_widget(self.placeholder)
+        self.add_item(self.placeholder)
         if self.api_key:
             self.placeholder.api_key.set(self.api_key)
 
         if self.chat:
-            self.remove_widget(self.chat)
+            self.remove_item(self.chat)
             self.chat.destroy()
 
     def add_chat(self, api_key: str=None) -> None:
@@ -60,13 +60,13 @@ class AI(SidebarView):
         self.db.commit()
 
         if self.chat:
-            self.remove_widget(self.chat)
+            self.remove_item(self.chat)
             self.chat.destroy()
             self.chat = None
         
         self.chat = Chat(self)
-        self.add_widget(self.chat)
-        self.remove_widget(self.placeholder)
+        self.add_item(self.chat)
+        self.remove_item(self.placeholder)
 
     def new_chat(self) -> None:
         if self.chat:

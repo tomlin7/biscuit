@@ -26,7 +26,7 @@ class Explorer(SidebarView):
         self.open_editors = OpenEditors(self)
         self.open_editors.pack(fill=tk.X)
         self.directory = DirectoryTree(self, observe_changes=True)
-        self.add_widget(self.directory)
+        self.add_item(self.directory)
 
         self.filesearch_actionset = ActionSet("Search files", "file:", [])
 

@@ -20,7 +20,7 @@ class Outline(SidebarView):
         self.name = 'Outline'
 
         self.tree = OutlineTree(self)
-        self.add_widget(self.tree)
+        self.add_item(self.tree)
 
     def update_symbols(self, tab: Text, response: list[lsp.DocumentSymbol]) -> str:
         return self.tree.update_symbols(tab, response)
