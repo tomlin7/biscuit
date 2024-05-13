@@ -3,27 +3,30 @@ import threading
 import tkinter as tk
 
 from biscuit.core.components.floating.palette import ActionSet
-from biscuit.core.utils.label import WrappingLabel
+from biscuit.core.utils import WrappingLabel
 
 from ..sidebarview import SidebarView
 from .issues import Issues
+from .menu import GitHubMenu
 from .prs import PRs
 
 
 class GitHub(SidebarView):
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = []
+        self.__buttons__ = [('refresh', self.on_directory_change)]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = 'github'
         self.name = 'GitHub'
 
-        # self.menu = ExplorerMenu(self, 'files')
-        # self.menu.add_checkable("Open Editors", self.toggle_active_editors, checked=True)
-        # self.menu.add_checkable("Search", self.base.commands.show_file_search)
-        # self.add_button('ellipsis', self.menu.show)
+        self.menu = GitHubMenu(self, 'files')
+        self.menu.add_checkable("Open Issues", self.toggle_issues, checked=True)
+        self.menu.add_checkable("Pull Requests", self.toggle_prs, checked=True)
+        self.add_button('ellipsis', self.menu.show)
+
+        self.issues_enabled = True
+        self.prs_enabled = True
 
         self.git = self.base.git
-
         self.issues = Issues(self)
         self.prs = PRs(self)
 
@@ -83,5 +86,25 @@ class GitHub(SidebarView):
         """Shows the content of the view."""
         
         self.placeholder.pack_forget()
-        self.issues.pack(fill=tk.BOTH, expand=True)
-        self.prs.pack(fill=tk.BOTH, expand=True)
+        if self.issues_enabled:
+            self.issues.pack(fill=tk.BOTH, expand=True)
+        if self.prs_enabled:
+            self.prs.pack(fill=tk.BOTH, expand=True)
+
+    def toggle_issues(self) -> None:
+        """Toggles the visibility of the issues view."""
+        
+        if self.issues_enabled:
+            self.issues.pack_forget()
+        else:
+            self.issues.pack(fill=tk.BOTH, expand=True)
+        self.issues_enabled = not self.issues_enabled
+        
+    def toggle_prs(self) -> None:
+        """Toggles the visibility of the PRs view."""
+        
+        if self.prs_enabled:
+            self.prs.pack_forget()
+        else:
+            self.prs.pack(fill=tk.BOTH, expand=True)
+        self.prs_enabled = not self.prs_enabled

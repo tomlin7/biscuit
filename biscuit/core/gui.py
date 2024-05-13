@@ -8,11 +8,11 @@ from .layout import *
 
 
 class GUIManager(Tk, ConfigManager):
-    """
-    GUI MANAGER
-    -----------
-
-    GUI part of Biscuit core (Tkinter).
+    """GUI part of Biscuit core (Tkinter).
+    Initializes the underlying tkinter GUI and sets up the main components.
+    - This is the root of the GUI, and all major components are initialized here.
+    - DPI scaling is handled here.
+    - Also gives quick access to major components of the editor from API.
     """
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +52,7 @@ class GUIManager(Tk, ConfigManager):
         self.min_height = round(500)
 
         app_width = round(1150 * self.scale)
-        app_height = round(600 * self.scale)
+        app_height = round(650 * self.scale)
         x = int((self.winfo_screenwidth() - app_width) / 2)
         y = int((self.winfo_screenheight() - app_height) / 2)
 
