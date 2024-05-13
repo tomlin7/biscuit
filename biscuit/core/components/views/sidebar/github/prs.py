@@ -60,6 +60,7 @@ class PRs(SidebarViewItem):
         
         prs = json.loads(response.text)
         if not prs:
+            self.tree.insert('', tk.END, text="No open pull requests")
             return
         
         self.prs_actionset.update([(f"{pr['title']} #{pr['number']}", lambda *_, link=pr['html_url']: webbrowser.open(link)) for pr in prs])

@@ -62,6 +62,7 @@ class Issues(SidebarViewItem):
         
         issues = json.loads(response.text)
         if not issues:
+            self.tree.insert('', tk.END, text="No open issues")
             return
         
         self.issues_actionset.update([(f"{issue['title']} #{issue['number']}", lambda *_, link=issue['html_url']: webbrowser.open(link)) for issue in issues])
