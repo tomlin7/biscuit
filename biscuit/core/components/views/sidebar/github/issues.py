@@ -48,7 +48,7 @@ class Issues(SidebarViewItem):
         try:
             item = self.tree.selection()[0]
             link = self.tree.item(item, "values")[0]
-            webbrowser.open(link)
+            webbrowser.open(link)d
         except Exception as e:
             pass
     
@@ -65,16 +65,8 @@ class Issues(SidebarViewItem):
             self.tree.insert('', tk.END, text="No open issues")
             return
         
-        for index, issue in enumerate(issues):
-            # Remove the pull requests from issues
-            try:
-                issue["pull_request"]
-                del issues[index]
-            except KeyError:
-                pass
-
-        self.issues_actionset.update([(f"{issue['title']} #{issue['number']}", lambda *_, link=issue['html_url']: webbrowser.open(link)) for issue in issues])
-        issues = ((f"{issue['title']} #{issue['number']}", issue['html_url']) for issue in issues)
+        self.issues_actionset.update([(f"{issue['title']} #{issue['number']}", lambda *_, link=issue['html_url']: webbrowser.open(link)) for issue in issues if 'pull_request' not in issue])
+        issues = ((f"{issue['title']} #{issue['number']}", issue['html_url']) for issue in issues if 'pull_request' not in issue)
 
         self.tree.delete(*self.tree.get_children())
         for issue in issues:
