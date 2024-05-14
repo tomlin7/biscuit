@@ -65,8 +65,8 @@ class Issues(SidebarViewItem):
             self.tree.insert('', tk.END, text="No open issues")
             return
         
-        self.issues_actionset.update([(f"{issue['title']} #{issue['number']}", lambda *_, link=issue['html_url']: webbrowser.open(link)) for issue in issues])
-        issues = ((f"{issue['title']} #{issue['number']}", issue['html_url']) for issue in issues)
+        self.issues_actionset.update([(f"{issue['title']} #{issue['number']}", lambda *_, link=issue['html_url']: webbrowser.open(link)) for issue in issues if 'pull_request' not in issue])
+        issues = ((f"{issue['title']} #{issue['number']}", issue['html_url']) for issue in issues if 'pull_request' not in issue)
 
         self.tree.delete(*self.tree.get_children())
         for issue in issues:
