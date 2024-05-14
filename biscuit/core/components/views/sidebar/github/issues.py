@@ -48,7 +48,7 @@ class Issues(SidebarViewItem):
         try:
             item = self.tree.selection()[0]
             link = self.tree.item(item, "values")[0]
-            webbrowser.open(link)d
+            webbrowser.open(link)
         except Exception as e:
             pass
     
