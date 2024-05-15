@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import typing
 
+from biscuit.core.api.releases import Releases
+
 if typing.TYPE_CHECKING:
     from biscuit.core import App
 
@@ -39,6 +41,8 @@ class ExtensionsAPI:
         self.notifications = Notifications(self.base)
         self.utils = Utils(self.base)
         self.views = Views(self.base)
+
+        self.releases = Releases(self.base)
 
         self.Game = BaseGame
         self.Editor = BaseEditor

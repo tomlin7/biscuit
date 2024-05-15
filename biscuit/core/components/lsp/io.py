@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
 
 
 class IO:
-    def __init__(self, master: App, cmd: str, cwd: str) -> None:
+    def __init__(self, master, cmd: str, cwd: str) -> None:
         """IO for LSP Client
         
         Attributes
@@ -28,7 +28,7 @@ class IO:
         """
         
         self.master = master
-        self.base = master.base
+        self.base: App = master.base
         self.alive = True
         self.cmd = cmd
         self.cwd = cwd
@@ -55,7 +55,7 @@ class IO:
     def start(self, *_) -> None:
         "Start the process"
         self.p = subprocess.Popen(
-            self.cmd, 
+            self.cmd, cwd=self.cwd,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE, 
             stderr=subprocess.PIPE,

@@ -33,7 +33,7 @@ class LanguageServerManager:
             #TODO: currently only supports lsp.SymbolInformation; implement this for lsp.DocumentSymbol
             pass
 
-    def register_langserver(self, language, command) -> None:
+    def register_langserver(self, language: str, command: str) -> None:
         self.langservers[language] = command
     
     def tab_opened(self, tab: Text) -> None:
