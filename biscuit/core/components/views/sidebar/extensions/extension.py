@@ -16,7 +16,7 @@ class Extension(Frame):
         self.name = name
         self.file = os.path.join(self.base.extensionsdir, data[0])
         self.author = data[1]
-        self.description = data[2]
+        self.description = data[2][:35] + "..." if len(data[2]) > 30 else data[2]
         self.url = f"{master.repo_url}extensions/{data[0]}"
         self.installed = os.path.isfile(self.file)
 

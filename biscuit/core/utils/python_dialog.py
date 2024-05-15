@@ -1,3 +1,4 @@
+import os
 import subprocess as sp
 import webbrowser
 from tkinter import messagebox
@@ -13,7 +14,10 @@ def show_python_not_installed_message():
 
 def check_python_installation():
     try:
-        sp.check_call(["python", "--version"])
+        if os.name == "nt":
+            sp.check_call(["python", "--version"])
+        else:
+            sp.check_call(["python3", "--version"])
         reqs = sp.check_output(['pip', 'freeze'])
 
         # install python language server

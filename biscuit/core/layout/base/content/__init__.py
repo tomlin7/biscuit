@@ -55,6 +55,9 @@ class ContentPane(Frame):
                 self.editorspane.pack_forget()
             else:
                 self.panel.pack(fill=tk.BOTH, pady=(1, 0))
+            
+            if not self.panel.terminals.active_terminal:
+                self.panel.terminals.open_terminal()
 
         self._panel_enabled = not self._panel_enabled
 

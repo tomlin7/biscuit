@@ -27,6 +27,18 @@ class SysInfo:
         self.processor = platform.processor()
         self.python_version = sys.version
         self.tk_version = tk.TclVersion
+
+    @property
+    def is_windows(self) -> bool:
+        return self.os == "Windows"
+    
+    @property
+    def is_linux(self) -> bool:
+        return self.os == "Linux"
+    
+    @property
+    def is_macos(self) -> bool:
+        return self.os == "Darwin"
     
     def get_current_stats(self) -> str: 
         """Get current CPU and Memory usage"""

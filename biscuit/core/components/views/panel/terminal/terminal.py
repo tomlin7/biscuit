@@ -63,7 +63,7 @@ class Terminal(PanelView):
         self.alive = True
         self.last_command = None
         
-        self.p = PTY.spawn([self.shell])
+        self.p = PTY.spawn([self.shell], cwd=self.cwd)
         Thread(target=self.write_loop, daemon=True).start()
 
     def destroy(self, *_) -> None:
