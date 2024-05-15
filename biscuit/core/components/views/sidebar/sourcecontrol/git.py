@@ -130,3 +130,9 @@ class Git(Frame):
 
     def commit(self, *_) -> None:
         self.base.git.repo.commit_files(self.get_commit_message())
+
+    def push(self, *_) -> None:
+        self.base.git.repo.push_files()
+
+    def pull(self, *_) -> None:
+        self.base.git.repo.pull_files()

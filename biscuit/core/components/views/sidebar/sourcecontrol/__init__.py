@@ -11,23 +11,25 @@ class SourceControl(SidebarView):
         self.__icon__ = 'source-control'
         self.name = 'Source Control'
 
-        self.tree = Git(self)
-        self.add_item(self.tree)
+        self.git = Git(self)
+        self.add_item(self.git)
         self.bind('<Visibility>', self.reload_tree)
 
         self.menu = SourceControlMenu(self, 'files')
-        self.menu.add_checkable("Show Staged", self.tree.toggle_staged, checked=True)
+        self.menu.add_checkable("Show Staged", self.git.toggle_staged, checked=True)
         self.menu.add_separator(10)
-        self.menu.add_checkable("Show Changes", self.tree.toggle_changes, checked=True)
+        self.menu.add_checkable("Show Changes", self.git.toggle_changes, checked=True)
         self.add_button('refresh', self.refresh)
+        self.add_button('repo-push', self.git.push)
+        self.add_button('repo-pull', self.git.pull)
         self.add_button('ellipsis', self.menu.show)
     
     def reload_tree(self, *_) -> None:
-        self.tree.open_repo()
+        self.git.open_repo()
     
     def refresh(self, *_) -> None:
         if self.base.git_found:
-            self.tree.enable_tree()
-            self.tree.open_repo()
+            self.git.enable_tree()
+            self.git.open_repo()
         else:
-            self.tree.disable_tree()
+            self.git.disable_tree()

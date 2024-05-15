@@ -99,11 +99,19 @@ class GitRepo(git.Repo):
             branch = self.active_branch.name
         return self.do(self.remotes[remote].push, branch, **kwargs)
 
+    def pull_files(self, remote=None, branch=None, **kwargs):
+        if not remote:
+            remote = "origin"
+        if not branch:
+            branch = self.active_branch.name
+        return self.do(self.remotes[remote].pull, branch, **kwargs)
+
     def do(self, fn, *args, **kwargs):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
-            self.master.base.notifications.error(e)
+            self.base.notifications.error(e)
+            self.base.logger.error(e)
 
     def get_remote(self, name):
         return self.remotes[name]
