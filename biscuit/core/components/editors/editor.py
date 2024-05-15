@@ -18,11 +18,25 @@ class BaseEditor(Frame):
         self.diff = False
         self.run_command_value = ""
         self.language = ""
+        self.standalone = False
+        self.minimalist = False
+        self.exists = True
+        self.debugger = None
+        self.runmenu = None
+        self.unsupported = False
+        self.content_hash = ''
+        self.text = None
 
         self.__buttons__ = []
 
         self.register_drop_target(dnd.FILE)
         self.bind("<<Drop>>", self.ondrop)
+
+    def unsaved_changes(self):
+        ...
+    
+    def breakpoints(self, *_):
+        ...
     
     def ondrop(self, event):
         if not event.data:

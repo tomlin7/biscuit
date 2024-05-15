@@ -30,9 +30,9 @@ class Git(Frame):
         self.container = ScrollableFrame(self, **self.base.theme.views.sidebar.item)
         self.container.canvas.config(**self.base.theme.views.sidebar.item)
 
-        self.staged_changes_tree = StagedChanges(self.container, *args, **kwargs)
+        self.staged_changes_tree = StagedChanges(self, *args, **kwargs)
         self.container.add(self.staged_changes_tree, fill=tk.BOTH, expand=True)
-        self.changes_tree = Changes(self.container, *args, **kwargs)
+        self.changes_tree = Changes(self, *args, **kwargs)
         self.container.add(self.changes_tree, fill=tk.BOTH, expand=True)
 
         self.placeholder = ChangesTreePlaceholder(self)
@@ -97,13 +97,19 @@ class Git(Frame):
         if not self.base.git_found:
             return
         
-        self.staged_changes_tree.pack_forget() if self.staged_changes_tree.winfo_ismapped() else self.staged_changes_tree.pack(fill=tk.BOTH, before=self.changes_tree)
+        if self.staged_changes_tree.winfo_ismapped():
+            self.staged_changes_tree.pack_forget() 
+        else:
+            self.staged_changes_tree.pack(fill=tk.BOTH, before=self.changes_tree, in_=self.container)
 
     def toggle_changes(self, *_) -> None:
         if not self.base.git_found:
             return
         
-        self.changes_tree.pack_forget() if self.changes_tree.winfo_ismapped() else self.changes_tree.pack(fill=tk.BOTH, after=self.staged_changes_tree)
+        if self.changes_tree.winfo_ismapped():
+            self.changes_tree.pack_forget()
+        else:
+            self.changes_tree.pack(fill=tk.BOTH, after=self.staged_changes_tree, in_=self.container)
 
     def enable_tree(self) -> None:
         self.placeholder.pack_forget()

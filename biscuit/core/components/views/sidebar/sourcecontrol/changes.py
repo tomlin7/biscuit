@@ -42,9 +42,8 @@ class Changes(SidebarViewItem):
         if path in self.items and self.items[path][1] == kind:
             return
 
-        new_item = ChangeItem(self.content, path, kind)
-        new_item.master = self
-        new_item.pack(fill=tk.X)
+        new_item = ChangeItem(self, path, kind)
+        new_item.pack(fill=tk.X, in_=self.content)
         self.items[path] = (new_item, kind)
 
     def git_add_all(self, *_) -> None:

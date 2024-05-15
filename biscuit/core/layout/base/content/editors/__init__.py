@@ -155,7 +155,8 @@ class EditorsPane(Frame):
     def close_editor(self, editor: Editor) -> None:
         "removes an editor, keeping it in cache."
         
-        self.active_editors.remove(editor)
+        if editor in self.active_editors:
+            self.active_editors.remove(editor)
         editor.grid_forget()
         self.refresh()
 

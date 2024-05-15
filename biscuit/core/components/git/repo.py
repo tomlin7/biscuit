@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import os
 import typing
 
 import git
+import git.exc
 
 if typing.TYPE_CHECKING:
     from . import Git
@@ -76,8 +78,13 @@ class GitRepo(git.Repo):
     def unstage_files(self, *paths) -> None:
         self.index.reset(paths=paths)
 
-    def discard_changes(self, *path) -> None:
-        self.git.checkout("--", *path)
+    def discard_changes(self, *paths) -> None:
+        try:
+            self.git.checkout("--", *paths)
+        except git.exc.GitCommandError as e:
+            for path in paths:
+                if path in self.get_untracked_files():
+                    os.remove(path)
 
     def commit_files(self, message=None, **kwargs):
         if not message:
