@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 import tkinter as tk
+import typing
+
+if typing.TYPE_CHECKING:
+    from .text import Text
 
 from biscuit.core.utils import Canvas, Menubutton
 
 
 class LineNumbers(Canvas):
-    def __init__(self, master, text=None, font=None, *args, **kwargs) -> None:
+    def __init__(self, master, text: Text=None, font=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.font = font
         self.config(width=65, bd=0, highlightthickness=0, **self.base.theme.editors.linenumbers)
@@ -44,6 +50,8 @@ class LineNumbers(Canvas):
 
         if not self.text:
             return
+        
+        # current_line = int(self.text.index(tk.INSERT).split('.')[0])
 
         i = self.text.index("@0,0")
         while True:
@@ -56,6 +64,14 @@ class LineNumbers(Canvas):
             curline = self.text.dlineinfo(tk.INSERT)
             cur_y = curline[1] if curline else None
 
+            # TODO: optional: skipping comments
+            #             # check if line is commented
+            # if self.text.highlighter and any((tag[1].startswith("Token.Comment") for tag in self.text.dump(i, i + " lineend", tag=True))):
+            # if self.text.get(f"{i} linestart", f"{i} lineend").strip().startswith("#"):
+            #     self.create_text(40, y, anchor=tk.NE, text="|   ", tag=i, fill=self.base.theme.border)
+            #     i = self.text.index(f"{i}+1line")
+            #     continue
+
             # Render breakpoint
             has_breakpoint = linenum in self.breakpoints
             breakpoint_id = self.create_oval(5, y + 3, 15, y + 13, outline="", fill=self.bg if not has_breakpoint else self.bp_enabled_color)
@@ -67,6 +83,10 @@ class LineNumbers(Canvas):
                           lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_leave(breakpoint_id, flag))
             self.tag_bind(breakpoint_id, "<Button-1>", 
                           lambda _, linenum=linenum: self.toggle_breakpoint(linenum))
+
+            # TODO: optional: line numbers relative to the current line
+            # if linenum != current_line:
+            #     linenum = abs(linenum - current_line)
 
             self.create_text(40, y, anchor=tk.NE, text=linenum, font=self.font, tag=i, fill=self.hfg if y == cur_y else self.fg)
             i = self.text.index(f"{i}+1line")

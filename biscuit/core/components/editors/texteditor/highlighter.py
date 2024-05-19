@@ -103,10 +103,8 @@ class Highlighter:
                     props['font'] = f
 
                 self.text.tag_configure(str(token), **props)
-                print(f"Tag {token} configured with {props}")
             else:
                 self.text.tag_configure(str(token), foreground=props)
-                print(f"Tag {token} configured with {props}")
     
     def clear(self) -> None:
         "Clears all tags from the text"
