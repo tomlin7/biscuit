@@ -22,8 +22,8 @@ class Highlighter:
         text : Text
             Text widget to highlight
         language : str, optional
-            Language to highlight, by default None
-        """
+            Language to highlight, by default None"""
+
         self.text: Text = text
         self.base = text.base
         self.language = language
@@ -55,6 +55,7 @@ class Highlighter:
 
     def detect_language(self) -> None:
         """Detect the language from the file extension and set the lexer"""
+
         try:
             if os.path.basename(self.text.path).endswith("txt"):
                 raise Exception()
@@ -76,8 +77,8 @@ class Highlighter:
         Parameters
         ----------
         language : str
-            Language to highlight
-        """
+            Language to highlight"""
+
         try:
             self.lexer = get_lexer_by_name(language)
         except:
@@ -93,16 +94,29 @@ class Highlighter:
 
     def setup_highlight_tags(self) -> None:
         "Setup the tags for highlighting"
-        for token, color in self.tag_colors.items():
-            self.text.tag_configure(str(token), foreground=color)
+
+        for token, props in self.tag_colors.items():
+            if isinstance(props, dict):
+                if 'font' in props and isinstance(props['font'], dict):
+                    f = self.base.settings.font.copy()
+                    f.config(**props['font'])
+                    props['font'] = f
+
+                self.text.tag_configure(str(token), **props)
+                print(f"Tag {token} configured with {props}")
+            else:
+                self.text.tag_configure(str(token), foreground=props)
+                print(f"Tag {token} configured with {props}")
     
     def clear(self) -> None:
         "Clears all tags from the text"
+
         for token, _ in self.tag_colors.items():
             self.text.tag_remove(str(token), '1.0', tk.END)
 
     def highlight(self) -> None:
         "Highlights the text content of attached Editor instance"
+
         if not self.lexer or not self.tag_colors:
             return
 

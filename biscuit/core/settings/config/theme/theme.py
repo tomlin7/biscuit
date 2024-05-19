@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from pygments.token import Token
+from pytermgui import foreground
 
 
 class ThemeObject(Mapping):
@@ -287,7 +288,12 @@ class Theme:
     Function = "#795e26"
     String = "#b11515"
     Number = "#098658"
-    Comment = "#098658"
+    Comment = {
+        "foreground":"#098658",
+        "font": {
+            "slant": "italic"
+        }
+    }
     Punctuation = "#3b3b3b"
 
 

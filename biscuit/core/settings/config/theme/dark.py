@@ -25,7 +25,12 @@ class Dark(Theme):
     Function = "#dcdcaa"
     String = "#ce9178"
     Number = "#b5cea8"
-    Comment = "#7ca668"
+    Comment = {
+        "foreground": "#7ca668",
+        "font": {
+            "slant": "italic"
+        }
+    }
     Punctuation = "#808080"
 
     def __init__(self, *args, **kwds) -> None:

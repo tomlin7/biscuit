@@ -80,8 +80,11 @@ class IO:
                 continue
             
             self.p.stdin.write(chunk)
-            self.p.stdin.flush()
-    
+            try:
+                self.p.stdin.flush()
+            except OSError:
+                pass
+            
     def _process_out(self) -> None:
         while self.alive:
             data = self.p.stdout.read(1)

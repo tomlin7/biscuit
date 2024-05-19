@@ -23,7 +23,8 @@ class GUIManager(Tk, ConfigManager):
         # config for high DPI with winAPI
         if platform.system() == "Windows":
             from ctypes import windll
-            windll.shcore.SetProcessDpiAwareness(1)
+
+            # windll.shcore.SetProcessDpiAwareness(1)
 
             self.overrideredirect(True)
             self.update_idletasks()
@@ -44,9 +45,8 @@ class GUIManager(Tk, ConfigManager):
         # window is going too big in low DPI, when I adjust scale for normal size in high DPI
         # window is going too small in high DPI, when I adjust scale for normal size in low DPI
         self.dpi_value = self.winfo_fpixels('1i')
-        print(self.dpi_value)
         self.scale = self.dpi_value / 95.90560471976401 
-        self.tk.call('tk', 'scaling', self.scale)
+        # self.tk.call('tk', 'scaling', self.scale)
 
         self.min_width = round(500)
         self.min_height = round(500)
