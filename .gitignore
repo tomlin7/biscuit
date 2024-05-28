@@ -1,6 +1,6 @@
 # biscuit
-biscuit/extensions/*.py
-biscuit/data
+data/
+
 # nuitka
 biscuit.build
 biscuit.dist
