@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from src.biscuit.components.views.sidebar.explorer import DirectoryTree
-from src.biscuit.utils import Toplevel
+from src.biscuit.common.ui import Toplevel
+from src.biscuit.views.explorer import DirectoryTree
 
 
 class PathView(Toplevel):
@@ -9,7 +9,9 @@ class PathView(Toplevel):
         super().__init__(master, *args, **kwargs)
         self.width = round(width * self.base.scale)
 
-        self.tree = DirectoryTree(self, width=width, observe_changes=False, itembar=False)
+        self.tree = DirectoryTree(
+            self, width=width, observe_changes=False, itembar=False
+        )
         self.tree.pack()
 
         self.config(pady=1, padx=1, bg=self.base.theme.border)

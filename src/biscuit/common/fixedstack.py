@@ -8,13 +8,13 @@ class FixedSizeStack:
     A stack with a fixed size. If the stack is full, the oldest item is removed
     when a new item is added.
     """
-    
+
     def __init__(self, master, name: str, capacity=5):
         self.base = master.base
         self.name = name
         self.capacity = capacity
         self.stack = []
-    
+
     def __iter__(self):
         return iter(self.stack)
 
@@ -43,17 +43,26 @@ class FixedSizeStack:
 
     def clear(self):
         self.stack.clear()
-    
+
     def dump_sqlite(self, cursor: sqlite3.Cursor) -> None:
+        """Dump the stack to the database.
+
+        Args:
+            cursor (sqlite3.Cursor): the cursor to the database"""
+
         # print(self.name, self.stack)
         cursor.execute(f"DELETE FROM {self.name};")
         cursor.executemany(
             f"INSERT INTO {self.name} (path) VALUES (?);",
             [(item,) for item in self.stack],
         )
-    
+
     def load_sqlite(self, cursor: sqlite3.Cursor) -> FixedSizeStack:
+        """Load the stack from the database.
+
+        Args:
+            cursor (sqlite3.Cursor): the cursor to the database"""
+
         cursor.execute(f"SELECT path FROM {self.name};")
         self.stack = [item[0] for item in cursor.fetchall()]
         return self
-    

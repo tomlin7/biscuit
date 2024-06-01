@@ -1,12 +1,13 @@
 """Various widgets/functions used across the editor"""
 
-from .buttons import Button
+from .bubble import Bubble
+from .buttons import *
 from .buttonsentry import ButtonsEntry
 from .closables import Closable
 from .hintedentry import Entry
-from .icons import Icon
+from .icons import *
 from .labels import *
-from .linklabel import LinkLabel, WebLinkLabel
+from .linklabel import *
 from .native import *
 from .scrollableframe import ScrollableFrame
 from .scrollbar import Scrollbar

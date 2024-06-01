@@ -7,31 +7,58 @@ from .native import Frame
 
 class Closable(Frame):
     """For implementing a list of closeable items.
-    A varient of IconLabelButton that comes with a close icon 
+    A varient of IconLabelButton that comes with a close icon
     on the right side of the button.
     """
 
-    def __init__(self, master, text=None, icon=None, function=lambda *_: None, closefn=lambda *_:None, iconside=tk.LEFT, padx=5, pady=1, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        master,
+        text=None,
+        icon=None,
+        callback=lambda *_: None,
+        closefn=lambda *_: None,
+        iconside=tk.LEFT,
+        padx=5,
+        pady=1,
+        *args,
+        **kwargs
+    ) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
-        self.function = function
+        self.callback = callback
         self.closefn = closefn
 
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.utils.iconlabelbutton.values()
+        self.bg, self.fg, self.hbg, self.hfg = (
+            self.base.theme.utils.iconlabelbutton.values()
+        )
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
 
         if icon:
-            self.icon_label = tk.Label(self, text=get_codicon(self.icon), anchor=tk.CENTER, 
-                bg=self.bg, fg=self.fg, font=("codicon", 14))
+            self.icon_label = tk.Label(
+                self,
+                text=get_codicon(self.icon),
+                anchor=tk.CENTER,
+                bg=self.bg,
+                fg=self.fg,
+                font=("codicon", 14),
+            )
             self.icon_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
         if text:
-            self.text_label = tk.Label(self, text=self.text, anchor=tk.CENTER, pady=2,
-                    bg=self.bg, fg=self.fg, font=("Segoe UI", 10))
+            self.text_label = tk.Label(
+                self,
+                text=self.text,
+                anchor=tk.CENTER,
+                pady=2,
+                bg=self.bg,
+                fg=self.fg,
+                font=("Segoe UI", 10),
+            )
             self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
-        self.close_btn = IconButton(self, 'close', self.closefn)
+        self.close_btn = IconButton(self, "close", self.closefn)
         self.close_btn.config(bg=self.bg, fg=self.fg)
         self.close_btn.pack(side=tk.RIGHT, fill=tk.BOTH)
 
@@ -65,7 +92,7 @@ class Closable(Frame):
         self.close_btn.config(bg=self.bg, fg=self.fg)
 
     def on_click(self, *_) -> None:
-        self.function()
+        self.callback()
 
     def change_text(self, text) -> None:
         """Change the text of the item"""
@@ -74,7 +101,7 @@ class Closable(Frame):
 
     def change_icon(self, icon) -> None:
         """Change the icon of the item"""
-        
+
         self.icon_label.config(text=icon)
 
     def set_pack_data(self, **kwargs) -> None:

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
 from .game import BaseGame
 from .gameoflife import GameOfLife
@@ -9,19 +9,32 @@ from .pong import Pong
 from .ttt import TicTacToe
 from .whoops import Whoops
 
-games = {i.name:i for i in (GameOfLife, Pong, TicTacToe, Minesweeper)}
+games = {i.name: i for i in (GameOfLife, Pong, TicTacToe, Minesweeper)}
 
 
 def get_games(base) -> list:
-    "helper function to generate actionset items"
+    """For palette to generate action sets of games"""
+
     return [(f"Play {i}", lambda _, i=i: base.open_game(i)) for i in games.keys()]
 
+
 def get_game(name) -> str:
-    "picks the game for the name"
+    """returns the game class from the name
+
+    Args:
+        name (str): name of the game
+    """
+
     return games.get(name, Whoops)
 
+
 def register_game(game) -> None:
-    "registers a game"
+    """Registers a game to the games dict
+
+    Args:
+        game (BaseGame): game to be registered
+    """
+
     try:
         games[game.name] = game
     except AttributeError:
@@ -29,12 +42,15 @@ def register_game(game) -> None:
 
 
 class Game(Frame):
-    """
-    Responsible for picking the right game
+    """Responsible for picking the right game to display and displaying it"""
 
-    name - name of game to opened
-    """
     def __init__(self, master, name, *args, **kwargs) -> None:
+        """Initializes the game frame
+
+        Args:
+            master (tk.Tk): master window
+            name (str): name of the game"""
+
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.filename = name
@@ -44,10 +60,12 @@ class Game(Frame):
         self.diff = False
         self.showpath = False
 
-        self.grid_columnconfigure(0, weight=1) 
+        self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        self.content = get_game(name=name)(self)     
+        self.content = get_game(name=name)(self)
         self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
     def focus(self) -> None:
+        """Focuses on the game"""
+
         self.content.focus_get()

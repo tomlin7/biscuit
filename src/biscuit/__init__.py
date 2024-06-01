@@ -63,7 +63,7 @@ class App(EventManager, GUIManager, ConfigManager):
         self.initialized = False
         self.setup_path(self.appdir)
         self.setup_configs()
-        self.setup_tk()
+        self.initialize_tk()
 
     def initialize_editor(self, dir: str) -> None:
         self.initialized = True
@@ -75,4 +75,3 @@ class App(EventManager, GUIManager, ConfigManager):
         self.menubar.update()
         self.set_title()
         self.open_directory(dir)
-

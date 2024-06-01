@@ -3,30 +3,35 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
 if typing.TYPE_CHECKING:
     from . import TextEditor
     from .text import Text
 
-#TODO update minimap when scrollbar is used
-#TODO rewrite the handling with proper yview (percentage change)
+
+# TODO update minimap when scrollbar is used
+# TODO rewrite the handling with proper yview (percentage change)
 class Minimap(Frame):
-    def __init__(self, master: TextEditor, text: Text=None, *args, **kwargs) -> None:
+    def __init__(self, master: TextEditor, text: Text = None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.tw = text
         self.font = ("Arial", 1, "bold")
         self.config(highlightthickness=0, bg=self.base.theme.border)
 
-        self.cw = tk.Canvas(self, width=100, highlightthickness=0, **self.base.theme.editors.minimap)
+        self.cw = tk.Canvas(
+            self, width=100, highlightthickness=0, **self.base.theme.editors.minimap
+        )
         self.cw.pack(fill=tk.BOTH, expand=True, side=tk.LEFT, padx=(1, 0))
 
-        self.slider_image = tk.PhotoImage(data="""iVBORw0KGgoAAAANSUhEUgAAAG4AAABFCAYAAACrMNMO
+        self.slider_image = tk.PhotoImage(
+            data="""iVBORw0KGgoAAAANSUhEUgAAAG4AAABFCAYAAACrMNMO
         AAAACXBIWXMAAABfAAAAXwEqnu0dAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAMBJRE
         FUeJzt0UENwCAAwMAxLajjhwOkz8M+pMmdgiYda5/5kPPeDuAf46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo
         46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46
         KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIuyrgo46KMizIu6gNeAwIJ
-        26ERewAAAABJRU5ErkJggg==""")
+        26ERewAAAABJRU5ErkJggg=="""
+        )
 
         self.cw.create_image(0, 0, image=self.slider_image, anchor=tk.NW, tag="slider")
 
@@ -46,19 +51,27 @@ class Minimap(Frame):
 
         if not self.tw:
             return
-        
-        self.text = self.tw.get('1.0', tk.END)
-        self.cw.create_text(5, 0, text=self.text, anchor=tk.NW, font=self.font, fill="grey", tag="redrawn")
+
+        self.text = self.tw.get("1.0", tk.END)
+        self.cw.create_text(
+            5,
+            0,
+            text=self.text,
+            anchor=tk.NW,
+            font=self.font,
+            fill="grey",
+            tag="redrawn",
+        )
 
         self.y_bottom_lim = int(self.tw.index(tk.END).split(".")[0]) * 2 + 10
         # self.y_bottom_lim = self.tw.yview()[1] * self.cw.winfo_height()
 
     def redraw_cursor(self):
         self.cw.delete("cursor")
-        
+
         if not self.tw:
             return
-        
+
         y = int(self.tw.index(tk.INSERT).split(".")[0]) * 2
         self.cw.create_line(0, y, 100, y, fill="#dc8c34", width=2, tag="cursor")
 

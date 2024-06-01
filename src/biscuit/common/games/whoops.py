@@ -1,12 +1,12 @@
-import tkinter as tk
 import random
+import tkinter as tk
 
 from .game import BaseGame
 
 
 # a simple physics engine
 class PhysicsObject:
-    def __init__(self, canvas, x, y, width, height, color='black'):
+    def __init__(self, canvas, x, y, width, height, color="black"):
         self.x = x
         self.y = y
         self.width = width
@@ -22,7 +22,12 @@ class PhysicsObject:
         self.is_jumping = False
 
         self.shape = self.canvas.create_rectangle(
-            self.x, self.y, self.x + self.width, self.y + self.height, fill=self.color, outline=""
+            self.x,
+            self.y,
+            self.x + self.width,
+            self.y + self.height,
+            fill=self.color,
+            outline="",
         )
 
     def update(self):
@@ -32,7 +37,9 @@ class PhysicsObject:
         self.x += self.vel_x
         self.y += self.vel_y
 
-        self.canvas.coords(self.shape, self.x, self.y, self.x + self.width, self.y + self.height)
+        self.canvas.coords(
+            self.shape, self.x, self.y, self.x + self.width, self.y + self.height
+        )
 
     def jump(self, *_):
         if not self.is_jumping:
@@ -40,33 +47,46 @@ class PhysicsObject:
             self.vel_y = -10
 
     def check_collision(self, other):
-        if (self.x < other.x + other.width and
-            self.x + self.width > other.x and
-            self.y < other.y + other.height and
-            self.y + self.height > other.y):
+        if (
+            self.x < other.x + other.width
+            and self.x + self.width > other.x
+            and self.y < other.y + other.height
+            and self.y + self.height > other.y
+        ):
             return True
         return False
 
 
 class Whoops(BaseGame):
+    """404 not found page"""
+
     name = "404"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.config(bg='#22223b')
+        self.config(bg="#22223b")
         self.gravity = 0.5
-        self.canvas = tk.Canvas(self, width=800, height=400, bg='#22223b', borderwidth=0, highlightthickness=0)
+        self.canvas = tk.Canvas(
+            self,
+            width=800,
+            height=400,
+            bg="#22223b",
+            borderwidth=0,
+            highlightthickness=0,
+        )
         self.canvas.pack(pady=30)
 
-        self.canvas.create_text(390, 100, text="404", fill='#4a4e69', font=("Fixedsys", 50))
-        self.car = PhysicsObject(self.canvas, 100, 100, 60, 30, '#f2e9e4')
-        self.ground = PhysicsObject(self.canvas, 0, 350, 800, 50, '#4a4e69')
+        self.canvas.create_text(
+            390, 100, text="404", fill="#4a4e69", font=("Fixedsys", 50)
+        )
+        self.car = PhysicsObject(self.canvas, 100, 100, 60, 30, "#f2e9e4")
+        self.ground = PhysicsObject(self.canvas, 0, 350, 800, 50, "#4a4e69")
         self.obstacles = []
 
         self.min_obstacle_gap = 2
         self.obstacle_spawnpoint = 800
 
-        self.bind_all('<space>', self.car.jump)
+        self.bind_all("<space>", self.car.jump)
         self.focus_set()
 
         self.update_game()
@@ -94,7 +114,14 @@ class Whoops(BaseGame):
         obstacle_x = self.obstacle_spawnpoint
         obstacle_y = self.ground.y - obstacle_height
 
-        obstacle = PhysicsObject(self.canvas, obstacle_x, obstacle_y, obstacle_width, obstacle_height, random.choice(['#9a8c98', '#4a4e69']))
+        obstacle = PhysicsObject(
+            self.canvas,
+            obstacle_x,
+            obstacle_y,
+            obstacle_width,
+            obstacle_height,
+            random.choice(["#9a8c98", "#4a4e69"]),
+        )
         self.obstacles.append(obstacle)
         self.canvas.tag_lower(obstacle.shape)
 
@@ -108,7 +135,12 @@ class Whoops(BaseGame):
                 self.obstacles.remove(obstacle)
 
         # spawn a new obstacle if there's enough gap between the last one and the right side of the canvas
-        if not self.obstacles or self.obstacle_spawnpoint - (self.obstacles[-1].x + self.obstacles[-1].width) >= self.min_obstacle_gap:
+        if (
+            not self.obstacles
+            or self.obstacle_spawnpoint
+            - (self.obstacles[-1].x + self.obstacles[-1].width)
+            >= self.min_obstacle_gap
+        ):
             self.spawn_obstacle()
 
         self.after(10, self.update_obstacles)

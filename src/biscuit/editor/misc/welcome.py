@@ -1,10 +1,9 @@
 import os
 import tkinter as tk
 
-from src.biscuit.utils import (Frame, IconLabel, IconLabelButton, Label,
-                               LinkLabel)
+from src.biscuit.common.ui import Frame, IconLabel, IconLabelButton, Label, LinkLabel
 
-from ..editor import BaseEditor
+from ..editorbase import BaseEditor
 
 
 class Welcome(BaseEditor):
@@ -22,37 +21,71 @@ class Welcome(BaseEditor):
         self.right = Frame(self, **self.base.theme.editors)
         self.right.pack(expand=True, fill=tk.BOTH, anchor=tk.CENTER)
 
-        self.title = Label(self.left, text="BISCUIT", font=("Segoe UI", 50, "bold"), fg=self.base.theme.biscuit, **self.base.theme.editors.biscuit_labels)
+        self.title = Label(
+            self.left,
+            text="BISCUIT",
+            font=("Segoe UI", 50, "bold"),
+            fg=self.base.theme.biscuit,
+            **self.base.theme.editors.biscuit_labels
+        )
         self.title.grid(row=0, column=0, sticky=tk.W)
 
-        self.description = IconLabel(self.left, text="Made with Love ✨", iconside=tk.RIGHT, font=("Segoe UI", 16, "bold"), fg=self.base.theme.biscuit)
+        self.description = IconLabel(
+            self.left,
+            text="Made with Love ✨",
+            iconside=tk.RIGHT,
+            font=("Segoe UI", 16, "bold"),
+            fg=self.base.theme.biscuit,
+        )
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.create_start_group()
         self.create_recent_group()
 
         try:
-            self.logo = Label(self.right, image=self.base.settings.res.logo, **self.base.theme.editors.biscuit_labels)
+            self.logo = Label(
+                self.right,
+                image=self.base.settings.res.logo,
+                **self.base.theme.editors.biscuit_labels
+            )
             self.logo.grid(row=0, column=0, sticky=tk.NSEW)
         except tk.TclError:
             pass
 
     def create_start_group(self):
-        Label(self.left, text="Start", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
+        Label(
+            self.left,
+            text="Start",
+            font=("Segoe UI", 15),
+            **self.base.theme.editors.labels
+        ).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
         start = Frame(self.left, **self.base.theme.editors)
         start.grid(row=3, column=0, sticky=tk.EW)
 
-        IconLabelButton(start, "New File...", 'new-file', self.new_file, expandicon=False).grid(row=0, column=0, sticky=tk.EW, pady=2)
-        IconLabelButton(start, "Open File...", 'go-to-file', self.open_file, expandicon=False).grid(row=1, column=0, sticky=tk.EW, pady=2)
-        IconLabelButton(start, "Open Folder...", 'folder-opened', self.open_folder, expandicon=False).grid(row=2, column=0, sticky=tk.EW, pady=2)
-    
+        IconLabelButton(
+            start, "New File...", "new-file", self.new_file, expandicon=False
+        ).grid(row=0, column=0, sticky=tk.EW, pady=2)
+        IconLabelButton(
+            start, "Open File...", "go-to-file", self.open_file, expandicon=False
+        ).grid(row=1, column=0, sticky=tk.EW, pady=2)
+        IconLabelButton(
+            start, "Open Folder...", "folder-opened", self.open_folder, expandicon=False
+        ).grid(row=2, column=0, sticky=tk.EW, pady=2)
+
     def create_recent_group(self):
-        Label(self.left, text="Recent", font=("Segoe UI", 15), **self.base.theme.editors.labels).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))
+        Label(
+            self.left,
+            text="Recent",
+            font=("Segoe UI", 15),
+            **self.base.theme.editors.labels
+        ).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))
         recents = Frame(self.left, **self.base.theme.editors)
         recents.grid(row=5, column=0, sticky=tk.EW)
 
         for i, p in enumerate(self.base.history.folder_history.list):
-            LinkLabel(recents, os.path.basename(p[0]), p[1]).grid(row=i, column=0, sticky=tk.W, pady=2)
+            LinkLabel(recents, os.path.basename(p[0]), p[1]).grid(
+                row=i, column=0, sticky=tk.W, pady=2
+            )
 
     def new_file(self, *_):
         self.base.commands.new_file()

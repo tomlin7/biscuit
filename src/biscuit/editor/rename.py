@@ -3,11 +3,11 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.utils import Frame, Toplevel
+from src.biscuit.common.ui import Frame, Toplevel
 
 if typing.TYPE_CHECKING:
     from src.biscuit import App
-    from src.biscuit.components.editors.texteditor.text import Text
+    from src.biscuit.editor.text import Text
 
 
 class Rename(Toplevel):
@@ -25,8 +25,13 @@ class Rename(Toplevel):
 
         self.text_variable = tk.StringVar()
         self.entry = tk.Entry(
-            frame, font=self.base.settings.font, relief=tk.FLAT, highlightcolor=self.base.theme.biscuit,
-            textvariable=self.text_variable, **self.base.theme.palette.searchbar)
+            frame,
+            font=self.base.settings.font,
+            relief=tk.FLAT,
+            highlightcolor=self.base.theme.biscuit,
+            textvariable=self.text_variable,
+            **self.base.theme.palette.searchbar,
+        )
         self.entry.grid(sticky=tk.EW, padx=5, pady=3)
 
         self.entry.bind("<Return>", self.enter)
@@ -38,35 +43,35 @@ class Rename(Toplevel):
 
     def focus(self) -> None:
         self.entry.focus()
-    
+
     def get(self):
         return self.text_variable.get()
-        
+
     def enter(self, *_):
         if self.tab:
             self.base.language_server_manager.request_rename(self.tab, self.get())
 
         self.hide()
-    
+
     def show(self, tab: Text):
         self.tab = tab
         self.focus()
-        
+
         current = tab.get_current_fullword()
         if current is None:
             return
-        
+
         self.text_variable.set(current)
         self.entry.selection_range(0, tk.END)
 
         self.refresh_geometry(tab)
         self.deiconify()
         self.active = True
-    
+
     def hide(self, *_):
         self.withdraw()
         self.active = False
-    
+
     def refresh_geometry(self, tab: Text):
         self.update_idletasks()
         self.geometry("+{}+{}".format(*tab.cursor_wordstart_screen_location()))

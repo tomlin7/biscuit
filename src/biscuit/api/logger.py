@@ -2,6 +2,11 @@ from .endpoint import Endpoint
 
 
 class Logger(Endpoint):
+    """Logger endpoint
+
+    This class is used to interact with the logger API.
+    """
+
     def __init__(self, *a) -> None:
         super().__init__(*a)
         self.logger = self.base.logger

@@ -1,3 +1,5 @@
+"""Contains the mapping of codicons to their respective unicode values."""
+
 codicons = {
     "account": "\ueb99",
     "activate-breakpoints": "\uea97",
@@ -89,11 +91,11 @@ codicons = {
     "debug-all": "\uebdc",
     "debug-alt-small": "\ueba8",
     "debug-alt": "\ueb91",
-    "debug-breakpoint-conditional-unverified": "\ueaa6",     
+    "debug-breakpoint-conditional-unverified": "\ueaa6",
     "debug-breakpoint-conditional": "\ueaa7",
     "debug-breakpoint-data-unverified": "\ueaa8",
     "debug-breakpoint-data": "\ueaa9",
-    "debug-breakpoint-function-unverified": "\ueb87",        
+    "debug-breakpoint-function-unverified": "\ueb87",
     "debug-breakpoint-function": "\ueb88",
     "debug-breakpoint-log-unverified": "\ueaaa",
     "debug-breakpoint-log": "\ueaab",
@@ -458,8 +460,9 @@ codicons = {
     "workspace-unknown": "\uebc3",
     "workspace-untrusted": "\uebc2",
     "zoom-in": "\ueb81",
-    "zoom-out": "\ueb82"
+    "zoom-out": "\ueb82",
 }
+
 
 def get_codicon(name: str):
     if name in codicons:

@@ -17,36 +17,57 @@ def show_python_not_installed_message():
     webbrowser.open("https://www.python.org/downloads/")
     exit(1)
 
+
 def check_python_installation():
+    """Check if python is installed and install python language server."""
+
     try:
         if os.name == "nt":
             sp.check_call(["python", "--version"])
-            reqs = sp.check_output(['pip', 'freeze'])
+            reqs = sp.check_output(["pip", "freeze"])
         else:
             sp.check_call(["python3", "--version"])
-            reqs = sp.check_output(['python3', '-m', 'pip', 'freeze'])
+            reqs = sp.check_output(["python3", "-m", "pip", "freeze"])
 
         # install python language server
         if not "python-lsp-server".encode() in reqs:
             try:
                 if os.name == "nt":
-                    sp.check_call(['pip', 'install', 'python-lsp-server'])
+                    sp.check_call(["pip", "install", "python-lsp-server"])
                 else:
-                    sp.check_call(['python3', '-m', 'pip', 'install', 'python-lsp-server'])
+                    sp.check_call(
+                        ["python3", "-m", "pip", "install", "python-lsp-server"]
+                    )
             except sp.CalledProcessError:
                 print("Install python extension to enable python language features.")
-                
+
     except sp.CalledProcessError:
         show_python_not_installed_message()
 
+
 def get_file_type(file_path):
+    """Get the type of the file.
+
+    Args:
+        file_path (str): path to the file
+    """
+
     return filetype.guess(file_path)
 
+
 def is_image(file_path):
+    """Check if the file is an image.
+
+    Args:
+        file_path (str): path to the file
+    """
+
     return filetype.is_image(file_path)
+
 
 def search_google(query: str) -> None:
     webbrowser.open(f"https://www.google.com/search?q={query}")
+
 
 def caller_name(skip=2):
     """
@@ -57,12 +78,12 @@ def caller_name(skip=2):
 
     An empty string is returned if skipped levels exceed stack height
     """
-    
+
     stack = inspect.stack()
     start = 0 + skip
     if len(stack) < start + 1:
-        return ''
-    parentframe = stack[start][0]    
+        return ""
+    parentframe = stack[start][0]
 
     name = []
     module = inspect.getmodule(parentframe)
@@ -70,8 +91,8 @@ def caller_name(skip=2):
     if module:
         name.append(module.__name__)
     # detect classname
-    if 'self' in parentframe.f_locals:
-        name.append(parentframe.f_locals['self'].__class__.__name__)
+    if "self" in parentframe.f_locals:
+        name.append(parentframe.f_locals["self"].__class__.__name__)
 
     del parentframe, stack
 

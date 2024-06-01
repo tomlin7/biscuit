@@ -3,7 +3,7 @@ import re
 import threading
 import tkinter as tk
 
-from ..editor import BaseEditor
+from ...editor import BaseEditor
 from .differ import Differ
 from .pane import DiffPane
 
@@ -34,19 +34,29 @@ class DiffEditor(BaseEditor):
         self.left = self.lhs.text
         self.right = self.text = self.rhs.text
 
-        self.lhs.scrollbar['command'] = self.on_scrollbar
-        self.rhs.scrollbar['command'] = self.on_scrollbar
-        self.left['yscrollcommand'] = self.on_textscroll
-        self.right['yscrollcommand'] = self.on_textscroll
+        self.lhs.scrollbar["command"] = self.on_scrollbar
+        self.rhs.scrollbar["command"] = self.on_scrollbar
+        self.left["yscrollcommand"] = self.on_textscroll
+        self.right["yscrollcommand"] = self.on_textscroll
 
         self.stipple = self.base.settings.res.stipple
 
-        self.left.tag_config("addition", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
+        self.left.tag_config(
+            "addition",
+            background=self.base.theme.editors.diff.not_exist,
+            bgstipple=f"@{self.stipple}",
+        )
         self.left.tag_config("removal", background=self.base.theme.editors.diff.removed)
         self.left.tag_config("removedword", background="red")
 
-        self.right.tag_config("addition", background=self.base.theme.editors.diff.addition)
-        self.right.tag_config("removal", background=self.base.theme.editors.diff.not_exist, bgstipple=f"@{self.stipple}")
+        self.right.tag_config(
+            "addition", background=self.base.theme.editors.diff.addition
+        )
+        self.right.tag_config(
+            "removal",
+            background=self.base.theme.editors.diff.not_exist,
+            bgstipple=f"@{self.stipple}",
+        )
         self.right.tag_config("addedword", background="green")
 
         self.differ = Differ(self)
@@ -63,7 +73,7 @@ class DiffEditor(BaseEditor):
     def on_textscroll(self, *args) -> None:
         self.lhs.scrollbar.set(*args)
         self.rhs.scrollbar.set(*args)
-        self.on_scrollbar('moveto', args[0])
+        self.on_scrollbar("moveto", args[0])
 
     def run_show_diff(self) -> None:
         threading.Thread(target=self.show_diff).start()
@@ -72,22 +82,26 @@ class DiffEditor(BaseEditor):
         try:
             # case: deleted file
             if not self.kind:
-                self.left.write(self.base.git.repo.get_commit_filedata(self.path), 'removal')
+                self.left.write(
+                    self.base.git.repo.get_commit_filedata(self.path), "removal"
+                )
                 self.left.update()
                 self.left.highlighter.highlight()
                 return
 
             # case: new/untracked file
             if self.kind in (1, 3):
-                with open(os.path.join(self.base.active_directory, self.path), 'r') as f:
-                    self.right.write(f.read(), 'addition')
+                with open(
+                    os.path.join(self.base.active_directory, self.path), "r"
+                ) as f:
+                    self.right.write(f.read(), "addition")
                     self.right.update()
                     self.right.highlighter.highlight()
                 return
 
             # case: modified file
             lhs_data = self.base.git.repo.get_commit_filedata(self.path)
-            with open(os.path.join(self.base.active_directory, self.path), 'r') as f:
+            with open(os.path.join(self.base.active_directory, self.path), "r") as f:
                 rhs_data = f.read()
 
         except Exception as e:
@@ -95,8 +109,8 @@ class DiffEditor(BaseEditor):
             self.base.logger.error(f"Failed to load diff: {self.path}\n{e}")
             return
 
-        lhs_lines = [line+"\n" for line in lhs_data.split('\n')]
-        rhs_lines = [line+"\n" for line in rhs_data.split('\n')]
+        lhs_lines = [line + "\n" for line in lhs_data.split("\n")]
+        rhs_lines = [line + "\n" for line in rhs_data.split("\n")]
 
         self.diff = list(self.differ.get_diff(lhs_lines, rhs_lines))
         for i, line in enumerate(self.diff):
@@ -129,15 +143,21 @@ class DiffEditor(BaseEditor):
 
                 case "?":
                     # the above line has changes
-                    if matches := re.finditer(r'\++', content):
-                        self.left.delete(str(float(self.rhs_last_line+1)), str(float(int(float(self.left.index(tk.INSERT))))))
+                    if matches := re.finditer(r"\++", content):
+                        self.left.delete(
+                            str(float(self.rhs_last_line + 1)),
+                            str(float(int(float(self.left.index(tk.INSERT))))),
+                        )
                         for match in matches:
                             start = f"{self.rhs_last_line}.{match.start()}"
                             end = f"{self.rhs_last_line}.{match.end()}"
                             self.right.tag_add("addedword", start, end)
 
-                    if matches := re.finditer(r'-+', content):
-                        self.right.delete(str(float(self.lhs_last_line+1)), str(float(int(float(self.right.index(tk.INSERT))))))
+                    if matches := re.finditer(r"-+", content):
+                        self.right.delete(
+                            str(float(self.lhs_last_line + 1)),
+                            str(float(int(float(self.right.index(tk.INSERT))))),
+                        )
                         for match in matches:
                             start = f"{self.lhs_last_line}.{match.start()}"
                             end = f"{self.lhs_last_line}.{match.end()}"
@@ -162,5 +182,3 @@ class DiffEditor(BaseEditor):
                 self.left.insert_newline()
 
         self.left.set_active(False)
-
-

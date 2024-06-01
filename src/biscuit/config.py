@@ -1,30 +1,31 @@
-
 import os
 import sys
 
 from .api import *
 from .binder import Binder
 from .commands import Commands
-from .components import *
+from .common import *
 from .exec import ExecManager
 from .extensions import ExtensionManager
+from .git import Git
 from .history import HistoryManager
+from .language import *
 from .settings import *
-from .utils import *
 
 
 class ConfigManager:
     """
     CONFIG MANAGER
     --------------
-    
-    Configuration manager part of Biscuit Core
+
+    Configuration manager part of Biscuit Core. Manages the application state,
+    configurations, settings, and extensions.
     """
 
     # application state / environement
     initialized: bool
     testing: bool
-    
+
     # active directory dependant
     git_found: bool
     active_directory: str
@@ -46,7 +47,7 @@ class ConfigManager:
         self.onfocus_callbacks = []
 
         self.testing = False
-        if os.environ.get('ENVIRONMENT') == 'test':
+        if os.environ.get("ENVIRONMENT") == "test":
             self.testing = True
 
         self.sysinfo = SysInfo(self)
@@ -67,11 +68,13 @@ class ConfigManager:
         self.appdir = os.path.dirname(appdir)
         sys.path.append(self.appdir)
 
-        self.resdir = os.path.join(getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res")
+        self.resdir = os.path.join(
+            getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res"
+        )
         self.configdir = os.path.join(self.appdir, "config")
         self.extensionsdir = os.path.join(self.appdir, "extensions")
         self.datadir = os.path.join(self.appdir, "data")
-        
+
         try:
             os.makedirs(self.datadir, exist_ok=True)
         except Exception as e:
@@ -87,7 +90,7 @@ class ConfigManager:
         # sets up the extension API & loads extensions
         self.api = ExtensionsAPI(self)
         self.extensions_manager = ExtensionManager(self)
-    
+
     def set_tab_spaces(self, spaces: int) -> None:
         self.tab_spaces = spaces
         if e := self.editorsmanager.active_editor:

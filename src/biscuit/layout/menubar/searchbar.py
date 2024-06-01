@@ -1,8 +1,7 @@
 import tkinter as tk
 
 from src import __version__
-from src.biscuit.utils import Frame, IconLabelButton
-from src.biscuit.utils.iconbutton import IconButton
+from src.biscuit.common.ui import Frame, IconButton, IconLabelButton
 
 
 class Searchbar(Frame):
@@ -10,12 +9,22 @@ class Searchbar(Frame):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
-        self.label = IconLabelButton(self, text=f'Biscuit {__version__}', icon="search", padx=150, function=self.onclick)
+        self.label = IconLabelButton(
+            self,
+            text=f"Biscuit {__version__}",
+            icon="search",
+            padx=150,
+            callback=self.onclick,
+        )
         self.label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, pady=1, padx=1)
 
-        self.palette_button = IconButton(self, icon="terminal", event=self.base.commands.show_command_palette)
+        self.palette_button = IconButton(
+            self, icon="terminal", event=self.base.commands.show_command_palette
+        )
         self.palette_button.config(**self.base.theme.utils.iconlabelbutton)
-        self.palette_button.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, pady=1, padx=(0, 1))
+        self.palette_button.pack(
+            side=tk.RIGHT, fill=tk.BOTH, expand=True, pady=1, padx=(0, 1)
+        )
 
     def onclick(self, *_):
         if self.base.active_directory:

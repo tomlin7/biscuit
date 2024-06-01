@@ -554,6 +554,8 @@ class Languages:
 
 
 
+# Code used to generate the above snippet
+# ---------------------------------------
 
 # from pygments.lexers import get_all_lexers, get_lexer_by_name
 # for lexer in get_all_lexers():

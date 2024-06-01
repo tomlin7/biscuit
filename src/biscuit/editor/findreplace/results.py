@@ -8,7 +8,12 @@ class FindResults(tk.Label):
         self.base = master.base
 
         self.init()
-        self.config(padx=1, width=10, font=("Helvetica", 10), **self.base.theme.findreplace.label)
+        self.config(
+            padx=1,
+            width=10,
+            font=("Helvetica", 10),
+            **self.base.theme.findreplace.label,
+        )
 
     def show(self, n):
         if not n:

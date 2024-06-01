@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter.constants import *
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
 from .toolbar import ItemBar
 
@@ -10,10 +10,13 @@ class SidebarViewItem(Frame):
     """Containers that fit in SidebarViews
     These also come with an ItemBar that can maximize, minimize and manage the container
     """
+
     __buttons__ = []
     title = "Item"
 
-    def __init__(self, master, title: str=None, itembar=True, *args, **kwargs) -> None:
+    def __init__(
+        self, master, title: str = None, itembar=True, *args, **kwargs
+    ) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
@@ -55,4 +58,3 @@ class SidebarViewItem(Frame):
         if self.enabled:
             self.content.grid_remove()
             self.enabled = False
-

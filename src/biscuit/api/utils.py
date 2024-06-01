@@ -1,9 +1,15 @@
-from src.biscuit.utils import *
+from src.biscuit.common import *
+from src.biscuit.common.ui import *
 
 from .endpoint import Endpoint
 
 
 class Utils(Endpoint):
+    """Utils endpoint
+
+    Provides various widgets/functions used across the editor.
+    """
+
     def __init__(self, *a) -> None:
         super().__init__(*a)
 
@@ -13,9 +19,7 @@ class Utils(Endpoint):
         self.caller_name = caller_name
         self.Canvas = Canvas
         self.get_codicon = get_codicon
-        self.colorize = colorize
         self.Entry = Entry
-        self.FileType = FileType
         self.FixedSizeStack = FixedSizeStack
         self.Frame = Frame
         self.Icon = Icon

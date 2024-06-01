@@ -3,12 +3,12 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
 from .kind import Kind
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.components.lsp.data import Completion
+    from src.biscuit.language.data import Completion
 
     from . import AutoComplete
 
@@ -18,7 +18,9 @@ class CompletionItem(Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.config(width=500, **self.base.theme.editors.autocomplete)
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.editors.autocomplete.item.values()
+        self.bg, self.fg, self.hbg, self.hfg = (
+            self.base.theme.editors.autocomplete.item.values()
+        )
 
         self.selected = False
         self.hovered = False
@@ -28,13 +30,25 @@ class CompletionItem(Frame):
         self.replace_text: str = ""
         self.documentation: str = ""
         # TODO add GUI for documentation
-        
-        self.kind = Kind(self)
-        self.text = tk.Text(self, 
-            font=self.base.settings.font, fg=self.fg, bg=self.bg, cursor="hand2",
-            relief=tk.FLAT, highlightthickness=0, width=30, height=1)
 
-        self.text.tag_config("term", foreground=self.base.theme.biscuit, font=self.base.settings.font_bold)
+        self.kind = Kind(self)
+        self.text = tk.Text(
+            self,
+            font=self.base.settings.font,
+            fg=self.fg,
+            bg=self.bg,
+            cursor="hand2",
+            relief=tk.FLAT,
+            highlightthickness=0,
+            width=30,
+            height=1,
+        )
+
+        self.text.tag_config(
+            "term",
+            foreground=self.base.theme.biscuit,
+            font=self.base.settings.font_bold,
+        )
         self.text.config(state=tk.DISABLED)
 
         self.grid_columnconfigure(1, weight=1)
@@ -46,7 +60,7 @@ class CompletionItem(Frame):
         self.text.bind("<Button-1>", self.on_click)
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
-    
+
     def set_data(self, word: str, term: str):
         self.replace_start = ""
         self.replace_end = ""
@@ -60,7 +74,7 @@ class CompletionItem(Frame):
 
         self.kind.set_kind()
         self.mark_term(word, term)
-    
+
     def lsp_set_data(self, completion: Completion, term: str):
         self.replace_start = completion.replace_start
         self.replace_end = completion.replace_end
@@ -87,7 +101,7 @@ class CompletionItem(Frame):
 
         self.kind.set_kind()
         self.clear_mark()
-    
+
     def clear_mark(self):
         self.text.tag_remove("term", 1.0, tk.END)
 
@@ -101,7 +115,7 @@ class CompletionItem(Frame):
             start_pos = display_text.lower().find(term)
             if start_pos == -1:
                 return
-        
+
         end_pos = start_pos + len(term)
         self.text.tag_add("term", f"1.{start_pos}", f"1.{end_pos}")
 

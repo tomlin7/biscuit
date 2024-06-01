@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import List, Optional, Union
+from typing import List, Optional
 
 import tarts as lsp
 
 # Requests
 
+
 @dataclasses.dataclass
 class CompletionRequest:
     id: int
     cursor: str
+
 
 @dataclasses.dataclass
 class JumpRequest:
@@ -19,6 +21,7 @@ class JumpRequest:
 
 
 # Responses
+
 
 @dataclasses.dataclass
 class Underline:
@@ -29,11 +32,13 @@ class Underline:
 
     def __repr__(self) -> str:
         return self.start
-    
+
+
 @dataclasses.dataclass
 class Underlines:
     id: str
     underline_list: List[Underline]
+
 
 @dataclasses.dataclass
 class Completion:
@@ -44,14 +49,16 @@ class Completion:
     replace_text: str
     filter_text: str
     documentation: str
-    
+
     def __repr__(self) -> str:
         return self.replace_text
+
 
 @dataclasses.dataclass
 class Completions:
     id: int
     completions: List[Completion]
+
 
 @dataclasses.dataclass
 class HoverResponse:
@@ -62,6 +69,7 @@ class HoverResponse:
     def __repr__(self) -> str:
         return self.text
 
+
 @dataclasses.dataclass
 class JumpLocationRange:
     file_path: str
@@ -70,6 +78,7 @@ class JumpLocationRange:
 
     def __repr__(self) -> str:
         return self.file_path
+
 
 @dataclasses.dataclass
 class Jump:
@@ -86,6 +95,7 @@ class TextEdit:
     def __repr__(self) -> str:
         return self.file_path
 
+
 @dataclasses.dataclass
 class WorkspaceEdit:
     file_path: str
@@ -93,6 +103,7 @@ class WorkspaceEdit:
 
     def __repr__(self) -> str:
         return self.file_path
+
 
 @dataclasses.dataclass
 class WorkspaceEdits:

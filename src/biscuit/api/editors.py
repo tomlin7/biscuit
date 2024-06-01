@@ -1,14 +1,14 @@
-from src.biscuit.components.editors import (DiffEditor, Editor, ImageViewer,
-                                            MDEditor, TextEditor)
-from src.biscuit.components.views import PanelView, SidebarView
+from src.biscuit.editor import Editor, ImageViewer, MDEditor, TextEditor
+from src.biscuit.git import DiffEditor
+from src.biscuit.views import PanelView, SidebarView
 
 from .endpoint import Endpoint
 
 
 class Editors(Endpoint):
     def __init__(self, *a) -> None:
-        super().__init__(*a)        
-        self.editors = self.base.editorsmanager 
+        super().__init__(*a)
+        self.editors = self.base.editorsmanager
 
         self.PanelView = PanelView
         self.SidebarView = SidebarView

@@ -1,7 +1,7 @@
 import random
 import tkinter as tk
 
-from src.biscuit.utils import Button, Canvas
+from src.biscuit.common.ui import Button, Canvas
 
 from .game import BaseGame
 
@@ -24,18 +24,20 @@ class TicTacToe(BaseGame):
 
     def start(self, *_):
         self.canvas.delete("all")
-        self.board = [[0, 0, 0],
-                      [0, 0, 0],
-                      [0, 0, 0]]
+        self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
         self.draw_board()
 
     def draw_board(self):
         self.canvas.delete("all")
 
         for row in range(1, 3):
-            self.canvas.create_line(0, row * 100, 300, row * 100, width=2, fill=self.border)
+            self.canvas.create_line(
+                0, row * 100, 300, row * 100, width=2, fill=self.border
+            )
         for col in range(1, 3):
-            self.canvas.create_line(col * 100, 0, col * 100, 300, width=2, fill=self.border)
+            self.canvas.create_line(
+                col * 100, 0, col * 100, 300, width=2, fill=self.border
+            )
 
         for row in range(3):
             for col in range(3):
@@ -43,11 +45,16 @@ class TicTacToe(BaseGame):
                 y = row * 100
 
                 if self.board[row][col] == 1:
-                    self.canvas.create_line(x + 15, y + 15, x + 85, y + 85, width=10, fill=self.player)
-                    self.canvas.create_line(x + 15, y + 85, x + 85, y + 15, width=10, fill=self.player)
+                    self.canvas.create_line(
+                        x + 15, y + 15, x + 85, y + 85, width=10, fill=self.player
+                    )
+                    self.canvas.create_line(
+                        x + 15, y + 85, x + 85, y + 15, width=10, fill=self.player
+                    )
                 elif self.board[row][col] == 2:
-                    self.canvas.create_oval(x + 15, y + 15, x + 85, y + 85, width=10, outline=self.computer)
-
+                    self.canvas.create_oval(
+                        x + 15, y + 15, x + 85, y + 85, width=10, outline=self.computer
+                    )
 
     def handle_click(self, event: tk.Event):
         row = event.y // 100
@@ -80,7 +87,12 @@ class TicTacToe(BaseGame):
                     self.board[row][col] = 0
 
         # Choose a random move
-        available_moves = [(row, col) for row in range(3) for col in range(3) if self.board[row][col] == 0]
+        available_moves = [
+            (row, col)
+            for row in range(3)
+            for col in range(3)
+            if self.board[row][col] == 0
+        ]
         if not available_moves:
             return self.display_winner(0)
 
@@ -103,7 +115,9 @@ class TicTacToe(BaseGame):
                 return True
 
         # Check diagonals
-        if all(self.board[i][i] == player for i in range(3)) or all(self.board[i][2 - i] == player for i in range(3)):
+        if all(self.board[i][i] == player for i in range(3)) or all(
+            self.board[i][2 - i] == player for i in range(3)
+        ):
             return True
 
         return False
@@ -118,7 +132,9 @@ class TicTacToe(BaseGame):
                 message = "Torte wins!"
 
         self.canvas.delete("all")
-        self.canvas.create_text(150, 125, text=message, font=("Fixedsys", 20), fill=self.player)
+        self.canvas.create_text(
+            150, 125, text=message, font=("Fixedsys", 20), fill=self.player
+        )
 
         restart = Button(self.canvas, "Retry!", self.start)
         restart.config(font=("Fixedsys", 20))

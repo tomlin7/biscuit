@@ -13,15 +13,15 @@ import tkinter as tk
 import tkinter.filedialog as filedialog
 from tkinter.filedialog import asksaveasfilename
 
-from .utils.classdrill import *
+from src.biscuit.common.classdrill import *
 
 
 class Commands:
     """This class contains all the commands that can be triggered by the user.
-    All the methods that are not decorated with `@command_palette_ignore` are exported to 
+    All the methods that are not decorated with `@command_palette_ignore` are exported to
     the command palette and can be triggered by the user.
     """
-    
+
     def __init__(self, base: App) -> None:
         self.base = base
         self.count = 1
@@ -38,21 +38,21 @@ class Commands:
 
     def open_file(self, *_) -> None:
         path = filedialog.askopenfilename()
-        if not path or not os.path.isfile(path): 
+        if not path or not os.path.isfile(path):
             return
         self.base.open_editor(path)
         self.base.history.register_file_history(path)
 
     def open_directory(self, *_) -> None:
         path = filedialog.askdirectory()
-        if not path or not os.path.isdir(path):  
+        if not path or not os.path.isdir(path):
             return
         self.base.open_directory(path)
         self.base.history.register_folder_history(path)
 
     def open_recent_file(self, *_):
         self.base.palette.show("recentf:")
-    
+
     def open_recent_dir(self, *_):
         self.base.palette.show("recentd:")
 
@@ -65,21 +65,29 @@ class Commands:
                     editor.save()
 
     def save_as(self, *_) -> None:
-        #TODO set initial filename to a range of text inside the editor
+        # TODO set initial filename to a range of text inside the editor
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):
+                if path := asksaveasfilename(
+                    title="Save As...",
+                    defaultextension=".txt",
+                    initialfile=("Untitled"),
+                ):
                     editor.save(path)
 
     def save_all(self, *_) -> None:
         for editor in self.base.editorsmanager.active_editors:
             if editor.content:
                 if not editor.content.exists:
-                    if path := asksaveasfilename(title="Save As...", defaultextension=".txt", initialfile=("Untitled")):
+                    if path := asksaveasfilename(
+                        title="Save As...",
+                        defaultextension=".txt",
+                        initialfile=("Untitled"),
+                    ):
                         return editor.save(path)
                 if editor.content.editable:
                     editor.save()
-    
+
     def open_settings(self, *_) -> None:
         self.base.open_settings()
 
@@ -96,7 +104,7 @@ class Commands:
     def toggle_maximize(self, *_) -> None:
         match platform.system():
             case "Windows" | "Darwin":
-                self.base.wm_state('normal' if self.maximized else 'zoomed')
+                self.base.wm_state("normal" if self.maximized else "zoomed")
             # TODO windows specific maximizing
             # case "Windows":
             #     from ctypes import windll
@@ -109,16 +117,16 @@ class Commands:
             #         SWP_SHOWWINDOW = 0x40
             #         windll.user32.SetWindowPos(hwnd, 0, self.previous_pos[0], self.previous_pos[1], int(self.base.minsize()[0]), int(self.base.minsize()[1]), SWP_SHOWWINDOW)
             case _:
-                self.base.wm_attributes('-zoomed', self.maximized)
+                self.base.wm_attributes("-zoomed", self.maximized)
 
         self.maximized = not self.maximized
-
 
     def minimize(self, *_) -> None:
         self.base.update_idletasks()
 
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             from ctypes import windll
+
             hwnd = windll.user32.GetParent(self.base.winfo_id())
             windll.user32.ShowWindow(hwnd, 6)
         else:
@@ -132,13 +140,13 @@ class Commands:
         if self.minimized:
             self.base.deiconify()
             self.minimized = False
-    
+
     def toggle_wordwrap(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 self.base.wrap_words = not self.base.wrap_words
                 editor.content.text.refresh_wrap()
-    
+
     def toggle_block_cursor(self, *_) -> None:
         self.base.block_cursor = not self.base.block_cursor
         if e := self.base.editorsmanager.active_editor:
@@ -169,6 +177,7 @@ class Commands:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.paste()
+
     def find(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
@@ -218,17 +227,17 @@ class Commands:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.event_duplicate_selection()
-    
+
     def go_to_definition(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.request_definition(from_menu=True)
-    
+
     def find_references(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.request_references(from_menu=True)
-    
+
     def rename_symbol(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
@@ -254,77 +263,81 @@ class Commands:
 
     def show_logs(self, *_) -> None:
         self.base.panel.show_logs()
-    
+
     def show_welcome(self, *_) -> None:
         self.base.editorsmanager.add_welcome()
-    
+
     def show_command_palette(self, *_) -> None:
         self.base.palette.show(">")
-    
+
     def show_symbol_palette(self, *_) -> None:
         self.base.palette.show("@")
 
     def show_active_editors(self, *_) -> None:
         self.base.palette.show("active:")
-    
+
     def change_language_mode(self, *_) -> None:
-        self.base.palette.show('language:')
-    
+        self.base.palette.show("language:")
+
     def change_eol(self, *_) -> None:
-        self.base.palette.show('eol:')
-    
+        self.base.palette.show("eol:")
+
     def change_encoding(self, *_) -> None:
-        self.base.palette.show('encoding:')
-    
+        self.base.palette.show("encoding:")
+
     def change_indentation_level(self, *_) -> None:
-        self.base.palette.show('indent:')
-    
+        self.base.palette.show("indent:")
+
     def clone_repo(self, *_) -> None:
-        self.base.palette.show('clone:')
+        self.base.palette.show("clone:")
 
     def show_goto_palette(self, *_) -> None:
-        self.base.palette.show(':')
-    
+        self.base.palette.show(":")
+
     def change_git_branch(self, *_) -> None:
-        self.base.palette.show('branch:')
-    
+        self.base.palette.show("branch:")
+
     @command_palette_ignore
     def show_run_config_palette(self, command) -> None:
-        self.base.palette.show('runconf:', command)
+        self.base.palette.show("runconf:", command)
 
     def show_google_search(self, *_) -> None:
-        self.base.palette.show('google:')
-    
+        self.base.palette.show("google:")
+
     def configure_run_command(self, *_) -> None:
-        self.base.palette.show('runconf:')
+        self.base.palette.show("runconf:")
 
     def search_github_issues(self, *_) -> None:
-        self.base.palette.show('issue:')
-    
+        self.base.palette.show("issue:")
+
     def search_github_prs(self, *_) -> None:
-        self.base.palette.show('pr:')
+        self.base.palette.show("pr:")
 
     def show_file_search(self, *_) -> None:
         self.base.palette.show()
 
     def documentation(self, *_) -> None:
         web.open("https://tomlin7.github.io/biscuit/")
-    
+
     def release_notes(self, *_) -> None:
         web.open("https://github.com/tomlin7/biscuit/blob/main/CHANGELOG.md")
-    
+
     def report_bug(self, *_) -> None:
-        web.open("https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=bug&projects=&template=bug_report.md")
+        web.open(
+            "https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=bug&projects=&template=bug_report.md"
+        )
 
     def request_feature(self, *_) -> None:
-        web.open("https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=enhancement&projects=&template=feature_request.md")
+        web.open(
+            "https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=enhancement&projects=&template=feature_request.md"
+        )
 
     def code_of_conduct(self, *_) -> None:
         web.open("https://github.com/tomlin7/biscuit/blob/main/CODE_OF_CONDUCT.md")
 
     def view_license(self, *_) -> None:
         web.open("https://github.com/tomlin7/biscuit/blob/main/LICENSE.md")
-    
+
     def about(self, *_) -> None:
         messagebox.showinfo("Biscuit", str(self.base.sysinfo))
         self.base.logger.info(str(self.base.sysinfo))

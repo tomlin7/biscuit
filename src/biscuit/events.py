@@ -12,9 +12,12 @@ from .gui import GUIManager
 
 if typing.TYPE_CHECKING:
     from .layout import *
+    from src.biscuit.language.data import *
+    from src.biscuit.editor import Editor, BaseEditor
 
 from .config import ConfigManager
 from .settings import *
+from .views import *
 
 
 class EventManager(GUIManager, ConfigManager):
@@ -49,7 +52,7 @@ class EventManager(GUIManager, ConfigManager):
 
     def open(self, path: str, warn_for_directory=False) -> None:
         """Opens file/directory based on path.
-        
+
         TODO: Open directory in new window if warn_for_directory is True.
         """
         if not path:
@@ -81,7 +84,7 @@ class EventManager(GUIManager, ConfigManager):
         except Exception as e:
             self.logger.error(f"Checking git failed: {e}")
             self.notifications.error("Checking git failed: see logs")
-        
+
         self.event_generate("<<DirectoryChanged>>", data=dir)
 
     def update_git(self) -> None:
@@ -93,11 +96,15 @@ class EventManager(GUIManager, ConfigManager):
         if not path:
             return
 
-        new_window = askyesnocancel("Open in new window or current", "Do you want to open the cloned repository in a new window?")
+        new_window = askyesnocancel(
+            "Open in new window or current",
+            "Do you want to open the cloned repository in a new window?",
+        )
         if new_window is None:
             return
-        
+
         try:
+
             def clone() -> None:
                 repodir = self.git.clone(url, path)
                 if new_window:
@@ -149,7 +156,12 @@ class EventManager(GUIManager, ConfigManager):
             return
 
         editor = self.open_editor(path, exists=True)
-        editor.content.bind("<<FileLoaded>>", lambda _, editor=editor.content.text,edits=edits:threading.Thread(target=self.do_workspace_edits, args=(editor, edits), daemon=True).start())
+        editor.content.bind(
+            "<<FileLoaded>>",
+            lambda _, editor=editor.content.text, edits=edits: threading.Thread(
+                target=self.do_workspace_edits, args=(editor, edits), daemon=True
+            ).start(),
+        )
 
     def do_workspace_edits(self, tab: Text, edits: list[TextEdit]):
         for i in edits:
@@ -179,7 +191,7 @@ class EventManager(GUIManager, ConfigManager):
 
     def register_langserver(self, language: str, command: str) -> None:
         self.language_server_manager.register_langserver(language, command)
-    
+
     def register_comment_prefix(self, language: str, prefix: str) -> None:
         register_comment_prefix(language, prefix)
 
@@ -207,4 +219,3 @@ class EventManager(GUIManager, ConfigManager):
                 )
 
         self.statusbar.toggle_editmode(False)
-

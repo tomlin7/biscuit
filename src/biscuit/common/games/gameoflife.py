@@ -3,7 +3,7 @@ __author__ = "tomlin7"
 import random
 import tkinter as tk
 
-from src.biscuit.utils import Button
+from src.biscuit.common.ui import Button
 
 from .game import BaseGame
 
@@ -19,12 +19,25 @@ class GameOfLife(BaseGame):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, None, None, *args, **kwargs)
 
-        self.start_stop_button = Button(self, text="Start", command=self.toggle_start_stop, padx=20, pady=20, font=("Fixedsys", 15))
-        self.canvas = tk.Canvas(self, width=GRID_WIDTH*CELL_SIZE, height=GRID_HEIGHT*CELL_SIZE, 
-                                borderwidth=0, highlightthickness=0, **self.base.theme.editors)
+        self.start_stop_button = Button(
+            self,
+            text="Start",
+            command=self.toggle_start_stop,
+            padx=20,
+            pady=20,
+            font=("Fixedsys", 15),
+        )
+        self.canvas = tk.Canvas(
+            self,
+            width=GRID_WIDTH * CELL_SIZE,
+            height=GRID_HEIGHT * CELL_SIZE,
+            borderwidth=0,
+            highlightthickness=0,
+            **self.base.theme.editors
+        )
 
         self._grid = [[0] * GRID_WIDTH for _ in range(GRID_HEIGHT)]
-        #self.randomize_grid()
+        # self.randomize_grid()
         self.draw_gridlines()
         self.is_running = False
 
@@ -36,7 +49,9 @@ class GameOfLife(BaseGame):
         self.canvas.bind("<B3-Motion>", self.remove_cell)
         self.canvas.bind("<Button-3>", self.remove_cell)
 
-        self.base.notifications.info("INSTRUCTIONS: Left click to add cells, Right click to remove cells!")
+        self.base.notifications.info(
+            "INSTRUCTIONS: Left click to add cells, Right click to remove cells!"
+        )
 
     def randomize_grid(self) -> None:
         for row in range(GRID_HEIGHT):
@@ -47,11 +62,24 @@ class GameOfLife(BaseGame):
     def draw_gridlines(self) -> None:
         for col in range(GRID_WIDTH + 1):
             x = col * CELL_SIZE
-            self.canvas.create_line(x, 0, x, GRID_HEIGHT * CELL_SIZE, fill=self.base.theme.border, tags="grid")
+            self.canvas.create_line(
+                x,
+                0,
+                x,
+                GRID_HEIGHT * CELL_SIZE,
+                fill=self.base.theme.border,
+                tags="grid",
+            )
         for row in range(GRID_HEIGHT + 1):
             y = row * CELL_SIZE
-            self.canvas.create_line(0, y, GRID_WIDTH * CELL_SIZE, y, fill=self.base.theme.border, tags="grid")
-
+            self.canvas.create_line(
+                0,
+                y,
+                GRID_WIDTH * CELL_SIZE,
+                y,
+                fill=self.base.theme.border,
+                tags="grid",
+            )
 
     def toggle_start_stop(self, *_) -> None:
         if self.is_running:
@@ -121,11 +149,21 @@ class GameOfLife(BaseGame):
         y1 = row * CELL_SIZE
         x2 = x1 + CELL_SIZE
         y2 = y1 + CELL_SIZE
-        self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.base.theme.biscuit, outline="", tags="cell")
+        self.canvas.create_rectangle(
+            x1, y1, x2, y2, fill=self.base.theme.biscuit, outline="", tags="cell"
+        )
 
     def erase_cell(self, row, col) -> None:
         x1 = col * CELL_SIZE
         y1 = row * CELL_SIZE
         x2 = x1 + CELL_SIZE
         y2 = y1 + CELL_SIZE
-        self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.base.theme.editors.background, outline=self.base.theme.border, tags="cell")
+        self.canvas.create_rectangle(
+            x1,
+            y1,
+            x2,
+            y2,
+            fill=self.base.theme.editors.background,
+            outline=self.base.theme.border,
+            tags="cell",
+        )

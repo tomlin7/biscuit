@@ -2,7 +2,7 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
-from src.biscuit.utils import Button, Frame, IconButton, Label
+from src.biscuit.common.ui import Button, Frame, IconButton, Label
 
 from .game import BaseGame
 
@@ -10,14 +10,21 @@ from .game import BaseGame
 BOARD_SIZE = 10
 NUM_MINES = 10
 
+
 class Tile(IconButton):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.config(font=("Segoi UI", 13), width=2, bg=self.base.theme.biscuit, fg="white", activebackground=self.base.theme.biscuit_dark)
+        self.config(
+            font=("Segoi UI", 13),
+            width=2,
+            bg=self.base.theme.biscuit,
+            fg="white",
+            activebackground=self.base.theme.biscuit_dark,
+        )
 
     def reveal_count(self, count) -> None:
         self.config(font=("Segoi UI", 13), text=count)
-        bg=self.base.theme.editors.background
+        bg = self.base.theme.editors.background
         self.config(bg=bg, activebackground=bg)
 
     def reveal_icon(self, icon, **kw) -> None:
@@ -26,6 +33,7 @@ class Tile(IconButton):
 
     def clear(self) -> None:
         self.config(fg=self.base.theme.editors.background)
+
 
 class Minesweeper(BaseGame):
     name = "Minesweeper!"
@@ -37,7 +45,13 @@ class Minesweeper(BaseGame):
         self.container.pack(pady=100)
 
         self.gameover_frame = Frame(self, **self.base.theme.editors, pady=50)
-        Label(self.gameover_frame, text="Game Over", font=("Fixedsys", 20), fg=self.base.theme.biscuit, **self.base.theme.editors).pack()
+        Label(
+            self.gameover_frame,
+            text="Game Over",
+            font=("Fixedsys", 20),
+            fg=self.base.theme.biscuit,
+            **self.base.theme.editors
+        ).pack()
         restart = Button(self.gameover_frame, "Retry!", self.reload)
         restart.config(font=("Fixedsys", 20))
         restart.pack(pady=20)
@@ -51,8 +65,8 @@ class Minesweeper(BaseGame):
 
     def start_game(self):
         self.mine_positions = []
-        self.board = [[0]*BOARD_SIZE for _ in range(BOARD_SIZE)]
-        self.buttons = [[None]*BOARD_SIZE for _ in range(BOARD_SIZE)]
+        self.board = [[0] * BOARD_SIZE for _ in range(BOARD_SIZE)]
+        self.buttons = [[None] * BOARD_SIZE for _ in range(BOARD_SIZE)]
 
         self.generate_mines()
         self.create_tiles()
@@ -69,9 +83,15 @@ class Minesweeper(BaseGame):
         for row in range(BOARD_SIZE):
             for col in range(BOARD_SIZE):
                 button = Tile(self.container, "", width=2, height=1)
-                button.grid(row=row, column=col, padx=(0, 1), pady=(0, 1), sticky=tk.NSEW)
-                button.bind("<Button-1>", lambda e, r=row, c=col: self.button_click(e, r, c))
-                button.bind("<Button-3>", lambda e, r=row, c=col: self.button_click(e, r, c))
+                button.grid(
+                    row=row, column=col, padx=(0, 1), pady=(0, 1), sticky=tk.NSEW
+                )
+                button.bind(
+                    "<Button-1>", lambda e, r=row, c=col: self.button_click(e, r, c)
+                )
+                button.bind(
+                    "<Button-3>", lambda e, r=row, c=col: self.button_click(e, r, c)
+                )
                 self.buttons[row][col] = button
 
     def button_click(self, event, row, col):
@@ -93,7 +113,9 @@ class Minesweeper(BaseGame):
             if self.buttons[row][col]["text"] == "pinned":
                 # Remove the flag
                 self.buttons[row][col].config(text="")
-                self.buttons[row][col].bind("<Button-1>", lambda e, r=row, c=col: self.button_click(e, r, c))
+                self.buttons[row][col].bind(
+                    "<Button-1>", lambda e, r=row, c=col: self.button_click(e, r, c)
+                )
             else:
                 # Flag the button
                 self.buttons[row][col].reveal_icon("pinned")
@@ -101,15 +123,15 @@ class Minesweeper(BaseGame):
 
     def count_adjacent_mines(self, row, col):
         count = 0
-        for i in range(max(0, row-1), min(row+2, BOARD_SIZE)):
-            for j in range(max(0, col-1), min(col+2, BOARD_SIZE)):
+        for i in range(max(0, row - 1), min(row + 2, BOARD_SIZE)):
+            for j in range(max(0, col - 1), min(col + 2, BOARD_SIZE)):
                 if self.board[i][j] == -1:
                     count += 1
         return count
 
     def reveal_empty_cells(self, row, col):
-        for i in range(max(0, row-1), min(row+2, BOARD_SIZE)):
-            for j in range(max(0, col-1), min(col+2, BOARD_SIZE)):
+        for i in range(max(0, row - 1), min(row + 2, BOARD_SIZE)):
+            for j in range(max(0, col - 1), min(col + 2, BOARD_SIZE)):
                 if self.buttons[i][j]["text"] == "" and self.board[i][j] != -1:
                     count = self.count_adjacent_mines(i, j)
                     self.buttons[i][j].reveal_count(count)

@@ -17,7 +17,11 @@ from src import __version__
 
 @dataclass
 class SysInfo:
+    """Get system information"""
+
     def __init__(self, base: App) -> None:
+        """Initialize the system information class with the base app instance."""
+
         self.base = base
 
         self.os = platform.system()
@@ -31,16 +35,16 @@ class SysInfo:
     @property
     def is_windows(self) -> bool:
         return self.os == "Windows"
-    
+
     @property
     def is_linux(self) -> bool:
         return self.os == "Linux"
-    
+
     @property
     def is_macos(self) -> bool:
         return self.os == "Darwin"
-    
-    def get_current_stats(self) -> str: 
+
+    def get_current_stats(self) -> str:
         """Get current CPU and Memory usage"""
 
         cpu_percent = psutil.cpu_percent(interval=0)
@@ -53,7 +57,7 @@ class SysInfo:
     def __str__(self) -> None:
         # ikr this is a mess
         return dedent(
-    f"""BISCUIT
+            f"""BISCUIT
 ----------------------------------------
 
 "Life is short, eat more biscuits." 
@@ -68,4 +72,5 @@ OS: {self.os} {self.release} ({self.version})
 Processor: {self.processor}
 
 MIT License
-Copyright (c) 2021-24 tomlin7""")
+Copyright (c) 2021-24 tomlin7"""
+        )
