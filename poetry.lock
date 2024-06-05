@@ -1126,12 +1126,12 @@ scikit-build = "*"
 
 [[package]]
 name = "tkinterweb"
-version = "3.23.9"
+version = "3.23.10"
 description = "HTML/CSS viewer for Tkinter"
 optional = false
 python-versions = "*"
 files = [
-    {file = "tkinterweb-3.23.9.tar.gz", hash = "sha256:7ac56ea71885b7296369003107f04ca954979bae574b32132defebff9ee6bd99"},
+    {file = "tkinterweb-3.23.10.tar.gz", hash = "sha256:2b08c5f068a0002020615856438f2795c01f97b22bc0a4a7219d7f662ceebcdd"},
 ]
 
 [package.dependencies]
@@ -1292,4 +1292,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "65b98c9e6b62a3bdcbf76aab3a13996a9e311eef8d9008e628f36443abf37a4e"
+content-hash = "5fad10658f3a3359bbcef381e10906bcc78ffc345c94662a7b747c159dc1a57c"
