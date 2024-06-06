@@ -6,9 +6,9 @@
     "configurations": [
         {
             "name": "Python: Launch Biscuit",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "module": "biscuit",
+            "module": "src",
             "console": "integratedTerminal"
         }
     ]
