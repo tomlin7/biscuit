@@ -29,6 +29,7 @@ class LineNumbers(Canvas):
             width=65, bd=0, highlightthickness=0, **self.base.theme.editors.linenumbers
         )
         self.text = text
+        self.font = self.base.settings.font
 
         self.bg, self.fg, _, self.hfg = (
             self.base.theme.editors.linenumbers.number.values()

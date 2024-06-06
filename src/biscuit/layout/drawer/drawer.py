@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import tkinter as tk
 import typing
 
@@ -17,15 +19,15 @@ class NavigationDrawer(Frame):
     - Manages the SidebarViews
     """
 
-    def __init__(self, master: Root, *args, **kwargs) -> None:
+    def __init__(self, master: Frame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
-        self.slots = ActivityBar(self)
-        self.slots.grid(sticky=tk.NS, column=0, row=0, padx=(0, 1))
+        self.activitybar = ActivityBar(self)
+        self.activitybar.grid(sticky=tk.NS, column=0, row=0, padx=(0, 1))
 
         self.views = []
 
@@ -39,8 +41,8 @@ class NavigationDrawer(Frame):
             "GitHub": GitHub(self),
             "Extensions": Extensions(self),
         }
-        self.add_views(self.default_views)
-        self.slots.toggle_first_slot()
+        self.add_views(self.default_views.values())
+        self.activitybar.toggle_first_slot()
 
     def add_views(self, views: list[NavigationDrawerView]) -> None:
         """Adds multiple views to the drawer at once."""
@@ -55,7 +57,7 @@ class NavigationDrawer(Frame):
             view (SidebarView): The view to add."""
 
         self.views.append(view)
-        self.slots.add_view(view)
+        self.activitybar.add_view(view)
 
     def create_view(self, name: str, icon: str = "browser") -> NavigationDrawerView:
         """Create a new view.
@@ -124,9 +126,9 @@ class NavigationDrawer(Frame):
         Args:
             view (SidebarView): The view to show."""
 
-        for i in self.slots.buttons:
+        for i in self.activitybar.buttons:
             if i.view == view:
-                self.slots.set_active_slot(i)
+                self.activitybar.set_active_slot(i)
                 i.enable()
                 break
 

@@ -27,15 +27,12 @@ class Checkable(IconLabelButton):
             command,
             expandicon=False,
             iconsize=10,
-            toggle=False,
+            icon_visible=checked,
             *args,
             **kwargs
         )
 
         self.command = command
-        if checked:
-            self.toggle_icon()
-
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.menu.item.values()
         self.on_leave()
 

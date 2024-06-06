@@ -51,11 +51,11 @@ class BaseEditor(Frame):
         self.content = None
         self.diff = False
         self.run_command_value = ""
+        self.debugger = None
         self.language = ""
         self.standalone = False
         self.minimalist = False
         self.exists = True
-        self.debugger = None
         self.runmenu = None
         self.unsupported = False
         self.content_hash = ""

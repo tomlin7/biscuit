@@ -9,7 +9,7 @@ from src.biscuit.common.ui import Frame, Icon, IconButton
 if typing.TYPE_CHECKING:
     from src.biscuit.editor import Editor
 
-    from .tabbar import TabBar
+    from .editorsbar import EditorsBar
 
 # TODO: show modified, saved state in the tab
 
@@ -21,7 +21,7 @@ class Tab(Frame):
     Shows the filename, icon and close button.
     """
 
-    def __init__(self, master: TabBar, editor: Editor, *args, **kwargs) -> None:
+    def __init__(self, master: EditorsBar, editor: Editor, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.editor = editor
         self.selected = False

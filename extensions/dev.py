@@ -7,15 +7,16 @@
 
 from __future__ import annotations
 
-__version__ = '0.0.1'
-__version_info__ = tuple([ int(num) for num in __version__.split('.')])
+__version__ = "0.0.1"
+__version_info__ = tuple([int(num) for num in __version__.split(".")])
 
 import typing
 
 if typing.TYPE_CHECKING:
-    from src import ExtensionsAPI
+    from src.biscuit import ExtensionsAPI
 
 # 4. Create a class named `Extension` as follows:
+
 
 class Extension:
     """Dev Mode extension for Biscuit (author: @billyeatcookies)
@@ -29,5 +30,6 @@ class Extension:
 
     def run(self) -> None:
         self.api.notifications.info(f"Dev mode is enabled!")
+
 
 # 5. Start customizing your extension!

@@ -28,8 +28,8 @@ class OpenEditors(NavigationDrawerViewItem):
     def add_item(self, editor):
         temp = Closable(
             self.content,
-            editor.filename,
-            function=lambda p=editor.path: self.openfile(p),
+            text=editor.filename,
+            callback=lambda p=editor.path: self.openfile(p),
             closefn=lambda p=editor.path: self.closefile(p),
             padx=10,
         )
@@ -59,8 +59,8 @@ class OpenEditors(NavigationDrawerViewItem):
         self.refresh()
 
     def openfile(self, path) -> None:
-        self.base.editorsmanager.tabs.switch_tabs(path)
+        self.base.editorsmanager.editorsbar.switch_tabs(path)
 
     def closefile(self, path) -> None:
         e = self.base.editorsmanager.close_editor_by_path(path)
-        self.base.editorsmanager.tabs.close_tab_helper(e)
+        self.base.editorsmanager.editorsbar.close_tab_helper(e)

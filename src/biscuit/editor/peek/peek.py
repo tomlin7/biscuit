@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from src.biscuit.common.ui import Frame, Label, Toplevel
 
+from ..text import TextEditor
 from .tree import PeekTree
 
 if typing.TYPE_CHECKING:
@@ -57,8 +58,6 @@ class Peek(Toplevel):
             self, width=100, singleclick=self.switch_editor, doubleclick=self.choose
         )
         self.tree.pack(side=tk.LEFT, fill=tk.Y)
-
-        from src.biscuit.editor.text import TextEditor
 
         self.editor = TextEditor(self, standalone=True)
         self.editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)

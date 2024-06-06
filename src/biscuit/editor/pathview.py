@@ -5,6 +5,11 @@ from src.biscuit.views.explorer import DirectoryTree
 
 
 class PathView(Toplevel):
+    """PathView is a floating window that displays the directory tree of a path.
+    PathView is used with the breadcrumbs to display the directory structure of a file.
+    User can navigate the tree and open files in the editor.
+    """
+
     def __init__(self, master, width=150, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.width = round(width * self.base.scale)

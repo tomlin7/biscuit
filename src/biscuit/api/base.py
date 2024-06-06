@@ -2,22 +2,16 @@ from __future__ import annotations
 
 import typing
 
-from src.biscuit.api.releases import Releases
+from .commands import Commands
+from .editors import Editors
+from .logger import Logger
+from .notifications import Notifications
+from .releases import Releases
+from .utils import Utils
+from .views import Views
 
 if typing.TYPE_CHECKING:
     from src.biscuit import App
-
-from src.biscuit.api.editors import Editors
-from src.biscuit.common import ActionSet, BaseGame
-from src.biscuit.editor import BaseEditor
-from src.biscuit.language import Languages
-from src.biscuit.layout.statusbar import SButton
-
-from .commands import Commands
-from .logger import Logger
-from .notifications import Notifications
-from .utils import Utils
-from .views import Views
 
 
 class ExtensionsAPI:
@@ -51,7 +45,7 @@ class ExtensionsAPI:
         self.statusbar = self.base.statusbar
         self.sidebar = self.base.drawer
         self.panel = self.base.panel
-        self.sysinfo = self.base.sysinfo
+        self.sysinfo = self.base.system
         self.editorsmanager = self.base.editorsmanager
         self.terminalmanager = self.base.terminalmanager
         self.languageservermanager = self.base.language_server_manager
@@ -63,6 +57,11 @@ class ExtensionsAPI:
         self.utils = Utils(self.base)
         self.views = Views(self.base)
         self.releases = Releases(self.base)
+
+        from src.biscuit.common import ActionSet, BaseGame
+        from src.biscuit.editor import BaseEditor
+        from src.biscuit.language import Languages
+        from src.biscuit.layout.statusbar import SButton
 
         self.Game = BaseGame
         self.Editor = BaseEditor

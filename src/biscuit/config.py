@@ -1,16 +1,17 @@
 import os
 import sys
+from pathlib import Path
 
-from .api import *
+from .api import ExtensionsAPI
 from .binder import Binder
 from .commands import Commands
-from .common import *
+from .common import SysInfo
 from .execution import ExecutionManager
 from .extensions import ExtensionManager
 from .git import Git
 from .history import HistoryManager
-from .language import *
-from .settings import *
+from .language import LanguageServerManager
+from .settings import Settings
 
 
 class ConfigManager:
@@ -35,22 +36,27 @@ class ConfigManager:
     resdir: str
     appdir: str
     extensionsdir: str
+    git_found = False
+    wrap_words = False
+    tab_spaces = 4
+    block_cursor = False
+    active_directory = None
+    active_branch_name = None
+    onupdate_callbacks = []
+    onfocus_callbacks = []
+
+    # runtime flags
+    testing = False
+    frozen = False
 
     def setup_configs(self) -> None:
-        self.git_found = False
-        self.wrap_words = False
-        self.tab_spaces = 4
-        self.block_cursor = False
-        self.active_directory = None
-        self.active_branch_name = None
-        self.onupdate_callbacks = []
-        self.onfocus_callbacks = []
+        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+            self.frozen = True
 
-        self.testing = False
         if os.environ.get("ENVIRONMENT") == "test":
             self.testing = True
 
-        self.sysinfo = SysInfo(self)
+        self.system = SysInfo(self)
         self.settings = Settings(self)
         self.history = HistoryManager(self)
 
@@ -64,16 +70,23 @@ class ConfigManager:
         self.execution_manager = ExecutionManager(self)
 
     def setup_path(self, appdir: str) -> None:
-        # setup all paths used across editor
+        """Sets up the application paths and directories."""
+
+        # sets up the application directory
         self.appdir = os.path.dirname(appdir)
         sys.path.append(self.appdir)
 
+        # resources, config, extensions are outside src/
+        self.parentdir = self.appdir
+        if not self.frozen:
+            self.parentdir = Path(self.appdir).parent.absolute()
+
         self.resdir = os.path.join(
-            getattr(sys, "_MEIPASS", os.path.dirname(appdir)), "res"
+            getattr(sys, "_MEIPASS", self.parentdir), "resources"
         )
-        self.configdir = os.path.join(self.appdir, "config")
-        self.extensionsdir = os.path.join(self.appdir, "extensions")
-        self.datadir = os.path.join(self.appdir, "data")
+        self.configdir = os.path.join(self.parentdir, "config")
+        self.extensionsdir = os.path.join(self.parentdir, "extensions")
+        self.datadir = os.path.join(self.parentdir, "data")
 
         try:
             os.makedirs(self.datadir, exist_ok=True)

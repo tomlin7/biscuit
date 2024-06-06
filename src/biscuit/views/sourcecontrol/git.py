@@ -32,7 +32,7 @@ class Git(Frame):
             self.commitbox,
             text="Commit",
             icon="git-commit",
-            function=self.commit,
+            callback=self.commit,
             highlighted=True,
         )
         self.commit_button.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)

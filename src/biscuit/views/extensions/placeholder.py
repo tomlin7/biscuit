@@ -26,7 +26,7 @@ class ExtensionsPlaceholder(Frame):
             self,
             text="Retry",
             icon="sync",
-            function=self.retry,
+            callback=self.retry,
             pady=2,
             highlighted=True,
         )

@@ -21,10 +21,17 @@ class SearchBar(Frame):
             padx=150,
             callback=self.onclick,
         )
+        font = self.base.settings.uifont.copy()
+        font.config(size=8)
+        self.label.text_label.config(font=font)
+        self.label.icon_label.config(font=("codicon", 10))
         self.label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, pady=1, padx=1)
 
         self.palette_button = IconButton(
-            self, icon="terminal", event=self.base.commands.show_command_palette
+            self,
+            icon="terminal",
+            event=self.base.commands.show_command_palette,
+            iconsize=10,
         )
         self.palette_button.config(**self.base.theme.utils.iconlabelbutton)
         self.palette_button.pack(

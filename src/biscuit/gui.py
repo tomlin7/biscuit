@@ -58,8 +58,8 @@ class GUIManager(Tk, ConfigManager):
         # window size and position
         self.min_width = round(500)
         self.min_height = round(500)
-        app_width = round(1150 * self.scale)
-        app_height = round(650 * self.scale)
+        app_width = round(1200 * self.scale)
+        app_height = round(700 * self.scale)
         x = int((self.winfo_screenwidth() - app_width) / 2)
         y = int((self.winfo_screenheight() - app_height) / 2)
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")

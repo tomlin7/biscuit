@@ -4,9 +4,8 @@ import re
 import threading
 import tkinter as tk
 
-from src.biscuit.editor import TextEditor
-
-from ..editor import BaseEditor
+from ..editor.editorbase import BaseEditor
+from ..editor.text import TextEditor
 
 
 class DiffPane(TextEditor):
@@ -48,6 +47,8 @@ class DiffEditor(BaseEditor):
         self.rhs = DiffPane(self, path, exists=False)
         self.rhs.grid(row=0, column=1, sticky=tk.NSEW)
 
+        self.debugger = self.rhs.debugger
+
         self.left = self.lhs.text
         self.right = self.text = self.rhs.text
 
@@ -56,7 +57,7 @@ class DiffEditor(BaseEditor):
         self.left["yscrollcommand"] = self.on_textscroll
         self.right["yscrollcommand"] = self.on_textscroll
 
-        self.stipple = self.base.settings.res.stipple
+        self.stipple = self.base.settings.resources.stipple
 
         self.left.tag_config(
             "addition",
@@ -76,7 +77,7 @@ class DiffEditor(BaseEditor):
         )
         self.right.tag_config("addedword", background="green")
 
-        self.differ = difflib.Differ(self)
+        self.differ = difflib.Differ()
 
         self.show_diff()
 

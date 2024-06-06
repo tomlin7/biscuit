@@ -1,6 +1,3 @@
-from src.biscuit.common import *
-from src.biscuit.common.ui import *
-
 from .endpoint import Endpoint
 
 
@@ -12,6 +9,30 @@ class Utils(Endpoint):
 
     def __init__(self, *a) -> None:
         super().__init__(*a)
+
+        from src.biscuit.common import FixedSizeStack, caller_name
+        from src.biscuit.common.ui import (
+            Bubble,
+            Button,
+            ButtonsEntry,
+            Canvas,
+            Entry,
+            Frame,
+            Icon,
+            IconButton,
+            IconLabelButton,
+            Label,
+            Menubutton,
+            ScrollableFrame,
+            Scrollbar,
+            Shortcut,
+            Text,
+            Toplevel,
+            Tree,
+            TruncatedLabel,
+            WrappingLabel,
+            get_codicon,
+        )
 
         self.Bubble = Bubble
         self.Button = Button

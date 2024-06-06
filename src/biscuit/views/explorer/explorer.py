@@ -28,7 +28,7 @@ class Explorer(NavigationDrawerView):
             "Open Editors", self.toggle_active_editors, checked=True
         )
         self.menu.add_separator(10)
-        self.menu.add_item("Search", self.base.commands.search_files)
+        self.menu.add_command("Search", self.base.commands.search_files)
         self.add_action("ellipsis", self.menu.show)
 
         self.active_editors_visible = True

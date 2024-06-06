@@ -39,8 +39,5 @@ class Binder:
         self.bind(self.bindings.symbolpalette, self.events.show_symbol_palette)
         self.bind(self.bindings.panel, self.base.contentpane.toggle_panel)
 
-        self.bind("<Configure>", self.base.on_gui_update)
-        self.bind("<FocusIn>", self.base.on_focus)
-
     def bind(self, this, to_this) -> None:
         self.base.bind(this, to_this)

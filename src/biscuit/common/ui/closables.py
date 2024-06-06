@@ -35,6 +35,9 @@ class Closable(Frame):
         self.text = text
         self.icon = icon
 
+        self.icon_label = None
+        self.text_label = None
+
         if icon:
             self.icon_label = tk.Label(
                 self,

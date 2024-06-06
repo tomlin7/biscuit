@@ -67,22 +67,27 @@ class FindReplace(Toplevel):
 
         self.term.trace_add("write", self.find)
 
-        self.base.register_onfocus(self.lift)
-        self.base.register_onupdate(self._follow_root)
+        self.base.bind("<FocusIn>", lambda *_: self.lift, add=True)
+        self.base.bind("<Configure>", self._follow_root, add=True)
 
     def _follow_root(self, *_):
         if not self.active:
             return
 
-        self.update_idletasks()
-        x = (
-            self.text.winfo_rootx()
-            + self.text.winfo_width()
-            - self.winfo_width()
-            - self.offset
-        )
-        y = self.text.winfo_rooty()
-        self.geometry(f"+{x}+{y}")
+        try:
+
+            self.update_idletasks()
+            x = (
+                self.text.winfo_rootx()
+                + self.text.winfo_width()
+                - self.winfo_width()
+                - self.offset
+            )
+            y = self.text.winfo_rooty()
+            self.geometry(f"+{x}+{y}")
+        except tk.TclError:
+            # root was destroyed
+            pass
 
     def show(self, text: Text):
         self.text = text

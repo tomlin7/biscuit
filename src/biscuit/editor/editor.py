@@ -5,7 +5,7 @@ from src.biscuit.common import is_image
 
 from ..git.diff import DiffEditor
 from .breadcrumbs import BreadCrumbs
-from .editor import BaseEditor
+from .editorbase import BaseEditor
 from .html import HTMLEditor
 from .image import ImageViewer
 from .markdown import MDEditor

@@ -3,15 +3,13 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-if typing.TYPE_CHECKING:
-    ...
-
 from src.biscuit.common.ui import Frame
 
 from .editors import EditorsManager
 from .panel import Panel
 
-__all__ = ["Content", EditorsManager, Panel]
+if typing.TYPE_CHECKING:
+    ...
 
 
 class Content(Frame):

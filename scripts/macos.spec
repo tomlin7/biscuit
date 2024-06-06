@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
 
-datas = [('../biscuit/res/*', 'res/')]
+datas = [('../resources/*', 'resources/')]
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
 datas += collect_data_files('tkinterweb')
@@ -15,7 +15,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['../biscuit/__main__.py'],
+    ['../src/__main__.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,

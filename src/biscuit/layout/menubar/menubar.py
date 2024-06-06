@@ -12,7 +12,7 @@ from .item import MenubarItem
 from .searchbar import SearchBar
 
 if typing.TYPE_CHECKING:
-    from .. import Root
+    ...
 
 
 class Menubar(Frame):
@@ -22,7 +22,7 @@ class Menubar(Frame):
     - Manages the MenubarItems
     """
 
-    def __init__(self, master: Root, *args, **kwargs) -> None:
+    def __init__(self, master: Frame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.menus: list[MenubarItem] = []
         self.events = self.base.commands
@@ -128,41 +128,41 @@ class Menubar(Frame):
         events = self.events
 
         self.file_menu = self.add_menu("File")
-        self.file_menu.add_item("New File", events.new_file)
-        self.file_menu.add_item("New Window", events.new_window)
+        self.file_menu.add_command("New File", events.new_file)
+        self.file_menu.add_command("New Window", events.new_window)
         self.file_menu.add_separator()
-        self.file_menu.add_item("Open File", events.open_file)
-        self.file_menu.add_item("Open Folder", events.open_directory)
-        self.file_menu.add_item("Open Recent File...", events.open_recent_file)
-        self.file_menu.add_item("Open Recent Folder...", events.open_recent_dir)
+        self.file_menu.add_command("Open File", events.open_file)
+        self.file_menu.add_command("Open Folder", events.open_directory)
+        self.file_menu.add_command("Open Recent File...", events.open_recent_file)
+        self.file_menu.add_command("Open Recent Folder...", events.open_recent_dir)
         self.file_menu.add_separator()
-        self.file_menu.add_item("Save", events.save_file)
-        self.file_menu.add_item("Save As...", events.save_file_as)
-        self.file_menu.add_item("Save All", events.save_all)
+        self.file_menu.add_command("Save", events.save_file)
+        self.file_menu.add_command("Save As...", events.save_file_as)
+        self.file_menu.add_command("Save All", events.save_all)
         self.file_menu.add_separator()
-        self.file_menu.add_item("Preferences", events.open_settings)
+        self.file_menu.add_command("Preferences", events.open_settings)
         self.file_menu.add_separator()
-        self.file_menu.add_item("Close Editor", events.close_editor)
-        self.file_menu.add_item("Close Folder", events.close_folder)
-        self.file_menu.add_item("Close Window", events.quit_biscuit)
+        self.file_menu.add_command("Close Editor", events.close_editor)
+        self.file_menu.add_command("Close Folder", events.close_folder)
+        self.file_menu.add_command("Close Window", events.quit_biscuit)
         self.file_menu.add_separator()
-        self.file_menu.add_item("Exit", events.quit_biscuit)
+        self.file_menu.add_command("Exit", events.quit_biscuit)
 
     def add_edit_menu(self) -> None:
         events = self.events
 
         self.edit_menu = self.add_menu("Edit")
-        self.edit_menu.add_item("Undo", events.undo)
-        self.edit_menu.add_item("Redo", events.redo)
+        self.edit_menu.add_command("Undo", events.undo)
+        self.edit_menu.add_command("Redo", events.redo)
         self.edit_menu.add_separator()
-        self.edit_menu.add_item("Cut", events.cut)
-        self.edit_menu.add_item("Copy", events.copy)
-        self.edit_menu.add_item("Paste", events.paste)
+        self.edit_menu.add_command("Cut", events.cut)
+        self.edit_menu.add_command("Copy", events.copy)
+        self.edit_menu.add_command("Paste", events.paste)
         self.edit_menu.add_separator()
-        self.edit_menu.add_item("Find", events.find_symbol)
-        self.edit_menu.add_item("Replace", events.replace_symbol)
-        self.edit_menu.add_item("Find in Files", events.search_files)
-        self.edit_menu.add_item("Change Language Mode", events.change_language_mode)
+        self.edit_menu.add_command("Find", events.find_symbol)
+        self.edit_menu.add_command("Replace", events.replace_symbol)
+        self.edit_menu.add_command("Find in Files", events.search_files)
+        self.edit_menu.add_command("Change Language Mode", events.change_language_mode)
         self.edit_menu.add_separator()
         self.edit_menu.add_checkable("Word Wrap", events.toggle_wordwrap)
         self.edit_menu.add_checkable("Block Cursor", events.toggle_block_cursor)
@@ -171,58 +171,64 @@ class Menubar(Frame):
         events = self.events
 
         self.selection_menu = self.add_menu("Selection")
-        self.selection_menu.add_item("Select All", events.select_all)
-        self.selection_menu.add_item("Select Line", events.select_line)
-        self.selection_menu.add_item("Delete Line", events.delete_line)
+        self.selection_menu.add_command("Select All", events.select_all)
+        self.selection_menu.add_command("Select Line", events.select_line)
+        self.selection_menu.add_command("Delete Line", events.delete_line)
         self.selection_menu.add_separator()
-        self.selection_menu.add_item("Copy Line Up", events.copy_line_up)
-        self.selection_menu.add_item("Copy Line Down", events.copy_line_down)
-        self.selection_menu.add_item("Move Line Up", events.move_line_up)
-        self.selection_menu.add_item("Move Line Down", events.move_line_down)
-        self.selection_menu.add_item("Duplicate Selection", events.duplicate_selection)
+        self.selection_menu.add_command("Copy Line Up", events.copy_line_up)
+        self.selection_menu.add_command("Copy Line Down", events.copy_line_down)
+        self.selection_menu.add_command("Move Line Up", events.move_line_up)
+        self.selection_menu.add_command("Move Line Down", events.move_line_down)
+        self.selection_menu.add_command(
+            "Duplicate Selection", events.duplicate_selection
+        )
 
     def add_view_menu(self) -> None:
         events = self.events
 
         self.view_menu = self.add_menu("View")
-        self.view_menu.add_item("Command Palette...", events.show_command_palette)
-        self.view_menu.add_item("Explorer", events.show_explorer)
-        self.view_menu.add_item("Outline", events.show_outline)
-        self.view_menu.add_item("Search", events.show_search)
-        self.view_menu.add_item("Source Control", events.show_source_control)
-        self.view_menu.add_item("Extensions", events.show_extensions)
+        self.view_menu.add_command("Command Palette...", events.show_command_palette)
+        self.view_menu.add_command("Explorer", events.show_explorer)
+        self.view_menu.add_command("Outline", events.show_outline)
+        self.view_menu.add_command("Search", events.show_search)
+        self.view_menu.add_command("Source Control", events.show_source_control)
+        self.view_menu.add_command("Extensions", events.show_extensions)
         self.view_menu.add_separator()
-        self.view_menu.add_item("Terminal", events.show_terminal)
-        self.view_menu.add_item("Log", events.show_logs)
+        self.view_menu.add_command("Terminal", events.show_terminal)
+        self.view_menu.add_command("Log", events.show_logs)
 
     def add_go_menu(self) -> None:
         events = self.events
 
         self.view_menu = self.add_menu("Go")
-        self.view_menu.add_item("Go to File...", events.search_files)
+        self.view_menu.add_command("Go to File...", events.search_files)
         self.view_menu.add_separator()
-        self.view_menu.add_item("Go to Symbol in Editor", events.show_symbol_palette)
-        self.view_menu.add_item("Go to Definition", events.go_to_symbol_definition)
-        self.view_menu.add_item("Go to References", events.find_symbol_references)
+        self.view_menu.add_command("Go to Symbol in Editor", events.show_symbol_palette)
+        self.view_menu.add_command("Go to Definition", events.go_to_symbol_definition)
+        self.view_menu.add_command("Go to References", events.find_symbol_references)
         self.view_menu.add_separator()
-        self.view_menu.add_item("Go to Line/Column...", events.goto_line_column)
+        self.view_menu.add_command("Go to Line/Column...", events.goto_line_column)
 
     def add_help_menu(self) -> None:
         events = self.events
 
         self.help_menu = self.add_menu("Help")
-        self.help_menu.add_item("Welcome", events.show_welcome)
-        self.help_menu.add_item("Show All Commands", events.show_command_palette)
-        self.help_menu.add_item("Documentation", events.open_biscuit_documentation)
-        self.help_menu.add_item("Show Release Notes", events.open_biscuit_release_notes)
+        self.help_menu.add_command("Welcome", events.show_welcome)
+        self.help_menu.add_command("Show All Commands", events.show_command_palette)
+        self.help_menu.add_command("Documentation", events.open_biscuit_documentation)
+        self.help_menu.add_command(
+            "Show Release Notes", events.open_biscuit_release_notes
+        )
         self.help_menu.add_separator()
-        self.help_menu.add_item("Report Bug", events.report_bug)
-        self.help_menu.add_item("Request Feature", events.request_feature)
+        self.help_menu.add_command("Report Bug", events.report_bug)
+        self.help_menu.add_command("Request Feature", events.request_feature)
         self.help_menu.add_separator()
-        self.help_menu.add_item("View License", events.view_biscuit_licenses)
-        self.help_menu.add_item("Code of Conduct", events.open_biscuit_code_of_conduct)
+        self.help_menu.add_command("View License", events.view_biscuit_licenses)
+        self.help_menu.add_command(
+            "Code of Conduct", events.open_biscuit_code_of_conduct
+        )
         self.help_menu.add_separator()
-        self.help_menu.add_item("About", events.show_about)
+        self.help_menu.add_command("About", events.show_about)
 
     def close_all_menus(self, *_) -> None:
         for btn in self.menus:

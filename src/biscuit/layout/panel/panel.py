@@ -19,6 +19,8 @@ class Panel(Frame):
 
     def __init__(self, master: Content, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
+        self.master: Content = master
+
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
@@ -27,9 +29,8 @@ class Panel(Frame):
 
         self.panelbar = PanelBar(self)
         self.panelbar.grid(row=0, column=0, sticky=tk.EW)
-        self.tabs = self.panelbar.tabs
 
-        self.views = []
+        self.views: list[PanelView] = []
 
         self.default_views = [Problems(self), Logs(self), Terminal(self)]
         self.add_views(self.default_views)
@@ -41,12 +42,15 @@ class Panel(Frame):
             self.add_view(view)
 
     def add_view(self, view: PanelView) -> None:
-        """Add a view to the panel."""
+        """Add a view to the panel.
+
+        Args:
+            view (PanelView): view to be added to the panel"""
 
         self.views.append(view)
         view.generate_actions(self.panelbar)
 
-        self.tabs.add_tab(view)
+        self.panelbar.add_tab(view)
 
     def delete_all_views(self) -> None:
         """Permanently delete all views."""
@@ -63,9 +67,9 @@ class Panel(Frame):
         self.views.remove(view)
 
     def set_active_view(self, view: PanelView) -> None:
-        for tab in self.tabs.tabs:
+        for tab in self.panelbar.active_tabs:
             if tab.view == view:
-                self.tabs.set_active_tab(tab)
+                self.panelbar.set_active_tab(tab)
                 tab.select()
 
     @property

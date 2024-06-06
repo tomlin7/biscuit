@@ -17,7 +17,7 @@ if typing.TYPE_CHECKING:
 class ActivityBar(Frame):
     def __init__(self, master: NavigationDrawer, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(width=150, **self.base.theme.layout.base.sidebar.slots)
+        self.config(width=150, **self.base.theme.layout.drawer.actionbar)
 
         self.buttons: list[ActionButton] = []
         self.active_button: ActionButton = None
@@ -44,11 +44,11 @@ class ActivityBar(Frame):
 
     def add_settings_menu(self) -> None:
         settings_menu = self.add_menu("settings-gear", "manage")
-        settings_menu.add_item(
+        settings_menu.add_command(
             "Command Palette", lambda *_: self.base.palette.show(">")
         )
         settings_menu.add_separator()
-        settings_menu.add_item("Settings", self.base.commands.open_settings)
+        settings_menu.add_command("Settings", self.base.commands.open_settings)
 
     def add_menu(self, icon: str, text: str) -> Menu:
         menu_btn = ActionMenuButton(self, icon, text)

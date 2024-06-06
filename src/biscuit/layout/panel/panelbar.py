@@ -27,13 +27,13 @@ class PanelBar(Frame):
 
         self.config(**self.base.theme.layout.content.panel.bar)
 
-        self.tabs = Frame(self)
-        self.tabs.pack(fill=tk.X, side=tk.LEFT, expand=True)
+        self.tab_container = Frame(self, **self.base.theme.layout.content.panel.bar)
+        self.tab_container.pack(fill=tk.X, side=tk.LEFT, expand=True)
 
-        self.tabs = []
+        self.active_tabs: list[Tab] = []
         self.active_tab = None
 
-        self.buttons = []
+        self.buttons: list[IconButton] = []
 
         # These buttons are common for all panel views
         self.default_buttons = (
@@ -75,8 +75,8 @@ class PanelBar(Frame):
             view (PanelView): panel view to be added to the tabs"""
 
         tab = Tab(self, view)
-        tab.pack(fill=tk.Y, side=tk.LEFT, in_=self.tabs)
-        self.tabs.append(tab)
+        tab.pack(fill=tk.Y, side=tk.LEFT, in_=self.tab_container)
+        self.active_tabs.append(tab)
 
         tab.select()
 
@@ -88,6 +88,6 @@ class PanelBar(Frame):
 
         self.active_tab = selected_tab
         self.replace_buttons(selected_tab.view.__actions__)
-        for tab in self.tabs:
+        for tab in self.active_tabs:
             if tab != selected_tab:
                 tab.deselect()

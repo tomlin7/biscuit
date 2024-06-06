@@ -1,2 +1,2 @@
-from .markdown import MDEditor
+from .editor import MDEditor
 from .renderer import MDRenderer

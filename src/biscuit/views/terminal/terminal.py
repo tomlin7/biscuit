@@ -33,10 +33,10 @@ class Terminal(PanelView):
 
         self.addmenu = TerminalMenu(self, "addterminal")
         for i in SHELLS:
-            self.addmenu.add_item(i.name, lambda i=i: self.open_shell(i))
+            self.addmenu.add_command(i.name, lambda i=i: self.open_shell(i))
 
         self.menu = TerminalMenu(self, "terminal")
-        self.menu.add_item("Clear Terminal", self.clear_terminal)
+        self.menu.add_command("Clear Terminal", self.clear_terminal)
 
         self.__buttons__ = [
             ("add", self.addmenu.show),

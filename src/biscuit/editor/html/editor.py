@@ -40,10 +40,6 @@ class HTMLEditor(BaseEditor):
     def unsaved_changes(self) -> bool:
         return self.editor.unsaved_changes
 
-    @property
-    def debugger(self) -> Any:
-        return self.editor.debugger
-
     def toggle_preview(self, *_):
         if self.preview_enabled:
             self.grid_columnconfigure(1, weight=0)

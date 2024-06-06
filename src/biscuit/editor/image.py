@@ -6,6 +6,9 @@ from .editor import BaseEditor
 
 
 class ImageViewer(BaseEditor):
+    """ImageViewer is a simple image viewer that displays images in a canvas.
+    User can zoom in and out using the mouse wheel and reset the zoom using Ctrl+0."""
+
     def __init__(self, master, path, editable=False, *args, **kwargs) -> None:
         super().__init__(master, path, editable=editable, *args, **kwargs)
         self.exists = True

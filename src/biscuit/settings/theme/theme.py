@@ -136,12 +136,12 @@ class ContentPane(FrameThemeObject):
         self.panel = PanelPane(self)
 
 
-class SidebarPane(FrameThemeObject):
+class DrawerPane(FrameThemeObject):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.slots = FrameThemeObject(self)
-        self.slots.slot = HighlightableThemeObject(self.slots).remove_bg_highlight()
-        self.slots.bubble = ThemeObject(self.slots)
+        self.actionbar = FrameThemeObject(self)
+        self.actionbar.slot = HighlightableThemeObject(self.actionbar).remove_bg_highlight()
+        self.actionbar.bubble = ThemeObject(self.actionbar)
 
 
 class Layout(FrameThemeObject):
@@ -152,7 +152,7 @@ class Layout(FrameThemeObject):
         self.menubar.title = ThemeObject(self)
 
         self.content = ContentPane(self)
-        self.sidebar = SidebarPane(self)(self)
+        self.drawer = DrawerPane(self)
 
         self.statusbar = FrameThemeObject(self)
         self.statusbar.button = HighlightableThemeObject(self.statusbar)

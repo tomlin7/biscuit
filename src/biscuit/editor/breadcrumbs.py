@@ -6,6 +6,11 @@ from src.biscuit.common.ui import Frame, IconLabelButton
 
 
 class Item(IconLabelButton):
+    """Item in the breadcrumbs widget
+
+    Item is a button that represents a directory in the breadcrumbs widget.
+    PathView is shown when the user clicks on the item."""
+
     def __init__(self, master, path: str, text: str, callback, *args, **kwargs) -> None:
         super().__init__(
             master,
@@ -24,7 +29,14 @@ class Item(IconLabelButton):
         self.callback(self)
 
 
+# TODO show current symbols when language features are enabled
 class BreadCrumbs(Frame):
+    """Breadcrumbs widget
+
+    Breadcrumbs widget is used to display the path of the current file.
+    It is used in the editor to show the directory structure of the file.
+    User can click on the breadcrumbs to navigate the directory tree."""
+
     def __init__(self, master, path: str = None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(padx=10, **self.base.theme.editors.breadcrumbs)

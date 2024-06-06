@@ -56,10 +56,8 @@ class Dark(Theme):
         self.editors.linenumbers.breakpoint.highlightbackground = "#e51400"
 
         self.layout.statusbar.button_highlighted.update(
-            {
-                "bg": self.biscuit,
-                "fg": "#CCCCCC",
-                "hbg": self.biscuit,
-                "hfg": "#CCCCCC",
-            }
+            bg=self.biscuit,
+            fg="white",
+            highlightbackground=self.biscuit_dark,
+            highlightforeground="white",
         )

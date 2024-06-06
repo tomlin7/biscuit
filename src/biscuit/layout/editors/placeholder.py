@@ -28,7 +28,7 @@ class Placeholder(BaseEditor):
         try:
             self.logo = tk.Label(
                 self,
-                image=self.base.settings.res.logo,
+                image=self.base.settings.resources.logo,
                 **self.base.theme.editors.labels,
             )
             self.logo.grid(row=0, column=0)

@@ -45,7 +45,7 @@ class AIPlaceholder(Frame):
             self,
             text="Start Chat",
             icon="sparkle-filled",
-            function=self.start_chat,
+            callback=self.start_chat,
             pady=2,
             highlighted=True,
         )

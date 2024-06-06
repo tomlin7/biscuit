@@ -15,7 +15,7 @@ from .resources import Resources
 from .styles import Style
 
 if typing.TYPE_CHECKING:
-    from ... import App
+    from ..app import App
 
 
 URL = re.compile(r"^(?:http)s?:")
@@ -44,11 +44,11 @@ class Settings:
     """
 
     def __init__(self, base: App) -> None:
-        self.base = base
+        self.base: App = base
 
         self.config = Config(self)
         self.style = Style(self.base, self.config.theme)
-        self.res = Resources(self)
+        self.resources = Resources(self)
         self.bindings = Bindings(self)
 
         self.commands = []
@@ -76,13 +76,13 @@ class Settings:
             "wm",
             "iconphoto",
             self.base._w,
-            tk.PhotoImage(file=self.res.get_res_path("icon.png")),
+            tk.PhotoImage(file=self.resources.get_res_path_platform("icon.png")),
         )
 
     def setup_font(self) -> None:
         try:
             self.iconfont = extra.Font(
-                file=self.res.get_res_path("codicon.ttf"), family="codicon"
+                file=self.resources.get_font("codicon.ttf"), family="codicon"
             )
         except tk.TclError:
             pass

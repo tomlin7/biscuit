@@ -2,7 +2,7 @@
 from PyInstaller.utils.hooks import collect_data_files
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('../biscuit/res/*', 'res/')]
+datas = [('../resources/*', 'resources/')]
 binaries = []
 hiddenimports = []
 datas += collect_data_files('sv_ttk')
@@ -13,7 +13,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['..\\biscuit\\__main__.py'],
+    ['..\\src\\__main__.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,
@@ -45,5 +45,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['logo.ico'],
+    icon=['../resources/win32/logo.ico'],
 )

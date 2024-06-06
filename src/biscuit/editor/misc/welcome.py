@@ -45,7 +45,7 @@ class Welcome(BaseEditor):
         try:
             self.logo = Label(
                 self.right,
-                image=self.base.settings.res.logo,
+                image=self.base.settings.resources.logo,
                 **self.base.theme.editors.biscuit_labels
             )
             self.logo.grid(row=0, column=0, sticky=tk.NSEW)

@@ -1,6 +1,6 @@
-from .config import *
-from .events import *
-from .gui import *
+from .config import ConfigManager
+from .events import EventManager
+from .gui import GUIManager
 
 
 class App(EventManager, GUIManager, ConfigManager):

@@ -41,7 +41,7 @@ class ActionButton(Menubutton):
             cursor="hand2",
             padx=13,
             pady=11,
-            **self.base.theme.layout.base.sidebar.slots.slot,
+            **self.base.theme.layout.drawer.actionbar.slot,
         )
         self.pack(fill=tk.X, side=tk.TOP)
 
@@ -60,12 +60,12 @@ class ActionButton(Menubutton):
         if not self.enabled:
             self.view.grid(column=1, row=0, sticky=tk.NSEW, padx=(0, 1))
             self.config(
-                fg=self.base.theme.layout.base.sidebar.slots.slot.selectedforeground
+                fg=self.base.theme.layout.drawer.actionbar.slot.selectedforeground
             )
             self.enabled = True
 
     def disable(self) -> None:
         if self.enabled:
             self.view.grid_remove()
-            self.config(fg=self.base.theme.layout.base.sidebar.slots.slot.foreground)
+            self.config(fg=self.base.theme.layout.drawer.actionbar.slot.foreground)
             self.enabled = False

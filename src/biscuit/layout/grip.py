@@ -1,6 +1,10 @@
-import tkinter as tk
+from __future__ import annotations
 
-from .root import Root
+import tkinter as tk
+import typing
+
+if typing.TYPE_CHECKING:
+    from .root import Root
 
 
 class Grip(tk.Frame):

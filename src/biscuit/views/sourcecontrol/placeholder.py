@@ -21,7 +21,7 @@ class ChangesTreePlaceholder(Frame):
             self,
             text="Open Folder",
             icon="folder",
-            function=self.open_folder,
+            callback=self.open_folder,
             pady=2,
             highlighted=True,
         )
@@ -31,7 +31,7 @@ class ChangesTreePlaceholder(Frame):
             self,
             text="Clone Repository",
             icon="clone",
-            function=self.clone_repo,
+            callback=self.clone_repo,
             pady=2,
             highlighted=True,
         )

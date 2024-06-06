@@ -29,7 +29,7 @@ class ActionMenuButton(Menubutton):
             cursor="hand2",
             padx=10,
             pady=10,
-            **self.base.theme.layout.base.sidebar.slots.slot,
+            **self.base.theme.layout.drawer.actionbar.slot,
         )
         self.pack(fill=tk.X, side=tk.TOP)
 

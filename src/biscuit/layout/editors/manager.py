@@ -10,8 +10,8 @@ from src.biscuit.common import ActionSet, Game
 from src.biscuit.common.ui import Frame
 from src.biscuit.editor import BaseEditor, Editor, Welcome
 
+from .editorsbar import EditorsBar
 from .placeholder import Placeholder
-from .tabbar import TabBar
 
 if typing.TYPE_CHECKING:
     from ..content import Content
@@ -33,9 +33,8 @@ class EditorsManager(Frame):
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.editorsbar = TabBar(self)
+        self.editorsbar = EditorsBar(self)
         self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
-        self.tabs = self.editorsbar.tabs
 
         self.active_editors: List[Editor] = []
         self.closed_editors: Dict[Editor] = {}
@@ -100,24 +99,23 @@ class EditorsManager(Frame):
         self.active_editors.append(editor)
         if editor.content:
             editor.content.create_buttons(self.editorsbar.container)
-        self.tabs.add_tab(editor)
+        self.editorsbar.add_tab(editor)
         self.base.explorer.open_editors.add_item(editor)
         self.refresh()
         return editor
 
     def delete_all_editors(self) -> None:
-        for tab in self.tabs.tabs:
+        for tab in self.editorsbar.active_tabs:
             if e := tab.editor:
-                self.tabs.save_unsaved_changes(e)
+                self.editorsbar.save_unsaved_changes(e)
                 e.destroy()
 
-        self.editorsbar.clear()
-        self.tabs.clear_all_tabs()
+        self.editorsbar.clear_all_tabs()
         self.active_editors.clear()
         self.base.explorer.open_editors.clear()
         self.refresh()
 
-    def reopen_active_editor(self) -> None:
+    def reopen_active_editor(self, *_) -> None:
         if self.active_editor and self.active_editor.exists:
             self.delete_editor(self.active_editor)
             self.update()
@@ -149,7 +147,7 @@ class EditorsManager(Frame):
             Editor: The opened editor."""
 
         if self.is_open(path):
-            return self.tabs.switch_tabs(path)
+            return self.editorsbar.switch_tabs(path)
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
         return self.add_editor(Editor(self, path, exists))
@@ -215,7 +213,7 @@ class EditorsManager(Frame):
                 return editor
 
     def close_active_editor(self) -> None:
-        self.tabs.close_active_tab()
+        self.editorsbar.close_active_tab()
 
     def delete_editor(self, editor: Editor) -> None:
         """Delete the given editor.
@@ -227,7 +225,7 @@ class EditorsManager(Frame):
             return
 
         self.active_editors.remove(editor)
-        self.tabs.delete_tab(editor)
+        self.editorsbar.delete_tab(editor)
         if editor.path in self.closed_editors:
             self.closed_editors.pop(editor.path)
 
@@ -241,9 +239,9 @@ class EditorsManager(Frame):
         Args:
             editor (Editor): The editor to set as active."""
 
-        for tab in self.tabs.tabs:
+        for tab in self.editorsbar.active_tabs:
             if tab.editor == editor:
-                self.tabs.set_active_tab(tab)
+                self.editorsbar.set_active_tab(tab)
         self.base.explorer.open_editors.set_active(editor)
 
         return editor
@@ -254,22 +252,22 @@ class EditorsManager(Frame):
         Args:
             path (str): The path of the editor to set as active."""
 
-        for tab in self.tabs.tabs:
+        for tab in self.editorsbar.active_tabs:
             if tab.editor.path == path:
-                self.tabs.set_active_tab(tab)
+                self.editorsbar.set_active_tab(tab)
                 return tab.editor
 
     @property
     def active_editor(self) -> Editor:
-        if not self.tabs.active_tab:
+        if not self.editorsbar.active_tab:
             return
 
-        return self.tabs.active_tab.editor
+        return self.editorsbar.active_tab.editor
 
     def refresh(self) -> None:
         if not self.active_editors:
             self.emptytab.grid()
-            self.editorsbar.clear()
+            self.editorsbar.active_tabs.clear()
             self.base.set_title(
                 os.path.basename(self.base.active_directory)
                 if self.base.active_directory

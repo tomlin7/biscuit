@@ -6,7 +6,7 @@ from tkinter import ttk
 
 import requests
 
-from src.biscuit import ActionSet
+from src.biscuit.common import ActionSet
 from src.biscuit.common.ui import Scrollbar
 
 from ..drawer_item import NavigationDrawerViewItem

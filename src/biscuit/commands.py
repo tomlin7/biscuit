@@ -347,5 +347,5 @@ class Commands:
         web.open("https://github.com/tomlin7/biscuit/blob/main/LICENSE.md")
 
     def show_about(self, *_) -> None:
-        messagebox.showinfo("Biscuit", str(self.base.sysinfo))
-        self.base.logger.info(str(self.base.sysinfo))
+        messagebox.showinfo("Biscuit", str(self.base.system))
+        self.base.logger.info(str(self.base.system))

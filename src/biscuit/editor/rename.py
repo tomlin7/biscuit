@@ -11,6 +11,11 @@ if typing.TYPE_CHECKING:
 
 
 class Rename(Toplevel):
+    """Floating window for renaming a symbol in the editor.
+
+    The window is placed right below the cursor, and it's width is
+    adjusted to the longest item in the list."""
+
     def __init__(self, master: App, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(pady=1, padx=1, bg=self.base.theme.border)

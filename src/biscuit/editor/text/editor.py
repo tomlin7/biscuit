@@ -7,7 +7,6 @@ from tkinter.font import Font
 from src.biscuit.common.ui import Scrollbar
 from src.biscuit.debugger import get_debugger
 
-from ..comment_prefix import register_comment_prefix
 from ..editorbase import BaseEditor
 from .linenumbers import LineNumbers
 from .menu import RunMenu
@@ -48,7 +47,7 @@ class TextEditor(BaseEditor):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
-        self.linenumbers = LineNumbers(self, font=self.font)
+        self.linenumbers = LineNumbers(self)
         self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, style="EditorScrollbar")
 
         if not self.minimalist:
@@ -71,7 +70,7 @@ class TextEditor(BaseEditor):
 
             if not self.standalone:
                 self.run_command_value = self.base.execution_manager.get_command(self)
-                self.__buttons__.insert(0, ("run", lambda: self.run_file()))
+                self.__buttons__.insert(0, ("play", lambda: self.run_file()))
 
                 self.runmenu = RunMenu(self, "run menu")
                 if self.run_command_value:

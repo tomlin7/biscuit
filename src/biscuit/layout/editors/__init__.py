@@ -1,2 +1,2 @@
+from .editorsbar import EditorsBar
 from .manager import EditorsManager
-from .tabbar import TabBar
