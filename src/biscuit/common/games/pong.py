@@ -6,7 +6,7 @@ import tkinter as tk
 
 from src.biscuit.common.ui import Canvas
 
-from .game import BaseGame
+from .gamebase import BaseGame
 
 WIDTH = 800
 HEIGHT = 400

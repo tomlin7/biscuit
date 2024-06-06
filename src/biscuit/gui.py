@@ -9,7 +9,7 @@ from .layout import *
 
 
 class GUIManager(Tk, ConfigManager):
-    """GUI part of Biscuit core (Tkinter)
+    """GUI manager of Biscuit core (Tkinter)
     -------------------------------------
 
     Initializes the underlying tkinter GUI and sets up the main components.
@@ -82,25 +82,26 @@ class GUIManager(Tk, ConfigManager):
 
         # the very parent of all GUI parts
         self.root = Root(self)
-        self.root.pack(fill=tk.BOTH, expand=True)
 
-        # For easy access to major components of the editor from API (also helps intellisense -- a ton)
-        self.basepane = self.root.baseframe
+        # major components of layout
         self.menubar = self.root.menubar
         self.statusbar = self.root.statusbar
 
-        self.contentpane = self.root.baseframe.contentpane
-        self.editorsmanager = self.root.baseframe.contentpane.editorspane
+        self.drawer = self.root.drawer
+        self.contentpane = self.root.content
 
-        self.sidebar = self.root.baseframe.sidebar
-        self.explorer = self.sidebar.explorer
-        self.search = self.sidebar.search
-        self.outline = self.sidebar.outline
-        self.debug = self.sidebar.debug
-        self.source_control = self.sidebar.source_control
-        self.extensions_GUI = self.sidebar.extensions
+        self.panel = self.contentpane.panel
+        self.editorsmanager = self.root.content.editorspane
 
-        self.panel = self.root.baseframe.contentpane.panel
+        self.explorer = self.drawer.explorer
+        self.search = self.drawer.search
+        self.outline = self.drawer.outline
+        self.debug = self.drawer.debug
+        self.source_control = self.drawer.source_control
+        self.extensions_GUI = self.drawer.extensions
+        self.ai = self.drawer.ai
+        self.github = self.drawer.github
+
         self.terminalmanager = self.panel.terminals
         self.logger = self.panel.logger
         self.problems = self.panel.problems

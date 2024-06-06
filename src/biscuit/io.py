@@ -10,8 +10,10 @@ if typing.TYPE_CHECKING:
 
 
 class IO:
+    """Handling input/output of a process in a separate thread"""
+
     def __init__(self, master, cmd: str, cwd: str) -> None:
-        """Handling input/output of a process in a separate thread
+        """Initialize the IO class
 
         Args:
             master: The parent object

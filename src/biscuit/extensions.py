@@ -6,17 +6,16 @@ from queue import Queue
 
 
 class ExtensionManager:
+    """Extension manager for Biscuit.
+
+    Manages the loading and execution of extensions.
+    """
+
     def __init__(self, base) -> None:
         self.base = base
 
         self.interval = 5
-        # stores loaded instances
         self.extensions = {}
-
-        # TODO sandboxed execution of extensions
-        # self.blocked_modules = ['os', 'sys']
-        # self.imports = {module: __import__(module) for module in sys.modules}
-        # sys.modules['builtins'].__import__ = self.restricted_import
 
         if not (self.base.extensionsdir and os.path.isdir(self.base.extensionsdir)):
             return
@@ -31,13 +30,9 @@ class ExtensionManager:
 
         self.start_server()
 
-    # def restricted_import(self, name, globals={}, locals={}, fromlist=[], level=0):
-    #     if name in self.blocked_modules:
-    #         raise ImportError("Module '{}' is not allowed.".format(name))
-
-    #     return self.imports[name]
-
     def _load_extensions(self):
+        """Not to be called directly. Use `start_server` instead."""
+
         refresh_count = 0
         while self.alive:
             if self.queue.empty():
@@ -45,7 +40,9 @@ class ExtensionManager:
 
                 refresh_count += 1
                 if refresh_count == 10:
-                    self.base.logger.info(f"Extensions server: active, {len(self.extensions)} extensions loaded.")
+                    self.base.logger.info(
+                        f"Extensions server: active, {len(self.extensions)} extensions loaded."
+                    )
                     refresh_count = 0
                 continue
 
@@ -67,7 +64,9 @@ class ExtensionManager:
                 self.base.logger.error(f"Failed to load extension '{ext}': {e}")
                 self.base.notifications.error(f"Extension '{ext}' failed: see logs.")
 
-    def load_extension(self, file):
+    def load_extension(self, file: str):
+        """Load an extension from a file."""
+
         if file.endswith(".py"):
             extension_name = os.path.splitext(file)[0]
 
@@ -90,3 +89,14 @@ class ExtensionManager:
     def stop_server(self):
         print(f"Extensions server stopped.")
         self.alive = False
+
+    # def restricted_import(self, name, globals={}, locals={}, fromlist=[], level=0):
+    #     # sandboxed import function
+    #     self.blocked_modules = ['os', 'sys']
+    #     self.imports = {module: __import__(module) for module in sys.modules}
+    #     sys.modules['builtins'].__import__ = self.restricted_import
+
+    #     if name in self.blocked_modules:
+    #         raise ImportError("Module '{}' is not allowed.".format(name))
+
+    #     return self.imports[name]

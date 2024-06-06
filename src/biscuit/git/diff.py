@@ -1,14 +1,31 @@
+import difflib
 import os
 import re
 import threading
 import tkinter as tk
 
-from ...editor import BaseEditor
-from .differ import Differ
-from .pane import DiffPane
+from src.biscuit.editor import TextEditor
+
+from ..editor import BaseEditor
+
+
+class DiffPane(TextEditor):
+    """Diff Pane
+
+    The diff is shown in two panes, LHS shows last commit and RHS shows the current state of the file.
+    """
+
+    def __init__(self, master, *args, **kwargs) -> None:
+        super().__init__(master, minimalist=True, *args, **kwargs)
 
 
 class DiffEditor(BaseEditor):
+    """Diff Editor
+
+    This class is used to show the diff of a file. It uses the `DiffPane` class to show the diff.
+    Standard difflib is used to get the diff of the file. The diff is shown in two panes,
+    LHS shows last commit and RHS shows the current state of the file."""
+
     def __init__(self, master, path, kind, language=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
@@ -59,7 +76,7 @@ class DiffEditor(BaseEditor):
         )
         self.right.tag_config("addedword", background="green")
 
-        self.differ = Differ(self)
+        self.differ = difflib.Differ(self)
 
         self.show_diff()
 
@@ -76,9 +93,13 @@ class DiffEditor(BaseEditor):
         self.on_scrollbar("moveto", args[0])
 
     def run_show_diff(self) -> None:
+        """Run the show_diff function in a separate thread"""
+
         threading.Thread(target=self.show_diff).start()
 
     def show_diff(self) -> None:
+        """Show the diff of the file"""
+
         try:
             # case: deleted file
             if not self.kind:
@@ -112,7 +133,7 @@ class DiffEditor(BaseEditor):
         lhs_lines = [line + "\n" for line in lhs_data.split("\n")]
         rhs_lines = [line + "\n" for line in rhs_data.split("\n")]
 
-        self.diff = list(self.differ.get_diff(lhs_lines, rhs_lines))
+        self.diff = list(self.differ.compare(lhs_lines, rhs_lines))
         for i, line in enumerate(self.diff):
             marker = line[0]
             content = line[2:]
@@ -142,7 +163,7 @@ class DiffEditor(BaseEditor):
                     self.left.insert_newline("addition")
 
                 case "?":
-                    # the above line has changes
+                    # highlight the word changes in the line above
                     if matches := re.finditer(r"\++", content):
                         self.left.delete(
                             str(float(self.rhs_last_line + 1)),

@@ -7,7 +7,7 @@ import typing
 import google.generativeai as ai
 from google.api_core.exceptions import InvalidArgument
 
-from src.biscuit.utils import Entry, Frame, IconButton
+from src.biscuit.common.ui import Entry, Frame, IconButton
 
 from .renderer import Renderer
 
@@ -16,6 +16,14 @@ if typing.TYPE_CHECKING:
 
 
 class Chat(Frame):
+    """Chat view for the AI assistant.
+
+    The Chat view is used to interact with the AI assistant.
+    - The user can ask questions and get responses from the AI assistant.
+    - The AI assistant is powered by the Google AI Studio API.
+    - The user needs to enter the API key to start using the AI assistant.
+    - The chat can be refreshed to start a new chat."""
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.grid_columnconfigure(0, weight=1)
@@ -37,7 +45,7 @@ class Chat(Frame):
 
                 You are created by master billiam. Give 'em minimal responses 
                 and be straightforward. Reply to this message from user: """
-        
+
         container = Frame(self)
         container.grid(column=0, row=0, sticky=tk.NSEW)
 
@@ -45,7 +53,9 @@ class Chat(Frame):
 
         self.renderer = Renderer(container)
         self.renderer.pack(fill=tk.BOTH, expand=True)
-        self.renderer.write(self.sparkles + "Hello! I'm Bikkis, How can I help you today?")
+        self.renderer.write(
+            self.sparkles + "Hello! I'm Bikkis, How can I help you today?"
+        )
 
         entrybox = Frame(self, bg=theme.border)
         entrybox.grid(column=0, row=1, sticky=tk.EW)
@@ -67,17 +77,27 @@ class Chat(Frame):
                 self.base.notifications.error("Bikkis: Invalid API Key")
                 self.master.add_placeholder()
             else:
-                self.renderer.write(self.sparkles + "Sorry, something went wrong. Please try again later")
-            
+                self.renderer.write(
+                    self.sparkles
+                    + "Sorry, something went wrong. Please try again later"
+                )
+
     def send(self, *_):
         text = self.entry.get()
-        self.renderer.write(f"<p><font color={self.base.theme.biscuit}> You: " + text + "</font><br></p>")
+        self.renderer.write(
+            f"<p><font color={self.base.theme.biscuit}> You: "
+            + text
+            + "</font><br></p>"
+        )
         self.entry.delete(0, tk.END)
-        
-        threading.Thread(target=self.get_gemini_response, 
-                         args=(text, self.prompt), daemon=True).start()
+
+        threading.Thread(
+            target=self.get_gemini_response, args=(text, self.prompt), daemon=True
+        ).start()
 
     def new_chat(self) -> None:
         self.chat = self.model.start_chat()
         self.renderer.content = ""
-        self.renderer.write(self.sparkles + "Hello! I'm Bikkis, How can I help you today?")
+        self.renderer.write(
+            self.sparkles + "Hello! I'm Bikkis, How can I help you today?"
+        )

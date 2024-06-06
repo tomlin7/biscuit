@@ -16,7 +16,7 @@ class ActionSet(list):
         description: str,
         prefix: str,
         items: List[Tuple[str, Callable]] = [],
-        pinned: List[Tuple[str, Callable]] = [],
+        pinned: List[Tuple[str, Callable[[str], None]]] = [],
         *args,
         **kwargs
     ) -> None:
@@ -26,14 +26,16 @@ class ActionSet(list):
             description (str): The description of the actionset.
             prefix (str): The prefix of the actionset.
             items (List[Tuple[str, Callable]], optional): The list of actions. Defaults to [].
-            pinned (List[Tuple[str, Callable]], optional): The list of pinned actions. Defaults to [].
+            pinned (List[Tuple[str, Callable[[str], None]]], optional): The list of pinned actions. Defaults to [].
         """
 
         super().__init__(items, *args, **kwargs)
         self.description: str = description
         self.prefix: str = prefix
 
-        self.pinned: List[Tuple[str, Callable]] = pinned  # [[command, callback], ...]
+        self.pinned: List[Tuple[str, Callable[[str], None]]] = (
+            pinned  # [[command, callback], ...]
+        )
 
     def __repr__(self) -> str:
         return self.description

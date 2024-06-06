@@ -8,16 +8,19 @@ import typing
 from tkinter import filedialog
 from tkinter.messagebox import askyesnocancel
 
-from .gui import GUIManager
-
-if typing.TYPE_CHECKING:
-    from .layout import *
-    from src.biscuit.language.data import *
-    from src.biscuit.editor import Editor, BaseEditor
-
+from .common import BaseGame, register_game
 from .config import ConfigManager
+from .editor import *
+from .gui import GUIManager
+from .layout import *
 from .settings import *
 from .views import *
+
+if typing.TYPE_CHECKING:
+    from src.biscuit.editor import BaseEditor, Editor
+    from src.biscuit.language.data import *
+
+    from .layout import *
 
 
 class EventManager(GUIManager, ConfigManager):
@@ -26,15 +29,16 @@ class EventManager(GUIManager, ConfigManager):
     -------------
 
     Event manager part of Biscuit Core.
+    Manages the application events, actions, and interactions.
     """
 
     menubar: Menubar
     statusbar: Statusbar
 
-    contentpane: ContentPane
-    editorsmanager: EditorsPane
+    contentpane: Content
+    editorsmanager: EditorsManager
 
-    sidebar: Sidebar
+    drawer: NavigationDrawer
     explorer: Explorer
     search: Search
     outline: Outline
@@ -42,7 +46,7 @@ class EventManager(GUIManager, ConfigManager):
     extensionsGUI: Extensions
 
     panel: Panel
-    terminalmanager: Terminals
+    terminalmanager: Terminal
     logger: Logs
 
     def set_title(self, title: str = None) -> None:
@@ -187,7 +191,7 @@ class EventManager(GUIManager, ConfigManager):
     def register_game(self, game: BaseGame) -> None:
         # TODO game manager class
         register_game(game)
-        self.settings.gen_actionset()
+        self.settings.generate_actionset()
 
     def register_langserver(self, language: str, command: str) -> None:
         self.language_server_manager.register_langserver(language, command)
@@ -196,7 +200,7 @@ class EventManager(GUIManager, ConfigManager):
         register_comment_prefix(language, prefix)
 
     def register_run_command(self, language: str, command: str) -> None:
-        self.exec_manager.register_command(language, command)
+        self.execution_manager.register_command(language, command)
 
     def open_in_new_window(self, dir: str) -> None:
         subprocess.Popen([sys.executable, sys.argv[0], dir])

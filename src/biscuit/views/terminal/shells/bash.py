@@ -1,19 +1,20 @@
 import os
 
-from src.biscuit.utils import Label
+from src.biscuit.common.ui import Label
 
-from ..terminal import Terminal
+from ..terminalbase import TerminalBase
 
 
-class Bash(Terminal):
+class Bash(TerminalBase):
     """
-    Linux Bash - Checks for bash executable in path and opens that in terminal. 
+    Linux Bash - Checks for bash executable in path and opens that in terminal.
     Shows Not Available in case variable is not set.
-
     """
+
     shell = "/bin/bash"
     name = "Bash"
     icon = "bash"
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 

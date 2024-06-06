@@ -17,9 +17,13 @@ from src.biscuit.common.classdrill import *
 
 
 class Commands:
-    """This class contains all the commands that can be triggered by the user.
+    """Commands that can be triggered by the user.
+
+    This class contains all the commands that can be triggered by the user.
     All the methods that are not decorated with `@command_palette_ignore` are exported to
     the command palette and can be triggered by the user.
+
+    The `@command_palette_ignore` decorator is used to ignore a method from being exported to the command palette.
     """
 
     def __init__(self, base: App) -> None:
@@ -56,15 +60,15 @@ class Commands:
     def open_recent_dir(self, *_):
         self.base.palette.show("recentd:")
 
-    def save(self, *_) -> None:
+    def save_file(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content:
                 if not editor.content.exists:
-                    return self.save_as()
+                    return self.save_file_as()
                 if editor.content.editable:
                     editor.save()
 
-    def save_as(self, *_) -> None:
+    def save_file_as(self, *_) -> None:
         # TODO set initial filename to a range of text inside the editor
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
@@ -91,17 +95,17 @@ class Commands:
     def open_settings(self, *_) -> None:
         self.base.open_settings()
 
-    def close_file(self, *_) -> None:
+    def close_editor(self, *_) -> None:
         self.base.close_active_editor()
 
-    def close_dir(self, *_) -> None:
+    def close_folder(self, *_) -> None:
         self.base.close_active_directory()
 
-    def quit(self, *_) -> None:
+    def quit_biscuit(self, *_) -> None:
         self.base.on_close_app()
         # self.base.destroy()
 
-    def toggle_maximize(self, *_) -> None:
+    def maximize_biscuit(self, *_) -> None:
         match platform.system():
             case "Windows" | "Darwin":
                 self.base.wm_state("normal" if self.maximized else "zoomed")
@@ -121,7 +125,7 @@ class Commands:
 
         self.maximized = not self.maximized
 
-    def minimize(self, *_) -> None:
+    def minimize_biscuit(self, *_) -> None:
         self.base.update_idletasks()
 
         if platform.system() == "Windows":
@@ -135,6 +139,7 @@ class Commands:
 
         self.minimized = True
 
+    @command_palette_ignore
     def window_mapped(self, *_) -> None:
         self.base.update_idletasks()
         if self.minimized:
@@ -178,12 +183,12 @@ class Commands:
             if editor.content and editor.content.editable:
                 editor.content.paste()
 
-    def find(self, *_) -> None:
+    def find_symbol(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.open_find_replace()
 
-    def replace(self, *_) -> None:
+    def replace_symbol(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.open_find_replace()
@@ -228,12 +233,12 @@ class Commands:
             if editor.content and editor.content.editable:
                 editor.content.text.event_duplicate_selection()
 
-    def go_to_definition(self, *_) -> None:
+    def go_to_symbol_definition(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.request_definition(from_menu=True)
 
-    def find_references(self, *_) -> None:
+    def find_symbol_references(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 editor.content.text.request_references(from_menu=True)
@@ -243,20 +248,23 @@ class Commands:
             if editor.content and editor.content.editable:
                 editor.content.text.request_rename()
 
+    def restart_extension_server(self, *_) -> None:
+        self.base.extensions.restart_server()
+
     def show_explorer(self, *_) -> None:
-        self.base.sidebar.show_explorer()
+        self.base.drawer.show_explorer()
 
     def show_outline(self, *_) -> None:
-        self.base.sidebar.show_outline()
+        self.base.drawer.show_outline()
 
     def show_search(self, *_) -> None:
-        self.base.sidebar.show_search()
+        self.base.drawer.show_search()
 
     def show_source_control(self, *_) -> None:
-        self.base.sidebar.show_source_control()
+        self.base.drawer.show_source_control()
 
     def show_extensions(self, *_) -> None:
-        self.base.sidebar.show_extensions()
+        self.base.drawer.show_extensions()
 
     def show_terminal(self, *_) -> None:
         self.base.panel.show_terminal()
@@ -279,7 +287,7 @@ class Commands:
     def change_language_mode(self, *_) -> None:
         self.base.palette.show("language:")
 
-    def change_eol(self, *_) -> None:
+    def change_end_of_line_character(self, *_) -> None:
         self.base.palette.show("eol:")
 
     def change_encoding(self, *_) -> None:
@@ -288,10 +296,10 @@ class Commands:
     def change_indentation_level(self, *_) -> None:
         self.base.palette.show("indent:")
 
-    def clone_repo(self, *_) -> None:
+    def clone_git_repository(self, *_) -> None:
         self.base.palette.show("clone:")
 
-    def show_goto_palette(self, *_) -> None:
+    def goto_line_column(self, *_) -> None:
         self.base.palette.show(":")
 
     def change_git_branch(self, *_) -> None:
@@ -301,7 +309,7 @@ class Commands:
     def show_run_config_palette(self, command) -> None:
         self.base.palette.show("runconf:", command)
 
-    def show_google_search(self, *_) -> None:
+    def search_google(self, *_) -> None:
         self.base.palette.show("google:")
 
     def configure_run_command(self, *_) -> None:
@@ -313,13 +321,13 @@ class Commands:
     def search_github_prs(self, *_) -> None:
         self.base.palette.show("pr:")
 
-    def show_file_search(self, *_) -> None:
+    def search_files(self, *_) -> None:
         self.base.palette.show()
 
-    def documentation(self, *_) -> None:
+    def open_biscuit_documentation(self, *_) -> None:
         web.open("https://tomlin7.github.io/biscuit/")
 
-    def release_notes(self, *_) -> None:
+    def open_biscuit_release_notes(self, *_) -> None:
         web.open("https://github.com/tomlin7/biscuit/blob/main/CHANGELOG.md")
 
     def report_bug(self, *_) -> None:
@@ -332,12 +340,12 @@ class Commands:
             "https://github.com/tomlin7/biscuit/issues/new?assignees=tomlin7&labels=enhancement&projects=&template=feature_request.md"
         )
 
-    def code_of_conduct(self, *_) -> None:
+    def open_biscuit_code_of_conduct(self, *_) -> None:
         web.open("https://github.com/tomlin7/biscuit/blob/main/CODE_OF_CONDUCT.md")
 
-    def view_license(self, *_) -> None:
+    def view_biscuit_licenses(self, *_) -> None:
         web.open("https://github.com/tomlin7/biscuit/blob/main/LICENSE.md")
 
-    def about(self, *_) -> None:
+    def show_about(self, *_) -> None:
         messagebox.showinfo("Biscuit", str(self.base.sysinfo))
         self.base.logger.info(str(self.base.sysinfo))

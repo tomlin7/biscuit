@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.components.floating import Menu
+from src.biscuit.common import Menu
 
 
 class SourceControlMenu(Menu):

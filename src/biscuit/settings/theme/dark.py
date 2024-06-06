@@ -1,5 +1,4 @@
 import sv_ttk
-from pygments.token import Token
 
 from .theme import *
 
@@ -14,10 +13,10 @@ class Dark(Theme):
     primary_background_highlight = "#2C2D2D"
     primary_foreground_highlight = "#CCCCCC"
 
-    secondary_background = '#1f1f1f'
-    secondary_foreground = '#a9a9a9'
-    secondary_background_highlight = '#323232'
-    secondary_foreground_highlight = '#e0e0e0'
+    secondary_background = "#1f1f1f"
+    secondary_foreground = "#a9a9a9"
+    secondary_background_highlight = "#323232"
+    secondary_foreground_highlight = "#e0e0e0"
 
     # syntax
     Keyword = "#569cd6"
@@ -25,12 +24,7 @@ class Dark(Theme):
     Function = "#dcdcaa"
     String = "#ce9178"
     Number = "#b5cea8"
-    Comment = {
-        "foreground": "#7ca668",
-        "font": {
-            "slant": "italic"
-        }
-    }
+    Comment = {"foreground": "#7ca668", "font": {"slant": "italic"}}
     Punctuation = "#808080"
 
     def __init__(self, *args, **kwds) -> None:
@@ -58,5 +52,14 @@ class Dark(Theme):
         self.views.panel.logs.warning = "#ce9178"
         self.views.panel.logs.error = "#ce9178"
 
-        self.editors.linenumbers.breakpoint.background = '#6e1b13' 
-        self.editors.linenumbers.breakpoint.highlightbackground = '#e51400'
+        self.editors.linenumbers.breakpoint.background = "#6e1b13"
+        self.editors.linenumbers.breakpoint.highlightbackground = "#e51400"
+
+        self.layout.statusbar.button_highlighted.update(
+            {
+                "bg": self.biscuit,
+                "fg": "#CCCCCC",
+                "hbg": self.biscuit,
+                "hfg": "#CCCCCC",
+            }
+        )

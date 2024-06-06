@@ -1,30 +1,49 @@
 import tkinter as tk
 
-from src.biscuit.utils import Frame, Icon, IconButton, Label
+from src.biscuit.common.ui import Frame, Icon, IconButton, Label
 
 ICONS = {
     "cmd": "terminal-cmd",
     "bash": "terminal-bash",
-    "powershell": "terminal-powershell"
+    "powershell": "terminal-powershell",
 }
 
+
 class Tab(Frame):
+    """Tab for terminal panel."""
+
     def __init__(self, master, terminal, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.terminal = terminal
         self.selected = False
 
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.views.panel.terminal.tab.values()
+        self.bg, self.fg, self.hbg, self.hfg = (
+            self.base.theme.views.panel.terminal.tab.values()
+        )
         self.config(bg=self.bg)
 
-        self.icon = Icon(self, icon=ICONS.get(terminal.icon, "debug"), width=3, **self.base.theme.views.panel.terminal.content)
+        self.icon = Icon(
+            self,
+            icon=ICONS.get(terminal.icon, "debug"),
+            width=3,
+            **self.base.theme.views.panel.terminal.content
+        )
         self.icon.pack(side=tk.LEFT)
 
-        self.name = Label(self, text=terminal.name  or terminal.__class__.__name__, padx=5, 
-                             font=('Segoe UI', 11), anchor=tk.W, bg=self.bg, fg=self.fg)
+        self.name = Label(
+            self,
+            text=terminal.name or terminal.__class__.__name__,
+            padx=5,
+            font=("Segoe UI", 11),
+            anchor=tk.W,
+            bg=self.bg,
+            fg=self.fg,
+        )
         self.name.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
-        self.closebtn = IconButton(self, 'trash', event=self.close, **self.base.theme.views.panel.terminal.tab)
+        self.closebtn = IconButton(
+            self, "trash", event=self.close, **self.base.theme.views.panel.terminal.tab
+        )
         self.closebtn.pack(padx=5)
 
         self.bind("<Button-1>", self.select)

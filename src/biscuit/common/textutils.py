@@ -1,6 +1,13 @@
 import os
 
-__all__ = ["get_eol", "get_eol_label", "get_default_newline", "is_text_file"]
+__all__ = [
+    "get_eol",
+    "get_eol_label",
+    "get_default_newline",
+    "is_text_file",
+    "eol_map",
+    "eol_map_rev",
+]
 
 eol_map = {
     "LF": "\n",

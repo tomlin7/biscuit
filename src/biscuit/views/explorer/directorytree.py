@@ -8,30 +8,67 @@ from tkinter.messagebox import askyesno
 
 import pyperclip
 
-from src.biscuit.components.floating.palette.actionset import ActionSet
-from src.biscuit.utils import Tree
+from src.biscuit.common.ui import Tree
 
-from ..sidebaritem import SidebarViewItem
+from ..drawer_item import NavigationDrawerViewItem
 from .menu import ExplorerContextMenu
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
 
 
-class DirectoryTree(SidebarViewItem):
-    def __init__(self, master, startpath=None, observe_changes=False, itembar=True, *args, **kwargs) -> None:
-        self.title = 'No folder opened'
-        self.__buttons__ = (('new-file', lambda: self.base.palette.show('newfile:')), 
-                            ('new-folder', lambda: self.base.palette.show('newfolder:')), 
-                            ('refresh', self.refresh_root), ('collapse-all', self.collapse_all))
+class DirectoryTree(NavigationDrawerViewItem):
+    """A view that displays the directory tree.
+
+    The directory tree displays the contents of the active directory."""
+
+    def __init__(
+        self,
+        master,
+        startpath=None,
+        observe_changes=False,
+        itembar=True,
+        *args,
+        **kwargs,
+    ) -> None:
+        self.title = "No folder opened"
+        self.__buttons__ = (
+            ("new-file", lambda: self.base.palette.show("newfile:")),
+            ("new-folder", lambda: self.base.palette.show("newfolder:")),
+            ("refresh", self.refresh_root),
+            ("collapse-all", self.collapse_all),
+        )
         super().__init__(master, itembar=itembar, *args, **kwargs)
 
         self.nodes = {}
 
-        self.ignore_dirs = [".git", "__pycache__", ".pytest_cache", "node_modules", "debug", "dist", "build"]
-        self.ignore_dir_patterns = ["*/.git/*", "*/__pycache__/*", "*/.pytest_cache/*", "*/node_modules/*", "*/debug/*", "*/dist/*", "*/build/*"]
+        self.ignore_dirs = [
+            ".git",
+            "__pycache__",
+            ".pytest_cache",
+            "node_modules",
+            "debug",
+            "dist",
+            "build",
+        ]
+        self.ignore_dir_patterns = [
+            "*/.git/*",
+            "*/__pycache__/*",
+            "*/.pytest_cache/*",
+            "*/node_modules/*",
+            "*/debug/*",
+            "*/dist/*",
+            "*/build/*",
+        ]
         self.ignore_exts = [".pyc"]
 
-        self.tree = Tree(self.content, startpath, doubleclick=self.openfile, singleclick=self.preview_file, *args, **kwargs)
+        self.tree = Tree(
+            self.content,
+            startpath,
+            doubleclick=self.openfile,
+            singleclick=self.preview_file,
+            *args,
+            **kwargs,
+        )
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.grid_remove()
         self.tree.bind("<<Open>>", self.toggle_node)
@@ -44,16 +81,16 @@ class DirectoryTree(SidebarViewItem):
         self.loading = False
 
         self.ctxmenu = ExplorerContextMenu(self, "ExplorerContextMenu")
-        self.tree.bind('<Button-3>', self.right_click)
+        self.tree.bind("<Button-3>", self.right_click)
 
         if startpath:
             self.change_path(startpath)
         else:
-            self.tree.insert('', 0, text='You have not yet opened a folder.')
-    
+            self.tree.insert("", 0, text="You have not yet opened a folder.")
+
     def right_click(self, e: tk.Event) -> None:
         """Shows the context menu on right click."""
-        
+
         if item := self.tree.identify_row(e.y):
             self.tree.selection_set(item)
             self.tree.focus(item)
@@ -66,7 +103,7 @@ class DirectoryTree(SidebarViewItem):
 
         self.nodes.clear()
         self.path = os.path.abspath(path) if path else path
-        self.nodes[self.path] = ''
+        self.nodes[self.path] = ""
         if self.path:
             self.placeholder.grid_remove()
             self.tree.grid()
@@ -78,26 +115,29 @@ class DirectoryTree(SidebarViewItem):
         else:
             self.tree.grid_remove()
             self.placeholder.grid()
-            self.set_title('No folder opened')
+            self.set_title("No folder opened")
 
-    def create_root(self, path: str, parent='', subdir=True) -> None:
+    def create_root(self, path: str, parent="", subdir=True) -> None:
         """Creates the root node of the treeview."""
 
         if self.loading:
             return
 
         self.loading = True
-        t = threading.Thread(target=self.run_create_sub_root if subdir else self.run_create_root, args=(path, parent))
+        t = threading.Thread(
+            target=self.run_create_sub_root if subdir else self.run_create_root,
+            args=(path, parent),
+        )
         t.daemon = True
         t.start()
 
-    def run_create_root(self, path: str, parent='') -> None:
+    def run_create_root(self, path: str, parent="") -> None:
         """Updates the treeview with the contents of the given directory."""
 
         self.update_treeview(path, parent)
         self.loading = False
-    
-    def run_create_sub_root(self, path: str, parent='') -> None:
+
+    def run_create_sub_root(self, path: str, parent="") -> None:
         """Updates the treeview with the contents of the given directory."""
 
         self.update_treeview(path, parent)
@@ -108,8 +148,13 @@ class DirectoryTree(SidebarViewItem):
 
         files = []
         for item in self.tree.get_children():
-            if self.tree.item_type(item) == 'file':
-                files.append((self.tree.item(item, "text"), lambda _, item=item: print(self.tree.item_fullpath(item))))
+            if self.tree.item_type(item) == "file":
+                files.append(
+                    (
+                        self.tree.item(item, "text"),
+                        lambda _, item=item: print(self.tree.item_fullpath(item)),
+                    )
+                )
 
         return files
 
@@ -128,7 +173,7 @@ class DirectoryTree(SidebarViewItem):
         if not path or any(path.endswith(i) for i in self.ignore_dirs):
             return
 
-        node = self.nodes.get(os.path.abspath(path)) 
+        node = self.nodes.get(os.path.abspath(path))
         for i in self.tree.get_children(node):
             self.tree.delete(i)
 
@@ -150,18 +195,31 @@ class DirectoryTree(SidebarViewItem):
                     if name in self.ignore_dirs:
                         continue
 
-                    node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'directory'], image='foldericon', open=False)
+                    node = self.tree.insert(
+                        parent,
+                        "end",
+                        text=f"  {name}",
+                        values=[path, "directory"],
+                        image="foldericon",
+                        open=False,
+                    )
                     self.nodes[os.path.abspath(path)] = node
                     self.tree.insert(node, "end", text="loading...")
 
                     # recursive mode loading (not good for large projects)
-                    #self.update_treeview(path, node)
+                    # self.update_treeview(path, node)
                 else:
                     if name.split(".")[-1] in self.ignore_exts:
                         continue
 
-                    #TODO check filetype and get matching icon, cases
-                    node = self.tree.insert(parent, "end", text=f"  {name}", values=[path, 'file'], image='document')
+                    # TODO check filetype and get matching icon, cases
+                    node = self.tree.insert(
+                        parent,
+                        "end",
+                        text=f"  {name}",
+                        values=[path, "file"],
+                        image="document",
+                    )
                     self.nodes[os.path.abspath(path)] = node
         except Exception as e:
             self.base.logger.error(f"Error updating treeview: {e}")
@@ -169,7 +227,11 @@ class DirectoryTree(SidebarViewItem):
     def selected_directory(self) -> str:
         """Returns the selected directory path, or the current path if no directory is selected."""
 
-        return (self.tree.selected_path().strip() if self.tree.selected_type() != 'file' else self.tree.selected_parent_path().strip()) or self.path
+        return (
+            self.tree.selected_path().strip()
+            if self.tree.selected_type() != "file"
+            else self.tree.selected_parent_path().strip()
+        ) or self.path
 
     def new_file(self, filename) -> None:
         """Creates a new file in the selected directory."""
@@ -177,16 +239,20 @@ class DirectoryTree(SidebarViewItem):
         if not filename:
             return
 
-        parent = self.selected_directory() or self.base.active_directory or os.path.abspath('.')
+        parent = (
+            self.selected_directory()
+            or self.base.active_directory
+            or os.path.abspath(".")
+        )
         path = os.path.join(parent, filename)
 
         if os.path.exists(path):
             # If user tries to create a new file with the name of an existing file
-            # open that existing file in editor instead. 
+            # open that existing file in editor instead.
             self.base.open_editor(path)
             return
-        
-        with open(path, 'w+') as f:
+
+        with open(path, "w+") as f:
             f.write("")
         self.create_root(parent, self.nodes[parent])
 
@@ -201,7 +267,9 @@ class DirectoryTree(SidebarViewItem):
         try:
             os.makedirs(path, exist_ok=True)
         except:
-            self.base.logger.error(f"Creating folder failed: no permission to write ('{path}')")
+            self.base.logger.error(
+                f"Creating folder failed: no permission to write ('{path}')"
+            )
             self.base.notifications.error("Creating folder failed: see logs")
             return
         self.create_root(parent, self.nodes[parent])
@@ -215,35 +283,39 @@ class DirectoryTree(SidebarViewItem):
         """Copies the relative path of the selected item to the clipboard."""
 
         pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
-    
+
     def reopen_editor(self, *_) -> None:
         """Reopens the selected file in the editor."""
 
         path = os.path.abspath(self.tree.selected_path())
-        if self.tree.selected_type() == 'file':
+        if self.tree.selected_type() == "file":
             self.base.editorsmanager.reopen_editor(path)
-            
+
     def reveal_in_explorer(self, *_) -> None:
         """Reveals the selected directory in the file explorer.
-        
-        This method is platform dependent, and uses the `subprocess` module 
+
+        This method is platform dependent, and uses the `subprocess` module
         to open the file explorer. If the file explorer executable is not found,
         it will log the error and show a warning notification."""
 
         path = self.selected_directory()
         try:
-            if platform.system() == 'Windows':
-                subprocess.Popen(['start', path], shell=True)
-            elif platform.system() == 'Linux':
+            if platform.system() == "Windows":
+                subprocess.Popen(["start", path], shell=True)
+            elif platform.system() == "Linux":
                 try:
-                    subprocess.Popen(['xdg-open', path])
+                    subprocess.Popen(["xdg-open", path])
                 except OSError:
-                    subprocess.Popen(['nautilus', path, '&'])
+                    subprocess.Popen(["nautilus", path, "&"])
             else:
-                subprocess.Popen(['open', path])
+                subprocess.Popen(["open", path])
         except OSError as e:
-            self.base.notifications.warning("No File Explorer executable detected, see logs")
-            self.base.logger.error(f"Explorer: {e}\n(Mostly because no File explorer executable detected)")
+            self.base.notifications.warning(
+                "No File Explorer executable detected, see logs"
+            )
+            self.base.logger.error(
+                f"Explorer: {e}\n(Mostly because no File explorer executable detected)"
+            )
             return
 
     def open_in_terminal(self, *_) -> None:
@@ -259,8 +331,11 @@ class DirectoryTree(SidebarViewItem):
         parent = self.tree.selected_parent_path()
 
         if path := self.tree.selected_path():
-            shutil.move(path, os.path.join(self.tree.selected_parent_path() or self.path, newname))
-        
+            shutil.move(
+                path,
+                os.path.join(self.tree.selected_parent_path() or self.path, newname),
+            )
+
         self.update_path(parent)
 
     def delete_item(self) -> None:
@@ -272,7 +347,7 @@ class DirectoryTree(SidebarViewItem):
             return
 
         try:
-            if self.tree.selected_type() == 'directory':
+            if self.tree.selected_type() == "directory":
                 shutil.rmtree(path)
                 return
             os.remove(path)
@@ -280,14 +355,14 @@ class DirectoryTree(SidebarViewItem):
             self.base.notifications.warning("Removing failed, see logs")
             self.base.logger.error(f"Removing failed: {e}")
             return
-        
+
         # refresh parent of the deleted item
         self.update_path(parent)
 
     def collapse_all(self, *_) -> None:
         """Collapses all nodes in the treeview."""
 
-        for node in self.tree.get_children(''):
+        for node in self.tree.get_children(""):
             self.tree.item(node, open=False)
 
     def refresh_selected_parent(self, *_) -> None:
@@ -317,13 +392,12 @@ class DirectoryTree(SidebarViewItem):
     def openfile(self, _) -> None:
         """Opens the selected file in an editor."""
 
-        if self.tree.selected_type() != 'file':
+        if self.tree.selected_type() != "file":
             return
 
         path = self.tree.selected_path()
         self.base.open_editor(path)
 
     def preview_file(self, _) -> None:
-        #TODO preview editors -- extra preview param for editors
+        # TODO preview editors -- extra preview param for editors
         return
-

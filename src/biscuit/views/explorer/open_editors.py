@@ -1,19 +1,23 @@
 import tkinter as tk
 
-from src.biscuit.components.floating.palette.actionset import ActionSet
-from src.biscuit.utils import CloseListItem, Menubutton
+from src.biscuit.common.ui import Closable
 
-from ..sidebaritem import SidebarViewItem
+from ..drawer_item import NavigationDrawerViewItem
 
 
-class OpenEditors(SidebarViewItem):
+class OpenEditors(NavigationDrawerViewItem):
+    """View that displays the open editors in the editor tabs.
+
+    The OpenEditors view displays the open editors in the editor tabs.
+    - The user can switch between open editors, close the editors."""
+
     def __init__(self, master, startpath=None, itembar=True, *args, **kwargs) -> None:
-        self.title = 'Open Editors'
-        self.__buttons__ = (('new-file', lambda: self.base.palette.show('newfile:')),)
+        self.title = "Open Editors"
+        self.__buttons__ = (("new-file", lambda: self.base.palette.show("newfile:")),)
         super().__init__(master, itembar=itembar, *args, **kwargs)
         self.path = startpath
         self.nodes = {}
-    
+
     def refresh(self):
         if not self.nodes:
             self.itembar.hide_content()
@@ -22,33 +26,38 @@ class OpenEditors(SidebarViewItem):
         self.update()
 
     def add_item(self, editor):
-        temp = CloseListItem(self.content, editor.filename, function=lambda p=editor.path: self.openfile(p), 
-                               closefn=lambda p=editor.path: self.closefile(p), padx=10)
+        temp = Closable(
+            self.content,
+            editor.filename,
+            function=lambda p=editor.path: self.openfile(p),
+            closefn=lambda p=editor.path: self.closefile(p),
+            padx=10,
+        )
         temp.text_label.config(anchor=tk.W)
         temp.pack(fill=tk.X, expand=True)
-        
+
         self.nodes[editor.path] = temp
         self.refresh()
-    
+
     def remove_item(self, editor):
         if not self.nodes:
             return
-        
+
         e = self.nodes.pop(editor.path)
         e.pack_forget()
         e.destroy()
         self.refresh()
-        
+
     def set_active(self, editor):
         # TODO: set highlight, clear highlight on others
         ...
-    
+
     def clear(self):
         for node in self.nodes.values():
             node.destroy()
         self.nodes = {}
         self.refresh()
-    
+
     def openfile(self, path) -> None:
         self.base.editorsmanager.tabs.switch_tabs(path)
 

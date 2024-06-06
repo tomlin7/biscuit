@@ -1,4 +1,4 @@
-from src.biscuit.views import PanelView, SidebarView
+from src.biscuit.views import NavigationDrawerView, PanelView
 
 from .endpoint import Endpoint
 
@@ -14,16 +14,16 @@ class Views(Endpoint):
 
     def __init__(self, *a) -> None:
         super().__init__(*a)
-        self.sidebar = self.base.sidebar
-        self.panel = self.base.sidebar
+        self.sidebar = self.base.drawer
+        self.panel = self.base.drawer
 
         self.PanelView = PanelView
-        self.SidebarView = SidebarView
+        self.SidebarView = NavigationDrawerView
 
     def add_sidebar_view(self, view: PanelView):
         self.sidebar.add_view(view)
 
-    def add_panel_view(self, view: SidebarView):
+    def add_panel_view(self, view: NavigationDrawerView):
         self.panel.add_view(view)
 
     @property

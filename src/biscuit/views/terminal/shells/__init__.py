@@ -1,3 +1,5 @@
+"""Shell classes for the terminal view."""
+
 import platform
 
 from .bash import Bash

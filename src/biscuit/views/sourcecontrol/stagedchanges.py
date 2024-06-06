@@ -1,12 +1,18 @@
 import tkinter as tk
 
-from ..sidebaritem import SidebarViewItem
+from ..drawer_item import NavigationDrawerViewItem
 from .stageditem import StagedChangeItem
 
 
-class StagedChanges(SidebarViewItem):
+class StagedChanges(NavigationDrawerViewItem):
+    """The Staged Changes view.
+
+    The Staged Changes view allows the user to view the staged changes made to the active document.
+    - Remove staged changes.
+    """
+
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (('remove', self.git_remove_all),)
+        self.__buttons__ = (("remove", self.git_remove_all),)
         self.title = "Staged Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
@@ -26,11 +32,11 @@ class StagedChanges(SidebarViewItem):
                 pass
 
         self.items.clear()
-    
-    def clear(self, otherthan: list=[]) -> None:
+
+    def clear(self, otherthan: list = []) -> None:
         if not otherthan:
             return self.clear_tree()
-        
+
         for path in list(self.items.keys()):
             if path not in otherthan:
                 self.items[path].destroy()

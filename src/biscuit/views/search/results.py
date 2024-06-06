@@ -1,14 +1,25 @@
-__author__ = 'nfoert'
+__author__ = "nfoert"
 
 import os
 import re
 import tkinter as tk
 from tkinter.messagebox import askyesno
 
-from src.biscuit.utils import Frame, Label, Tree
+from src.biscuit.common.ui import Frame, Label, Tree
 
 
 class Results(Frame):
+    """The Results view.
+
+    The Results view displays the results of a search.
+    - Show search results.
+    - Replace text in search results.
+    - Search case-sensitive.
+    - Search whole words.
+    - Search with regular expressions.
+    - Clear search results.
+    """
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
@@ -19,8 +30,18 @@ class Results(Frame):
         self.treeview.pack(fill=tk.BOTH, expand=True)
 
         self.ignore_folders = [
-            ".git", "__pycache__", "venv", "node_modules", "docs", 
-            "build", "dist", "bin", "obj", "out", "target"]
+            ".git",
+            "__pycache__",
+            "venv",
+            "node_modules",
+            "docs",
+            "build",
+            "dist",
+            "bin",
+            "obj",
+            "out",
+            "target",
+        ]
         self.ignore_exts = []
 
         self.results = []
@@ -36,7 +57,9 @@ class Results(Frame):
     def add_item(self, parent: str, index: str, text: str, open=False) -> str:
         "Add an item to the tree for the search"
         try:
-            result = self.treeview.insert(parent=parent, index=index, text=text, open=open)
+            result = self.treeview.insert(
+                parent=parent, index=index, text=text, open=open
+            )
             return result
 
         except Exception as e:
@@ -52,14 +75,17 @@ class Results(Frame):
 
     def click(self, _) -> None:
         "Event run when an item is clicked in the tree"
-        # Thanks to tobias_k's answer here 
+        # Thanks to tobias_k's answer here
         # https://stackoverflow.com/questions/30614279/tkinter-treeview-get-selected-item-values
         item = self.treeview.focus()
 
-        try: # Click on child item
-            self.base.goto_location(self.treeview.item(item)["tags"][0], str(float(self.treeview.item(item)["tags"][1])))
+        try:  # Click on child item
+            self.base.goto_location(
+                self.treeview.item(item)["tags"][0],
+                str(float(self.treeview.item(item)["tags"][1])),
+            )
 
-        except IndexError: # Click on parent item
+        except IndexError:  # Click on parent item
             print("You clicked on a parent item")
 
     def search_casesensitive(self, _) -> None:
@@ -116,12 +142,16 @@ class Results(Frame):
 
                         if result:
                             found_files.append(result[0])
-                            self.label.config(text=f"Searched {len(found_files)} files...")
+                            self.label.config(
+                                text=f"Searched {len(found_files)} files..."
+                            )
 
                         self.base.root.update()
 
                 if len(found_files) > 0:
-                    self.label.config(text=f"{len(self.results)} results for '{search_string}'")
+                    self.label.config(
+                        text=f"{len(self.results)} results for '{search_string}'"
+                    )
 
                 else:
                     self.label.config(text="No results.")
@@ -134,7 +164,6 @@ class Results(Frame):
 
         else:
             self.base.notifications.warning("Already searching!")
-
 
     def search_in_file(self, file_path: str, search_string: str) -> list:
         """
@@ -149,7 +178,7 @@ class Results(Frame):
         result_lines = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 for line_number, line in enumerate(f, start=1):
                     if self.case_sensitive:
                         if search_string in line:
@@ -162,7 +191,9 @@ class Results(Frame):
                         result = re.search(r"\b" + search_string + r"\b", line)
                         if result:
                             found = True
-                            occurrences += len(re.findall(r"\b" + search_string + r"\b", line))
+                            occurrences += len(
+                                re.findall(r"\b" + search_string + r"\b", line)
+                            )
                             result_lines.append((line_number, line.strip()))
                             text = result.group()
 
@@ -186,20 +217,23 @@ class Results(Frame):
             return
 
         if found:
-            parent = self.add_item(parent="", index=tk.END, open=True,
-                                   text=f"{os.path.basename(file_path)} | {file_path}")
+            parent = self.add_item(
+                parent="",
+                index=tk.END,
+                open=True,
+                text=f"{os.path.basename(file_path)} | {file_path}",
+            )
 
             for line_number, line in result_lines:
-                child_elm = self.add_item(parent=parent, index=tk.END, 
-                                          text=f"line {line_number}: {line}")
+                child_elm = self.add_item(
+                    parent=parent, index=tk.END, text=f"line {line_number}: {line}"
+                )
                 self.treeview.item(child_elm, tags=(file_path, line_number))
                 self.treeview.bind("<Double-1>", self.click)
 
-                self.results.append({
-                    "file_path": file_path,
-                    "line": line_number,
-                    "text": text
-                })
+                self.results.append(
+                    {"file_path": file_path, "line": line_number, "text": text}
+                )
 
             return [file_path, occurrences, line_number]
 
@@ -207,7 +241,7 @@ class Results(Frame):
         """
         Replace all occurrences from the search with new text
 
-        TODO: It looks like files aren't refreshed after the replace happens. 
+        TODO: It looks like files aren't refreshed after the replace happens.
         Opening a file which had contents replaced shows the old contents
         """
         replace_string = self.master.replacebox.get()
@@ -224,8 +258,10 @@ class Results(Frame):
                     self.label.config(text="Nothing to replace!")
 
                 else:
-                    answer = askyesno("Replace Confirmation",
-                        f"Are you sure you want to apply a replace to {len(self.results)} occurrences?")
+                    answer = askyesno(
+                        "Replace Confirmation",
+                        f"Are you sure you want to apply a replace to {len(self.results)} occurrences?",
+                    )
                     total = len(self.results)
                     so_far = 0
 
@@ -233,12 +269,16 @@ class Results(Frame):
                         for item in self.results:
                             so_far += 1
 
-                            self.label.config(text=f"Replacing... {round(round(so_far / total, 2) * 100)}%")
+                            self.label.config(
+                                text=f"Replacing... {round(round(so_far / total, 2) * 100)}%"
+                            )
                             self.base.root.update()
 
                             with open(item["file_path"], "r", encoding="utf-8") as file:
                                 data = file.readlines()
-                                data[item["line"] - 1] = data[item["line"] - 1].replace(item["text"], replace_string)
+                                data[item["line"] - 1] = data[item["line"] - 1].replace(
+                                    item["text"], replace_string
+                                )
 
                             with open(item["file_path"], "w", encoding="utf-8") as file:
                                 file.writelines(data)
@@ -246,7 +286,6 @@ class Results(Frame):
                         self.label.config(text="Done replacing.")
                         self.clear_tree()
                         self.results = []
-
 
             else:
                 print("Replace with matchcase! (Not implemented yet)")

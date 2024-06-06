@@ -1,113 +1,166 @@
 import os
+import platform
+import subprocess
 import tkinter as tk
-from threading import Thread
-
-if os.name == 'nt':
-    from winpty import PtyProcess as PTY
-else:
-    from ptyprocess import PtyProcessUnicode as PTY
-
-from src.biscuit.utils import Scrollbar
 
 from ..panelview import PanelView
-from .ansi import replace_newline, strip_ansi_escape_sequences
-from .text import TerminalText
+from .menu import TerminalMenu
+from .shells import SHELLS, Default
+from .tabs import Tabs
+from .terminalbase import TerminalBase
+
+
+def get_home_directory() -> str:
+    if os.name == "nt":
+        return os.path.expandvars("%USERPROFILE%")
+    if os.name == "posix":
+        return os.path.expanduser("~")
+    return "."
 
 
 class Terminal(PanelView):
-    """
-    Base component for terminals, all terminals should inherit this class.
+    """Manages all integrated terminal instances.
 
-    args:
-        shell - the shell executable
-        cwd - current directory
+    Tabbable terminal instances. Can spawn multiple terminals."""
 
-    methods:
-        start_service - start the terminal service
-        destroy - kill the terminal service
-        command - run custom commands
-        enter - confirm a command at input
-        write - write text to terminal
-    """
-    name: str
-    icon: str
-    shell: str
-    p: PTY
-
-    def __init__(self, master, cwd=".", *args, **kwargs) -> None:
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (('add',), ('trash', self.destroy))
 
-        self.grid_columnconfigure(0, weight=1)
+        self.config(bg=self.base.theme.border)
         self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_propagate(False)
 
-        self.alive = False
-        self.cwd = cwd
+        self.addmenu = TerminalMenu(self, "addterminal")
+        for i in SHELLS:
+            self.addmenu.add_item(i.name, lambda i=i: self.open_shell(i))
 
-        self.text = TerminalText(self, relief=tk.FLAT, padx=10, pady=10, font=("Consolas", 11))
-        self.text.grid(row=0, column=0, sticky=tk.NSEW)
-        self.text.bind("<Return>", self.enter)
+        self.menu = TerminalMenu(self, "terminal")
+        self.menu.add_item("Clear Terminal", self.clear_terminal)
 
-        self.terminal_scrollbar = Scrollbar(self, style="EditorScrollbar")
-        self.terminal_scrollbar.grid(row=0, column=1, sticky='NSW')
+        self.__buttons__ = [
+            ("add", self.addmenu.show),
+            ("trash", self.delete_active_terminal),
+            ("ellipsis", self.menu.show),
+        ]
 
-        self.text.config(yscrollcommand=self.terminal_scrollbar.set)
-        self.terminal_scrollbar.config(command=self.text.yview, orient=tk.VERTICAL)
+        self.tabs = Tabs(self)
+        self.tabs.grid(row=0, column=1, padx=(1, 0), sticky=tk.NS)
 
-        self.text.tag_config("prompt", foreground=self.base.theme.biscuit_dark)
-        self.text.tag_config("command", foreground=self.base.theme.biscuit)
+        self.active_terminals = []
 
-        self.bind("<Destroy>", self.destroy)
-    
-    def start_service(self, *_) -> None:
-        self.alive = True
-        self.last_command = None
-        
-        self.p = PTY.spawn([self.shell], cwd=self.cwd)
-        Thread(target=self.write_loop, daemon=True).start()
+    def add_default_terminal(self) -> Default:
+        default_terminal = Default(
+            self, cwd=self.base.active_directory or get_home_directory()
+        )
+        self.add_terminal(default_terminal)
+        return default_terminal
 
-    def destroy(self, *_) -> None:
-        self.alive = False
+    def add_current_terminal(self, *_) -> None:
+        "Spawns an instance of currently active terminal"
+        self.add_terminal(
+            self.active_terminal_type(
+                self, cwd=self.base.active_directory or get_home_directory()
+            )
+        )
+
+    def add_terminals(self, terminals) -> None:
+        "Append terminals to list. Create tabs for them."
+        for terminal in terminals:
+            self.add_terminal(terminal)
+
+    def add_terminal(self, terminal) -> None:
+        "Appends a terminal to list. Create a tab."
+        self.active_terminals.append(terminal)
+        self.tabs.add_tab(terminal)
+
+    def open_shell(self, shell) -> None:
+        self.add_terminal(
+            shell(self, cwd=self.base.active_directory or get_home_directory())
+        )
+
+    def open_terminal(self, path=None) -> None:
+        """Open another instance of active terminal in the current directory.
+        If no active terminal, open a default terminal."""
+
+        self.add_terminal(
+            self.active_terminal_type(
+                self, cwd=path or self.base.active_directory or get_home_directory()
+            )
+        )
+
+    def delete_all_terminals(self) -> None:
+        "Permanently delete all terminals."
+        for terminal in self.active_terminals:
+            terminal.destroy()
+
+        self.tabs.clear_all_tabs()
+        self.active_terminals.clear()
+
+    def delete_terminal(self, terminal) -> None:
+        "Permanently delete a terminal."
+        terminal.destroy()
+        self.active_terminals.remove(terminal)
+
+    def delete_active_terminal(self) -> None:
+        "Closes the active tab"
+        try:
+            self.tabs.close_active_tab()
+        except IndexError:
+            pass
+
+    def set_active_terminal(self, terminal) -> None:
+        "set an existing terminal to currently shown one"
+        for tab in self.tabs.tabs:
+            if tab.terminal == terminal:
+                self.tabs.set_active_tab(tab)
+
+    def clear_terminal(self, *_) -> None:
+        if active := self.active_terminal:
+            active.clear()
 
     def run_command(self, command: str) -> None:
-        self.text.insert("end", command, "command")
-        self.enter()
+        if not self.active_terminal:
+            default = self.add_default_terminal()
+            default.run_command(command)
+            # this won't work, TODO: implement a queue for commands
+        else:
+            self.active_terminal.run_command(command)
 
-    def enter(self, *_) -> None:
-        command = self.text.get('input', 'end')
-        self.last_command = command
-        self.text.register_history(command)
-        if command.strip():
-            self.text.delete('input', 'end')
+    def run_external_console(self, command: str) -> None:
+        "Run a command in external console."
+        match platform.system():
+            case "Windows":
+                subprocess.Popen(["start", "cmd", "/K", command], shell=True)
+            case "Linux":
+                subprocess.Popen(["x-terminal-emulator", "-e", command])
+            case "Darwin":
+                subprocess.Popen(["open", "-a", "Terminal", command])
+            case _:
+                self.base.notifications.show("No terminal emulator detected.")
 
-        self.p.write(command + "\r\n")
-        return "break"
+    # TODO: Implement these
+    def open_pwsh(self): ...
 
-    def write_loop(self) -> None:
-        while self.alive:
-            if buf := self.p.read():
-                p = buf.find('\x1b]0;')
-                
-                if p != -1:
-                    buf = buf[:p]
-                buf = [strip_ansi_escape_sequences(i) for i in replace_newline(buf).splitlines()]
-                self.insert('\n'.join(buf))
-                
-    def insert(self, output: str, tag='') -> None:
-        self.text.insert(tk.END, output, tag)
-        #self.terminal.tag_add("prompt", "insert linestart", "insert")
-        self.text.see(tk.END)
-        self.text.mark_set('input', 'insert')
-    
-    def newline(self):
-        self.insert('\n')
+    def open_cmd(self): ...
 
-    def clear(self) -> None:
-        self.text.clear()
+    def open_python(self): ...
 
-    def ctrl_key(self, key: str) -> None:
-        if key == 'c':
-            self.run_command('\x03')
-            
-    def __str__(self) -> str:
-        return self.name
+    @property
+    def active_terminal_type(self):
+        if active := self.active_terminal:
+            return type(active)
+
+        return Default
+
+    @property
+    def active_terminal(self) -> TerminalBase:
+        "Get active terminal."
+        if not self.tabs.active_tab:
+            return
+
+        return self.tabs.active_tab.terminal
+
+    def refresh(self) -> None:
+        if not self.active_terminals:
+            self.master.toggle_panel()

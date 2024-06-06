@@ -4,7 +4,12 @@ from src import __version__
 from src.biscuit.common.ui import Frame, IconButton, IconLabelButton
 
 
-class Searchbar(Frame):
+class SearchBar(Frame):
+    """Search bar for the menu bar.
+
+    - When no active directory, opens the command palette, shows the biscuit version
+    - When active directory, opens the file search, shows the active directory name"""
+
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
@@ -28,6 +33,6 @@ class Searchbar(Frame):
 
     def onclick(self, *_):
         if self.base.active_directory:
-            self.base.commands.show_file_search()
+            self.base.commands.search_files()
         else:
             self.base.commands.show_command_palette()

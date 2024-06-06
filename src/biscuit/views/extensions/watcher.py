@@ -5,6 +5,10 @@ from watchdog.observers import Observer
 
 
 class ExtensionsWatcher(FileSystemEventHandler):
+    """Watchdog event handler for the extensions directory.
+
+    The ExtensionsWatcher is used to watch for changes in the extensions directory."""
+
     def __init__(self, master) -> None:
         self.master = master
         self.base = master.base
@@ -17,7 +21,9 @@ class ExtensionsWatcher(FileSystemEventHandler):
             try:
                 os.makedirs(self.base.extensionsdir, exist_ok=True)
             except:
-                self.base.logger.error("Extensions refreshing failed: no permission to write")
+                self.base.logger.error(
+                    "Extensions refreshing failed: no permission to write"
+                )
                 self.base.notifications.error("Extensions failed: see logs")
                 return
         self.observer.schedule(self, self.base.extensionsdir, recursive=True)

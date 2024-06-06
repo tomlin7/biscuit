@@ -4,7 +4,7 @@ from tkinter import messagebox
 
 from src.biscuit.common.ui import Button, Frame, IconButton, Label
 
-from .game import BaseGame
+from .gamebase import BaseGame
 
 # Game constants
 BOARD_SIZE = 10

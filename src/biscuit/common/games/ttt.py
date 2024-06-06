@@ -3,7 +3,7 @@ import tkinter as tk
 
 from src.biscuit.common.ui import Button, Canvas
 
-from .game import BaseGame
+from .gamebase import BaseGame
 
 
 class TicTacToe(BaseGame):

@@ -5,7 +5,7 @@ from .api import *
 from .binder import Binder
 from .commands import Commands
 from .common import *
-from .exec import ExecManager
+from .execution import ExecutionManager
 from .extensions import ExtensionManager
 from .git import Git
 from .history import HistoryManager
@@ -18,8 +18,8 @@ class ConfigManager:
     CONFIG MANAGER
     --------------
 
-    Configuration manager part of Biscuit Core. Manages the application state,
-    configurations, settings, and extensions.
+    Configuration manager part of Biscuit Core.
+    Manages the application state, configurations, settings, and extensions.
     """
 
     # application state / environement
@@ -61,7 +61,7 @@ class ConfigManager:
         self.binder = Binder(self)
         self.git = Git(self)
         self.language_server_manager = LanguageServerManager(self)
-        self.exec_manager = ExecManager(self)
+        self.execution_manager = ExecutionManager(self)
 
     def setup_path(self, appdir: str) -> None:
         # setup all paths used across editor

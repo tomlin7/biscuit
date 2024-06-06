@@ -10,11 +10,11 @@
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/tomlin7/Biscuit?style=for-the-badge">
 </h1>
 <h4 align="center">
-    <a href=https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features>Features</a> • 
     <a href=https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md>Developer Docs</a> • 
-    <a href=https://github.com/tomlin7/Biscuit/blob/main/CODE_OF_CONDUCT.md>Code of Conduct</a> • 
+    <a href=https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features>Screenshots</a> • 
     <a href=https://github.com/tomlin7/Biscuit/releases>Downloads</a> • 
-    <a href=https://tomlin7.github.io/biscuit-extensions>Marketplace</a><br><br>
+    <a href=https://tomlin7.github.io/biscuit-extensions>Marketplace</a> • 
+    <a href=https://github.com/tomlin7/Biscuit/blob/main/CODE_OF_CONDUCT.md>Code of Conduct</a><br><br>
     <img src="https://github.com/tomlin7/biscuit/assets/70792552/75c1eaf8-04d1-4945-859f-52b32b36d529" width=2000><br><br>
     <code>"Life is short, eat more biscuits."</code>
 </h1>

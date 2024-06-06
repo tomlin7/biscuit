@@ -1,22 +1,21 @@
-from tkinter.constants import *
+from src.biscuit.common.ui import IconButton
 
-from src.biscuit.utils import IconButton
-
-from ..view import View
+from .view import View
 
 
 class PanelView(View):
-    """Base class of Panel Views"""
+    """Abstract class for creating a panel view."""
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.panel)
 
-        self.__buttons__ = []
+        self.__actions__ = []
 
-    def add_button(self, icon, event=lambda *_: ...) -> None:
-        self.__buttons__.append((icon, event))
+    def add_action(self, icon, event=lambda *_: ...) -> None:
+        self.__actions__.append((icon, event))
 
-    def create_buttons(self, panelbar) -> None:
-        self.__buttons__ = [IconButton(panelbar, *button) for button in self.__buttons__]
-
+    def generate_actions(self, panelbar) -> None:
+        self.__actions__ = [
+            IconButton(panelbar, *action) for action in self.__actions__
+        ]

@@ -1,9 +1,9 @@
+"""Data classes for the language server client."""
+
 from __future__ import annotations
 
 import dataclasses
 from typing import List, Optional
-
-import tarts as lsp
 
 # Requests
 

@@ -24,8 +24,8 @@ class Debugger:
         self.editor = self.master = editor
         self.base = editor.base
         self.file_path = self.editor.path
-        self.variables = self.base.sidebar.debug.variables
-        self.callstack = self.base.sidebar.debug.callstack
+        self.variables = self.base.drawer.debug.variables
+        self.callstack = self.base.drawer.debug.callstack
 
     def run(self, *_):
         """Debug the code in the editor.

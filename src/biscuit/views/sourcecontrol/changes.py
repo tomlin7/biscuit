@@ -1,12 +1,22 @@
 import tkinter as tk
 
-from ..sidebaritem import SidebarViewItem
+from ..drawer_item import NavigationDrawerViewItem
 from .item import ChangeItem
 
 
-class Changes(SidebarViewItem):
+class Changes(NavigationDrawerViewItem):
+    """The Changes view.
+
+    The Changes view allows the user to view the changes made to the active document.
+    - Discard changes.
+    - Add changes.
+    """
+
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (('discard', self.git_discard_all), ('add', self.git_add_all))
+        self.__buttons__ = (
+            ("discard", self.git_discard_all),
+            ("add", self.git_add_all),
+        )
         self.title = "Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
@@ -29,10 +39,10 @@ class Changes(SidebarViewItem):
 
         self.items.clear()
 
-    def clear(self, otherthan: list=[]) -> None:
+    def clear(self, otherthan: list = []) -> None:
         if not otherthan:
             return self.clear_tree()
-        
+
         for path, val in list(self.items.items()):
             if (path, val[1]) not in otherthan:
                 self.items[path][0].destroy()

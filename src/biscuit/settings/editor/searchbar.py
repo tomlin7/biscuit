@@ -2,7 +2,7 @@ import tkinter as tk
 
 from hintedtext import HintedEntry
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
 
 class Searchbar(Frame):
@@ -16,14 +16,19 @@ class Searchbar(Frame):
 
         self.text_variable = tk.StringVar()
         self.searchbar = HintedEntry(
-            frame, font=("Segoe UI", 12),hint="Search settings",
-            relief=tk.FLAT, textvariable=self.text_variable, **self.base.theme.editors.text)
+            frame,
+            font=("Segoe UI", 12),
+            hint="Search settings",
+            relief=tk.FLAT,
+            textvariable=self.text_variable,
+            **self.base.theme.editors.text
+        )
         self.searchbar.pack(fill=tk.X, expand=True, pady=5, padx=5)
 
         self.configure_bindings()
 
     def configure_bindings(self) -> None:
-        self.text_variable.trace("w", self.filter) 
+        self.text_variable.trace("w", self.filter)
 
     def clear(self) -> None:
         self.text_variable.set("")
@@ -37,7 +42,20 @@ class Searchbar(Frame):
     def filter(self, *args) -> str:
         term = self.get_search_term()
         return
-        new = [i for i in self.master.active_set if i[0].lower().startswith(term.lower())]
-        new += [i for i in self.master.active_set if any([f.lower() in i[0].lower() or i[0].lower() in f.lower() and i not in new for f in term.lower().split()])]
+        new = [
+            i for i in self.master.active_set if i[0].lower().startswith(term.lower())
+        ]
+        new += [
+            i
+            for i in self.master.active_set
+            if any(
+                [
+                    f.lower() in i[0].lower()
+                    or i[0].lower() in f.lower()
+                    and i not in new
+                    for f in term.lower().split()
+                ]
+            )
+        ]
 
         self.master.show_result(new)

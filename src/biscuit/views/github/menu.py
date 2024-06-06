@@ -1,4 +1,4 @@
-from src.biscuit.components.floating import Menu
+from src.biscuit.common import Menu
 
 
 class GitHubMenu(Menu):

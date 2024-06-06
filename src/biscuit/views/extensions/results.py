@@ -5,28 +5,38 @@ import tkinter as tk
 
 import requests
 
-from src.biscuit.utils.scrollableframe import ScrollableFrame
+from src.biscuit.common.ui import ScrollableFrame
 
-from ..sidebaritem import SidebarViewItem
+from ..drawer_item import NavigationDrawerViewItem
 from .extension import Extension
 from .placeholder import ExtensionsPlaceholder
-from .watcher import ExtensionsWatcher
 
 
-class Results(SidebarViewItem):
+class Results(NavigationDrawerViewItem):
+    """View that displays the available extensions.
+    # TODO search filter for extensions
+
+    The Results view displays the available extensions.
+    - The user can install, uninstall, search for extensions.
+    """
+
     def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = ()
-        self.title = 'Available'
+        self.title = "Available"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
         self.extensions = {}
 
         self.placeholder = ExtensionsPlaceholder(self)
-        self.extension_list = ScrollableFrame(self.content, bg=self.base.theme.views.sidebar.background)
+        self.extension_list = ScrollableFrame(
+            self.content, bg=self.base.theme.views.sidebar.background
+        )
         self.extension_list.pack(fill=tk.BOTH, expand=True)
 
-        self.repo_url = "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
+        self.repo_url = (
+            "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
+        )
         self.list_url = self.repo_url + "extensions.json"
 
         self.queue = queue.Queue()
@@ -34,7 +44,7 @@ class Results(SidebarViewItem):
         # self.watcher = ExtensionsWatcher(self)
         # self.watcher.watch()
 
-        #TODO list installed extensions separately
+        # TODO list installed extensions separately
 
         self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
@@ -54,7 +64,7 @@ class Results(SidebarViewItem):
         if self.fetching.is_set():
             self.fetching.wait()
 
-        with self.extensions_lock: 
+        with self.extensions_lock:
             threading.Thread(target=self.fetch_list, daemon=True).start()
 
     def fetch_list(self) -> None:
@@ -63,13 +73,13 @@ class Results(SidebarViewItem):
             response = requests.get(self.list_url)
         except Exception as e:
             pass
-            
+
         # FAIL - network error
         if not response or response.status_code != 200:
             self.extension_list.pack_forget()
             self.placeholder.pack(in_=self.content, fill=tk.BOTH, expand=True)
             return
-        
+
         self.extensions = json.loads(response.text)
         # SUCCESS
         if self.extensions:
@@ -77,15 +87,15 @@ class Results(SidebarViewItem):
             self.extension_list.pack(in_=self.content, fill=tk.BOTH, expand=True)
 
         for name, data in self.extensions.items():
-            #TODO add further loops for folders
+            # TODO add further loops for folders
             self.queue.put((name, data))
-    
+
     def gui_refresh_loop(self) -> None:
         if not self.queue.empty():
             name, data = self.queue.get()
             ext = Extension(self, name, data)
             self.extension_list.add(ext, fill=tk.X)
-        
+
         self.after(5, self.gui_refresh_loop)
 
     def clear(self, *_) -> None:

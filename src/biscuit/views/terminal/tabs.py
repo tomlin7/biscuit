@@ -1,11 +1,13 @@
 import tkinter as tk
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
 from .tab import Tab
 
 
 class Tabs(Frame):
+    """Tabbed view for terminal panel."""
+
     def __init__(self, master, width=170, *args, **kwargs) -> None:
         super().__init__(master, width=width, *args, **kwargs)
         self.pack_propagate(False)
@@ -39,7 +41,7 @@ class Tabs(Frame):
     def close_tab(self, tab) -> None:
         if not self.tabs:
             return
-        
+
         i = self.tabs.index(tab)
         self.tabs.remove(tab)
         tab.terminal.grid_forget()
@@ -50,7 +52,7 @@ class Tabs(Frame):
             if i < len(self.tabs):
                 self.tabs[i].select()
             else:
-                self.tabs[i-1].select()
+                self.tabs[i - 1].select()
         else:
             self.active_tab = None
         self.master.refresh()

@@ -6,22 +6,35 @@ import typing
 import mistune
 from tkinterweb import HtmlFrame
 
-from src.biscuit.utils import Frame, Scrollbar
+from src.biscuit.common.ui import Frame, Scrollbar
 
 if typing.TYPE_CHECKING:
     ...
 
 
 class Renderer(Frame):
+    """Renderer for the AI assistant chat view.
+
+    The Renderer is used to render the chat messages in the AI chat view.
+    - The Renderer uses the HtmlFrame widget to display the chat messages.
+    - The chat messages support markdown formatting."""
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
-        self.htmlframe = HtmlFrame(self, messages_enabled=False, vertical_scrollbar=False)
-        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.htmlframe.yview, style="EditorScrollbar")
+        self.htmlframe = HtmlFrame(
+            self, messages_enabled=False, vertical_scrollbar=False
+        )
+        self.scrollbar = Scrollbar(
+            self,
+            orient=tk.VERTICAL,
+            command=self.htmlframe.yview,
+            style="EditorScrollbar",
+        )
         self.htmlframe.html.config(yscrollcommand=self.scrollbar.set)
         self.htmlframe.html.shrink(True)
-        
+
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.htmlframe.grid(row=0, column=1, sticky=tk.NSEW)
@@ -58,7 +71,6 @@ class Renderer(Frame):
             }}
             """
 
-        
     def write(self, content: str) -> None:
         self.content += content
         self.htmlframe.load_html(mistune.html(self.header + self.content + self.footer))

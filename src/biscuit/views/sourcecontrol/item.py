@@ -1,9 +1,15 @@
 import os
 import tkinter as tk
 
-from src.biscuit.utils import Bubble, Frame, IconButton, Label, Menubutton
+from src.biscuit.common.ui import Bubble, Frame, IconButton, Label, Menubutton
 
-KINDS = [("D", "Deleted", "red"), ("A", "Added", "green"), ("M", "Modified", "orange"), ("U", "Untracked", "green")]
+KINDS = [
+    ("D", "Deleted", "red"),
+    ("A", "Added", "green"),
+    ("M", "Modified", "orange"),
+    ("U", "Untracked", "green"),
+]
+
 
 class ChangeItem(Frame):
     """
@@ -14,14 +20,21 @@ class ChangeItem(Frame):
         2 - modified
         3 - untracked
     """
+
     def __init__(self, master, path, kind, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
         self.path = path
         self.kind = kind
 
-        name_label = Menubutton(self, text=os.path.basename(path), anchor=tk.W, font=("Segoe UI", 11),
-            padx=10, pady=2, **self.base.theme.views.sidebar.item.button
+        name_label = Menubutton(
+            self,
+            text=os.path.basename(path),
+            anchor=tk.W,
+            font=("Segoe UI", 11),
+            padx=10,
+            pady=2,
+            **self.base.theme.views.sidebar.item.button,
         )
         name_label.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
         name_label.bind("<Double-Button-1>", self.open_diff)
@@ -32,13 +45,28 @@ class ChangeItem(Frame):
         # path_label.pack(fill=tk.BOTH, side=tk.LEFT)
         # path_label.bind("<Double-Button-1>", self.open_diff)
 
-        IconButton(self, "discard", self.git_discard, **self.base.theme.views.sidebar.item.button).pack(fill=tk.BOTH, side=tk.LEFT)
-        IconButton(self, "add", self.git_add, **self.base.theme.views.sidebar.item.button).pack(fill=tk.BOTH, side=tk.LEFT)
-        Label(self, text=KINDS[self.kind][0], fg=KINDS[self.kind][2], font=("Segoe UI", 11, "bold"), width=3, pady=2, **self.base.theme.views.sidebar.item).pack(fill=tk.BOTH, expand=True)
+        IconButton(
+            self,
+            "discard",
+            self.git_discard,
+            **self.base.theme.views.sidebar.item.button,
+        ).pack(fill=tk.BOTH, side=tk.LEFT)
+        IconButton(
+            self, "add", self.git_add, **self.base.theme.views.sidebar.item.button
+        ).pack(fill=tk.BOTH, side=tk.LEFT)
+        Label(
+            self,
+            text=KINDS[self.kind][0],
+            fg=KINDS[self.kind][2],
+            font=("Segoe UI", 11, "bold"),
+            width=3,
+            pady=2,
+            **self.base.theme.views.sidebar.item,
+        ).pack(fill=tk.BOTH, expand=True)
 
         self.bubble = Bubble(self, text=f"{path} • {KINDS[self.kind][1]}")
-        self.bind('<Enter>', self.bubble.show)
-        self.bind('<Leave>', self.bubble.hide)
+        self.bind("<Enter>", self.bubble.show)
+        self.bind("<Leave>", self.bubble.hide)
 
     def open_diff(self, _) -> None:
         self.base.open_diff(self.path, self.kind)

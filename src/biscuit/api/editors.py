@@ -1,6 +1,6 @@
 from src.biscuit.editor import Editor, ImageViewer, MDEditor, TextEditor
 from src.biscuit.git import DiffEditor
-from src.biscuit.views import PanelView, SidebarView
+from src.biscuit.views import NavigationDrawerView, PanelView
 
 from .endpoint import Endpoint
 
@@ -11,7 +11,7 @@ class Editors(Endpoint):
         self.editors = self.base.editorsmanager
 
         self.PanelView = PanelView
-        self.SidebarView = SidebarView
+        self.SidebarView = NavigationDrawerView
         self.TextEditor = TextEditor
         self.MDEditor = MDEditor
         self.DiffEditor = DiffEditor

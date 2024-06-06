@@ -1,7 +1,7 @@
 import random
 import tkinter as tk
 
-from .game import BaseGame
+from .gamebase import BaseGame
 
 
 # a simple physics engine

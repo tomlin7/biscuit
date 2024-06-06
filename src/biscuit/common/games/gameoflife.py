@@ -5,7 +5,7 @@ import tkinter as tk
 
 from src.biscuit.common.ui import Button
 
-from .game import BaseGame
+from .gamebase import BaseGame
 
 GRID_WIDTH = 50
 GRID_HEIGHT = 50

@@ -1,8 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.utils import Button, Entry, Frame, IconButton
-from src.biscuit.utils.iconlabelbutton import IconLabelButton
-from src.biscuit.utils.scrollableframe import ScrollableFrame
+from src.biscuit.common.ui import Entry, Frame, IconLabelButton, ScrollableFrame
 
 from .changes import Changes
 from .placeholder import ChangesTreePlaceholder
@@ -10,17 +8,35 @@ from .stagedchanges import StagedChanges
 
 
 class Git(Frame):
+    """The Git view.
+
+    The Git view allows the user to manage the source control of the active document.
+    - Show changes.
+    - Show staged changes.
+    - Commit changes.
+    - Push changes.
+    - Pull changes.
+    """
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
         self.commitbox = Frame(self, **self.base.theme.views.sidebar.item)
-        self.commit_message = Entry(self.commitbox, hint="Message", **self.base.theme.utils.entry)
+        self.commit_message = Entry(
+            self.commitbox, hint="Message", **self.base.theme.utils.entry
+        )
         self.commit_message.pack(fill=tk.X, pady=(0, 5))
 
-        self.commit_button = IconLabelButton(self.commitbox, text='Commit', icon='git-commit', function=self.commit, highlighted=True)
+        self.commit_button = IconLabelButton(
+            self.commitbox,
+            text="Commit",
+            icon="git-commit",
+            function=self.commit,
+            highlighted=True,
+        )
         self.commit_button.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        
+
         # Commit menu
         # tk.Label(self.commitbox, text="｜", **self.base.theme.utils.colorlabel).pack(side=tk.LEFT, fill=tk.Y)
         # self.more = IconButton(self.commitbox, icon='chevron-down')
@@ -57,7 +73,7 @@ class Git(Frame):
 
         if not self.base.git.repo:
             return
-        
+
         staged = []
 
         if deleted := self.base.git.repo.get_staged_deleted_files():
@@ -74,7 +90,7 @@ class Git(Frame):
             self.staged_changes_tree.clear(otherthan=staged)
 
         unstaged = []
-    
+
         if deleted := self.base.git.repo.get_deleted_files():
             self.add_changes(deleted, 0)
             unstaged += [(i, 0) for i in deleted]
@@ -89,27 +105,31 @@ class Git(Frame):
         if untracked := self.base.git.repo.get_untracked_files():
             self.add_changes(untracked, 3)
             unstaged += [(i, 3) for i in untracked]
-            
+
         if unstaged:
             self.changes_tree.clear(otherthan=unstaged)
 
     def toggle_staged(self, *_) -> None:
         if not self.base.git_found:
             return
-        
+
         if self.staged_changes_tree.winfo_ismapped():
-            self.staged_changes_tree.pack_forget() 
+            self.staged_changes_tree.pack_forget()
         else:
-            self.staged_changes_tree.pack(fill=tk.BOTH, before=self.changes_tree, in_=self.container)
+            self.staged_changes_tree.pack(
+                fill=tk.BOTH, before=self.changes_tree, in_=self.container
+            )
 
     def toggle_changes(self, *_) -> None:
         if not self.base.git_found:
             return
-        
+
         if self.changes_tree.winfo_ismapped():
             self.changes_tree.pack_forget()
         else:
-            self.changes_tree.pack(fill=tk.BOTH, after=self.staged_changes_tree, in_=self.container)
+            self.changes_tree.pack(
+                fill=tk.BOTH, after=self.staged_changes_tree, in_=self.container
+            )
 
     def enable_tree(self) -> None:
         self.placeholder.pack_forget()

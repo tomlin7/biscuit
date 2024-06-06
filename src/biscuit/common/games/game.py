@@ -1,72 +1,71 @@
-from src.biscuit.common.ui import Frame, IconButton
+import tkinter as tk
+
+from src.biscuit.common.ui import Frame
+
+from .gamebase import BaseGame
+from .gameoflife import GameOfLife
+from .minesweeper import Minesweeper
+from .pong import Pong
+from .ttt import TicTacToe
+from .whoops import Whoops
+
+games = {i.name: i for i in (GameOfLife, Pong, TicTacToe, Minesweeper)}
 
 
-class BaseGame(Frame):
-    """Base class for games.
+def get_games(base) -> list:
+    """For palette to generate action sets of games"""
 
-    Games may inherit from this class and implement the following methods:
-    - `__init__`
-    - `reload`
+    return [(f"Play {i}", lambda _, i=i: base.open_game(i)) for i in games.keys()]
 
-    Otherwise make sure to set the following attributes:
-    - `path` (str): path to the game file
-    - `filename` (str): name of the game file
-    - `exists` (bool): whether the game file exists
-    - `diff` (bool): whether the game file has been modified
-    - `showpath` (bool): whether to display the path of the game file
-    - `editable` (bool): whether the game file is editable
-    - `__buttons__` (list): list of buttons to be added to the editor bar
 
-    and implement the following methods:
-    - `reload`: reload the game file
-    - `save`: save the game file
+def get_game(name) -> str:
+    """returns the game class from the name
+
+    Args:
+        name (str): name of the game
     """
 
-    def __init__(self, master, path=None, *args, **kwargs) -> None:
+    return games.get(name, Whoops)
+
+
+def register_game(game) -> None:
+    """Registers a game to the games dict
+
+    Args:
+        game (BaseGame): game to be registered
+    """
+
+    try:
+        games[game.name] = game
+    except AttributeError:
+        games[f"Game {len(games) + 1}"] = game
+
+
+class Game(Frame):
+    """Responsible for picking the right game to display and displaying it"""
+
+    def __init__(self, master, name, *args, **kwargs) -> None:
         """Initializes the game frame
 
         Args:
             master (tk.Tk): master window
-            path (str): path to the game file
-        """
+            name (str): name of the game"""
 
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.editors)
-        self.path = path
-        self.filename = None
+        self.config(bg=self.base.theme.border)
+        self.filename = name
 
+        self.path = None
         self.exists = False
-        self.showpath = False
         self.diff = False
-        self.editable = False
+        self.showpath = False
 
-        self.__buttons__ = (("refresh", self.reload),)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.content = get_game(name=name)(self)
+        self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
-    def add_buttons(self, icon, event) -> None:
-        """Adds a button to the editor bar
+    def focus(self) -> None:
+        """Focuses on the game"""
 
-        Args:
-            icon (str): name of the icon
-            event (function): function to be called on button press
-        """
-
-        self.__buttons__.append((icon, event))
-
-    def create_buttons(self, editorbar) -> None:
-        """Not to be called directly. Creates buttons for the editor bar"""
-
-        self.__buttons__ = [
-            IconButton(editorbar, *button) for button in self.__buttons__
-        ]
-
-    def reload(self, *_) -> None:
-        """Reloads the game
-        This method should be implemented by the subclass"""
-
-        ...
-
-    def save(self, *_) -> None:
-        """Saves the game
-        This method should be implemented by the subclass"""
-
-        ...
+        self.content.focus_get()

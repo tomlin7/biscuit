@@ -70,7 +70,7 @@ class TextEditor(BaseEditor):
             self.text.update_idletasks()
 
             if not self.standalone:
-                self.run_command_value = self.base.exec_manager.get_command(self)
+                self.run_command_value = self.base.execution_manager.get_command(self)
                 self.__buttons__.insert(0, ("run", lambda: self.run_file()))
 
                 self.runmenu = RunMenu(self, "run menu")
@@ -177,7 +177,7 @@ class TextEditor(BaseEditor):
 
         if not external:
             self.base.panel.show_terminal()
-        self.base.exec_manager.run_command(self, external=external)
+        self.base.execution_manager.run_command(self, external=external)
 
     def set_run_command(self, command):
         self.run_command_value = command

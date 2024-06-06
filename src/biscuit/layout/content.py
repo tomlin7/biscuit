@@ -1,40 +1,31 @@
-"""
-Content container of the app
-    .
-    App
-    └── Root
-        ├── Menubar
-        ├── BaseFrame
-        │    ├── SideBar
-        │    └── ContentPane 
-        │        ├── EditorsPane
-        │        └── Panel
-        └── StatusBar
-"""
 from __future__ import annotations
 
 import tkinter as tk
 import typing
 
 if typing.TYPE_CHECKING:
-    from .. import BaseFrame
+    ...
 
-from src.biscuit.utils import Frame
+from src.biscuit.common.ui import Frame
 
-from .editors import EditorsPane
+from .editors import EditorsManager
 from .panel import Panel
 
-__all__ = ["ContentPane", EditorsPane, Panel]
+__all__ = ["Content", EditorsManager, Panel]
 
 
-class ContentPane(Frame):
-    """Content frame holds EditorsPane and Panel"""
+class Content(Frame):
+    """Content Pane
 
-    def __init__(self, master: BaseFrame, *args, **kwargs) -> None:
+    - Contains the EditorsPane and Panel
+    - Manages the visibility of the Panel and the EditorPane
+    """
+
+    def __init__(self, master: Frame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
-        self.editorspane = EditorsPane(self)
+        self.editorspane = EditorsManager(self)
         self.panel = Panel(self)
         self._panel_enabled = False
         self._panel_maxed = False
@@ -55,7 +46,7 @@ class ContentPane(Frame):
                 self.editorspane.pack_forget()
             else:
                 self.panel.pack(fill=tk.BOTH, pady=(1, 0))
-            
+
             if not self.panel.terminals.active_terminal:
                 self.panel.terminals.open_terminal()
 
@@ -71,3 +62,6 @@ class ContentPane(Frame):
             self.panel.pack(fill=tk.BOTH, pady=(1, 0), expand=True)
 
         self._panel_maxed = not self._panel_maxed
+
+    def pack(self):
+        super().pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
