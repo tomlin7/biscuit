@@ -95,17 +95,18 @@ class EventManager(GUIManager, ConfigManager):
         self.statusbar.update_git_info()
         self.source_control.refresh()
 
-    def clone_repo(self, url: str) -> None:
+    def clone_repo(self, url: str, new_window: bool = None) -> None:
         path = filedialog.askdirectory()
         if not path:
             return
 
-        new_window = askyesnocancel(
-            "Open in new window or current",
-            "Do you want to open the cloned repository in a new window?",
-        )
         if new_window is None:
-            return
+            new_window = askyesnocancel(
+                "Open in new window or current",
+                "Do you want to open the cloned repository in a new window?",
+            )
+            if new_window is None:
+                return
 
         try:
 
@@ -180,7 +181,11 @@ class EventManager(GUIManager, ConfigManager):
         return self.editorsmanager.open_editor(path, exists)
 
     def open_diff(self, path: str, kind: str) -> None:
+        # TODO kind kwarg
         self.editorsmanager.open_diff_editor(path, kind)  # type: ignore
+
+    def diff_files(self, file1: str, file2: str) -> None:
+        self.editorsmanager.diff_files(file1, file2, standalone=True)
 
     def open_settings(self, *_) -> None:
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))

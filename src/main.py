@@ -3,21 +3,21 @@ import os
 from biscuit import App, check_python_installation
 
 
-def get_app_instance(args: list[str] = []) -> App:
+def get_app_instance(
+    exec_dir: str = os.path.abspath(__file__),
+    open_path: str = None,
+) -> App:
     """Get an instance of the application.
+
+    Args:
+        exec_dir (str, optional): The directory of the executable. Defaults to os.path.dirname(os.path.abspath(__file__)).
+        open_path (str, optional): The path to open. Defaults to None.
 
     Returns:
         App: An instance of the application."""
 
     check_python_installation()
-
-    dir = None
-    if not args:
-        args = [os.path.dirname(os.path.abspath(__file__))]
-    elif len(args) >= 2:
-        dir = args[1]
-
-    return App(args[0] if args else None, dir=dir)
+    return App(exec_dir, dir=open_path)
 
 
 def main(args: list[str] = []):
@@ -26,7 +26,13 @@ def main(args: list[str] = []):
     Args:
         args (list[str], optional): Command line arguments. Defaults to []."""
 
-    app = get_app_instance(args)
+    dir = None
+    if not args:
+        args = [os.path.abspath(__file__)]
+    elif len(args) >= 2:
+        dir = args[1]
+
+    app = get_app_instance(args[0], dir=dir)
     app.run()
 
 

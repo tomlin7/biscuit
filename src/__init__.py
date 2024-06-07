@@ -6,4 +6,5 @@ from os.path import abspath, dirname, join
 
 sys.path.append(abspath(join(dirname(__file__), ".")))
 
-from .biscuit import *
+from biscuit import *
+from main import *
