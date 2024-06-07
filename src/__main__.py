@@ -1,5 +1,3 @@
-import sys
+from cli import cli
 
-from main import main
-
-main(sys.argv)
+cli()
