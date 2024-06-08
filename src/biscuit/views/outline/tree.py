@@ -31,7 +31,7 @@ class Tree(Text):
                 self.tag_config(kind[0], foreground=kind[1])
             self.tag_config(kind[0], font="codicon 12")
         self.tag_config(
-            "line", foreground=self.base.theme.border, font=("Segoi UI", 15)
+            "branch", foreground=self.base.theme.border, font=("Segoi UI", 15)
         )
 
         # self.bind("<Button-1>", self.onclick)
@@ -39,10 +39,10 @@ class Tree(Text):
         # self.bind("<Leave>", self.hoverout)
 
     # def hoverin(self, _: tk.Event) -> None:
-    #     self.tag_config("line", foreground=self.base.theme.border)
+    #     self.tag_config("branch", foreground=self.base.theme.border)
 
     # def hoverout(self, _: tk.Event) -> None:
-    #     self.tag_config("line", foreground=self.base.theme.views.sidebar.item.content.background)
+    #     self.tag_config("branch", foreground=self.base.theme.views.sidebar.item.content.background)
 
     def add_items(self, items: list[lsp.DocumentSymbol], level=0) -> None:
         if not items:
@@ -53,7 +53,7 @@ class Tree(Text):
                 continue
 
             tag = f"{item.name}{item.kind}"
-            self.insert(tk.END, "┊" * level, "line")
+            self.insert(tk.END, "┊" * level, "branch")
             self.insert(
                 tk.END, get_codicon(kinds[item.kind - 1][0]), kinds[item.kind - 1][0]
             )

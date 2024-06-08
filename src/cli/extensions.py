@@ -1,19 +1,21 @@
 import click
 
 
-@click.group()
-def extensions(): ...
+@click.group("ext")
+def extension():
+    """Extension development commands"""
+    ...
 
 
-@extensions.command()
+@extension.command()
 def create():
     click.echo("Extension created!")
 
 
-@extensions.command()
+@extension.command()
 def test():
     click.echo("Extension tested!")
 
 
-def setup(cli: click.Group):
-    cli.add_command(extensions)
+def register(cli: click.Group):
+    cli.add_command(extension)

@@ -14,12 +14,13 @@ from .text import TextEditor
 
 def get_editor(
     base,
-    path: str = None,
-    exists: bool = True,
-    path2: str = None,
-    diff: bool = False,
-    language: str = None,
-    standalone: bool = False,
+    path="",
+    exists=True,
+    path2="",
+    diff=False,
+    language="",
+    load_file=True,
+    standalone=False,
 ) -> TextEditor | DiffEditor | MDEditor | ImageViewer:
     """Get the suitable editor based on the path, exists, diff values passed.
 
@@ -48,9 +49,9 @@ def get_editor(
         if path.endswith(".html") or path.endswith(".htm"):
             return HTMLEditor(base, path, exists=exists)
 
-        return TextEditor(base, path, exists, language=language)
+        return TextEditor(base, path, exists, language=language, load_file=load_file)
 
-    return TextEditor(base, exists=exists, language=language)
+    return TextEditor(base, exists=exists, language=language, load_file=False)
 
 
 class Editor(BaseEditor):
@@ -71,6 +72,7 @@ class Editor(BaseEditor):
         path2: str = None,
         diff: bool = False,
         language: str = None,
+        load_file: bool = True,
         standalone: bool = False,
         config_file: str = None,
         showpath: bool = True,
@@ -111,7 +113,16 @@ class Editor(BaseEditor):
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
 
-        self.content = get_editor(self, path, exists, path2, diff, language, standalone)
+        self.content = get_editor(
+            self,
+            path,
+            exists,
+            path2,
+            diff,
+            language,
+            load_file=load_file,
+            standalone=standalone,
+        )
         self.filename = os.path.basename(self.path) if path else None
         if path and exists and self.showpath and not diff:
             self.breadcrumbs = BreadCrumbs(self, path)
