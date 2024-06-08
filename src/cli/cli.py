@@ -4,27 +4,28 @@ from typing import Callable
 import click
 
 from src import App, __version__, get_app_instance
+from src.biscuit.git import URL
 from src.cli import extensions
 
 
 @click.group(invoke_without_command=True)
 @click.version_option(__version__, "-v", "--version", message="Biscuit v%(version)s")
 @click.help_option("-h", "--help")
-@click.pass_context
-def cli(ctx, path=None):
+@click.option("--dev", is_flag=True, help="Run in development mode")
+def cli(path=None, dev=False):
     """Biscuit CLI"""
 
-    click.echo(f"Biscuit v{__version__}")
-    if ctx.invoked_subcommand is None and path:
-        click.echo(f"Opening {path}")
+    click.echo(f"Biscuit v{__version__} {'(dev) 🚧' if dev else '🚀'}")
 
 
 @cli.result_callback()
-def process_commands(processors, path=None):
+def process_commands(processors, path=None, dev=False):
     """Process the commands"""
 
     if path:
         path = str(Path(path).resolve())
+        click.echo(f"Opening {path}")
+
     app = get_app_instance(open_path=path)
 
     if processors:
@@ -45,7 +46,9 @@ def clone(url) -> Callable[[App, str], None]:
     if not url:
         url = click.prompt("Git repository url", type=str)
 
-    click.echo(f"Cloning repository from {url}")
+    click.echo(
+        f"Cloning repository from {'https://github.com/' if not URL.match(url) else ''}{url}"
+    )
     return lambda app, url=url: app.clone_repo(url, new_window=False)
 
 
