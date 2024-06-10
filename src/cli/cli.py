@@ -36,6 +36,14 @@ def process_commands(processors, path=None, dev=False):
     app.run()
 
 
+@cli.command("doc")
+def docs():
+    """Open the documentation"""
+
+    click.launch("https://tomlin7.github.io/biscuit/")
+    exit()
+
+
 def setup():
     """Setup the CLI commands"""
 

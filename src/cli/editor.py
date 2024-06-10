@@ -22,7 +22,7 @@ if typing.TYPE_CHECKING:
 )
 @click.argument("linecol", type=str, required=False)
 def goto(path=None, linecol=None) -> typing.Callable[[App, str], None]:
-    """Diff two files"""
+    """Open a file and go to a specific location"""
 
     if not path:
         path = click.prompt("path/to/file", type=str)
