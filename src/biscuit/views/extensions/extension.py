@@ -13,7 +13,7 @@ class Extension(Frame):
     The Extension class represents an extension item in the Extensions view.
     """
 
-    def __init__(self, master, name: str, data: list, *args, **kwargs) -> None:
+    def __init__(self, master, name: str, data: list[str], *args, **kwargs) -> None:
         """Initialize the Extension class.
 
         Args:
@@ -24,12 +24,16 @@ class Extension(Frame):
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
+        self.manager = self.base.extensions_manager
+
         self.data = data
         self.name = name
+        self.filename = data[0]
         self.file = os.path.join(self.base.extensionsdir, data[0])
         self.author = data[1]
         self.description = data[2][:35] + "..." if len(data[2]) > 30 else data[2]
-        self.url = f"{master.repo_url}extensions/{data[0]}"
+
+        self.url = f"{self.manager.repo_url}extensions/{data[0]}"
         self.installed = os.path.isfile(self.file)
 
         self.bg = self.base.theme.views.sidebar.item.background
@@ -89,45 +93,22 @@ class Extension(Frame):
         self.bind("<Leave>", self.hoveroff)
         self.hoveroff()
 
-    def run_fetch_extension(self, *_) -> None:
-        if self.installed:
-            return
+    def remove_extension(self, *_):
+        self.manager.remove_extension(self)
 
-        threading.Thread(target=self.fetch_extension).start()
+    def run_fetch_extension(self, *_):
+        self.manager.run_fetch_extension(self)
 
-    def fetch_extension(self) -> None:
-        try:
-            response = requests.get(self.url)
-            if response.status_code == 200:
-                self.install_extension(response)
-        except:
-            self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
+    def set_unavailable(self):
+        self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
-    def install_extension(self, response) -> None:
-        with open(self.file, "w") as fp:
-            fp.write(response.text)
-
+    def set_installed(self):
         self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
         self.install.set_command(self.remove_extension)
 
-        self.base.logger.info(f"Fetching extension '{self.name}' successful.")
-        self.base.notifications.info(f"Extension '{self.name}' has been installed!")
-
-        self.base.extensions_manager.load_extension(self.data[0])
-
-    def remove_extension(self, *_) -> None:
-        try:
-            os.remove(self.file)
-
-            self.install.config(text="Install", bg=self.base.theme.biscuit)
-            self.install.set_command(self.run_fetch_extension)
-
-            self.base.logger.info(f"Uninstalling extension '{self.name}' successful.")
-            self.base.notifications.info(
-                f"Extension '{self.name}' has been uninstalled!"
-            )
-        except Exception as e:
-            self.base.logger.error(f"Uninstalling extension '{self.name}' failed.\n{e}")
+    def set_uninstalled(self):
+        self.install.config(text="Install", bg=self.base.theme.biscuit)
+        self.install.set_command(self.run_fetch_extension)
 
     def hoverin(self, *_) -> None:
         try:

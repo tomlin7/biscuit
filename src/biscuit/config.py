@@ -99,10 +99,12 @@ class ConfigManager:
         except Exception as e:
             print(f"Extensions failed: {e}")
 
-    def setup_api(self):
+    def setup_extensions(self):
         # sets up the extension API & loads extensions
         self.api = ExtensionsAPI(self)
         self.extensions_manager = ExtensionManager(self)
+        self.extensions_view.results.late_setup()
+        self.extensions_view.initialize()
 
     def set_tab_spaces(self, spaces: int) -> None:
         self.tab_spaces = spaces

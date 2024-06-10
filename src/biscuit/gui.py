@@ -98,7 +98,7 @@ class GUIManager(Tk, ConfigManager):
         self.outline = self.drawer.outline
         self.debug = self.drawer.debug
         self.source_control = self.drawer.source_control
-        self.extensions_GUI = self.drawer.extensions
+        self.extensions_view = self.drawer.extensions
         self.ai = self.drawer.ai
         self.github = self.drawer.github
 
@@ -139,8 +139,7 @@ class GUIManager(Tk, ConfigManager):
         if self.testing:
             return
 
-        self.setup_api()
-        self.extensions_GUI.initialize()
+        self.setup_extensions()
 
     def register_misc_palettes(self) -> None:
         """Register miscellaneous palettes that don't belong to any specific component."""
