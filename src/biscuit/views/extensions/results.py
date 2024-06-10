@@ -90,3 +90,10 @@ class Results(NavigationDrawerViewItem):
             self.content.update_idletasks()
 
         self.fetching.set()
+
+    def set_selected(self, extension: Extension) -> None:
+        for widget in self.extension_list.items:
+            if widget == extension:
+                widget.select()
+            else:
+                widget.deselect()

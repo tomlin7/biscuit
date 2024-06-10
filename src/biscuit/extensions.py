@@ -92,6 +92,7 @@ class ExtensionManager:
         if ext.installed:
             return
 
+        ext.set_fetching()
         threading.Thread(target=self.fetch_extension, args=(ext,), daemon=True).start()
 
     def fetch_extension(self, ext: Extension) -> None:
@@ -99,7 +100,6 @@ class ExtensionManager:
 
         try:
             response = requests.get(ext.url)
-            print(response)
             if response.status_code == 200:
                 self.install_extension(ext, response)
         except:
@@ -110,19 +110,19 @@ class ExtensionManager:
 
         with open(ext.file, "w") as fp:
             fp.write(response.text)
+        self.load_extension(ext.filename)
 
         ext.set_installed()
 
         self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
         self.base.notifications.info(f"Extension '{ext.name}' has been installed!")
 
-        self.load_extension(ext.filename)
-
     def remove_extension(self, ext: Extension) -> None:
         """Remove an extension from the system."""
 
         try:
             os.remove(ext.file)
+            self.unload_extension(ext.filename)
 
             ext.set_uninstalled()
 
@@ -143,6 +143,15 @@ class ExtensionManager:
             if extension_name in self.installed:
                 return
             self.load_queue.put(extension_name)
+
+    def unload_extension(self, file: str):
+        """Unload an extension from a file."""
+
+        if file.endswith(".py"):
+            file = os.path.splitext(file)[0]
+
+        if file in self.installed:
+            self.installed.pop(file)
 
     def load_extensions(self):
         """Not to be called directly. Use `start_server` instead."""
@@ -177,6 +186,8 @@ class ExtensionManager:
             except ImportError as e:
                 self.base.logger.error(f"Failed to load extension '{ext}': {e}")
                 self.base.notifications.error(f"Extension '{ext}' failed: see logs.")
+                if ext in self.installed:
+                    self.installed.pop(ext)
 
     def start_server(self):
         self.server = threading.Thread(target=self.load_extensions, daemon=True)
