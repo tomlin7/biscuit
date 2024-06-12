@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import os
-import typing
-import webbrowser as web
-from tkinter import messagebox
-
-if typing.TYPE_CHECKING:
-    from .. import App
-
 import platform
 import tkinter as tk
 import tkinter.filedialog as filedialog
+import typing
+import webbrowser as web
+from tkinter import messagebox
 from tkinter.filedialog import asksaveasfilename
 
 from src.biscuit.common.classdrill import *
+
+if typing.TYPE_CHECKING:
+    from .. import App
 
 
 class Commands:
@@ -27,7 +26,7 @@ class Commands:
     """
 
     def __init__(self, base: App) -> None:
-        self.base = base
+        self.base: App = base
         self.count = 1
         self.maximized = False
         self.minimized = False
@@ -249,7 +248,7 @@ class Commands:
                 editor.content.text.request_rename()
 
     def restart_extension_server(self, *_) -> None:
-        self.base.extensions.restart_server()
+        self.base.extensions_manager.restart_server()
 
     def show_explorer(self, *_) -> None:
         self.base.drawer.show_explorer()

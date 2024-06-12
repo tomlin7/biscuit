@@ -29,7 +29,7 @@ class Extension(Frame):
         super().__init__(master, *args, **kwargs)
         self.master: Results = master
         self.config(**self.base.theme.views.sidebar.item)
-
+        self.selected = False
         self.manager = self.base.extensions_manager
 
         self.data = data
@@ -37,7 +37,7 @@ class Extension(Frame):
         self.filename = data[0]
         self.file = os.path.join(self.base.extensionsdir, data[0])
         self.author = data[1]
-        self.description = data[2][:35] + "..." if len(data[2]) > 30 else data[2]
+        self.description = data[2][:50] + "..." if len(data[2]) > 30 else data[2]
 
         self.url = f"{self.manager.repo_url}extensions/{data[0]}"
         self.installed = os.path.isfile(self.file)
@@ -127,6 +127,7 @@ class Extension(Frame):
         self.master.set_selected(self)
 
     def select(self):
+        self.selected = True
         self.config(bg=self.hbg)
         self.namelbl.config(bg=self.hbg)
         self.authorlbl.config(bg=self.hbg)
@@ -135,6 +136,7 @@ class Extension(Frame):
         self.subcontainer.config(bg=self.hbg)
 
     def deselect(self):
+        self.selected = False
         self.config(bg=self.bg)
         self.namelbl.config(bg=self.bg)
         self.authorlbl.config(bg=self.bg)
@@ -143,6 +145,9 @@ class Extension(Frame):
         self.subcontainer.config(bg=self.bg)
 
     def hoverin(self, *_) -> None:
+        if self.selected:
+            return
+
         try:
             self.config(bg=self.hbg)
             self.namelbl.config(bg=self.hbg)
@@ -154,6 +159,9 @@ class Extension(Frame):
             pass
 
     def hoveroff(self, *_) -> None:
+        if self.selected:
+            return
+
         try:
             self.config(bg=self.bg)
             self.namelbl.config(bg=self.bg)

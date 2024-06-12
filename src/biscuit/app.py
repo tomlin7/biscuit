@@ -54,7 +54,7 @@ class App(EventManager, GUIManager, ConfigManager):
 
         self.setup()
         self.late_setup()
-        self.initialize_editor(dir)
+        self.initialize_app(dir)
 
     def run(self) -> None:
         """Start the main loop of the app."""
@@ -71,7 +71,7 @@ class App(EventManager, GUIManager, ConfigManager):
         self.setup_configs()
         self.initialize_tk()
 
-    def initialize_editor(self, dir: str) -> None:
+    def initialize_app(self, dir: str) -> None:
         """Initialize the editor.
 
         Args:
