@@ -23,15 +23,17 @@ class TextEditor(BaseEditor):
         language=None,
         minimalist=False,
         standalone=False,
+        load_file=True,
         *args,
         **kwargs,
     ) -> None:
         super().__init__(master, path, exists, *args, **kwargs)
         self.font: Font = self.base.settings.font
+        self.path = path
+        self.exists = exists
         self.standalone = standalone
         self.minimalist = minimalist or self.standalone
         self.language = language
-        self.exists = exists
         self.editable = True
         self.run_command_value = None
         self.debugger = None
@@ -65,7 +67,9 @@ class TextEditor(BaseEditor):
         self.language = self.text.language
 
         if self.exists:
-            self.text.load_file()
+            if load_file:
+                self.text.load_file()
+
             self.text.update_idletasks()
 
             if not self.standalone:
@@ -140,7 +144,9 @@ class TextEditor(BaseEditor):
 
     def file_loaded(self):
         self.recalculate_content_hash()
+        print(f"File opened {self.path}")
         self.event_generate("<<FileLoaded>>", when="tail")
+        self.text.event_generate("<<FileLoaded>>", when="tail")
 
     def recalculate_content_hash(self):
         """Recalculate the hash of the editor content"""

@@ -95,17 +95,18 @@ class EventManager(GUIManager, ConfigManager):
         self.statusbar.update_git_info()
         self.source_control.refresh()
 
-    def clone_repo(self, url: str) -> None:
+    def clone_repo(self, url: str, new_window: bool = None) -> None:
         path = filedialog.askdirectory()
         if not path:
             return
 
-        new_window = askyesnocancel(
-            "Open in new window or current",
-            "Do you want to open the cloned repository in a new window?",
-        )
         if new_window is None:
-            return
+            new_window = askyesnocancel(
+                "Open in new window or current",
+                "Do you want to open the cloned repository in a new window?",
+            )
+            if new_window is None:
+                return
 
         try:
 
@@ -150,8 +151,11 @@ class EventManager(GUIManager, ConfigManager):
                 editor.content.goto(position)
             return
 
-        editor = self.open_editor(path, exists=True)
-        editor.content.bind("<<FileLoaded>>", lambda e: editor.content.goto(position))
+        editor = self.open_editor(path, exists=True, load_file=False)
+        editor.content.bind(
+            "<<FileLoaded>>", lambda e, pos=position: editor.content.goto(pos), add=True
+        )
+        editor.content.load_file()
 
     def open_workspace_edit(self, path: str, edits: list[TextEdit]):
         if self.editorsmanager.is_open(path):
@@ -159,13 +163,15 @@ class EventManager(GUIManager, ConfigManager):
             self.do_workspace_edits(e, edits)
             return
 
-        editor = self.open_editor(path, exists=True)
+        editor = self.open_editor(path, exists=True, load_file=False)
         editor.content.bind(
             "<<FileLoaded>>",
             lambda _, editor=editor.content.text, edits=edits: threading.Thread(
                 target=self.do_workspace_edits, args=(editor, edits), daemon=True
             ).start(),
+            add=True,
         )
+        editor.content.load_file()
 
     def do_workspace_edits(self, tab: Text, edits: list[TextEdit]):
         for i in edits:
@@ -173,14 +179,25 @@ class EventManager(GUIManager, ConfigManager):
             tab.update()
             tab.update_idletasks()
 
-    def open_editor(self, path: str, exists: bool = True) -> Editor | BaseEditor:
+    def open_editor(
+        self, path: str, exists=True, load_file=True
+    ) -> Editor | BaseEditor:
+        """Opens suitable editor based on the path, exists and load_file flags.
+
+        `exists` flag will prioritize over `load_file`. If `exists` is False, `load_file` will be False.
+        """
+
         if exists and not os.path.isfile(path):
             return
 
-        return self.editorsmanager.open_editor(path, exists)
+        return self.editorsmanager.open_editor(path, exists, load_file)
 
     def open_diff(self, path: str, kind: str) -> None:
+        # TODO kind kwarg
         self.editorsmanager.open_diff_editor(path, kind)  # type: ignore
+
+    def diff_files(self, file1: str, file2: str) -> None:
+        self.editorsmanager.diff_files(file1, file2, standalone=True)
 
     def open_settings(self, *_) -> None:
         self.editorsmanager.add_editor(SettingsEditor(self.editorsmanager))

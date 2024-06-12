@@ -14,10 +14,13 @@ from .text import TextEditor
 
 def get_editor(
     base,
-    path: str = None,
-    exists: bool = True,
-    diff: bool = False,
-    language: str = None,
+    path="",
+    exists=True,
+    path2="",
+    diff=False,
+    language="",
+    load_file=True,
+    standalone=False,
 ) -> TextEditor | DiffEditor | MDEditor | ImageViewer:
     """Get the suitable editor based on the path, exists, diff values passed.
 
@@ -25,6 +28,7 @@ def get_editor(
         base: The parent widget
         path (str): The path of the file to be opened
         exists (bool): Whether the file exists
+        path2 (str): The path of the file to be opened in diff, required if diff=True is passed
         diff (bool): Whether the file is to be opened in diff editor
         language (str): The language of the file
 
@@ -33,7 +37,7 @@ def get_editor(
             The suitable editor based on the path, exists, diff values passed"""
 
     if diff:
-        return DiffEditor(base, path, exists, language=language)
+        return DiffEditor(base, path, exists, path2, standalone=standalone)
 
     if path and os.path.isfile(path):
         if is_image(path):
@@ -45,9 +49,9 @@ def get_editor(
         if path.endswith(".html") or path.endswith(".htm"):
             return HTMLEditor(base, path, exists=exists)
 
-        return TextEditor(base, path, exists, language=language)
+        return TextEditor(base, path, exists, language=language, load_file=load_file)
 
-    return TextEditor(base, exists=exists, language=language)
+    return TextEditor(base, exists=exists, language=language, load_file=False)
 
 
 class Editor(BaseEditor):
@@ -68,7 +72,8 @@ class Editor(BaseEditor):
         path2: str = None,
         diff: bool = False,
         language: str = None,
-        darkmode=True,
+        load_file: bool = True,
+        standalone: bool = False,
         config_file: str = None,
         showpath: bool = True,
         preview_file_callback=None,
@@ -86,8 +91,6 @@ class Editor(BaseEditor):
             diff (bool): Whether the file is to be opened in diff editor
             language (str): Use the `Languages` enum provided (eg. Languages.PYTHON, Languages.TYPESCRIPT)
                 This is given priority while picking suitable highlighter. If not passed, guesses from file extension.
-            darkmode (str): Sets the editor theme to cupcake dark if True, or cupcake light by default
-                This is ignored if custom config_file path is passed
             config_file (str): path to the custom config (TOML) file, uses theme defaults if not passed
             showpath (bool): Whether to show the breadcrumbs for editor or not
             preview_file_callback (function): called when files in breadcrumbs-pathview are single clicked. MUST take an argument (path)
@@ -100,8 +103,9 @@ class Editor(BaseEditor):
         self.exists = exists
         self.path2 = path2
         self.diff = diff
+        self.language = language
+        self.standalone = standalone
         self.showpath = showpath
-        self.darkmode = darkmode
         self.config_file = config_file
         self.preview_file_callback = preview_file_callback
         self.open_file_callback = open_file_callback
@@ -109,7 +113,16 @@ class Editor(BaseEditor):
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
 
-        self.content = get_editor(self, path, exists, diff, language)
+        self.content = get_editor(
+            self,
+            path,
+            exists,
+            path2,
+            diff,
+            language,
+            load_file=load_file,
+            standalone=standalone,
+        )
         self.filename = os.path.basename(self.path) if path else None
         if path and exists and self.showpath and not diff:
             self.breadcrumbs = BreadCrumbs(self, path)

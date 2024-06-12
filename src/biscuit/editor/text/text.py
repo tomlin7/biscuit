@@ -955,7 +955,7 @@ class Text(BaseText):
 
         threading.Thread(target=write_with_buffer, daemon=True).start()
 
-    def read_file(self, file):
+    def read_file(self, file: typing.TextIO):
         while True:
             try:
                 chunk = file.read(self.buffer_size)
@@ -974,9 +974,13 @@ class Text(BaseText):
             while True:
                 chunk = self.queue.get_nowait()
                 if chunk is None:
+                    # Finished loading file -- reached EOF 🚧
                     try:
                         self.master.on_change()
                         self.master.on_scroll()
+                        self.update_idletasks()
+                        self.master.file_loaded()
+                        self.focus_set()
                     except Exception:
                         pass
                     break
@@ -994,9 +998,9 @@ class Text(BaseText):
             # If the queue is empty, schedule the next check after a short delay
             self.master.after(100, self.process_queue)
 
-        self.master.file_loaded()
+    def custom_get(self, start: str, end: str) -> str:
+        """Ignore the text that is tagged with 'ignore_tag' and return the rest of the text."""
 
-    def custom_get(self, start, end):
         content = self.get(start, end)
         tag_ranges = self.tag_ranges("ignore_tag")
 

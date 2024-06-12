@@ -25,7 +25,17 @@ class DiffEditor(BaseEditor):
     Standard difflib is used to get the diff of the file. The diff is shown in two panes,
     LHS shows last commit and RHS shows the current state of the file."""
 
-    def __init__(self, master, path, kind, language=None, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        master,
+        path: str,
+        kind: int = None,
+        path2: str = None,
+        standalone: bool = False,
+        language="",
+        *args,
+        **kwargs,
+    ) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
@@ -33,7 +43,9 @@ class DiffEditor(BaseEditor):
         self.grid_rowconfigure(0, weight=1)
         self.path = path
         self.kind = kind
+        self.path2 = path2
         self.editable = True
+        self.standalone = standalone
 
         self.lhs_data = []
         self.rhs_data = []
@@ -47,6 +59,7 @@ class DiffEditor(BaseEditor):
         self.rhs = DiffPane(self, path, exists=False)
         self.rhs.grid(row=0, column=1, sticky=tk.NSEW)
 
+        self.differ = difflib.Differ()
         self.debugger = self.rhs.debugger
 
         self.left = self.lhs.text
@@ -77,9 +90,10 @@ class DiffEditor(BaseEditor):
         )
         self.right.tag_config("addedword", background="green")
 
-        self.differ = difflib.Differ()
-
-        self.show_diff()
+        if path2:
+            self.run_show_diff()
+        else:
+            self.run_show_git_diff()
 
     def on_scrollbar(self, *args) -> None:
         self.left.yview(*args)
@@ -99,6 +113,65 @@ class DiffEditor(BaseEditor):
         threading.Thread(target=self.show_diff).start()
 
     def show_diff(self) -> None:
+        """Show the diff of the file"""
+
+        with open(
+            (
+                self.path
+                if self.standalone
+                else os.path.join(self.base.active_directory, self.path)
+            ),
+            "r",
+        ) as f:
+            lhs_data = f.read()
+        with open(
+            (
+                self.path2
+                if self.standalone
+                else os.path.join(self.base.active_directory, self.path2)
+            ),
+            "r",
+        ) as f:
+            rhs_data = f.read()
+
+        lhs_lines = [line + "\n" for line in lhs_data.split("\n")]
+        rhs_lines = [line + "\n" for line in rhs_data.split("\n")]
+
+        self.diff = list(self.differ.compare(lhs_lines, rhs_lines))
+        for i, line in enumerate(self.diff):
+            marker = line[0]
+            content = line[2:]
+
+            match marker:
+                case " ":
+                    # line is same in both
+                    self.left.write(content)
+                    self.right.write(content)
+
+                case "-":
+                    # line is only on the left
+                    self.lhs_last_line = int(float(self.left.index(tk.INSERT)))
+                    self.left.write(content, "removal")
+
+                    # TODO this check is done to make sure if this is a line with modifications
+                    # and not a newly added line, but this is not done right.
+                    self.right.insert_newline("removal")
+
+                case "+":
+                    # line is only on the right
+                    self.rhs_last_line = int(float(self.right.index(tk.INSERT)))
+                    self.right.write(content, "addition")
+
+                    # TODO this check is done to make sure if this is a line with modifications
+                    # and not a newly added line, but this is not done right.
+                    self.left.insert_newline("addition")
+
+    def run_show_git_diff(self) -> None:
+        """Run the show_diff_git function in a separate thread"""
+
+        threading.Thread(target=self.show_git_diff).start()
+
+    def show_git_diff(self) -> None:
         """Show the diff of the file"""
 
         try:

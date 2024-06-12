@@ -1,5 +1,3 @@
-import sys
+from cli import run
 
-from main import main
-
-main(sys.argv)
+run()

@@ -10,7 +10,7 @@
         "editor.formatOnSave": true
     },
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
+        "source.organizeImports": "always"
     },
     "python.analysis.autoImportCompletions": true,
 }

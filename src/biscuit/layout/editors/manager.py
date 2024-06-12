@@ -136,7 +136,9 @@ class EditorsManager(Frame):
             self.base.logger.error(f"Reopening editor failed: {e}")
             self.base.notifications.error("Reopening editor failed: see logs")
 
-    def open_editor(self, path: str, exists: bool = True) -> Editor | BaseEditor:
+    def open_editor(
+        self, path: str, exists=True, load_file=True
+    ) -> Editor | BaseEditor:
         """Open a new editor with the given path.
 
         Args:
@@ -150,7 +152,8 @@ class EditorsManager(Frame):
             return self.editorsbar.switch_tabs(path)
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
-        return self.add_editor(Editor(self, path, exists))
+        
+        return self.add_editor(Editor(self, path, exists, load_file=load_file))
 
     def open_diff_editor(self, path: str, exists: bool) -> None:
         """Open a new diff editor with the given path.
@@ -160,6 +163,17 @@ class EditorsManager(Frame):
             exists (bool): Whether the file exists."""
 
         self.add_editor(Editor(self, path, exists, diff=True))
+
+    def diff_files(self, file1: str, file2: str, standalone: bool = False) -> None:
+        """Diff two files.
+
+        Args:
+            file1 (str): The path of the first file.
+            file2 (str): The path of the second file."""
+
+        self.add_editor(
+            Editor(self, file1, True, file2, diff=True, standalone=standalone)
+        )
 
     def open_game(self, id: str) -> None:
         """Open a new game editor with the given id.

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import json
 import queue
 import threading
 import tkinter as tk
+import typing
 
 import requests
 
@@ -10,6 +13,17 @@ from src.biscuit.common.ui import ScrollableFrame
 from ..drawer_item import NavigationDrawerViewItem
 from .extension import Extension
 from .placeholder import ExtensionsPlaceholder
+
+if typing.TYPE_CHECKING:
+    from src.biscuit.extensions import ExtensionManager
+
+
+class ExtensionsList(ScrollableFrame):
+    items: list[Extension]
+
+    def __init__(self, master, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.config(bg=self.base.theme.views.sidebar.background)
 
 
 class Results(NavigationDrawerViewItem):
@@ -20,34 +34,38 @@ class Results(NavigationDrawerViewItem):
     - The user can install, uninstall, search for extensions.
     """
 
+    manager: ExtensionManager
+    fetch_queue: queue.Queue
+    fetching: threading.Event
+
     def __init__(self, master, *args, **kwargs) -> None:
         self.__buttons__ = ()
         self.title = "Available"
+
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)
 
-        self.extensions = {}
-
         self.placeholder = ExtensionsPlaceholder(self)
-        self.extension_list = ScrollableFrame(
-            self.content, bg=self.base.theme.views.sidebar.background
-        )
+        self.extension_list = ExtensionsList(self.content)
         self.extension_list.pack(fill=tk.BOTH, expand=True)
-
-        self.repo_url = (
-            "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
-        )
-        self.list_url = self.repo_url + "extensions.json"
-
-        self.queue = queue.Queue()
 
         # self.watcher = ExtensionsWatcher(self)
         # self.watcher.watch()
 
         # TODO list installed extensions separately
 
-        self.fetching = threading.Event()
-        self.extensions_lock = threading.Lock()
+    def late_setup(self) -> None:
+        self.manager = self.base.extensions_manager
+        self.fetch_queue = self.manager.fetch_queue
+        self.fetching = self.manager.fetching
+
+    def show_content(self) -> None:
+        self.extension_list.pack(in_=self.content, fill=tk.BOTH, expand=True)
+        self.placeholder.pack_forget()
+
+    def show_placeholder(self) -> None:
+        self.extension_list.pack_forget()
+        self.placeholder.pack(in_=self.content, fill=tk.BOTH, expand=True)
 
     def refresh(self, *_) -> None:
         if self.base.testing:
@@ -55,44 +73,11 @@ class Results(NavigationDrawerViewItem):
 
         self.clear()
         self.update_idletasks()
-        self.after(5, self.run_fetch_list())
-
-    def run_fetch_list(self, *_) -> None:
-        if self.base.testing:
-            return
-
-        if self.fetching.is_set():
-            self.fetching.wait()
-
-        with self.extensions_lock:
-            threading.Thread(target=self.fetch_list, daemon=True).start()
-
-    def fetch_list(self) -> None:
-        response = None
-        try:
-            response = requests.get(self.list_url)
-        except Exception as e:
-            pass
-
-        # FAIL - network error
-        if not response or response.status_code != 200:
-            self.extension_list.pack_forget()
-            self.placeholder.pack(in_=self.content, fill=tk.BOTH, expand=True)
-            return
-
-        self.extensions = json.loads(response.text)
-        # SUCCESS
-        if self.extensions:
-            self.placeholder.pack_forget()
-            self.extension_list.pack(in_=self.content, fill=tk.BOTH, expand=True)
-
-        for name, data in self.extensions.items():
-            # TODO add further loops for folders
-            self.queue.put((name, data))
+        self.after(5, self.manager.run_fetch_extensions())
 
     def gui_refresh_loop(self) -> None:
-        if not self.queue.empty():
-            name, data = self.queue.get()
+        if not self.fetch_queue.empty():
+            name, data = self.fetch_queue.get()
             ext = Extension(self, name, data)
             self.extension_list.add(ext, fill=tk.X)
 
@@ -105,3 +90,10 @@ class Results(NavigationDrawerViewItem):
             self.content.update_idletasks()
 
         self.fetching.set()
+
+    def set_selected(self, extension: Extension) -> None:
+        for widget in self.extension_list.items:
+            if widget == extension:
+                widget.select()
+            else:
+                widget.deselect()
