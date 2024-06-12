@@ -15,6 +15,22 @@ if typing.TYPE_CHECKING:
     "path",
     type=click.Path(
         exists=True,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    required=False,
+)
+def open(path=None) -> typing.Callable[[App, str], None]:
+    """Open a file or folder in the editor"""
+
+    return lambda app, path=path: app.open(path)
+
+
+@click.command()
+@click.argument(
+    "path",
+    type=click.Path(
+        exists=True,
         dir_okay=False,
         resolve_path=True,
     ),
@@ -40,3 +56,4 @@ def goto(path=None, linecol=None) -> typing.Callable[[App, str], None]:
 
 def register(cli: click.Group):
     cli.add_command(goto)
+    cli.add_command(open)
