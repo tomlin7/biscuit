@@ -62,6 +62,7 @@ class BaseEditor(Frame):
         self.unsupported = False
         self.content_hash = ""
         self.text = None
+        self.filename = ""
 
         self.__buttons__ = []
 

@@ -8,6 +8,7 @@ import requests
 
 from src.biscuit.common import ActionSet
 from src.biscuit.common.ui import Scrollbar
+from src.biscuit.git import IssueViewer
 
 from ..drawer_item import NavigationDrawerViewItem
 
@@ -29,12 +30,14 @@ class Issues(NavigationDrawerViewItem):
         self.owner = None
         self.repo = None
 
+        self.issues = {}
+
         self.tree = ttk.Treeview(
             self.content,
             selectmode=tk.BROWSE,
             show="tree",
             displaycolumns="",
-            columns=("link"),
+            columns=("number"),
         )
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.bind("<Double-Button-1>", self.on_click)
@@ -61,12 +64,17 @@ class Issues(NavigationDrawerViewItem):
     def on_click(self, *_) -> None:
         """Event handler for treeview item click event."""
 
-        try:
-            item = self.tree.selection()[0]
-            link = self.tree.item(item, "values")[0]
-            webbrowser.open(link)
-        except Exception as e:
-            pass
+        item = self.tree.selection()[0]
+        number = self.tree.item(item, "values")[0]
+        self.open_editor(number)
+
+    def open_editor(self, number: str) -> None:
+        """Opens the issue viewer for the selected issue."""
+
+        self.base.editorsmanager.add_editor(
+            IssueViewer(self.base.editorsmanager, self.issues[number])
+        )
+        print(f"opened issue #{number}")
 
     def fetch(self) -> typing.List[dict]:
         """Fetches issues from the current repository."""
@@ -76,9 +84,13 @@ class Issues(NavigationDrawerViewItem):
             self.base.notifications.error(
                 f"Failed to fetch issues from {self.owner}/{self.repo}"
             )
+            self.base.logger.error(
+                f"Failed to fetch issues from {self.owner}/{self.repo}: {response.reason} {response.text}"
+            )
             return
 
         issues = json.loads(response.text)
+        self.issues = {str(issue["number"]): issue for issue in issues}
         if not issues:
             self.tree.insert("", tk.END, text="No open issues")
             return
@@ -87,14 +99,14 @@ class Issues(NavigationDrawerViewItem):
             [
                 (
                     f"{issue['title']} #{issue['number']}",
-                    lambda *_, link=issue["html_url"]: webbrowser.open(link),
+                    lambda *_, number=issue["number"]: self.open_editor(number),
                 )
                 for issue in issues
                 if "pull_request" not in issue
             ]
         )
         issues = (
-            (f"{issue['title']} #{issue['number']}", issue["html_url"])
+            (f"{issue['title']} #{issue['number']}", issue["number"])
             for issue in issues
             if "pull_request" not in issue
         )
