@@ -98,7 +98,7 @@ class Tab(Frame):
                 )
             elif self.editor.filename:
                 self.base.set_title(self.editor.filename)
-            self.editor.grid(column=0, row=1, sticky=tk.NSEW)
+            self.editor.grid(column=0, row=1, sticky=tk.NSEW, in_=self.master.master)
 
             self.apply_color(self.hbg)
             self.closebtn.config(activeforeground=self.hfg)

@@ -9,36 +9,41 @@ from .pong import Pong
 from .ttt import TicTacToe
 from .whoops import Whoops
 
-games = {i.name: i for i in (GameOfLife, Pong, TicTacToe, Minesweeper)}
 
+class GameManager:
+    def __init__(self, base) -> None:
+        self.base = base
 
-def get_games(base) -> list:
-    """For palette to generate action sets of games"""
+        self.games = {i.name: i for i in (GameOfLife, Pong, TicTacToe, Minesweeper)}
 
-    return [(f"Play {i}", lambda _, i=i: base.open_game(i)) for i in games.keys()]
+    def get_games(self) -> list:
+        """For palette to generate action sets of games"""
 
+        return [
+            (f"Play {i}", lambda _, i=i: self.base.open_game(i))
+            for i in self.games.keys()
+        ]
 
-def get_game(name) -> str:
-    """returns the game class from the name
+    def get_game(self, name) -> str:
+        """returns the game class from the name
 
-    Args:
-        name (str): name of the game
-    """
+        Args:
+            name (str): name of the game
+        """
 
-    return games.get(name, Whoops)
+        return self.games.get(name, Whoops)
 
+    def register_new_game(self, game: BaseGame) -> None:
+        """Registers a game to the games dict
 
-def register_game(game) -> None:
-    """Registers a game to the games dict
+        Args:
+            game (BaseGame): game to be registered
+        """
 
-    Args:
-        game (BaseGame): game to be registered
-    """
-
-    try:
-        games[game.name] = game
-    except AttributeError:
-        games[f"Game {len(games) + 1}"] = game
+        try:
+            self.games[game.name] = game
+        except AttributeError:
+            self.games[f"Game {len(self.games) + 1}"] = game
 
 
 class Game(Frame):
@@ -62,7 +67,8 @@ class Game(Frame):
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        self.content = get_game(name=name)(self)
+
+        self.content = self.base.game_manager.get_game(name=name)(self)
         self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
     def focus(self) -> None:

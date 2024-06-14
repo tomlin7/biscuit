@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import tkinter as tk
 import webbrowser
 
@@ -7,13 +9,21 @@ from .labels import Label
 class LinkLabel(Label):
     """Label that acts as a link"""
 
-    def __init__(self, master, text: str, command=lambda _: None, *args, **kwargs) -> None:
+    def __init__(
+        self, master, text: str, command=lambda _: None, *args, **kwargs
+    ) -> None:
         super().__init__(master, text=text, *args, **kwargs)
-        self.config(font=("Segoi UI", 10), cursor="hand2", **self.base.theme.utils.linklabel)
+        self.config(
+            font=("Segoi UI", 10), cursor="hand2", **self.base.theme.utils.linklabel
+        )
         self.set_command(command)
 
     def set_command(self, command) -> None:
-        self.bind('<Button-1>', command)
+        self.bind("<Button-1>", command)
+
+    def pack(self, *args, **kwargs) -> LinkLabel:
+        super().pack(*args, **kwargs)
+        return self
 
 
 class WebLinkLabel(LinkLabel):
