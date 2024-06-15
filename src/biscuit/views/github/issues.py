@@ -74,7 +74,6 @@ class Issues(NavigationDrawerViewItem):
         self.base.editorsmanager.add_editor(
             IssueViewer(self.base.editorsmanager, self.issues[number])
         )
-        print(f"opened issue #{number}")
 
     def fetch(self) -> typing.List[dict]:
         """Fetches issues from the current repository."""

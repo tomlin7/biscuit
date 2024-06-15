@@ -10,10 +10,10 @@ from src.biscuit.common.ui.buttons import IconLabelButton
 from ..editor.editorbase import BaseEditor
 
 
-class IssueViewer(BaseEditor):
-    """Issue Viewer
+class PRViewer(BaseEditor):
+    """Pull Request Viewer
 
-    Issue Viewer is a class that displays the details of an issue in a GitHub repository.
+    Pull Request Viewer is a class that displays the details of a pull request in a GitHub repository.
     """
 
     def __init__(
@@ -24,7 +24,7 @@ class IssueViewer(BaseEditor):
         **kwargs,
     ) -> None:
         super().__init__(master, *args, **kwargs)
-        self.filename = self.path = f"Issue #{data['number']}"
+        self.filename = self.path = f"Pull request #{data['number']}"
         self.config(bg=self.base.theme.border)
         self.data = data
 
@@ -107,9 +107,11 @@ class IssueViewer(BaseEditor):
         self.body.on_link_click(load_new_page)
 
         self.body.load_html(
-            f"<h1>{data['title']} <a href={data['html_url']}>#{data['number']}</a></h1><br>"
+            f"<h1>{data['title']} <a href={data['html_url']}>#{data['number']}</a></h1>"
             + f"<span class='state-label'>{data['state']}</span>"
-            + f"Opened by <a href={data["user"]["html_url"]}>{data['user']['login']}</a><br><hr>"
+            + f"<a href={data['user']['html_url']}>{data['user']['login']}</a>"
+            + f" wants to merge <code>{data['head']['label']}</code> into <code>{data['base']['label']}</code>"
+            + "<br><hr>"
             + mistune.html(data["body"])
         )
 
@@ -122,6 +124,7 @@ class IssueViewer(BaseEditor):
                 height: auto;
             }}
 
+            
             hr {{
                 border: 0;
                 border-top: 1px solid {t.border};
@@ -141,7 +144,7 @@ class IssueViewer(BaseEditor):
                 padding-left: 20px;
                 padding-right: 20px;
             }}
-
+            
             span.state-label {{
                 display: inline-block;
                 padding: 0.25em 0.5em;
