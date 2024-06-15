@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit"
-version = "2.92.0"
+version = "2.95.0"
 description = "The uncompromising code editor"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
@@ -23,8 +23,8 @@ tkinterweb = "^3.23.9"
 mistune = "^3.0.2"
 tarts = "^0.12.0"
 chardet = "^5.2.0"
-pywinpty = {version = "^2.0.13", platform = "win32"}
-ptyprocess = {version = "^0.7.0", platform = "linux"}
+pywinpty = { version = "^2.0.13", platform = "win32" }
+ptyprocess = { version = "^0.7.0", platform = "linux" }
 python-tkdnd = "^0.2.1"
 psutil = "^5.9.8"
 google-generativeai = "^0.5.4"

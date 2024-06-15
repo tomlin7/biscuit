@@ -32,6 +32,9 @@ class Renderer(Frame):
             command=self.htmlframe.yview,
             style="EditorScrollbar",
         )
+
+        self.sparkles = f"<h4 color={self.base.theme.biscuit}>✨ Bikkis</h4> "
+
         self.htmlframe.html.config(yscrollcommand=self.scrollbar.set)
         self.htmlframe.html.shrink(True)
 
@@ -47,16 +50,16 @@ class Renderer(Frame):
         t = self.base.theme
         self.css = f"""
             CODE, PRE {{
-                font-family: {self.base.settings.font['family']};
-                font-size: {self.base.settings.font['size']}pt;
+                font-family: {self.base.settings.uifont['family']};
+                font-size: {self.base.settings.uifont['size']}pt;
                 background-color: {t.border};
                 padding: 2px;
             }}
             BODY {{
                 background-color: {t.primary_background};
                 color: {t.primary_foreground};
-                font-family: {self.base.settings.font['family']};
-                font-size: {self.base.settings.font['size']}pt;
+                font-family: {self.base.settings.uifont['family']};
+                font-size: {self.base.settings.uifont['size']}pt;
             }}
             :link    {{ color: {t.biscuit}; }}
             :visited {{ color: {t.biscuit_dark}; }}
@@ -71,7 +74,9 @@ class Renderer(Frame):
             }}
             """
 
-    def write(self, content: str) -> None:
-        self.content += content
-        self.htmlframe.load_html(mistune.html(self.header + self.content + self.footer))
+    def write(self, content: str, sparkles: bool = False) -> None:
+        if sparkles:
+            self.content += self.sparkles
+        self.content += mistune.html(content)
+        self.htmlframe.load_html(self.content)
         self.htmlframe.add_css(self.css)

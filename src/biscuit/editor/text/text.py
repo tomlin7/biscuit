@@ -182,8 +182,8 @@ class Text(BaseText):
         self.bind("<<Selection>>", self.on_selection)
         self.bind("<Control-KeyPress>", lambda _: self.set_ctrl_key(True))
         self.bind("<Control-KeyRelease>", lambda _: self.set_ctrl_key(False))
-        self.bind("<Control-Button-1>", self.request_definition)
-        self.bind("<Control-comma>", self.request_references)
+        self.bind("<Control-Button-1>", self.request_references)
+        self.bind("<Control-comma>", self.request_definition)
         self.bind(
             "<Control-period>",
             lambda _: self.base.language_server_manager.request_completions(self),

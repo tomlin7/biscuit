@@ -11,7 +11,7 @@ class Button(Menubutton):
         super().__init__(master, text=text, *args, **kwargs)
         self.config(
             pady=5,
-            font=("Segoi UI", 10),
+            font=self.base.settings.uifont,
             cursor="hand2",
             **self.base.theme.utils.button
         )

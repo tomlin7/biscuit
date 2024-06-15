@@ -19,6 +19,7 @@ codicons = {
     "arrow-small-up": "\ueaa0",
     "arrow-swap": "\uebcb",
     "arrow-up": "\ueaa1",
+    "attach": "\uec34",
     "azure-devops": "\uebe8",
     "azure": "\uebd8",
     "beaker-stop": "\uebe1",

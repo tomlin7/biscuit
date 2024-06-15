@@ -14,7 +14,7 @@ class Shortcuts(Frame):
         name = tk.Label(
             self,
             text=name,
-            font=("Segoi UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.E,
             **self.base.theme.editors.labels
         )

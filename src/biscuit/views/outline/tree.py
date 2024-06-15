@@ -18,7 +18,7 @@ class Tree(Text):
         self.config(
             cursor="hand2",
             **self.base.theme.views.sidebar.item.content,
-            font=("Segoi UI", 10),
+            font=self.base.settings.uifont,
             padx=10,
             pady=10,
             spacing1=0,
