@@ -14,7 +14,9 @@ class LinkLabel(Label):
     ) -> None:
         super().__init__(master, text=text, *args, **kwargs)
         self.config(
-            font=("Segoi UI", 10), cursor="hand2", **self.base.theme.utils.linklabel
+            font=self.base.settings.uifont,
+            cursor="hand2",
+            **self.base.theme.utils.linklabel,
         )
         self.set_command(command)
 

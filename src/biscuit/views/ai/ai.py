@@ -52,6 +52,15 @@ class AI(NavigationDrawerView):
         else:
             self.add_placeholder()
 
+    def attach_file(self, *files: typing.List[str]) -> None:
+        """Attach a file to the chat.
+
+        Args:
+            files (list): The list of files to attach to the chat."""
+
+        if self.chat:
+            self.chat.attach_file(*files)
+
     def add_placeholder(self) -> None:
         """Show the home page for the AI assistant view"""
 

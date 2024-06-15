@@ -1,4 +1,4 @@
-__version__ = "2.92.0"
+__version__ = "2.95.0"
 __version_info__ = tuple([int(num) for num in __version__.split(".")])
 
 import sys

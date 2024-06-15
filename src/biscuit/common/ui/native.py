@@ -47,7 +47,7 @@ class Label(tk.Label):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
-        self.base = master.base
+        self.base: App = master.base
 
     def set_text(self, text: str) -> None:
         self.config(text=text)
