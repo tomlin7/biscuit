@@ -28,6 +28,7 @@ class AI(NavigationDrawerView):
         self.__icon__ = "sparkle-filled"
         self.name = "AI"
         self.chat = None
+        self.api_key = ""
 
         self.menu = AIMenu(self)
         self.add_action("ellipsis", self.menu.show)
@@ -38,17 +39,16 @@ class AI(NavigationDrawerView):
         self.cursor = self.db.cursor()
         self.cursor.executescript(
             """
-            CREATE TABLE IF NOT EXISTS secrets (key TEXT NOT NULL, value TEXT);
+            CREATE TABLE IF NOT EXISTS secrets (key TEXT PRIMARY KEY NOT NULL, value TEXT);
             """
         )
 
         self.cursor.execute("SELECT value FROM secrets WHERE key='GEMINI_API_KEY'")
-        self.api_key = self.cursor.fetchone()
+        api_key = self.cursor.fetchone()
 
         self.placeholder = AIPlaceholder(self)
-        if self.api_key:
-            self.api_key = self.api_key[0]
-            self.add_chat()
+        if api_key:
+            self.add_chat(api_key[0])
         else:
             self.add_placeholder()
 
@@ -80,6 +80,9 @@ class AI(NavigationDrawerView):
 
         if api_key:
             self.api_key = api_key
+
+        if not self.api_key:
+            return self.add_placeholder()
 
         self.cursor.execute(
             "INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)",
