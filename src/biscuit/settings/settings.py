@@ -7,8 +7,7 @@ import typing
 
 import tkextrafont as extra
 
-from src.biscuit.common import ActionSet, extract_commands, formalize_command, get_games
-
+from ..common import ActionSet, extract_commands, formalize_command
 from .bindings import Bindings
 from .config import Config
 from .resources import Resources
@@ -68,7 +67,9 @@ class Settings:
 
     def generate_actionset(self) -> None:
         self._actionset = ActionSet(
-            "Show and run commands", ">", self.commands + get_games(self.base)
+            "Show and run commands",
+            ">",
+            self.commands + self.base.game_manager.get_games(),
         )
 
     def setup_icon(self) -> None:

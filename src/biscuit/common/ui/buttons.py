@@ -9,19 +9,23 @@ class Button(Menubutton):
 
     def __init__(self, master, text, command=lambda _: None, *args, **kwargs) -> None:
         super().__init__(master, text=text, *args, **kwargs)
-        self.config(pady=5, font=("Segoi UI", 10), cursor="hand2", **self.base.theme.utils.button)
+        self.config(
+            pady=5,
+            font=("Segoi UI", 10),
+            cursor="hand2",
+            **self.base.theme.utils.button
+        )
         self.set_command(command)
 
     def set_command(self, command) -> None:
         """Set the command for the button"""
 
-        self.bind('<Button-1>', command)
-
+        self.bind("<Button-1>", command)
 
 
 class IconLabelButton(Frame):
     """Icon label button with both text and icon
-    
+
     Args:
         text (str): Text to display on the button
         icon (str): Icon to display on the button
@@ -31,15 +35,38 @@ class IconLabelButton(Frame):
         highlighted (bool): Highlight the button
         iconsize (int): Size of the icon
         icon_visible (bool): Initial state of the icon visibility"""
-    
+
     def __init__(
-            self, master, text=None, icon=None, callback=lambda *_: None, 
-            iconside=tk.LEFT, expandicon=True, highlighted=False, iconsize=14,  
-            icon_visible=True, padx=5, pady=1, *args, **kwargs
+        self,
+        master,
+        text=None,
+        icon=None,
+        callback=lambda *_: None,
+        iconside=tk.LEFT,
+        expandicon=True,
+        highlighted=False,
+        iconsize=14,
+        icon_visible=True,
+        padx=5,
+        pady=1,
+        bg="",
+        hbg="",
+        *args,
+        **kwargs
     ) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
 
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.utils.iconlabelbutton.values() if not highlighted else self.base.theme.utils.button.values()
+        self.bg, self.fg, self.hbg, self.hfg = (
+            self.base.theme.utils.iconlabelbutton.values()
+            if not highlighted
+            else self.base.theme.utils.button.values()
+        )
+        if bg:
+            self.bg = bg
+
+        if hbg:
+            self.hbg = hbg
+
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
@@ -48,13 +75,28 @@ class IconLabelButton(Frame):
         self.codicon = get_codicon(self.icon)
 
         if icon:
-            self.icon_label = tk.Label(self, text=self.codicon if self.icon_visible else "    ", anchor=tk.E, 
-                bg=self.bg, fg=self.fg, font=("codicon", iconsize), cursor="hand2")
+            self.icon_label = tk.Label(
+                self,
+                text=self.codicon if self.icon_visible else "    ",
+                anchor=tk.E,
+                bg=self.bg,
+                fg=self.fg,
+                font=("codicon", iconsize),
+                cursor="hand2",
+            )
             self.icon_label.pack(side=iconside, fill=tk.BOTH, expand=expandicon)
 
         if text:
-            self.text_label = tk.Label(self, text=self.text, anchor=tk.W, pady=2,
-                    bg=self.bg, fg=self.fg, font=("Segoe UI", 10), cursor="hand2")
+            self.text_label = tk.Label(
+                self,
+                text=self.text,
+                anchor=tk.W,
+                pady=2,
+                bg=self.bg,
+                fg=self.fg,
+                font=("Segoe UI", 10),
+                cursor="hand2",
+            )
             self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
         self.config_bindings()
@@ -86,10 +128,12 @@ class IconLabelButton(Frame):
 
     def on_click(self, *_) -> None:
         self.callback()
-    
+
     def toggle_icon(self) -> None:
         try:
-            self.icon_label.config(text=self.codicon if not self.icon_visible else "    ")
+            self.icon_label.config(
+                text=self.codicon if not self.icon_visible else "    "
+            )
             self.icon_visible = not self.icon_visible
         except Exception:
             pass
@@ -105,7 +149,7 @@ class IconLabelButton(Frame):
             self.icon_label.config(text=icon)
         except Exception:
             pass
-        
+
     def set_pack_data(self, **kwargs) -> None:
         self.pack_data = kwargs
 

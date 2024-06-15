@@ -5,7 +5,7 @@ from pathlib import Path
 from .api import ExtensionsAPI
 from .binder import Binder
 from .commands import Commands
-from .common import SysInfo
+from .common import GameManager, SysInfo
 from .execution import ExecutionManager
 from .extensions import ExtensionManager
 from .git import Git
@@ -66,6 +66,7 @@ class ConfigManager:
         self.commands = Commands(self)
         self.binder = Binder(self)
         self.git = Git(self)
+        self.game_manager = GameManager(self)
         self.language_server_manager = LanguageServerManager(self)
         self.execution_manager = ExecutionManager(self)
 

@@ -8,7 +8,7 @@ import typing
 from tkinter import filedialog
 from tkinter.messagebox import askyesnocancel
 
-from .common import BaseGame, register_game
+from .common import BaseGame
 from .config import ConfigManager
 from .editor import *
 from .gui import GUIManager
@@ -63,7 +63,8 @@ class EventManager(GUIManager, ConfigManager):
             return
 
         if os.path.isdir(path):
-            return self.open_directory(path)
+            self.open_directory(path)
+            return self.explorer.directory.refresh_root()
 
         if os.path.isfile(path):
             return self.open_editor(path)
@@ -207,7 +208,7 @@ class EventManager(GUIManager, ConfigManager):
 
     def register_game(self, game: BaseGame) -> None:
         # TODO game manager class
-        register_game(game)
+        self.game_manager.register_new_game(game)
         self.settings.generate_actionset()
 
     def register_langserver(self, language: str, command: str) -> None:
