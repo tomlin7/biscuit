@@ -21,6 +21,10 @@ class Closable(Frame):
         iconside=tk.LEFT,
         padx=5,
         pady=1,
+        fg=None,
+        bg=None,
+        hfg=None,
+        hbg=None,
         *args,
         **kwargs
     ) -> None:
@@ -31,6 +35,15 @@ class Closable(Frame):
         self.bg, self.fg, self.hbg, self.hfg = (
             self.base.theme.utils.iconlabelbutton.values()
         )
+        if fg:
+            self.fg = fg
+        if bg:
+            self.bg = bg
+        if hfg:
+            self.hfg = hfg
+        if hbg:
+            self.hbg = hbg
+
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
@@ -47,7 +60,7 @@ class Closable(Frame):
                 fg=self.fg,
                 font=("codicon", 14),
             )
-            self.icon_label.pack(side=iconside, fill=tk.BOTH, expand=True)
+            self.icon_label.pack(side=iconside, fill=tk.BOTH)
 
         if text:
             self.text_label = tk.Label(

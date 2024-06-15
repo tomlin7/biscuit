@@ -33,12 +33,14 @@ class AIPlaceholder(Frame):
             justify=tk.LEFT,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,
-            text="Bikkis is an AI assistant that can answer your queries right within Biscuit, you will need a Google AI Studio API key to start using it.",
+            text="AI chat to find answer to your queries, configure Google AI API key to start using",
         )
         self.label.pack(fill=tk.X)
 
         self.api_key = tk.StringVar()
-        self.api_entry = Entry(self, hint="Enter API Key", textvariable=self.api_key)
+        self.api_entry = Entry(
+            self, hint="Enter API Key here...", textvariable=self.api_key
+        )
         self.api_entry.pack(fill=tk.X, pady=5)
 
         confirm_btn = IconLabelButton(

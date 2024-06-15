@@ -7,16 +7,36 @@ from .native import Frame, Label
 
 class WrappingLabel(Label):
     """a type of Label that automatically adjusts the wrap to the size"""
-    
+
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.bind('<Configure>', lambda e: self.config(wraplength=self.winfo_width()))
+        self.bind("<Configure>", lambda e: self.config(wraplength=self.winfo_width()))
 
 
 class IconLabel(Frame):
-    def __init__(self, master, text=None, icon=None, iconside=tk.LEFT, fg=None, font=("Segoi UI", 10), padx=5, pady=1, expandicon=True, highlighted=False, iconsize=14, toggle=True, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        master,
+        text=None,
+        icon=None,
+        iconside=tk.LEFT,
+        fg=None,
+        font=None,
+        padx=5,
+        pady=1,
+        expandicon=True,
+        highlighted=False,
+        iconsize=14,
+        toggle=True,
+        *args,
+        **kwargs
+    ) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.utils.iconlabelbutton.values() if not highlighted else self.base.theme.utils.button.values()
+        self.bg, self.fg, self.hbg, self.hfg = (
+            self.base.theme.utils.iconlabelbutton.values()
+            if not highlighted
+            else self.base.theme.utils.button.values()
+        )
         self.fg = fg or self.fg
         self.config(bg=self.bg)
         self.text = text
@@ -26,13 +46,26 @@ class IconLabel(Frame):
         self.toggle = toggle
 
         if icon:
-            self.icon_label = tk.Label(self, text=self.codicon, anchor=tk.E, 
-                bg=self.bg, fg=self.fg, font=("codicon", iconsize))
+            self.icon_label = tk.Label(
+                self,
+                text=self.codicon,
+                anchor=tk.E,
+                bg=self.bg,
+                fg=self.fg,
+                font=("codicon", iconsize),
+            )
             self.icon_label.pack(side=iconside, fill=tk.BOTH, expand=expandicon)
 
         if text:
-            self.text_label = tk.Label(self, text=self.text, anchor=tk.W, pady=2,
-                    bg=self.bg, fg=self.fg, font=font)
+            self.text_label = tk.Label(
+                self,
+                text=self.text,
+                anchor=tk.W,
+                pady=2,
+                bg=self.bg,
+                fg=self.fg,
+                font=font or self.base.settings.uifont,
+            )
             self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
         self.visible = False
@@ -79,14 +112,16 @@ class TruncatedLabel(Frame):
         self.bind("<Configure>", self._wrap_text)
 
     def _wrap_text(self, event=None):
-        width = self.winfo_width() * (len(self.text)/self.label.winfo_width())
+        width = self.winfo_width() * (len(self.text) / self.label.winfo_width())
 
         if width > 0:
             wrapped_text = textwrap.fill(self.text, width=width)
 
             if len(wrapped_text) > len(self.text):
                 # Truncate the text and add "..." at the end
-                truncated_text = textwrap.shorten(wrapped_text, width - 3, placeholder="...")
+                truncated_text = textwrap.shorten(
+                    wrapped_text, width - 3, placeholder="..."
+                )
                 self.label.configure(text=truncated_text)
             else:
                 self.label.configure(text=wrapped_text)

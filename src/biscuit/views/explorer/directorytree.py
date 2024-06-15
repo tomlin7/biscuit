@@ -11,7 +11,7 @@ import pyperclip
 from src.biscuit.common.ui import Tree
 
 from ..drawer_item import NavigationDrawerViewItem
-from .menu import ExplorerContextMenu
+from .menu import DirectoryContextMenu
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
 
@@ -80,7 +80,7 @@ class DirectoryTree(NavigationDrawerViewItem):
         self.watcher = DirectoryTreeWatcher(self, self.tree, observe_changes)
         self.loading = False
 
-        self.ctxmenu = ExplorerContextMenu(self, "ExplorerContextMenu")
+        self.ctxmenu = DirectoryContextMenu(self, "ExplorerContextMenu")
         self.tree.bind("<Button-3>", self.right_click)
 
         if startpath:
@@ -284,11 +284,28 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         pyperclip.copy(os.path.relpath(self.tree.selected_path(), self.path))
 
+    def copy_name(self, *_) -> None:
+        """Copies the name of the selected item to the clipboard."""
+
+        pyperclip.copy(os.path.basename(self.tree.selected_path()))
+
+    def copy_name_without_extension(self, *_) -> None:
+        """Copies the name of the selected item without the extension to the clipboard."""
+
+        pyperclip.copy(os.path.splitext(os.path.basename(self.tree.selected_path()))[0])
+
+    def attach_to_chat(self, *_) -> None:
+        """Attaches the selected item to the chat."""
+
+        path = os.path.abspath(self.tree.selected_path())
+        if self.tree.is_file_selected():
+            self.base.ai.attach_file(path)
+
     def reopen_editor(self, *_) -> None:
         """Reopens the selected file in the editor."""
 
         path = os.path.abspath(self.tree.selected_path())
-        if self.tree.selected_type() == "file":
+        if self.tree.is_file_selected():
             self.base.editorsmanager.reopen_editor(path)
 
     def reveal_in_explorer(self, *_) -> None:
