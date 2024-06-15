@@ -1,4 +1,11 @@
+from __future__ import annotations
+
+import typing
+
 from src.biscuit.common import Menu
+
+if typing.TYPE_CHECKING:
+    from .directorytree import DirectoryTree
 
 
 class ExplorerMenu(Menu):
@@ -6,9 +13,11 @@ class ExplorerMenu(Menu):
         return e.widget.winfo_rootx(), e.widget.winfo_rooty() + e.widget.winfo_height()
 
 
-class ExplorerContextMenu(Menu):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+class DirectoryContextMenu(Menu):
+    def __init__(self, master: DirectoryTree, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.master = master
+
         self.add_command("New file...", lambda: self.base.palette.show("newfile:"))
         self.add_command("New Folder...", lambda: self.base.palette.show("newfolder:"))
         self.add_command("Reveal in File Explorer", self.master.reveal_in_explorer)
@@ -21,6 +30,12 @@ class ExplorerContextMenu(Menu):
         self.add_separator()
         self.add_command("Copy Path", self.master.copy_path)
         self.add_command("Copy Relative Path", self.master.copy_relpath)
+        self.add_command("Copy Name", self.master.copy_name)
+        self.add_command(
+            "Copy Name without Extension", self.master.copy_name_without_extension
+        )
+        self.add_separator()
+        self.add_command("Attach to bikkis...", self.master.attach_to_chat)
         self.add_separator()
         self.add_command("Rename...", lambda: self.base.palette.show("rename:"))
         self.add_command("Delete", self.master.delete_item)
