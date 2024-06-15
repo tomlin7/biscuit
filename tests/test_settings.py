@@ -1,7 +1,5 @@
 import tkinter as tk
 
-from src.biscuit.settings import Bindings, Config, Resources, Style
-
 
 class TestSettings:
     # Tests that Config is initialized correctly
@@ -17,5 +15,5 @@ class TestSettings:
     # Tests that register_command method correctly registers new commands
     def test_register_command(self, app_instance):
         settings = app_instance.settings
-        settings.register_command('Test Command', lambda: print('Test Command'))
-        assert 'Test Command' in (i[0] for i in settings.commands)
+        settings.register_command("Test Command", lambda: print("Test Command"))
+        assert "Test Command" in (i[0] for i in settings.commands)
