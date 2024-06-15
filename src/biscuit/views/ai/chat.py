@@ -90,7 +90,9 @@ class Chat(Frame):
         self.attached_indicator.set_command(self.attachments_window.show)
 
     def attach(self, *_) -> None:
-        self.attachments += list(askopenfilenames())
+        self.attachments += list(
+            askopenfilenames(initialdir=self.base.active_directory)
+        )
         if self.attachments:
             self.show_attachments()
         else:
