@@ -109,7 +109,7 @@ class IssueViewer(BaseEditor):
         self.body.load_html(
             f"<h1>{data['title']} <a href={data['html_url']}>#{data['number']}</a></h1><br>"
             + f"<span class='state-label'>{data['state']}</span>"
-            + f"Opened by <a href={data["user"]["html_url"]}>{data['user']['login']}</a><br><hr>"
+            + f'''Opened by <a href={data["user"]["html_url"]}>{data['user']['login']}</a><br><hr>"'''
             + mistune.html(data["body"])
         )
 
