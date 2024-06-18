@@ -1,13 +1,22 @@
+from __future__ import annotations
+
 import tkinter as tk
+import typing
 
 from ..ui import Frame, Icon, IconButton, Label
+
+if typing.TYPE_CHECKING:
+    from .manager import Notifications
 
 
 class Notification(Frame):
     """Notification class
+
     Holds the notification icon, text and close button"""
 
-    def __init__(self, master, icon: str, text: str, fg: str, *args, **kwargs) -> None:
+    def __init__(
+        self, master: Notifications, icon: str, text: str, fg: str, *args, **kwargs
+    ) -> None:
         """Create a notification
 
         Args:
@@ -17,6 +26,7 @@ class Notification(Frame):
             fg (str): Foreground color"""
 
         super().__init__(master, *args, **kwargs)
+        self.master: Notifications = master
         self.config(**self.base.theme.notifications)
 
         self.icon = Icon(self, icon, padx=5, **self.base.theme.utils.iconbutton)
@@ -29,7 +39,7 @@ class Notification(Frame):
             anchor=tk.W,
             padx=10,
             pady=10,
-            **self.base.theme.utils.iconbutton
+            **self.base.theme.utils.iconbutton,
         )
         self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH)
 
@@ -39,4 +49,4 @@ class Notification(Frame):
     def delete(self):
         """Delete the notification"""
 
-        self.master.delete(self)
+        self.master.delete_notification(self)

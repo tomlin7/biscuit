@@ -184,20 +184,20 @@ class Notifications(Toplevel):
             i.delete()
         self.count = 0
 
-    def delete(self, notification: Notification) -> None:
+    def delete_notification(self, notification: Notification) -> None:
         """Delete a notification
 
         Args:
             notification (Notification): notification to delete"""
 
         self.notifications.remove(notification)
-        self.count -= 1
         notification.destroy()
-        if not self.count:
-            self.hide()
-        else:
-            self.show()
+        self.count -= 1
 
         self.update_idletasks()
         self._follow_root()
+
+        if not self.count:
+            self.hide()
+
         self.base.statusbar.update_notifications()
