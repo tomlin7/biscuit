@@ -21,7 +21,7 @@ class AI(NavigationDrawerView):
     - The chat can be refreshed to start a new chat."""
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = [
+        self.__actions__ = [
             ("refresh", self.new_chat),
         ]
         super().__init__(master, *args, **kwargs)

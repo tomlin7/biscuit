@@ -11,7 +11,7 @@ class CallStack(NavigationDrawerViewItem):
 
     def __init__(self, master, *args, **kwargs) -> None:
         self.title = "Callstack"
-        self.__buttons__ = ()
+        self.__actions__ = ()
         super().__init__(master, itembar=True, *args, **kwargs)
 
         self.tree = Tree(self.content, cursor="hand2")

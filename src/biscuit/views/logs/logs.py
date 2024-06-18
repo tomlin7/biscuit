@@ -44,7 +44,7 @@ class Logs(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (("clear-all",),)
+        self.__actions__ = (("clear-all",),)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)

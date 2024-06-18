@@ -10,6 +10,7 @@ else:
 from src.biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
+from .ai import AI
 from .ansi import replace_newline, strip_ansi_escape_sequences
 from .text import TerminalText
 
@@ -50,13 +51,16 @@ class TerminalBase(PanelView):
             cwd: The current working directory"""
 
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (("add",), ("trash", self.destroy))
+        self.__actions__ = (("add",), ("trash", self.destroy))
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.alive = False
         self.cwd = cwd
+        self.last_command = ""
+        self.last_command_index = ""
+        # self.prediction = ""
 
         self.text = TerminalText(
             self, relief=tk.FLAT, padx=10, pady=10, font=("Consolas", 11)
@@ -72,8 +76,12 @@ class TerminalBase(PanelView):
 
         self.text.tag_config("prompt", foreground=self.base.theme.biscuit_dark)
         self.text.tag_config("command", foreground=self.base.theme.biscuit)
+        self.text.tag_config("ghost", foreground=self.base.theme.border)
+
+        self.ai = AI(self)
 
         self.bind("<Destroy>", self.destroy)
+        # self.bind("<Tab>", self.tab_key)
 
     def start_service(self, *_) -> None:
         self.alive = True
@@ -90,11 +98,14 @@ class TerminalBase(PanelView):
         self.enter()
 
     def enter(self, *_) -> None:
+        self.last_command_index = self.text.index("input")
+
         command = self.text.get("input", "end")
         self.last_command = command
         self.text.register_history(command)
         if command.strip():
             self.text.delete("input", "end")
+            self.text.tag_add("prompt", "input linestart", "input")
 
         self.p.write(command + "\r\n")
         return "break"
@@ -110,7 +121,17 @@ class TerminalBase(PanelView):
                     strip_ansi_escape_sequences(i)
                     for i in replace_newline(buf).splitlines()
                 ]
-                self.insert("\n".join(buf))
+                buf = "\n".join(buf)
+
+                self.insert(buf)
+                if "is not recognized as an internal or external command" in buf:
+                    self.error()
+
+    def error(self):
+        if not self.base.ai.api_key:
+            self.base.drawer.show_ai().add_placeholder()
+
+        self.ai.get_gemini_response(self.last_command)
 
     def insert(self, output: str, tag="") -> None:
         self.text.insert(tk.END, output, tag)
@@ -123,6 +144,19 @@ class TerminalBase(PanelView):
 
     def clear(self) -> None:
         self.text.clear()
+
+    # def ghost_insert(self, output: str) -> None:
+    #     self.text.insert(tk.END, output, "ghost")
+    #     self.text.see(tk.END)
+    #     self.prediction = output
+
+    # def tab_key(self, *_) -> None:
+    #     if t := self.text.get("input", "insert"):
+    #         if t.strip() in self.prediction.strip():
+    #             self.text.delete("input", "end")
+    #             self.text.insert("end", self.prediction)
+    #     else:
+    #         self.text.insert("end", "    ")
 
     def ctrl_key(self, key: str) -> None:
         if key == "c":

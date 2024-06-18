@@ -22,7 +22,7 @@ class PRs(NavigationDrawerViewItem):
 
     def __init__(self, master, itembar=True, *args, **kwargs) -> None:
         self.title = "Pull Requests"
-        self.__buttons__ = ()
+        self.__actions__ = ()
         super().__init__(master, itembar=itembar, *args, **kwargs)
 
         self.url_template = "https://api.github.com/repos/{}/{}/pulls"

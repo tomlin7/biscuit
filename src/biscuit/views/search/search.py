@@ -20,7 +20,7 @@ class Search(NavigationDrawerView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (("refresh",), ("clear-all",), ("collapse-all",))
+        self.__actions__ = (("refresh",), ("clear-all",), ("collapse-all",))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "search"
         self.name = "Search"

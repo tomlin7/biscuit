@@ -120,7 +120,7 @@ class NavigationDrawer(Frame):
     def extensions(self) -> Extensions:
         return self.default_views["Extensions"]
 
-    def show_view(self, view: NavigationDrawerView) -> None:
+    def show_view(self, view: NavigationDrawerView) -> NavigationDrawerView:
         """Show a view in the drawer.
 
         Args:
@@ -130,31 +130,31 @@ class NavigationDrawer(Frame):
             if i.view == view:
                 self.activitybar.set_active_slot(i)
                 i.enable()
-                break
+                return view
 
-    def show_explorer(self) -> None:
-        self.show_view(self.explorer)
+    def show_explorer(self) -> Explorer:
+        return self.show_view(self.explorer)
 
-    def show_outline(self) -> None:
-        self.show_view(self.outline)
+    def show_outline(self) -> Outline:
+        return self.show_view(self.outline)
 
-    def show_search(self) -> None:
-        self.show_view(self.search)
+    def show_search(self) -> Search:
+        return self.show_view(self.search)
 
-    def show_source_control(self) -> None:
-        self.show_view(self.source_control)
+    def show_source_control(self) -> SourceControl:
+        return self.show_view(self.source_control)
 
-    def show_debug(self) -> None:
-        self.show_view(self.debug)
+    def show_debug(self) -> Debug:
+        return self.show_view(self.debug)
 
-    def show_ai(self) -> None:
-        self.show_view(self.ai)
+    def show_ai(self) -> AI:
+        return self.show_view(self.ai)
 
-    def show_github(self) -> None:
-        self.show_view(self.github)
+    def show_github(self) -> GitHub:
+        return self.show_view(self.github)
 
-    def show_extensions(self) -> None:
-        self.show_view(self.extensions)
+    def show_extensions(self) -> Extensions:
+        return self.show_view(self.extensions)
 
     def pack(self):
         super().pack(side=tk.LEFT, fill=tk.Y)
