@@ -16,7 +16,7 @@ class GitHub(NavigationDrawerView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = [("refresh", self.on_directory_change)]
+        self.__actions__ = [("refresh", self.on_directory_change)]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "github"
         self.name = "GitHub"

@@ -21,7 +21,7 @@ class Outline(NavigationDrawerView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = [
+        self.__actions__ = [
             ("refresh",),
             ("collapse-all",),
             ("ellipsis",),

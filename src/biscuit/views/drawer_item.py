@@ -11,7 +11,7 @@ class NavigationDrawerViewItem(Frame):
     - Contains the itembar and the content of the item.
     """
 
-    __buttons__ = []
+    __actions__ = []
     title = "Item"
 
     def __init__(
@@ -38,7 +38,7 @@ class NavigationDrawerViewItem(Frame):
 
         if itembar:
             self.itembar = NavigationDrawerItemToolBar(
-                self, self.title, self.__buttons__
+                self, self.title, self.__actions__
             )
             self.itembar.grid(row=0, column=0, sticky=tk.NSEW)
 
@@ -47,6 +47,10 @@ class NavigationDrawerViewItem(Frame):
         self.content.grid_rowconfigure(0, weight=1)
         self.content.grid_columnconfigure(0, weight=1)
         self.content.grid(row=1 if itembar else 0, column=0, sticky=tk.NSEW)
+
+    def add_action(self, icon: str, event) -> None:
+        if self.itembar_enabled:
+            self.itembar.add_action(icon, event)
 
     def set_title(self, title: str) -> None:
         if self.itembar_enabled:

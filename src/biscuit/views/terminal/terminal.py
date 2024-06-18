@@ -3,6 +3,8 @@ import platform
 import subprocess
 import tkinter as tk
 
+from src.biscuit.common.actionset import ActionSet
+
 from ..panelview import PanelView
 from .menu import TerminalMenu
 from .shells import SHELLS, Default
@@ -38,7 +40,7 @@ class Terminal(PanelView):
         self.menu = TerminalMenu(self, "terminal")
         self.menu.add_command("Clear Terminal", self.clear_terminal)
 
-        self.__buttons__ = [
+        self.__actions__ = [
             ("add", self.addmenu.show),
             ("trash", self.delete_active_terminal),
             ("ellipsis", self.menu.show),
@@ -48,6 +50,13 @@ class Terminal(PanelView):
         self.tabs.grid(row=0, column=1, padx=(1, 0), sticky=tk.NS)
 
         self.active_terminals = []
+
+        self.run_actionset = ActionSet(
+            "Run Command in Terminal",
+            "runc:",
+            pinned=[["Run command? {}", self.run_command]],
+        )
+        self.base.palette.register_actionset(lambda: self.run_actionset)
 
     def add_default_terminal(self) -> Default:
         default_terminal = Default(

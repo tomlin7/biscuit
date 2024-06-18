@@ -39,7 +39,7 @@ class Results(NavigationDrawerViewItem):
     fetching: threading.Event
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = ()
+        self.__actions__ = ()
         self.title = "Available"
 
         super().__init__(master, *args, **kwargs)

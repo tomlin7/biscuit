@@ -31,7 +31,7 @@ class DirectoryTree(NavigationDrawerViewItem):
         **kwargs,
     ) -> None:
         self.title = "No folder opened"
-        self.__buttons__ = (
+        self.__actions__ = (
             ("new-file", lambda: self.base.palette.show("newfile:")),
             ("new-folder", lambda: self.base.palette.show("newfolder:")),
             ("refresh", self.refresh_root),

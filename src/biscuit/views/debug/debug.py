@@ -18,7 +18,7 @@ class Debug(NavigationDrawerView):
     - Debugger run controls are displayed in the editor toolbar."""
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = []
+        self.__actions__ = []
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "bug"
         self.name = "Debug"
