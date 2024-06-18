@@ -66,6 +66,7 @@ class Text(BaseText):
         self.current_word = None
         self.words: list[str] = []
         self.lsp: bool = False
+        self.current_indent_level = 0
 
         self.hover_after = None
         self.last_hovered = None
@@ -102,6 +103,8 @@ class Text(BaseText):
         self._edit_stack_index = -1
 
     def config_tags(self):
+        self.indentguide_stipple = self.base.resources.indent_guide
+
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
         self.tag_config(
             "hyperlink", foreground=self.base.theme.editors.hyperlink, underline=True
@@ -109,8 +112,22 @@ class Text(BaseText):
         self.tag_config("found", background=self.base.theme.editors.found)
         self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
         self.tag_config("currentword", background=self.base.theme.editors.currentword)
-        self.tag_config("currentline", background=self.base.theme.editors.currentline)
+        self.tag_config(
+            "currentline",
+            background=self.base.theme.editors.currentline,
+        )
         self.tag_config("hover", background=self.base.theme.editors.hovertag)
+
+        self.tag_configure(
+            "indent_guide",
+            bgstipple=f"@{self.indentguide_stipple}",
+            background=self.base.theme.border,
+        )
+        self.tag_configure(
+            "current_indent_guide",
+            bgstipple=f"@{self.indentguide_stipple}",
+            background=self.base.theme.secondary_foreground,
+        )
 
         self.tag_raise(tk.SEL, "hover")
         self.tag_raise(tk.SEL, "currentline")
@@ -235,6 +252,50 @@ class Text(BaseText):
                     self.show_autocomplete(event)
 
         self.update_words_list()
+
+    def update_indent_guides(self) -> None:
+        if self.minimalist:
+            return
+
+        self.tag_remove("indent_guide", "1.0", "end")
+        self.tag_remove("current_indent_guide", "1.0", "end")
+        lines = self.get("1.0", "end-1c").split("\n")
+
+        self.current_indent_level = self.get_current_indent_level() - 1
+
+        for line_number, line in enumerate(lines, start=1):
+            indent_level = self.calculate_indent_level(line)
+            if indent_level > 0:
+                self.add_indent_guide(line_number, indent_level)
+
+    def calculate_indent_level(self, line: str) -> int:
+        indent = len(line) - len(line.lstrip())
+        return indent // self.base.tab_spaces
+
+    def add_indent_guide(self, line_number: int, indent_level: int) -> None:
+        for level in range(indent_level):
+            start_index = f"{line_number}.{level * self.base.tab_spaces - 1}"
+            end_index = f"{line_number}.{level * self.base.tab_spaces + 1}"
+            self.tag_add(
+                (
+                    "current_indent_guide"
+                    if level == self.current_indent_level
+                    else "indent_guide"
+                ),
+                start_index,
+                end_index,
+            )
+
+    def get_current_indent_level(self) -> int:
+        prev = self.get("insert-1l linestart", "insert-1l lineend")
+        line = self.get("insert linestart", "insert lineend")
+        next_line = self.get("insert+1l linestart", "insert+1l lineend")
+
+        return max(
+            self.calculate_indent_level(prev),
+            self.calculate_indent_level(line),
+            self.calculate_indent_level(next_line),
+        )
 
     # TODO this wont work properly
     # write a custom ast, parser for bracket matching
@@ -553,9 +614,10 @@ class Text(BaseText):
             return
 
         self.current_word = self.get("insert-1c wordstart", "insert")
+        self.base.language_server_manager.request_outline(self)
         self.highlight_current_line()
         self.highlight_current_brackets()
-        self.base.language_server_manager.request_outline(self)
+        self.update_indent_guides()
 
         # TODO send only portions of text on change to the LSPServer
         # current solution is not scalable, and will cause lag on large files

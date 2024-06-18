@@ -60,6 +60,8 @@ class ConfigManager:
         self.settings = Settings(self)
         self.history = HistoryManager(self)
 
+        self.resources = self.settings.resources
+        self.bindings = self.settings.bindings
         self.config = self.settings.config
         self.theme = self.config.theme
 
