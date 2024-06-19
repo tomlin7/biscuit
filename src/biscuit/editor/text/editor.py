@@ -170,7 +170,9 @@ class TextEditor(BaseEditor):
 
     def run_file(self, dedicated=False, external=False):
         if not self.run_command_value:
-            self.base.notifications.show("No programs are configured to run this file.")
+            self.base.notifications.warning(
+                "No programs are configured to run this file."
+            )
             self.base.commands.show_run_config_palette(self.run_command_value)
             return
 

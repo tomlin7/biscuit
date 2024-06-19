@@ -140,7 +140,9 @@ class DrawerPane(FrameThemeObject):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.actionbar = FrameThemeObject(self)
-        self.actionbar.slot = HighlightableThemeObject(self.actionbar).remove_bg_highlight()
+        self.actionbar.slot = HighlightableThemeObject(
+            self.actionbar
+        ).remove_bg_highlight()
         self.actionbar.bubble = ThemeObject(self.actionbar)
 
 
@@ -216,11 +218,17 @@ class Menu(FrameThemeObject):
 
 
 class Notifications(FrameThemeObject):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.title = ThemeObject(self)
+    def __init__(self, master: Theme, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.theme = master
+        self.title = ThemeObject(self, fg=master.secondary_foreground)
         self.button = HighlightableThemeObject(self)
         self.text = ThemeObject(self)
+        self.source = ThemeObject(
+            self,
+            master.primary_background,
+            master.primary_foreground,
+        )
 
 
 class Editors(FrameThemeObject):
@@ -303,6 +311,7 @@ class Utils(ThemeObject):
             theme.secondary_foreground,
             self.highlightbackground,
         )
+        self.frame = FrameThemeObject(self)
         self.buttonsentry = ThemeObject(
             self,
             theme.secondary_background,
@@ -360,6 +369,13 @@ class Theme:
             self.secondary_background_highlight,
             self.secondary_foreground_highlight,
         ]
+
+        self.foreground = self.primary_foreground
+        self.background = self.primary_background
+        self.highlightbackground = self.primary_background_highlight
+        self.highlightforeground = self.primary_foreground_highlight
+        self.selectedbackground = self.primary_background_highlight
+        self.selectedforeground = self.primary_foreground_highlight
 
         self.layout = Layout(self, *primary)
         self.views = Views(self, *primary)

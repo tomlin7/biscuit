@@ -130,7 +130,7 @@ class Statusbar(Frame):
         # ---------------------------------------------------------------------
         self.notif = self.add_button(
             icon="bell",
-            callback=self.base.notifications.show,
+            callback=self.base.notifications.toggle,
             description="No notifications",
             side=tk.RIGHT,
             padx=(0, 10),
