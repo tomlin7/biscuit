@@ -38,14 +38,14 @@ class Notification(Frame):
         self.master: Notifications = master
         self.config(**self.base.theme.notifications)
 
-        self.icon = Icon(self, icon, padx=5, **self.base.theme.utils.iconbutton)
-        self.icon.config(fg=fg)
-        self.icon.pack(side=tk.LEFT, fill=tk.BOTH)
-
         top = Frame(self, **self.base.theme.utils.frame)
         top.pack(fill=tk.BOTH, expand=1)
         bottom = Frame(self, **self.base.theme.utils.frame)
         bottom.pack(fill=tk.BOTH)
+
+        self.icon = Icon(top, icon, padx=5, **self.base.theme.utils.iconbutton)
+        self.icon.config(fg=fg)
+        self.icon.pack(side=tk.LEFT, fill=tk.BOTH)
 
         self.label = Label(
             top,
