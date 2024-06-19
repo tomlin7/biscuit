@@ -54,6 +54,10 @@ class Git(git.Git):
         """This function is called after the app is initialized."""
 
         if not git_available:
+            self.base.notifications.warning(
+                "Git not found in PATH, git features are disabled"
+            )
+            self.base.logger.warning("Git not found in PATH, git features are disabled")
             return
 
         self.base.palette.register_actionset(lambda: self.actionset)
@@ -70,6 +74,8 @@ class Git(git.Git):
         try:
             self.repo = GitRepo(self, self.base.active_directory)
             self.base.git_found = True
+            self.base.notifications.info("Git repository found in opened directory")
+            self.base.logger.info("Git repository found in opened directory")
             self.update_repo_info()
         except git.exc.InvalidGitRepositoryError:
             self.base.git_found = False
@@ -115,6 +121,8 @@ class Git(git.Git):
             return
 
         self.repo.index.checkout(branch)
+        self.base.notifications.info(f"Checked out branch {branch}")
+        self.base.logger.info(f"Checked out branch {branch}")
 
     def clone(self, url: str, dir: str) -> str:
         """Clone a git repository to the specified directory

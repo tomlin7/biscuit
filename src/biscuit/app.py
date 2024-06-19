@@ -56,6 +56,10 @@ class App(EventManager, GUIManager, ConfigManager):
         self.late_setup()
         self.initialize_app(dir)
 
+        self.notifications.info(
+            "Welcome to Biscuit!", [("Close", lambda: print("Closed"))]
+        )
+
     def run(self) -> None:
         """Start the main loop of the app."""
 

@@ -146,7 +146,7 @@ class Terminal(PanelView):
             case "Darwin":
                 subprocess.Popen(["open", "-a", "Terminal", command])
             case _:
-                self.base.notifications.show("No terminal emulator detected.")
+                self.base.notifications.warning("No terminal emulator detected.")
 
     # TODO: Implement these
     def open_pwsh(self): ...

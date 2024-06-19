@@ -3,7 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from ..ui import Frame, Icon, IconButton, Label
+from ..helpers import caller_class_name
+from ..ui import Frame, Icon, IconButton, IconLabelButton, Label
 
 if typing.TYPE_CHECKING:
     from .manager import Notifications
@@ -15,7 +16,14 @@ class Notification(Frame):
     Holds the notification icon, text and close button"""
 
     def __init__(
-        self, master: Notifications, icon: str, text: str, fg: str, *args, **kwargs
+        self,
+        master: Notifications,
+        icon: str,
+        text: str,
+        actions: list[tuple[str, typing.Callable[[None], None]]],
+        fg: str,
+        *args,
+        **kwargs,
     ) -> None:
         """Create a notification
 
@@ -23,7 +31,8 @@ class Notification(Frame):
             master: Parent widget
             icon (str): Icon name
             text (str): Notification text
-            fg (str): Foreground color"""
+            fg (str): Foreground color
+            actions (list[tuple(str, Callable[[None], None])]): List of actions"""
 
         super().__init__(master, *args, **kwargs)
         self.master: Notifications = master
@@ -33,8 +42,13 @@ class Notification(Frame):
         self.icon.config(fg=fg)
         self.icon.pack(side=tk.LEFT, fill=tk.BOTH)
 
+        top = Frame(self, **self.base.theme.utils.frame)
+        top.pack(fill=tk.BOTH, expand=1)
+        bottom = Frame(self, **self.base.theme.utils.frame)
+        bottom.pack(fill=tk.BOTH)
+
         self.label = Label(
-            self,
+            top,
             text=text,
             anchor=tk.W,
             padx=10,
@@ -43,8 +57,28 @@ class Notification(Frame):
         )
         self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH)
 
-        close_button = IconButton(self, "close", self.delete)
-        close_button.pack(side=tk.RIGHT, fill=tk.BOTH)
+        close_button = IconButton(top, "close", self.delete)
+        close_button.pack(fill=tk.BOTH)
+
+        self.source_label = Label(
+            bottom,
+            text=f"Source: {caller_class_name(3)}",
+            anchor=tk.W,
+            padx=10,
+            pady=5,
+            **self.base.theme.notifications.source,
+        )
+        self.source_label.pack(side=tk.LEFT, fill=tk.BOTH)
+
+        if actions:
+            self.actions = Frame(bottom, **self.base.theme.notifications)
+            self.actions.pack(side=tk.RIGHT, fill=tk.BOTH)
+
+            for text, action in actions:
+                btn = IconLabelButton(
+                    self.actions, text, callback=action, highlighted=True
+                )
+                btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 5), pady=(0, 5))
 
     def delete(self):
         """Delete the notification"""
