@@ -1,57 +1,8 @@
 import os
 import tkinter as tk
 
-from src.biscuit.common import is_image
-
-from ..git.diff import DiffEditor
 from .breadcrumbs import BreadCrumbs
 from .editorbase import BaseEditor
-from .html import HTMLEditor
-from .image import ImageViewer
-from .markdown import MDEditor
-from .text import TextEditor
-
-
-def get_editor(
-    base,
-    path="",
-    exists=True,
-    path2="",
-    diff=False,
-    language="",
-    load_file=True,
-    standalone=False,
-) -> TextEditor | DiffEditor | MDEditor | ImageViewer:
-    """Get the suitable editor based on the path, exists, diff values passed.
-
-    Args:
-        base: The parent widget
-        path (str): The path of the file to be opened
-        exists (bool): Whether the file exists
-        path2 (str): The path of the file to be opened in diff, required if diff=True is passed
-        diff (bool): Whether the file is to be opened in diff editor
-        language (str): The language of the file
-
-    Returns:
-        TextEditor | DiffEditor | MDEditor | ImageViewer:
-            The suitable editor based on the path, exists, diff values passed"""
-
-    if diff:
-        return DiffEditor(base, path, exists, path2, standalone=standalone)
-
-    if path and os.path.isfile(path):
-        if is_image(path):
-            return ImageViewer(base, path)
-        if any(
-            path.endswith(i) for i in (".md", ".markdown", ".mdown", ".rst", ".mkd")
-        ):
-            return MDEditor(base, path, exists=exists)
-        if path.endswith(".html") or path.endswith(".htm"):
-            return HTMLEditor(base, path, exists=exists)
-
-        return TextEditor(base, path, exists, language=language, load_file=load_file)
-
-    return TextEditor(base, exists=exists, language=language, load_file=False)
 
 
 class Editor(BaseEditor):
@@ -113,7 +64,7 @@ class Editor(BaseEditor):
         self.config(bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
 
-        self.content = get_editor(
+        self.content = self.base.editortypes.get_editor(
             self,
             path,
             exists,

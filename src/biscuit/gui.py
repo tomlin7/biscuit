@@ -82,6 +82,7 @@ class GUIManager(Tk, ConfigManager):
 
         # the very parent of all GUI parts
         self.root = Root(self)
+        self.editortypes = EditorTypes(self)
 
         # major components of layout
         self.menubar = self.root.menubar

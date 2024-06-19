@@ -14,3 +14,4 @@ from .pathview import PathView
 from .peek import Peek
 from .rename import Rename
 from .text import Text, TextEditor
+from .types import EditorTypes
