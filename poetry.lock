@@ -1082,6 +1082,17 @@ files = [
 ]
 
 [[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
+    {file = "sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88"},
+]
+
+[[package]]
 name = "sv-ttk"
 version = "2.6.0"
 description = "A gorgeous theme for Tkinter, based on Windows 11's UI"
@@ -1291,4 +1302,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "65b98c9e6b62a3bdcbf76aab3a13996a9e311eef8d9008e628f36443abf37a4e"
+content-hash = "227ffc1ad893a18b073a0ecb5459676076e5ad13986ab117bdf1cffb83dab96a"

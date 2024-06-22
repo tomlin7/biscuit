@@ -1,4 +1,3 @@
-import inspect
 import queue
 import tkinter as tk
 from datetime import datetime
@@ -95,25 +94,25 @@ class Logs(PanelView):
     def info(self, text: str) -> None:
         """info level log"""
 
-        self._std_log(" [info] ", "info")
+        self._std_log(" [info] ", "info", text)
 
     def warning(self, text: str) -> None:
         """warning level log"""
 
-        self._std_log(" [warning] ", "warning")
+        self._std_log(" [warning] ", "warning", text)
 
     def error(self, text: str) -> None:
         """error level log"""
 
-        self._std_log(" [error] ", "error")
+        self._std_log(" [error] ", "error", text)
 
     def trace(self, text: str) -> None:
         """trace level log"""
 
-        self._std_log(" [trace] ", "trace")
+        self._std_log(" [trace] ", "trace", text)
 
-    def _std_log(self, text: str, kind: int) -> None:
-        self.log((text, kind), caller_class_name(), text)
+    def _std_log(self, kindtext: str, kind: str, text: str) -> None:
+        self.log((kindtext, kind), caller_class_name(), text)
 
     def rawlog(self, text: str, kind: int):
         match kind:

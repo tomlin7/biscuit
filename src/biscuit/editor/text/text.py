@@ -12,13 +12,17 @@ from tkinter.messagebox import askokcancel
 import chardet
 import tarts as lsp
 
+from src.biscuit.common.minclosestdict import MinClosestKeyDict
+from src.biscuit.common.textindex import TextIndex
+from src.biscuit.language.data import Diagnostic
+
 if typing.TYPE_CHECKING:
     from src.biscuit.language.data import (
         WorkspaceEdits,
         HoverResponse,
         Jump,
-        Underlines,
         Completions,
+        Diagnostic,
     )
     from . import TextEditor
 
@@ -79,6 +83,8 @@ class Text(BaseText):
             self.definitions = self.base.peek
             self.hover = self.base.hover
 
+        self.diagnostics = MinClosestKeyDict()
+
         self.focus_set()
         self.config_tags()
         self.create_proxy()
@@ -109,6 +115,12 @@ class Text(BaseText):
         self.tag_config(
             "hyperlink", foreground=self.base.theme.editors.hyperlink, underline=True
         )
+
+        self.tag_config("hint", underline=True, underlinefg="gray")
+        self.tag_config("information", underline=True)
+        self.tag_config("warning", underline=True, underlinefg="yellow")
+        self.tag_config("error", underline=True, underlinefg="red")
+
         self.tag_config("found", background=self.base.theme.editors.found)
         self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
         self.tag_config("currentword", background=self.base.theme.editors.currentword)
@@ -206,6 +218,16 @@ class Text(BaseText):
             lambda _: self.base.language_server_manager.request_completions(self),
         )
 
+        self.tag_bind("error", "<Enter>", lambda _: self.diagnostic_hover(1))
+        self.tag_bind("warning", "<Enter>", lambda _: self.diagnostic_hover(2))
+        self.tag_bind("information", "<Enter>", lambda _: self.diagnostic_hover(3))
+        self.tag_bind("hint", "<Enter>", lambda _: self.diagnostic_hover(4))
+
+        self.tag_bind("error", "<Leave>", self.base.diagnostic.hide)
+        self.tag_bind("warning", "<Leave>", self.base.diagnostic.hide)
+        self.tag_bind("information", "<Leave>", self.base.diagnostic.hide)
+        self.tag_bind("hint", "<Leave>", self.base.diagnostic.hide)
+
     def key_release_events(self, event: tk.Event):
         self._user_edit = True
 
@@ -252,6 +274,13 @@ class Text(BaseText):
                     self.show_autocomplete(event)
 
         self.update_words_list()
+
+    def diagnostic_hover(self, severity: int) -> str:
+        if pos := self.get_mouse_pos():
+            message, start = self.diagnostics[pos]
+            self.base.diagnostic.show(
+                self, start, message, severity
+            )
 
     def update_indent_guides(self) -> None:
         if self.minimalist:
@@ -712,6 +741,9 @@ class Text(BaseText):
 
         self.clear_goto_marks()
 
+        if any(token.startswith("Token.Keyword") for token in self.tag_names(start)):
+            return
+
         if word and self.is_identifier(word):
             if self.ctrl_down:
                 self.tag_add("hyperlink", start, end)
@@ -752,12 +784,26 @@ class Text(BaseText):
     def lsp_show_autocomplete(self, response: Completions) -> None:
         self.autocomplete.lsp_update_completions(self, response.completions)
 
-    def lsp_diagnostics(self, response: Underlines) -> None: ...
+    def lsp_diagnostics(self, response: list[Diagnostic]) -> None:
+        self.tag_remove("error", 1.0, tk.END)
+        self.tag_remove("warning", 1.0, tk.END)
+        self.tag_remove("information", 1.0, tk.END)
+        self.tag_remove("hint", 1.0, tk.END)
 
-    # print("LSP <<< ", response)
-    # for i in response.underline_list:
-    #     # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
-    #     print(i.start, i.color, i.tooltip_text)
+        self.diagnostics.clear()
+
+        for i in response:
+            self.diagnostics[i.start] = i.message
+
+            match i.severity:
+                case 1:
+                    self.tag_add("error", i.start, i.end)
+                case 2:
+                    self.tag_add("warning", i.start, i.end)
+                case 4:
+                    self.tag_add("hint", i.start, i.end)
+                case _:
+                    self.tag_add("information", i.start, i.end)
 
     def lsp_goto_definition(self, response: Jump) -> None:
         if not response.locations:

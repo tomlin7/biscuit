@@ -34,15 +34,7 @@ class Hover(Toplevel):
         self.renderer = HoverRenderer(self)
         self.renderer.pack(fill=tk.BOTH, expand=True)
 
-        self.hovered = False
         self.withdraw()
-
-        self.bind("<Enter>", lambda _: self.set_hovered(True))
-        self.bind("<Leave>", lambda _: self.set_hovered(False))
-        self.bind("<Escape>", self.hide)
-
-    def set_hovered(self, flag: bool) -> None:
-        self.hovered = flag
 
     def update_position(self, pos: str, tab: Text):
         tab.update_idletasks()
@@ -83,7 +75,3 @@ class Hover(Toplevel):
 
     def hide(self, *_) -> None:
         self.withdraw()
-
-    def hide_if_not_hovered(self) -> None:
-        if not self.hovered:
-            self.hide()
