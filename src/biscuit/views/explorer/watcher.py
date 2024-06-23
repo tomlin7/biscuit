@@ -40,12 +40,10 @@ class DirectoryTreeWatcher(PatternMatchingEventHandler):
     def on_created(self, event) -> None:
         self.master.update_path(os.path.dirname(event.src_path))
         self.base.source_control.reload_tree()
-        print("created", event.src_path)
 
     def on_deleted(self, event) -> None:
         self.master.update_path(os.path.dirname(event.src_path))
         self.base.source_control.reload_tree()
-        print("deleted", event.src_path)
 
     def on_modified(self, event) -> None:
         # self.master.update_path(os.path.dirname(event.src_path))

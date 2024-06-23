@@ -3,8 +3,6 @@ from __future__ import annotations
 import os
 import typing
 
-from gitignore_parser import parse_gitignore
-
 if typing.TYPE_CHECKING:
     from src.biscuit import App
 
@@ -15,25 +13,38 @@ class GitIgnore:
     def __init__(self, master):
         self.master: Git = master
         self.base: App = master.base
-        self.match = None
         self.path = ""
+        self.repo = self.master.repo
 
-    def load(self):
-        """Load the .gitignore file."""
+    def load(self) -> None:
+        if not self.base.git_found:
+            return
+
+        self.repo = self.master.repo
+        self.path = os.path.join(self.base.active_directory, ".gitignore")
+
+    def check(self, path: list[str]) -> list:
+        """returns list of ignored files"""
+
+        if not self.base.git_found:
+            return []
+
+        return self.repo.ignored(path)
+
+    def add(self, path: str) -> None:
+        """Add the given path to the .gitignore file."""
 
         if not self.base.git_found:
             return
 
-        self.path = os.path.join(self.base.active_directory, ".gitignore")
-        if os.path.exists(self.path):
-            self.match = parse_gitignore(self.path)
-        else:
-            self.match = None
+        with open(self.path, "a") as f:
+            f.write(f"\n{path.replace("\\", "/")}")
 
-    def __contains__(self, path: str) -> bool:
-        """Check if the given path is ignored by the .gitignore file."""
+    def exclude(self, path: str) -> None:
+        """Exclude the given path from the .gitignore file."""
 
-        if not self.match:
-            return False
+        if not self.base.git_found:
+            return
 
-        return self.match(path)
+        with open(self.path, "a") as f:
+            f.write(f"\n!{path.replace("\\", "/")}")

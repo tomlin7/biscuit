@@ -8,6 +8,8 @@ import typing
 from tkinter import filedialog
 from tkinter.messagebox import askyesnocancel
 
+from src.biscuit.common.actionset import ActionSet
+
 from .common import BaseGame
 from .config import ConfigManager
 from .editor import *
@@ -76,12 +78,6 @@ class EventManager(GUIManager, ConfigManager):
             return
 
         self.active_directory = dir
-        self.explorer.directory.change_path(dir)
-        self.set_title(os.path.basename(self.active_directory))
-
-        self.editorsmanager.delete_all_editors()
-        self.terminalmanager.delete_all_terminals()
-        self.terminalmanager.open_terminal()
 
         try:
             self.git.check_git()
@@ -89,6 +85,13 @@ class EventManager(GUIManager, ConfigManager):
         except Exception as e:
             self.logger.error(f"Checking git failed: {e}")
             self.notifications.error("Checking git failed: see logs")
+
+        self.explorer.directory.change_path(dir)
+        self.set_title(os.path.basename(self.active_directory))
+
+        self.editorsmanager.delete_all_editors()
+        self.terminalmanager.delete_all_terminals()
+        self.terminalmanager.open_terminal()
 
         self.event_generate("<<DirectoryChanged>>", data=dir)
 
@@ -216,6 +219,12 @@ class EventManager(GUIManager, ConfigManager):
 
     def register_comment_prefix(self, language: str, prefix: str) -> None:
         register_comment_prefix(language, prefix)
+
+    def register_actionset(self, actionset: ActionSet) -> None:
+        self.palette.register_actionset(actionset)
+
+    def register_command(self, name: str, command: typing.Callable) -> None:
+        self.settings.register_command(name, command)
 
     def register_run_command(self, language: str, command: str) -> None:
         self.execution_manager.register_command(language, command)

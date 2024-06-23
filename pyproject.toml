@@ -29,7 +29,6 @@ python-tkdnd = "^0.2.1"
 psutil = "^5.9.8"
 google-generativeai = "^0.5.4"
 sortedcontainers = "^2.4.0"
-gitignore-parser = "^0.1.11"
 
 
 [tool.poetry.group.dev.dependencies]

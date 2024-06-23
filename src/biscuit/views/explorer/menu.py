@@ -36,6 +36,8 @@ class DirectoryContextMenu(Menu):
         )
         self.add_separator()
         self.add_command("Attach to bikkis...", self.master.attach_to_chat)
+        self.add_command("Add to .gitignore", self.master.add_to_gitignore)
+        self.add_command("Exclude from .gitignore", self.master.exclude_from_gitignore)
         self.add_separator()
         self.add_command("Rename...", lambda: self.base.palette.show("rename:"))
         self.add_command("Delete", self.master.delete_item)
