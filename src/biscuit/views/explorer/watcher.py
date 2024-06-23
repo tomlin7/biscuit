@@ -24,7 +24,7 @@ class DirectoryTreeWatcher(PatternMatchingEventHandler):
         self.tree = tree
         self.observe_changes = observe_changes
 
-        super().__init__(ignore_patterns=self.master.ignore_dir_patterns)
+        super().__init__(ignore_patterns=self.master.changes_ignore_dir_patterns)
 
         self.observer = Observer()
         self.observer.start()

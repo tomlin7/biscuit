@@ -41,7 +41,11 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         self.nodes = {}
 
-        self.ignore_dirs = [
+        self.hide_dirs = [
+            ".git",
+        ]
+
+        self.search_ignore_dirs = [
             ".git",
             "__pycache__",
             ".pytest_cache",
@@ -50,7 +54,8 @@ class DirectoryTree(NavigationDrawerViewItem):
             "dist",
             "build",
         ]
-        self.ignore_dir_patterns = [
+
+        self.changes_ignore_dir_patterns = [
             "*/.git/*",
             "*/__pycache__/*",
             "*/.pytest_cache/*",
@@ -59,7 +64,9 @@ class DirectoryTree(NavigationDrawerViewItem):
             "*/dist/*",
             "*/build/*",
         ]
+
         self.ignore_exts = [".pyc"]
+        self.git = self.base.git
 
         self.tree = Tree(
             self.content,
@@ -82,6 +89,8 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         self.ctxmenu = DirectoryContextMenu(self, "ExplorerContextMenu")
         self.tree.bind("<Button-3>", self.right_click)
+
+        self.tree.tree.tag_configure("ignored", foreground=self.base.theme.disabled)
 
         if startpath:
             self.change_path(startpath)
@@ -158,7 +167,7 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         return files
 
-    def scandir(self, path) -> list:
+    def scandir(self, path: str) -> list:
         """Returns a list of entries in the given directory.
         Heloper function for updating the treeview."""
 
@@ -167,10 +176,10 @@ class DirectoryTree(NavigationDrawerViewItem):
             entries.append((entry.name, os.path.join(self.path, entry.path)))
         return entries
 
-    def update_path(self, path) -> None:
+    def update_path(self, path: str) -> None:
         """Updates the treeview with the contents of the given directory."""
 
-        if not path or any(path.endswith(i) for i in self.ignore_dirs):
+        if not path or any(path.endswith(i) for i in self.hide_dirs):
             return
 
         node = self.nodes.get(os.path.abspath(path))
@@ -179,20 +188,21 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         self.create_root(path, node)
 
-    def update_treeview(self, parent_path, parent="") -> None:
+    def update_treeview(self, parent_path: str, parent="") -> None:
         """Updates the treeview with the contents of the given directory."""
 
         if not os.path.exists(parent_path):
             return
 
         entries = self.scandir(parent_path)
+
         # sort: directories first, then files (alphabetic order)
         entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
 
         try:
             for name, path in entries:
                 if os.path.isdir(path):
-                    if name in self.ignore_dirs:
+                    if name in self.hide_dirs:
                         continue
 
                     node = self.tree.insert(
@@ -202,9 +212,10 @@ class DirectoryTree(NavigationDrawerViewItem):
                         values=[path, "directory"],
                         image="foldericon",
                         open=False,
+                        tags="ignored" if name in self.git.ignore else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
-                    self.tree.insert(node, "end", text="loading...")
+                    self.tree.insert(node, "end", text="loading...", tags="ignored")
 
                     # recursive mode loading (not good for large projects)
                     # self.update_treeview(path, node)
@@ -219,6 +230,7 @@ class DirectoryTree(NavigationDrawerViewItem):
                         text=f"  {name}",
                         values=[path, "file"],
                         image="document",
+                        tags="ignored" if name in self.git.ignore else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
         except Exception as e:
@@ -233,7 +245,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             else self.tree.selected_parent_path().strip()
         ) or self.path
 
-    def new_file(self, filename) -> None:
+    def new_file(self, filename: str) -> None:
         """Creates a new file in the selected directory."""
 
         if not filename:
@@ -256,7 +268,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             f.write("")
         self.create_root(parent, self.nodes[parent])
 
-    def new_folder(self, foldername) -> None:
+    def new_folder(self, foldername: str) -> None:
         """Creates a new folder in the selected directory."""
 
         if not foldername:

@@ -223,6 +223,16 @@ files = [
 smmap = ">=3.0.1,<6"
 
 [[package]]
+name = "gitignore-parser"
+version = "0.1.11"
+description = "A spec-compliant gitignore parser for Python 3.5+"
+optional = false
+python-versions = "*"
+files = [
+    {file = "gitignore_parser-0.1.11.tar.gz", hash = "sha256:fa10fde48b44888eeefac096f53bcdad9b87a4ffd7db788558dbdf71ff3bc9db"},
+]
+
+[[package]]
 name = "gitpython"
 version = "3.1.43"
 description = "GitPython is a Python library used to interact with Git repositories"
@@ -1302,4 +1312,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "227ffc1ad893a18b073a0ecb5459676076e5ad13986ab117bdf1cffb83dab96a"
+content-hash = "0f2e5f3f23b6931ba51697df6009002b823ae80a7bff11f7305efb8cc0bc1d3a"

@@ -7,6 +7,7 @@ class Dark(Theme):
     name = "biscuit dark"
 
     border = "#2A2A2A"
+    disabled = "#7A7A7A"
 
     primary_background = "#181818"
     primary_foreground = "#8B949E"

@@ -14,6 +14,7 @@ git_available = True
 try:
     import git
 
+    from .ignore import GitIgnore
     from .repo import GitRepo
 except ImportError:
     messagebox.showerror(
@@ -36,6 +37,7 @@ class Git(git.Git):
         super().__init__(*args, **kwargs)
         self.base = master
         self.repo = None
+        self.ignore = GitIgnore(self)
         self.branches = {}
 
         self.actionset = ActionSet(
@@ -74,6 +76,7 @@ class Git(git.Git):
         try:
             self.repo = GitRepo(self, self.base.active_directory)
             self.base.git_found = True
+            self.ignore.load()
             self.base.notifications.info("Git repository found in opened directory")
             self.base.logger.info("Git repository found in opened directory")
             self.update_repo_info()

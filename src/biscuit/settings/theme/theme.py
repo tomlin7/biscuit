@@ -296,7 +296,9 @@ class Utils(ThemeObject):
         )
         self.colorlabel = ThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
         self.tree = FrameThemeObject(self)
-        self.tree.item = ThemeObject(self.tree)
+        self.tree.item = ThemeObject(
+            self.tree, foreground=theme.primary_foreground_highlight
+        )
         self.bubble = ThemeObject(self)
         self.iconbutton = HighlightableThemeObject(self)
         self.iconlabelbutton = HighlightableThemeObject(
@@ -336,6 +338,7 @@ class Theme:
     biscuit_dark = "#B56711"
 
     border = "#dfdfdf"
+    disabled = "#8e8e90"
 
     primary_background = "#f8f8f8"
     primary_foreground = "#424242"

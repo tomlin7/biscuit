@@ -37,7 +37,11 @@ class Tree(Frame):
         self.singleclick = singleclick
 
         self.tree = ttk.Treeview(
-            self, show="tree", columns=columns, displaycolumns="", selectmode=tk.BROWSE
+            self,
+            show="tree",
+            columns=columns,
+            displaycolumns="",
+            selectmode=tk.BROWSE,
         )
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
@@ -51,6 +55,32 @@ class Tree(Frame):
 
         self.bind("<Double-Button-1>", self.doubleclick)
         self.bind("<<TreeviewSelect>>", self.check_singleclick)
+
+        # self.tree.bind("<Motion>", self.on_motion)
+        # self.tree.bind("<Leave>", self.on_leave)
+        # self.tree.tag_configure("hover", background=self.base.theme.border)
+        # self.hovered = None
+
+    def on_motion(self, event):
+        try:
+            self.item(self.hovered, tags=())
+        except tk.TclError:
+            pass
+
+        item = self.identify_row(event.y)
+        try:
+            self.item(item, tags=("hover",))
+            self.hovered = item
+        except tk.TclError:
+            pass
+
+    def on_leave(self, _):
+        if self.hovered:
+            try:
+                self.item(self.hovered, tags=())
+            except tk.TclError:
+                pass
+            self.hovered = None
 
     def bind(self, *args, **kwargs) -> None:
         self.tree.bind(*args, **kwargs)
