@@ -92,7 +92,7 @@ class Explorer(NavigationDrawerView):
 
         pys = []
         for r, d, f in os.walk(self.base.active_directory):
-            if any(i in r for i in self.directory.ignore_dirs):
+            if any(i in r for i in self.directory.search_ignore_dirs):
                 d[:] = []
                 continue
             for file in f:
