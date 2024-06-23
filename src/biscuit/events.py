@@ -65,8 +65,7 @@ class EventManager(GUIManager, ConfigManager):
             return
 
         if os.path.isdir(path):
-            self.open_directory(path)
-            return self.explorer.directory.refresh_root()
+            return self.open_directory(path)
 
         if os.path.isfile(path):
             return self.open_editor(path)
@@ -79,19 +78,19 @@ class EventManager(GUIManager, ConfigManager):
 
         self.active_directory = dir
 
-        try:
-            self.git.check_git()
-            self.update_git()
-        except Exception as e:
-            self.logger.error(f"Checking git failed: {e}")
-            self.notifications.error("Checking git failed: see logs")
-
         self.explorer.directory.change_path(dir)
         self.set_title(os.path.basename(self.active_directory))
 
         self.editorsmanager.delete_all_editors()
         self.terminalmanager.delete_all_terminals()
         self.terminalmanager.open_terminal()
+
+        try:
+            self.git.check_git()
+            self.update_git()
+        except Exception as e:
+            self.logger.error(f"Checking git failed: {e}")
+            self.notifications.error("Checking git failed: see logs")
 
         self.event_generate("<<DirectoryChanged>>", data=dir)
 

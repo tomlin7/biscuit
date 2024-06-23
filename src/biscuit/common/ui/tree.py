@@ -115,7 +115,10 @@ class Tree(Frame):
         return self.tree.identify_row(y)
 
     def insert(self, *args, **kwargs):
-        return self.tree.insert(*args, **kwargs)
+        try:
+            return self.tree.insert(*args, **kwargs)
+        except tk.TclError:
+            return None
 
     def add(self, *a, **kw):
         return self.tree.insert("", "end", *a, **kw)

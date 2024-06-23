@@ -219,17 +219,21 @@ class DirectoryTree(NavigationDrawerViewItem):
                 if name in self.hide_dirs:
                     continue
 
-                node = self.tree.insert(
-                    parent or "",
-                    "end",
-                    text=f"  {name}",
-                    values=[path, "directory"],
-                    # image="foldericon",
-                    open=False,
-                    tags="ignored" if unixlike in ignored else "",
-                )
-                self.nodes[os.path.abspath(path)] = node
-                self.tree.insert(node, "end", text="loading...", tags="ignored")
+                try:
+                    node = self.tree.insert(
+                        parent or "",
+                        "end",
+                        text=f"  {name}",
+                        values=[path, "directory"],
+                        # image="foldericon",
+                        open=False,
+                        tags="ignored" if unixlike in ignored else "",
+                    )
+                    self.nodes[os.path.abspath(path)] = node
+                    self.tree.insert(node, "end", text="loading...", tags="ignored")
+                except:
+                    self.refresh_root()
+                    break
 
                 # NOTE: recursive mode loading (not good for large projects)
                 # self.update_treeview(path, node)
@@ -237,16 +241,20 @@ class DirectoryTree(NavigationDrawerViewItem):
                 if name.split(".")[-1] in self.ignore_exts:
                     continue
 
-                # TODO check filetype and get matching icon, cases
-                node = self.tree.insert(
-                    parent,
-                    "end",
-                    text=f"  {name}",
-                    values=[path, "file"],
-                    image="document",
-                    tags="ignored" if unixlike in ignored else "",
-                )
-                self.nodes[os.path.abspath(path)] = node
+                try:
+                    # TODO check filetype and get matching icon, cases
+                    node = self.tree.insert(
+                        parent,
+                        "end",
+                        text=f"  {name}",
+                        values=[path, "file"],
+                        image="document",
+                        tags="ignored" if unixlike in ignored else "",
+                    )
+                    self.nodes[os.path.abspath(path)] = node
+                except:
+                    self.refresh_root()
+                    break
 
     def selected_directory(self) -> str:
         """Returns the selected directory path, or the current path if no directory is selected."""
