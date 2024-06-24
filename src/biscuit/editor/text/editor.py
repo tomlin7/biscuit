@@ -144,7 +144,6 @@ class TextEditor(BaseEditor):
 
     def file_loaded(self):
         self.recalculate_content_hash()
-        print(f"File opened {self.path}")
         self.event_generate("<<FileLoaded>>", when="tail")
         self.text.event_generate("<<FileLoaded>>", when="tail")
 
