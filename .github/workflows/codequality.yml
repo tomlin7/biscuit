@@ -25,10 +25,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install python3-dev tcl-dev tk-dev fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential  
+          sudo apt install python3-dev tcl-dev tk-dev fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential xvfb 
           pip install scikit-build
           python -m pip install --upgrade pip
-          pip install flake8 pytest pytest-dotenv xvfb
+          pip install flake8 pytest pytest-dotenv
           pip install -r requirements.txt
           pip install .
       - name: Lint with flake8
