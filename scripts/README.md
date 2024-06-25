@@ -8,7 +8,7 @@ Python 3.10 or higher is required to run Biscuit. You can download Python from t
 
 If you want access to the latest features and updates, you can install Biscuit from the source code. Make sure you **clone the repository** to your local machine before proceeding with the installation.
 
-### Using Poetry
+### Using Poetry (Windows only)
 
 We recommend using [Poetry](https://python-poetry.org/) to manage the dependencies for the project. You can install Poetry using the following command:
 
@@ -28,12 +28,13 @@ Once the dependencies are installed, you can run Biscuit using the following com
 poetry run biscuit
 ```
 
-### Using pip
+### Using pip (Windows and Linux)
 
 If you don't want to use Poetry, you can install the dependencies using pip. You can install the dependencies using the following command:
 
 ```bash
-pip install -r requirements.txt -e .
+pip install tkextrafont scikit-build
+pip install -e .
 ```
 
 Once the dependencies are installed, you can run Biscuit using the following command:
@@ -53,13 +54,13 @@ pip install git+https://github.com/tomlin7/biscuit
 
 Biscuit is compiled into standalone executable files using [pyinstaller](https://pyinstaller.org/). Following steps reveal the process of building Biscuit from source code.
 
-Install the required packages:
+First, **install biscuit** using the instructions provided above. Then, run the `windows.spec` or `linux.spec` file with pyinstaller:
 
 ```
-pip install pyinstaller biscuit-editor
+poetry run pyinstaller scripts/windows.spec
 ```
 
-Load the `windows.spec` or `linux.spec` file in pyinstaller with following command
+if you've installed Biscuit using pip:
 
 ```
 pyinstaller scripts/windows.spec
