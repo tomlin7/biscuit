@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +24,11 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: |
+          sudo apt update
+          sudo apt install python3-dev tcl-dev tk-dev fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential xvfb 
+          pip install scikit-build
           python -m pip install --upgrade pip
-          pip install flake8 pytest pytest-dotenv
+          pip install flake8 pytest pytest-dotenv xvfb
           pip install -r requirements.txt
           pip install .
       - name: Lint with flake8
@@ -36,4 +39,6 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
+          export DISPLAY=:99
+          Xvfb :99 &
           pytest
