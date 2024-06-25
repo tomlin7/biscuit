@@ -4,7 +4,7 @@ import os
 import typing
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
     from .git import Git
 
@@ -38,7 +38,7 @@ class GitIgnore:
             return
 
         with open(self.path, "a") as f:
-            f.write(f"\n{path.replace('\\' '/')}")
+            f.write("\n" + path.replace("\\" "/"))
 
     def exclude(self, path: str) -> None:
         """Exclude the given path from the .gitignore file."""
@@ -47,4 +47,4 @@ class GitIgnore:
             return
 
         with open(self.path, "a") as f:
-            f.write(f"\n!{path.replace('\\', '/')}")
+            f.write("\n!" + path.replace("\\", "/"))

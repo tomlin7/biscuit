@@ -3,7 +3,7 @@ import platform
 import subprocess
 import tkinter as tk
 
-from src.biscuit.common.actionset import ActionSet
+from biscuit.common.actionset import ActionSet
 
 from ..panelview import PanelView
 from .menu import TerminalMenu

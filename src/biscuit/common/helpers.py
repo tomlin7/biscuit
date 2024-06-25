@@ -24,22 +24,10 @@ def check_python_installation():
     try:
         if os.name == "nt":
             sp.check_call(["python", "--version"])
-            reqs = sp.check_output(["pip", "freeze"])
+            sp.Popen(["pip", "install", "python-lsp-server"])
         else:
             sp.check_call(["python3", "--version"])
-            reqs = sp.check_output(["python3", "-m", "pip", "freeze"])
-
-        # install python language server
-        if not "python-lsp-server".encode() in reqs:
-            try:
-                if os.name == "nt":
-                    sp.check_call(["pip", "install", "python-lsp-server"])
-                else:
-                    sp.check_call(
-                        ["python3", "-m", "pip", "install", "python-lsp-server"]
-                    )
-            except sp.CalledProcessError:
-                print("Install python extension to enable python language features.")
+            sp.Popen(["python3", "-m", "pip", "install", "python-lsp-server"])
 
     except sp.CalledProcessError:
         show_python_not_installed_message()

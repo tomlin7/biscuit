@@ -4,10 +4,10 @@ import re
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import ButtonsEntry, Frame, IconButton, Toplevel
+from biscuit.common.ui import ButtonsEntry, Frame, IconButton, Toplevel
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.common.ui import Text
+    from biscuit.common.ui import Text
 
 from .results import FindResults
 

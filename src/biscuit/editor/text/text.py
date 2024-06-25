@@ -12,12 +12,12 @@ from tkinter.messagebox import askokcancel
 import chardet
 import tarts as lsp
 
-from src.biscuit.common.minclosestdict import MinClosestKeyDict
-from src.biscuit.common.textindex import TextIndex
-from src.biscuit.language.data import Diagnostic
+from biscuit.common.minclosestdict import MinClosestKeyDict
+from biscuit.common.textindex import TextIndex
+from biscuit.language.data import Diagnostic
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.language.data import (
+    from biscuit.language.data import (
         WorkspaceEdits,
         HoverResponse,
         Jump,
@@ -26,8 +26,8 @@ if typing.TYPE_CHECKING:
     )
     from . import TextEditor
 
-from src.biscuit.common import textutils
-from src.biscuit.common.ui import Text as BaseText
+from biscuit.common import textutils
+from biscuit.common.ui import Text as BaseText
 
 from ..comment_prefix import get_comment_prefix
 from .highlighter import Highlighter
@@ -278,9 +278,7 @@ class Text(BaseText):
     def diagnostic_hover(self, severity: int) -> str:
         if pos := self.get_mouse_pos():
             message, start = self.diagnostics[pos]
-            self.base.diagnostic.show(
-                self, start, message, severity
-            )
+            self.base.diagnostic.show(self, start, message, severity)
 
     def update_indent_guides(self) -> None:
         if self.minimalist:

@@ -1,4 +1,4 @@
-from src.biscuit.common.ui import IconButton
+from biscuit.common.ui import IconButton
 
 from .view import View
 

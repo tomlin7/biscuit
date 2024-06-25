@@ -7,7 +7,7 @@ if os.name == "nt":
 else:
     from ptyprocess import PtyProcessUnicode as PTY
 
-from src.biscuit.common.ui import Scrollbar
+from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
 from .ai import AI

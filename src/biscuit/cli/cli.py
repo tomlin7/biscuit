@@ -1,9 +1,12 @@
+import os
+import sys
 from pathlib import Path
 
 import click
 
-from src import __version__, get_app_instance
-from src.cli import editor, extensions, git
+from biscuit import __version__, get_app_instance
+
+from . import editor, extensions, git  # reason: see at bottom
 
 
 @click.group(invoke_without_command=True)
@@ -17,14 +20,16 @@ def cli(path=None, dev=False):
 
 
 @cli.result_callback()
-def process_commands(processors, path=None, dev=False):
+@click.pass_context
+def process_commands(context: click.Context, processors, path=None, dev=False):
     """Process the commands"""
 
     if path:
         path = str(Path(path).resolve())
         click.echo(f"Opening {path}")
 
-    app = get_app_instance(open_path=path)
+    appdir = Path(os.path.abspath(__file__)).parent
+    app = get_app_instance(appdir, open_path=path)
 
     if processors:
         if isinstance(processors, list):

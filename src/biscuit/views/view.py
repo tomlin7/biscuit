@@ -1,4 +1,4 @@
-from src.biscuit.common.ui import Frame
+from biscuit.common.ui import Frame
 
 
 class View(Frame):

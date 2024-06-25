@@ -1,4 +1,4 @@
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 
 class BaseGame(Frame):

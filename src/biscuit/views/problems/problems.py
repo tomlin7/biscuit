@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Scrollbar
+from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
 

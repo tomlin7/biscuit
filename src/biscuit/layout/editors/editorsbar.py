@@ -4,13 +4,13 @@ import tkinter as tk
 import typing
 from tkinter.messagebox import askyesno
 
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 from .menu import EditorsbarMenu
 from .tab import Tab
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import Editor
+    from biscuit.editor import Editor
 
     from .manager import EditorsManager
 

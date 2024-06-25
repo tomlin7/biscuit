@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Bubble, Menubutton, get_codicon
+from biscuit.common.ui import Bubble, Menubutton, get_codicon
 
 from .menu import ActionMenu
 

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Tree
+from biscuit.common.ui import Tree
 
 from ..drawer_item import NavigationDrawerViewItem
 

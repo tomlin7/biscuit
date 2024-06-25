@@ -3,10 +3,10 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Menubutton
+from biscuit.common.ui import Menubutton
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.views import PanelView
+    from biscuit.views import PanelView
 
     from .panelbar import PanelBar
 

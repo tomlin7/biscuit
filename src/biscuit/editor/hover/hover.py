@@ -3,13 +3,13 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Toplevel
+from biscuit.common.ui import Toplevel
 
 from .renderer import HoverRenderer
 
 if typing.TYPE_CHECKING:
+    from biscuit.language.data import HoverResponse
     from src import App
-    from src.biscuit.language.data import HoverResponse
 
     from ..text import Text
 

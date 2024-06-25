@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Button, Frame, ScrollableFrame
-from src.biscuit.editor import BaseEditor
+from biscuit.common.ui import Button, Frame, ScrollableFrame
+from biscuit.editor import BaseEditor
 
 from .searchbar import Searchbar
 from .section import Section

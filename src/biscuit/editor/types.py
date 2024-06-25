@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import typing
 
-from src.biscuit.common import is_image
+from biscuit.common import is_image
 
 from ..git.diff import DiffEditor
 from .html import HTMLEditor

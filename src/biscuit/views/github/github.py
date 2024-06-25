@@ -1,7 +1,7 @@
 import threading
 import tkinter as tk
 
-from src.biscuit.common.ui import WrappingLabel
+from biscuit.common.ui import WrappingLabel
 
 from ..drawer_view import NavigationDrawerView
 from .issues import Issues

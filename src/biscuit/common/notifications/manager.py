@@ -1,8 +1,6 @@
 import tkinter as tk
 from typing import Callable
 
-from numpy import pad
-
 from ..ui import Frame, IconButton, Label, Toplevel
 from .notification import Notification
 
@@ -67,6 +65,8 @@ class Notifications(Toplevel):
 
         self.base.bind("<FocusIn>", lambda *_: self.lift, add=True)
         self.base.bind("<Configure>", self._follow_root, add=True)
+        self.lift()
+        self.withdraw()
 
     def info(
         self, text: str, actions: list[tuple[str, Callable[[None], None]]] = None

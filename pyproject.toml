@@ -1,10 +1,15 @@
 [tool.poetry]
-name = "biscuit"
-version = "2.99.2"
-description = "The uncompromising code editor"
+name = "biscuit-editor"
+version = "2.99.7"
+description = "A lightweight, fast, and extensible code editor with a growing community"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "biscuit", from = "src" }]
+include = ["./resources/**/*"]
+
+[tool.poetry.scripts]
+biscuit = "biscuit.cli:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -12,7 +17,7 @@ hintedtext = "^0.6.0"
 watchdog = "^4.0.1"
 filetype = "^1.2.0"
 GitPython = "^3.1.43"
-tkextrafont = "^0.6.3"
+tkextrafont = { version = "^0.6.3", platform = "win32" }
 Pygments = "^2.18.0"
 toml = "^0.10.2"
 sv-ttk = "^2.6.0"
@@ -29,7 +34,7 @@ python-tkdnd = "^0.2.1"
 psutil = "^5.9.8"
 google-generativeai = "^0.5.4"
 sortedcontainers = "^2.4.0"
-
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"

@@ -4,7 +4,7 @@ import os
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Closable, Toplevel
+from biscuit.common.ui import Closable, Toplevel
 
 if typing.TYPE_CHECKING:
     from .chat import Chat

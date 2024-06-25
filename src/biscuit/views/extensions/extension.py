@@ -4,7 +4,7 @@ import os
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Button, Frame, Label
+from biscuit.common.ui import Button, Frame, Label
 
 if typing.TYPE_CHECKING:
     from .results import Results

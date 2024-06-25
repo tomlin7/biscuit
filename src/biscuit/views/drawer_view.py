@@ -1,7 +1,7 @@
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 from .drawer_item import NavigationDrawerViewItem
 from .view import View

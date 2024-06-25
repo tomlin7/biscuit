@@ -9,7 +9,7 @@ from .item import PaletteItem
 from .searchbar import SearchBar
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
 
 # TODO: enlarge current item, add shortcuts, secondary text

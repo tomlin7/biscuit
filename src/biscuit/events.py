@@ -8,7 +8,7 @@ import typing
 from tkinter import filedialog
 from tkinter.messagebox import askyesnocancel
 
-from src.biscuit.common.actionset import ActionSet
+from biscuit.common.actionset import ActionSet
 
 from .common import BaseGame
 from .config import ConfigManager
@@ -19,8 +19,8 @@ from .settings import *
 from .views import *
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import BaseEditor, Editor
-    from src.biscuit.language.data import *
+    from biscuit.editor import BaseEditor, Editor
+    from biscuit.language.data import *
 
     from .layout import *
 

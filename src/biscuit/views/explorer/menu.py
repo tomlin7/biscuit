@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from src.biscuit.common import Menu
+from biscuit.common import Menu
 
 if typing.TYPE_CHECKING:
     from .directorytree import DirectoryTree

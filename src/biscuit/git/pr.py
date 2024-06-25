@@ -4,8 +4,8 @@ import webbrowser
 import mistune
 from tkinterweb import HtmlFrame
 
-from src.biscuit.common.ui import Frame, Label, LinkLabel, Scrollbar
-from src.biscuit.common.ui.buttons import IconLabelButton
+from biscuit.common.ui import Frame, Label, LinkLabel, Scrollbar
+from biscuit.common.ui.buttons import IconLabelButton
 
 from ..editor.editorbase import BaseEditor
 

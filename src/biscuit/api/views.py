@@ -5,7 +5,7 @@ import typing
 from .endpoint import Endpoint
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.views import NavigationDrawerView, PanelView
+    from biscuit.views import NavigationDrawerView, PanelView
 
 
 class Views(Endpoint):
@@ -21,11 +21,6 @@ class Views(Endpoint):
         super().__init__(*a)
         self.sidebar = self.base.drawer
         self.panel = self.base.drawer
-
-        from src.biscuit.views import NavigationDrawerView, PanelView
-
-        self.PanelView = PanelView
-        self.SidebarView = NavigationDrawerView
 
     def add_sidebar_view(self, view: PanelView):
         self.sidebar.add_view(view)

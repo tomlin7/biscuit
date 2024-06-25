@@ -19,3 +19,4 @@ ptyprocess; platform_system != "Windows"
 python-tkdnd
 psutil
 google-generativeai
+click

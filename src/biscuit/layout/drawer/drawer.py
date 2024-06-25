@@ -3,8 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Frame
-from src.biscuit.views import *
+from biscuit.common.ui import Frame
+from biscuit.views import *
 
 from .activitybar import ActivityBar
 

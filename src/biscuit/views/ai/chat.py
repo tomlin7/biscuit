@@ -8,7 +8,7 @@ from tkinter.filedialog import askopenfilenames
 import google.generativeai as ai
 from google.api_core.exceptions import InvalidArgument
 
-from src.biscuit.common.ui import Button, Entry, Frame, IconButton
+from biscuit.common.ui import Button, Entry, Frame, IconButton
 
 from .attachments import Attachments
 from .renderer import Renderer

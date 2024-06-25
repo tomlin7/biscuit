@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Closable
+from biscuit.common.ui import Closable
 
 from ..drawer_item import NavigationDrawerViewItem
 

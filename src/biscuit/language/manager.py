@@ -9,8 +9,8 @@ from .client import LangServerClient
 from .utils import decode_position
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
-    from src.biscuit.editor.text import Text
+    from biscuit import App
+    from biscuit.editor.text import Text
 
 
 class LanguageServerManager:

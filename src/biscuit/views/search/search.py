@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from src.biscuit.common.ui import ButtonsEntry, Frame
+from biscuit.common.ui import ButtonsEntry, Frame
 
 from ..drawer_view import NavigationDrawerView
 from .results import Results

@@ -3,10 +3,10 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Bubble, Menubutton, get_codicon
+from biscuit.common.ui import Bubble, Menubutton, get_codicon
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.views import NavigationDrawerView
+    from biscuit.views import NavigationDrawerView
 
     from .activitybar import ActivityBar
 
