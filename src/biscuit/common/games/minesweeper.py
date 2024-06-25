@@ -2,7 +2,7 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
-from src.biscuit.common.ui import Button, Frame, IconButton, Label
+from biscuit.common.ui import Button, Frame, IconButton, Label
 
 from .gamebase import BaseGame
 

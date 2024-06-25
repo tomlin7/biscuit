@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Toplevel
-from src.biscuit.views.explorer import DirectoryTree
+from biscuit.common.ui import Toplevel
+from biscuit.views.explorer import DirectoryTree
 
 
 class PathView(Toplevel):

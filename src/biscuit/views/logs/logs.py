@@ -2,8 +2,8 @@ import queue
 import tkinter as tk
 from datetime import datetime
 
-from src.biscuit.common import caller_class_name
-from src.biscuit.common.ui import Scrollbar
+from biscuit.common import caller_class_name
+from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
 

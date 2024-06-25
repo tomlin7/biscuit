@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 
-from src.biscuit.common.ui import Frame, IconLabel, IconLabelButton, Label, LinkLabel
+from biscuit.common.ui import Frame, IconLabel, IconLabelButton, Label, LinkLabel
 
 from ..editorbase import BaseEditor
 

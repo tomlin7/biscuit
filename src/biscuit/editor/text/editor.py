@@ -4,8 +4,8 @@ import tkinter as tk
 from hashlib import md5
 from tkinter.font import Font
 
-from src.biscuit.common.ui import Scrollbar
-from src.biscuit.debugger import get_debugger
+from biscuit.common.ui import Scrollbar
+from biscuit.debugger import get_debugger
 
 from ..editorbase import BaseEditor
 from .linenumbers import LineNumbers

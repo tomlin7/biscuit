@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.editor.editorbase import BaseEditor
+from biscuit.editor.editorbase import BaseEditor
 
 from .shortcuts import Shortcuts
 

@@ -4,7 +4,7 @@ import os
 import typing
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
     from .git import Git
 

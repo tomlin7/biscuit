@@ -3,14 +3,14 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 from .tab import Tab
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.common.ui import IconButton
-    from src.biscuit.layout.content import Content
-    from src.biscuit.views.panelview import PanelView
+    from biscuit.common.ui import IconButton
+    from biscuit.layout.content import Content
+    from biscuit.views.panelview import PanelView
 
     from .panel import Panel
 

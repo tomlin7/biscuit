@@ -5,14 +5,14 @@ import typing
 
 from pygments.lexers._mapping import LEXERS
 
-from src.biscuit.common import ActionSet
-from src.biscuit.common.textutils import *
-from src.biscuit.common.ui import Frame
+from biscuit.common import ActionSet
+from biscuit.common.textutils import *
+from biscuit.common.ui import Frame
 
 from .button import SButton
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import Text
+    from biscuit.editor import Text
 
 
 class Statusbar(Frame):

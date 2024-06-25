@@ -13,12 +13,12 @@ __version_info__ = tuple([int(num) for num in __version__.split(".")])
 import typing
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import ExtensionsAPI
+    from biscuit import ExtensionsAPI
 
 # 4. Create a class named `Extension` as follows:
 
 
-class Extension:
+class DevMode:
     """Dev Mode extension for Biscuit (author: @billyeatcookies)
 
     Contributes:
@@ -27,9 +27,12 @@ class Extension:
 
     def __init__(self, api: ExtensionsAPI) -> None:
         self.api = api
-
-    def run(self) -> None:
         self.api.notifications.info(f"Dev mode is enabled!")
+
+
+def setup(api: ExtensionsAPI) -> None:
+    """Setup the extension"""
+    api.register("dev", DevMode(api))
 
 
 # 5. Start customizing your extension!

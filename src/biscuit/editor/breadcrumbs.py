@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from pathlib import Path
 
-from src.biscuit.common.ui import Frame, IconLabelButton
+from biscuit.common.ui import Frame, IconLabelButton
 
 
 class Item(IconLabelButton):

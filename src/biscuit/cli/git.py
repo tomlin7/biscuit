@@ -4,10 +4,10 @@ import typing
 
 import click
 
-from src.biscuit.git import URL
+from biscuit.git import URL
 
 if typing.TYPE_CHECKING:
-    from src import App
+    from biscuit import App
 
 
 @click.command()

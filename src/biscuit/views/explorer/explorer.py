@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 
-from src.biscuit.common import ActionSet
+from biscuit.common import ActionSet
 
 from ..drawer_view import NavigationDrawerView
 from .directorytree import DirectoryTree

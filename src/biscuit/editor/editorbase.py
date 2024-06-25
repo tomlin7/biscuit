@@ -4,7 +4,7 @@ import tkinter as tk
 
 import tkinterDnD as dnd
 
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 
 class BaseEditor(Frame):

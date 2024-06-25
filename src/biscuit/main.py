@@ -1,6 +1,7 @@
 import os
 
-from biscuit import App, check_python_installation
+from .app import App
+from .common import check_python_installation
 
 
 def get_app_instance(
@@ -32,7 +33,7 @@ def main(args: list[str] = []):
     elif len(args) >= 2:
         dir = args[1]
 
-    app = get_app_instance(args[0], dir=dir)
+    app = get_app_instance(args[0], dir)
     app.run()
 
 

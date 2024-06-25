@@ -12,7 +12,7 @@ import psutil
 if typing.TYPE_CHECKING:
     from .. import App
 
-from src import __version__
+from biscuit import __version__
 
 
 @dataclass

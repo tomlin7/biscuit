@@ -3,11 +3,11 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Text, Toplevel
+from biscuit.common.ui import Text, Toplevel
 
 if typing.TYPE_CHECKING:
+    from biscuit.common.textindex import TextIndex
     from src import App
-    from src.biscuit.common.textindex import TextIndex
 
     from .text import Text
 

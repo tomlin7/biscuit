@@ -3,13 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import (
-    Entry,
-    Frame,
-    IconLabelButton,
-    WebLinkLabel,
-    WrappingLabel,
-)
+from biscuit.common.ui import Entry, Frame, IconLabelButton, WebLinkLabel, WrappingLabel
 
 if typing.TYPE_CHECKING:
     ...

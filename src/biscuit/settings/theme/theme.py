@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from pygments.token import Token
-from pytermgui import foreground
 
 
 class ThemeObject(Mapping):

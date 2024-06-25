@@ -11,14 +11,14 @@ from pathlib import Path
 
 import tarts as lsp
 
-from biscuit.io import IO
+from biscuit.common import IO
 
 from .data import *
 from .handler import EventHandler
 from .utils import *
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import Text
+    from biscuit.editor import Text
 
     from . import LanguageServerManager
 

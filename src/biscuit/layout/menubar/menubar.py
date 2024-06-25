@@ -4,9 +4,8 @@ import platform
 import tkinter as tk
 import typing
 
-from src import __version__
-from src.biscuit.common import Menu
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common import Menu
+from biscuit.common.ui import Frame, IconButton
 
 from .item import MenubarItem
 from .searchbar import SearchBar

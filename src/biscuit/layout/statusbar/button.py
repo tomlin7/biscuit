@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Bubble, Frame, get_codicon
+from biscuit.common.ui import Bubble, Frame, get_codicon
 
 if typing.TYPE_CHECKING:
     from . import Statusbar

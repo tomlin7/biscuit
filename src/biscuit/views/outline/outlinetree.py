@@ -6,14 +6,14 @@ from tkinter import ttk
 
 import tarts as lsp
 
-from src.biscuit.common import ActionSet
-from src.biscuit.common.ui import Frame
+from biscuit.common import ActionSet
+from biscuit.common.ui import Frame
 
 from .placeholder import OutlineTreePlaceholder
 from .tree import Tree
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import Text
+    from biscuit.editor import Text
 
 
 class OutlineTree(Frame):

@@ -82,7 +82,7 @@ class ConfigManager:
         # resources, config, extensions are outside src/
         self.parentdir = self.appdir
         if not self.frozen:
-            self.parentdir = Path(self.appdir).parent.absolute()
+            self.parentdir = Path(self.appdir).parent.parent.absolute()
 
         self.resdir = os.path.join(
             getattr(sys, "_MEIPASS", self.parentdir), "resources"
@@ -106,6 +106,7 @@ class ConfigManager:
         # sets up the extension API & loads extensions
         self.api = ExtensionsAPI(self)
         self.extensions_manager = ExtensionManager(self)
+        self.extensions_manager.start_server()
         self.extensions_view.results.late_setup()
         self.extensions_view.initialize()
 

@@ -5,7 +5,7 @@ from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv(".env"))
 
-from src import get_app_instance
+from biscuit import get_app_instance
 
 
 @pytest.fixture(scope="session")

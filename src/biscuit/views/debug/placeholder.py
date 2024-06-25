@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Button, Frame, IconLabelButton, WrappingLabel
+from biscuit.common.ui import Button, Frame, IconLabelButton, WrappingLabel
 
 
 class DebugPlaceholder(Frame):

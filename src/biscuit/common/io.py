@@ -6,7 +6,7 @@ import typing
 from threading import Thread
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
 
 class IO:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor.text import TextEditor
+    from biscuit.editor.text import TextEditor
 
 from .base import Debugger
 from .python_bdb import PythonDebugger

@@ -1,6 +1,6 @@
 import os
 
-from src.biscuit.common.ui import Label
+from biscuit.common.ui import Label
 
 from ..terminalbase import TerminalBase
 

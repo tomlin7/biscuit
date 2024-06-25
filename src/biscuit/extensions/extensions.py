@@ -6,14 +6,15 @@ import os
 import threading
 import time
 import typing
+from importlib import util
 from queue import Queue
 
 import requests
 
-from src.biscuit.views.extensions.extension import Extension
+from biscuit.views.extensions.extension import Extension
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
 
 class ExtensionManager:
@@ -23,12 +24,12 @@ class ExtensionManager:
     """
 
     def __init__(self, base: App) -> None:
-        self.base = base
+        self.base: App = base
 
         self.extensions_loaded = False
 
         self.interval = 5
-        self.installed = {}
+        self.installed: dict[str, bool] = {}
 
         self.repo_url = (
             "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
@@ -45,14 +46,6 @@ class ExtensionManager:
             return
 
         self.load_queue = Queue()
-        for extension_file in os.listdir(self.base.extensionsdir):
-            if extension_file.endswith(".py"):
-                extension_name = os.path.splitext(extension_file)[0]
-                if extension_name in self.installed:
-                    return
-                self.load_queue.put(extension_name)
-
-        self.start_server()
 
     def install_extension_from_name(self, name: str) -> bool:
         """Install an extension from the repository by name."""
@@ -231,17 +224,16 @@ class ExtensionManager:
                 continue
 
             ext = self.load_queue.get()
+            path = os.path.join(self.base.extensionsdir, f"{ext}.py")
             module_name = f"extensions.{ext}"
             try:
-                extension_module = importlib.import_module(module_name)
-                extension_instance = extension_module.Extension(self.base.api)
-                self.installed[ext] = extension_instance
+                # TODO support for multiple files
+                spec = util.spec_from_file_location(module_name, path)
+                extension_module = util.module_from_spec(spec)
 
-                try:
-                    extension_instance.run()
-                except:
-                    # normally because no `run` method defined.
-                    pass
+                spec.loader.exec_module(extension_module)
+                # execute the setup function
+                extension_module.setup(self.base.api)
 
                 self.base.logger.info(f"Extension '{ext}' loaded.")
             except ImportError as e:
@@ -250,16 +242,31 @@ class ExtensionManager:
                 if ext in self.installed:
                     self.installed.pop(ext)
 
+    def register_installed(self, name: str, extension: object) -> None:
+        """Register an installed extension."""
+
+        self.installed[name] = extension
+
+    def queue_installed_extensions(self) -> None:
+        for extension_file in os.listdir(self.base.extensionsdir):
+            if extension_file.endswith(".py"):
+                extension_name = os.path.splitext(extension_file)[0]
+                if extension_name in self.installed:
+                    return
+
+                self.load_queue.put(extension_name)
+
     def start_server(self):
-        self.server = threading.Thread(target=self.load_extensions, daemon=True)
+        self.queue_installed_extensions()
         self.alive = True
+        self.server = threading.Thread(target=self.load_extensions, daemon=True)
         self.server.start()
 
         self.base.logger.info(f"Extensions server started.")
 
     def restart_server(self):
-        self.alive = False
-        self.base.after(1000, self.start_server)
+        self.installed.clear()
+        self.queue_installed_extensions()
 
     def stop_server(self):
         print(f"Extensions server stopped.")

@@ -3,10 +3,10 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Frame, WrappingLabel
+from biscuit.common.ui import Frame, WrappingLabel
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import Text
+    from biscuit.editor import Text
 
 
 class OutlineTreePlaceholder(Frame):

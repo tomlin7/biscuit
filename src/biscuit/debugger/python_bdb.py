@@ -6,7 +6,7 @@ import typing
 from .base import Debugger
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import TextEditor
+    from biscuit.editor import TextEditor
 
 
 class PythonDebugger(Debugger, bdb.Bdb):

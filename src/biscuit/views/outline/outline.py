@@ -4,13 +4,13 @@ import typing
 
 import tarts as lsp
 
-from src.biscuit.common import ActionSet
+from biscuit.common import ActionSet
 
 from ..drawer_view import NavigationDrawerView
 from .outlinetree import OutlineTree
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import Text
+    from biscuit.editor import Text
 
 
 class Outline(NavigationDrawerView):
