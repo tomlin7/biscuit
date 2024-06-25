@@ -1,7 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files, collect_dynamic_libs
+datas = [
+    ('../resources/*', 'resources/'), 
+    ('../resources/fonts/*', 'resources/fonts/'), 
+    ('../resources/bitmap/*', 'resources/bitmap/'),
+    ('../resources/linux/*', 'resources/linux/'), 
+]
 
-datas = [('../resources/*', 'resources/')]
 datas += collect_data_files('sv_ttk')
 datas += collect_data_files('tkextrafont')
 datas += collect_data_files('tkinterweb')
@@ -15,7 +20,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['../src/__main__.py'],
+    ['build.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,

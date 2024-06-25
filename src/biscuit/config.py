@@ -50,11 +50,8 @@ class ConfigManager:
     frozen = False
 
     def setup_configs(self) -> None:
-        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-            self.frozen = True
-
-        if os.environ.get("ENVIRONMENT") == "test":
-            self.testing = True
+        self.frozen = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+        self.testing = os.environ.get("ENVIRONMENT") == "test"
 
         self.system = SysInfo(self)
         self.settings = Settings(self)
@@ -80,16 +77,20 @@ class ConfigManager:
         sys.path.append(self.appdir)
 
         # resources, config, extensions are outside src/
-        self.parentdir = self.appdir
-        if not self.frozen:
+        if self.frozen:
+            self.appdir = sys._MEIPASS
+            self.parentdir = self.appdir
+        else:
+            self.appdir = os.path.dirname(os.path.abspath(__file__))
             self.parentdir = Path(self.appdir).parent.parent.absolute()
 
-        self.resdir = os.path.join(
-            getattr(sys, "_MEIPASS", self.parentdir), "resources"
-        )
         self.configdir = os.path.join(self.parentdir, "config")
         self.extensionsdir = os.path.join(self.parentdir, "extensions")
         self.datadir = os.path.join(self.parentdir, "data")
+
+        self.resdir = os.path.join(self.parentdir, "resources")
+        self.fallback_resdir = Path(self.appdir).parent.absolute() / "resources"
+        self.second_fallback_resdir = Path(self.appdir).absolute() / "resources"
 
         try:
             os.makedirs(self.datadir, exist_ok=True)

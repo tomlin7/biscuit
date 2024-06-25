@@ -1,11 +1,12 @@
 [tool.poetry]
-name = "biscuit-api"
-version = "2.99.4"
+name = "biscuit-editor"
+version = "2.99.7"
 description = "The uncompromising code editor"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "biscuit", from = "src" }]
+include = ["./resources/**/*"]
 
 [tool.poetry.scripts]
 biscuit = "biscuit.cli:run"
