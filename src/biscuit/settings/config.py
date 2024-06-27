@@ -1,10 +1,8 @@
 import os
-import sys
-from dataclasses import dataclass
 
 import toml
 
-from .theme import Dark
+from .theme import Dark, Light
 
 
 class Config:

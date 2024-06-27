@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Toplevel
+from biscuit.common.ui import Frame, Toplevel
 
 from .renderer import HoverRenderer
 
@@ -15,14 +15,17 @@ if typing.TYPE_CHECKING:
 
 
 class Hover(Toplevel):
-    def __init__(self, master: App, bd: int = 1, *args, **kw) -> None:
+    def __init__(self, master: App, bd: int = 2, *args, **kw) -> None:
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
         self.maxsize(400, 200)
-        self.config(bg=self.base.theme.border, bd=bd)
+        self.config(bg=self.base.theme.primary_background_highlight, bd=bd)
+
+        container = Frame(self, bg=self.base.theme.border)
+        container.pack(fill=tk.BOTH, expand=True)
 
         self.label = tk.Label(
-            self,
+            container,
             padx=6,
             font=self.base.settings.font,
             anchor=tk.W,
@@ -31,7 +34,7 @@ class Hover(Toplevel):
         )
         self.label.pack(fill=tk.BOTH, expand=True)
 
-        self.renderer = HoverRenderer(self)
+        self.renderer = HoverRenderer(container)
         self.renderer.pack(fill=tk.BOTH, expand=True)
 
         self.withdraw()

@@ -76,9 +76,10 @@ class EventManager(GUIManager, ConfigManager):
         if not dir or not os.path.isdir(dir):
             return
 
+        self.statusbar.process_indicator.show()
         self.active_directory = dir
 
-        self.explorer.directory.change_path(dir)
+        self.explorer.directory.change_path(dir, create_root=False)
         self.set_title(os.path.basename(self.active_directory))
 
         self.editorsmanager.delete_all_editors()
@@ -91,6 +92,8 @@ class EventManager(GUIManager, ConfigManager):
         except Exception as e:
             self.logger.error(f"Checking git failed: {e}")
             self.notifications.error("Checking git failed: see logs")
+
+        self.explorer.directory.create_root(self.active_directory, subdir=False)
 
         self.event_generate("<<DirectoryChanged>>", data=dir)
 

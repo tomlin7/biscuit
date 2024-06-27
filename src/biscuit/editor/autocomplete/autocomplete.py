@@ -24,7 +24,7 @@ class AutoComplete(Toplevel):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=1, pady=1, bg=self.base.theme.border)
+        self.config(padx=2, pady=2, bg=self.base.theme.primary_background_highlight)
         self.withdraw()
         self.overrideredirect(True)
         self.wm_attributes("-topmost", True)

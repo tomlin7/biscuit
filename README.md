@@ -9,18 +9,14 @@
     </a>
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/tomlin7/Biscuit?style=for-the-badge">
 </h1>
-<h4 align="center">
-    <a href=https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md>Developer Docs</a> • 
-    <a href=https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features>Screenshots</a> • 
-    <a href=https://github.com/tomlin7/Biscuit/releases>Downloads</a> • 
-    <a href=https://tomlin7.github.io/biscuit-extensions>Marketplace</a> • 
-    <a href=https://github.com/tomlin7/Biscuit/blob/main/CODE_OF_CONDUCT.md>Code of Conduct</a><br><br>
-</h1>
 
-A lightweight, fast, and extensible code editor with a wide range of language support and runs with very minimal system requirements. It implements the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) for code completions, refactoring, symbol references, and more. Features include breakpoint-based code debugging, AI assistant integration (Gemini), fast workspace search, and built-in Git support. Scroll down to see [biscuit in action](https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features).
+A lightweight, fast, and extensible code editor with a wide range of language support and runs with very minimal system requirements. It implements the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) for code completions, refactoring, symbol references, and more. Features include breakpoint-based code debugging, AI assisted workflow, fast workspace search, and built-in Git support. Scroll down to see [biscuit in action](https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features).
+
+![image](https://github.com/tomlin7/biscuit/assets/70792552/74118e72-e7de-48dd-a34f-a5abd6664e42)
 
 - 🎀 Explore all community made extensions and their authors at the [Biscuit Extension Center](https://tomlin7.github.io/biscuit-extensions/)
-- 🪛 For developer/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit).
+- 🪛 For contributing/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit).
+- 🌟 Scroll down to [features section]() for a list of all features
 
 ## Installing
 
@@ -32,64 +28,69 @@ pip install biscuit-editor
 
 Try running `biscuit --version` in your terminal to check if the installation was successful.
 
-#### Standalone Builds
+### Standalone Builds
 
 - Grab the latest stable build from [**releases page**](https://github.com/tomlin7/Biscuit/releases)
 - Unstable nightly builds from [GitHub actions](https://github.com/tomlin7/Biscuit/actions)
 
-To compile Biscuit from source code, see the [compiling guide](https://github.com/tomlin7/Biscuit/tree/main/scripts).
+For compiling from source code, please check the [installation guide](https://github.com/tomlin7/Biscuit/tree/main/scripts).
 
-## Contributing
+## Contributing ❤️
 
-Your contributions are greatly appreciated! please have a look at our [**developer docs**](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for an outline of the project and to setup the environment.
+Your contributions are valuable and very much appreciated!
+Have a peek at the [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour on project structure and to setup the environment. To contribute a new extension, check the [extension docs](https://github.com/tomlin7/biscuit-extensions).
 
 <a href="https://github.com/tomlin7/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg" />
-</a>
+</a><br>
 
-- For feature suggestions and bug reports, please check [issue tracker](https://github.com/tomlin7/Biscuit/issues)
-- Community made Extensions can be published at: [**Biscuit Extensions Repository**](https://github.com/tomlin7/biscuit-extensions)
+- For opening feature requests and bug reports, use the [issue tracker](https://github.com/tomlin7/Biscuit/issues)
+- Community made extensions are published at the [extensions repository](https://github.com/tomlin7/biscuit-extensions)
 
 ## Features
 
-## Smart Auto-completions
+- **Language Server Support** for code completions, refactoring, symbol references, and more
 
-When the opened file have a recognized and supported file type, and also have language extensions installed, the autocomplete widget will automatically turn on LSP mode, the completions will be handled by registered language server afterwards. LSP mode enables smart and context sensitive code suggestions, as demonstrated below.
-When there are no language extensions available/installed, autocomplete widget goes to word mode, the completions will not be context sensitive and can be unexpected.
+![peek](https://github.com/tomlin7/biscuit/assets/70792552/be132f5b-776c-4045-8a62-c9d29d463762)
 
-![Autocompletions](https://github.com/tomlin7/biscuit/assets/70792552/885ebf36-ce18-45a3-ae57-9a4b709331f7)
+<table>
+    <tr>
+        <img src=https://github.com/tomlin7/biscuit/assets/70792552/36589a2d-8f5f-4196-bc88-5b1800492076 height=300>
+    </tr>
+    <tr> 
+        <img src=https://github.com/tomlin7/biscuit/assets/70792552/68a26ccb-b309-4c21-b75e-3e5cf5fa6500 height=300>
+    </tr>
+</table>
 
-## Hover for Documentation
+<hr>
 
-Identifiers when hovered pops up a floating window on top, containing the documentation (if there is) of that symbol.
+- **Breakpoint-based Code Debugging** with variable inspection, call stack, and more
 
-![hover](https://github.com/tomlin7/biscuit/assets/70792552/4f0ba532-4ec0-49c3-ad08-19e8a622a416)
+![peek](https://github.com/tomlin7/biscuit/assets/70792552/29541b9e-e084-42bc-85b2-4d7c54cd8d34)
 
-## Goto Definitions by `ctrl` + clicking on symbols
+<hr>
 
-User can jump directly into symbol definitions by `ctrl` + clicking on them, the definition containing script will open up in new/existing tab. If there are multiple definitions, window containing all the definitions will popup right below the symbol to pick from
+- **AI Assisted Workflow** for refactoring, code generation, and more
 
-![gotodef](https://github.com/tomlin7/biscuit/assets/70792552/fb3a012f-1e93-4c00-930c-843a9728b958)
+![peek](https://github.com/tomlin7/biscuit/assets/70792552/97913c12-5493-4783-b1f0-ee904f67ff2d)
 
-## **Git Support**
+<hr>
 
-![image](https://github.com/tomlin7/Biscuit/assets/70792552/ea231a77-7899-4560-ab97-95828bb96932)
+- **Fast Workspace Search** with regex support and file preview
 
-## **Integrated Terminals, Extension center**
+![peek](https://github.com/tomlin7/biscuit/assets/70792552/de0540b2-2b34-4be6-aa86-97e17a20d47d)
 
-![image](https://github.com/tomlin7/Biscuit/assets/70792552/2531ea77-a1e0-4a81-96c9-66ad6b6b0c6d)
+<hr>
 
-## **Split-Pane Markdown Editor**
+- **Built-in Git Support** for version control and diff viewer
 
-![image](https://github.com/tomlin7/Biscuit/assets/70792552/2e58ff22-2412-4cb1-b183-673591200308)
+![image](https://github.com/tomlin7/biscuit/assets/70792552/ad650048-7e74-420b-bd3a-d0c059ff69cd)
 
-## **Command Palette for Quick Access**
+<hr>
 
-![ezgif com-video-to-gif](https://github.com/tomlin7/Biscuit/assets/70792552/e0868336-a15f-4b98-a62e-a822e2211e57)
+- **Customizable Themes** with support for custom themes
 
-## **PathView for the Breadcrumbs!**
-
-![pathview](https://imgur.com/CztWtni.jpg)
+![image]()
 
 # License
 
