@@ -109,7 +109,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             self.ctxmenu.show(e)
 
     # IMPORTANT
-    def change_path(self, path: str) -> None:
+    def change_path(self, path: str, create_root=True) -> None:
         """Changes the current directory and updates the treeview.
         Main interface for changing the current directory and updating the treeview."""
 
@@ -120,7 +120,8 @@ class DirectoryTree(NavigationDrawerViewItem):
             self.placeholder.grid_remove()
             self.tree.grid()
             self.tree.clear_tree()
-            self.create_root(self.path, subdir=False)
+            if create_root:
+                self.create_root(self.path, subdir=False)
             self.watcher.watch()
 
             self.set_title(os.path.basename(self.path))
@@ -148,6 +149,8 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         self.update_treeview(path, parent)
         self.loading = False
+
+        self.base.statusbar.process_indicator.hide()
 
     def run_create_sub_root(self, path: str, parent="") -> None:
         """Updates the treeview with the contents of the given directory."""

@@ -10,7 +10,6 @@
             "request": "launch",
             "module": "biscuit",
             "console": "integratedTerminal",
-            "cwd": "src"
         }
     ]
 }

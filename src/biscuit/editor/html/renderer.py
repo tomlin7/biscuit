@@ -46,6 +46,19 @@ class HTMLRenderer(Frame):
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground};
             }}
+            img {{
+                max-width: 100%;
+                height: auto;
+            }}
+
+            hr {{
+                border: 0;
+                border-top: 1px solid {t.border};
+                max-width: 100%;
+            }}
+            li{{
+                margin-left:1px;
+            }}
             :link    {{ color: {t.biscuit}; }}
             :visited {{ color: {t.biscuit_dark}; }}
             INPUT, TEXTAREA, SELECT, BUTTON {{ 

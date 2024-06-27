@@ -53,13 +53,15 @@ class Statusbar(Frame):
             text="setting up environment",
             icon="sync",
             description="enabling language extensions",
-            side=tk.RIGHT,
+            side=tk.LEFT,
             padx=(2, 0),
         )
 
         # ---------------------------------------------------------------------
         self.lc_actionset = self.create_actionset(
-            "Goto line in active editor", ":", [("goto line: {}", self.goto_line)]
+            "Goto line in active editor",
+            ":",
+            pinned=[["goto line: {}", self.goto_line]],
         )
         self.line_col_info = self.add_button(
             text="Ln 1, Col 1",
@@ -171,7 +173,9 @@ class Statusbar(Frame):
         btn.set_pack_data(**kwargs)
         return btn
 
-    def create_actionset(self, name: str, prefix: str, actions: list) -> ActionSet:
+    def create_actionset(
+        self, name: str, prefix: str, actions: list = [], pinned: list = []
+    ) -> ActionSet:
         """Creates and registers an ActionSet.
 
         Args:
@@ -182,7 +186,7 @@ class Statusbar(Frame):
         Returns:
             ActionSet: The created ActionSet instance.
         """
-        actionset = ActionSet(name, prefix, actions)
+        actionset = ActionSet(name, prefix, actions, pinned=pinned)
         self.base.palette.register_actionset(lambda: actionset)
         return actionset
 
