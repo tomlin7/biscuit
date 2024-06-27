@@ -55,10 +55,10 @@ Have a peek at the [contributing guide](https://github.com/tomlin7/Biscuit/blob/
 
 <table>
     <tr>
-        <img src=https://github.com/tomlin7/biscuit/assets/70792552/36589a2d-8f5f-4196-bc88-5b1800492076 height=300>
+        <img src=https://github.com/tomlin7/biscuit/assets/70792552/36589a2d-8f5f-4196-bc88-5b1800492076 height=270>
     </tr>
     <tr> 
-        <img src=https://github.com/tomlin7/biscuit/assets/70792552/68a26ccb-b309-4c21-b75e-3e5cf5fa6500 height=300>
+        <img src=https://github.com/tomlin7/biscuit/assets/70792552/68a26ccb-b309-4c21-b75e-3e5cf5fa6500 height=270>
     </tr>
 </table>
 
