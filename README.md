@@ -15,8 +15,8 @@ A lightweight, fast, and extensible code editor with a wide range of language su
 ![image](https://github.com/tomlin7/biscuit/assets/70792552/74118e72-e7de-48dd-a34f-a5abd6664e42)
 
 - 🎀 Explore all community made extensions and their authors at the [Biscuit Extension Center](https://tomlin7.github.io/biscuit-extensions/)
-- 🪛 For contributing/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit).
-- 🌟 Scroll down to [features section]() for a list of all features
+- 🪛 For contributing/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit)
+- 🌟 Scroll down to the [features section](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features) for a list of all features
 
 ## Installing
 
@@ -86,12 +86,6 @@ Have a peek at the [contributing guide](https://github.com/tomlin7/Biscuit/blob/
 
 ![image](https://github.com/tomlin7/biscuit/assets/70792552/ad650048-7e74-420b-bd3a-d0c059ff69cd)
 
-<hr>
+## License
 
-- **Customizable Themes** with support for custom themes
-
-![image]()
-
-# License
-
-Biscuit uses the MIT License, please check [LICENSE](https://github.com/tomlin7/Biscuit/blob/main/LICENSE.md).
+Biscuit is released under the MIT License; for more information, see [LICENSE](https://github.com/tomlin7/Biscuit/blob/main/LICENSE.md).
