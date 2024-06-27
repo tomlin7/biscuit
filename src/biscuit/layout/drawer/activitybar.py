@@ -3,13 +3,13 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common import Frame, Menu
+from biscuit.common import Frame, Menu
 
 from .actionbutton import ActionButton
 from .menubutton import ActionMenuButton
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.views import NavigationDrawerView
+    from biscuit.views import NavigationDrawerView
 
     from .drawer import NavigationDrawer
 

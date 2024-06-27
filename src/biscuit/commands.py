@@ -9,7 +9,7 @@ import webbrowser as web
 from tkinter import messagebox
 from tkinter.filedialog import asksaveasfilename
 
-from src.biscuit.common.classdrill import *
+from biscuit.common.classdrill import *
 
 if typing.TYPE_CHECKING:
     from .. import App

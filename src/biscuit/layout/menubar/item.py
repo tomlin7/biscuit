@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import typing
 
-from src.biscuit.common import Menu
-from src.biscuit.common.ui import Menubutton
+from biscuit.common import Menu
+from biscuit.common.ui import Menubutton
 
 if typing.TYPE_CHECKING:
     from . import Menubar

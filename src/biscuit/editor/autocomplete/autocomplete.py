@@ -6,10 +6,10 @@ import typing
 from itertools import chain
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor.text import Text
-    from src.biscuit.language.data import Completion, Completions
+    from biscuit.editor.text import Text
+    from biscuit.language.data import Completion, Completions
 
-from src.biscuit.common.ui import Toplevel
+from biscuit.common.ui import Toplevel
 
 from .item import CompletionItem
 

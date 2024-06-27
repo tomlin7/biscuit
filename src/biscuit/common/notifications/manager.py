@@ -1,4 +1,5 @@
 import tkinter as tk
+from typing import Callable
 
 from ..ui import Frame, IconButton, Label, Toplevel
 from .notification import Notification
@@ -60,19 +61,25 @@ class Notifications(Toplevel):
 
         close_button = IconButton(topbar, "chevron-down", self.hide)
         close_button.config(**self.base.theme.notifications.title)
-        close_button.pack(side=tk.RIGHT, fill=tk.BOTH)
+        close_button.pack(side=tk.RIGHT, fill=tk.BOTH, pady=(0, 1))
 
         self.base.bind("<FocusIn>", lambda *_: self.lift, add=True)
         self.base.bind("<Configure>", self._follow_root, add=True)
+        self.lift()
+        self.withdraw()
 
-    def info(self, text: str) -> Notification:
+    def info(
+        self, text: str, actions: list[tuple[str, Callable[[None], None]]] = None
+    ) -> Notification:
         """Create an info notification
 
         Args:
             text (str): notification text"""
 
-        instance = Notification(self, "info", text=text, fg=self.base.theme.biscuit)
-        instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        instance = Notification(
+            self, "info", text=text, fg=self.base.theme.biscuit, actions=actions
+        )
+        instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
 
@@ -80,14 +87,18 @@ class Notifications(Toplevel):
         self.latest = instance
         return instance
 
-    def warning(self, text: str) -> Notification:
+    def warning(
+        self, text: str, actions: list[tuple[str, Callable[[None], None]]] = None
+    ) -> Notification:
         """Create a warning notification
 
         Args:
             text (str): notification text"""
 
-        instance = Notification(self, "warning", text=text, fg="yellow")
-        instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        instance = Notification(
+            self, "warning", text=text, fg="yellow", actions=actions
+        )
+        instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
 
@@ -95,14 +106,16 @@ class Notifications(Toplevel):
         self.latest = instance
         return instance
 
-    def error(self, text: str) -> Notification:
+    def error(
+        self, text: str, actions: list[tuple[str, Callable[[None], None]]] = None
+    ) -> Notification:
         """Create an error notification
 
         Args:
             text (str): notification text"""
 
-        instance = Notification(self, "error", text=text, fg="red")
-        instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        instance = Notification(self, "error", text=text, fg="red", actions=actions)
+        instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
 
@@ -110,7 +123,12 @@ class Notifications(Toplevel):
         self.latest = instance
         return instance
 
-    def notify(self, text: str, kind: int) -> Notification:
+    def notify(
+        self,
+        text: str,
+        kind: int,
+        actions: list[tuple[str, Callable[[None], None]]] = None,
+    ) -> Notification:
         """Create a notification based on kind
         1: info
         2: warning
@@ -122,11 +140,11 @@ class Notifications(Toplevel):
         """
         match kind:
             case 1:
-                self.error(text)
+                self.error(text, actions)
             case 2:
-                self.warning(text)
+                self.warning(text, actions)
             case _:
-                self.info(text)
+                self.info(text, actions)
 
     def _follow_root(self, *_) -> None:
         """Follow root window position"""
@@ -153,6 +171,14 @@ class Notifications(Toplevel):
             # root window is destroyed
             pass
 
+    def toggle(self, *_) -> None:
+        """Toggle notification visibility"""
+
+        if self.active:
+            self.hide()
+        else:
+            self.show()
+
     def show(self, *_) -> None:
         """Toggle notification visibility
         Also updates title based on count."""
@@ -161,9 +187,6 @@ class Notifications(Toplevel):
             self.title.config(text=f"NOTIFICATIONS ({self.count})")
         else:
             self.title.config(text="NO NEW NOTIFICATIONS")
-
-        if self.active:
-            return self.hide()
 
         self.active = True
         self.deiconify()
@@ -184,20 +207,20 @@ class Notifications(Toplevel):
             i.delete()
         self.count = 0
 
-    def delete(self, notification: Notification) -> None:
+    def delete_notification(self, notification: Notification) -> None:
         """Delete a notification
 
         Args:
             notification (Notification): notification to delete"""
 
         self.notifications.remove(notification)
-        self.count -= 1
         notification.destroy()
-        if not self.count:
-            self.hide()
-        else:
-            self.show()
+        self.count -= 1
 
         self.update_idletasks()
         self._follow_root()
+
+        if not self.count:
+            self.hide()
+
         self.base.statusbar.update_notifications()

@@ -1,4 +1,4 @@
-from src.biscuit.common import Menu
+from biscuit.common import Menu
 
 
 class AIMenu(Menu):

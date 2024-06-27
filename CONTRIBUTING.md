@@ -6,15 +6,17 @@ Welcome to the contributing guidelines for Biscuit. This document will help you 
 
 Python 3.10 or above is required for building Biscuit.
 
-[**Fork**](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Biscuit repository and clone locally. 
+Fork the Biscuit repository and clone locally.
+
 ```bash
 git clone http://github.com/tomlin7/biscuit
 ```
-Run `pip install -r requirements.txt` or `poetry install`, your preference. Try to launch biscuit once with `python -m biscuit` and make sure everything looks good.
 
+In the root directory, run `poetry install`. Try to launch biscuit from source with `poetry run biscuit` and make sure everything looks good.
 
 > [!IMPORTANT]
 > Linux distros require some prerequisites to be installed prior to the pip installation
+>
 > ```bash
 >  sudo apt install python3-dev tcl-dev tk-dev \
 >    fontconfig libfontconfig1 libfontconfig1-dev \
@@ -22,9 +24,10 @@ Run `pip install -r requirements.txt` or `poetry install`, your preference. Try 
 >  python -m pip install scikit-build
 > ```
 
-
 # Project Structure
+
 The codebase of Biscuit is divided into 3 main parts:
+
 - **/biscuit**: Main codebase of the App.
 - **/tests**: unit tests for Biscuit (WIP).
 - **/docs**: documentation for Biscuit (WIP).
@@ -38,41 +41,42 @@ Please make sure to follow the [PEP8](https://www.python.org/dev/peps/pep-0008/)
 - `/extensions`: extensions directory.
 - `/res`: icon fonts, bitmaps, images, etc.
 
-Main interest here is in the `/core` directory. 
+Main interest here is in the `/core` directory.
 
 - `/core/components`: all components of app such as editors, git, extension manager, views and floating views such as menu, notifications and palette, etc.
 - `/core/layout`: the GUI structure, statusbar, menubar, editor-view-terminal managers, etc.
 - `/core/utils`: keyboard shortcuts, events manager, etc.
 - `/core/settings`: preferences, configuration manager, settings editor, themes, etc.
 
-
 # The App class
 
-Main point of having this class is to have a single point of access to all the important parts of the app. 
+Main point of having this class is to have a single point of access to all the important parts of the app.
 
 > [!IMPORTANT]  
 > **This class holds reference to all the components of Biscuit and every class of biscuit have a reference to this `base` class**
 
-- Example: Accessing the active editor instance from Foo class of biscuit: 
-    ```py
-    class Foo:
-        ...
-        def foo(self):
-            editor = self.base.editorsmanager.active_editor 
-            if (editor.content and editor.content.exists):
-                print(editor.path)
-                if (editor.content.editable):
-                    self.base.notifications.info(":)")
-    ```
+- Example: Accessing the active editor instance from Foo class of biscuit:
+
+  ```py
+  class Foo:
+      ...
+      def foo(self):
+          editor = self.base.editorsmanager.active_editor
+          if (editor.content and editor.content.exists):
+              print(editor.path)
+              if (editor.content.editable):
+                  self.base.notifications.info(":)")
+  ```
 
 - Example: Accessing the menubar from Foo class of biscuit:
-    ```py
-    class Foo:
-        ...
-        def foo(self):
-            filemenu = self.base.menubar.file_menu
-            filemenu.add_item("this", lambda: print("Wah"))
 
-            xyzmenu = self.base.menubar.add_menu("Wah")
-            xyzmenu.add_item("stuff", lambda: print("Wah"))
-    ```
+  ```py
+  class Foo:
+      ...
+      def foo(self):
+          filemenu = self.base.menubar.file_menu
+          filemenu.add_item("this", lambda: print("Wah"))
+
+          xyzmenu = self.base.menubar.add_menu("Wah")
+          xyzmenu.add_item("stuff", lambda: print("Wah"))
+  ```

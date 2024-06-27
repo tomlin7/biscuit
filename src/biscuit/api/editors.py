@@ -5,19 +5,6 @@ class Editors(Endpoint):
     def __init__(self, *a) -> None:
         super().__init__(*a)
         self.editors = self.base.editorsmanager
-
-        from src.biscuit.editor import Editor, ImageViewer, MDEditor, TextEditor
-        from src.biscuit.git.diff import DiffEditor
-        from src.biscuit.views import NavigationDrawerView, PanelView
-
-        self.PanelView = PanelView
-        self.SidebarView = NavigationDrawerView
-        self.TextEditor = TextEditor
-        self.MDEditor = MDEditor
-        self.DiffEditor = DiffEditor
-        self.ImageViewer = ImageViewer
-        self.Editor = Editor
-
         self.theme = self.base.theme
 
     def add_editor(self, editor) -> None:

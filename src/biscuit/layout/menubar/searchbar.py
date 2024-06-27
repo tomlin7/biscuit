@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from src import __version__
-from src.biscuit.common.ui import Frame, IconButton, IconLabelButton
+from biscuit import __version__
+from biscuit.common.ui import Frame, IconButton, IconLabelButton
 
 
 class SearchBar(Frame):

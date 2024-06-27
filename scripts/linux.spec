@@ -2,7 +2,13 @@
 from PyInstaller.utils.hooks import collect_data_files
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('../resources/*', 'resources/')]
+datas = [
+    ('../resources/*', 'resources/'), 
+    ('../resources/fonts/*', 'resources/fonts/'), 
+    ('../resources/bitmap/*', 'resources/bitmap/'),
+    ('../resources/linux/*', 'resources/linux/'), 
+]
+
 binaries = []
 hiddenimports = []
 datas += collect_data_files('sv_ttk')
@@ -13,7 +19,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['../src/__main__.py'],
+    ['build.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,

@@ -8,14 +8,14 @@ import typing
 
 import requests
 
-from src.biscuit.common.ui import ScrollableFrame
+from biscuit.common.ui import ScrollableFrame
 
 from ..drawer_item import NavigationDrawerViewItem
 from .extension import Extension
 from .placeholder import ExtensionsPlaceholder
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.extensions import ExtensionManager
+    from biscuit.extensions import ExtensionManager
 
 
 class ExtensionsList(ScrollableFrame):
@@ -39,7 +39,7 @@ class Results(NavigationDrawerViewItem):
     fetching: threading.Event
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = ()
+        self.__actions__ = ()
         self.title = "Available"
 
         super().__init__(master, *args, **kwargs)

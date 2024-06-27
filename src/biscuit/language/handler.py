@@ -92,28 +92,15 @@ class EventHandler:
             tab = matching_tabs[0]
 
             tab.lsp_diagnostics(
-                Underlines(
-                    id="diagnostics",
-                    underline_list=[
-                        Underline(
-                            start=decode_position(diagnostic.range.start),
-                            end=decode_position(diagnostic.range.end),
-                            tooltip_text=f"{diagnostic.source}: {diagnostic.message}",
-                            color=(
-                                "red"
-                                if diagnostic.severity == lsp.DiagnosticSeverity.ERROR
-                                else "orange"
-                            ),
-                        )
-                        for diagnostic in sorted(
-                            e.diagnostics,
-                            key=(
-                                lambda d: d.severity or lsp.DiagnosticSeverity.WARNING
-                            ),
-                            reverse=True,
-                        )
-                    ],
-                ),
+                [
+                    Diagnostic(
+                        start=decode_position(diagnostic.range.start),
+                        end=decode_position(diagnostic.range.end),
+                        message=f"{diagnostic.source}: {diagnostic.message}",
+                        severity=(diagnostic.severity),
+                    )
+                    for diagnostic in e.diagnostics
+                ],
             )
             return
 

@@ -1,14 +1,16 @@
 import os
+import pathlib
 import platform
 import shutil
 import subprocess
 import threading
 import tkinter as tk
 from tkinter.messagebox import askyesno
+from typing import Iterator
 
 import pyperclip
 
-from src.biscuit.common.ui import Tree
+from biscuit.common.ui import Tree
 
 from ..drawer_item import NavigationDrawerViewItem
 from .menu import DirectoryContextMenu
@@ -31,7 +33,7 @@ class DirectoryTree(NavigationDrawerViewItem):
         **kwargs,
     ) -> None:
         self.title = "No folder opened"
-        self.__buttons__ = (
+        self.__actions__ = (
             ("new-file", lambda: self.base.palette.show("newfile:")),
             ("new-folder", lambda: self.base.palette.show("newfolder:")),
             ("refresh", self.refresh_root),
@@ -41,7 +43,11 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         self.nodes = {}
 
-        self.ignore_dirs = [
+        self.hide_dirs = [
+            ".git",
+        ]
+
+        self.search_ignore_dirs = [
             ".git",
             "__pycache__",
             ".pytest_cache",
@@ -50,16 +56,20 @@ class DirectoryTree(NavigationDrawerViewItem):
             "dist",
             "build",
         ]
-        self.ignore_dir_patterns = [
-            "*/.git/*",
-            "*/__pycache__/*",
-            "*/.pytest_cache/*",
-            "*/node_modules/*",
-            "*/debug/*",
-            "*/dist/*",
-            "*/build/*",
+
+        s = os.sep
+        self.changes_ignore_dir_patterns = [
+            f"*{s}.git{s}*",
+            f"*{s}__pycache__{s}*",
+            f"*{s}.pytest_cache{s}*",
+            f"*{s}node_modules{s}*",
+            f"*{s}debug{s}*",
+            f"*{s}dist{s}*",
+            f"*{s}build{s}*",
         ]
+
         self.ignore_exts = [".pyc"]
+        self.git = self.base.git
 
         self.tree = Tree(
             self.content,
@@ -82,6 +92,8 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         self.ctxmenu = DirectoryContextMenu(self, "ExplorerContextMenu")
         self.tree.bind("<Button-3>", self.right_click)
+
+        self.tree.tree.tag_configure("ignored", foreground=self.base.theme.disabled)
 
         if startpath:
             self.change_path(startpath)
@@ -158,60 +170,78 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         return files
 
-    def scandir(self, path) -> list:
-        """Returns a list of entries in the given directory.
-        Heloper function for updating the treeview."""
+    def scandir(self, path: str) -> Iterator:
+        """Scans the given directory and yields its contents."""
 
-        entries = []
         for entry in os.scandir(path):
-            entries.append((entry.name, os.path.join(self.path, entry.path)))
-        return entries
+            isdir = os.path.isdir(entry.path)
+            data = (
+                entry.name,
+                os.path.join(self.path, entry.path),
+                isdir,
+                entry.path.replace("\\", "/")
+                + ("/" if isdir else ""),  # unix-like path
+            )
 
-    def update_path(self, path) -> None:
+            yield data
+
+    def update_path(self, path: str) -> None:
         """Updates the treeview with the contents of the given directory."""
 
-        if not path or any(path.endswith(i) for i in self.ignore_dirs):
+        if not path or any(path.endswith(i) for i in self.hide_dirs):
             return
 
         node = self.nodes.get(os.path.abspath(path))
         for i in self.tree.get_children(node):
-            self.tree.delete(i)
+            try:
+                self.tree.delete(i)
+            except:
+                pass
 
         self.create_root(path, node)
 
-    def update_treeview(self, parent_path, parent="") -> None:
-        """Updates the treeview with the contents of the given directory."""
+    def update_treeview(self, parent_path: str, parent="") -> None:
+        """Lazy loads the treeview with the contents of the given directory.
+
+        Initially this was done recursively, but it was changed to a lazy load
+        to improve performance. The treeview is updated only when the user
+        expands a directory node."""
 
         if not os.path.exists(parent_path):
             return
 
-        entries = self.scandir(parent_path)
         # sort: directories first, then files (alphabetic order)
-        entries.sort(key=lambda x: (not os.path.isdir(x[1]), x[0]))
+        entries = sorted(self.scandir(parent_path), key=lambda x: (not x[2], x[0]))
+        ignored = self.git.ignore.check([i[3] for i in entries])
 
-        try:
-            for name, path in entries:
-                if os.path.isdir(path):
-                    if name in self.ignore_dirs:
-                        continue
+        for name, path, isdir, unixlike in entries:
+            if isdir:
+                if name in self.hide_dirs:
+                    continue
 
+                try:
                     node = self.tree.insert(
-                        parent,
+                        parent or "",
                         "end",
                         text=f"  {name}",
                         values=[path, "directory"],
-                        image="foldericon",
+                        # image="foldericon",
                         open=False,
+                        tags="ignored" if unixlike in ignored else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
-                    self.tree.insert(node, "end", text="loading...")
+                    self.tree.insert(node, "end", text="loading...", tags="ignored")
+                except:
+                    self.refresh_root()
+                    break
 
-                    # recursive mode loading (not good for large projects)
-                    # self.update_treeview(path, node)
-                else:
-                    if name.split(".")[-1] in self.ignore_exts:
-                        continue
+                # NOTE: recursive mode loading (not good for large projects)
+                # self.update_treeview(path, node)
+            else:
+                if name.split(".")[-1] in self.ignore_exts:
+                    continue
 
+                try:
                     # TODO check filetype and get matching icon, cases
                     node = self.tree.insert(
                         parent,
@@ -219,10 +249,12 @@ class DirectoryTree(NavigationDrawerViewItem):
                         text=f"  {name}",
                         values=[path, "file"],
                         image="document",
+                        tags="ignored" if unixlike in ignored else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
-        except Exception as e:
-            self.base.logger.error(f"Error updating treeview: {e}")
+                except:
+                    self.refresh_root()
+                    break
 
     def selected_directory(self) -> str:
         """Returns the selected directory path, or the current path if no directory is selected."""
@@ -233,7 +265,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             else self.tree.selected_parent_path().strip()
         ) or self.path
 
-    def new_file(self, filename) -> None:
+    def new_file(self, filename: str) -> None:
         """Creates a new file in the selected directory."""
 
         if not filename:
@@ -256,7 +288,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             f.write("")
         self.create_root(parent, self.nodes[parent])
 
-    def new_folder(self, foldername) -> None:
+    def new_folder(self, foldername: str) -> None:
         """Creates a new folder in the selected directory."""
 
         if not foldername:
@@ -300,6 +332,20 @@ class DirectoryTree(NavigationDrawerViewItem):
         path = os.path.abspath(self.tree.selected_path())
         if self.tree.is_file_selected():
             self.base.ai.attach_file(path)
+
+    def add_to_gitignore(self, *_) -> None:
+        """Adds the selected item to the .gitignore file."""
+
+        path = os.path.relpath(self.tree.selected_path(), self.path)
+        self.git.ignore.add((path + "/") if self.tree.is_directory_selected() else path)
+
+    def exclude_from_gitignore(self, *_) -> None:
+        """Excludes the selected item from the .gitignore file."""
+
+        path = os.path.relpath(self.tree.selected_path(), self.path)
+        self.git.ignore.exclude(
+            (path + "/") if self.tree.is_directory_selected() else path
+        )
 
     def reopen_editor(self, *_) -> None:
         """Reopens the selected file in the editor."""

@@ -1,4 +1,4 @@
-from src.biscuit.common.ui import Tree
+from biscuit.common.ui import Tree
 
 
 class PeekTree(Tree):

@@ -3,14 +3,14 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 from .tab import Tab
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.common.ui import IconButton
-    from src.biscuit.layout.content import Content
-    from src.biscuit.views.panelview import PanelView
+    from biscuit.common.ui import IconButton
+    from biscuit.layout.content import Content
+    from biscuit.views.panelview import PanelView
 
     from .panel import Panel
 
@@ -33,18 +33,18 @@ class PanelBar(Frame):
         self.active_tabs: list[Tab] = []
         self.active_tab = None
 
-        self.buttons: list[IconButton] = []
+        self.actions: list[IconButton] = []
 
         # These buttons are common for all panel views
-        self.default_buttons = (
+        self.default_actions = (
             ("close", content.toggle_panel),
             ("chevron-up", content.toggle_max_panel, "chevron-down"),
         )
 
-        for button in self.default_buttons:
+        for button in self.default_actions:
             IconButton(self, *button).pack(side=tk.RIGHT)
 
-    def add_buttons(self, buttons: list[IconButton]) -> None:
+    def add_actions(self, buttons: list[IconButton]) -> None:
         """Add the buttons to the control buttons
 
         Args:
@@ -52,21 +52,21 @@ class PanelBar(Frame):
 
         for button in buttons:
             button.pack(side=tk.LEFT)
-            self.buttons.append(button)
+            self.actions.append(button)
 
-    def replace_buttons(self, buttons: list[IconButton]) -> None:
+    def replace_actions(self, buttons: list[IconButton]) -> None:
         """Replace the control buttons with the new buttons
 
         Args:
             buttons (list[IconButton]): new buttons"""
 
         self.clear()
-        self.add_buttons(buttons)
+        self.add_actions(buttons)
 
     def clear(self) -> None:
-        for button in self.buttons:
+        for button in self.actions:
             button.pack_forget()
-        self.buttons.clear()
+        self.actions.clear()
 
     def add_tab(self, view: PanelView) -> None:
         """Add the view to the tabs
@@ -87,7 +87,7 @@ class PanelBar(Frame):
             selected_tab (Tab): selected tab"""
 
         self.active_tab = selected_tab
-        self.replace_buttons(selected_tab.view.__actions__)
+        self.replace_actions(selected_tab.view.__actions__)
         for tab in self.active_tabs:
             if tab != selected_tab:
                 tab.deselect()

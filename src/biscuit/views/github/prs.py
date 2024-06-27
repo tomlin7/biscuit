@@ -6,9 +6,9 @@ from tkinter import ttk
 
 import requests
 
-from src.biscuit.common import ActionSet
-from src.biscuit.common.ui import Scrollbar
-from src.biscuit.git import PRViewer
+from biscuit.common import ActionSet
+from biscuit.common.ui import Scrollbar
+from biscuit.git import PRViewer
 
 from ..drawer_item import NavigationDrawerViewItem
 
@@ -22,7 +22,7 @@ class PRs(NavigationDrawerViewItem):
 
     def __init__(self, master, itembar=True, *args, **kwargs) -> None:
         self.title = "Pull Requests"
-        self.__buttons__ = ()
+        self.__actions__ = ()
         super().__init__(master, itembar=itembar, *args, **kwargs)
 
         self.url_template = "https://api.github.com/repos/{}/{}/pulls"

@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 
-from src.biscuit.common import ActionSet
+from biscuit.common import ActionSet
 
 from ..drawer_view import NavigationDrawerView
 from .directorytree import DirectoryTree
@@ -18,7 +18,7 @@ class Explorer(NavigationDrawerView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = []
+        self.__actions__ = []
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "files"
         self.name = "Explorer"
@@ -92,7 +92,7 @@ class Explorer(NavigationDrawerView):
 
         pys = []
         for r, d, f in os.walk(self.base.active_directory):
-            if any(i in r for i in self.directory.ignore_dirs):
+            if any(i in r for i in self.directory.search_ignore_dirs):
                 d[:] = []
                 continue
             for file in f:

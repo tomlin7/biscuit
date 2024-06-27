@@ -1,7 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import (Entry, Frame, IconLabelButton,
-                                   ScrollableFrame)
+from biscuit.common.ui import Entry, Frame, IconLabelButton, ScrollableFrame
 
 from .changes import Changes
 from .placeholder import ChangesTreePlaceholder

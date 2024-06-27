@@ -8,8 +8,9 @@
             "name": "Python: Launch Biscuit",
             "type": "debugpy",
             "request": "launch",
-            "module": "src",
-            "console": "integratedTerminal"
+            "module": "biscuit",
+            "console": "integratedTerminal",
+            "cwd": "src"
         }
     ]
 }

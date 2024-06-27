@@ -2,8 +2,8 @@ import tkinter as tk
 
 import tarts as lsp
 
-from src.biscuit.common.ui import Text, get_codicon
-from src.biscuit.language.utils import decode_position
+from biscuit.common.ui import Text, get_codicon
+from biscuit.language.utils import decode_position
 
 from .kinds import kinds
 

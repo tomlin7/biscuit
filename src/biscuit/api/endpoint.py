@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
 
 class Endpoint:

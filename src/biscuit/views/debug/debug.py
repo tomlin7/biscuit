@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 
-from src.biscuit.common import ActionSet
+from biscuit.common import ActionSet
 
 from ..drawer_view import NavigationDrawerView
 from .callstack import CallStack
@@ -18,7 +18,7 @@ class Debug(NavigationDrawerView):
     - Debugger run controls are displayed in the editor toolbar."""
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = []
+        self.__actions__ = []
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "bug"
         self.name = "Debug"

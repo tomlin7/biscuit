@@ -24,7 +24,7 @@ class DirectoryTreeWatcher(PatternMatchingEventHandler):
         self.tree = tree
         self.observe_changes = observe_changes
 
-        super().__init__(ignore_patterns=self.master.ignore_dir_patterns)
+        super().__init__(ignore_patterns=self.master.changes_ignore_dir_patterns)
 
         self.observer = Observer()
         self.observer.start()
@@ -38,14 +38,20 @@ class DirectoryTreeWatcher(PatternMatchingEventHandler):
         self.observer.stop()
 
     def on_created(self, event) -> None:
+        for i in self.master.search_ignore_dirs:
+            if i in event.src_path:
+                return
+
         self.master.update_path(os.path.dirname(event.src_path))
         self.base.source_control.reload_tree()
-        print("created", event.src_path)
 
     def on_deleted(self, event) -> None:
+        for i in self.master.search_ignore_dirs:
+            if i in event.src_path:
+                return
+
         self.master.update_path(os.path.dirname(event.src_path))
         self.base.source_control.reload_tree()
-        print("deleted", event.src_path)
 
     def on_modified(self, event) -> None:
         # self.master.update_path(os.path.dirname(event.src_path))
@@ -54,6 +60,10 @@ class DirectoryTreeWatcher(PatternMatchingEventHandler):
         ...
 
     def on_moved(self, event):
+        for i in self.master.search_ignore_dirs:
+            if i in event.src_path:
+                return
+
         try:
             self.master.update_path(os.path.dirname(event.src_path))
             self.base.source_control.reload_tree()

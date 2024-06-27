@@ -82,6 +82,7 @@ class GUIManager(Tk, ConfigManager):
 
         # the very parent of all GUI parts
         self.root = Root(self)
+        self.editortypes = EditorTypes(self)
 
         # major components of layout
         self.menubar = self.root.menubar
@@ -120,6 +121,7 @@ class GUIManager(Tk, ConfigManager):
         self.rename = Rename(self)
         self.pathview = PathView(self)
         self.hover = Hover(self)
+        self.diagnostic = Diagnostic(self)
 
     def late_setup(self) -> None:
         """Late setup for GUI components that are dependant on other components.

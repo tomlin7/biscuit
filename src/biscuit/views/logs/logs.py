@@ -1,37 +1,11 @@
-import inspect
 import queue
 import tkinter as tk
 from datetime import datetime
 
-from src.biscuit.common.ui import Scrollbar
+from biscuit.common import caller_class_name
+from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
-
-
-def caller_class_name(skip=2):
-    """
-    Get the name of the class of the caller.
-
-    `skip` specifies how many levels of stack to skip while getting the caller's class.
-    skip=1 means "who calls me", skip=2 "who calls my caller" etc.
-
-    An empty string is returned if skipped levels exceed the stack height.
-    """
-    stack = inspect.stack()
-    start = 0 + skip
-    if len(stack) < start + 1:
-        return ""
-
-    parentframe = stack[start][0]
-    class_name = None
-
-    # detect classname
-    if "self" in parentframe.f_locals:
-        class_name = parentframe.f_locals["self"].__class__.__name__
-
-    del parentframe, stack
-
-    return class_name
 
 
 class Logs(PanelView):
@@ -44,7 +18,7 @@ class Logs(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (("clear-all",),)
+        self.__actions__ = (("clear-all",),)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -120,22 +94,25 @@ class Logs(PanelView):
     def info(self, text: str) -> None:
         """info level log"""
 
-        self.log((" [info] ", "info"), caller_class_name(), text)
+        self._std_log(" [info] ", "info", text)
 
     def warning(self, text: str) -> None:
         """warning level log"""
 
-        self.log((" [warning] ", "warning"), caller_class_name(), text)
+        self._std_log(" [warning] ", "warning", text)
 
     def error(self, text: str) -> None:
         """error level log"""
 
-        self.log((" [error] ", "error"), caller_class_name(), text)
+        self._std_log(" [error] ", "error", text)
 
     def trace(self, text: str) -> None:
         """trace level log"""
 
-        self.log((" [trace] ", "trace"), caller_class_name(), text)
+        self._std_log(" [trace] ", "trace", text)
+
+    def _std_log(self, kindtext: str, kind: str, text: str) -> None:
+        self.log((kindtext, kind), caller_class_name(), text)
 
     def rawlog(self, text: str, kind: int):
         match kind:

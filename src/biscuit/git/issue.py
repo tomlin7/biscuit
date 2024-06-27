@@ -4,8 +4,8 @@ import webbrowser
 import mistune
 from tkinterweb import HtmlFrame
 
-from src.biscuit.common.ui import Frame, Label, LinkLabel, Scrollbar
-from src.biscuit.common.ui.buttons import IconLabelButton
+from biscuit.common.ui import Frame, Label, LinkLabel, Scrollbar
+from biscuit.common.ui.buttons import IconLabelButton
 
 from ..editor.editorbase import BaseEditor
 
@@ -109,7 +109,7 @@ class IssueViewer(BaseEditor):
         self.body.load_html(
             f"<h1>{data['title']} <a href={data['html_url']}>#{data['number']}</a></h1><br>"
             + f"<span class='state-label'>{data['state']}</span>"
-            + f"Opened by <a href={data["user"]["html_url"]}>{data['user']['login']}</a><br><hr>"
+            + f'''Opened by <a href={data["user"]["html_url"]}>{data['user']['login']}</a><br><hr>"'''
             + mistune.html(data["body"])
         )
 

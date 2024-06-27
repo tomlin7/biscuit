@@ -4,8 +4,8 @@ import tkinter as tk
 from hashlib import md5
 from tkinter.font import Font
 
-from src.biscuit.common.ui import Scrollbar
-from src.biscuit.debugger import get_debugger
+from biscuit.common.ui import Scrollbar
+from biscuit.debugger import get_debugger
 
 from ..editorbase import BaseEditor
 from .linenumbers import LineNumbers
@@ -144,7 +144,6 @@ class TextEditor(BaseEditor):
 
     def file_loaded(self):
         self.recalculate_content_hash()
-        print(f"File opened {self.path}")
         self.event_generate("<<FileLoaded>>", when="tail")
         self.text.event_generate("<<FileLoaded>>", when="tail")
 
@@ -170,7 +169,9 @@ class TextEditor(BaseEditor):
 
     def run_file(self, dedicated=False, external=False):
         if not self.run_command_value:
-            self.base.notifications.show("No programs are configured to run this file.")
+            self.base.notifications.warning(
+                "No programs are configured to run this file."
+            )
             self.base.commands.show_run_config_palette(self.run_command_value)
             return
 

@@ -24,20 +24,20 @@ class JumpRequest:
 
 
 @dataclasses.dataclass
-class Underline:
+class Diagnostic:
     start: str
     end: str
-    tooltip_text: str
-    color: Optional[str] = None
+    message: str
+    severity: int = 0
+    tag: Optional[str] = None
 
     def __repr__(self) -> str:
         return self.start
 
 
 @dataclasses.dataclass
-class Underlines:
-    id: str
-    underline_list: List[Underline]
+class Diagnostics:
+    underline_list: List[Diagnostic]
 
 
 @dataclasses.dataclass

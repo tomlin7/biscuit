@@ -8,6 +8,8 @@ import typing
 from tkinter import filedialog
 from tkinter.messagebox import askyesnocancel
 
+from biscuit.common.actionset import ActionSet
+
 from .common import BaseGame
 from .config import ConfigManager
 from .editor import *
@@ -17,8 +19,8 @@ from .settings import *
 from .views import *
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor import BaseEditor, Editor
-    from src.biscuit.language.data import *
+    from biscuit.editor import BaseEditor, Editor
+    from biscuit.language.data import *
 
     from .layout import *
 
@@ -63,8 +65,7 @@ class EventManager(GUIManager, ConfigManager):
             return
 
         if os.path.isdir(path):
-            self.open_directory(path)
-            return self.explorer.directory.refresh_root()
+            return self.open_directory(path)
 
         if os.path.isfile(path):
             return self.open_editor(path)
@@ -76,6 +77,7 @@ class EventManager(GUIManager, ConfigManager):
             return
 
         self.active_directory = dir
+
         self.explorer.directory.change_path(dir)
         self.set_title(os.path.basename(self.active_directory))
 
@@ -216,6 +218,12 @@ class EventManager(GUIManager, ConfigManager):
 
     def register_comment_prefix(self, language: str, prefix: str) -> None:
         register_comment_prefix(language, prefix)
+
+    def register_actionset(self, actionset: ActionSet) -> None:
+        self.palette.register_actionset(actionset)
+
+    def register_command(self, name: str, command: typing.Callable) -> None:
+        self.settings.register_command(name, command)
 
     def register_run_command(self, language: str, command: str) -> None:
         self.execution_manager.register_command(language, command)

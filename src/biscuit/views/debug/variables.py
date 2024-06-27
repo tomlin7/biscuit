@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Tree
+from biscuit.common.ui import Tree
 
 from ..drawer_item import NavigationDrawerViewItem
 
@@ -11,7 +11,7 @@ class Variables(NavigationDrawerViewItem):
 
     def __init__(self, master, *args, **kwargs) -> None:
         self.title = "Variables"
-        self.__buttons__ = ()
+        self.__actions__ = ()
         super().__init__(master, itembar=True, *args, **kwargs)
 
         self.tree = Tree(self.content, *args, **kwargs)

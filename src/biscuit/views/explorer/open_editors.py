@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Closable
+from biscuit.common.ui import Closable
 
 from ..drawer_item import NavigationDrawerViewItem
 
@@ -13,7 +13,7 @@ class OpenEditors(NavigationDrawerViewItem):
 
     def __init__(self, master, startpath=None, itembar=True, *args, **kwargs) -> None:
         self.title = "Open Editors"
-        self.__buttons__ = (("new-file", lambda: self.base.palette.show("newfile:")),)
+        self.__actions__ = (("new-file", lambda: self.base.palette.show("newfile:")),)
         super().__init__(master, itembar=itembar, *args, **kwargs)
         self.path = startpath
         self.nodes = {}

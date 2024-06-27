@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Scrollbar
+from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
 
@@ -15,7 +15,7 @@ class Problems(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__buttons__ = (("clear-all", self.clear),)
+        self.__actions__ = (("clear-all", self.clear),)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)

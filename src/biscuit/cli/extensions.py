@@ -4,10 +4,10 @@ import typing
 
 import click
 
-from src import get_app_instance
+from biscuit import get_app_instance
 
 if typing.TYPE_CHECKING:
-    from src import App
+    from biscuit import App
 
 
 @click.group(invoke_without_command=True)

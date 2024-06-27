@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Frame, IconLabelButton, WrappingLabel
+from biscuit.common.ui import Frame, IconLabelButton, WrappingLabel
 
 
 class ChangesTreePlaceholder(Frame):

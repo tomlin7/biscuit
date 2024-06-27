@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton
 
 
 class NavigationDrawerItemToolBar(Frame):
@@ -32,15 +32,15 @@ class NavigationDrawerItemToolBar(Frame):
         self.actions = Frame(self, **self.base.theme.views.sidebar.itembar)
         self.actions.grid(row=0, column=2, sticky=tk.E)
 
-        self.add_buttons(buttons)
+        self.add_actions(buttons)
 
-    def add_button(self, *args) -> None:
+    def add_action(self, *args) -> None:
         IconButton(self.actions, *args).grid(row=0, column=self.buttoncolumn)
         self.buttoncolumn += 1
 
-    def add_buttons(self, buttons) -> None:
+    def add_actions(self, buttons) -> None:
         for btn in buttons:
-            self.add_button(*btn)
+            self.add_action(*btn)
 
     def set_title(self, title: str) -> None:
         self.title.set(title.upper())

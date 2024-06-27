@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from pygments.token import Token
-from pytermgui import foreground
 
 
 class ThemeObject(Mapping):
@@ -140,7 +139,9 @@ class DrawerPane(FrameThemeObject):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.actionbar = FrameThemeObject(self)
-        self.actionbar.slot = HighlightableThemeObject(self.actionbar).remove_bg_highlight()
+        self.actionbar.slot = HighlightableThemeObject(
+            self.actionbar
+        ).remove_bg_highlight()
         self.actionbar.bubble = ThemeObject(self.actionbar)
 
 
@@ -216,11 +217,17 @@ class Menu(FrameThemeObject):
 
 
 class Notifications(FrameThemeObject):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.title = ThemeObject(self)
+    def __init__(self, master: Theme, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.theme = master
+        self.title = ThemeObject(self, fg=master.secondary_foreground)
         self.button = HighlightableThemeObject(self)
         self.text = ThemeObject(self)
+        self.source = ThemeObject(
+            self,
+            master.primary_background,
+            master.primary_foreground,
+        )
 
 
 class Editors(FrameThemeObject):
@@ -288,7 +295,9 @@ class Utils(ThemeObject):
         )
         self.colorlabel = ThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
         self.tree = FrameThemeObject(self)
-        self.tree.item = ThemeObject(self.tree)
+        self.tree.item = ThemeObject(
+            self.tree, foreground=theme.primary_foreground_highlight
+        )
         self.bubble = ThemeObject(self)
         self.iconbutton = HighlightableThemeObject(self)
         self.iconlabelbutton = HighlightableThemeObject(
@@ -303,6 +312,7 @@ class Utils(ThemeObject):
             theme.secondary_foreground,
             self.highlightbackground,
         )
+        self.frame = FrameThemeObject(self)
         self.buttonsentry = ThemeObject(
             self,
             theme.secondary_background,
@@ -327,6 +337,7 @@ class Theme:
     biscuit_dark = "#B56711"
 
     border = "#dfdfdf"
+    disabled = "#8e8e90"
 
     primary_background = "#f8f8f8"
     primary_foreground = "#424242"
@@ -360,6 +371,13 @@ class Theme:
             self.secondary_background_highlight,
             self.secondary_foreground_highlight,
         ]
+
+        self.foreground = self.primary_foreground
+        self.background = self.primary_background
+        self.highlightbackground = self.primary_background_highlight
+        self.highlightforeground = self.primary_foreground_highlight
+        self.selectedbackground = self.primary_background_highlight
+        self.selectedforeground = self.primary_foreground_highlight
 
         self.layout = Layout(self, *primary)
         self.views = Views(self, *primary)

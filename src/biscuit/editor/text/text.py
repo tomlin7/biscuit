@@ -12,18 +12,22 @@ from tkinter.messagebox import askokcancel
 import chardet
 import tarts as lsp
 
+from biscuit.common.minclosestdict import MinClosestKeyDict
+from biscuit.common.textindex import TextIndex
+from biscuit.language.data import Diagnostic
+
 if typing.TYPE_CHECKING:
-    from src.biscuit.language.data import (
+    from biscuit.language.data import (
         WorkspaceEdits,
         HoverResponse,
         Jump,
-        Underlines,
         Completions,
+        Diagnostic,
     )
     from . import TextEditor
 
-from src.biscuit.common import textutils
-from src.biscuit.common.ui import Text as BaseText
+from biscuit.common import textutils
+from biscuit.common.ui import Text as BaseText
 
 from ..comment_prefix import get_comment_prefix
 from .highlighter import Highlighter
@@ -66,6 +70,7 @@ class Text(BaseText):
         self.current_word = None
         self.words: list[str] = []
         self.lsp: bool = False
+        self.current_indent_level = 0
 
         self.hover_after = None
         self.last_hovered = None
@@ -77,6 +82,8 @@ class Text(BaseText):
             self.autocomplete = self.base.autocomplete
             self.definitions = self.base.peek
             self.hover = self.base.hover
+
+        self.diagnostics = MinClosestKeyDict()
 
         self.focus_set()
         self.config_tags()
@@ -102,15 +109,37 @@ class Text(BaseText):
         self._edit_stack_index = -1
 
     def config_tags(self):
+        self.indentguide_stipple = self.base.resources.indent_guide
+
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
         self.tag_config(
             "hyperlink", foreground=self.base.theme.editors.hyperlink, underline=True
         )
+
+        self.tag_config("hint", underline=True, underlinefg="gray")
+        self.tag_config("information", underline=True)
+        self.tag_config("warning", underline=True, underlinefg="yellow")
+        self.tag_config("error", underline=True, underlinefg="red")
+
         self.tag_config("found", background=self.base.theme.editors.found)
         self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
         self.tag_config("currentword", background=self.base.theme.editors.currentword)
-        self.tag_config("currentline", background=self.base.theme.editors.currentline)
+        self.tag_config(
+            "currentline",
+            background=self.base.theme.editors.currentline,
+        )
         self.tag_config("hover", background=self.base.theme.editors.hovertag)
+
+        self.tag_configure(
+            "indent_guide",
+            bgstipple=f"@{self.indentguide_stipple}",
+            background=self.base.theme.border,
+        )
+        self.tag_configure(
+            "current_indent_guide",
+            bgstipple=f"@{self.indentguide_stipple}",
+            background=self.base.theme.secondary_foreground,
+        )
 
         self.tag_raise(tk.SEL, "hover")
         self.tag_raise(tk.SEL, "currentline")
@@ -189,6 +218,16 @@ class Text(BaseText):
             lambda _: self.base.language_server_manager.request_completions(self),
         )
 
+        self.tag_bind("error", "<Enter>", lambda _: self.diagnostic_hover(1))
+        self.tag_bind("warning", "<Enter>", lambda _: self.diagnostic_hover(2))
+        self.tag_bind("information", "<Enter>", lambda _: self.diagnostic_hover(3))
+        self.tag_bind("hint", "<Enter>", lambda _: self.diagnostic_hover(4))
+
+        self.tag_bind("error", "<Leave>", self.base.diagnostic.hide)
+        self.tag_bind("warning", "<Leave>", self.base.diagnostic.hide)
+        self.tag_bind("information", "<Leave>", self.base.diagnostic.hide)
+        self.tag_bind("hint", "<Leave>", self.base.diagnostic.hide)
+
     def key_release_events(self, event: tk.Event):
         self._user_edit = True
 
@@ -235,6 +274,55 @@ class Text(BaseText):
                     self.show_autocomplete(event)
 
         self.update_words_list()
+
+    def diagnostic_hover(self, severity: int) -> str:
+        if pos := self.get_mouse_pos():
+            message, start = self.diagnostics[pos]
+            self.base.diagnostic.show(self, start, message, severity)
+
+    def update_indent_guides(self) -> None:
+        if self.minimalist:
+            return
+
+        self.tag_remove("indent_guide", "1.0", "end")
+        self.tag_remove("current_indent_guide", "1.0", "end")
+        lines = self.get("1.0", "end-1c").split("\n")
+
+        self.current_indent_level = self.get_current_indent_level() - 1
+
+        for line_number, line in enumerate(lines, start=1):
+            indent_level = self.calculate_indent_level(line)
+            if indent_level > 0:
+                self.add_indent_guide(line_number, indent_level)
+
+    def calculate_indent_level(self, line: str) -> int:
+        indent = len(line) - len(line.lstrip())
+        return indent // self.base.tab_spaces
+
+    def add_indent_guide(self, line_number: int, indent_level: int) -> None:
+        for level in range(indent_level):
+            start_index = f"{line_number}.{level * self.base.tab_spaces - 1}"
+            end_index = f"{line_number}.{level * self.base.tab_spaces + 1}"
+            self.tag_add(
+                (
+                    "current_indent_guide"
+                    if level == self.current_indent_level
+                    else "indent_guide"
+                ),
+                start_index,
+                end_index,
+            )
+
+    def get_current_indent_level(self) -> int:
+        prev = self.get("insert-1l linestart", "insert-1l lineend")
+        line = self.get("insert linestart", "insert lineend")
+        next_line = self.get("insert+1l linestart", "insert+1l lineend")
+
+        return max(
+            self.calculate_indent_level(prev),
+            self.calculate_indent_level(line),
+            self.calculate_indent_level(next_line),
+        )
 
     # TODO this wont work properly
     # write a custom ast, parser for bracket matching
@@ -553,9 +641,10 @@ class Text(BaseText):
             return
 
         self.current_word = self.get("insert-1c wordstart", "insert")
+        self.base.language_server_manager.request_outline(self)
         self.highlight_current_line()
         self.highlight_current_brackets()
-        self.base.language_server_manager.request_outline(self)
+        self.update_indent_guides()
 
         # TODO send only portions of text on change to the LSPServer
         # current solution is not scalable, and will cause lag on large files
@@ -650,6 +739,9 @@ class Text(BaseText):
 
         self.clear_goto_marks()
 
+        if any(token.startswith("Token.Keyword") for token in self.tag_names(start)):
+            return
+
         if word and self.is_identifier(word):
             if self.ctrl_down:
                 self.tag_add("hyperlink", start, end)
@@ -690,12 +782,26 @@ class Text(BaseText):
     def lsp_show_autocomplete(self, response: Completions) -> None:
         self.autocomplete.lsp_update_completions(self, response.completions)
 
-    def lsp_diagnostics(self, response: Underlines) -> None: ...
+    def lsp_diagnostics(self, response: list[Diagnostic]) -> None:
+        self.tag_remove("error", 1.0, tk.END)
+        self.tag_remove("warning", 1.0, tk.END)
+        self.tag_remove("information", 1.0, tk.END)
+        self.tag_remove("hint", 1.0, tk.END)
 
-    # print("LSP <<< ", response)
-    # for i in response.underline_list:
-    #     # self.tag_add("error", f"{i.start[0]}.{i.start[1]}", f"{i.end[0]}.{i.end[1]}")
-    #     print(i.start, i.color, i.tooltip_text)
+        self.diagnostics.clear()
+
+        for i in response:
+            self.diagnostics[i.start] = i.message
+
+            match i.severity:
+                case 1:
+                    self.tag_add("error", i.start, i.end)
+                case 2:
+                    self.tag_add("warning", i.start, i.end)
+                case 4:
+                    self.tag_add("hint", i.start, i.end)
+                case _:
+                    self.tag_add("information", i.start, i.end)
 
     def lsp_goto_definition(self, response: Jump) -> None:
         if not response.locations:

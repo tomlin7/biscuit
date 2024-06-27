@@ -6,9 +6,9 @@ import typing
 from tkinter.messagebox import askyesno
 from typing import Dict, List, Union
 
-from src.biscuit.common import ActionSet, Game
-from src.biscuit.common.ui import Frame
-from src.biscuit.editor import BaseEditor, Editor, Welcome
+from biscuit.common import ActionSet, Game
+from biscuit.common.ui import Frame
+from biscuit.editor import BaseEditor, Editor, Welcome
 
 from .editorsbar import EditorsBar
 from .placeholder import Placeholder
@@ -152,7 +152,7 @@ class EditorsManager(Frame):
             return self.editorsbar.switch_tabs(path)
         if path in self.closed_editors:
             return self.add_editor(self.closed_editors[path])
-        
+
         return self.add_editor(Editor(self, path, exists, load_file=load_file))
 
     def open_diff_editor(self, path: str, exists: bool) -> None:

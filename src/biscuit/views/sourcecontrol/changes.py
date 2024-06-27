@@ -13,7 +13,7 @@ class Changes(NavigationDrawerViewItem):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (
+        self.__actions__ = (
             ("discard", self.git_discard_all),
             ("add", self.git_add_all),
         )

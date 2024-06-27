@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Frame, Shortcut
+from biscuit.common.ui import Frame, Shortcut
 
 
 class Shortcuts(Frame):

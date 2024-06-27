@@ -7,11 +7,10 @@ from .editors import Editors
 from .logger import Logger
 from .notifications import Notifications
 from .releases import Releases
-from .utils import Utils
 from .views import Views
 
 if typing.TYPE_CHECKING:
-    from src.biscuit import App
+    from biscuit import App
 
 
 class ExtensionsAPI:
@@ -54,24 +53,16 @@ class ExtensionsAPI:
         self.logger = Logger(self.base)
         self.editors = Editors(self.base)
         self.notifications = Notifications(self.base)
-        self.utils = Utils(self.base)
         self.views = Views(self.base)
         self.releases = Releases(self.base)
 
-        from src.biscuit.common import ActionSet, BaseGame
-        from src.biscuit.editor import BaseEditor
-        from src.biscuit.language import Languages
-        from src.biscuit.layout.statusbar import SButton
-
-        self.Game = BaseGame
-        self.Editor = BaseEditor
-
-        self.SButton = SButton
-        self.ActionSet = ActionSet
-
-        # Enum of supported languages
-        self.LANGUAGES = Languages
         self.register_comment_prefix = self.base.register_comment_prefix
         self.register_game = self.base.register_game
         self.register_langserver = self.base.register_langserver
         self.register_run_command = self.base.register_run_command
+
+    def register(self, name: str, extension: object) -> None:
+        """Register an extension"""
+
+        self.base.extensions_manager.register_installed(name, extension)
+        # extension.install()

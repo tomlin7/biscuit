@@ -5,14 +5,14 @@ import tkinter as tk
 import typing
 from collections import defaultdict
 
-from src.biscuit.common.ui import Frame, Label, Toplevel
+from biscuit.common.ui import Frame, Label, Toplevel
 
 from ..text import TextEditor
 from .tree import PeekTree
 
 if typing.TYPE_CHECKING:
-    from src.biscuit.editor.text import Text
-    from src.biscuit.language.data import Jump, JumpLocationRange
+    from biscuit.editor.text import Text
+    from biscuit.language.data import Jump, JumpLocationRange
 
 
 class Peek(Toplevel):

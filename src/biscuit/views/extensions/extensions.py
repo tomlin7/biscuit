@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from src.biscuit.common.ui import Entry
+from biscuit.common.ui import Entry
 
 from ..drawer_view import NavigationDrawerView
 from .results import Results

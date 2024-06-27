@@ -6,7 +6,7 @@ import typing
 if typing.TYPE_CHECKING:
     from .text import Text
 
-from src.biscuit.common.ui import Canvas, Menubutton
+from biscuit.common.ui import Canvas, Menubutton
 
 
 class LineNumbers(Canvas):

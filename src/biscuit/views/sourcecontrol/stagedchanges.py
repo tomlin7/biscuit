@@ -12,7 +12,7 @@ class StagedChanges(NavigationDrawerViewItem):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__buttons__ = (("remove", self.git_remove_all),)
+        self.__actions__ = (("remove", self.git_remove_all),)
         self.title = "Staged Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)

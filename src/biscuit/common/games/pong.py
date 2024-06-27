@@ -4,7 +4,7 @@ __author__ = "cid0rz"
 import random
 import tkinter as tk
 
-from src.biscuit.common.ui import Canvas
+from biscuit.common.ui import Canvas
 
 from .gamebase import BaseGame
 

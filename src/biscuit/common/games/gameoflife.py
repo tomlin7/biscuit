@@ -3,7 +3,7 @@ __author__ = "tomlin7"
 import random
 import tkinter as tk
 
-from src.biscuit.common.ui import Button
+from biscuit.common.ui import Button
 
 from .gamebase import BaseGame
 

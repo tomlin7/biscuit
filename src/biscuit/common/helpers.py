@@ -24,22 +24,10 @@ def check_python_installation():
     try:
         if os.name == "nt":
             sp.check_call(["python", "--version"])
-            reqs = sp.check_output(["pip", "freeze"])
+            sp.Popen(["pip", "install", "python-lsp-server"])
         else:
             sp.check_call(["python3", "--version"])
-            reqs = sp.check_output(["python3", "-m", "pip", "freeze"])
-
-        # install python language server
-        if not "python-lsp-server".encode() in reqs:
-            try:
-                if os.name == "nt":
-                    sp.check_call(["pip", "install", "python-lsp-server"])
-                else:
-                    sp.check_call(
-                        ["python3", "-m", "pip", "install", "python-lsp-server"]
-                    )
-            except sp.CalledProcessError:
-                print("Install python extension to enable python language features.")
+            sp.Popen(["python3", "-m", "pip", "install", "python-lsp-server"])
 
     except sp.CalledProcessError:
         show_python_not_installed_message()
@@ -97,3 +85,29 @@ def caller_name(skip=2):
     del parentframe, stack
 
     return ".".join(name)
+
+
+def caller_class_name(skip=2):
+    """
+    Get the name of the class of the caller.
+
+    `skip` specifies how many levels of stack to skip while getting the caller's class.
+    skip=1 means "who calls me", skip=2 "who calls my caller" etc.
+
+    An empty string is returned if skipped levels exceed the stack height.
+    """
+    stack = inspect.stack()
+    start = 0 + skip
+    if len(stack) < start + 1:
+        return ""
+
+    parentframe = stack[start][0]
+    class_name = None
+
+    # detect classname
+    if "self" in parentframe.f_locals:
+        class_name = parentframe.f_locals["self"].__class__.__name__
+
+    del parentframe, stack
+
+    return class_name

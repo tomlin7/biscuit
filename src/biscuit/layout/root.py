@@ -20,7 +20,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from src.biscuit.common.ui import Frame
+from biscuit.common.ui import Frame
 
 from .content import *
 from .drawer import NavigationDrawer
