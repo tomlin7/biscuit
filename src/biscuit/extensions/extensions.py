@@ -249,7 +249,7 @@ class ExtensionManager:
         try:
             extension.install()
         except Exception as e:
-            print("no install method !!!!!!!!!!!!")
+            print(e)
             # most likely the extension does not implement the install method
             ...
 
