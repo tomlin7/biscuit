@@ -65,4 +65,8 @@ class ExtensionsAPI:
         """Register an extension"""
 
         self.base.extensions_manager.register_installed(name, extension)
-        # extension.install()
+
+    def register_extension(self, name: str, extension: object) -> None:
+        """Register an extension"""
+
+        self.register(name, extension)

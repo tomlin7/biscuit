@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from .results import Results
 
 
-class Extension(Frame):
+class ExtensionGUI(Frame):
     """Extension item in the Extensions view.
 
     The Extension class represents an extension item in the Extensions view.

@@ -11,7 +11,7 @@ from queue import Queue
 
 import requests
 
-from biscuit.views.extensions.extension import Extension
+from biscuit.views.extensions.extension import ExtensionGUI
 
 if typing.TYPE_CHECKING:
     from biscuit import App
@@ -54,7 +54,7 @@ class ExtensionManager:
             data = self.fetched[name]
 
             t = self.run_fetch_extension(
-                Extension(self.base.extensions_view.results, name, data)
+                ExtensionGUI(self.base.extensions_view.results, name, data)
             )
             t.join()
 
@@ -136,7 +136,7 @@ class ExtensionManager:
             # TODO add further loops for folders
             self.fetch_queue.put((name, data))
 
-    def run_fetch_extension(self, ext: Extension) -> None:
+    def run_fetch_extension(self, ext: ExtensionGUI) -> None:
         """Called from the Extension View to fetch an extension."""
 
         if ext.installed:
@@ -148,7 +148,7 @@ class ExtensionManager:
         t.start()
         return t
 
-    def fetch_extension(self, ext: Extension) -> None:
+    def fetch_extension(self, ext: ExtensionGUI) -> None:
         """Fetch an extension from the repository."""
 
         try:
@@ -158,7 +158,7 @@ class ExtensionManager:
         except:
             ext.set_unavailable()
 
-    def save_extension(self, ext: Extension, response: requests.Response) -> None:
+    def save_extension(self, ext: ExtensionGUI, response: requests.Response) -> None:
         """Save a fetched extension. Saves the extension and loads it."""
 
         with open(ext.file, "w") as fp:
@@ -170,7 +170,7 @@ class ExtensionManager:
         self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
         self.base.notifications.info(f"Extension '{ext.name}' has been installed!")
 
-    def remove_extension(self, ext: Extension) -> None:
+    def remove_extension(self, ext: ExtensionGUI) -> None:
         """Remove an extension from the system."""
 
         try:
@@ -236,7 +236,7 @@ class ExtensionManager:
                 extension_module.setup(self.base.api)
 
                 self.base.logger.info(f"Extension '{ext}' loaded.")
-            except ImportError as e:
+            except Exception as e:
                 self.base.logger.error(f"Failed to load extension '{ext}': {e}")
                 self.base.notifications.error(f"Extension '{ext}' failed: see logs.")
                 if ext in self.installed:
@@ -246,6 +246,12 @@ class ExtensionManager:
         """Register an installed extension."""
 
         self.installed[name] = extension
+        try:
+            extension.install()
+        except Exception as e:
+            print("no install method !!!!!!!!!!!!")
+            # most likely the extension does not implement the install method
+            ...
 
     def queue_installed_extensions(self) -> None:
         for extension_file in os.listdir(self.base.extensionsdir):
