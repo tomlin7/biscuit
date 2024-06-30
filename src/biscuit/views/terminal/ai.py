@@ -2,9 +2,6 @@ from __future__ import annotations
 
 import typing
 
-import google.generativeai as ai
-from google.generativeai.types import HarmBlockThreshold, HarmCategory
-
 if typing.TYPE_CHECKING:
     from .terminalbase import TerminalBase
 
@@ -27,22 +24,22 @@ class AI:
                 System details: {str(self.base.system)}
                 Input from user: """
 
-        self.model = ai.GenerativeModel(
-            "gemini-1.5-flash",
-            safety_settings={
-                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-            },
-        )
-        self.chat = self.model.start_chat()
+        self.model = self.base.ai.get_model_instance(self.prompt)
+        self.model.start_chat()
 
-    def get_gemini_response(self, err_command: str) -> str:
+    def get_response(self, err_command: str) -> str:
         try:
-            response = self.chat.send_message([self.prompt, err_command])
-            if response and response.text:
-                self.base.palette.show("runc:", response.text.strip())
+            response = self.model.send_message(f"{self.prompt} {err_command}")
+            if response:
+                self.base.palette.show("runc:", response.strip())
         except Exception as e:
             self.base.logger.error(e)
-            self.base.drawer.show_ai().add_placeholder()
+            self.base.notifications.error(
+                "Error occurred while fetching response. Please try again.",
+                actions=[
+                    (
+                        "Configuration",
+                        lambda: self.base.drawer.show_ai().add_placeholder(),
+                    )
+                ],
+            )

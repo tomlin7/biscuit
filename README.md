@@ -10,7 +10,7 @@
     <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/tomlin7/Biscuit?style=for-the-badge">
 </h1>
 
-A lightweight, fast, and extensible code editor with a wide range of language support and runs with very minimal system requirements. It implements the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) for code completions, refactoring, symbol references, and more. Features include breakpoint-based code debugging, AI assisted workflow, fast workspace search, and built-in Git support. Scroll down to see [biscuit in action](https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features).
+A lightweight, fast, and extensible code editor with wide range of language support, runs with very minimal system requirements. It implements the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) for code completions, refactoring, symbol references, and more. Features include breakpoint-based code debugging, AI assisted workflow, fast workspace search, and built-in Git support. Scroll down to see [biscuit in action](https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features).
 
 ![image](https://github.com/tomlin7/biscuit/assets/70792552/74118e72-e7de-48dd-a34f-a5abd6664e42)
 

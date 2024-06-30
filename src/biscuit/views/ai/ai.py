@@ -17,6 +17,22 @@ if typing.TYPE_CHECKING:
     ...
 
 
+PROMPT = """You are an assistant part of Biscuit code editor named Bikkis. 
+You are an expert programmer, you'll help the user with his queries.
+
+Biscuit have many features like auto completions, git integration,
+code diagnostics, code refactoring, code navigation, advanced search, etc.
+It supports many languages like Python, JavaScript, Java, C++, etc.
+User can install extensions right within the editor's extension marketplace.
+Don't make assumptions about the existence of a feature in Biscuit.
+
+Give the user minimal responses and be straightforward. 
+If there are files attached by user, they will be appended to the question.
+You will have to consider them while responding.
+
+Reply to this message from user: """
+
+
 class AI(NavigationDrawerView):
     """A view that displays the AI chat.
 
@@ -135,17 +151,17 @@ class AI(NavigationDrawerView):
             self.chat = None
 
         self.chat = Chat(self)
-        self.chat.set_model(self.get_model_instance())
+        self.chat.set_model(self.get_model_instance(PROMPT))
         self.add_item(self.chat)
         self.remove_item(self.placeholder)
 
-    def get_model_instance(self) -> ChatModelInterface:
+    def get_model_instance(self, prompt: str) -> ChatModelInterface:
         """Get the model instance for the current provider.
 
         Returns:
             ChatModelInterface: The model instance for the current provider."""
 
-        return self.api_providers[self.current_provider](self.api_key)
+        return self.api_providers[self.current_provider](self.api_key, prompt)
 
     def new_chat(self) -> None:
         """Start a new chat with the AI assistant."""

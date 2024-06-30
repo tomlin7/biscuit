@@ -16,6 +16,8 @@ from biscuit.views.extensions.extension import ExtensionGUI
 if typing.TYPE_CHECKING:
     from biscuit import App
 
+    from . import extension
+
 
 class ExtensionManager:
     """Extension manager for Biscuit.
@@ -229,7 +231,7 @@ class ExtensionManager:
             try:
                 # TODO support for multiple files
                 spec = util.spec_from_file_location(module_name, path)
-                extension_module = util.module_from_spec(spec)
+                extension_module: extension = util.module_from_spec(spec)
 
                 spec.loader.exec_module(extension_module)
                 # execute the setup function

@@ -22,5 +22,7 @@ class Extension:
         """Uninstall the extension."""
         ...
 
-    def __repr__(self) -> str:
-        return f"<Extension {self.__class__.__name__}>"
+
+def setup(api: ExtensionsAPI) -> Extension:
+    """Just for type hinting."""
+    ...
