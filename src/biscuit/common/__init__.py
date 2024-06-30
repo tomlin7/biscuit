@@ -5,7 +5,7 @@ from .fixedstack import FixedSizeStack
 from .games import *
 from .helpers import *
 from .io import IO
-from .menu import Checkable, Command, Menu
+from .menu import Checkable, Command, Dropdown, Menu
 from .notifications import Notification, Notifications
 from .palette import Palette
 from .sysinfo import SysInfo

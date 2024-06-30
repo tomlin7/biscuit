@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import os
 import sqlite3
+import tkinter as tk
 import typing
+
+from biscuit.common import Dropdown
+from biscuit.common.chat import ChatModelInterface, Gemini1p5Flash
 
 from ..drawer_view import NavigationDrawerView
 from .chat import Chat
@@ -21,19 +25,33 @@ class AI(NavigationDrawerView):
     - The chat can be refreshed to start a new chat."""
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = [
-            ("refresh", self.new_chat),
-        ]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "sparkle-filled"
         self.name = "AI"
         self.chat = None
         self.api_key = ""
 
+        self.api_providers = {
+            "Gemini 1.5 Flash": Gemini1p5Flash,
+        }
+        self.current_provider = "Gemini 1.5 Flash"
+
+        self.dropdown = Dropdown(
+            self.top,
+            items=self.api_providers.keys(),
+            selected=self.current_provider,
+            callback=self.set_current_provider,
+        )
+        self.top.grid_columnconfigure(self.column, weight=1)
+        self.dropdown.grid(row=0, column=self.column, sticky=tk.NSEW, padx=(0, 10))
+        self.column += 1
+
         self.menu = AIMenu(self)
-        self.add_action("ellipsis", self.menu.show)
         self.menu.add_command("New Chat", self.new_chat)
         self.menu.add_command("Configure API Key...", self.add_placeholder)
+
+        self.add_action("refresh", self.new_chat)
+        self.add_action("ellipsis", self.menu.show)
 
         self.db = sqlite3.connect(os.path.join(self.base.datadir, "secrets.db"))
         self.cursor = self.db.cursor()
@@ -51,6 +69,27 @@ class AI(NavigationDrawerView):
             self.add_chat(api_key[0])
         else:
             self.add_placeholder()
+
+    def register_provider(self, provider: str, model: ChatModelInterface) -> None:
+        """Register a new provider for the chat.
+
+        Args:
+            provider (str): The provider to register."""
+
+        self.api_providers[provider] = model
+        self.dropdown.add_command(provider)
+
+    def set_current_provider(self, provider: str) -> None:
+        """Set the current provider for the chat.
+
+        Args:
+            provider (str): The provider to set as the current provider."""
+
+        if provider == self.current_provider:
+            return
+
+        self.current_provider = provider
+        self.add_chat()
 
     def attach_file(self, *files: typing.List[str]) -> None:
         """Attach a file to the chat.
@@ -96,8 +135,17 @@ class AI(NavigationDrawerView):
             self.chat = None
 
         self.chat = Chat(self)
+        self.chat.set_model(self.get_model_instance())
         self.add_item(self.chat)
         self.remove_item(self.placeholder)
+
+    def get_model_instance(self) -> ChatModelInterface:
+        """Get the model instance for the current provider.
+
+        Returns:
+            ChatModelInterface: The model instance for the current provider."""
+
+        return self.api_providers[self.current_provider](self.api_key)
 
     def new_chat(self) -> None:
         """Start a new chat with the AI assistant."""

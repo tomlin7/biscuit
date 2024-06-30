@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import typing
 
+from .assistant import Assistant
 from .commands import Commands
 from .editors import Editors
 from .logger import Logger
@@ -55,6 +56,7 @@ class ExtensionsAPI:
         self.notifications = Notifications(self.base)
         self.views = Views(self.base)
         self.releases = Releases(self.base)
+        self.assistant = Assistant(self.base)
 
         self.register_comment_prefix = self.base.register_comment_prefix
         self.register_game = self.base.register_game
