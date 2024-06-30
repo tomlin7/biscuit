@@ -21,7 +21,7 @@ if typing.TYPE_CHECKING:
 
 
 class DevMode(Extension):
-    """Dev Mode extension for Biscuit (author: @billyeatcookies)
+    """Dev Mode extension for Biscuit (author: @tomlin7)
 
     Contributes:
     - notifies user that dev mode is enabled
