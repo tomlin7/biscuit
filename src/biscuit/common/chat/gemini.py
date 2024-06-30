@@ -1,4 +1,5 @@
 import google.generativeai as ai
+from google.generativeai.types import HarmBlockThreshold, HarmCategory
 
 from .model import ChatModelInterface
 
@@ -10,7 +11,15 @@ class Gemini1p5Flash(ChatModelInterface):
 
     def initialize_model(self):
         ai.configure(api_key=self.api_key)
-        self.model = ai.GenerativeModel("gemini-1.5-flash")
+        self.model = ai.GenerativeModel(
+            "gemini-1.5-flash",
+            safety_settings={
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+            },
+        )
 
     def set_api_key(self, api_key: str):
         self.api_key = api_key
