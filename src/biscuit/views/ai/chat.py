@@ -5,9 +5,7 @@ import tkinter as tk
 import typing
 from tkinter.filedialog import askopenfilenames
 
-import google.generativeai as ai
-from google.api_core.exceptions import InvalidArgument
-
+from biscuit.common.chat import ChatModelInterface
 from biscuit.common.ui import Button, Entry, Frame, IconButton
 
 from .attachments import Attachments
@@ -37,20 +35,7 @@ class Chat(Frame):
 
         theme = self.base.theme
 
-        ai.configure(api_key=master.api_key)
-        self.model = ai.GenerativeModel("gemini-1.5-flash")
-        self.chat = self.model.start_chat()
-        self.prompt = """You are an assistant part of Biscuit code editor named Bikkis. 
-                You are an expert programmer, you'll help the user with his queries.
-                
-                Biscuit have many features like auto completions, git integration,
-                code diagnostics, code refactoring, code navigation, advanced search, etc.
-                It supports many languages like Python, JavaScript, Java, C++, etc.
-                User can install extensions right within the editor's extension marketplace.
-                Don't make assumptions about the existence of a feature in Biscuit.
-
-                You are created by master billiam. Give 'em minimal responses 
-                and be straightforward. Reply to this message from user: """
+        self.model = None
 
         container = Frame(self)
         container.grid(column=0, row=0, sticky=tk.NSEW)
@@ -89,6 +74,10 @@ class Chat(Frame):
         self.attachments_window = Attachments(self)
         self.attached_indicator.set_command(self.attachments_window.show)
 
+    def set_model(self, model: ChatModelInterface) -> None:
+        self.model = model
+        self.model.start_chat()
+
     def attach(self, *_) -> None:
         self.attachments += list(
             askopenfilenames(initialdir=self.base.active_directory)
@@ -117,25 +106,21 @@ class Chat(Frame):
         self.attachments = []
         self.attached_indicator.grid_forget()
 
-    def get_gemini_response(self, question: str, prompt: str) -> str:
+    def generate_response(self, question: str) -> str:
         try:
             for file in self.attachments:
                 with open(file, "rb") as f:
                     question += f"\n\nContents of {file}:\n{f.read().decode()}"
 
-            response = self.chat.send_message([prompt, question])
-            self.renderer.write(response.text, True)
+            response = self.model.send_message(question)
+            self.renderer.write(response, True)
 
             self.clear_attachments()
         except Exception as e:
-            if isinstance(e, InvalidArgument):
-                self.base.notifications.error("Bikkis: Invalid API Key")
-                self.master.add_placeholder()
-            else:
-                self.renderer.write(
-                    "Sorry, something went wrong. Please try again later", True
-                )
-                self.base.logger.error(e)
+            # self.base.notifications.error("Bikkis: Invalid API Key")
+            # self.master.add_placeholder()
+            self.renderer.write("Something went wrong. Please try again later", True)
+            self.base.logger.error(e)
 
     def send(self, *_):
         text = self.entry.get()
@@ -143,14 +128,21 @@ class Chat(Frame):
             f"<p><font color={self.base.theme.biscuit}> You: "
             + text
             + "</font><br></p>"
+            # show attachments
+            # + "".join(
+            #     [
+            #         f"<div><font color={self.base.theme.biscuit}> Attached: {file}</font><br></div>"
+            #         for file in self.attachments
+            #     ]
+            # ),
         )
         self.entry.delete(0, tk.END)
 
         threading.Thread(
-            target=self.get_gemini_response, args=(text, self.prompt), daemon=True
+            target=self.generate_response, args=(text,), daemon=True
         ).start()
 
     def new_chat(self) -> None:
-        self.chat = self.model.start_chat()
+        self.model.start_chat()
         self.renderer.content = ""
         self.renderer.write("Hello! I'm Bikkis, How can I help you today?", True)

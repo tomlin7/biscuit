@@ -152,3 +152,12 @@ class Menu(Toplevel):
 
         self.row += 1
         return new_sep
+
+    def clear(self) -> None:
+        """Clear all menu items from the menu"""
+
+        for item in self.menu_items:
+            item.destroy()
+
+        self.menu_items = []
+        self.row = 0

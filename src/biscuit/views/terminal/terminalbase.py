@@ -101,6 +101,12 @@ class TerminalBase(PanelView):
         self.last_command_index = self.text.index("input")
 
         command = self.text.get("input", "end")
+
+        if command.startswith("#"):
+            self.text.delete("input", "end")
+            self.ai.get_response(command)
+            return "break"
+
         self.last_command = command
         self.text.register_history(command)
         if command.strip():
@@ -128,10 +134,7 @@ class TerminalBase(PanelView):
                     self.error()
 
     def error(self):
-        if not self.base.ai.api_key:
-            self.base.drawer.show_ai().add_placeholder()
-
-        self.ai.get_gemini_response(self.last_command)
+        self.ai.get_response(self.last_command)
 
     def insert(self, output: str, tag="") -> None:
         self.text.insert(tk.END, output, tag)

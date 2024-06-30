@@ -11,7 +11,7 @@ import requests
 from biscuit.common.ui import ScrollableFrame
 
 from ..drawer_item import NavigationDrawerViewItem
-from .extension import Extension
+from .extension import ExtensionGUI
 from .placeholder import ExtensionsPlaceholder
 
 if typing.TYPE_CHECKING:
@@ -19,7 +19,7 @@ if typing.TYPE_CHECKING:
 
 
 class ExtensionsList(ScrollableFrame):
-    items: list[Extension]
+    items: list[ExtensionGUI]
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -78,7 +78,7 @@ class Results(NavigationDrawerViewItem):
     def gui_refresh_loop(self) -> None:
         if not self.fetch_queue.empty():
             name, data = self.fetch_queue.get()
-            ext = Extension(self, name, data)
+            ext = ExtensionGUI(self, name, data)
             self.extension_list.add(ext, fill=tk.X)
 
         self.after(5, self.gui_refresh_loop)
@@ -91,7 +91,7 @@ class Results(NavigationDrawerViewItem):
 
         self.fetching.set()
 
-    def set_selected(self, extension: Extension) -> None:
+    def set_selected(self, extension: ExtensionGUI) -> None:
         for widget in self.extension_list.items:
             if widget == extension:
                 widget.select()
