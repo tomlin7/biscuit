@@ -3,6 +3,7 @@ import tkinter as tk
 from datetime import datetime
 
 from biscuit.common import caller_class_name
+from biscuit.common.helpers import caller_name
 from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
@@ -112,7 +113,7 @@ class Logs(PanelView):
         self._std_log(" [trace] ", "trace", text)
 
     def _std_log(self, kindtext: str, kind: str, text: str) -> None:
-        self.log((kindtext, kind), caller_class_name(), text)
+        self.log((kindtext, kind), caller_name(skip=3), text)
 
     def rawlog(self, text: str, kind: int):
         match kind:

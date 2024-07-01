@@ -1,7 +1,9 @@
 """List of all available languages for the Editor."""
 
+
 class Languages:
     """Holds all available languages. To be passed to Editor during initialization."""
+
     ABAP = "abap"
     AMDGPU = "amdgpu"
     APL = "apl"
@@ -551,7 +553,6 @@ class Languages:
     IPYTHON2 = "ipython2"
     IPYTHON3 = "ipython3"
     IPYTHONCONSOLE = "ipythonconsole"
-
 
 
 # Code used to generate the above snippet
