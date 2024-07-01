@@ -1127,13 +1127,13 @@ files = [
 
 [[package]]
 name = "tarts"
-version = "0.12.0"
+version = "0.13.3"
 description = "Client library for managing language server requests & responses."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "tarts-0.12.0-py3-none-any.whl", hash = "sha256:9f2c326d30ac4210cd6ae3adf508a50c9c50a1c8746bade39e54676876c6e026"},
-    {file = "tarts-0.12.0.tar.gz", hash = "sha256:adf768e5148bc289cfb13a6d00e28b457cb1ef5957975657cad8d8a369f7a7b0"},
+    {file = "tarts-0.13.3-py3-none-any.whl", hash = "sha256:c6685545a050bec43847a3e97cddbc2362739b8c478d64fe32f40ac502f8e60c"},
+    {file = "tarts-0.13.3.tar.gz", hash = "sha256:cdce5fbab3b3be9e83758fa820a3b9ed47cd14e6d4e0586392525b567f0f2f1c"},
 ]
 
 [package.dependencies]
@@ -1324,4 +1324,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "6bf884ace4d5ff8682f44756c734311fc94704cf130ff27ce100eab954f23c92"
+content-hash = "4ee10252f93619fa08d5a71ec8924a17017022626324e5e31c143dba3c89e8d6"
