@@ -1246,7 +1246,7 @@ class Text(BaseText):
         return "1.0"
 
     def get_end(self):
-        return self.index(tk.END)
+        return self.index(tk.END + "-1c")
 
     def get_all_text(self):
         return self.get(1.0, tk.END)
