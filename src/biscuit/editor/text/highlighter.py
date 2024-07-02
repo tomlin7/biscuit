@@ -38,7 +38,8 @@ class Highlighter:
         if language:
             try:
                 self.lexer = get_lexer_by_name(language)
-                self.text.language = self.lexer.name.lower()
+                self.text.language = self.lexer.name
+                self.text.language_alias = self.lexer.aliases[0]
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
@@ -51,7 +52,8 @@ class Highlighter:
                 self.lexer = get_lexer_for_filename(
                     os.path.basename(text.path), encoding=text.encoding
                 )
-                self.text.language = self.lexer.name.lower()
+                self.text.language = self.lexer.name
+                self.text.language_alias = self.lexer.aliases[0]
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
@@ -70,7 +72,8 @@ class Highlighter:
             self.lexer = get_lexer_for_filename(
                 os.path.basename(self.text.path), encoding=self.text.encoding
             )
-            self.text.language = self.lexer.name.lower()
+            self.text.language = self.lexer.name
+            self.text.language_alias = self.lexer.aliases[0]
             self.highlight()
         except:
             self.lexer = None
@@ -92,7 +95,8 @@ class Highlighter:
             self.base.notifications.info("Selected lexer is not available.")
             return
 
-        self.text.language = self.lexer.name.lower()
+        self.text.language = self.lexer.name
+        self.text.language_alias = self.lexer.aliases[0]
         self.tag_colors = self.base.theme.syntax
         self.text.master.on_change()
         self.base.statusbar.on_open_file(self.text)

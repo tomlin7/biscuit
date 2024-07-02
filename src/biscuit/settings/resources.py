@@ -24,6 +24,7 @@ class Resources:
         self.logo = self.load_image("logo.png")
         self.stipple = self.get_res_path("bitmap/stipple.xbm")
         self.indent_guide = self.get_res_path("bitmap/indentguide.xbm")
+        self.line = self.get_res_path("bitmap/line.xbm")
 
     def get_res_path(self, relative_path: str) -> str:
         if self.base.frozen:

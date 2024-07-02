@@ -49,8 +49,10 @@ class LangServerClient:
         self.master = master
         self.base = master.base
         self.tab = tab
-        self.language = tab.language.lower()
-        self.command = master.langservers.get(self.language, None)
+        self.language = tab.language_alias or tab.language
+        self.command = master.langservers.get(
+            self.language, None
+        ) or master.langservers.get(tab.language, None)
         self.root_dir = root_dir
         self._counter = itertools.count()
 
@@ -275,10 +277,10 @@ class LangServerClient:
             ),
             content_changes=[
                 lsp.TextDocumentContentChangeEvent(
-                    range=lsp.Range(
-                        start=encode_position(tab.get_begin()),
-                        end=encode_position(tab.get_end()),
-                    ),
+                    # range=lsp.Range(
+                    #     start=encode_position(tab.get_begin()),
+                    #     end=encode_position(tab.get_end()),
+                    # ),
                     text=tab.get_all_text(),
                 )
             ],

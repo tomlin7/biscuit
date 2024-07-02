@@ -29,11 +29,21 @@ class HoverRenderer(HtmlFrame):
                 padding: 2px;
             }}
             BODY {{
-                margin-top: 0px;
-                margin-bottom: 0px;
-                padding: 0px;
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground};
+            }}
+            img {{
+                max-width: 100%;
+                height: auto;
+            }}
+
+            hr {{
+                border: 0;
+                border-top: 1px solid {t.border};
+                max-width: 100%;
+            }}
+            li{{
+                margin-left:1px;
             }}
             :link    {{ color: {t.biscuit}; }}
             :visited {{ color: {t.biscuit_dark}; }}

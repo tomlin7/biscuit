@@ -3,7 +3,6 @@ import tkinter as tk
 from datetime import datetime
 
 from biscuit.common import caller_class_name
-from biscuit.common.helpers import caller_name
 from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
@@ -19,7 +18,7 @@ class Logs(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = (("clear-all",),)
+        self.__actions__ = (("clear-all", self.clear_all),)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -113,7 +112,7 @@ class Logs(PanelView):
         self._std_log(" [trace] ", "trace", text)
 
     def _std_log(self, kindtext: str, kind: str, text: str) -> None:
-        self.log((kindtext, kind), caller_name(skip=3), text)
+        self.log((kindtext, kind), caller_class_name(skip=3), text)
 
     def rawlog(self, text: str, kind: int):
         match kind:
@@ -125,3 +124,8 @@ class Logs(PanelView):
                 self.info(text)
             case _:
                 self.trace(text)
+
+    def clear_all(self, *_) -> None:
+        self.text.config(state=tk.NORMAL)
+        self.text.delete(1.0, tk.END)
+        self.text.config(state=tk.DISABLED)
