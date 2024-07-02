@@ -60,9 +60,15 @@ class LangServerClient:
         self.tabs_opened: set[Text] = set()
         self._count = 0
 
-        self.client = lsp.Client(root_uri=Path(self.root_dir).as_uri())
+        self.root_uri = Path(self.root_dir).as_uri()
         self.io = IO(self, self.command, self.root_dir)
         self.io.start()
+        self.client = lsp.Client(
+            process_id=self.io.p.pid,
+            root_uri=self.root_uri,
+            workspace_folders=[lsp.WorkspaceFolder(uri=self.root_uri, name="Root")],
+            trace="verbose",
+        )
         self.handler = EventHandler(self)
 
     def run_loop(self) -> None:
