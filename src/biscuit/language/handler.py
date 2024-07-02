@@ -35,7 +35,7 @@ class EventHandler:
             return
 
         if isinstance(e, lsp.ConfigurationRequest):
-            self.base.logger.warning("Config asked for: ", e.items)
+            self.base.logger.warning(f"Config asked for: {e.items}")
             e.reply([])
             return
 
@@ -57,12 +57,7 @@ class EventHandler:
                 self.master.open_tab(tab)
                 # self.master.request_outline(tab)
 
-            self.client._send_notification(
-                method="workspace/didChangeConfiguration",
-                params={
-                    "settings": [],
-                },
-            )
+            self.client.did_change_configuration([])
 
             self.base.statusbar.process_indicator.hide()
             return
@@ -207,6 +202,11 @@ class EventHandler:
                     else to_document_symbol(e.result)
                 ),
             )
+            return
+
+        # TODO hooks
+        if isinstance(e, lsp.ResponseError):
+            self.base.logger.error(str(e))
             return
 
         # DEBUG ones that are not implemented yet
