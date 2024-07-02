@@ -86,3 +86,14 @@ class App(EventManager, GUIManager, ConfigManager):
         self.menubar.update()
         self.set_title()
         self.open_directory(dir)
+
+    def control_execute(self, text: str) -> None:
+        try:
+            return eval(text)
+        except SyntaxError:
+            try:
+                exec(text)
+            except Exception as e:
+                return e
+        except Exception as e:
+            return e

@@ -1,4 +1,5 @@
 from .ai import AI
+from .control import Control
 from .debug import Debug
 from .drawer_item import NavigationDrawerViewItem
 from .drawer_view import NavigationDrawerView
