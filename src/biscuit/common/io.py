@@ -67,6 +67,10 @@ class IO:
         self.t_out = Thread(target=self._process_out, daemon=True)
         self.t_out.start()
 
+        # Debugging purposes
+        # self.t_err = Thread(target=self._process_err, daemon=True)
+        # self.t_err.start()
+
     def stop(self, *_) -> None:
         """Stop the process"""
 
@@ -93,3 +97,10 @@ class IO:
             if not data:
                 break
             self.out_queue.put(data)
+
+    def _process_err(self) -> None:
+        while self.alive:
+            data = self.p.stderr.read(1)
+            if not data:
+                break
+            print(data.decode(), end="", flush=True)  # Print to the console

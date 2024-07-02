@@ -82,6 +82,8 @@ class Notifications(Toplevel):
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
+        self.update_idletasks()
+        self._follow_root()
 
         self.notifications.append(instance)
         self.latest = instance
@@ -101,6 +103,8 @@ class Notifications(Toplevel):
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
+        self.update_idletasks()
+        self._follow_root()
 
         self.notifications.append(instance)
         self.latest = instance
@@ -118,6 +122,8 @@ class Notifications(Toplevel):
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
+        self.update_idletasks()
+        self._follow_root()
 
         self.notifications.append(instance)
         self.latest = instance
