@@ -49,7 +49,7 @@ class LangServerClient:
         self.master = master
         self.base = master.base
         self.tab = tab
-        self.language = tab.language
+        self.language = tab.language.lower()
         self.command = master.langservers.get(self.language, None)
         self.root_dir = root_dir
         self._counter = itertools.count()
