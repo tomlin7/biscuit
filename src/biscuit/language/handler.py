@@ -28,9 +28,20 @@ class EventHandler:
     def process(self, e: lsp.Event) -> None:
         """Process the event"""
 
+        # print(e.__class__.__name__.upper(), e, end="\n\n")
+
         if isinstance(e, lsp.Shutdown):
             self.client.exit()
             return
+
+        if isinstance(e, lsp.ConfigurationRequest):
+            self.base.logger.warning("Config asked for: ", e.items)
+            e.reply([])
+            return
+
+        # if isinstance(e, lsp.WorkspaceFolders):
+        #     e.reply([lsp.WorkspaceFolder(uri=self.root_uri, name="Root")])
+        #     return
 
         if isinstance(e, lsp.LogMessage):
             self.base.logger.rawlog(e.message, e.type)
@@ -44,7 +55,14 @@ class EventHandler:
             self.base.logger.info("Capabilities " + pprint.pformat(e.capabilities))
             for tab in self.master.tabs_opened:
                 self.master.open_tab(tab)
-                self.master.request_outline(tab)
+                # self.master.request_outline(tab)
+
+            self.client._send_notification(
+                method="workspace/didChangeConfiguration",
+                params={
+                    "settings": [],
+                },
+            )
 
             self.base.statusbar.process_indicator.hide()
             return
