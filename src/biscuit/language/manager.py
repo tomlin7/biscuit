@@ -6,6 +6,7 @@ import typing
 import tarts as lsp
 
 from .client import LangServerClient
+from .languages import Languages
 from .utils import decode_position
 
 if typing.TYPE_CHECKING:
@@ -26,7 +27,7 @@ class LanguageServerManager:
         self.langservers: dict[str, str] = {}
 
         # built-in support for python-lsp-server
-        self.langservers["Python"] = "pylsp"
+        self.langservers[Languages.PYTHON] = "pylsp"
 
         self.existing: dict[str, LangServerClient] = {}
         self.latest: LangServerClient = None
@@ -146,7 +147,10 @@ class LanguageServerManager:
         if (
             tab.path is None
             or not tab.language
-            or tab.language not in self.langservers.keys()
+            or (
+                tab.language not in self.langservers.keys()
+                and tab.language.lower() not in self.langservers.keys()
+            )
         ):
             return
 
@@ -161,6 +165,7 @@ class LanguageServerManager:
         self.base.logger.trace(
             f"<<-- Requesting <LSPC>({tab.language}) instance for --[{root_dir}] -->>"
         )
+        self.base.logger.trace(f"Command: {self.langservers[tab.language]}")
 
         # TODO multithread this process
         langserver = LangServerClient(self, tab, root_dir)
