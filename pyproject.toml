@@ -34,7 +34,7 @@ psutil = ">=5.9.8,<7.0.0"
 google-generativeai = "^0.7.0"
 sortedcontainers = "^2.4.0"
 click = "^8.1.7"
-tarts = "0.13.3"
+tarts = "0.14.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
