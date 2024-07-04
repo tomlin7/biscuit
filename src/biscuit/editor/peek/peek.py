@@ -35,7 +35,7 @@ class Peek(Toplevel):
         self.overrideredirect(True)
         self.wm_attributes("-topmost", True)
 
-        container = Frame(self)
+        container = Frame(self, **self.base.theme.editors)
         container.pack(fill=tk.X, pady=(0, 1))
 
         self.filename = Label(
@@ -57,9 +57,9 @@ class Peek(Toplevel):
         self.tree = PeekTree(
             self, width=100, singleclick=self.switch_editor, doubleclick=self.choose
         )
-        self.tree.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.editor = TextEditor(self, standalone=True)
+        self.editor = TextEditor(self, standalone=True, minimalist=True)
+        self.tree.pack(side=tk.LEFT, fill=tk.Y)
         self.editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.latest_tab = None
@@ -84,7 +84,7 @@ class Peek(Toplevel):
 
         tab.update_idletasks()
 
-        pos_x, pos_y = tab.winfo_rootx(), tab.winfo_rooty()
+        pos_x, pos_y = tab.master.winfo_rootx(), tab.master.winfo_rooty()
 
         pos = tab.index(pos + " linestart")
         bbox = tab.bbox(pos)
@@ -92,8 +92,11 @@ class Peek(Toplevel):
             return
 
         bbx_x, bbx_y, _, bbx_h = bbox
-        self.geometry("+{}+{}".format(pos_x + bbx_x - 1, pos_y + bbx_y + bbx_h))
-        self.geometry("{}x{}".format(tab.winfo_width(), 200))
+        self.geometry(
+            "{}x{}+{}+{}".format(
+                tab.master.winfo_width(), 250, pos_x, pos_y + bbx_y + bbx_h
+            )
+        )
 
     def show(self, tab: Text, jump: Jump):
         """Show the definitions window.

@@ -68,8 +68,8 @@ class IO:
         self.t_out.start()
 
         # Debugging purposes
-        # self.t_err = Thread(target=self._process_err, daemon=True)
-        # self.t_err.start()
+        self.t_err = Thread(target=self._process_err, daemon=True)
+        self.t_err.start()
 
     def stop(self, *_) -> None:
         """Stop the process"""
