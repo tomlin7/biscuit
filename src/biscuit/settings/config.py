@@ -2,7 +2,7 @@ import os
 
 import toml
 
-from .theme import Dark, Light
+from .theme import Dark, Light, Theme
 
 
 class Config:

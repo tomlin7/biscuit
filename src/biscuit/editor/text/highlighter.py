@@ -6,9 +6,21 @@ import typing
 
 from pygments import lex
 from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
+from pygments.style import Style
 
 if typing.TYPE_CHECKING:
+    from biscuit import App
+
     from .text import Text
+
+
+class BiscuitStyle(Style):
+    name = "biscuit"
+
+    def __init__(self, master: Highlighter) -> None:
+        self.base = master.base
+        self.styles = self.base.theme.syntax
+        self.background_color = self.base.theme.editors.background
 
 
 class Highlighter:
@@ -32,7 +44,7 @@ class Highlighter:
             language (str, optional): Language to highlight. Defaults to None."""
 
         self.text: Text = text
-        self.base = text.base
+        self.base: App = text.base
         self.language = language
 
         if language:
