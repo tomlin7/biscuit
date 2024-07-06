@@ -5,6 +5,7 @@ import typing
 
 if typing.TYPE_CHECKING:
     from .text import Text
+    from .editor import TextEditor
 
 from biscuit.common.ui import Canvas, Menubutton
 
@@ -16,7 +17,7 @@ class LineNumbers(Canvas):
     It also provides the functionality to toggle breakpoints on the lines.
     """
 
-    def __init__(self, master, text: Text = None, *args, **kwargs) -> None:
+    def __init__(self, master: TextEditor, text: Text = None, *args, **kwargs) -> None:
         """Line Numbers widget
 
         Args:
@@ -25,6 +26,7 @@ class LineNumbers(Canvas):
         """
 
         super().__init__(master, *args, **kwargs)
+        self.master: TextEditor = master
         self.config(
             width=65, bd=0, highlightthickness=0, **self.base.theme.editors.linenumbers
         )
@@ -37,7 +39,7 @@ class LineNumbers(Canvas):
         self.bp_hover_color, _, self.bp_enabled_color, _ = (
             self.base.theme.editors.linenumbers.breakpoint.values()
         )
-        self.breakpoints = set()
+        self.breakpoints: set[int] = set()
 
     def attach(self, text):
         self.text = text
@@ -73,6 +75,7 @@ class LineNumbers(Canvas):
         else:
             self.breakpoints.add(line)
         self.redraw()
+        self.master.update_breakpoints(self.breakpoints)
 
     def redraw(self, *_):
         self.delete(tk.ALL)
@@ -146,6 +149,23 @@ class LineNumbers(Canvas):
                 tag=i,
                 fill=self.hfg if y == cur_y else self.fg,
             )
+
+            self.tag_bind(
+                i,
+                "<Enter>",
+                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_enter(
+                    breakpoint_id, flag
+                ),
+            )
+
+            self.tag_bind(
+                i,
+                "<Leave>",
+                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_leave(
+                    breakpoint_id, flag
+                ),
+            )
+
             i = self.text.index(f"{i}+1line")
 
     def on_breakpoint_enter(self, id, flag):

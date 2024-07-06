@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import tkinter as tk
+import typing
 from hashlib import md5
-from tkinter.font import Font
 
 from biscuit.common.ui import Scrollbar
-from biscuit.debugger import get_debugger
 
 from ..editorbase import BaseEditor
 from .linenumbers import LineNumbers
@@ -13,14 +12,20 @@ from .menu import RunMenu
 from .minimap import Minimap
 from .text import Text
 
+if typing.TYPE_CHECKING:
+    from tkinter.font import Font
+
+    from biscuit.debugger.base import DebuggerBase
+    from biscuit.editor.editor import Editor
+
 
 class TextEditor(BaseEditor):
     def __init__(
         self,
-        master,
-        path=None,
+        master: Editor,
+        path="",
         exists=True,
-        language=None,
+        language="",
         minimalist=False,
         standalone=False,
         load_file=True,
@@ -35,8 +40,8 @@ class TextEditor(BaseEditor):
         self.minimalist = minimalist or self.standalone
         self.language = language
         self.editable = True
-        self.run_command_value = None
-        self.debugger = None
+        self.run_command_value = ""
+        self.debugger: DebuggerBase = None
         self.runmenu = None
         self.unsupported = False
         self.content_hash = ""
@@ -98,12 +103,12 @@ class TextEditor(BaseEditor):
 
                 self.__buttons__.insert(1, ("chevron-down", self.runmenu.show))
 
-                self.debugger = get_debugger(self)
+                self.debugger = self.base.debugger_manager.request_debugger(self)
                 if self.debugger:
-                    self.__buttons__.insert(2, ("bug", self.debugger.run))
+                    self.__buttons__.insert(2, ("bug", self.run_debugger))
                     self.runmenu.add_separator()
                     self.runmenu.add_command(
-                        f"Debug {self.language} file", self.debugger.run
+                        f"Debug {self.language} file", self.run_debugger
                     )
 
         self.linenumbers.attach(self.text)
@@ -127,7 +132,15 @@ class TextEditor(BaseEditor):
         if self.base.settings.config.auto_save_enabled:
             self.auto_save()
 
-    def __getattr__(self, name):
+    def run_debugger(self) -> None:
+        if self.debugger:
+            self.debugger.launch(self)
+
+    def update_breakpoints(self, breakpoints: set[int]) -> None:
+        if self.debugger:
+            self.debugger.update_breakpoints(self.path, breakpoints)
+
+    def __getattr__(self, name) -> typing.Any:
         """For methods that are not in this class, assume it is present in Text widget
         and delegate the call to the `Text` widget."""
 
@@ -142,16 +155,16 @@ class TextEditor(BaseEditor):
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
 
-    def file_loaded(self):
+    def file_loaded(self) -> None:
         self.recalculate_content_hash()
         self.event_generate("<<FileLoaded>>", when="tail")
         self.text.event_generate("<<FileLoaded>>", when="tail")
 
-    def recalculate_content_hash(self):
+    def recalculate_content_hash(self) -> None:
         """Recalculate the hash of the editor content"""
         self.content_hash = self.calculate_content_hash()
 
-    def calculate_content_hash(self):
+    def calculate_content_hash(self) -> str | None:
         """Calculate the hash of the editor content"""
         if self.exists and self.editable:
             text = self.text.get_all_text()
@@ -165,9 +178,12 @@ class TextEditor(BaseEditor):
     def unsaved_changes(self):
         """Check if the editor content has changed"""
         if self.editable:
+            if not self.content_hash:
+                return False
+
             return self.content_hash != self.calculate_content_hash()
 
-    def run_file(self, dedicated=False, external=False):
+    def run_file(self, dedicated=False, external=False) -> None:
         if not self.run_command_value:
             self.base.notifications.warning(
                 "No programs are configured to run this file."
@@ -185,11 +201,11 @@ class TextEditor(BaseEditor):
             self.base.panel.show_terminal()
         self.base.execution_manager.run_command(self, external=external)
 
-    def set_run_command(self, command):
+    def set_run_command(self, command) -> None:
         self.run_command_value = command
         self.run_file()
 
-    def on_change(self, *_):
+    def on_change(self, *_) -> None:
         self.linenumbers.redraw()
         try:
             if not self.standalone:
@@ -201,34 +217,34 @@ class TextEditor(BaseEditor):
             self.minimap.redraw_cursor()
         self.event_generate("<<Change>>")
 
-    def on_scroll(self, *_):
+    def on_scroll(self, *_) -> None:
         self.linenumbers.redraw()
         if not self.minimalist:
             self.minimap.redraw()
         self.event_generate("<<Scroll>>")
 
-    def unsupported_file(self):
+    def unsupported_file(self) -> None:
         self.unsupported = True
         self.text.show_unsupported_dialog()
         self.linenumbers.grid_remove()
         self.scrollbar.grid_remove()
         self.editable = False
 
-    def focus(self):
+    def focus(self) -> None:
         self.text.focus()
         self.on_change()
 
-    def set_fontsize(self, size):
+    def set_fontsize(self, size) -> None:
         self.font.configure(size=size)
         self.linenumbers.set_bar_width(size * 3)
         self.on_change()
 
-    def save(self, path=None):
+    def save(self, path=None) -> None:
         if self.editable:
             self.recalculate_content_hash()
             self.text.save_file(path)
 
-    def auto_save(self):
+    def auto_save(self) -> None:
         if self.standalone:
             return
 

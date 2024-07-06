@@ -3,34 +3,73 @@ from __future__ import annotations
 import typing
 
 if typing.TYPE_CHECKING:
+    from biscuit.debugger.manager import DebuggerManager
     from biscuit.editor import TextEditor
 
 
-class Debugger:
+class DebuggerBase:
     """Abstract debugger base class.
     This class should be inherited by a debugger class that implements the `run` method.
 
     Attributes:
-        editor (TextEditor): the editor instance
+        manager (DebuggerManager): the debugger manager
         base (App): the base app instance
-        file_path (str): the path of the file being debugged
+        breakpoints (dict[str, set[int]]): map of breakpoints set for each file,
+            `file_path` -> set of line numbers
         variables (Variables): the variables pane in the debug view,
             `variables.tree` is the treeview widget for the variables
         callstack (CallStack): the call stack pane in the debug view,
-            `callstack.tree` is the treeview widget for the call stack"""
+            `callstack.tree` is the treeview widget for the call stack
+    """
 
-    def __init__(self, editor: TextEditor):
+    def __init__(self, manager: DebuggerManager):
         super().__init__()
-        self.editor = self.master = editor
-        self.base = editor.base
-        self.file_path = self.editor.path
+        self.manager = manager
+        self.base = manager.base
         self.variables = self.base.drawer.debug.variables
         self.callstack = self.base.drawer.debug.callstack
+        self.breakpoints: dict[str, set[int]] = {}  # file_path -> set of line numbers
 
-    def run(self, *_):
+    def launch(self, editor: TextEditor) -> None:
         """Debug the code in the editor.
 
         This method should be implemented by the subclass.
-        Current editor instance is available as `self.editor`."""
+
+        Args:
+            editor (TextEditor): the editor instance"""
+
+        raise NotImplementedError
+
+    def update_breakpoints(self, file_path: str, line_numbers: set[int]) -> None:
+        """Update the breakpoints for the file.
+
+        Args:
+            file_path (str): the file path
+            line_numbers (set[int]): the set of line numbers"""
+
+        self.breakpoints[file_path] = line_numbers
+
+    def stop(self):
+        """Stop the debugger."""
+
+        raise NotImplementedError
+
+    def step(self) -> None:
+        """Step through the code."""
+
+        raise NotImplementedError
+
+    def step_over(self) -> None:
+        """Step over the code."""
+
+        raise NotImplementedError
+
+    def step_out(self) -> None:
+        """Step out of the code."""
+
+        raise NotImplementedError
+
+    def continue_(self) -> None:
+        """Continue the execution."""
 
         raise NotImplementedError

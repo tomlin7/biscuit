@@ -71,7 +71,7 @@ class LanguageServerManager:
         if self.latest:
             self.latest.open_tab(tab)
             self.latest.request_outline(tab)
-        return self.latest is not None
+        return self.latest
 
     def request_removal(self, tab: Text) -> None:
         """Request the language server to remove a tab"""
