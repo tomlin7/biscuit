@@ -62,7 +62,7 @@ class Text(BaseText):
         self.minimalist = minimalist
         self.standalone = standalone
         self.language = language
-        self.language_alias = []
+        self.language_alias = ""
         self.unsupported = False
 
         self.ctrl_down = False
