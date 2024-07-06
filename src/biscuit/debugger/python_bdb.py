@@ -25,6 +25,7 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
 
     def launch(self, editor: TextEditor) -> None:
         self.reset()
+        self.base.drawer.show_debug()
 
         with open(editor.path, "r") as f:
             code = compile(f.read(), editor.path, "exec")
@@ -44,28 +45,23 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
         threading.Thread(target=self._run_debugger, args=(code, globals_dict)).start()
 
     def _run_debugger(self, code, globals_dict):
-        sys.settrace(self.trace_dispatch)
+        self.set_trace()
         try:
             exec(code, globals_dict)
         finally:
             sys.settrace(None)
             self.is_running = False
+            self.variables.clear()
+            self.callstack.clear()
 
     def user_line(self, frame):
         if self.break_here(frame):
             self.current_frame = frame
             self.variables.show(frame)
             self.callstack.show(frame)
-            self.is_running = False
-            print("we are paused at", frame.f_lineno)
             # self.manager.base.update_debug_view()  # Update UI to show we're paused
             self.paused.wait()  # Wait for user input
             self.paused.clear()
-
-    def trace_dispatch(self, frame, event, arg):
-        if event == "line":
-            return self.dispatch_line(frame)
-        return self.trace_dispatch
 
     def stop(self):
         self.is_running = False
@@ -87,16 +83,3 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
     def continue_(self):
         self.command = "continue"
         self.paused.set()
-
-    def dispatch_line(self, frame):
-        self.user_line(frame)
-        if self.command == "step":
-            self.set_step()
-        elif self.command == "next":
-            self.set_next(frame)
-        elif self.command == "return":
-            self.set_return(frame)
-        elif self.command == "continue":
-            self.set_continue()
-        self.command = None
-        return self.trace_dispatch
