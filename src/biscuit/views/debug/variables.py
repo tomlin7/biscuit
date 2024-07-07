@@ -14,17 +14,17 @@ class Variables(NavigationDrawerViewItem):
         self.__actions__ = ()
         super().__init__(master, itembar=True, *args, **kwargs)
 
-        self.tree = Tree(self.content, *args, **kwargs)
+        self.tree = Tree(self.content, style="mono.Treeview", *args, **kwargs)
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
-    def show(self, frame):
-        """Show the local variables in the given frame.
+    def show(self, locals: list[str, str]):
+        """Show the variables from the given list of locals (name, value)
 
         Args:
-            frame (frame): The frame to show the local variables of."""
+            locals (list[str, str]): The local variables to show."""
 
         self.clear()
-        for var, val in frame.f_locals.items():
+        for var, val in locals:
             locals_str = f"{var}: {val}"
             self.tree.add(text=locals_str)
 

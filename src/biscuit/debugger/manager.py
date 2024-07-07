@@ -24,9 +24,27 @@ class DebuggerManager:
         )  # language -> debugger type mapping
         self.debuggers[Languages.PYTHON] = PythonDebugger
 
-        self.active: dict[str, DebuggerBase] = (
+        self.spawned: dict[str, DebuggerBase] = (
             {}
         )  # language -> active debugger instance
+
+        self._latest: DebuggerBase = None
+
+    @property
+    def latest(self) -> DebuggerBase:
+        """Get the latest debugger instance
+        Returns:
+            DebuggerBase: the latest debugger instance
+        """
+        return self._latest
+
+    @latest.setter
+    def latest(self, debugger: DebuggerBase) -> None:
+        """Set the latest debugger instance
+        Args:
+            debugger (DebuggerBase): the debugger instance
+        """
+        self._latest = debugger
 
     def request_debugger(self, editor: TextEditor) -> DebuggerBase:
         """Get or create a debugger instance for the given editor's language.
@@ -39,13 +57,13 @@ class DebuggerManager:
             return
 
         language = editor.language.lower()
-        if language not in self.active:
+        if language not in self.spawned:
             debugger_type = self.debuggers.get(language)
             if not debugger_type:
                 return
 
-            self.active[language] = debugger_type(self)
-        return self.active[language]
+            self.spawned[language] = debugger_type(self)
+        return self.spawned[language]
 
     def is_debugger_available(self, editor: TextEditor) -> bool:
         """Check if a debugger is available for the given editor's language.

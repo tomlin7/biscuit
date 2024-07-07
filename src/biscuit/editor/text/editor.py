@@ -134,7 +134,7 @@ class TextEditor(BaseEditor):
 
     def run_debugger(self) -> None:
         if self.debugger:
-            self.debugger.launch(self)
+            self.debugger.launch_standalone(self)
 
     def update_breakpoints(self, breakpoints: set[int]) -> None:
         if self.debugger:

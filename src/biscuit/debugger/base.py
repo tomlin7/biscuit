@@ -30,13 +30,30 @@ class DebuggerBase:
         self.callstack = self.base.drawer.debug.callstack
         self.breakpoints: dict[str, set[int]] = {}  # file_path -> set of line numbers
 
-    def launch(self, editor: TextEditor) -> None:
-        """Debug the code in the editor.
+    def launch_standalone(self, editor: TextEditor) -> None:
+        """Launch the debugger in standalone mode.
+
+        Args:
+            editor (TextEditor): the text editor"""
+
+        self._launch_debugger(editor.path)
+
+    def _launch_debugger(self, path: str) -> None:
+        """Launch the debugger.
+
+        Args:
+            path (str): the file path"""
+
+        self.manager.latest = self
+        self.launch(path)
+
+    def launch(self, path: str) -> None:
+        """Debug the file.
 
         This method should be implemented by the subclass.
 
         Args:
-            editor (TextEditor): the editor instance"""
+            editor (TextEditor): the text editor"""
 
         raise NotImplementedError
 
@@ -54,7 +71,12 @@ class DebuggerBase:
 
         raise NotImplementedError
 
-    def step(self) -> None:
+    def restart(self):
+        """Restart the debugger."""
+
+        raise NotImplementedError
+
+    def step_in(self) -> None:
         """Step through the code."""
 
         raise NotImplementedError
