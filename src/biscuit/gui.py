@@ -133,6 +133,7 @@ class GUIManager(Tk, ConfigManager):
         self.settings.late_setup()
         self.history.generate_actionsets()
         self.git.late_setup()
+        self.debugger_manager.register_actionsets()
         self.register_misc_palettes()
 
         # force set focus on this window

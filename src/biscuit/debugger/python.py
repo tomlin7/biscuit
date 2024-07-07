@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import bdb
 import os
 import sys
@@ -82,12 +83,13 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
 
             # Update UI
             self.debug.reset()
+            self.debug.set_stopped()
 
     def user_line(self, frame):
         self.debug.reset()
+        self.current_frame = frame
         if self.break_here(frame):
             self.debugging.clear()
-            self.current_frame = frame
 
             for d in get_variables(frame):
                 self.variables.show(*d)
@@ -134,3 +136,27 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
             self.debugging.clear()
         else:
             self.debugging.set()
+
+    def set_variable(self, name: str, value: str):
+        try:
+            # evaluate as a literal
+            new_value = ast.literal_eval(value)
+            print(f"Value of `{name}` changed to {new_value} (literal)")
+        except (ValueError, SyntaxError):
+            try:
+                # evaluate expression in current frame
+                new_value = eval(
+                    value, self.current_frame.f_globals, self.current_frame.f_locals
+                )
+                print(f"Value of `{name}` changed to {new_value} (complex expression)")
+            except Exception as e:
+                print(f"Value of `{name}` cannot be changed: {e}")
+                return
+
+        self.current_frame.f_locals[name] = new_value
+        save_locals(self.current_frame)
+
+        # Update UI
+        self.variables.clear()
+        for d in get_variables(self.current_frame):
+            self.variables.show(*d)

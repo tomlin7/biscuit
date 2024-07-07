@@ -49,7 +49,6 @@ class Debug(NavigationDrawerView):
         self.actionbar.pause_btn.toggle_icon()
 
     def reset(self):
-        self.set_stopped()
         self.actionbar.pause_btn.reset_icon()
         self.variables.clear()
         self.callstack.clear()

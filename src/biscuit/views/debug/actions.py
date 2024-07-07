@@ -42,25 +42,19 @@ class DebuggerActions(Frame):
         return button
 
     def toggle_pause(self, *_):
-        if self.manager.latest:
-            self.manager.latest.continue_pause()
+        self.base.commands.debugger_toggle_pause()
 
     def step_over(self, *_):
-        if self.manager.latest:
-            self.manager.latest.step_over()
+        self.base.commands.debugger_step_over()
 
     def step_into(self, *_):
-        if self.manager.latest:
-            self.manager.latest.step_in()
+        self.base.commands.debugger_step_into()
 
     def step_out(self, *_):
-        if self.manager.latest:
-            self.manager.latest.step_out()
+        self.base.commands.debugger_step_out()
 
     def restart(self, *_):
-        if self.manager.latest:
-            self.manager.latest.restart()
+        self.base.commands.debugger_restart()
 
     def stop(self, *_):
-        if self.manager.latest:
-            self.manager.latest.stop()
+        self.base.commands.debugger_stop()

@@ -1,5 +1,6 @@
 """Utility functions for the Python debugger."""
 
+import ctypes
 import os
 import sys
 import types
@@ -57,3 +58,9 @@ def get_variables(
     yield "Code Info", code_info
     yield "Globals", frame.f_globals
     yield "Locals", frame.f_locals, True
+
+
+# CREDITS: https://pydev.blogspot.com/2014/02/changing-locals-of-frame-frameflocals.html
+def save_locals(frame: types.FrameType) -> dict:
+    ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(0))
+    return frame.f_locals

@@ -69,8 +69,8 @@ class Variables(NavigationDrawerViewItem):
 
         try:
             self.tree.delete(*self.tree.get_children())
-        except tk.TclError:
-            pass
+        except tk.TclError as e:
+            print("Debugger variables panel", e)
 
     def copy_value(self):
         """Copy the value of the selected variable to the clipboard."""
@@ -86,4 +86,17 @@ class Variables(NavigationDrawerViewItem):
 
     def set_value(self):
         """Set the value of the selected variable."""
-        pass
+
+        try:
+            self.base.palette.show(
+                "debugger.set_local", default=self.tree.set(self.tree.focus(), "value")
+            )
+        except Exception as e:
+            print("Debugger variables:", e)
+
+    def set_variable_callback(self, value: str):
+        """Callback function for setting the value of the selected variable."""
+
+        self.base.debugger_manager.latest.set_variable(
+            self.tree.set(self.tree.focus(), "key"), value
+        )

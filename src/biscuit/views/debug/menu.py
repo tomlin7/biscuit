@@ -17,9 +17,8 @@ class VariablesContextMenu(Menu):
         self.add_command("Copy Expression", self.master.copy_expression)
         self.add_command("Copy Name", self.master.copy_name)
 
-        # TODO setting values
-        # self.add_separator()
-        # self.add_command("Set Value", self.master.set_value)
+        self.add_separator()
+        self.add_command("Set Value", self.master.set_value)
 
     def get_coords(self, e) -> list:
         return e.x_root, e.y_root

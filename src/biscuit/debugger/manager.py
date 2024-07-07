@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import typing
 
+from biscuit.common.actionset import ActionSet
 from biscuit.language import Languages
 
 from .base import DebuggerBase
@@ -29,6 +30,18 @@ class DebuggerManager:
         )  # language -> active debugger instance
 
         self._latest: DebuggerBase = None
+
+    def register_actionsets(self) -> None:
+        """Register the debugger action sets."""
+
+        set_local_actionset = ActionSet(
+            "debugger: set local variable",
+            "debugger.set_local",
+            pinned=[
+                ["Change value to {}", self.base.debug.variables.set_variable_callback]
+            ],
+        )
+        self.base.register_actionset(lambda: set_local_actionset)
 
     @property
     def latest(self) -> DebuggerBase:

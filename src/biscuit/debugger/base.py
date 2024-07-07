@@ -95,3 +95,12 @@ class DebuggerBase:
         """Toggle between continue and pause."""
 
         raise NotImplementedError
+
+    def set_variable(self, name: str, value: str) -> None:
+        """Set the value of a local variable.
+
+        Args:
+            name (str): local variable name
+            value (str): the value"""
+
+        raise NotImplementedError
