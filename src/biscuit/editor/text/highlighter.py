@@ -55,6 +55,7 @@ class Highlighter:
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
+                self.text.language_alias = "text"
                 self.base.notifications.info("Selected lexer is not available.")
         else:
             try:
@@ -69,6 +70,7 @@ class Highlighter:
             except:
                 self.lexer = None
                 self.text.language = "Plain Text"
+                self.text.language_alias = "text"
 
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
@@ -90,6 +92,7 @@ class Highlighter:
         except:
             self.lexer = None
             self.text.language = "Plain Text"
+            self.text.language_alias = "text"
 
     def change_language(self, language: str) -> None:
         """Change the language of the highlighter
@@ -104,6 +107,7 @@ class Highlighter:
         except:
             self.lexer = None
             self.text.language = "Plain Text"
+            self.text.language_alias = "text"
             self.base.notifications.info("Selected lexer is not available.")
             return
 

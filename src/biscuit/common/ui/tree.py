@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import typing
 
 from .native import Frame
 from .scrollbar import Scrollbar
@@ -23,8 +24,9 @@ class Tree(Frame):
         doubleclick=lambda _: None,
         singleclick=lambda _: None,
         columns=("fullpath", "type"),
+        style="",
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.utils.tree)
@@ -41,6 +43,7 @@ class Tree(Frame):
             show="tree",
             columns=columns,
             displaycolumns="",
+            style=style,
             selectmode=tk.BROWSE,
         )
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
@@ -86,10 +89,13 @@ class Tree(Frame):
         self.tree.bind(*args, **kwargs)
 
     def check_singleclick(self, _) -> None:
-        if self.item_type(self.focus()) == "file":
-            if self.singleclick:
-                self.singleclick(self.item_fullpath(self.focus()))
-        else:
+        try:
+            if self.item_type(self.focus()) == "file":
+                if self.singleclick:
+                    self.singleclick(self.item_fullpath(self.focus()))
+            else:
+                self.toggle_node(self.focus())
+        except:
             self.toggle_node(self.focus())
 
     def clear_node(self, node) -> None:
@@ -144,6 +150,9 @@ class Tree(Frame):
     def selected_parent_path(self):
         return self.item_fullpath(self.parent_selected())
 
+    def selection(self, *args, **kwargs):
+        return self.tree.selection(*args, **kwargs)
+
     def selection_set(self, *args, **kwargs):
         return self.tree.selection_set(*args, **kwargs)
 
@@ -162,10 +171,28 @@ class Tree(Frame):
     def set(self, *args, **kwargs):
         return self.tree.set(*args, **kwargs)
 
+    def __getattr__(self, name) -> typing.Any:
+        """For methods that are not in this class, assume it is present in tree widget
+        and delegate the call to the `tree` widget."""
+
+        text_methods = set(dir(self.tree))
+        if name in text_methods:
+            attr = getattr(self.tree, name)
+            return attr
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
+
     def toggle_node(self, node) -> None:
-        if self.item_type(node) == "directory":
+        try:
+            if self.item_type(node) == "directory":
+                if self.is_open(node):
+                    self.tree.item(node, open=False)
+                else:
+                    self.tree.item(node, open=True)
+                    self.tree.event_generate("<<Open>>")
+        except:
             if self.is_open(node):
                 self.tree.item(node, open=False)
             else:
                 self.tree.item(node, open=True)
-                self.tree.event_generate("<<Open>>")

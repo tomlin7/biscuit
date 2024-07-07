@@ -48,7 +48,12 @@ class EditorsManager(Frame):
         return not self.active_editors
 
     def is_open(self, path: str) -> bool:
-        return any(editor.path == path for editor in self.active_editors)
+        return any(
+            editor.path
+            and path
+            and (os.path.abspath(editor.path) == os.path.abspath(path))
+            for editor in self.active_editors
+        )
 
     def get_active_actionset(self) -> ActionSet:
         self.actionset.update(
@@ -137,7 +142,7 @@ class EditorsManager(Frame):
             self.base.notifications.error("Reopening editor failed: see logs")
 
     def open_editor(
-        self, path: str, exists=True, load_file=True
+        self, path: str = None, exists=True, load_file=True
     ) -> Editor | BaseEditor:
         """Open a new editor with the given path.
 
@@ -148,10 +153,11 @@ class EditorsManager(Frame):
         Returns:
             Editor: The opened editor."""
 
-        if self.is_open(path):
-            return self.editorsbar.switch_tabs(path)
-        if path in self.closed_editors:
-            return self.add_editor(self.closed_editors[path])
+        if path:
+            if self.is_open(path):
+                return self.editorsbar.switch_tabs(path)
+            if path in self.closed_editors:
+                return self.add_editor(self.closed_editors[path])
 
         return self.add_editor(Editor(self, path, exists, load_file=load_file))
 
@@ -267,7 +273,11 @@ class EditorsManager(Frame):
             path (str): The path of the editor to set as active."""
 
         for tab in self.editorsbar.active_tabs:
-            if tab.editor.path == path:
+            if (
+                tab.editor.path
+                and path
+                and (os.path.abspath(tab.editor.path) == os.path.abspath(path))
+            ):
                 self.editorsbar.set_active_tab(tab)
                 return tab.editor
 
@@ -291,4 +301,3 @@ class EditorsManager(Frame):
             self.emptytab.grid_remove()
 
         self.base.update_statusbar()
-        self.base.debug.refresh()

@@ -62,7 +62,7 @@ class Text(BaseText):
         self.minimalist = minimalist
         self.standalone = standalone
         self.language = language
-        self.language_alias = []
+        self.language_alias = ""
         self.unsupported = False
 
         self.ctrl_down = False
@@ -114,7 +114,9 @@ class Text(BaseText):
 
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
         self.tag_config(
-            "hyperlink", foreground=self.base.theme.editors.hyperlink, underline=True
+            "hyperlink",
+            foreground=self.base.theme.editors.hyperlink,
+            underline=True,
         )
 
         self.tag_config("hint", underline=True, underlinefg="gray")

@@ -40,7 +40,7 @@ class Statusbar(Frame):
 
         # ---------------------------------------------------------------------
         self.branch = self.add_button(
-            text="master",
+            text="main",
             icon="source-control",
             callback=self.base.commands.change_git_branch,
             description="Checkout branch",
@@ -154,7 +154,7 @@ class Statusbar(Frame):
             text (str): The text to display on the button.
             icon (str, optional): The icon to display on the button.
             callback (typing.Callable, optional): The callback to call when the button is clicked.
-            description (str, optional): The description of the button.
+            description (str, optional): The description of the button to display on hover.
             side (str, optional): The side to pack the button on. Defaults to tk.LEFT.
             padx (tuple, optional): The padding for the button on the x-axis. Defaults to (2, 0).
 

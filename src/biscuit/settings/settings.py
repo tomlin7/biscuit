@@ -46,13 +46,13 @@ class Settings:
         self.base: App = base
 
         self.config = Config(self)
-        self.style = Style(self.base, self.config.theme)
         self.resources = Resources(self)
         self.bindings = Bindings(self)
 
-        self.commands = []
-
         self.setup_font()
+        self.style = Style(self)
+
+        self.commands = []
         self.setup_icon()
 
     def register_command(self, command: str, callback: typing.Callable) -> None:
@@ -97,6 +97,9 @@ class Settings:
         )
         self.uifont = tkfont.Font(
             family=self.config.uifont[0], size=self.config.uifont[1]
+        )
+        self.uifont_bold = tkfont.Font(
+            family=self.config.uifont[0], size=self.config.uifont[1], weight="bold"
         )
 
     def late_setup(self) -> None:

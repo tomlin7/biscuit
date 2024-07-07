@@ -12,7 +12,7 @@ from tkinter.filedialog import asksaveasfilename
 from biscuit.common.classdrill import *
 
 if typing.TYPE_CHECKING:
-    from .. import App
+    from .app import App
 
 
 class Commands:
@@ -73,8 +73,7 @@ class Commands:
             if editor.content and editor.content.editable:
                 if path := asksaveasfilename(
                     title="Save As...",
-                    defaultextension=".txt",
-                    initialfile=("Untitled"),
+                    initialfile=(editor.filename or "Untitled.txt"),
                 ):
                     editor.save(path)
 
@@ -84,8 +83,7 @@ class Commands:
                 if not editor.content.exists:
                     if path := asksaveasfilename(
                         title="Save As...",
-                        defaultextension=".txt",
-                        initialfile=("Untitled"),
+                        initialfile=(editor.filename or "Untitled.txt"),
                     ):
                         return editor.save(path)
                 if editor.content.editable:
@@ -249,6 +247,30 @@ class Commands:
 
     def restart_extension_server(self, *_) -> None:
         self.base.extensions_manager.restart_server()
+
+    def debugger_toggle_pause(self, *_):
+        if self.base.debugger_manager.latest:
+            self.base.debugger_manager.latest.continue_pause()
+
+    def debugger_step_over(self, *_):
+        if self.base.debugger_manager.latest:
+            self.base.debugger_manager.latest.step_over()
+
+    def debugger_step_into(self, *_):
+        if self.base.debugger_manager.latest:
+            self.base.debugger_manager.latest.step_in()
+
+    def debugger_step_out(self, *_):
+        if self.base.debugger_manager.latest:
+            self.base.debugger_manager.latest.step_out()
+
+    def debugger_restart(self, *_):
+        if self.base.debugger_manager.latest:
+            self.base.debugger_manager.latest.restart()
+
+    def debugger_stop(self, *_):
+        if self.base.debugger_manager.latest:
+            self.base.debugger_manager.latest.stop()
 
     def show_explorer(self, *_) -> None:
         self.base.drawer.show_explorer()

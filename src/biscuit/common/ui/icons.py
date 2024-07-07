@@ -60,14 +60,22 @@ class IconButton(Menubutton):
             self.event(*args)
         except:
             self.event()
-        if not self.icon2:
-            return
 
-        self.switch = not self.switch
-        self.config(text=get_codicon(self.icons[self.switch]))
         self.v_onclick()
+        self.toggle_icon()
 
     def v_onclick(self) -> None: ...
 
     def set_icon(self, icon) -> None:
         self.config(text=get_codicon(icon))
+
+    def toggle_icon(self) -> None:
+        if not self.icon2:
+            return
+
+        self.switch = not self.switch
+        self.config(text=get_codicon(self.icons[self.switch]))
+
+    def reset_icon(self) -> None:
+        self.switch = False
+        self.config(text=get_codicon(self.icons[self.switch]))

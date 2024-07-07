@@ -6,6 +6,7 @@ from .api import ExtensionsAPI
 from .binder import Binder
 from .commands import Commands
 from .common import GameManager, SysInfo
+from .debugger import DebuggerManager
 from .execution import ExecutionManager
 from .extensions import ExtensionManager
 from .git import Git
@@ -68,6 +69,7 @@ class ConfigManager:
         self.game_manager = GameManager(self)
         self.language_server_manager = LanguageServerManager(self)
         self.execution_manager = ExecutionManager(self)
+        self.debugger_manager = DebuggerManager(self)
 
     def setup_path(self, appdir: str) -> None:
         """Sets up the application paths and directories."""

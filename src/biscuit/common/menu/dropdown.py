@@ -1,5 +1,4 @@
 import tkinter as tk
-from turtle import width
 
 from ..codicon import get_codicon
 from ..ui.icons import IconButton
@@ -21,22 +20,28 @@ class Dropdown(Frame):
     def __init__(
         self,
         master,
-        selected: str = None,
-        items: list = None,
-        icon=None,
+        selected="",
+        items=[],
+        icon="",
         callback=lambda *_: None,
         iconside=tk.LEFT,
         padx=5,
         pady=1,
-        fg=None,
-        bg=None,
-        hfg=None,
-        hbg=None,
+        fg="",
+        bg="",
+        hfg="",
+        hbg="",
+        iconfg="",
+        iconbg="",
+        iconhfg="",
+        iconhbg="",
+        empty_message="No items",
         *args,
         **kwargs
     ) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
         self.callback = callback
+        self.empty_message = empty_message
 
         self.bg, self.fg, self.hbg, self.hfg = (
             self.base.theme.utils.iconlabelbutton.values()
@@ -50,8 +55,13 @@ class Dropdown(Frame):
         if hbg:
             self.hbg = hbg
 
+        self.iconfg = iconfg or self.fg
+        self.iconbg = iconbg or self.bg
+        self.iconhfg = iconhfg or self.hfg
+        self.iconhbg = iconhbg or self.hbg
+
         self.config(bg=self.bg)
-        self.text = selected
+        self.text = selected or empty_message
         self.icon = icon
 
         self.icon_label = None
@@ -59,35 +69,33 @@ class Dropdown(Frame):
 
         self.selected = None
         self.menu = _DropdownMenu(self)
-        for i in items:
-            self.add_command(i)
+        self.set_items(items)
 
         if icon:
             self.icon_label = tk.Label(
                 self,
                 text=get_codicon(self.icon),
                 anchor=tk.CENTER,
-                bg=self.bg,
-                fg=self.fg,
+                bg=self.iconbg,
+                fg=self.iconfg,
                 font=("codicon", 12),
             )
             self.icon_label.pack(side=iconside, fill=tk.BOTH)
 
-        if selected:
-            self.text_label = tk.Label(
-                self,
-                text=self.text,
-                anchor=tk.CENTER,
-                pady=2,
-                bg=self.bg,
-                fg=self.fg,
-                font=("Segoe UI", 10),
-            )
-            self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
+        self.text_label = tk.Label(
+            self,
+            text=self.text,
+            anchor=tk.CENTER,
+            pady=2,
+            bg=self.bg,
+            fg=self.fg,
+            font=("Segoe UI", 10),
+        )
+        self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
-        self.close_btn = IconButton(self, "chevron-down", self.menu.show)
-        self.close_btn.config(bg=self.bg, fg=self.fg)
-        self.close_btn.pack(side=tk.RIGHT, fill=tk.BOTH)
+        self.dropdown_btn = IconButton(self, "chevron-down", self.menu.show)
+        self.dropdown_btn.config(bg=self.bg, fg=self.fg)
+        self.dropdown_btn.pack(side=tk.RIGHT, fill=tk.BOTH)
 
         self.config_bindings()
         self.visible = False
@@ -95,12 +103,15 @@ class Dropdown(Frame):
     def add_command(self, text) -> None:
         """Add a command to the dropdown menu"""
 
-        self.menu.add_command(text, lambda: self.choose(text))
+        self.menu.add_command(text, lambda text=text: self.choose(text))
 
     def set_items(self, items: list[str]) -> None:
         self.menu.clear()
-        for i in items:
-            self.add_command(i)
+        if not items:
+            self.add_command(self.empty_message)
+        else:
+            for i in items:
+                self.add_command(i)
 
     def config_bindings(self) -> None:
         self.bind("<Enter>", self.on_enter)
@@ -117,16 +128,16 @@ class Dropdown(Frame):
         if self.text:
             self.text_label.config(bg=self.hbg, fg=self.hfg)
         if self.icon:
-            self.icon_label.config(bg=self.hbg, fg=self.hfg)
-        self.close_btn.config(bg=self.hbg, fg=self.hfg)
+            self.icon_label.config(bg=self.iconhbg, fg=self.iconhfg)
+        self.dropdown_btn.config(bg=self.hbg, fg=self.hfg)
 
     def on_leave(self, *_) -> None:
         self.config(bg=self.bg)
         if self.text:
             self.text_label.config(bg=self.bg, fg=self.fg)
         if self.icon:
-            self.icon_label.config(bg=self.bg, fg=self.fg)
-        self.close_btn.config(bg=self.bg, fg=self.fg)
+            self.icon_label.config(bg=self.iconbg, fg=self.iconfg)
+        self.dropdown_btn.config(bg=self.bg, fg=self.fg)
 
     def change_text(self, text) -> None:
         """Change the text of the item"""

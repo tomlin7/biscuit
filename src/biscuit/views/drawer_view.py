@@ -47,8 +47,8 @@ class NavigationDrawerView(View):
         IconButton(self.top, icon, event).grid(row=0, column=self.column, sticky=tk.E)
         self.column += 1
 
-    def add_item(self, widget, *args, **kwargs) -> None:
-        widget.pack(fill=tk.BOTH, expand=True, *args, **kwargs)
+    def add_item(self, widget, fill=tk.BOTH, expand=True, *args, **kwargs) -> None:
+        widget.pack(fill=fill, expand=expand, *args, **kwargs)
 
     def remove_item(self, widget) -> None:
         widget.pack_forget()

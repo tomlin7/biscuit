@@ -1,19 +1,31 @@
+from __future__ import annotations
+
 import tkinter as tk
+import typing
 from tkinter import ttk
+from tkinter.font import Font
+
+if typing.TYPE_CHECKING:
+    from .settings import Settings
 
 
 class Style(ttk.Style):
     """Handles the styling of the app"""
 
-    def __init__(self, master, theme, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
-        self.master = master
-        self.base = master.base
-        self.theme = theme
+    def __init__(self, settings: Settings, *args, **kwargs) -> None:
+        super().__init__(settings.base, *args, **kwargs)
+        self.settings = settings
+        self.base = settings.base
+        self.theme = settings.config.theme
 
         self.configure("TCheckbutton", background=self.theme.editors.background)
         self.configure("TFrame", background=self.theme.editors.background)
         self.gen_fileicons()
+
+        self.config_treeview()
+        self.config_tree_scrollbar()
+
+    def config_treeview(self) -> None:
 
         self.configure(
             "Treeview.treearea",
@@ -38,7 +50,28 @@ class Style(ttk.Style):
 
         self.layout("Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
 
-        self.config_tree_scrollbar()
+        self.monofont = Font(family=self.settings.config.font[0], size=10)
+        self.layout("mono.Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
+        self.configure(
+            "mono.Treeview.treearea",
+            font=self.monofont,
+            relief="flat",
+            rowheight=25,
+            highlightthickness=0,
+            bd=0,
+            **self.theme.utils.tree.item,
+            padding=0,
+        )
+        self.configure(
+            "mono.Treeview",
+            font=self.monofont,
+            relief="flat",
+            rowheight=25,
+            highlightthickness=0,
+            bd=0,
+            **self.theme.utils.tree.item,
+            padding=0,
+        )
 
     def config_tree_scrollbar(self) -> None:
         self.element_create("TreeScrollbar.trough", "from", "clam")
