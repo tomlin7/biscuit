@@ -44,15 +44,15 @@ def get_variables(
     }
 
     if sys.version_info >= (3, 10):
-        code_info["co_linetable"] = repr(frame.f_code.co_linetable)
-        code_info["co_lines"] = list(frame.f_code.co_lines())
+        code_info["linetable"] = repr(frame.f_code.co_linetable)
+        code_info["lines"] = list(frame.f_code.co_lines())
     else:
-        code_info["co_lnotab"] = repr(frame.f_code.co_lnotab)
+        code_info["lnotab"] = repr(frame.f_code.co_lnotab)
 
     if sys.version_info >= (3, 11):
-        code_info["co_exceptiontable"] = repr(frame.f_code.co_exceptiontable)
-        code_info["co_qualname"] = frame.f_code.co_qualname
-        code_info["co_positions"] = list(frame.f_code.co_positions())
+        code_info["exceptiontable"] = repr(frame.f_code.co_exceptiontable)
+        code_info["qualname"] = frame.f_code.co_qualname
+        code_info["positions"] = list(frame.f_code.co_positions())
 
     yield "Code Info", code_info
     yield "Globals", frame.f_globals
