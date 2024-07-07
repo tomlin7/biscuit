@@ -6,6 +6,7 @@ from biscuit.common.actionset import ActionSet
 from biscuit.language import Languages
 
 from .base import DebuggerBase
+from .config import ConfigLoader
 from .python import PythonDebugger
 
 if typing.TYPE_CHECKING:
@@ -30,6 +31,8 @@ class DebuggerManager:
         )  # language -> active debugger instance
 
         self._latest: DebuggerBase = None
+
+        self.config_loader = ConfigLoader(self)
 
     def register_actionsets(self) -> None:
         """Register the debugger action sets."""
@@ -59,17 +62,26 @@ class DebuggerManager:
         """
         self._latest = debugger
 
-    def request_debugger(self, editor: TextEditor) -> DebuggerBase:
+    def request_debugger_for_editor(self, editor: TextEditor) -> DebuggerBase:
+        """Get or create a debugger instance for the given editor.
+        Args:
+            editor (TextEditor): the editor instance
+        Returns:
+            DebuggerBase: the debugger instance
+        """
+        return self.request_debugger(editor.language)
+
+    def request_debugger(self, language: str) -> DebuggerBase:
         """Get or create a debugger instance for the given editor's language.
         Args:
             editor (TextEditor): the editor instance
         Returns:
             DebuggerBase: the debugger instance
         """
-        if not (editor.language and self.is_debugger_available(editor)):
+        if not (language and self.is_debugger_available(language)):
             return
 
-        language = editor.language.lower()
+        language = language.lower()
         if language not in self.spawned:
             debugger_type = self.debuggers.get(language)
             if not debugger_type:
@@ -78,14 +90,23 @@ class DebuggerManager:
             self.spawned[language] = debugger_type(self)
         return self.spawned[language]
 
-    def is_debugger_available(self, editor: TextEditor) -> bool:
+    def is_debugger_available_for_editor(self, editor: TextEditor) -> bool:
+        """Check if a debugger is available for the given editor.
+        Args:
+            editor (TextEditor): the editor instance
+        Returns:
+            bool: True if a debugger is available, False otherwise
+        """
+        return self.is_debugger_available(editor.language)
+
+    def is_debugger_available(self, language: str) -> bool:
         """Check if a debugger is available for the given editor's language.
         Args:
             editor (TextEditor): the editor instance
         Returns:
             bool: True if a debugger is available, False otherwise
         """
-        return editor.language.lower() in self.debuggers
+        return language.lower() in self.debuggers
 
     def register_debugger(self, language: str, debugger: type[DebuggerBase]) -> None:
         """Register a debugger for a specific language.

@@ -88,7 +88,7 @@ class Panel(Frame):
     def terminals(self) -> Terminal:
         return self.default_views[3]
 
-    def show_terminal(self) -> None:
+    def show_terminal(self, *_) -> None:
         """Shows the terminal if its hidden/minimized."""
 
         if not self.terminals.active_terminal:
@@ -96,18 +96,18 @@ class Panel(Frame):
         self.set_active_view(self.terminals)
         self.show_panel()
 
-    def show_logs(self) -> None:
+    def show_logs(self, *_) -> None:
         """Shows the logs if its hidden/minimized."""
 
         self.set_active_view(self.logger)
         self.show_panel()
 
-    def toggle_panel(self) -> None:
+    def toggle_panel(self, *_) -> None:
         """Toggles the panel visibility."""
 
         self.master.toggle_panel()
 
-    def switch_to_terminal(self) -> None:
+    def switch_to_terminal(self, *_) -> None:
         if not self.terminals.active_terminal:
             self.terminals.add_default_terminal()
         self.set_active_view(self.terminals)

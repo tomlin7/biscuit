@@ -132,28 +132,28 @@ class NavigationDrawer(Frame):
                 i.enable()
                 return view
 
-    def show_explorer(self) -> Explorer:
+    def show_explorer(self, *_) -> Explorer:
         return self.show_view(self.explorer)
 
-    def show_outline(self) -> Outline:
+    def show_outline(self, *_) -> Outline:
         return self.show_view(self.outline)
 
-    def show_search(self) -> Search:
+    def show_search(self, *_) -> Search:
         return self.show_view(self.search)
 
-    def show_source_control(self) -> SourceControl:
+    def show_source_control(self, *_) -> SourceControl:
         return self.show_view(self.source_control)
 
-    def show_debug(self) -> Debug:
+    def show_debug(self, *_) -> Debug:
         return self.show_view(self.debug)
 
-    def show_ai(self) -> AI:
+    def show_ai(self, *_) -> AI:
         return self.show_view(self.ai)
 
-    def show_github(self) -> GitHub:
+    def show_github(self, *_) -> GitHub:
         return self.show_view(self.github)
 
-    def show_extensions(self) -> Extensions:
+    def show_extensions(self, *_) -> Extensions:
         return self.show_view(self.extensions)
 
     def pack(self):

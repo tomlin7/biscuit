@@ -1,10 +1,15 @@
 import tkinter as tk
 
+from biscuit.api import notifications
+from biscuit.common.menu import Dropdown
+
 from ..drawer_view import NavigationDrawerView
 from .actions import DebuggerActions
 from .callstack import CallStack
 from .placeholder import DebugPlaceholder
 from .variables import Variables
+
+EMPTY_MESSAGE = "No configurations found"
 
 
 class Debug(NavigationDrawerView):
@@ -20,6 +25,24 @@ class Debug(NavigationDrawerView):
         self.__icon__ = "bug"
         self.name = "Debug"
         self.running = False
+        self.manager = self.base.debugger_manager
+
+        self.dropdown = Dropdown(
+            self.top,
+            icon="play",
+            callback=self.set_config,
+            iconfg="#87d282",
+            iconhfg="#87d282",
+            empty_message=EMPTY_MESSAGE,
+        )
+        self.dropdown.icon_label.bind("<Button-1>", self.run_config)
+        self.top.grid_columnconfigure(self.column, weight=1)
+        self.dropdown.grid(row=0, column=self.column, sticky=tk.NSEW, padx=(0, 10))
+        self.column += 1
+
+        self.configs = {}
+        self.selected_config = ""
+        self.refresh_configs()
 
         self.actionbar = DebuggerActions(self)
         self.variables = Variables(self)
@@ -28,12 +51,67 @@ class Debug(NavigationDrawerView):
         self.placeholder = DebugPlaceholder(self)
         self.add_item(self.placeholder)
 
-    def refresh(self):
-        if e := self.base.editorsmanager.active_editor:
-            if e.content and e.content.editable and e.content.debugger:
-                return self.show()
+    def refresh_configs(self):
+        self.configs = {
+            config["name"]: config for config in self.manager.config_loader.configs
+        }
+        self.selected_config = list(self.configs.keys())[0] if self.configs else None
+        self.dropdown.set_items([config for config in self.configs.keys()])
+        self.dropdown.change_text(self.selected_config)
 
-        self.hide()
+    def set_config(self, name: str):
+        self.selected_config = name
+        self.run_config()
+
+    def run_config(self, *_):
+        if not self.selected_config or self.selected_config == EMPTY_MESSAGE:
+            self.base.notifications.error(
+                "You need to create a launch configuration to run the debugger.",
+                actions=[["Configure launch...", self.open_config_editor]],
+            )
+            return
+
+        try:
+            if self.selected_config:
+                config = self.configs[self.selected_config]
+                language = config["language"]
+                if debugger := self.manager.request_debugger(config["language"]):
+                    debugger.launch_config(config)
+                else:
+                    self.base.notifications.error(
+                        f"Debugger for {language} not found.",
+                        actions=[
+                            ["Configure launch...", self.open_config_editor],
+                            ["Search Extensions", self.base.drawer.show_extensions],
+                        ],
+                    )
+        except Exception as e:
+            self.base.notifications.error(
+                f"Launch configuration {self.selected_config} failed.",
+                actions=[
+                    ["Configure launch...", self.open_config_editor],
+                    ["Logs", self.base.panel.show_logs],
+                ],
+            )
+            self.base.logger.error(
+                f"Launch configuration {self.selected_config} failed: {e}"
+            )
+
+    def open_config_editor(self, *_):
+        path = (
+            self.manager.config_loader.path
+            if self.base.active_directory
+            else ".biscuit/launch.toml"
+        )
+        self.base.open_editor(path)
+
+    def refresh(self):
+        if self.manager.config_loader.config_found or self.running:
+            self.show()
+        else:
+            self.hide()
+
+        self.refresh_configs()
 
     def set_running(self):
         self.running = True

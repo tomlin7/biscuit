@@ -30,6 +30,9 @@ class DebuggerBase:
         self.callstack = self.base.drawer.debug.callstack
         self.breakpoints: dict[str, set[int]] = {}  # file_path -> set of line numbers
 
+    def format_path(self, path: str) -> str:
+        return path.format(workspace=self.base.active_directory)
+
     def launch_standalone(self, editor: TextEditor) -> None:
         """Launch the debugger in standalone mode.
 
@@ -47,13 +50,26 @@ class DebuggerBase:
         self.manager.latest = self
         self.launch(path)
 
-    def launch(self, path: str) -> None:
+    def launch_config(self, config: dict[str, str]) -> None:
+        """Launch the debugger with the given configuration.
+
+        Args:
+            config (dict[str, str]): the configuration"""
+
+        self.manager.latest = self
+        self.launch(
+            self.format_path(config["program"]),
+            self.format_path(config.get("cwd", "")),
+        )
+
+    def launch(self, path: str, cwd: str = None) -> None:
         """Debug the file.
 
         This method should be implemented by the subclass.
 
         Args:
-            editor (TextEditor): the text editor"""
+            path (str): the file path
+            cwd (str): the working directory"""
 
         raise NotImplementedError
 

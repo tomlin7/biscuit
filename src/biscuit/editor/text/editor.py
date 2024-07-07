@@ -103,7 +103,9 @@ class TextEditor(BaseEditor):
 
                 self.__buttons__.insert(1, ("chevron-down", self.runmenu.show))
 
-                self.debugger = self.base.debugger_manager.request_debugger(self)
+                self.debugger = self.base.debugger_manager.request_debugger_for_editor(
+                    self
+                )
                 if self.debugger:
                     self.__buttons__.insert(2, ("bug", self.run_debugger))
                     self.runmenu.add_separator()

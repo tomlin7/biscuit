@@ -73,8 +73,7 @@ class Commands:
             if editor.content and editor.content.editable:
                 if path := asksaveasfilename(
                     title="Save As...",
-                    defaultextension=".txt",
-                    initialfile=("Untitled"),
+                    initialfile=(editor.filename or "Untitled.txt"),
                 ):
                     editor.save(path)
 
@@ -84,8 +83,7 @@ class Commands:
                 if not editor.content.exists:
                     if path := asksaveasfilename(
                         title="Save As...",
-                        defaultextension=".txt",
-                        initialfile=("Untitled"),
+                        initialfile=(editor.filename or "Untitled.txt"),
                     ):
                         return editor.save(path)
                 if editor.content.editable:

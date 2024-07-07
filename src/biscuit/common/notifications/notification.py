@@ -55,7 +55,7 @@ class Notification(Frame):
             pady=10,
             **self.base.theme.utils.iconbutton,
         )
-        self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH)
+        self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH, anchor=tk.W)
 
         close_button = IconButton(top, "close", self.delete)
         close_button.pack(fill=tk.BOTH)

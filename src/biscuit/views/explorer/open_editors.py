@@ -28,12 +28,16 @@ class OpenEditors(NavigationDrawerViewItem):
     def add_item(self, editor):
         temp = Closable(
             self.content,
-            text=editor.filename,
+            text=editor.filename or editor.path,
             callback=lambda p=editor.path: self.openfile(p),
             closefn=lambda p=editor.path: self.closefile(p),
             padx=10,
         )
-        temp.text_label.config(anchor=tk.W)
+        try:
+            temp.text_label.config(anchor=tk.W)
+        except AttributeError:
+            pass
+
         temp.pack(fill=tk.X, expand=True)
 
         self.nodes[editor.path] = temp

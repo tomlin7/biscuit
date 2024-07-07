@@ -6,6 +6,7 @@ import os
 import sys
 import threading
 import typing
+from types import CodeType
 
 from .base import DebuggerBase
 from .pyutils import *
@@ -30,9 +31,10 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
 
         self.latest_path = ""
 
-    def launch(self, path: str) -> None:
+    def launch(self, path: str, cwd="") -> None:
         self.reset()
         self.base.drawer.show_debug()
+        self.debug.refresh()
         self.latest_path = path
 
         script_dir = os.path.dirname(os.path.abspath(path))
@@ -57,13 +59,19 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
         self.thread = threading.Thread(
             target=self._run_debugger,
             name="Python Debugger Thread",
-            args=(code, globals_dict, script_dir),
+            args=(code, globals_dict, script_dir, cwd),
             daemon=True,
         )
         self.thread.start()
 
-    def _run_debugger(self, code, globals_dict, script_dir):
-        original_cwd = os.getcwd()
+    def _run_debugger(
+        self,
+        code: CodeType,
+        globals_dict: dict[str, typing.Any],
+        script_dir: str,
+        cwd="",
+    ):
+        original_cwd = cwd or os.getcwd()
         try:
             os.chdir(script_dir)
             self.set_trace()
@@ -84,6 +92,7 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
             # Update UI
             self.debug.reset()
             self.debug.set_stopped()
+            self.debug.refresh()
 
     def user_line(self, frame):
         self.debug.reset()

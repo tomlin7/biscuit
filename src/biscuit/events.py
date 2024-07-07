@@ -193,8 +193,11 @@ class EventManager(GUIManager, ConfigManager):
         `exists` flag will prioritize over `load_file`. If `exists` is False, `load_file` will be False.
         """
 
-        if exists and not os.path.isfile(path):
-            return
+        if not path:
+            exists = False
+
+        elif not os.path.isfile(path):
+            exists = False
 
         return self.editorsmanager.open_editor(path, exists, load_file)
 

@@ -1,0 +1,12 @@
+[config]
+name = "Python: Debug Biscuit"
+language = "python"
+program = "main.py"
+cwd = "{workspace}/src"
+
+[config2]
+name = "Python: Launch CLI"
+language = "python"
+program = "cli.py"
+cwd = "{workspace}/src"
+
