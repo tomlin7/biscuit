@@ -46,13 +46,13 @@ class Settings:
         self.base: App = base
 
         self.config = Config(self)
-        self.style = Style(self.base, self.config.theme)
         self.resources = Resources(self)
         self.bindings = Bindings(self)
 
-        self.commands = []
-
         self.setup_font()
+        self.style = Style(self)
+
+        self.commands = []
         self.setup_icon()
 
     def register_command(self, command: str, callback: typing.Callable) -> None:

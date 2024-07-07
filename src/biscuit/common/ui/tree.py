@@ -23,6 +23,7 @@ class Tree(Frame):
         doubleclick=lambda _: None,
         singleclick=lambda _: None,
         columns=("fullpath", "type"),
+        style="",
         *args,
         **kwargs
     ) -> None:
@@ -41,6 +42,7 @@ class Tree(Frame):
             show="tree",
             columns=columns,
             displaycolumns="",
+            style=style,
             selectmode=tk.BROWSE,
         )
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)

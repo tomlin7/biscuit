@@ -48,7 +48,10 @@ class EditorsManager(Frame):
         return not self.active_editors
 
     def is_open(self, path: str) -> bool:
-        return any(editor.path == path for editor in self.active_editors)
+        return any(
+            os.path.abspath(editor.path) == os.path.abspath(path)
+            for editor in self.active_editors
+        )
 
     def get_active_actionset(self) -> ActionSet:
         self.actionset.update(
@@ -267,7 +270,7 @@ class EditorsManager(Frame):
             path (str): The path of the editor to set as active."""
 
         for tab in self.editorsbar.active_tabs:
-            if tab.editor.path == path:
+            if os.path.abspath(tab.editor.path) == os.path.abspath(path):
                 self.editorsbar.set_active_tab(tab)
                 return tab.editor
 
