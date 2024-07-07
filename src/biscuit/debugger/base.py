@@ -91,7 +91,7 @@ class DebuggerBase:
 
         raise NotImplementedError
 
-    def continue_(self) -> None:
-        """Continue the execution."""
+    def continue_pause(self) -> None:
+        """Toggle between continue and pause."""
 
         raise NotImplementedError
