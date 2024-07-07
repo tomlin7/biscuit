@@ -111,6 +111,12 @@ class TextEditor(BaseEditor):
                         f"Debug {self.language} file", self.run_debugger
                     )
 
+                    if self.path in self.debugger.breakpoints:
+                        self.linenumbers.breakpoints = self.debugger.breakpoints[
+                            self.path
+                        ]
+                        self.linenumbers.redraw()
+
         self.linenumbers.attach(self.text)
         if not self.minimalist:
             self.minimap.attach(self.text)

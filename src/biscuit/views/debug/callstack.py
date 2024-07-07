@@ -37,7 +37,10 @@ class CallStack(NavigationDrawerViewItem):
     def clear(self):
         """Clear the call stack."""
 
-        self.tree.delete(*self.tree.get_children())
+        try:
+            self.tree.delete(*self.tree.get_children())
+        except tk.TclError:
+            pass
 
     def goto_line(self, event):
         """Go to the line of the selected call stack frame.

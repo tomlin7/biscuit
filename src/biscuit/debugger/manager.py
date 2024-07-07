@@ -5,7 +5,7 @@ import typing
 from biscuit.language import Languages
 
 from .base import DebuggerBase
-from .python_bdb import PythonDebugger
+from .python import PythonDebugger
 
 if typing.TYPE_CHECKING:
     from biscuit import App

@@ -17,18 +17,32 @@ class Variables(NavigationDrawerViewItem):
         self.tree = Tree(self.content, style="mono.Treeview", *args, **kwargs)
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
-    def show(self, locals: list[str, str]):
-        """Show the variables from the given list of locals (name, value)
+        self.tree.tree.tag_configure("bold", font=self.base.settings.uifont_bold)
+
+    def show(self, section_name: str = "", d: dict = {}, open_: bool = False):
+        """Show the variables in the tree.
 
         Args:
-            locals (list[str, str]): The local variables to show."""
+            d (dict): mapping of variable names to values
+            section (str): section name for grouping variables
+        """
+        section_node = self.tree.insert(
+            "", "end", text=section_name, open=open_, tags=("bold",)
+        )
+        self._insert_items(d, parent=section_node)
 
-        self.clear()
-        for var, val in locals:
-            locals_str = f"{var}: {val}"
-            self.tree.add(text=locals_str)
+    def _insert_items(self, d: dict, parent: str):
+        for key, value in d.items():
+            if isinstance(value, dict):
+                node = self.tree.insert(parent, "end", text=key)
+                self._insert_items(value, parent=node)
+            else:
+                self.tree.insert(parent, "end", text=f"{key} = {value}")
 
     def clear(self):
         """Clear the local variables."""
 
-        self.tree.delete(*self.tree.get_children())
+        try:
+            self.tree.delete(*self.tree.get_children())
+        except tk.TclError:
+            pass

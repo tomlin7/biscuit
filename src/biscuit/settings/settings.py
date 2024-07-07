@@ -98,6 +98,9 @@ class Settings:
         self.uifont = tkfont.Font(
             family=self.config.uifont[0], size=self.config.uifont[1]
         )
+        self.uifont_bold = tkfont.Font(
+            family=self.config.uifont[0], size=self.config.uifont[1], weight="bold"
+        )
 
     def late_setup(self) -> None:
         """Configurations that require full initialization of editor"""
