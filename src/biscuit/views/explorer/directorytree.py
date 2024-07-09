@@ -215,7 +215,10 @@ class DirectoryTree(NavigationDrawerViewItem):
 
         # sort: directories first, then files (alphabetic order)
         entries = sorted(self.scandir(parent_path), key=lambda x: (not x[2], x[0]))
-        ignored = self.git.ignore.check([i[3] for i in entries])
+
+        ignored = []
+        if paths := [i[3] for i in entries]:
+            ignored = self.git.ignore.check(paths)
 
         for name, path, isdir, unixlike in entries:
             if isdir:
@@ -230,7 +233,7 @@ class DirectoryTree(NavigationDrawerViewItem):
                         values=[path, "directory"],
                         # image="foldericon",
                         open=False,
-                        tags="ignored" if unixlike in ignored else "",
+                        tags="ignored" if ignored and (unixlike in ignored) else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
                     self.tree.insert(node, "end", text="loading...", tags="ignored")
@@ -252,7 +255,7 @@ class DirectoryTree(NavigationDrawerViewItem):
                         text=f"  {name}",
                         values=[path, "file"],
                         image="document",
-                        tags="ignored" if unixlike in ignored else "",
+                        tags="ignored" if ignored and (unixlike in ignored) else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
                 except:

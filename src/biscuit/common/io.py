@@ -103,4 +103,6 @@ class IO:
             data = self.p.stderr.read(1)
             if not data:
                 break
-            print(data.decode(), end="", flush=True)  # Print to the console
+            print(
+                data.decode(errors="ignore"), end="", flush=True
+            )  # Print to the console

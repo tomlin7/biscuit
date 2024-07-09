@@ -83,4 +83,7 @@ class Notification(Frame):
     def delete(self):
         """Delete the notification"""
 
-        self.master.delete_notification(self)
+        try:
+            self.master.delete_notification(self)
+        except Exception as e:
+            self.base.logger.error(e)
