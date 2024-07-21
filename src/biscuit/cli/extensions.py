@@ -13,15 +13,21 @@ if typing.TYPE_CHECKING:
 @click.group(invoke_without_command=True)
 @click.help_option("-h", "--help")
 def ext():
-    """Commands for managing biscuit extensions"""
+    """Commands for managing biscuit extensions
+
+    This command group allows you to manage biscuit extensions.
+
+    Example:
+        biscuit ext list \n
+        biscuit ext install extension_name \n
+        biscuit ext uninstall extension_name
+    """
     ...
 
 
 @ext.result_callback()
 @click.pass_context
 def process_extension_commands(ctx, processors):
-    """Process the extension commands"""
-
     if ctx.invoked_subcommand is None:
         # show help
         click.echo(ctx.get_help())
@@ -48,7 +54,17 @@ def process_extension_commands(ctx, processors):
 @click.option("-u", "--user", help="Filter by user")
 @click.option("-i", "--installed", is_flag=True, help="Show installed extensions")
 def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
-    """List all extensions or installed or filter by user"""
+    """List all extensions or installed or filter by user
+
+    Example:
+        biscuit ext list \n
+        biscuit ext list -u user \n
+        biscuit ext list -i
+
+    Args:
+        user (str): Filter by user
+        installed (bool): Show installed extensions
+    """
 
     if user:
         click.echo(f"Listing extensions by {user}\n")
@@ -86,7 +102,13 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
 @ext.command()
 @click.argument("name")
 def info(name: str) -> typing.Callable[[App], None]:
-    """Show information about an extension by name"""
+    """Show information about an extension by name
+
+    Example:
+        biscuit ext info extension_name
+
+    Args:
+        name (str): The name of the extension"""
 
     def f(app: App, name=name) -> None:
         data = app.extensions_manager.find_extension_by_name(name)
@@ -104,7 +126,14 @@ def info(name: str) -> typing.Callable[[App], None]:
 @ext.command()
 @click.argument("name")
 def install(name: str) -> typing.Callable[[App], None]:
-    """Install an extension by name"""
+    """Install an extension by name
+
+    Example:
+        biscuit ext install extension_name
+
+    Args:
+        name (str): The name of the extension
+    """
 
     def f(app: App, name=name) -> None:
         if app.extensions_manager.install_extension_from_name(name):
@@ -118,7 +147,14 @@ def install(name: str) -> typing.Callable[[App], None]:
 @ext.command()
 @click.argument("name")
 def uninstall(name: str) -> typing.Callable[[App], None]:
-    """Uninstall an extension by name"""
+    """Uninstall an extension by name
+
+    Example:
+        biscuit ext uninstall extension_name
+
+    Args:
+        name (str): The name of the extension
+    """
 
     def f(app: App, name=name) -> None:
         if app.extensions_manager.uninstall_extension_from_name(name):
@@ -131,14 +167,24 @@ def uninstall(name: str) -> typing.Callable[[App], None]:
 
 @ext.command()
 def create():
-    """Create a new extension from template"""
+    """Create a new extension from template
+
+    This command will create a new extension from the template
+
+    NOTE: This command is not yet implemented
+    """
 
     click.echo("Extension created!")
 
 
 @ext.command()
 def test():
-    """Test the extension"""
+    """Test the extension
+
+    This command will test your custom extension
+
+    NOTE: This command is not yet implemented
+    """
 
     click.echo("Extension tested!")
 

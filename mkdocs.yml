@@ -1,0 +1,84 @@
+site_name: Biscuit
+site_description: "A lightweight, fast, and extensible code editor with a wide range of language support"
+site_url: "https://tomlin7.github.io/biscuit"
+repo_url: "https://github.com/tomlin7/biscuit"
+repo_name: "tomlin7/biscuit"
+copyright: Copyright &copy; 2024 Billy
+
+theme:
+  name: "material"
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: pink
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.top
+    - navigation.expand
+    - toc.follow
+    - content.code.copy
+    - content.code.select
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            heading_level: 3
+  - search
+  - autorefs
+
+nav:
+  - Home: index.md
+  - CLI: cli.md
+  # - Getting Started:
+  #     - Installation: getting-started/installation.md
+  #     - Quick Start: getting-started/quick-start.md
+  # - About: about.md
+  # - Installation: installation.md
+  # - Usage:
+  #   - Quick Start: usage/quick-start.md
+  #   - Configuration: usage/configuration.md
+  #   - Customization: usage/customization.md
+  # - Features:
+  #   - Code Editor: features/code-editor.md
+  #   - Language Support: features/language-support.md
+  #   - Extensions: features/extensions.md
+  - API Reference:
+      - App: api/app.md
+      - CLI: api/cli.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/tomlin7/biscuit
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg

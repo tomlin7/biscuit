@@ -22,8 +22,6 @@ def cli(path=None, dev=False):
 @cli.result_callback()
 @click.pass_context
 def process_commands(context: click.Context, processors, path=None, dev=False):
-    """Process the commands"""
-
     if path:
         path = str(Path(path).resolve())
         click.echo(f"Opening {path}")
@@ -43,14 +41,22 @@ def process_commands(context: click.Context, processors, path=None, dev=False):
 
 @cli.command("doc")
 def docs():
-    """Open the documentation"""
+    """Open biscuit documentation
+
+    This command will open the biscuit documentation in the default browser.
+
+    Example:
+        biscuit doc
+    """
 
     click.launch("https://tomlin7.github.io/biscuit/")
     exit()
 
 
 def setup():
-    """Setup the CLI commands"""
+    """Setup the CLI commands
+
+    Loads all the commands from the cli extensions and registers them"""
 
     extensions.register(cli)
     git.register(cli)
@@ -58,7 +64,7 @@ def setup():
 
 
 def run():
-    """Run the CLI"""
+    """Setup the CLI and run the CLI"""
 
     setup()
     cli()

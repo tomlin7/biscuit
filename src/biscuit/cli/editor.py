@@ -21,7 +21,16 @@ if typing.TYPE_CHECKING:
     required=False,
 )
 def open(path=None) -> typing.Callable[[App, str], None]:
-    """Open a file or folder in the editor"""
+    """Open a file or folder in the editor
+
+    This command will open a file or folder in the editor.
+
+    Example:
+        biscuit open path/to/file
+
+    Args:
+        path (str, optional): The path to the file or folder. Defaults to None.
+    """
 
     return lambda app, path=path: app.open(path)
 
@@ -38,7 +47,18 @@ def open(path=None) -> typing.Callable[[App, str], None]:
 )
 @click.argument("linecol", type=str, required=False)
 def goto(path=None, linecol=None) -> typing.Callable[[App, str], None]:
-    """Open a file and go to a specific location"""
+    """Open a file and go to a specific location
+
+    This command will open a file and go to a specific location.
+
+    Example:
+        biscuit goto path/to/file line \n
+        biscuit goto path/to/file line:column
+
+    Args:
+        path (str, optional): The path to the file. Defaults to None.
+        linecol (str, optional): The line and column to go to. Defaults to None.
+    """
 
     if not path:
         path = click.prompt("path/to/file", type=str)

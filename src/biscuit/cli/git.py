@@ -13,7 +13,16 @@ if typing.TYPE_CHECKING:
 @click.command()
 @click.argument("url", type=str)
 def clone(url) -> typing.Callable[[App, str], None]:
-    """Clone & open a git repository in Biscuit"""
+    """Clone & open a git repository in Biscuit
+
+    This command will clone a git repository and open it in a new window.
+
+    Example:
+        biscuit clone
+
+    Args:
+        url (str): The url of the git repository
+    """
 
     if not url:
         url = click.prompt("Git repository url", type=str)
@@ -44,7 +53,16 @@ def clone(url) -> typing.Callable[[App, str], None]:
     required=False,
 )
 def diff(file1=None, file2=None) -> typing.Callable[[App, str], None]:
-    """Diff two files"""
+    """Diff two files
+
+    This command will open a new window with the diff of the two files.
+
+    Example:
+        biscuit diff path/to/file path/to/second/file
+
+    Args:
+        file1 (str, optional): The path to the first file. Defaults to None.
+        file2 (str, optional): The path to the second file. Defaults to None."""
 
     if not file1:
         file1 = click.prompt("path/to/file", type=str)
