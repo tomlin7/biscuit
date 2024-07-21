@@ -5,21 +5,24 @@ repo_url: "https://github.com/tomlin7/biscuit"
 repo_name: "tomlin7/biscuit"
 copyright: Copyright &copy; 2024 Billy
 
+docs_dir: docs
+
 theme:
   name: "material"
+  custom_dir: docs/overrides
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: pink
-      accent: pink
+      primary: orange
+      accent: orange
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
 
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
-      accent: pink
+      primary: orange
+      accent: orange
       toggle:
         icon: material/weather-night
         name: Switch to light mode
@@ -38,6 +41,9 @@ plugins:
             heading_level: 3
   - search
   - autorefs
+
+extra_css:
+  - stylesheets/extra.css
 
 nav:
   - Home: index.md
