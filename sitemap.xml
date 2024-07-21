@@ -1,1 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"><url><loc>https://tomlin7.github.io/biscuit/blog</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/archive</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/first-blog-post</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/long-blog-post</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/mdx-blog-post</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/tags</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/tags/docusaurus</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/tags/facebook</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/tags/hello</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/tags/hola</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/blog/welcome</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/markdown-page</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/base</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/category/corecomponents</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/category/developer-docs</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/editing-wide-vs-feature-wide</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/editors</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/intro</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/layout</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/relations</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/docs/structure</loc><changefreq>weekly</changefreq><priority>0.5</priority></url><url><loc>https://tomlin7.github.io/biscuit/</loc><changefreq>weekly</changefreq><priority>0.5</priority></url></urlset>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/</loc>
+         <lastmod>2024-07-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/cli/</loc>
+         <lastmod>2024-07-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/api/app/</loc>
+         <lastmod>2024-07-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/api/cli/</loc>
+         <lastmod>2024-07-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>

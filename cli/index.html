@@ -10,26 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://tomlin7.github.io/biscuit/">
+        <link rel="canonical" href="https://tomlin7.github.io/biscuit/cli/">
       
       
+        <link rel="prev" href="..">
       
-        <link rel="next" href="cli/">
+      
+        <link rel="next" href="../api/app/">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
     
     
       
-        <title>Biscuit</title>
+        <title>CLI - Biscuit</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.50c56a3b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,9 +50,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installing" class="md-skip">
+        <a href="#cli" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +94,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Biscuit" class="md-header__button md-logo" aria-label="Biscuit" data-md-component="logo">
+    <a href=".." title="Biscuit" class="md-header__button md-logo" aria-label="Biscuit" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -112,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              CLI
             
           </span>
         </div>
@@ -225,7 +227,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Biscuit" class="md-nav__button md-logo" aria-label="Biscuit" data-md-component="logo">
+    <a href=".." title="Biscuit" class="md-nav__button md-logo" aria-label="Biscuit" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -252,6 +254,26 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -261,108 +283,10 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Home
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
         
-  
-  <span class="md-ellipsis">
-    Home
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Installing
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Installing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#standalone-builds" class="md-nav__link">
-    <span class="md-ellipsis">
-      Standalone Builds
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing ❤️
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Features
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      License
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
       
       
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="cli/" class="md-nav__link">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -371,6 +295,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -421,7 +346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/app/" class="md-nav__link">
+      <a href="../api/app/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -442,7 +367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/cli/" class="md-nav__link">
+      <a href="../api/cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -480,65 +405,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Installing
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Installing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#standalone-builds" class="md-nav__link">
-    <span class="md-ellipsis">
-      Standalone Builds
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing ❤️
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Features
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      License
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -556,86 +424,8 @@
   
 
 
-<h1 align="center">
-    <img src="https://github.com/tomlin7/Biscuit/assets/70792552/0ea8e958-92de-4659-b1c9-ab5a72f05d7d" width=500><br>
-    <a href=https://github.com/tomlin7/Biscuit/actions/workflows/nightly.yml> 
-        <img src="https://img.shields.io/github/actions/workflow/status/tomlin7/biscuit/nightly.yml?style=for-the-badge"> 
-    </a> 
-    <img alt="Project License" src="https://img.shields.io/github/license/tomlin7/Biscuit?style=for-the-badge"> 
-    <a href=https://github.com/tomlin7/Biscuit/releases> 
-        <img alt="Download Latest" src="https://img.shields.io/github/v/release/tomlin7/biscuit?style=for-the-badge"> 
-    </a>
-    <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/tomlin7/Biscuit?style=for-the-badge">
-</h1>
-
-<p>A lightweight, fast, and extensible code editor with wide range of language support, runs with very minimal system requirements. It implements the <a href="https://microsoft.github.io/language-server-protocol/">Language Server Protocol</a> for code completions, refactoring, symbol references, and more. Features include breakpoint-based code debugging, AI assisted workflow, fast workspace search, and built-in Git support. Scroll down to see <a href="https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features">biscuit in action</a>.</p>
-<p><img alt="image" src="https://github.com/tomlin7/biscuit/assets/70792552/74118e72-e7de-48dd-a34f-a5abd6664e42" /></p>
-<ul>
-<li>🎀 Explore all community made extensions and their authors at the <a href="https://tomlin7.github.io/biscuit-extensions/">Biscuit Extension Center</a></li>
-<li>🪛 For contributing/user guides or API reference, check the <a href="https://tomlin7.github.io/biscuit">documentation here</a></li>
-<li>🌟 Scroll down to the <a href="https://github.com/tomlin7/biscuit?tab=readme-ov-file#features">features section</a> for a list of all features</li>
-</ul>
-<h2 id="installing">Installing</h2>
-<p>You can install the latest release from PyPI by running:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>biscuit-editor
-</span></code></pre></div>
-<p>Try running <code>biscuit --version</code> in your terminal to check if the installation was successful.</p>
-<h3 id="standalone-builds">Standalone Builds</h3>
-<ul>
-<li>Grab the latest stable build from <a href="https://github.com/tomlin7/Biscuit/releases"><strong>releases page</strong></a></li>
-<li>Unstable nightly builds from <a href="https://github.com/tomlin7/Biscuit/actions">GitHub actions</a></li>
-</ul>
-<p>For compiling from source code, please check the <a href="https://github.com/tomlin7/Biscuit/tree/main/scripts">installation guide</a>.</p>
-<h2 id="contributing">Contributing ❤️</h2>
-<p>Your contributions are valuable and very much appreciated!
-Have a peek at the <a href="https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md">contributing guide</a> for a quick tour on project structure and to setup the environment. To contribute a new extension, check the <a href="https://github.com/tomlin7/biscuit-extensions">extension docs</a>.</p>
-<p><a href="https://github.com/tomlin7/biscuit/graphs/contributors">
-  <img src="https://opencollective.com/biscuit/contributors.svg" />
-</a><br></p>
-<ul>
-<li>For opening feature requests and bug reports, use the <a href="https://github.com/tomlin7/Biscuit/issues">issue tracker</a></li>
-<li>Community made extensions are published at the <a href="https://github.com/tomlin7/biscuit-extensions">extensions repository</a></li>
-</ul>
-<h2 id="features">Features</h2>
-<ul>
-<li><strong>Language Server Support</strong> for code completions, refactoring, symbol references, and more</li>
-</ul>
-<p><img alt="peek" src="https://github.com/tomlin7/biscuit/assets/70792552/be132f5b-776c-4045-8a62-c9d29d463762" /></p>
-<table>
-    <tr>
-        <img src=https://github.com/tomlin7/biscuit/assets/70792552/36589a2d-8f5f-4196-bc88-5b1800492076 height=270>
-    </tr>
-    <tr> 
-        <img src=https://github.com/tomlin7/biscuit/assets/70792552/68a26ccb-b309-4c21-b75e-3e5cf5fa6500 height=270>
-    </tr>
-</table>
-
-<hr>
-
-<ul>
-<li><strong>Breakpoint-based Code Debugging</strong> with variable inspection, call stack, and more</li>
-</ul>
-<p><img alt="peek" src="https://github.com/tomlin7/biscuit/assets/70792552/29541b9e-e084-42bc-85b2-4d7c54cd8d34" /></p>
-<hr>
-
-<ul>
-<li><strong>AI Assisted Workflow</strong> for refactoring, code generation, and more</li>
-</ul>
-<p><img alt="peek" src="https://github.com/tomlin7/biscuit/assets/70792552/97913c12-5493-4783-b1f0-ee904f67ff2d" /></p>
-<hr>
-
-<ul>
-<li><strong>Fast Workspace Search</strong> with regex support and file preview</li>
-</ul>
-<p><img alt="peek" src="https://github.com/tomlin7/biscuit/assets/70792552/de0540b2-2b34-4be6-aa86-97e17a20d47d" /></p>
-<hr>
-
-<ul>
-<li><strong>Built-in Git Support</strong> for version control and diff viewer</li>
-</ul>
-<p><img alt="image" src="https://github.com/tomlin7/biscuit/assets/70792552/ad650048-7e74-420b-bd3a-d0c059ff69cd" /></p>
-<h2 id="license">License</h2>
-<p>Biscuit is released under the MIT License; for more information, see <a href="https://github.com/tomlin7/Biscuit/blob/main/LICENSE.md">LICENSE</a>.</p>
+<h1 id="cli">CLI</h1>
+<p>Biscuit provides a command line interface (CLI) to interact with the main application. The CLI is a powerful tool that allows you to perform a wide range of operations, such as managing extensions, files, and settings.</p>
 
 
 
@@ -707,10 +497,10 @@ Have a peek at the <a href="https://github.com/tomlin7/Biscuit/blob/main/CONTRIB
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.top", "navigation.expand", "toc.follow", "content.code.copy", "content.code.select"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.top", "navigation.expand", "toc.follow", "content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.e1c3ead8.min.js"></script>
+      <script src="../assets/javascripts/bundle.e1c3ead8.min.js"></script>
       
     
   </body>
