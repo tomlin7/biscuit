@@ -1,5 +1,5 @@
 .animate {
-    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.06));
+    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.08));
     animation: gliding-animation 3s infinite ease-in-out;
     transition: all 1s ease-in, filter 0.3s ease-in;
 }
@@ -12,7 +12,7 @@
 
 .animate:hover, .animate:focus {
     transform: scale(1.01);
-    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.12));
+    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.15));
 }
 
 .md-banner {
@@ -49,8 +49,26 @@
         font-size: 1.4rem;
     }
 }
-.mdx-hero__content {
-    padding-bottom: 6rem;
+
+#pip_install_code {
+    margin-top: 30px; 
+    display: block;
+    white-space: unset;
+}
+
+#pip_install_code code {
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+.code-container {
+    position: relative;
+    display: block;
+}
+
+.code-container button {
+    padding: 0.6rem 1.8rem;
 }
 
 @media screen and (min-width:60em) {
@@ -80,6 +98,7 @@
     color: var(--md-primary-bg-color);
     margin-right: .5rem;
     margin-top: .5rem;
+    border-radius: 5px;
 }
 
 .mdx-hero .md-button:focus, .mdx-hero .md-button:hover {
@@ -91,8 +110,16 @@
 .mdx-hero .md-button--primary {
     background-color: var(--md-primary-bg-color);
     border-color: var(--md-primary-bg-color);
-    color: #aa6114;
+    color: var(--md-accent-fg-color);
+    border-radius: 5px;
 }
 
-
+img {
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
 
