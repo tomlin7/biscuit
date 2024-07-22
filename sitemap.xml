@@ -2,22 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://tomlin7.github.io/biscuit/</loc>
-         <lastmod>2024-07-21</lastmod>
+         <lastmod>2024-07-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://tomlin7.github.io/biscuit/cli/</loc>
-         <lastmod>2024-07-21</lastmod>
+         <lastmod>2024-07-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://tomlin7.github.io/biscuit/api/app/</loc>
-         <lastmod>2024-07-21</lastmod>
+         <lastmod>2024-07-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://tomlin7.github.io/biscuit/api/cli/</loc>
-         <lastmod>2024-07-21</lastmod>
+         <lastmod>2024-07-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
