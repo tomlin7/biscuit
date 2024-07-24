@@ -1302,12 +1302,20 @@ scikit-build = "*"
 
 [[package]]
 name = "tkinterweb"
-version = "3.23.10"
+version = "3.24.6"
 description = "HTML/CSS viewer for Tkinter"
 optional = false
 python-versions = "*"
 files = [
-    {file = "tkinterweb-3.23.10.tar.gz", hash = "sha256:2b08c5f068a0002020615856438f2795c01f97b22bc0a4a7219d7f662ceebcdd"},
+    {file = "tkinterweb-3.24.6-py3-none-any.whl", hash = "sha256:755173afa4a26c13dc1e9cef80929e0e4f3f7e05216bc55dca90042c6eed55ba"},
+    {file = "tkinterweb-3.24.6-py3-none-linux_armv7l.whl", hash = "sha256:c2574a9e6202032fa89cc0084364a35cbe8094ba34b79dc4e1d40f9a742af26f"},
+    {file = "tkinterweb-3.24.6-py3-none-macosx_10_6_x86_64.whl", hash = "sha256:6fd37d7ec8f4c2cfdf3bab4b9f5423ebfa76a50032edce245b3b0e8a86b7ba44"},
+    {file = "tkinterweb-3.24.6-py3-none-macosx_11_0_arm64.whl", hash = "sha256:2df2e84ab64db62f038e1c6974dc7c53156bd3fa228e88be20b25c788f2fe6e4"},
+    {file = "tkinterweb-3.24.6-py3-none-manylinux1_i686.whl", hash = "sha256:3c553a978ac906558c03a26254757bba3d011d12b416b0fac8d7802599253ec1"},
+    {file = "tkinterweb-3.24.6-py3-none-manylinux1_x86_64.whl", hash = "sha256:48a6768db33e7edff19bf167f7a38c863686f9a5ebf36664a9ec8ac2d19540a2"},
+    {file = "tkinterweb-3.24.6-py3-none-win32.whl", hash = "sha256:8d899ebf53c04df7501cc8eb3df9f7868ac6e67e91d79d7cd3d4a8a2524dd75b"},
+    {file = "tkinterweb-3.24.6-py3-none-win_amd64.whl", hash = "sha256:8a4a5e5703f172fb7a438b04f3a723a01b6f12091aa44b1fcd568d75e318ab5f"},
+    {file = "tkinterweb-3.24.6.tar.gz", hash = "sha256:ad382d3e5b88c2ce0a3bd65fa7041867d2fe3dad6653f4b4d98e3c8c751d7e8c"},
 ]
 
 [package.dependencies]
