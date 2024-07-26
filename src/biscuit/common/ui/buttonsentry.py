@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from git import Optional
 from hintedtext import HintedEntry
 
 from .icons import IconButton
@@ -7,9 +8,32 @@ from .native import Frame
 
 
 class ButtonsEntry(Frame):
-    """Entry containing icon buttons"""
+    """Entry containing icon buttons on the right
 
-    def __init__(self, master, hint="", buttons=(), textvariable=None, *args, **kwargs):
+    Args:
+        master: Parent widget
+        hint: Entry hint
+        buttons: List of tuples containing button icon, event and optional second icon (toggled)
+        textvariable: Entry text variable
+    """
+
+    def __init__(
+        self,
+        master,
+        hint: str,
+        buttons: list[tuple[str, callable, Optional[str]]] = [],
+        textvariable=None,
+        *args,
+        **kwargs
+    ):
+        """Create a new ButtonsEntry
+
+        Args:
+            master: Parent widget
+            hint: Entry hint
+            buttons: List of tuples containing button icon, event and optional second icon (toggled)
+            textvariable: Entry text variable"""
+
         super().__init__(master, *args, **kwargs)
         self.config(padx=1, pady=1, bg=self.base.theme.border)
         self.grid_columnconfigure(0, weight=1)
@@ -47,6 +71,11 @@ class ButtonsEntry(Frame):
         """Get the entry text"""
 
         return self.entry.get(*args)
+
+    def clear(self):
+        """Clear the entry text"""
+
+        return self.entry.delete(0, tk.END)
 
     def delete(self, *args):
         """Delete the entry text"""

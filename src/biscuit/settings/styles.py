@@ -18,7 +18,11 @@ class Style(ttk.Style):
         self.base = settings.base
         self.theme = settings.config.theme
 
-        self.configure("TCheckbutton", background=self.theme.editors.background)
+        self.configure(
+            "TCheckbutton",
+            background=self.theme.editors.background,
+            font=self.settings.uifont,
+        )
         self.configure("TFrame", background=self.theme.editors.background)
         self.gen_fileicons()
 
