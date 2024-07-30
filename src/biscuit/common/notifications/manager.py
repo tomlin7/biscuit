@@ -5,7 +5,6 @@ from ..ui import Frame, IconButton, Label, Toplevel
 from .notification import Notification
 
 
-# TODO : actions for notifications, trace method, secondary text
 class Notifications(Toplevel):
     """
     Floating notifications, shown on bottom right corner

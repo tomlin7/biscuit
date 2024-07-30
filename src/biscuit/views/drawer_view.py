@@ -13,11 +13,11 @@ class NavigationDrawerView(View):
     __actions__ = []
 
     def __init__(
-        self, master, name: str = None, icon: str = None, *args, **kwargs
+        self, master, name: str = None, icon: str = "preview", *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = icon or "preview"
-        self.name = name or "View"
+        self.__icon__ = icon
+        self.name = name
         self.__name__ = self.__class__.__name__
 
         self.pack_propagate(False)
@@ -29,7 +29,7 @@ class NavigationDrawerView(View):
 
         tk.Label(
             self.top,
-            text=self.__class__.__name__.upper(),
+            text=name.upper() if name else self.__class__.__name__.upper(),
             anchor=tk.W,
             font=("Segoi UI", 8),
             **self.base.theme.views.sidebar.title
