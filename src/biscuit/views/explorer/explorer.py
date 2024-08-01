@@ -3,13 +3,13 @@ import tkinter as tk
 
 from biscuit.common import ActionSet
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .directorytree import DirectoryTree
 from .menu import ExplorerMenu
 from .open_editors import OpenEditors
 
 
-class Explorer(NavigationDrawerView):
+class Explorer(SideBarView):
     """A view that displays the file explorer.
 
     - The explorer view displays the directory tree and open editors.

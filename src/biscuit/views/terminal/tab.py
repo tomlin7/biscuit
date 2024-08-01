@@ -34,7 +34,7 @@ class Tab(Frame):
             self,
             text=terminal.name or terminal.__class__.__name__,
             padx=5,
-            font=("Segoe UI", 11),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             bg=self.bg,
             fg=self.fg,

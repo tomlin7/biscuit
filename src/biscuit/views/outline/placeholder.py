@@ -22,7 +22,7 @@ class OutlineTreePlaceholder(Frame):
         self.label = WrappingLabel(
             self,
             text="No outline information",
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,
         )

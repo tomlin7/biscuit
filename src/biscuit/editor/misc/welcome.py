@@ -24,7 +24,7 @@ class Welcome(BaseEditor):
         self.title = Label(
             self.left,
             text="BISCUIT",
-            font=("Segoe UI", 50, "bold"),
+            font=("Fira Code", 50, "bold"),
             fg=self.base.theme.biscuit,
             **self.base.theme.editors.biscuit_labels
         )
@@ -34,7 +34,7 @@ class Welcome(BaseEditor):
             self.left,
             text="Made with Love ✨",
             iconside=tk.RIGHT,
-            font=("Segoe UI", 16, "bold"),
+            font=("Fira Code", 16, "bold"),
             fg=self.base.theme.biscuit,
         )
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
@@ -56,7 +56,7 @@ class Welcome(BaseEditor):
         Label(
             self.left,
             text="Start",
-            font=("Segoe UI", 15),
+            font=("Fira Code", 15),
             **self.base.theme.editors.labels
         ).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
         start = Frame(self.left, **self.base.theme.editors)
@@ -76,7 +76,7 @@ class Welcome(BaseEditor):
         Label(
             self.left,
             text="Recent",
-            font=("Segoe UI", 15),
+            font=("Fira Code", 15),
             **self.base.theme.editors.labels
         ).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))
         recents = Frame(self.left, **self.base.theme.editors)

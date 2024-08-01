@@ -23,7 +23,7 @@ class AIPlaceholder(Frame):
 
         self.label = WrappingLabel(
             self,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             justify=tk.LEFT,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,

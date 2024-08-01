@@ -40,14 +40,14 @@ class Peek(Toplevel):
 
         self.filename = Label(
             container,
-            font=("Segoe UI", 12),
+            font=self.base.settings.uifont,
             **self.base.theme.editors.labels,
             anchor=tk.W,
         )
         self.filename.pack(fill=tk.X, side=tk.LEFT)
         self.path = Label(
             container,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             **self.base.theme.editors.labels,
             anchor=tk.W,
         )

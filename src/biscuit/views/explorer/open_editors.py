@@ -2,10 +2,10 @@ import tkinter as tk
 
 from biscuit.common.ui import Closable
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 
 
-class OpenEditors(NavigationDrawerViewItem):
+class OpenEditors(SideBarViewItem):
     """View that displays the open editors in the editor tabs.
 
     The OpenEditors view displays the open editors in the editor tabs.

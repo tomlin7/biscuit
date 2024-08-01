@@ -8,7 +8,7 @@ import typing
 from biscuit.common import Dropdown
 from biscuit.common.chat import ChatModelInterface, Gemini1p5Flash
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .chat import Chat
 from .menu import AIMenu
 from .placeholder import AIPlaceholder
@@ -33,7 +33,7 @@ You will have to consider them while responding.
 Reply to this message from user: """
 
 
-class AI(NavigationDrawerView):
+class AI(SideBarView):
     """A view that displays the AI chat.
 
     The AI view allows the user to chat with an AI using the Gemini API.

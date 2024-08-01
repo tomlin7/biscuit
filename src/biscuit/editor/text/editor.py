@@ -79,7 +79,15 @@ class TextEditor(BaseEditor):
 
             if not self.standalone:
                 self.run_command_value = self.base.execution_manager.get_command(self)
-                self.__buttons__.insert(0, ("play", lambda: self.run_file()))
+                self.__buttons__.insert(
+                    0,
+                    {
+                        "icon": "play",
+                        "event": lambda: self.run_file(),
+                        "width": 1,
+                        "hfg_only": True,
+                    },
+                )
 
                 self.runmenu = RunMenu(self, "run menu")
                 if self.run_command_value:
@@ -101,7 +109,15 @@ class TextEditor(BaseEditor):
                     ),
                 )
 
-                self.__buttons__.insert(1, ("chevron-down", self.runmenu.show))
+                self.__buttons__.insert(
+                    1,
+                    {
+                        "icon": "chevron-down",
+                        "event": self.runmenu.show,
+                        "iconsize": 6,
+                        "width": 1,
+                    },
+                )
 
                 self.debugger = self.base.debugger_manager.request_debugger_for_editor(
                     self

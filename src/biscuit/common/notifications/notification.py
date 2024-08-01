@@ -53,6 +53,7 @@ class Notification(Frame):
             anchor=tk.W,
             padx=10,
             pady=10,
+            font=self.base.settings.uifont,
             **self.base.theme.utils.iconbutton,
         )
         self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH, anchor=tk.W)
@@ -66,6 +67,7 @@ class Notification(Frame):
             anchor=tk.W,
             padx=10,
             pady=5,
+            font=self.base.settings.uifont,
             **self.base.theme.notifications.source,
         )
         self.source_label.pack(side=tk.LEFT, fill=tk.BOTH)

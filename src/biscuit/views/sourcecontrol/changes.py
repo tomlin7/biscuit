@@ -1,10 +1,10 @@
 import tkinter as tk
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 from .item import ChangeItem
 
 
-class Changes(NavigationDrawerViewItem):
+class Changes(SideBarViewItem):
     """The Changes view.
 
     The Changes view allows the user to view the changes made to the active document.

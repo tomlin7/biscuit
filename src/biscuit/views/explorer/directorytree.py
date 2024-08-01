@@ -12,13 +12,13 @@ import pyperclip
 
 from biscuit.common.ui import Tree
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 from .menu import DirectoryContextMenu
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
 
 
-class DirectoryTree(NavigationDrawerViewItem):
+class DirectoryTree(SideBarViewItem):
     """A view that displays the directory tree.
 
     The directory tree displays the contents of the active directory."""
@@ -29,6 +29,7 @@ class DirectoryTree(NavigationDrawerViewItem):
         startpath=None,
         observe_changes=False,
         itembar=True,
+        style="",
         *args,
         **kwargs,
     ) -> None:
@@ -76,6 +77,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             startpath,
             doubleclick=self.openfile,
             singleclick=self.preview_file,
+            style=style,
             *args,
             **kwargs,
         )
@@ -254,7 +256,7 @@ class DirectoryTree(NavigationDrawerViewItem):
                         "end",
                         text=f"  {name}",
                         values=[path, "file"],
-                        image="document",
+                        # image="document",
                         tags="ignored" if ignored and (unixlike in ignored) else "",
                     )
                     self.nodes[os.path.abspath(path)] = node

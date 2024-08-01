@@ -2,11 +2,11 @@ import tkinter as tk
 
 from biscuit.common.ui import Entry
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .results import Results
 
 
-class Extensions(NavigationDrawerView):
+class Extensions(SideBarView):
     """View that displays the installed extensions.
 
     The Extensions view displays the installed extensions.

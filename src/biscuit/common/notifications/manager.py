@@ -54,6 +54,7 @@ class Notifications(Toplevel):
             topbar,
             text="NOTIFICATIONS",
             anchor=tk.W,
+            font=self.base.settings.uifont,
             **self.base.theme.notifications.title,
         )
         self.title.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=1)

@@ -11,7 +11,7 @@ class ChangesTreePlaceholder(Frame):
 
         WrappingLabel(
             self,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,
             text="In order to use git features, you can open a folder containing a git repository or clone from a URL."

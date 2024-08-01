@@ -51,13 +51,18 @@ class IconLabelButton(Frame):
         pady=1,
         bg="",
         hbg="",
+        hfg_only=False,
         *args,
         **kwargs
     ) -> None:
         super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
 
         self.bg, self.fg, self.hbg, self.hfg = (
-            self.base.theme.utils.iconlabelbutton.values()
+            (
+                self.base.theme.utils.iconlabelbutton_hfg.values()
+                if hfg_only
+                else self.base.theme.utils.iconlabelbutton.values()
+            )
             if not highlighted
             else self.base.theme.utils.button.values()
         )
@@ -94,7 +99,7 @@ class IconLabelButton(Frame):
                 pady=2,
                 bg=self.bg,
                 fg=self.fg,
-                font=("Segoe UI", 10),
+                font=self.base.settings.uifont,
                 cursor="hand2",
             )
             self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)

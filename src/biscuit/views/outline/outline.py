@@ -6,14 +6,14 @@ import tarts as lsp
 
 from biscuit.common import ActionSet
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .outlinetree import OutlineTree
 
 if typing.TYPE_CHECKING:
     from biscuit.editor import Text
 
 
-class Outline(NavigationDrawerView):
+class Outline(SideBarView):
     """View that displays the outline of the active document.
 
     The Outline view displays the outline of the active document.

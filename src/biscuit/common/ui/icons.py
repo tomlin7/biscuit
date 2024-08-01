@@ -7,7 +7,7 @@ class Icon(Label):
     """Simple label using codicons"""
 
     def __init__(
-        self, master, icon: str = "", iconsize: int = 14, *args, **kwargs
+        self, master, icon: str = "", iconsize: int = 12, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(font=("codicon", iconsize))
@@ -29,8 +29,9 @@ class IconButton(Menubutton):
         icon,
         event=lambda *_: ...,
         icon2=None,
-        iconsize=14,
+        iconsize=12,
         highlighted=False,
+        hfg_only=False,
         *args,
         **kwargs
     ) -> None:
@@ -38,7 +39,11 @@ class IconButton(Menubutton):
         self.config(
             cursor="hand2",
             **(
-                self.base.theme.utils.iconbutton
+                (
+                    self.base.theme.utils.iconbutton_hfg
+                    if hfg_only
+                    else self.base.theme.utils.iconbutton
+                )
                 if not highlighted
                 else self.base.theme.utils.button
             )

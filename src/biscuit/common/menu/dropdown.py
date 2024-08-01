@@ -89,7 +89,7 @@ class Dropdown(Frame):
             pady=2,
             bg=self.bg,
             fg=self.fg,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
         )
         self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 

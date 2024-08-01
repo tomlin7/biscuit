@@ -1,10 +1,10 @@
 import tkinter as tk
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 from .stageditem import StagedChangeItem
 
 
-class StagedChanges(NavigationDrawerViewItem):
+class StagedChanges(SideBarViewItem):
     """The Staged Changes view.
 
     The Staged Changes view allows the user to view the staged changes made to the active document.

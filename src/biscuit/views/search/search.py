@@ -3,11 +3,11 @@ import tkinter.ttk as ttk
 
 from biscuit.common.ui import ButtonsEntry, Frame
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .results import Results
 
 
-class Search(NavigationDrawerView):
+class Search(SideBarView):
     """The Search view.
 
     The Search view allows the user to search for text in the active document.

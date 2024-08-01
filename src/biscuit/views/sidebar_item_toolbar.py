@@ -3,7 +3,7 @@ import tkinter as tk
 from biscuit.common.ui import Frame, IconButton
 
 
-class NavigationDrawerItemToolBar(Frame):
+class SideBarItemToolBar(Frame):
     def __init__(self, master, title: str, buttons=(), *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.itembar)
@@ -23,7 +23,7 @@ class NavigationDrawerItemToolBar(Frame):
             self,
             anchor=tk.W,
             textvariable=self.title,
-            font=("Segoi UI", 9, "bold"),
+            font=self.base.settings.uifont_bold,
             **self.base.theme.views.sidebar.itembar.title
         )
         self.label_title.grid(row=0, column=1, sticky=tk.EW)

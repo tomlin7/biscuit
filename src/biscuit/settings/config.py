@@ -2,7 +2,9 @@ import os
 
 import toml
 
-from .theme import Dark, Light, Theme
+from .theme.gruvbox_dark import Dark
+
+# from .theme import Dark, Light, Theme
 
 
 class Config:
@@ -12,8 +14,8 @@ class Config:
         self.base = master.base
 
         self.theme = Dark()
-        self.font = ("Consolas", 13)
-        self.uifont = ("Segoi UI", 10)
+        self.font = ("Fira Code", 12)
+        self.uifont = ("Fira Code", 10)
 
         self.auto_save_enabled = False
         self.auto_save_timer_ms = 10000

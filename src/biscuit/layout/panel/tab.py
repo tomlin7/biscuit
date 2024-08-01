@@ -24,7 +24,7 @@ class Tab(Menubutton):
             text=view.__class__.__name__,
             padx=5,
             pady=5,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             **self.base.theme.layout.content.panel.bar.tab,
         )
 

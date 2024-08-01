@@ -3,13 +3,13 @@ import tkinter as tk
 
 from biscuit.common.ui import WrappingLabel
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .issues import Issues
 from .menu import GitHubMenu
 from .prs import PRs
 
 
-class GitHub(NavigationDrawerView):
+class GitHub(SideBarView):
     """View that displays the GitHub issues and pull requests.
 
     The GitHub view displays the issues and pull requests from the active GitHub repository.

@@ -17,7 +17,7 @@ class MenubarItem(Menubutton):
             text=text,
             padx=10,
             pady=5,
-            font=("Segoi UI", 11),
+            font=self.base.settings.uifont,
             **self.base.theme.layout.menubar.item,
         )
 

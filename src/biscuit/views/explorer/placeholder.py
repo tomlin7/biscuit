@@ -18,7 +18,7 @@ class DirectoryTreePlaceholder(Frame):
         WrappingLabel(
             self,
             text="You have not yet opened a folder.",
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content
         ).grid(row=0, sticky=tk.EW)
@@ -36,7 +36,7 @@ class DirectoryTreePlaceholder(Frame):
         WrappingLabel(
             self,
             text="You can clone a repository locally.",
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content
         ).grid(row=2, sticky=tk.EW)

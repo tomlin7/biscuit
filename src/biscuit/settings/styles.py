@@ -33,7 +33,7 @@ class Style(ttk.Style):
 
         self.configure(
             "Treeview.treearea",
-            font=("Segoe UI", 10),
+            font=self.settings.uifont,
             relief="flat",
             rowheight=25,
             highlightthickness=0,
@@ -43,7 +43,7 @@ class Style(ttk.Style):
         )
         self.configure(
             "Treeview",
-            font=("Segoe UI", 10),
+            font=self.settings.uifont,
             relief="flat",
             rowheight=25,
             highlightthickness=0,
@@ -74,6 +74,28 @@ class Style(ttk.Style):
             highlightthickness=0,
             bd=0,
             **self.theme.utils.tree.item,
+            padding=0,
+        )
+
+        self.layout("secondary.Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
+        self.configure(
+            "secondary.Treeview.treearea",
+            font=self.monofont,
+            relief="flat",
+            rowheight=25,
+            highlightthickness=0,
+            bd=0,
+            **self.theme.utils.secondary_tree.item,
+            padding=0,
+        )
+        self.configure(
+            "secondary.Treeview",
+            font=self.monofont,
+            relief="flat",
+            rowheight=25,
+            highlightthickness=0,
+            bd=0,
+            **self.theme.utils.secondary_tree.item,
             padding=0,
         )
 

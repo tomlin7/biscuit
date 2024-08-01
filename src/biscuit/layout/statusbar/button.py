@@ -13,7 +13,7 @@ class SBubble(Bubble):
     def get_pos(self) -> str:
         return (
             f"+{int(self.master.winfo_rootx() + (self.master.winfo_width() - self.winfo_width())/2)}"
-            + f"+{self.master.winfo_rooty() - self.master.winfo_height() - 10}"
+            + f"+{self.master.winfo_rooty() - self.master.winfo_height() - 15}"
         )
 
 
@@ -64,7 +64,7 @@ class SButton(Frame):
                 bg=self.bg,
                 fg=self.fg,
                 pady=2,
-                font=("Segoe UI", 9),
+                font=self.base.settings.uifont,
             )
             self.text_label.pack(side=tk.LEFT, fill=tk.Y, expand=True)
 
@@ -83,19 +83,19 @@ class SButton(Frame):
 
     def on_enter(self, *_) -> None:
         self.bubble.show()
-        self.config(bg=self.hbg)
+        # self.config(bg=self.hbg)
         if self.text:
-            self.text_label.config(bg=self.hbg, fg=self.hfg)
+            self.text_label.config(fg=self.hfg)  # bg=self.hbg,
         if self.icon:
-            self.icon_label.config(bg=self.hbg, fg=self.hfg)
+            self.icon_label.config(fg=self.hfg)  # bg=self.hbg,
 
     def on_leave(self, *_) -> None:
         self.bubble.hide()
-        self.config(bg=self.bg)
+        # self.config(bg=self.bg)
         if self.text:
-            self.text_label.config(bg=self.bg, fg=self.fg)
+            self.text_label.config(fg=self.fg)  # bg=self.bg,
         if self.icon:
-            self.icon_label.config(bg=self.bg, fg=self.fg)
+            self.icon_label.config(fg=self.fg)  # bg=self.bg,
 
     def on_click(self, *_) -> None:
         self.callback()

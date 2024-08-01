@@ -90,7 +90,12 @@ class BaseEditor(Frame):
     def create_buttons(self, editorsbar):
         try:
             self.__buttons__ = [
-                IconButton(editorsbar, *button) for button in self.__buttons__
+                (
+                    IconButton(editorsbar, iconsize=12, hfg_only=True, *button)
+                    if isinstance(button, list | tuple)
+                    else IconButton(editorsbar, **button)
+                )
+                for button in self.__buttons__
             ]
         except:
             pass

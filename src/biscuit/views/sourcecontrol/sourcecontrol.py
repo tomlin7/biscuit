@@ -1,11 +1,11 @@
 import tkinter as tk
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .git import Git
 from .menu import SourceControlMenu
 
 
-class SourceControl(NavigationDrawerView):
+class SourceControl(SideBarView):
     """The Source Control view.
 
     The Source Control view allows the user to manage the source control of the active document.

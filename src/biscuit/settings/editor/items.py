@@ -17,7 +17,7 @@ class Item(Frame):
         self.lbl = tk.Label(
             self,
             text=self.name,
-            font=("Segoi UI", 11, "bold"),
+            font=self.base.settings.uifont_bold,
             anchor=tk.W,
             bg=self.bg,
             fg=self.fg,
@@ -65,7 +65,7 @@ class IntegerItem(Item):
 
         self.entry = ttk.Entry(
             self,
-            font=("Segoi UI", 11),
+            font=self.base.settings.uifont,
             width=30,
             validate="key",
             validatecommand=(self.register(self.validate), "%P"),
@@ -87,7 +87,7 @@ class StringItem(Item):
     ) -> None:
         super().__init__(master, name, *args, **kwargs)
 
-        self.entry = ttk.Entry(self, font=("Segoi UI", 11), width=30)
+        self.entry = ttk.Entry(self, font=self.base.settings.uifont, width=30)
         self.entry.insert(tk.END, default)
         self.entry.pack(side=tk.LEFT)
 
