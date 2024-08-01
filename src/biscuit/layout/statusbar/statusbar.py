@@ -9,6 +9,7 @@ from biscuit.common import ActionSet
 from biscuit.common.textutils import *
 from biscuit.common.ui import Frame
 
+from .activitybar import ActivityBar
 from .button import SButton
 
 if typing.TYPE_CHECKING:
@@ -25,15 +26,17 @@ class Statusbar(Frame):
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.layout.statusbar.background)
 
-        self.terminal_toggle = self.add_button(
-            icon="terminal-bash",
-            callback=self.toggle_terminal,
-            description="Toggle terminal",
-            highlighted=True,
-            side=tk.LEFT,
-        )
-        self.terminal_toggle.config(padx=10)
-        self.terminal_toggle.show()
+        self.activitybar = ActivityBar(self)
+        self.activitybar.pack(side=tk.LEFT, padx=(10, 0))
+
+        # self.terminal_toggle = self.add_button(
+        #     icon="symbol-class",
+        #     callback=self.toggle_sidebar,
+        #     description="Toggle terminal",
+        #     side=tk.LEFT,
+        # )
+        # self.terminal_toggle.config(padx=10)
+        # self.terminal_toggle.show()
 
         # TODO: making this more , Make default lists of buttons, map them with pack(bool), callback
         # also make an active_editor-specific/global lists of buttons to show/hide in bulk
@@ -64,7 +67,7 @@ class Statusbar(Frame):
             pinned=[["goto line: {}", self.goto_line]],
         )
         self.line_col_info = self.add_button(
-            text="Ln 1, Col 1",
+            text="1,1",
             callback=self.base.commands.goto_line_column,
             description="Go to Line/Column",
             side=tk.RIGHT,
@@ -139,6 +142,22 @@ class Statusbar(Frame):
         )
         self.notif.show()
 
+        # ---------------------------------------------------------------------
+
+        self.secondary_activitybar = ActivityBar(self)
+        self.secondary_activitybar.pack(side=tk.RIGHT)
+
+        # ---------------------------------------------------------------------
+
+        self.panel_toggle = self.add_button(
+            icon="layout-panel",
+            callback=self.toggle_panel,
+            description="Toggle panel",
+            side=tk.RIGHT,
+        )
+
+        self.panel_toggle.show()
+
     def add_button(
         self,
         text="",
@@ -190,8 +209,13 @@ class Statusbar(Frame):
         self.base.palette.register_actionset(lambda: actionset)
         return actionset
 
-    def toggle_terminal(self) -> None:
-        """Toggles the terminal visibility."""
+    def toggle_sidebar(self) -> None:
+        """Toggles the sidebar visibility."""
+
+        self.base.root.toggle_sidebar()
+
+    def toggle_panel(self) -> None:
+        """Toggles the panel visibility."""
 
         self.base.toggle_terminal()
 
@@ -239,7 +263,7 @@ class Statusbar(Frame):
         self.notif.change_icon("bell-dot" if n else "bell")
         self.notif.change_description(f"{n} notifications" if n else "No notifications")
 
-    def set_line_col_info(self, line: int, col: int, selected: int) -> None:
+    def set_line_col_info(self, line: int, col: int, selected: int = None) -> None:
         """Sets the line and column information on the status bar.
 
         Args:
@@ -248,8 +272,9 @@ class Statusbar(Frame):
             selected (int): The number of selected characters.
         """
 
-        selected_text = f" ({selected} selected)" if selected else ""
-        self.line_col_info.change_text(f"Ln {line}, Col {col}{selected_text}")
+        self.line_col_info.change_text(
+            f"{line},{col} "  # + (f"({selected})" if selected else "")
+        )
 
     def set_encoding(self, encoding: str) -> None:
         """Sets the file encoding displayed on the status bar.
