@@ -107,10 +107,14 @@ class FrameThemeObject(ThemeObject):
 
 
 class EditorsPane(FrameThemeObject):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, master, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.theme: Theme = master.theme
+
         self.bar = FrameThemeObject(self)
-        self.bar.tab = HighlightableThemeObject(self.bar)
+        self.bar.tab = HighlightableThemeObject(
+            self.bar, highlightbackground=self.theme.secondary_background
+        )
         self.bar.tab.icon = ThemeObject(self.bar.tab)
         self.bar.tab.close = HighlightableThemeObject(self.bar)
 
@@ -129,8 +133,10 @@ class ContentPane(FrameThemeObject):
     └── Panel
     """
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, master, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.theme: Theme = master.theme
+
         self.editors = EditorsPane(self)
         self.panel = PanelPane(self)
 
@@ -146,14 +152,16 @@ class DrawerPane(FrameThemeObject):
 
 
 class Layout(FrameThemeObject):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, theme, *args, **kwargs) -> None:
+        super().__init__(theme, *args, **kwargs)
+        self.theme = theme
+
         self.menubar = FrameThemeObject(self)
         self.menubar.item = HighlightableThemeObject(self.menubar)
         self.menubar.title = ThemeObject(self)
 
         self.content = ContentPane(self)
-        self.drawer = DrawerPane(self)
+        self.sidebar = DrawerPane(self)
 
         self.statusbar = FrameThemeObject(self)
         self.statusbar.button = HighlightableThemeObject(self.statusbar)
@@ -284,10 +292,10 @@ class Editors(FrameThemeObject):
 class Utils(ThemeObject):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        theme = self.master
+        theme: Theme = self.master
 
         self.button = HighlightableThemeObject(
-            self, theme.biscuit, "white", theme.biscuit_dark
+            self, theme.biscuit, "#1e1e2e", theme.biscuit_dark
         )
         self.label = ThemeObject(self)
         self.linklabel = ThemeObject(
@@ -295,16 +303,25 @@ class Utils(ThemeObject):
         )
         self.colorlabel = ThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
         self.tree = FrameThemeObject(self)
-        self.tree.item = ThemeObject(
-            self.tree, foreground=theme.primary_foreground_highlight
-        )
+        self.tree.item = ThemeObject(self.tree)
+        self.secondary_tree = FrameThemeObject(self, *theme.secondary)
+        self.secondary_tree.item = ThemeObject(self.secondary_tree)
+
         self.bubble = ThemeObject(self)
         self.iconbutton = HighlightableThemeObject(self)
+        self.iconbutton_hfg = HighlightableThemeObject(
+            self, highlightbackground=self.background
+        )
         self.iconlabelbutton = HighlightableThemeObject(
             self,
             theme.secondary_background,
             theme.secondary_foreground,
-            self.highlightbackground,
+        )
+        self.iconlabelbutton_hfg = HighlightableThemeObject(
+            self,
+            theme.secondary_background,
+            theme.secondary_foreground,
+            theme.secondary_background,
         )
         self.entry = ThemeObject(
             self,
@@ -359,13 +376,13 @@ class Theme:
     Punctuation = "#3b3b3b"
 
     def __init__(self) -> None:
-        primary = [
+        self.primary = primary = [
             self.primary_background,
             self.primary_foreground,
             self.primary_background_highlight,
             self.primary_foreground_highlight,
         ]
-        secondary = [
+        self.secondary = secondary = [
             self.secondary_background,
             self.secondary_foreground,
             self.secondary_background_highlight,
