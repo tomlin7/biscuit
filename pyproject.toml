@@ -14,7 +14,7 @@ biscuit = "biscuit.cli:run"
 [tool.poetry.dependencies]
 python = "^3.10"
 hintedtext = "^0.6.0"
-watchdog = "^4.0.1"
+watchdog = ">=4.0.1,<6.0.0"
 filetype = "^1.2.0"
 GitPython = "^3.1.43"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
