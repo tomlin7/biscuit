@@ -14,7 +14,7 @@ A lightweight, fast code editor with extensions, semantic code completions, refa
 
 ![image](https://github.com/tomlin7/biscuit/assets/70792552/74118e72-e7de-48dd-a34f-a5abd6664e42)
 
-- 🎀 **Explore all community-made extensions and their authors at the [Biscuit Extension Center]**(https://tomlin7.github.io/biscuit-extensions/)
+- 🎀 **Explore all community-made extensions and their authors at the [Biscuit Extension Center](https://tomlin7.github.io/biscuit-extensions/)**
 - 🪛 For contributing/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit)
 - 🌟 Scroll down to the [features section](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features) for a list of all features
 
