@@ -14,15 +14,15 @@ class GruvboxDark(Theme):
     border = "#3c3836"
     disabled = "#737373"
 
-    primary_background = "#1d2021"
-    primary_foreground = "#ffdadb"
-    primary_background_highlight = "#282828"
-    primary_foreground_highlight = "#ffdadb"
+    primary_background = "#282828"
+    primary_foreground = "#ebdbb2"
+    primary_background_highlight = "#3c3836"
+    primary_foreground_highlight = "#fbf1c7"
 
-    secondary_background = "#282828"
-    secondary_foreground = "#ffdadb"
-    secondary_background_highlight = "#1d2021"
-    secondary_foreground_highlight = "#ffdadb"
+    secondary_background = "#1d2021"
+    secondary_foreground = "#ebdbb2"
+    secondary_background_highlight = "#32302f"
+    secondary_foreground_highlight = "#fbf1c7"
 
     # syntax
     Keyword = "#f84b3c"

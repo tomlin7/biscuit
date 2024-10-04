@@ -4,6 +4,7 @@ import tkinter as tk
 import typing
 
 from biscuit.common import Frame, Menu
+from biscuit.common.icons import Icons
 
 from .actionbutton import ActionButton
 from .menubutton import ActionMenuButton
@@ -47,7 +48,7 @@ class ActivityBar(Frame):
         self.add_settings_menu()
 
     def add_settings_menu(self) -> None:
-        settings_menu = self.add_menu("settings-gear", "manage")
+        settings_menu = self.add_menu(Icons.SETTINGS_GEAR, "manage")
         settings_menu.add_command(
             "Command Palette", lambda *_: self.base.palette.show(">")
         )

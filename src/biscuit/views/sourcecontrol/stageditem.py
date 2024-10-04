@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Bubble, Frame, IconButton, Label, Menubutton
 
 KINDS = [
@@ -40,7 +41,10 @@ class StagedChangeItem(Frame):
         self.diff_btn.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         IconButton(
-            self, "remove", self.git_remove, **self.base.theme.views.sidebar.item.button
+            self,
+            Icons.REMOVE,
+            self.git_remove,
+            **self.base.theme.views.sidebar.item.button,
         ).pack(fill=tk.BOTH, side=tk.LEFT)
         Label(
             self,

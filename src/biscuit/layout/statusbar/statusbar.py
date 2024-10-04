@@ -45,7 +45,7 @@ class Statusbar(Frame):
         # ---------------------------------------------------------------------
         self.branch = self.add_button(
             text="main",
-            icon=Icons.GIT_COMMIT,
+            icon=Icons.SOURCE_CONTROL,
             callback=self.base.commands.change_git_branch,
             description="Checkout branch",
             side=tk.LEFT,
@@ -150,12 +150,14 @@ class Statusbar(Frame):
 
         # ---------------------------------------------------------------------
 
-        self.panel_toggle = self.add_button(
-            icon=Icons.LAYOUT_PANEL,
+        self.panel_toggle = SButton(
+            self,
+            icon=Icons.LAYOUT_PANEL_OFF,
             callback=self.toggle_panel,
             description="Toggle panel",
-            side=tk.RIGHT,
+            icon2=Icons.LAYOUT_PANEL,
         )
+        self.panel_toggle.set_pack_data(side=tk.RIGHT, padx=(0, 10))
 
         self.panel_toggle.show()
 
@@ -261,7 +263,7 @@ class Statusbar(Frame):
         """Updates the notifications icon and description on the status bar."""
 
         n = self.base.notifications.count
-        self.notif.change_icon(Icons.NOTIFICATIONS_ACTIVE if n else Icons.NOTIFICATIONS)
+        self.notif.change_icon(Icons.BELL_DOT if n else Icons.BELL)
         self.notif.change_description(f"{n} notifications" if n else "No notifications")
 
     def set_line_col_info(self, line: int, col: int, selected: int = None) -> None:

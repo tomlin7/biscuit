@@ -30,7 +30,7 @@ class Explorer(SideBarView):
         )
         self.menu.add_separator(10)
         self.menu.add_command("Search", self.base.commands.search_files)
-        self.add_action("ellipsis", self.menu.show)
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
         self.active_editors_visible = True
         self.open_editors = OpenEditors(self)

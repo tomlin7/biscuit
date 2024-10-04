@@ -74,7 +74,7 @@ class Closable(Frame):
             )
             self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
-        self.close_btn = IconButton(self, "close", self.closefn)
+        self.close_btn = IconButton(self, Icons.CLOSE, self.closefn)
         self.close_btn.config(bg=self.bg, fg=self.fg)
         self.close_btn.pack(side=tk.RIGHT, fill=tk.BOTH)
 

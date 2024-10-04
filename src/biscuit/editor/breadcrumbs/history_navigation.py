@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 if typing.TYPE_CHECKING:
@@ -24,7 +25,7 @@ class HistoryNavigation(Frame):
 
         self.left = IconButton(
             self,
-            "arrow-left",
+            Icons.ARROW_LEFT,
             event=self.go_down,
             iconsize=12,
             padx=7,
@@ -34,7 +35,7 @@ class HistoryNavigation(Frame):
 
         self.right = IconButton(
             self,
-            "arrow-right",
+            Icons.ARROW_RIGHT,
             event=self.go_up,
             iconsize=12,
             padx=7,

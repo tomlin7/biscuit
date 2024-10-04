@@ -3,12 +3,6 @@ import tkinter as tk
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, Icon, IconButton, Label
 
-ICONS = {
-    "cmd": Icons.TERMINAL_CMD,
-    "bash": Icons.TERMINAL_BASH,
-    "powershell": Icons.TERMINAL_POWERSHELL,
-}
-
 
 class Tab(Frame):
     """Tab for terminal panel."""
@@ -25,7 +19,7 @@ class Tab(Frame):
 
         self.icon = Icon(
             self,
-            icon=ICONS.get(terminal.icon, "debug"),
+            icon=terminal.icon or Icons.TERMINAL,
             width=3,
             **self.base.theme.views.panel.terminal.content
         )
@@ -44,7 +38,7 @@ class Tab(Frame):
 
         self.closebtn = IconButton(
             self,
-            Icons.TRASH,
+            Icons.CLOSE,
             event=self.close,
             **self.base.theme.views.panel.terminal.tab
         )

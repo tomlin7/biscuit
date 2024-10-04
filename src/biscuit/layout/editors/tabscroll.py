@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 if typing.TYPE_CHECKING:
@@ -23,7 +24,7 @@ class TabScroll(Frame):
 
         self.left = IconButton(
             self,
-            "arrow-left",
+            Icons.ARROW_LEFT,
             event=self.scroll_right,
             iconsize=12,
             padx=7,
@@ -33,7 +34,7 @@ class TabScroll(Frame):
 
         self.right = IconButton(
             self,
-            "arrow-right",
+            Icons.ARROW_RIGHT,
             event=self.scroll_left,
             iconsize=12,
             padx=7,

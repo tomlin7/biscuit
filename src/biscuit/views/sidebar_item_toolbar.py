@@ -48,15 +48,15 @@ class SideBarItemToolBar(Frame):
 
     def toggle_content(self, *_) -> None:
         if not self.master.enabled:
-            self.toggle.set_icon("chevron-down")
+            self.toggle.set_icon(Icons.CHEVRON_DOWN)
         else:
-            self.toggle.set_icon("chevron-right")
+            self.toggle.set_icon(Icons.CHEVRON_RIGHT)
         self.master.toggle()
 
     def hide_content(self, *_) -> None:
-        self.toggle.set_icon("chevron-right")
+        self.toggle.set_icon(Icons.CHEVRON_RIGHT)
         self.master.disable()
 
     def show_content(self, *_) -> None:
-        self.toggle.set_icon("chevron-down")
+        self.toggle.set_icon(Icons.CHEVRON_DOWN)
         self.master.enable()

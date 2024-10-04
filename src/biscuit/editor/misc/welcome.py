@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabel, IconLabelButton, Label, LinkLabel
 
 from ..editorbase import BaseEditor
@@ -63,13 +64,17 @@ class Welcome(BaseEditor):
         start.grid(row=3, column=0, sticky=tk.EW)
 
         IconLabelButton(
-            start, "New File...", "new-file", self.new_file, expandicon=False
+            start, "New File...", Icons.NEW_FILE, self.new_file, expandicon=False
         ).grid(row=0, column=0, sticky=tk.EW, pady=2)
         IconLabelButton(
-            start, "Open File...", "go-to-file", self.open_file, expandicon=False
+            start, "Open File...", Icons.GO_TO_FILE, self.open_file, expandicon=False
         ).grid(row=1, column=0, sticky=tk.EW, pady=2)
         IconLabelButton(
-            start, "Open Folder...", "folder-opened", self.open_folder, expandicon=False
+            start,
+            "Open Folder...",
+            Icons.FOLDER_OPENED,
+            self.open_folder,
+            expandicon=False,
         ).grid(row=2, column=0, sticky=tk.EW, pady=2)
 
     def create_recent_group(self):

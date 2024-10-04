@@ -1,5 +1,6 @@
 import os
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Label
 
 from ..terminalbase import TerminalBase
@@ -13,7 +14,7 @@ class CommandPrompt(TerminalBase):
 
     shell = "C:\\windows\\system32\\cmd.exe"
     name = "Default"
-    icon = "cmd"
+    icon = Icons.TERMINAL_CMD
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)

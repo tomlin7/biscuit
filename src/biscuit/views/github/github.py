@@ -19,13 +19,13 @@ class GitHub(SideBarView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = [(Icons.REFRESH, self.on_directory_change)]
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "github"
+        self.__icon__ = Icons.GITHUB
         self.name = "GitHub"
 
         self.menu = GitHubMenu(self, "files")
         self.menu.add_checkable("Open Issues", self.toggle_issues, checked=True)
         self.menu.add_checkable("Pull Requests", self.toggle_prs, checked=True)
-        self.add_action("ellipsis", self.menu.show)
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
         self.issues_enabled = True
         self.prs_enabled = True

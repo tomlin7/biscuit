@@ -7,7 +7,7 @@ if typing.TYPE_CHECKING:
 
 
 class Extension:
-    """TODO: Biscuit Extension base class.
+    """Biscuit Extension base class.
 
     This class can be optionally inherited to create an extension."""
 

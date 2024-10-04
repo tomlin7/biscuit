@@ -4,6 +4,7 @@ import tkinter as tk
 import typing
 from tkinter.messagebox import askyesno
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 from biscuit.editor import BreadCrumbs
 
@@ -50,8 +51,8 @@ class EditorsBar(Frame):
 
         self.buttons: list[IconButton] = []
         self.default_buttons = (
-            ("ellipsis", self.menu.show),
-            ("add", self.base.commands.open_empty_editor),
+            (Icons.ELLIPSIS, self.menu.show),
+            (Icons.ADD, self.base.commands.open_empty_editor),
         )
 
         self.action_container = Frame(

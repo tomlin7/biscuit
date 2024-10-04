@@ -29,6 +29,7 @@ class SButton(Frame):
         highlighted: bool = False,
         padx: int = 5,
         pady: int = 1,
+        icon2: Icons = None,
         *args,
         **kwargs,
     ) -> None:
@@ -37,6 +38,8 @@ class SButton(Frame):
         self.text = text
         self.icon = icon
         self.highlighted = highlighted
+        self.icon2 = icon2
+        self.toggled = False
 
         self.bg, self.fg, self.hbg, self.hfg = (
             self.base.theme.layout.statusbar.button_highlighted.values()
@@ -101,6 +104,10 @@ class SButton(Frame):
     def on_click(self, *_) -> None:
         self.callback()
         self.bubble.hide()
+
+        if self.icon2:
+            self.toggled = not self.toggled
+            self.icon_label.config(text=self.icon2 if self.toggled else self.icon)
 
     def change_text(self, text: str) -> None:
         self.text_label.config(text=text)
