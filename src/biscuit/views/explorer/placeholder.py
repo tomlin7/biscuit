@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Button, Frame, IconLabelButton, WrappingLabel
 
 
@@ -26,7 +27,7 @@ class DirectoryTreePlaceholder(Frame):
         open_btn = IconLabelButton(
             self,
             text="Open Folder",
-            icon="folder",
+            icon=Icons.FOLDER,
             callback=self.open_folder,
             pady=2,
             highlighted=True,
@@ -44,7 +45,7 @@ class DirectoryTreePlaceholder(Frame):
         clone_btn = IconLabelButton(
             self,
             text="Clone Repository",
-            icon="clone",
+            icon=Icons.REPO_CLONE,
             callback=self.clone_repo,
             pady=2,
             highlighted=True,

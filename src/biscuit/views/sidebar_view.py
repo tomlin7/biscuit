@@ -1,6 +1,6 @@
 import tkinter as tk
-import typing
 
+from biscuit.common import Icons
 from biscuit.common.ui import Frame, IconButton
 
 from .sidebar_item import SideBarViewItem
@@ -13,7 +13,7 @@ class SideBarView(View):
     __actions__ = []
 
     def __init__(
-        self, master, name: str = None, icon: str = "preview", *args, **kwargs
+        self, master, name: str = None, icon=Icons.PREVIEW, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
         self.__icon__ = icon

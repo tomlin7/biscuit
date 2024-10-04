@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from ..codicon import get_codicon
+from ..icons import Icons
 from .native import Frame, Menubutton
 
 
@@ -40,7 +40,7 @@ class IconLabelButton(Frame):
         self,
         master,
         text=None,
-        icon=None,
+        icon: Icons = "",
         callback=lambda *_: None,
         iconside=tk.LEFT,
         expandicon=True,
@@ -77,7 +77,7 @@ class IconLabelButton(Frame):
         self.icon = icon
         self.icon_visible = icon_visible
         self.callback = callback
-        self.codicon = get_codicon(self.icon)
+        self.codicon = self.icon
 
         if icon:
             self.icon_label = tk.Label(

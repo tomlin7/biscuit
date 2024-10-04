@@ -1,5 +1,7 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
+
 from ..sidebar_item import SideBarViewItem
 from .stageditem import StagedChangeItem
 
@@ -12,7 +14,7 @@ class StagedChanges(SideBarViewItem):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = (("remove", self.git_remove_all),)
+        self.__actions__ = ((Icons.REMOVE, self.git_remove_all),)
         self.title = "Staged Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)

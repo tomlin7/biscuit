@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from ..codicon import get_codicon
-from .icons import IconButton
+from ..icons import Icons
+from .icon import IconButton
 from .native import Frame
 
 
@@ -15,7 +15,7 @@ class Closable(Frame):
         self,
         master,
         text=None,
-        icon=None,
+        icon: Icons = "",
         callback=lambda *_: None,
         closefn=lambda *_: None,
         iconside=tk.LEFT,
@@ -54,7 +54,7 @@ class Closable(Frame):
         if icon:
             self.icon_label = tk.Label(
                 self,
-                text=get_codicon(self.icon),
+                text=self.icon,
                 anchor=tk.CENTER,
                 bg=self.bg,
                 fg=self.fg,

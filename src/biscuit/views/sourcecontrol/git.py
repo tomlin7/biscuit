@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry, Frame, IconLabelButton, ScrollableFrame
 
 from .changes import Changes
@@ -31,7 +32,7 @@ class Git(Frame):
         self.commit_button = IconLabelButton(
             self.commitbox,
             text="Commit",
-            icon="check",
+            icon=Icons.CHECK,
             callback=self.commit,
             highlighted=True,
         )

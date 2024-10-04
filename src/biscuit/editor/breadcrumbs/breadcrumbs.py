@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from pathlib import Path
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabelButton
 
 from .history_navigation import HistoryNavigation
@@ -18,7 +19,7 @@ class Item(IconLabelButton):
             master,
             text=text,
             pady=10,
-            icon="chevron-right",
+            icon=Icons.CHEVRON_RIGHT,
             callback=callback,
             iconside=tk.RIGHT,
             hfg_only=True,

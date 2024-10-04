@@ -1,7 +1,7 @@
 import textwrap
 import tkinter as tk
 
-from ..codicon import get_codicon
+from ..icons import Icons
 from .native import Frame, Label
 
 
@@ -18,7 +18,7 @@ class IconLabel(Frame):
         self,
         master,
         text=None,
-        icon=None,
+        icon: Icons = None,
         iconside=tk.LEFT,
         fg=None,
         font=None,
@@ -41,7 +41,7 @@ class IconLabel(Frame):
         self.config(bg=self.bg)
         self.text = text
         self.icon = icon
-        self.codicon = get_codicon(self.icon)
+        self.codicon = self.icon
 
         self.toggle = toggle
 

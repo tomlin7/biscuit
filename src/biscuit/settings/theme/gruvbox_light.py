@@ -5,8 +5,8 @@ import sv_ttk
 from .theme import *
 
 
-class GruvboxDark(Theme):
-    name = "gruvbox dark"
+class GruvboxLight(Theme):
+    name = "gruvbox light"
 
     biscuit = "#8fbf7c"
     biscuit_dark = "#3c3836"
@@ -14,15 +14,15 @@ class GruvboxDark(Theme):
     border = "#3c3836"
     disabled = "#737373"
 
-    primary_background = "#1d2021"
-    primary_foreground = "#ffdadb"
+    primary_background = "#f9f5d7"
+    primary_foreground = "#ebdbb2"
     primary_background_highlight = "#282828"
-    primary_foreground_highlight = "#ffdadb"
+    primary_foreground_highlight = "#ebdbb2"
 
     secondary_background = "#282828"
-    secondary_foreground = "#ffdadb"
+    secondary_foreground = "#ebdbb2"
     secondary_background_highlight = "#1d2021"
-    secondary_foreground_highlight = "#ffdadb"
+    secondary_foreground_highlight = "#ebdbb2"
 
     # syntax
     Keyword = "#f84b3c"

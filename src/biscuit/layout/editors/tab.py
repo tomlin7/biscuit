@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 import typing
 
+from biscuit.common import Icons
 from biscuit.common.ui import Frame, Icon, IconButton
 
 if typing.TYPE_CHECKING:
@@ -33,7 +34,7 @@ class Tab(Frame):
 
         self.icon = Icon(
             self,
-            "file",
+            Icons.FILE,
             iconsize=12,
             **self.base.theme.layout.content.editors.bar.tab.icon,
         )
@@ -53,7 +54,7 @@ class Tab(Frame):
 
         self.closebtn = IconButton(
             self,
-            "close",
+            Icons.CLOSE,
             iconsize=12,
             event=self.close,
         )

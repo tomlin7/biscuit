@@ -3,6 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
+from biscuit.common import Icons
+
 from ..helpers import caller_class_name
 from ..ui import Frame, Icon, IconButton, IconLabelButton, Label
 
@@ -58,7 +60,7 @@ class Notification(Frame):
         )
         self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH, anchor=tk.W)
 
-        close_button = IconButton(top, "close", self.delete)
+        close_button = IconButton(top, Icons.CLOSE, self.delete)
         close_button.pack(fill=tk.BOTH)
 
         self.source_label = Label(

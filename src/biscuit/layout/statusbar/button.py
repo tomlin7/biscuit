@@ -3,7 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Bubble, Frame, get_codicon
+from biscuit.common import Icons
+from biscuit.common.ui import Bubble, Frame
 
 if typing.TYPE_CHECKING:
     from . import Statusbar
@@ -22,7 +23,7 @@ class SButton(Frame):
         self,
         master: Statusbar,
         text: str = None,
-        icon: str = None,
+        icon: Icons = None,
         callback=None,
         description: str = None,
         highlighted: bool = False,
@@ -48,7 +49,7 @@ class SButton(Frame):
         if icon:
             self.icon_label = tk.Label(
                 self,
-                text=get_codicon(self.icon),
+                text=self.icon,
                 anchor=tk.CENTER,
                 bg=self.bg,
                 fg=self.fg,
@@ -107,8 +108,8 @@ class SButton(Frame):
     def change_description(self, text: str) -> None:
         self.bubble.change_text(text)
 
-    def change_icon(self, icon: str) -> None:
-        self.icon_label.config(text=get_codicon(icon))
+    def change_icon(self, icon: Icons) -> None:
+        self.icon_label.config(text=icon)
 
     def change_callback(self, callback: typing.Callable) -> None:
         self.callback = callback

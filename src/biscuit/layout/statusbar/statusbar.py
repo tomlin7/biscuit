@@ -6,6 +6,7 @@ import typing
 from pygments.lexers._mapping import LEXERS
 
 from biscuit.common import ActionSet
+from biscuit.common.icons import Icons
 from biscuit.common.textutils import *
 from biscuit.common.ui import Frame
 
@@ -44,7 +45,7 @@ class Statusbar(Frame):
         # ---------------------------------------------------------------------
         self.branch = self.add_button(
             text="main",
-            icon="source-control",
+            icon=Icons.GIT_COMMIT,
             callback=self.base.commands.change_git_branch,
             description="Checkout branch",
             side=tk.LEFT,
@@ -54,7 +55,7 @@ class Statusbar(Frame):
         # ---------------------------------------------------------------------
         self.process_indicator = self.add_button(
             text="setting up environment",
-            icon="sync",
+            icon=Icons.SYNC,
             description="enabling language extensions",
             side=tk.LEFT,
             padx=(2, 0),
@@ -134,7 +135,7 @@ class Statusbar(Frame):
 
         # ---------------------------------------------------------------------
         self.notif = self.add_button(
-            icon="bell",
+            icon=Icons.BELL,
             callback=self.base.notifications.toggle,
             description="No notifications",
             side=tk.RIGHT,
@@ -150,7 +151,7 @@ class Statusbar(Frame):
         # ---------------------------------------------------------------------
 
         self.panel_toggle = self.add_button(
-            icon="layout-panel",
+            icon=Icons.LAYOUT_PANEL,
             callback=self.toggle_panel,
             description="Toggle panel",
             side=tk.RIGHT,
@@ -260,7 +261,7 @@ class Statusbar(Frame):
         """Updates the notifications icon and description on the status bar."""
 
         n = self.base.notifications.count
-        self.notif.change_icon("bell-dot" if n else "bell")
+        self.notif.change_icon(Icons.NOTIFICATIONS_ACTIVE if n else Icons.NOTIFICATIONS)
         self.notif.change_description(f"{n} notifications" if n else "No notifications")
 
     def set_line_col_info(self, line: int, col: int, selected: int = None) -> None:

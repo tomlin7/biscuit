@@ -3,7 +3,8 @@ import tkinter as tk
 from git import Optional
 from hintedtext import HintedEntry
 
-from .icons import IconButton
+from ..icons import Icons
+from .icon import IconButton
 from .native import Frame
 
 
@@ -13,7 +14,7 @@ class ButtonsEntry(Frame):
     Args:
         master: Parent widget
         hint: Entry hint
-        buttons: List of tuples containing button icon, event and optional second icon (toggled)
+        buttons: List of tuples containing icon, event and optional second icon (toggled)
         textvariable: Entry text variable
     """
 
@@ -21,7 +22,7 @@ class ButtonsEntry(Frame):
         self,
         master,
         hint: str,
-        buttons: list[tuple[str, callable, Optional[str]]] = [],
+        buttons: list[tuple[Icons, callable, Optional[str]]] = [],
         textvariable=None,
         *args,
         **kwargs
@@ -53,7 +54,7 @@ class ButtonsEntry(Frame):
         self.column = 1
         self.add_buttons(buttons)
 
-    def add_button(self, icon: str, event=lambda _: None, icon2: str = None):
+    def add_button(self, icon: Icons, event=lambda _: None, icon2: str = None):
         """Add a button to the entry"""
 
         b = IconButton(self, icon, event, icon2)

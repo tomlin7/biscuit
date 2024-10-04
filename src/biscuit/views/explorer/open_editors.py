@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Closable
 
 from ..sidebar_item import SideBarViewItem
@@ -13,7 +14,9 @@ class OpenEditors(SideBarViewItem):
 
     def __init__(self, master, startpath=None, itembar=True, *args, **kwargs) -> None:
         self.title = "Open Editors"
-        self.__actions__ = (("new-file", lambda: self.base.palette.show("newfile:")),)
+        self.__actions__ = (
+            (Icons.NEW_FILE, lambda: self.base.palette.show("newfile:")),
+        )
         super().__init__(master, itembar=itembar, *args, **kwargs)
         self.path = startpath
         self.nodes = {}

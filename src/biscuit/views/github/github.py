@@ -1,6 +1,7 @@
 import threading
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import WrappingLabel
 
 from ..sidebar_view import SideBarView
@@ -16,7 +17,7 @@ class GitHub(SideBarView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = [("refresh", self.on_directory_change)]
+        self.__actions__ = [(Icons.REFRESH, self.on_directory_change)]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = "github"
         self.name = "GitHub"

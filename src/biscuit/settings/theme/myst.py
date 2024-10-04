@@ -4,7 +4,7 @@ from .theme import *
 
 
 class Dark(Theme):
-    name = "biscuit dark"
+    name = "Myst"
 
     biscuit = "#EE720D"
     biscuit_dark = "#EE720D"

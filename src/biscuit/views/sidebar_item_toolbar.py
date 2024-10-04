@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 
@@ -15,7 +16,7 @@ class SideBarItemToolBar(Frame):
             self.set_title(title)
 
         self.toggle = IconButton(
-            self, icon="chevron-down", event=self.toggle_content, width=1
+            self, icon=Icons.CHEVRON_DOWN, event=self.toggle_content, width=1
         )
         self.toggle.grid(row=0, column=0)
 

@@ -1,5 +1,7 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
+
 from ..sidebar_item import SideBarViewItem
 from .item import ChangeItem
 
@@ -14,8 +16,8 @@ class Changes(SideBarViewItem):
 
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = (
-            ("discard", self.git_discard_all),
-            ("add", self.git_add_all),
+            (Icons.DISCARD, self.git_discard_all),
+            (Icons.ADD, self.git_add_all),
         )
         self.title = "Changes"
         super().__init__(master, *args, **kwargs)

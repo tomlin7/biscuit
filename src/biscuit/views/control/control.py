@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry, Frame, Scrollbar
 
 from ..panelview import PanelView
@@ -25,7 +26,7 @@ class Control(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = (("clear-all", self.clear),)
+        self.__actions__ = ((Icons.CLEAR_ALL, self.clear),)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)

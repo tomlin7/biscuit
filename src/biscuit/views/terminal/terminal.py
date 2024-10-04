@@ -4,6 +4,7 @@ import subprocess
 import tkinter as tk
 
 from biscuit.common.actionset import ActionSet
+from biscuit.common.icons import Icons
 
 from ..panelview import PanelView
 from .menu import TerminalMenu
@@ -41,9 +42,9 @@ class Terminal(PanelView):
         self.menu.add_command("Clear Terminal", self.clear_terminal)
 
         self.__actions__ = [
-            ("add", self.addmenu.show),
-            ("trash", self.delete_active_terminal),
-            ("ellipsis", self.menu.show),
+            (Icons.ADD, self.addmenu.show),
+            (Icons.TRASH, self.delete_active_terminal),
+            (Icons.ELLIPSIS, self.menu.show),
         ]
 
         self.tabs = Tabs(self)

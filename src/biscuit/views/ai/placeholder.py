@@ -3,6 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry, Frame, IconLabelButton, WebLinkLabel, WrappingLabel
 
 if typing.TYPE_CHECKING:
@@ -40,7 +41,7 @@ class AIPlaceholder(Frame):
         confirm_btn = IconLabelButton(
             self,
             text="Start Chat",
-            icon="sparkle-filled",
+            icon=Icons.SPARKLE_FILLED,
             callback=self.start_chat,
             pady=2,
             highlighted=True,

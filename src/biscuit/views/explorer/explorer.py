@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 
 from biscuit.common import ActionSet
+from biscuit.common.icons import Icons
 
 from ..sidebar_view import SideBarView
 from .directorytree import DirectoryTree
@@ -20,7 +21,7 @@ class Explorer(SideBarView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = []
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "files"
+        self.__icon__ = Icons.HOME
         self.name = "Explorer"
 
         self.menu = ExplorerMenu(self, "files")

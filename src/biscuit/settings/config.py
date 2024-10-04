@@ -2,7 +2,7 @@ import os
 
 import toml
 
-from .theme.gruvbox_dark import Dark
+from .theme.gruvbox_dark import GruvboxDark
 
 # from .theme import Dark, Light, Theme
 
@@ -13,7 +13,7 @@ class Config:
     def __init__(self, master) -> None:
         self.base = master.base
 
-        self.theme = Dark()
+        self.theme = GruvboxDark()
         self.font = ("Fira Code", 12)
         self.uifont = ("Fira Code", 10)
 
@@ -36,5 +36,5 @@ class Config:
 
     def load_data(self) -> None:
         # TODO testing
-        self.theme = Dark()
+        self.theme = GruvboxDark()
         self.font = (self.config["font"], self.config["font_size"])

@@ -10,6 +10,7 @@ from typing import Iterator
 
 import pyperclip
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Tree
 
 from ..sidebar_item import SideBarViewItem
@@ -35,10 +36,10 @@ class DirectoryTree(SideBarViewItem):
     ) -> None:
         self.title = "No folder opened"
         self.__actions__ = (
-            ("new-file", lambda: self.base.palette.show("newfile:")),
-            ("new-folder", lambda: self.base.palette.show("newfolder:")),
-            ("refresh", self.refresh_root),
-            ("collapse-all", self.collapse_all),
+            (Icons.NEW_FILE, lambda: self.base.palette.show("newfile:")),
+            (Icons.NEW_FOLDER, lambda: self.base.palette.show("newfolder:")),
+            (Icons.REFRESH, self.refresh_root),
+            (Icons.COLLAPSE_ALL, self.collapse_all),
         )
         super().__init__(master, itembar=itembar, *args, **kwargs)
 

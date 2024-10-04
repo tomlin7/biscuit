@@ -2,7 +2,7 @@ import tkinter as tk
 
 import tarts as lsp
 
-from biscuit.common.ui import Text, get_codicon
+from biscuit.common.ui import Text
 from biscuit.language.utils import decode_position
 
 from .kinds import kinds
@@ -54,9 +54,7 @@ class Tree(Text):
 
             tag = f"{item.name}{item.kind}"
             self.insert(tk.END, "┊" * level, "branch")
-            self.insert(
-                tk.END, get_codicon(kinds[item.kind - 1][0]), kinds[item.kind - 1][0]
-            )
+            self.insert(tk.END, kinds[item.kind - 1][0], kinds[item.kind - 1][0])
             self.insert(tk.END, f" {item.name}\n", tag)
             self.add_items(item.children, level + 1)
             self.tag_bind(

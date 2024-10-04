@@ -1,6 +1,8 @@
 import tkinter as tk
 from typing import Callable
 
+from biscuit.common.icons import Icons
+
 from ..ui import Frame, IconButton, Label, Toplevel
 from .notification import Notification
 
@@ -59,7 +61,7 @@ class Notifications(Toplevel):
         )
         self.title.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=1)
 
-        close_button = IconButton(topbar, "chevron-down", self.hide)
+        close_button = IconButton(topbar, Icons.CLOSE, self.hide)
         close_button.config(**self.base.theme.notifications.title)
         close_button.pack(side=tk.RIGHT, fill=tk.BOTH, pady=(0, 1))
 
@@ -77,7 +79,7 @@ class Notifications(Toplevel):
             text (str): notification text"""
 
         instance = Notification(
-            self, "info", text=text, fg=self.base.theme.biscuit, actions=actions
+            self, Icons.INFO, text=text, fg=self.base.theme.biscuit, actions=actions
         )
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
@@ -98,7 +100,7 @@ class Notifications(Toplevel):
             text (str): notification text"""
 
         instance = Notification(
-            self, "warning", text=text, fg="yellow", actions=actions
+            self, Icons.WARNING, text=text, fg="yellow", actions=actions
         )
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
@@ -118,7 +120,7 @@ class Notifications(Toplevel):
         Args:
             text (str): notification text"""
 
-        instance = Notification(self, "error", text=text, fg="red", actions=actions)
+        instance = Notification(self, Icons.ERROR, text=text, fg="red", actions=actions)
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()

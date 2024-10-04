@@ -3,8 +3,8 @@ import sv_ttk
 from .theme import *
 
 
-class Dark(Theme):
-    name = "biscuit dark"
+class CatppuccinMocha(Theme):
+    name = "Catppuccin Mocha"
 
     biscuit = "#f5c2e7"
     biscuit_dark = "#f5c2e7"

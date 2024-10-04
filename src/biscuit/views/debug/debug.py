@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from biscuit.api import notifications
+from biscuit.common.icons import Icons
 from biscuit.common.menu import Dropdown
 
 from ..sidebar_view import SideBarView
@@ -22,14 +23,14 @@ class Debug(SideBarView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = []
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "bug"
+        self.__icon__ = Icons.DEBUG_ALT
         self.name = "Debug"
         self.running = False
         self.manager = self.base.debugger_manager
 
         self.dropdown = Dropdown(
             self.top,
-            icon="play",
+            icon=Icons.PLAY,
             callback=self.set_config,
             iconfg="#87d282",
             iconhfg="#87d282",

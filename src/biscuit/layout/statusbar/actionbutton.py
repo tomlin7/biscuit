@@ -3,7 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Bubble, Menubutton, get_codicon
+from biscuit.common import Icons
+from biscuit.common.ui import Bubble, Menubutton
 
 if typing.TYPE_CHECKING:
     from biscuit.views import SideBarView
@@ -42,7 +43,7 @@ class ActionButton(Menubutton):
         self.bind("<Leave>", self.bubble.hide)
 
         self.config(
-            text=get_codicon(view.__icon__),
+            text=view.__icon__,
             relief=tk.FLAT,
             font=("codicon", 12),
             cursor="hand2",

@@ -5,6 +5,7 @@ import typing
 import tarts as lsp
 
 from biscuit.common import ActionSet
+from biscuit.common.icons import Icons
 
 from ..sidebar_view import SideBarView
 from .outlinetree import OutlineTree
@@ -22,12 +23,12 @@ class Outline(SideBarView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = [
-            ("refresh",),
-            ("collapse-all",),
-            ("ellipsis",),
+            #     (Icons.REFRESH,),
+            #     (Icons.COLLAPSE_ALL,),
+            #     (Icons.ELLIPSIS,),
         ]
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "symbol-class"
+        self.__icon__ = Icons.SYMBOL_CLASS
         self.name = "Outline"
 
         self.tree = OutlineTree(self)

@@ -3,6 +3,7 @@ import tkinter as tk
 from datetime import datetime
 
 from biscuit.common import caller_class_name
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Scrollbar
 
 from ..panelview import PanelView
@@ -18,7 +19,7 @@ class Logs(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = (("clear-all", self.clear_all),)
+        self.__actions__ = ((Icons.CLEAR_ALL, self.clear_all),)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)

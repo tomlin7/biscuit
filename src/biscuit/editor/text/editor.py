@@ -4,6 +4,7 @@ import tkinter as tk
 import typing
 from hashlib import md5
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Scrollbar
 
 from ..editorbase import BaseEditor
@@ -48,7 +49,7 @@ class TextEditor(BaseEditor):
 
         if not self.standalone:
             self.__buttons__ = [
-                ("refresh", self.base.editorsmanager.reopen_active_editor),
+                (Icons.REFRESH, self.base.editorsmanager.reopen_active_editor),
             ]
 
         self.rowconfigure(0, weight=1)
@@ -82,7 +83,7 @@ class TextEditor(BaseEditor):
                 self.__buttons__.insert(
                     0,
                     {
-                        "icon": "play",
+                        "icon": Icons.PLAY,
                         "event": lambda: self.run_file(),
                         "width": 1,
                         "hfg_only": True,
@@ -112,7 +113,7 @@ class TextEditor(BaseEditor):
                 self.__buttons__.insert(
                     1,
                     {
-                        "icon": "chevron-down",
+                        "icon": Icons.CHEVRON_DOWN,
                         "event": self.runmenu.show,
                         "iconsize": 6,
                         "width": 1,
@@ -123,7 +124,7 @@ class TextEditor(BaseEditor):
                     self
                 )
                 if self.debugger:
-                    self.__buttons__.insert(2, ("bug", self.run_debugger))
+                    self.__buttons__.insert(2, (Icons.DEBUG_ALT, self.run_debugger))
                     self.runmenu.add_separator()
                     self.runmenu.add_command(
                         f"Debug {self.language} file", self.run_debugger
