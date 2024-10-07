@@ -46,7 +46,7 @@ class TabScroll(Frame):
         self.right.config(state=tk.DISABLED)
 
         self.left.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.right.pack(side=tk.RIGHT, fill=tk.BOTH)
+        self.right.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(0, 1))
 
     # TODO: Implement scroll_left and scroll_right methods
     def scroll_left(self) -> None: ...

@@ -8,12 +8,14 @@ from typing import Dict, List, Union
 
 from biscuit.common import ActionSet, Game
 from biscuit.common.ui import Frame
-from biscuit.editor import BaseEditor, Editor, Welcome
+from biscuit.editor import Editor, Welcome
 
 from .editorsbar import EditorsBar
 from .placeholder import Placeholder
 
 if typing.TYPE_CHECKING:
+    from biscuit.editor import BaseEditor
+
     from ..content import Content
 
 

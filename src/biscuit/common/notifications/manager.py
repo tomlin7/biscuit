@@ -42,8 +42,8 @@ class Notifications(Toplevel):
             width=round(300 * self.base.scale), height=round(15 * self.base.scale)
         )
         self.withdraw()
-        self.xoffset = 5 * self.base.scale
-        self.yoffset = 30 * self.base.scale
+        self.xoffset = 10 * self.base.scale
+        self.yoffset = 40 * self.base.scale
 
         self.latest: Notification = None
         self.count = 0
