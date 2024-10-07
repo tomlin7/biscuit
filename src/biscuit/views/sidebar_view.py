@@ -27,13 +27,14 @@ class SideBarView(View):
         self.top.pack(fill=tk.X, padx=(15, 10), pady=7)
         self.top.grid_columnconfigure(0, weight=1)
 
-        tk.Label(
+        self.title = tk.Label(
             self.top,
             text=name.upper() if name else self.__class__.__name__.upper(),
             anchor=tk.W,
             font=self.base.settings.uifont,
             **self.base.theme.views.sidebar.title
-        ).grid(row=0, column=0, sticky=tk.EW)
+        )
+        self.title.grid(row=0, column=0, sticky=tk.EW)
 
         self.column = 1
         if not self.__actions__:

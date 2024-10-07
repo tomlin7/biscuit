@@ -28,8 +28,10 @@ class Debug(SideBarView):
         self.running = False
         self.manager = self.base.debugger_manager
 
+        self.top.pack_forget()
+
         self.dropdown = Dropdown(
-            self.top,
+            self,
             icon=Icons.PLAY,
             callback=self.set_config,
             iconfg="#87d282",
@@ -37,9 +39,7 @@ class Debug(SideBarView):
             empty_message=EMPTY_MESSAGE,
         )
         self.dropdown.icon_label.bind("<Button-1>", self.run_config)
-        self.top.grid_columnconfigure(self.column, weight=1)
-        self.dropdown.grid(row=0, column=self.column, sticky=tk.NSEW, padx=(0, 10))
-        self.column += 1
+        self.dropdown.pack(fill=tk.X, padx=10, pady=10)
 
         self.configs = {}
         self.selected_config = ""

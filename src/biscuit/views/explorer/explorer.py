@@ -7,7 +7,6 @@ from biscuit.common.icons import Icons
 from ..sidebar_view import SideBarView
 from .directorytree import DirectoryTree
 from .menu import ExplorerMenu
-from .open_editors import OpenEditors
 
 
 class Explorer(SideBarView):
@@ -24,17 +23,12 @@ class Explorer(SideBarView):
         self.__icon__ = Icons.HOME
         self.name = "Explorer"
 
-        self.menu = ExplorerMenu(self, "files")
-        self.menu.add_checkable(
-            "Open Editors", self.toggle_active_editors, checked=True
-        )
-        self.menu.add_separator(10)
-        self.menu.add_command("Search", self.base.commands.search_files)
-        self.add_action(Icons.ELLIPSIS, self.menu.show)
+        # self.menu = ExplorerMenu(self, "files")
+        # self.menu.add_command("Search", self.base.commands.search_files)
+        # self.add_action(Icons.ELLIPSIS, self.menu.show)
 
-        self.active_editors_visible = True
-        self.open_editors = OpenEditors(self)
-        self.open_editors.pack(fill=tk.X)
+        self.top.pack_forget()
+
         self.directory = DirectoryTree(self, observe_changes=True)
         self.add_item(self.directory)
 
@@ -75,13 +69,6 @@ class Explorer(SideBarView):
             ],
         )
         self.base.palette.register_actionset(lambda: self.rename_actionset)
-
-    def toggle_active_editors(self):
-        if self.active_editors_visible:
-            self.open_editors.pack_forget()
-        else:
-            self.open_editors.pack(fill=tk.X, before=self.directory)
-        self.active_editors_visible = not self.active_editors_visible
 
     def get_actionset(self, term: str) -> ActionSet:
         self.filesearch_actionset.update(self.filesearch(term))

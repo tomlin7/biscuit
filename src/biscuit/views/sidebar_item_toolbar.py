@@ -24,7 +24,7 @@ class SideBarItemToolBar(Frame):
             self,
             anchor=tk.W,
             textvariable=self.title,
-            font=self.base.settings.uifont_bold,
+            font=self.base.settings.uifont,
             **self.base.theme.views.sidebar.itembar.title
         )
         self.label_title.grid(row=0, column=1, sticky=tk.EW)
