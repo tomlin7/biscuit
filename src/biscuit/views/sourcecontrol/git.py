@@ -153,7 +153,13 @@ class Git(Frame):
         self.base.git.repo.commit_files(self.get_commit_message())
 
     def push(self, *_) -> None:
-        self.base.git.repo.push_files()
+        try:
+            self.base.git.repo.push_files()
+        except AttributeError:
+            self.base.logger.error("No git repository found.")
 
     def pull(self, *_) -> None:
-        self.base.git.repo.pull_files()
+        try:
+            self.base.git.repo.pull_files()
+        except AttributeError:
+            self.base.logger.error("No git repository found.")
