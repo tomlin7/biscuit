@@ -85,6 +85,8 @@ class IO:
                 self.p.stdin.write(chunk)
             except queue.Empty:
                 continue
+            except OSError:
+                continue
 
             try:
                 self.p.stdin.flush()

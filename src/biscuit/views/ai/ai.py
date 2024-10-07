@@ -48,6 +48,8 @@ class AI(SideBarView):
         self.chat = None
         self.api_key = ""
 
+        self.title.grid_forget()
+
         self.api_providers = {
             "Gemini 1.5 Flash": Gemini1p5Flash,
         }
@@ -60,8 +62,8 @@ class AI(SideBarView):
             callback=self.set_current_provider,
         )
         self.top.grid_columnconfigure(self.column, weight=1)
-        self.dropdown.grid(row=0, column=self.column, sticky=tk.NSEW, padx=(0, 10))
-        self.column += 1
+
+        self.dropdown.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 10))
 
         self.menu = AIMenu(self)
         self.menu.add_command("New Chat", self.new_chat)

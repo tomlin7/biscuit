@@ -31,6 +31,8 @@ class Outline(SideBarView):
         self.__icon__ = Icons.SYMBOL_CLASS
         self.name = "Outline"
 
+        self.top.pack_forget()
+
         self.tree = OutlineTree(self)
         self.add_item(self.tree)
 

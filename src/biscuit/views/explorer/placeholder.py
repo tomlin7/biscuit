@@ -18,39 +18,27 @@ class DirectoryTreePlaceholder(Frame):
 
         WrappingLabel(
             self,
-            text="You have not yet opened a folder.",
+            text="No folder opened",
             font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content
         ).grid(row=0, sticky=tk.EW)
 
-        open_btn = IconLabelButton(
+        open_btn = Button(
             self,
             text="Open Folder",
-            icon=Icons.FOLDER,
-            callback=self.open_folder,
+            command=self.open_folder,
             pady=2,
-            highlighted=True,
         )
         open_btn.grid(row=1, pady=5, sticky=tk.EW)
 
-        WrappingLabel(
+        clone_btn = Button(
             self,
-            text="You can clone a repository locally.",
-            font=self.base.settings.uifont,
-            anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content
-        ).grid(row=2, sticky=tk.EW)
-
-        clone_btn = IconLabelButton(
-            self,
-            text="Clone Repository",
-            icon=Icons.REPO_CLONE,
-            callback=self.clone_repo,
+            text="Clone Repo",
+            command=self.clone_repo,
             pady=2,
-            highlighted=True,
         )
-        clone_btn.grid(row=3, pady=5, sticky=tk.EW)
+        clone_btn.grid(row=3, sticky=tk.EW)
 
     def open_folder(self, *_) -> None:
         self.base.commands.open_directory()

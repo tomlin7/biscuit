@@ -1,40 +1,56 @@
 import tkinter as tk
 
-from biscuit.common.icons import Icons
-from biscuit.common.ui import Closable
-
-from ..sidebar_item import SideBarViewItem
+from biscuit.common.ui import Closable, Frame
+from biscuit.common.ui.native import Label, Toplevel
 
 
-class OpenEditors(SideBarViewItem):
-    """View that displays the open editors in the editor tabs.
+class OpenEditors(Toplevel):
+    """Toplevel view that displays the open editors in the editor tabs.
 
     The OpenEditors view displays the open editors in the editor tabs.
     - The user can switch between open editors, close the editors."""
 
-    def __init__(self, master, startpath=None, itembar=True, *args, **kwargs) -> None:
-        self.title = "Open Editors"
-        self.__actions__ = (
-            (Icons.NEW_FILE, lambda: self.base.palette.show("newfile:")),
-        )
-        super().__init__(master, itembar=itembar, *args, **kwargs)
-        self.path = startpath
+    def __init__(self, master, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.config(bg=self.base.theme.border)
+        self.overrideredirect(True)
         self.nodes = {}
+        self.withdraw()
 
-    def refresh(self):
-        if not self.nodes:
-            self.itembar.hide_content()
-        else:
-            self.itembar.show_content()
+        self.container = Frame(self)
+        self.container.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
+
+        Label(
+            self.container,
+            text="Opened Editors",
+            font=self.base.settings.uifont,
+            padx=10,
+            pady=5,
+            **self.base.theme.utils.label,
+        ).pack(fill=tk.X, expand=True, anchor=tk.W)
+
+        self.bind("<FocusOut>", lambda _: self.hide())
+
+    def show(self, e: tk.Event) -> None:
+        btn = e.widget
+        x, y = (
+            btn.winfo_rootx() - self.winfo_width() + btn.winfo_width(),
+            btn.winfo_rooty() + btn.winfo_height(),
+        )
+        self.geometry(f"+{x}+{y}")
+        self.deiconify()
         self.update()
+        self.focus_force()
+
+    def hide(self) -> None:
+        self.withdraw()
 
     def add_item(self, editor):
         temp = Closable(
-            self.content,
+            self.container,
             text=editor.filename or editor.path,
             callback=lambda p=editor.path: self.openfile(p),
             closefn=lambda p=editor.path: self.closefile(p),
-            padx=10,
         )
         try:
             temp.text_label.config(anchor=tk.W)
@@ -42,9 +58,8 @@ class OpenEditors(SideBarViewItem):
             pass
 
         temp.pack(fill=tk.X, expand=True)
-
         self.nodes[editor.path] = temp
-        self.refresh()
+        self.update()
 
     def remove_item(self, editor):
         if not self.nodes:
@@ -53,7 +68,7 @@ class OpenEditors(SideBarViewItem):
         e = self.nodes.pop(editor.path)
         e.pack_forget()
         e.destroy()
-        self.refresh()
+        self.update()
 
     def set_active(self, editor):
         # TODO: set highlight, clear highlight on others
@@ -63,7 +78,6 @@ class OpenEditors(SideBarViewItem):
         for node in self.nodes.values():
             node.destroy()
         self.nodes = {}
-        self.refresh()
 
     def openfile(self, path) -> None:
         self.base.editorsmanager.editorsbar.switch_tabs(path)

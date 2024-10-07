@@ -27,6 +27,8 @@ class Search(SideBarView):
         self.name = "Search"
         self.searchterm = tk.StringVar(self)
 
+        self.top.pack_forget()
+
         self.results = Results(self, **self.base.theme.views.sidebar.item)
 
         self.container = Frame(self, **self.base.theme.views.sidebar)
