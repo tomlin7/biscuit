@@ -14,7 +14,7 @@ biscuit = "biscuit.cli:run"
 [tool.poetry.dependencies]
 python = "^3.10"
 hintedtext = "^0.6.0"
-watchdog = "^4.0.1"
+watchdog = ">=4.0.1,<6.0.0"
 filetype = "^1.2.0"
 GitPython = "^3.1.43"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
@@ -31,7 +31,7 @@ pywinpty = { version = "^2.0.13", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
 python-tkdnd = "^0.2.1"
 psutil = ">=5.9.8,<7.0.0"
-google-generativeai = "^0.7.0"
+google-generativeai = ">=0.7,<0.9"
 sortedcontainers = "^2.4.0"
 click = "^8.1.7"
 tarts = "0.14.0"
