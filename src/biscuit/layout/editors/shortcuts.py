@@ -18,7 +18,7 @@ class Shortcuts(Frame):
             anchor=tk.E,
             **self.base.theme.editors.labels
         )
-        shortcut = Shortcut(self, shortcuts=value, **self.base.theme.editors)
+        shortcut = Shortcut(self, keys=value, **self.base.theme.editors)
 
         name.grid(row=self.row, column=0, sticky=tk.EW, pady=5, padx=5)
         shortcut.grid(row=self.row, column=1, sticky=tk.EW, pady=5, padx=5)

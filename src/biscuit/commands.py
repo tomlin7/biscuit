@@ -279,16 +279,19 @@ class Commands:
         self.base.sidebar.show_explorer()
 
     def show_outline(self, *_) -> None:
-        self.base.sidebar.show_outline()
+        self.base.secondary_sidebar.show_outline()
 
     def show_search(self, *_) -> None:
         self.base.sidebar.show_search()
 
     def show_source_control(self, *_) -> None:
-        self.base.sidebar.show_source_control()
+        self.base.secondary_sidebar.show_source_control()
+
+    def show_debugger(self, *_) -> None:
+        self.base.sidebar.show_debug()
 
     def show_extensions(self, *_) -> None:
-        self.base.sidebar.show_extensions()
+        self.base.secondary_sidebar.show_extensions()
 
     def show_terminal(self, *_) -> None:
         self.base.panel.show_terminal()

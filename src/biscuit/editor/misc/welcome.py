@@ -2,7 +2,8 @@ import os
 import tkinter as tk
 
 from biscuit.common.icons import Icons
-from biscuit.common.ui import Frame, IconLabel, IconLabelButton, Label, LinkLabel
+from biscuit.common.ui import Frame, IconLabelButton, Label, LinkLabel, Shortcut
+from biscuit.editor.misc.quickitem import QuickItem
 
 from ..editorbase import BaseEditor
 
@@ -16,87 +17,86 @@ class Welcome(BaseEditor):
 
         self.filename = "Welcome"
 
-        self.left = Frame(self, **self.base.theme.editors)
-        self.left.pack(expand=True, side=tk.LEFT, fill=tk.BOTH, anchor=tk.CENTER)
+        self.container = Frame(self, **self.base.theme.editors)
+        self.container.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        self.right = Frame(self, **self.base.theme.editors)
-        self.right.pack(expand=True, fill=tk.BOTH, anchor=tk.CENTER)
+        # try:
+        #     self.logo = Label(
+        #         self.container,
+        #         image=self.base.settings.resources.logo.subsample(100, 100),
+        #         **self.base.theme.editors.biscuit_labels
+        #     )
+        #     self.logo.grid(row=0, column=0, sticky=tk.NSEW)
+        # except tk.TclError:
+        #     pass
 
         self.title = Label(
-            self.left,
+            self.container,
             text="BISCUIT",
-            font=("Fira Code", 50, "bold"),
+            font=("Fira Code", int(60 * self.base.scale), "bold"),
             fg=self.base.theme.biscuit,
             **self.base.theme.editors.biscuit_labels
         )
-        self.title.grid(row=0, column=0, sticky=tk.W)
+        self.title.pack(fill=tk.BOTH, padx=20)
 
-        self.description = IconLabel(
-            self.left,
-            text="Made with Love ✨",
-            iconside=tk.RIGHT,
-            font=("Fira Code", 16, "bold"),
-            fg=self.base.theme.biscuit,
-        )
-        self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
-
-        self.create_start_group()
+        self.create_quick_group()
         self.create_recent_group()
 
-        try:
-            self.logo = Label(
-                self.right,
-                image=self.base.settings.resources.logo,
-                **self.base.theme.editors.biscuit_labels
-            )
-            self.logo.grid(row=0, column=0, sticky=tk.NSEW)
-        except tk.TclError:
-            pass
+    def create_quick_group(self):
+        quick = Frame(self.container, **self.base.theme.editors)
+        quick.pack(fill=tk.BOTH, expand=True, pady=(20, 0))
 
-    def create_start_group(self):
-        Label(
-            self.left,
-            text="Start",
-            font=("Fira Code", 15),
-            **self.base.theme.editors.labels
-        ).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
-        start = Frame(self.left, **self.base.theme.editors)
-        start.grid(row=3, column=0, sticky=tk.EW)
+        QuickItem(
+            quick,
+            "New File",
+            Icons.NEW_FILE,
+            self.base.commands.new_file,
+            ["Ctrl", "N"],
+        ).pack(fill=tk.X, expand=True)
 
-        IconLabelButton(
-            start, "New File...", Icons.NEW_FILE, self.new_file, expandicon=False
-        ).grid(row=0, column=0, sticky=tk.EW, pady=2)
-        IconLabelButton(
-            start, "Open File...", Icons.GO_TO_FILE, self.open_file, expandicon=False
-        ).grid(row=1, column=0, sticky=tk.EW, pady=2)
-        IconLabelButton(
-            start,
-            "Open Folder...",
+        QuickItem(
+            quick,
+            "Open File...",
             Icons.FOLDER_OPENED,
-            self.open_folder,
-            expandicon=False,
-        ).grid(row=2, column=0, sticky=tk.EW, pady=2)
+            self.base.commands.open_file,
+            ["Ctrl", "O"],
+        ).pack(fill=tk.X, expand=True)
+
+        QuickItem(
+            quick,
+            "Open Folder...",
+            Icons.FOLDER,
+            self.base.commands.open_directory,
+            ["Ctrl", "Shift", "O"],
+        ).pack(fill=tk.X, expand=True)
+
+        QuickItem(
+            quick,
+            "Config",
+            Icons.SETTINGS,
+            self.base.commands.open_settings,
+            ["Ctrl", "Alt", "S"],
+        ).pack(fill=tk.X, expand=True)
+
+        QuickItem(
+            quick,
+            "Extensions",
+            Icons.EXTENSIONS,
+            self.base.commands.show_extensions,
+            ["Ctrl", "Alt", "X"],
+        ).pack(fill=tk.X, expand=True)
 
     def create_recent_group(self):
         Label(
-            self.left,
-            text="Recent",
+            self.container,
+            text="Recently opened",
             font=("Fira Code", 15),
             **self.base.theme.editors.labels
-        ).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))
-        recents = Frame(self.left, **self.base.theme.editors)
-        recents.grid(row=5, column=0, sticky=tk.EW)
+        ).pack(pady=(40, 0), anchor=tk.W)
+        recents = Frame(self.container, **self.base.theme.editors)
+        recents.pack(fill=tk.BOTH, expand=True, padx=5)
 
         for i, p in enumerate(self.base.history.folder_history.list):
             LinkLabel(recents, os.path.basename(p[0]), p[1]).grid(
                 row=i, column=0, sticky=tk.W, pady=2
             )
-
-    def new_file(self, *_):
-        self.base.commands.new_file()
-
-    def open_file(self, *_):
-        self.base.commands.open_file()
-
-    def open_folder(self, *_):
-        self.base.commands.open_directory()

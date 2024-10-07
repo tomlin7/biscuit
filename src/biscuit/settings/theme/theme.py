@@ -298,8 +298,12 @@ class Utils(ThemeObject):
             self, theme.biscuit, "#1e1e2e", theme.biscuit_dark
         )
         self.label = ThemeObject(self)
-        self.linklabel = ThemeObject(
-            self, theme.secondary_background, theme.biscuit, self.highlightbackground
+        self.linklabel = HighlightableThemeObject(
+            self,
+            theme.secondary_background,
+            theme.biscuit,
+            self.highlightbackground,
+            theme.biscuit_light,
         )
         self.colorlabel = ThemeObject(self, theme.biscuit, "white", theme.biscuit_dark)
         self.tree = FrameThemeObject(self)
@@ -312,6 +316,7 @@ class Utils(ThemeObject):
         self.iconbutton_hfg = HighlightableThemeObject(
             self, highlightbackground=self.background
         )
+        self.iconbutton_hfg.highlightforeground = "white"
         self.iconlabelbutton = HighlightableThemeObject(
             self,
             theme.secondary_background,

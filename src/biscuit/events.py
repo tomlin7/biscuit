@@ -41,6 +41,7 @@ class EventManager(GUIManager, ConfigManager):
     editorsmanager: EditorsManager
 
     sidebar: SideBar
+    secondary_sidebar: SecondarySideBar
     explorer: Explorer
     search: Search
     outline: Outline

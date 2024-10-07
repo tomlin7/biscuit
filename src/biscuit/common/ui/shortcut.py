@@ -3,6 +3,28 @@ import tkinter as tk
 from .native import Frame
 
 
+class KeyB(Frame):
+    """Visual representation of a key binding.
+
+    Args:
+        master (tk.Widget): The parent widget.
+        key (str): The key to be displayed."""
+
+    def __init__(self, master, key: str, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.key = key
+        self.config(bg=self.base.theme.border)
+
+        self.label = tk.Label(
+            self,
+            text=key,
+            bg=self.base.theme.editors.background,
+            fg=self.base.theme.border,
+            font=("Consolas", 8),
+        )
+        self.label.pack(pady=(1, 3), padx=1, side=tk.LEFT)
+
+
 class Shortcut(Frame):
     """Visual representation of a shortcut key combination.
 
@@ -10,33 +32,34 @@ class Shortcut(Frame):
         master (tk.Widget): The parent widget.
         shortcuts (tuple[str]): Tuple of shortcuts to be displayed."""
 
-    def __init__(self, master, shortcuts: tuple[str], *args, **kwargs) -> None:
+    def __init__(self, master, keys: tuple[str], *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.shortcuts = shortcuts
-        self.add_shortcuts()
+        self._keys = keys
 
-    def add_shortcuts(self) -> None:
-        """Add all shortcuts to the widget."""
+        self.labels = []
+        self.bg, self.fg, _, _ = self.base.theme.editors.values()
+        self.render()
 
-        for shortcut in self.shortcuts[:-1]:
-            self.add_shortcut(shortcut)
+    def render(self) -> None:
+        """Render the widget."""
+
+        for key in self._keys[:-1]:
+            self.add_key(key)
             self.add_separator()
-        self.add_shortcut(self.shortcuts[-1])
+        self.add_key(self._keys[-1])
 
     def add_separator(self) -> None:
         """Add a '+' separator between shortcuts."""
 
-        tk.Label(self, text="+", **self.base.theme.editors.labels).pack(
-            padx=2, side=tk.LEFT
+        l = tk.Label(
+            self, text="+", bg=self.bg, fg=self.base.theme.border, font=("Consolas", 7)
         )
+        l.pack(padx=2, side=tk.LEFT)
+        self.labels.append(l)
 
-    def add_shortcut(self, shortcut: str) -> None:
+    def add_key(self, key: str) -> None:
         """Add a shortcut to the widget."""
 
-        tk.Label(
-            self,
-            text=shortcut,
-            bg=self.base.theme.border,
-            fg=self.base.theme.biscuit,
-            font=("Consolas", 10),
-        ).pack(padx=2, side=tk.LEFT)
+        l = KeyB(self, key)
+        l.pack(padx=2, side=tk.LEFT)
+        self.labels.append(l)
