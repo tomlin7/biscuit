@@ -10,10 +10,10 @@ from biscuit.common import ActionSet
 from biscuit.common.ui import Scrollbar
 from biscuit.git import PRViewer
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 
 
-class PRs(NavigationDrawerViewItem):
+class PRs(SideBarViewItem):
     """View that displays the open pull requests in a GitHub repository.
 
     The PRs view displays the open pull requests in a GitHub repository.

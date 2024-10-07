@@ -43,7 +43,7 @@ class ExtensionsAPI:
 
         self.menubar = self.base.menubar
         self.statusbar = self.base.statusbar
-        self.sidebar = self.base.drawer
+        self.sidebar = self.base.sidebar
         self.panel = self.base.panel
         self.sysinfo = self.base.system
         self.editorsmanager = self.base.editorsmanager

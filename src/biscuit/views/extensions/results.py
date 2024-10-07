@@ -10,7 +10,7 @@ import requests
 
 from biscuit.common.ui import ScrollableFrame
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 from .extension import ExtensionGUI
 from .placeholder import ExtensionsPlaceholder
 
@@ -26,7 +26,7 @@ class ExtensionsList(ScrollableFrame):
         self.config(bg=self.base.theme.views.sidebar.background)
 
 
-class Results(NavigationDrawerViewItem):
+class Results(SideBarViewItem):
     """View that displays the available extensions.
     # TODO search filter for extensions
 

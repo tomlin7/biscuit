@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Button, Frame, IconLabelButton, WrappingLabel
 
 
@@ -18,7 +19,7 @@ class DirectoryTreePlaceholder(Frame):
         WrappingLabel(
             self,
             text="You have not yet opened a folder.",
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content
         ).grid(row=0, sticky=tk.EW)
@@ -26,7 +27,7 @@ class DirectoryTreePlaceholder(Frame):
         open_btn = IconLabelButton(
             self,
             text="Open Folder",
-            icon="folder",
+            icon=Icons.FOLDER,
             callback=self.open_folder,
             pady=2,
             highlighted=True,
@@ -36,7 +37,7 @@ class DirectoryTreePlaceholder(Frame):
         WrappingLabel(
             self,
             text="You can clone a repository locally.",
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content
         ).grid(row=2, sticky=tk.EW)
@@ -44,7 +45,7 @@ class DirectoryTreePlaceholder(Frame):
         clone_btn = IconLabelButton(
             self,
             text="Clone Repository",
-            icon="clone",
+            icon=Icons.REPO_CLONE,
             callback=self.clone_repo,
             pady=2,
             highlighted=True,

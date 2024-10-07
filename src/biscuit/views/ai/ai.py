@@ -7,8 +7,9 @@ import typing
 
 from biscuit.common import Dropdown
 from biscuit.common.chat import ChatModelInterface, Gemini1p5Flash
+from biscuit.common.icons import Icons
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .chat import Chat
 from .menu import AIMenu
 from .placeholder import AIPlaceholder
@@ -33,7 +34,7 @@ You will have to consider them while responding.
 Reply to this message from user: """
 
 
-class AI(NavigationDrawerView):
+class AI(SideBarView):
     """A view that displays the AI chat.
 
     The AI view allows the user to chat with an AI using the Gemini API.
@@ -42,7 +43,7 @@ class AI(NavigationDrawerView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "sparkle-filled"
+        self.__icon__ = Icons.SPARKLE_FILLED
         self.name = "AI"
         self.chat = None
         self.api_key = ""
@@ -66,8 +67,8 @@ class AI(NavigationDrawerView):
         self.menu.add_command("New Chat", self.new_chat)
         self.menu.add_command("Configure API Key...", self.add_placeholder)
 
-        self.add_action("refresh", self.new_chat)
-        self.add_action("ellipsis", self.menu.show)
+        self.add_action(Icons.REFRESH, self.new_chat)
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
         self.db = sqlite3.connect(os.path.join(self.base.datadir, "secrets.db"))
         self.cursor = self.db.cursor()

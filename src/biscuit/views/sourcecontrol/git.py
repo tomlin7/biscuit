@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry, Frame, IconLabelButton, ScrollableFrame
 
 from .changes import Changes
@@ -31,7 +32,7 @@ class Git(Frame):
         self.commit_button = IconLabelButton(
             self.commitbox,
             text="Commit",
-            icon="check",
+            icon=Icons.CHECK,
             callback=self.commit,
             highlighted=True,
         )
@@ -152,7 +153,13 @@ class Git(Frame):
         self.base.git.repo.commit_files(self.get_commit_message())
 
     def push(self, *_) -> None:
-        self.base.git.repo.push_files()
+        try:
+            self.base.git.repo.push_files()
+        except AttributeError:
+            self.base.logger.error("No git repository found.")
 
     def pull(self, *_) -> None:
-        self.base.git.repo.pull_files()
+        try:
+            self.base.git.repo.pull_files()
+        except AttributeError:
+            self.base.logger.error("No git repository found.")

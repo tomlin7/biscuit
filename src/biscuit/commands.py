@@ -39,6 +39,9 @@ class Commands:
     def new_window(self, *_) -> None:
         self.base.open_new_window()
 
+    def open_empty_editor(self, *_) -> None:
+        self.new_file()
+
     def open_file(self, *_) -> None:
         path = filedialog.askopenfilename()
         if not path or not os.path.isfile(path):
@@ -273,19 +276,19 @@ class Commands:
             self.base.debugger_manager.latest.stop()
 
     def show_explorer(self, *_) -> None:
-        self.base.drawer.show_explorer()
+        self.base.sidebar.show_explorer()
 
     def show_outline(self, *_) -> None:
-        self.base.drawer.show_outline()
+        self.base.sidebar.show_outline()
 
     def show_search(self, *_) -> None:
-        self.base.drawer.show_search()
+        self.base.sidebar.show_search()
 
     def show_source_control(self, *_) -> None:
-        self.base.drawer.show_source_control()
+        self.base.sidebar.show_source_control()
 
     def show_extensions(self, *_) -> None:
-        self.base.drawer.show_extensions()
+        self.base.sidebar.show_extensions()
 
     def show_terminal(self, *_) -> None:
         self.base.panel.show_terminal()

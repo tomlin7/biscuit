@@ -4,6 +4,7 @@ import re
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import ButtonsEntry, Frame, IconButton, Toplevel
 
 if typing.TYPE_CHECKING:
@@ -38,7 +39,7 @@ class FindReplace(Toplevel):
             self.container,
             hint="Find",
             textvariable=self.term,
-            buttons=(("case-sensitive",), ("whole-word",), ("regex",)),
+            buttons=((Icons.CASE_SENSITIVE,), (Icons.WHOLE_WORD,), (Icons.REGEX,)),
         )
         self.findbox.grid(row=0, column=0, pady=2)
 
@@ -47,23 +48,23 @@ class FindReplace(Toplevel):
 
         buttons = Frame(self.container, **self.base.theme.findreplace)
         buttons.grid(row=0, column=2, sticky=tk.NSEW, pady=2)
-        IconButton(buttons, "arrow-up", self.prev_match).pack(side=tk.LEFT)
-        IconButton(buttons, "arrow-down", self.next_match).pack(side=tk.LEFT)
-        IconButton(buttons, "list-selection").pack(
+        IconButton(buttons, Icons.ARROW_UP, self.prev_match).pack(side=tk.LEFT)
+        IconButton(buttons, Icons.ARROW_DOWN, self.next_match).pack(side=tk.LEFT)
+        IconButton(buttons, Icons.LIST_SELECTION).pack(
             side=tk.LEFT
         )  # TODO add finding from selection
-        IconButton(buttons, "close", self.hide).pack(side=tk.LEFT)
+        IconButton(buttons, Icons.CLOSE, self.hide).pack(side=tk.LEFT)
 
         # replace
         self.replacebox = ButtonsEntry(
-            self.container, hint="Replace", buttons=(("preserve-case",),)
+            self.container, hint="Replace", buttons=((Icons.PRESERVE_CASE),)
         )
         self.replacebox.grid(row=1, column=0, sticky=tk.NSEW, pady=2)
 
         buttons = Frame(self.container, **self.base.theme.findreplace)
         buttons.grid(row=1, column=1, sticky=tk.NSEW, padx=5, pady=2)
-        IconButton(buttons, "replace", self.replace).pack(side=tk.LEFT)
-        IconButton(buttons, "replace-all", self.replace_all).pack(side=tk.LEFT)
+        IconButton(buttons, Icons.REPLACE, self.replace).pack(side=tk.LEFT)
+        IconButton(buttons, Icons.REPLACE_ALL, self.replace_all).pack(side=tk.LEFT)
 
         self.term.trace_add("write", self.find)
 

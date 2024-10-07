@@ -88,20 +88,23 @@ class GUIManager(Tk, ConfigManager):
         self.menubar = self.root.menubar
         self.statusbar = self.root.statusbar
 
-        self.drawer = self.root.drawer
+        self.sidebar = self.root.sidebar
+        self.secondary_sidebar = self.root.secondary_sidebar
         self.contentpane = self.root.content
 
         self.panel = self.contentpane.panel
         self.editorsmanager = self.root.content.editorspane
+        self.editorsbar = self.editorsmanager.editorsbar
+        self.breadcrumbs = self.editorsbar.breadcrumbs
 
-        self.explorer = self.drawer.explorer
-        self.search = self.drawer.search
-        self.outline = self.drawer.outline
-        self.debug = self.drawer.debug
-        self.source_control = self.drawer.source_control
-        self.extensions_view = self.drawer.extensions
-        self.ai = self.drawer.ai
-        self.github = self.drawer.github
+        self.explorer = self.sidebar.explorer
+        self.search = self.sidebar.search
+        self.outline = self.secondary_sidebar.outline
+        self.source_control = self.secondary_sidebar.source_control
+        self.debug = self.sidebar.debug
+        self.ai = self.secondary_sidebar.ai
+        self.github = self.secondary_sidebar.github
+        self.extensions_view = self.secondary_sidebar.extensions
 
         self.terminalmanager = self.panel.terminals
         self.logger = self.panel.logger

@@ -1,5 +1,6 @@
 import os
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Label
 
 from ..terminalbase import TerminalBase
@@ -13,7 +14,8 @@ class Default(TerminalBase):
 
     # get the correct shell command depending on platform
     shell = os.environ.get("COMSPEC") or os.environ.get("SHELL")
-    name = icon = os.path.splitext(os.path.basename(shell))[0] if shell else None
+    name = os.path.splitext(os.path.basename(shell))[0] if shell else None
+    icon = Icons.TERMINAL
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)

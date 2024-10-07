@@ -1,6 +1,6 @@
 # Views
 
-Views are the components that make up most of the user interface. They go in the Navigation Drawer and the Panel panes. They are responsible for displaying the content of the application.
+Views are the components that make up most of the user interface. They go in the Side Bar and the Panel panes. They are responsible for displaying the content of the application.
 
 The built-in views that come with Biscuit are:
 |Name|Purpose|

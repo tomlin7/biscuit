@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from ..codicon import get_codicon
-from ..ui.icons import IconButton
+from ..icons import Icons
+from ..ui.icon import IconButton
 from ..ui.native import Frame
 from .menu import Menu
 
@@ -22,7 +22,7 @@ class Dropdown(Frame):
         master,
         selected="",
         items=[],
-        icon="",
+        icon: Icons = "",
         callback=lambda *_: None,
         iconside=tk.LEFT,
         padx=5,
@@ -74,7 +74,7 @@ class Dropdown(Frame):
         if icon:
             self.icon_label = tk.Label(
                 self,
-                text=get_codicon(self.icon),
+                text=self.icon,
                 anchor=tk.CENTER,
                 bg=self.iconbg,
                 fg=self.iconfg,
@@ -89,11 +89,11 @@ class Dropdown(Frame):
             pady=2,
             bg=self.bg,
             fg=self.fg,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
         )
         self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
-        self.dropdown_btn = IconButton(self, "chevron-down", self.menu.show)
+        self.dropdown_btn = IconButton(self, Icons.CHEVRON_DOWN, self.menu.show)
         self.dropdown_btn.config(bg=self.bg, fg=self.fg)
         self.dropdown_btn.pack(side=tk.RIGHT, fill=tk.BOTH)
 

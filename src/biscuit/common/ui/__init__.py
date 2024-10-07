@@ -5,7 +5,7 @@ from .buttons import *
 from .buttonsentry import ButtonsEntry
 from .closables import Closable
 from .hintedentry import Entry
-from .icons import *
+from .icon import *
 from .labels import *
 from .linklabel import *
 from .native import *

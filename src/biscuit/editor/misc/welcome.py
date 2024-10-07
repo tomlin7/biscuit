@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabel, IconLabelButton, Label, LinkLabel
 
 from ..editorbase import BaseEditor
@@ -24,7 +25,7 @@ class Welcome(BaseEditor):
         self.title = Label(
             self.left,
             text="BISCUIT",
-            font=("Segoe UI", 50, "bold"),
+            font=("Fira Code", 50, "bold"),
             fg=self.base.theme.biscuit,
             **self.base.theme.editors.biscuit_labels
         )
@@ -34,7 +35,7 @@ class Welcome(BaseEditor):
             self.left,
             text="Made with Love ✨",
             iconside=tk.RIGHT,
-            font=("Segoe UI", 16, "bold"),
+            font=("Fira Code", 16, "bold"),
             fg=self.base.theme.biscuit,
         )
         self.description.grid(row=1, column=0, sticky=tk.W, pady=5)
@@ -56,27 +57,31 @@ class Welcome(BaseEditor):
         Label(
             self.left,
             text="Start",
-            font=("Segoe UI", 15),
+            font=("Fira Code", 15),
             **self.base.theme.editors.labels
         ).grid(row=2, column=0, sticky=tk.W, pady=(40, 0))
         start = Frame(self.left, **self.base.theme.editors)
         start.grid(row=3, column=0, sticky=tk.EW)
 
         IconLabelButton(
-            start, "New File...", "new-file", self.new_file, expandicon=False
+            start, "New File...", Icons.NEW_FILE, self.new_file, expandicon=False
         ).grid(row=0, column=0, sticky=tk.EW, pady=2)
         IconLabelButton(
-            start, "Open File...", "go-to-file", self.open_file, expandicon=False
+            start, "Open File...", Icons.GO_TO_FILE, self.open_file, expandicon=False
         ).grid(row=1, column=0, sticky=tk.EW, pady=2)
         IconLabelButton(
-            start, "Open Folder...", "folder-opened", self.open_folder, expandicon=False
+            start,
+            "Open Folder...",
+            Icons.FOLDER_OPENED,
+            self.open_folder,
+            expandicon=False,
         ).grid(row=2, column=0, sticky=tk.EW, pady=2)
 
     def create_recent_group(self):
         Label(
             self.left,
             text="Recent",
-            font=("Segoe UI", 15),
+            font=("Fira Code", 15),
             **self.base.theme.editors.labels
         ).grid(row=4, column=0, sticky=tk.W, pady=(40, 0))
         recents = Frame(self.left, **self.base.theme.editors)

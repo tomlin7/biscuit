@@ -10,15 +10,16 @@ from typing import Iterator
 
 import pyperclip
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Tree
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 from .menu import DirectoryContextMenu
 from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
 
 
-class DirectoryTree(NavigationDrawerViewItem):
+class DirectoryTree(SideBarViewItem):
     """A view that displays the directory tree.
 
     The directory tree displays the contents of the active directory."""
@@ -29,15 +30,16 @@ class DirectoryTree(NavigationDrawerViewItem):
         startpath=None,
         observe_changes=False,
         itembar=True,
+        style="",
         *args,
         **kwargs,
     ) -> None:
         self.title = "No folder opened"
         self.__actions__ = (
-            ("new-file", lambda: self.base.palette.show("newfile:")),
-            ("new-folder", lambda: self.base.palette.show("newfolder:")),
-            ("refresh", self.refresh_root),
-            ("collapse-all", self.collapse_all),
+            (Icons.NEW_FILE, lambda: self.base.palette.show("newfile:")),
+            (Icons.NEW_FOLDER, lambda: self.base.palette.show("newfolder:")),
+            (Icons.REFRESH, self.refresh_root),
+            (Icons.COLLAPSE_ALL, self.collapse_all),
         )
         super().__init__(master, itembar=itembar, *args, **kwargs)
 
@@ -76,6 +78,7 @@ class DirectoryTree(NavigationDrawerViewItem):
             startpath,
             doubleclick=self.openfile,
             singleclick=self.preview_file,
+            style=style,
             *args,
             **kwargs,
         )
@@ -254,7 +257,7 @@ class DirectoryTree(NavigationDrawerViewItem):
                         "end",
                         text=f"  {name}",
                         values=[path, "file"],
-                        image="document",
+                        # image="document",
                         tags="ignored" if ignored and (unixlike in ignored) else "",
                     )
                     self.nodes[os.path.abspath(path)] = node

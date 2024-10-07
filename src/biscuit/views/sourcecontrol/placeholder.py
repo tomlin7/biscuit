@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabelButton, WrappingLabel
 
 
@@ -11,34 +12,36 @@ class ChangesTreePlaceholder(Frame):
 
         WrappingLabel(
             self,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,
-            text="In order to use git features, you can open a folder containing a git repository or clone from a URL."
+            text="Open a folder containing a git repository."
         ).grid(row=0, sticky=tk.EW)
 
-        open_btn = IconLabelButton(
-            self,
-            text="Open Folder",
-            icon="folder",
-            callback=self.open_folder,
-            pady=2,
-            highlighted=True,
-        )
-        open_btn.grid(row=1, pady=5, sticky=tk.EW)
+        # TODO add init repo button if no repo is found for opened folder
 
-        clone_btn = IconLabelButton(
-            self,
-            text="Clone Repository",
-            icon="clone",
-            callback=self.clone_repo,
-            pady=2,
-            highlighted=True,
-        )
-        clone_btn.grid(row=2, pady=5, sticky=tk.EW)
+    #     open_btn = IconLabelButton(
+    #         self,
+    #         text="Open Folder",
+    #         icon=Icons.FOLDER,
+    #         callback=self.open_folder,
+    #         pady=2,
+    #         highlighted=True,
+    #     )
+    #     open_btn.grid(row=1, pady=5, sticky=tk.EW)
 
-    def open_folder(self, *_) -> None:
-        self.base.commands.open_directory()
+    #     clone_btn = IconLabelButton(
+    #         self,
+    #         text="Clone Repository",
+    #         icon=Icons.GIT_COMMIT,
+    #         callback=self.clone_repo,
+    #         pady=2,
+    #         highlighted=True,
+    #     )
+    #     clone_btn.grid(row=2, pady=5, sticky=tk.EW)
 
-    def clone_repo(self, *_) -> None:
-        self.base.palette.show("clone:")
+    # def open_folder(self, *_) -> None:
+    #     self.base.commands.open_directory()
+
+    # def clone_repo(self, *_) -> None:
+    #     self.base.palette.show("clone:")

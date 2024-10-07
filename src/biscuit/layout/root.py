@@ -21,15 +21,17 @@ import tkinter as tk
 import typing
 
 from biscuit.common.ui import Frame
+from biscuit.layout.statusbar import activitybar
 
 from .content import *
-from .drawer import NavigationDrawer
 from .grip import Grip
 from .menubar import Menubar
+from .secondary_sidebar import SecondarySideBar
+from .sidebar import SideBar
 from .statusbar import Statusbar
 
 if typing.TYPE_CHECKING:
-    from ... import App
+    from ..app import App
 
 
 class Root(Frame):
@@ -50,7 +52,10 @@ class Root(Frame):
 
         subcontainer = Frame(container, bg=self.base.theme.border)
         self.content = Content(subcontainer)
-        self.drawer = NavigationDrawer(subcontainer)
+        self.sidebar = SideBar(subcontainer, activitybar=self.statusbar.activitybar)
+        self.secondary_sidebar = SecondarySideBar(
+            subcontainer, activitybar=self.statusbar.secondary_activitybar
+        )
 
         # Window Resizing Grips
         grip_w = Grip(self, "w", "left_side")
@@ -68,7 +73,8 @@ class Root(Frame):
         self.statusbar.pack()
         grip_s.pack(fill=tk.X)
 
-        self.drawer.pack()
         self.content.pack()
-
         self.pack(fill=tk.BOTH, expand=True)
+
+    def toggle_sidebar(self) -> None:
+        self.sidebar.toggle()

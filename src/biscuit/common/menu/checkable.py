@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import IconLabelButton
 
 
@@ -23,7 +24,7 @@ class Checkable(IconLabelButton):
         super().__init__(
             master,
             text,
-            "check",
+            Icons.CHECK,
             command,
             expandicon=False,
             iconsize=10,

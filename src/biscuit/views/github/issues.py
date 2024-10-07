@@ -10,10 +10,10 @@ from biscuit.common import ActionSet
 from biscuit.common.ui import Scrollbar
 from biscuit.git import IssueViewer
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 
 
-class Issues(NavigationDrawerViewItem):
+class Issues(SideBarViewItem):
     """View that displays the open issues in a GitHub repository.
 
     The Issues view displays the open issues in a GitHub repository.

@@ -17,7 +17,7 @@ class Searchbar(Frame):
         self.text_variable = tk.StringVar()
         self.searchbar = HintedEntry(
             frame,
-            font=("Segoe UI", 12),
+            font=self.base.settings.uifont,
             hint="Search settings",
             relief=tk.FLAT,
             textvariable=self.text_variable,

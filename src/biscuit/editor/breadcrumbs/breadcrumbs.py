@@ -2,7 +2,10 @@ import os
 import tkinter as tk
 from pathlib import Path
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabelButton
+
+from .history_navigation import HistoryNavigation
 
 
 class Item(IconLabelButton):
@@ -15,14 +18,14 @@ class Item(IconLabelButton):
         super().__init__(
             master,
             text=text,
-            pady=0,
-            padx=0,
-            icon="chevron-right",
+            pady=10,
+            icon=Icons.CHEVRON_RIGHT,
             callback=callback,
             iconside=tk.RIGHT,
+            hfg_only=True,
         )
         self.path = path
-        self.text_label.config(padx=0, pady=0, font=("Segoe UI", 11))
+        self.text_label.config(padx=0, pady=0, font=self.base.settings.uifont)
         self.icon_label.config(padx=0, pady=0, font=("codicon", 12))
 
     def on_click(self, e: tk.Event):
@@ -37,13 +40,20 @@ class BreadCrumbs(Frame):
     It is used in the editor to show the directory structure of the file.
     User can click on the breadcrumbs to navigate the directory tree."""
 
-    def __init__(self, master, path: str = None, *args, **kwargs) -> None:
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=10, **self.base.theme.editors.breadcrumbs)
+        self.config(**self.base.theme.editors.breadcrumbs)
 
         self.pathview = self.base.pathview
-        active = self.base.active_directory  # just to make it shorter lol
 
+        self.container = Frame(self)
+        self.container.pack(side=tk.LEFT, fill=tk.Y, expand=True, anchor=tk.W, padx=10)
+
+        self.tab_control = HistoryNavigation(self)
+        self.tab_control.pack(side=tk.RIGHT, fill=tk.Y)
+
+    def set_path(self, path: str):
+        active = self.base.active_directory
         try:
             # if the file belongs to active directory, use relative path instead
             if active and os.path.commonpath(
@@ -54,6 +64,8 @@ class BreadCrumbs(Frame):
         except ValueError:
             # mostly happens when paths don't have the same drive
             pass
+        except Exception as e:
+            print(f"Error in setting breadcrumbs: {e}")
 
         # otherwise, use the absolute path
         self.add_absolute(path)
@@ -76,5 +88,17 @@ class BreadCrumbs(Frame):
             self.additem(os.path.join(active, *path[:i]), text)
 
     def additem(self, path, text):
-        btn = Item(self, path, text, self.pathview.show)
+        btn = Item(self.container, path, text, self.pathview.show)
         btn.pack(side=tk.LEFT)
+
+    def clear(self):
+        for i in self.container.winfo_children():
+            i.destroy()
+
+    def hide(self):
+        self.clear()
+        self.pack_forget()
+
+    def show(self):
+        self.clear()
+        self.pack(fill=tk.X, side=tk.TOP)

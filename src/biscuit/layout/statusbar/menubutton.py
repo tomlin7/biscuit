@@ -3,12 +3,13 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Bubble, Menubutton, get_codicon
+from biscuit.common import Icons
+from biscuit.common.ui import Bubble, Menubutton
 
 from .menu import ActionMenu
 
 if typing.TYPE_CHECKING:
-    from .drawer import NavigationDrawer
+    from .activitybar import ActivityBar
 
 
 class ActionMenuButton(Menubutton):
@@ -18,18 +19,18 @@ class ActionMenuButton(Menubutton):
     Action menu instances are attached to these buttons."""
 
     def __init__(
-        self, master: NavigationDrawer, icon: str, text: str, *args, **kwargs
+        self, master: ActivityBar, icon: Icons, text: str, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
         self.bubble = Bubble(self, text=text)
         self.config(
-            text=get_codicon(icon),
+            text=icon,
             relief=tk.FLAT,
-            font=("codicon", 20),
+            font=("codicon", 12),
             cursor="hand2",
-            padx=10,
-            pady=10,
-            **self.base.theme.layout.drawer.actionbar.slot,
+            padx=5,
+            pady=1,
+            **self.base.theme.layout.sidebar.actionbar.slot,
         )
         self.pack(fill=tk.X, side=tk.TOP)
 

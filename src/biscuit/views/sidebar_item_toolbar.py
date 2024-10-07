@@ -1,9 +1,10 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 
-class NavigationDrawerItemToolBar(Frame):
+class SideBarItemToolBar(Frame):
     def __init__(self, master, title: str, buttons=(), *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.itembar)
@@ -15,7 +16,7 @@ class NavigationDrawerItemToolBar(Frame):
             self.set_title(title)
 
         self.toggle = IconButton(
-            self, icon="chevron-down", event=self.toggle_content, width=1
+            self, icon=Icons.CHEVRON_DOWN, event=self.toggle_content, width=1
         )
         self.toggle.grid(row=0, column=0)
 
@@ -23,7 +24,7 @@ class NavigationDrawerItemToolBar(Frame):
             self,
             anchor=tk.W,
             textvariable=self.title,
-            font=("Segoi UI", 9, "bold"),
+            font=self.base.settings.uifont_bold,
             **self.base.theme.views.sidebar.itembar.title
         )
         self.label_title.grid(row=0, column=1, sticky=tk.EW)
@@ -47,15 +48,15 @@ class NavigationDrawerItemToolBar(Frame):
 
     def toggle_content(self, *_) -> None:
         if not self.master.enabled:
-            self.toggle.set_icon("chevron-down")
+            self.toggle.set_icon(Icons.CHEVRON_DOWN)
         else:
-            self.toggle.set_icon("chevron-right")
+            self.toggle.set_icon(Icons.CHEVRON_RIGHT)
         self.master.toggle()
 
     def hide_content(self, *_) -> None:
-        self.toggle.set_icon("chevron-right")
+        self.toggle.set_icon(Icons.CHEVRON_RIGHT)
         self.master.disable()
 
     def show_content(self, *_) -> None:
-        self.toggle.set_icon("chevron-down")
+        self.toggle.set_icon(Icons.CHEVRON_DOWN)
         self.master.enable()

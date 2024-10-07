@@ -4,8 +4,8 @@ from pygments.token import Token
 from .theme import Theme
 
 
-class Light(Theme):
-    name = "biscuit light"
+class VSCodeLight(Theme):
+    name = "VSCode light"
 
     def __init__(self, *args, **kwds) -> None:
         super().__init__(*args, **kwds)

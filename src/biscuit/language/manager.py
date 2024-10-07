@@ -146,6 +146,7 @@ class LanguageServerManager:
 
         if tab.path is None or (
             tab.language not in self.langservers.keys()
+            and tab.language.lower() not in self.langservers.keys()
             and tab.language_alias not in self.langservers.keys()
         ):
             return
@@ -161,7 +162,6 @@ class LanguageServerManager:
         self.base.logger.trace(
             f"<<-- Requesting <LSPC>({tab.language_alias}) instance for --[{root_dir}] -->>"
         )
-        self.base.logger.trace(f"Command: {self.langservers[tab.language_alias]}")
 
         # TODO multithread this process
         langserver = LangServerClient(self, tab, root_dir)

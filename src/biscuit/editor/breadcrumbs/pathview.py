@@ -15,7 +15,11 @@ class PathView(Toplevel):
         self.width = round(width * self.base.scale)
 
         self.tree = DirectoryTree(
-            self, width=width, observe_changes=False, itembar=False
+            self,
+            width=width,
+            observe_changes=False,
+            itembar=False,
+            style="secondary.Treeview",
         )
         self.tree.pack()
 
@@ -43,7 +47,7 @@ class PathView(Toplevel):
     def show(self, w: tk.Widget) -> None:
         self.update_idletasks()
         x = w.winfo_rootx()
-        y = w.winfo_rooty() + w.winfo_height()
+        y = w.winfo_rooty() + w.winfo_height() - 10
 
         if not w.path:
             return

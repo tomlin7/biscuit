@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Bubble, Frame, IconButton, Label, Menubutton
 
 KINDS = [
@@ -31,7 +32,7 @@ class ChangeItem(Frame):
             self,
             text=os.path.basename(path),
             anchor=tk.W,
-            font=("Segoe UI", 11),
+            font=self.base.settings.uifont,
             padx=10,
             pady=2,
             **self.base.theme.views.sidebar.item.button,
@@ -47,18 +48,18 @@ class ChangeItem(Frame):
 
         IconButton(
             self,
-            "discard",
+            Icons.DISCARD,
             self.git_discard,
             **self.base.theme.views.sidebar.item.button,
         ).pack(fill=tk.BOTH, side=tk.LEFT)
         IconButton(
-            self, "add", self.git_add, **self.base.theme.views.sidebar.item.button
+            self, Icons.ADD, self.git_add, **self.base.theme.views.sidebar.item.button
         ).pack(fill=tk.BOTH, side=tk.LEFT)
         Label(
             self,
             text=KINDS[self.kind][0],
             fg=KINDS[self.kind][2],
-            font=("Segoe UI", 11, "bold"),
+            font=self.base.settings.uifont_bold,
             width=3,
             pady=2,
             **self.base.theme.views.sidebar.item,

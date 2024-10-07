@@ -82,10 +82,10 @@ class IO:
         while self.alive:
             try:
                 chunk = self.in_queue.get(timeout=5)
+                self.p.stdin.write(chunk)
             except queue.Empty:
                 continue
 
-            self.p.stdin.write(chunk)
             try:
                 self.p.stdin.flush()
             except OSError:

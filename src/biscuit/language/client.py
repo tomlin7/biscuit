@@ -51,8 +51,19 @@ class LangServerClient:
         self.tab = tab
         self.language = tab.language_alias or tab.language
         self.command = master.langservers.get(
-            self.language, None
-        ) or master.langservers.get(tab.language, None)
+            self.language,
+            master.langservers.get(
+                self.language.lower(),
+                master.langservers.get(
+                    tab.language,
+                    master.langservers.get(
+                        tab.language.lower(),
+                        master.langservers.get(tab.language_alias, None),
+                    ),
+                ),
+            ),
+        )
+
         self.root_dir = root_dir
         self._counter = itertools.count()
 

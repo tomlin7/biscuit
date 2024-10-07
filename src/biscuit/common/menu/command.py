@@ -24,7 +24,7 @@ class Command(Menubutton):
         self.config(
             text=text,
             anchor=tk.W,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             cursor="hand2",
             padx=20,
             pady=2,

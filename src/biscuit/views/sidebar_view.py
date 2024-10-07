@@ -1,19 +1,19 @@
 import tkinter as tk
-import typing
 
+from biscuit.common import Icons
 from biscuit.common.ui import Frame, IconButton
 
-from .drawer_item import NavigationDrawerViewItem
+from .sidebar_item import SideBarViewItem
 from .view import View
 
 
-class NavigationDrawerView(View):
-    """Abstract class for creating a navigation drawer view."""
+class SideBarView(View):
+    """Abstract class for creating a sidebar view."""
 
     __actions__ = []
 
     def __init__(
-        self, master, name: str = None, icon: str = "preview", *args, **kwargs
+        self, master, name: str = None, icon=Icons.PREVIEW, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
         self.__icon__ = icon
@@ -31,7 +31,7 @@ class NavigationDrawerView(View):
             self.top,
             text=name.upper() if name else self.__class__.__name__.upper(),
             anchor=tk.W,
-            font=("Segoi UI", 8),
+            font=self.base.settings.uifont,
             **self.base.theme.views.sidebar.title
         ).grid(row=0, column=0, sticky=tk.EW)
 
@@ -54,6 +54,6 @@ class NavigationDrawerView(View):
         widget.pack_forget()
 
     def create_item(self, name: str = None):
-        item = NavigationDrawerViewItem(self, name)
+        item = SideBarViewItem(self, name)
         self.add_item(item)
         return item

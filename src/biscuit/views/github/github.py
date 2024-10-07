@@ -1,30 +1,31 @@
 import threading
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import WrappingLabel
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .issues import Issues
 from .menu import GitHubMenu
 from .prs import PRs
 
 
-class GitHub(NavigationDrawerView):
+class GitHub(SideBarView):
     """View that displays the GitHub issues and pull requests.
 
     The GitHub view displays the issues and pull requests from the active GitHub repository.
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = [("refresh", self.on_directory_change)]
+        self.__actions__ = [(Icons.REFRESH, self.on_directory_change)]
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "github"
+        self.__icon__ = Icons.GITHUB
         self.name = "GitHub"
 
         self.menu = GitHubMenu(self, "files")
         self.menu.add_checkable("Open Issues", self.toggle_issues, checked=True)
         self.menu.add_checkable("Pull Requests", self.toggle_prs, checked=True)
-        self.add_action("ellipsis", self.menu.show)
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
         self.issues_enabled = True
         self.prs_enabled = True

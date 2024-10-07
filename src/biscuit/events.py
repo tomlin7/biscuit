@@ -40,7 +40,7 @@ class EventManager(GUIManager, ConfigManager):
     contentpane: Content
     editorsmanager: EditorsManager
 
-    drawer: NavigationDrawer
+    sidebar: SideBar
     explorer: Explorer
     search: Search
     outline: Outline
@@ -101,18 +101,16 @@ class EventManager(GUIManager, ConfigManager):
         self.statusbar.update_git_info()
         self.source_control.refresh()
 
-    def clone_repo(self, url: str, new_window: bool = None) -> None:
+    def clone_repo(self, url: str, new_window: bool = True) -> None:
         path = filedialog.askdirectory()
         if not path:
             return
 
-        if new_window is None:
+        if new_window:
             new_window = askyesnocancel(
                 "Open in new window or current",
                 "Do you want to open the cloned repository in a new window?",
             )
-            if new_window is None:
-                return
 
         try:
 

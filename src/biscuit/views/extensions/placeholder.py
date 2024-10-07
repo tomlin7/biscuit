@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabelButton, WrappingLabel
 
 
@@ -25,7 +26,7 @@ class ExtensionsPlaceholder(Frame):
         open_btn = IconLabelButton(
             self,
             text="Retry",
-            icon="sync",
+            icon=Icons.SYNC,
             callback=self.retry,
             pady=2,
             highlighted=True,
