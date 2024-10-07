@@ -19,7 +19,7 @@ class Closable(Frame):
         callback=lambda *_: None,
         closefn=lambda *_: None,
         iconside=tk.LEFT,
-        padx=5,
+        padx=1,
         pady=1,
         fg=None,
         bg=None,
@@ -60,7 +60,7 @@ class Closable(Frame):
                 fg=self.fg,
                 font=("codicon", 14),
             )
-            self.icon_label.pack(side=iconside, fill=tk.BOTH)
+            self.icon_label.pack(side=iconside, fill=tk.BOTH, padx=(10, 0))
 
         if text:
             self.text_label = tk.Label(
@@ -72,7 +72,9 @@ class Closable(Frame):
                 fg=self.fg,
                 font=self.base.settings.uifont,
             )
-            self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
+            self.text_label.pack(
+                side=iconside, fill=tk.BOTH, expand=True, padx=10 if not icon else 0
+            )
 
         self.close_btn = IconButton(self, Icons.CLOSE, self.closefn)
         self.close_btn.config(bg=self.bg, fg=self.fg)

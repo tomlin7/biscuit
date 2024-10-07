@@ -52,6 +52,7 @@ class EditorsBar(Frame):
         self.buttons: list[IconButton] = []
         self.default_buttons = (
             (Icons.ELLIPSIS, self.menu.show),
+            (Icons.CHEVRON_DOWN, self.base.open_editors.show),
             (Icons.ADD, self.base.commands.open_empty_editor),
         )
 

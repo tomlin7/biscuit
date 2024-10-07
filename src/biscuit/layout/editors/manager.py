@@ -107,7 +107,7 @@ class EditorsManager(Frame):
         if editor.content:
             editor.content.create_buttons(self.editorsbar.action_container)
         self.editorsbar.add_tab(editor)
-        self.base.explorer.open_editors.add_item(editor)
+        self.base.open_editors.add_item(editor)
         self.refresh()
         return editor
 
@@ -119,7 +119,7 @@ class EditorsManager(Frame):
 
         self.editorsbar.clear_all_tabs()
         self.active_editors.clear()
-        self.base.explorer.open_editors.clear()
+        self.base.open_editors.clear()
         self.refresh()
 
     def reopen_active_editor(self, *_) -> None:
@@ -211,7 +211,7 @@ class EditorsManager(Frame):
             self.closed_editors[editor.path] = editor
         else:
             editor.destroy()
-        self.base.explorer.open_editors.remove_item(editor)
+        self.base.open_editors.remove_item(editor)
 
     def close_editor_by_path(self, path: str) -> None:
         """Closes the editor with the given path.
@@ -252,7 +252,7 @@ class EditorsManager(Frame):
             self.closed_editors.pop(editor.path)
 
         editor.destroy()
-        self.base.explorer.open_editors.remove_item(editor)
+        self.base.open_editors.remove_item(editor)
         self.refresh()
 
     def set_active_editor(self, editor: Editor) -> Editor:
@@ -264,7 +264,7 @@ class EditorsManager(Frame):
         for tab in self.editorsbar.active_tabs:
             if tab.editor == editor:
                 self.editorsbar.set_active_tab(tab)
-        self.base.explorer.open_editors.set_active(editor)
+        self.base.open_editors.set_active(editor)
 
         return editor
 
