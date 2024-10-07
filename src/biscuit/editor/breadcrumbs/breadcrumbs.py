@@ -46,11 +46,11 @@ class BreadCrumbs(Frame):
 
         self.pathview = self.base.pathview
 
-        self.tab_control = HistoryNavigation(self)
-        self.tab_control.pack(side=tk.LEFT, fill=tk.Y)
-
         self.container = Frame(self)
-        self.container.pack(side=tk.LEFT, fill=tk.Y)
+        self.container.pack(side=tk.LEFT, fill=tk.Y, expand=True, anchor=tk.W, padx=10)
+
+        self.tab_control = HistoryNavigation(self)
+        self.tab_control.pack(side=tk.RIGHT, fill=tk.Y)
 
     def set_path(self, path: str):
         active = self.base.active_directory

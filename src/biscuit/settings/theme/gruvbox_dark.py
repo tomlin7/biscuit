@@ -42,3 +42,25 @@ class GruvboxDark(Theme):
 
         self.editors.linenumbers.breakpoint.background = "#df463a"
         self.editors.linenumbers.breakpoint.highlightbackground = "#df463a"
+
+        self.editors.diff.not_exist = "#424242"
+        self.editors.diff.removed = "#452323"
+        self.editors.diff.addition = "#203423"
+
+        self.editors.currentword = "#474747"
+        self.editors.found = "#203423"
+        self.editors.currentline = self.border
+        self.editors.selection = "#264f78"
+        self.editors.found = "#623315"
+        self.editors.foundcurrent = "#9e86b7"
+        self.editors.hovertag = "#202b35"
+
+        self.views.panel.logs.time = "#6a9955"
+        self.views.panel.logs.caller = "#569cd6"
+        self.views.panel.logs.info = "#b5cea8"
+        self.views.panel.logs.warning = "#ce9178"
+        self.views.panel.logs.error = "#ce9178"
+
+        self.editors.bracket_colors = ("ffd700", "da70d6", "179fff")
+        self.editors.activebracket = "#d79921"
+        self.editors.hyperlink = "#4583b6"
