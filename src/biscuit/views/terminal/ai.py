@@ -39,7 +39,7 @@ class AI:
                 actions=[
                     (
                         "Configuration",
-                        lambda: self.base.drawer.show_ai().add_placeholder(),
+                        lambda: self.base.sidebar.show_ai().add_placeholder(),
                     )
                 ],
             )

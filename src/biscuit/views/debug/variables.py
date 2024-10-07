@@ -5,10 +5,10 @@ import pyperclip
 from biscuit.common.ui import Tree
 from biscuit.views.debug.menu import VariablesContextMenu
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 
 
-class Variables(NavigationDrawerViewItem):
+class Variables(SideBarViewItem):
     """A view that displays the local variables of the debugger.
     Variables are populated when the debugger is running only."""
 

@@ -17,5 +17,5 @@ class Grip(tk.Frame):
         super().__init__(base, *args, **kwargs)
         self.base = base
         self.side = side
-        self.config(bg=self.base.base.theme.primary_background, cursor=cursor)
+        self.config(bg=self.base.base.theme.border, cursor=cursor)
         self.bind("<B1-Motion>", lambda _: self.base.base.resize(self.side))

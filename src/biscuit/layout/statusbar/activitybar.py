@@ -4,30 +4,35 @@ import tkinter as tk
 import typing
 
 from biscuit.common import Frame, Menu
+from biscuit.common.icons import Icons
 
 from .actionbutton import ActionButton
 from .menubutton import ActionMenuButton
 
 if typing.TYPE_CHECKING:
-    from biscuit.views import NavigationDrawerView
+    from biscuit.views import SideBarView
 
-    from .drawer import NavigationDrawer
+    from ..sidebar import SideBar
+    from .statusbar import Statusbar
 
 
 class ActivityBar(Frame):
-    def __init__(self, master: NavigationDrawer, *args, **kwargs) -> None:
+    def __init__(self, master: Statusbar, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(width=150, **self.base.theme.layout.drawer.actionbar)
+        self.config(**self.base.theme.layout.sidebar.actionbar)
 
         self.buttons: list[ActionButton] = []
         self.active_button: ActionButton = None
 
         self.menus = []
-        self.add_menus()
+        # self.add_menus()
 
-    def add_view(self, view: NavigationDrawerView) -> None:
+    def attach_sidebar(self, sidebar: SideBar) -> None:
+        self.sidebar = sidebar
+
+    def add_view(self, view: SideBarView) -> None:
         btn = ActionButton(self, view)
-        btn.pack(fill=tk.Y)
+        btn.pack(side=tk.LEFT)
         self.buttons.append(btn)
 
     def toggle_first_slot(self) -> None:
@@ -43,7 +48,7 @@ class ActivityBar(Frame):
         self.add_settings_menu()
 
     def add_settings_menu(self) -> None:
-        settings_menu = self.add_menu("settings-gear", "manage")
+        settings_menu = self.add_menu(Icons.SETTINGS_GEAR, "manage")
         settings_menu.add_command(
             "Command Palette", lambda *_: self.base.palette.show(">")
         )
@@ -52,7 +57,7 @@ class ActivityBar(Frame):
 
     def add_menu(self, icon: str, text: str) -> Menu:
         menu_btn = ActionMenuButton(self, icon, text)
-        menu_btn.pack(side=tk.BOTTOM, fill=tk.X, padx=0)
+        menu_btn.pack(side=tk.LEFT)
         self.menus.append(menu_btn.menu)
 
         return menu_btn.menu

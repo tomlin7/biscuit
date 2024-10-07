@@ -1,12 +1,13 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .results import Results
 
 
-class Extensions(NavigationDrawerView):
+class Extensions(SideBarView):
     """View that displays the installed extensions.
 
     The Extensions view displays the installed extensions.
@@ -15,7 +16,7 @@ class Extensions(NavigationDrawerView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "extensions"
+        self.__icon__ = Icons.EXTENSIONS
         self.name = "Extensions"
 
         self.searchterm = tk.StringVar(self)
@@ -25,8 +26,8 @@ class Extensions(NavigationDrawerView):
 
         self.results = Results(self)
         self.add_item(self.results)
-        self.add_action("refresh", self.results.refresh)
-        self.add_action("clear-all", self.results.clear)
+        self.add_action(Icons.REFRESH, self.results.refresh)
+        self.add_action(Icons.CLEAR_ALL, self.results.clear)
 
     def initialize(self) -> None:
         self.results.refresh()

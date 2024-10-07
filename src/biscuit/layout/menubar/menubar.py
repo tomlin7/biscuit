@@ -5,6 +5,7 @@ import tkinter as tk
 import typing
 
 from biscuit.common import Menu
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 from .item import MenubarItem
@@ -43,7 +44,7 @@ class Menubar(Frame):
         if platform.system() == "Windows":
             close = IconButton(
                 self.container_right,
-                icon="chrome-close",
+                icon=Icons.CHROME_CLOSE,
                 iconsize=12,
                 padx=15,
                 pady=8,
@@ -54,16 +55,16 @@ class Menubar(Frame):
 
             IconButton(
                 self.container_right,
-                icon="chrome-maximize",
+                icon=Icons.CHROME_MAXIMIZE,
                 iconsize=12,
-                icon2="chrome-restore",
+                icon2=Icons.CHROME_RESTORE,
                 padx=15,
                 pady=8,
                 event=self.events.maximize_biscuit,
             ).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             IconButton(
                 self.container_right,
-                icon="chrome-minimize",
+                icon=Icons.CHROME_MINIMIZE,
                 iconsize=12,
                 padx=15,
                 pady=8,

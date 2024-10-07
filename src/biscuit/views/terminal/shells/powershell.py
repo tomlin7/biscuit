@@ -1,5 +1,6 @@
 import os
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Label
 
 from ..terminalbase import TerminalBase
@@ -13,7 +14,7 @@ class PowerShell(TerminalBase):
 
     shell = "powershell"
     name = "PowerShell"
-    icon = "powershell"
+    icon = Icons.TERMINAL_POWERSHELL
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)

@@ -2,14 +2,15 @@ import os
 import tkinter as tk
 
 from biscuit.common import ActionSet
+from biscuit.common.icons import Icons
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .directorytree import DirectoryTree
 from .menu import ExplorerMenu
 from .open_editors import OpenEditors
 
 
-class Explorer(NavigationDrawerView):
+class Explorer(SideBarView):
     """A view that displays the file explorer.
 
     - The explorer view displays the directory tree and open editors.
@@ -20,7 +21,7 @@ class Explorer(NavigationDrawerView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = []
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "files"
+        self.__icon__ = Icons.HOME
         self.name = "Explorer"
 
         self.menu = ExplorerMenu(self, "files")
@@ -29,7 +30,7 @@ class Explorer(NavigationDrawerView):
         )
         self.menu.add_separator(10)
         self.menu.add_command("Search", self.base.commands.search_files)
-        self.add_action("ellipsis", self.menu.show)
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
         self.active_editors_visible = True
         self.open_editors = OpenEditors(self)

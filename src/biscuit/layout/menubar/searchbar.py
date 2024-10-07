@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from biscuit import __version__
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton, IconLabelButton
 
 
@@ -17,7 +18,7 @@ class SearchBar(Frame):
         self.label = IconLabelButton(
             self,
             text=f"Biscuit {__version__}",
-            icon="search",
+            icon=Icons.SEARCH,
             padx=150,
             callback=self.onclick,
         )
@@ -29,7 +30,7 @@ class SearchBar(Frame):
 
         self.palette_button = IconButton(
             self,
-            icon="terminal",
+            icon=Icons.TERMINAL,
             event=self.base.commands.show_command_palette,
             iconsize=10,
         )

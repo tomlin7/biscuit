@@ -30,7 +30,7 @@ class SearchBar(Frame):
 
         self.search_bar = tk.Entry(
             frame,
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             width=self.master.width,
             relief=tk.FLAT,
             textvariable=self.text_variable,

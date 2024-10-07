@@ -1,10 +1,12 @@
 import tkinter as tk
 
-from ..drawer_item import NavigationDrawerViewItem
+from biscuit.common.icons import Icons
+
+from ..sidebar_item import SideBarViewItem
 from .stageditem import StagedChangeItem
 
 
-class StagedChanges(NavigationDrawerViewItem):
+class StagedChanges(SideBarViewItem):
     """The Staged Changes view.
 
     The Staged Changes view allows the user to view the staged changes made to the active document.
@@ -12,7 +14,7 @@ class StagedChanges(NavigationDrawerViewItem):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = (("remove", self.git_remove_all),)
+        self.__actions__ = ((Icons.REMOVE, self.git_remove_all),)
         self.title = "Staged Changes"
         super().__init__(master, *args, **kwargs)
         self.config(**self.base.theme.views.sidebar.item)

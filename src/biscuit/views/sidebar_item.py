@@ -2,10 +2,10 @@ import tkinter as tk
 
 from biscuit.common.ui import Frame
 
-from .toolbar import NavigationDrawerItemToolBar
+from .sidebar_item_toolbar import SideBarItemToolBar
 
 
-class NavigationDrawerViewItem(Frame):
+class SideBarViewItem(Frame):
     """Container for the sidebar view items.
 
     - Contains the itembar and the content of the item.
@@ -37,9 +37,7 @@ class NavigationDrawerViewItem(Frame):
         self.itembar_enabled = itembar
 
         if itembar:
-            self.itembar = NavigationDrawerItemToolBar(
-                self, self.title, self.__actions__
-            )
+            self.itembar = SideBarItemToolBar(self, self.title, self.__actions__)
             self.itembar.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.content = Frame(self, **self.base.theme.views.sidebar.item)

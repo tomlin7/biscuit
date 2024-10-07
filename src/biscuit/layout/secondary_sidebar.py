@@ -6,60 +6,63 @@ import typing
 from biscuit.common.ui import Frame
 from biscuit.views import *
 
-from .activitybar import ActivityBar
-
 if typing.TYPE_CHECKING:
-    ...
+    from biscuit.layout.statusbar.activitybar import ActivityBar
 
 
-class NavigationDrawer(Frame):
-    """Navigation drawer of the application
+class SecondarySideBar(Frame):
+    """Secondary side bar of the application
 
     - Contains the SidebarViews
     - Manages the SidebarViews
     """
 
-    def __init__(self, master: Frame, *args, **kwargs) -> None:
+    def __init__(
+        self, master: Frame, activitybar: ActivityBar, *args, **kwargs
+    ) -> None:
         super().__init__(master, *args, **kwargs)
         self.config(bg=self.base.theme.border)
 
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
         self.columnconfigure(1, weight=1)
-
-        self.activitybar = ActivityBar(self)
-        self.activitybar.grid(sticky=tk.NS, column=0, row=0, padx=(0, 1))
 
         self.views = []
 
+        self.active_view = None
+
+        self.secondary_activitybar = activitybar
+        self.secondary_activitybar.attach_sidebar(self)
+
         self.default_views = {
-            "Explorer": Explorer(self),
             "Outline": Outline(self),
-            "Search": Search(self),
             "Source Control": SourceControl(self),
-            "Debug": Debug(self),
             "AI": AI(self),
             "GitHub": GitHub(self),
             "Extensions": Extensions(self),
         }
         self.add_views(self.default_views.values())
-        self.activitybar.toggle_first_slot()
 
-    def add_views(self, views: list[NavigationDrawerView]) -> None:
-        """Adds multiple views to the drawer at once."""
+    def toggle(self) -> None:
+        """Toggle the sidebar."""
+
+        self.show_explorer()
+
+    def add_views(self, views: list[SideBarView]) -> None:
+        """Adds multiple views to the sidebar at once."""
 
         for view in views:
             self.add_view(view)
 
-    def add_view(self, view: NavigationDrawerView) -> None:
-        """Adds a view to the drawer.
+    def add_view(self, view: SideBarView) -> None:
+        """Adds a view to the sidebar.
 
         Args:
             view (SidebarView): The view to add."""
 
         self.views.append(view)
-        self.activitybar.add_view(view)
+        self.secondary_activitybar.add_view(view)
 
-    def create_view(self, name: str, icon: str = "browser") -> NavigationDrawerView:
+    def create_view(self, name: str, icon: str = "browser") -> SideBarView:
         """Create a new view.
 
         Args:
@@ -67,7 +70,7 @@ class NavigationDrawer(Frame):
             icon (str, optional): The icon of the view. Defaults to "browser"
         """
 
-        view = NavigationDrawerView(self, name, icon)
+        view = SideBarView(self, name, icon)
         self.add_view(view)
         return view
 
@@ -79,7 +82,7 @@ class NavigationDrawer(Frame):
 
         self.views.clear()
 
-    def delete_view(self, view: NavigationDrawerView) -> None:
+    def delete_view(self, view: SideBarView) -> None:
         """Permanently delete a view.
 
         Args:
@@ -89,24 +92,12 @@ class NavigationDrawer(Frame):
         self.views.remove(view)
 
     @property
-    def explorer(self) -> Explorer:
-        return self.default_views["Explorer"]
-
-    @property
     def outline(self) -> Outline:
         return self.default_views["Outline"]
 
     @property
-    def search(self) -> Search:
-        return self.default_views["Search"]
-
-    @property
     def source_control(self) -> SourceControl:
         return self.default_views["Source Control"]
-
-    @property
-    def debug(self) -> Debug:
-        return self.default_views["Debug"]
 
     @property
     def ai(self) -> AI:
@@ -120,16 +111,17 @@ class NavigationDrawer(Frame):
     def extensions(self) -> Extensions:
         return self.default_views["Extensions"]
 
-    def show_view(self, view: NavigationDrawerView) -> NavigationDrawerView:
-        """Show a view in the drawer.
+    def show_view(self, view: SideBarView) -> SideBarView:
+        """Show a view in the sidebar.
 
         Args:
             view (SidebarView): The view to show."""
 
-        for i in self.activitybar.buttons:
+        for i in self.secondary_activitybar.buttons:
             if i.view == view:
-                self.activitybar.set_active_slot(i)
+                self.secondary_activitybar.set_active_slot(i)
                 i.enable()
+                self.active_view = view
                 return view
 
     def show_explorer(self, *_) -> Explorer:
@@ -157,4 +149,7 @@ class NavigationDrawer(Frame):
         return self.show_view(self.extensions)
 
     def pack(self):
-        super().pack(side=tk.LEFT, fill=tk.Y)
+        super().pack(side=tk.LEFT, fill=tk.Y, after=self.base.contentpane, padx=(1, 0))
+
+    def hide(self):
+        super().pack_forget()

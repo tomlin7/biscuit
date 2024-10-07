@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Closable, Toplevel
 
 if typing.TYPE_CHECKING:
@@ -46,7 +47,7 @@ class Attachments(Toplevel):
             item = Closable(
                 self,
                 text=os.path.basename(file),
-                icon="file",
+                icon=Icons.FILE,
                 fg=self.base.theme.biscuit,
                 hfg=self.base.theme.biscuit_light,
             )

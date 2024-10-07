@@ -33,7 +33,7 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
 
     def launch(self, path: str, cwd="") -> None:
         self.reset()
-        self.base.drawer.show_debug()
+        self.base.sidebar.show_debug()
         self.debug.refresh()
         self.latest_path = path
 

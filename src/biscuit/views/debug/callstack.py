@@ -2,10 +2,10 @@ import tkinter as tk
 
 from biscuit.common.ui import Tree
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 
 
-class CallStack(NavigationDrawerViewItem):
+class CallStack(SideBarViewItem):
     """A view that displays the local variables of the debugger.
     Callstack is populated when the debugger is running only."""
 

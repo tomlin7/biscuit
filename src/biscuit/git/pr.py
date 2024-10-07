@@ -4,6 +4,7 @@ import webbrowser
 import mistune
 from tkinterweb import HtmlFrame
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, Label, LinkLabel, Scrollbar
 from biscuit.common.ui.buttons import IconLabelButton
 
@@ -82,7 +83,7 @@ class PRViewer(BaseEditor):
             IconLabelButton(
                 subcontainer,
                 label["name"],
-                icon="tag",
+                icon=Icons.TAG,
                 callback=lambda l=label_url.format(label["name"]): webbrowser.open(l),
                 # bg=color,
                 # hbg=color,

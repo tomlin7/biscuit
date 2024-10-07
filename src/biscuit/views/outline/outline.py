@@ -5,15 +5,16 @@ import typing
 import tarts as lsp
 
 from biscuit.common import ActionSet
+from biscuit.common.icons import Icons
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .outlinetree import OutlineTree
 
 if typing.TYPE_CHECKING:
     from biscuit.editor import Text
 
 
-class Outline(NavigationDrawerView):
+class Outline(SideBarView):
     """View that displays the outline of the active document.
 
     The Outline view displays the outline of the active document.
@@ -22,12 +23,12 @@ class Outline(NavigationDrawerView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = [
-            ("refresh",),
-            ("collapse-all",),
-            ("ellipsis",),
+            #     (Icons.REFRESH,),
+            #     (Icons.COLLAPSE_ALL,),
+            #     (Icons.ELLIPSIS,),
         ]
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "symbol-class"
+        self.__icon__ = Icons.SYMBOL_CLASS
         self.name = "Outline"
 
         self.tree = OutlineTree(self)

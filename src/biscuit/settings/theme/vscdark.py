@@ -3,8 +3,8 @@ import sv_ttk
 from .theme import *
 
 
-class Dark(Theme):
-    name = "biscuit dark"
+class VSCodeDark(Theme):
+    name = "VSCode dark"
 
     border = "#2A2A2A"
     disabled = "#737373"

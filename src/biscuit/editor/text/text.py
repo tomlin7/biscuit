@@ -1153,8 +1153,9 @@ class Text(BaseText):
             self.base.notifications.warning(
                 f"{self.language} language server failed, check logs."
             )
-            self.base.logger.error(f"{self.language} language server: {e}")
+            self.base.logger.error(f"{self.language} language server failed: {e}")
             self.lsp = False
+            print(self.base.language_server_manager.langservers)
 
     def event_destroy(self, _):
         try:

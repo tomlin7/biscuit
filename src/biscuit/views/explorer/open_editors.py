@@ -1,11 +1,12 @@
 import tkinter as tk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Closable
 
-from ..drawer_item import NavigationDrawerViewItem
+from ..sidebar_item import SideBarViewItem
 
 
-class OpenEditors(NavigationDrawerViewItem):
+class OpenEditors(SideBarViewItem):
     """View that displays the open editors in the editor tabs.
 
     The OpenEditors view displays the open editors in the editor tabs.
@@ -13,7 +14,9 @@ class OpenEditors(NavigationDrawerViewItem):
 
     def __init__(self, master, startpath=None, itembar=True, *args, **kwargs) -> None:
         self.title = "Open Editors"
-        self.__actions__ = (("new-file", lambda: self.base.palette.show("newfile:")),)
+        self.__actions__ = (
+            (Icons.NEW_FILE, lambda: self.base.palette.show("newfile:")),
+        )
         super().__init__(master, itembar=itembar, *args, **kwargs)
         self.path = startpath
         self.nodes = {}

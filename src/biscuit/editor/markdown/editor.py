@@ -1,6 +1,8 @@
 import tkinter as tk
 from typing import Any
 
+from biscuit.common.icons import Icons
+
 from ..editorbase import BaseEditor
 from ..text import TextEditor
 from .renderer import MDRenderer
@@ -17,7 +19,7 @@ class MDEditor(BaseEditor):
         self.editable = True
         self.preview_enabled = False
 
-        self.__buttons__ = (("open-preview", self.toggle_preview),)
+        self.__buttons__ = ((Icons.OPEN_PREVIEW, self.toggle_preview),)
 
         self.editor = TextEditor(self, path, exists=exists)
         self.editor.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))

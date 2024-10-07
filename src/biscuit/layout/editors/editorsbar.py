@@ -4,10 +4,13 @@ import tkinter as tk
 import typing
 from tkinter.messagebox import askyesno
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
+from biscuit.editor import BreadCrumbs
 
 from .menu import EditorsbarMenu
 from .tab import Tab
+from .tabscroll import TabScroll
 
 if typing.TYPE_CHECKING:
     from biscuit.editor import Editor
@@ -27,13 +30,19 @@ class EditorsBar(Frame):
         self.config(**self.base.theme.layout.content.editors.bar)
         self.master: EditorsManager = master
 
+        self.major_container = Frame(self, **self.base.theme.layout.content.editors.bar)
+        self.major_container.pack(fill=tk.BOTH, expand=True)
+
         self.active_tabs: list[Tab] = []
         self.active_tab = None
 
-        self.tab_container = Frame(self, **self.base.theme.layout.content.editors.bar)
-        self.tab_container.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        self.tab_control_container = TabScroll(self.major_container)
+        self.tab_control_container.pack(fill=tk.Y, side=tk.LEFT)
 
-        self.menu = EditorsbarMenu(self, "tabs")
+        self.tab_container = Frame(self.major_container, bg=self.base.theme.border)
+        self.tab_container.pack(fill=tk.BOTH, side=tk.LEFT)
+
+        self.menu = EditorsbarMenu(self.major_container, "tabs")
         self.menu.add_command(
             "Show Opened Editors", lambda: self.base.palette.show("active:")
         )
@@ -41,13 +50,46 @@ class EditorsBar(Frame):
         self.menu.add_command("Close All", self.master.delete_all_editors)
 
         self.buttons: list[IconButton] = []
-        self.default_buttons = (("ellipsis", self.menu.show),)
+        self.default_buttons = (
+            (Icons.ELLIPSIS, self.menu.show),
+            (Icons.ADD, self.base.commands.open_empty_editor),
+        )
 
-        self.container = Frame(self, **self.base.theme.layout.content.editors.bar)
-        self.container.pack(fill=tk.BOTH, side=tk.RIGHT, padx=(0, 10))
+        self.action_container = Frame(
+            self.major_container, **self.base.theme.layout.content.editors.bar
+        )
+        self.action_container.pack(fill=tk.BOTH, side=tk.RIGHT, padx=(0, 10))
 
         for button in self.default_buttons:
-            IconButton(self.container, *button).pack(side=tk.RIGHT)
+            if isinstance(button, list | tuple):
+                IconButton(
+                    self.action_container, iconsize=12, pady=6, hfg_only=True, *button
+                ).pack(side=tk.RIGHT, fill=tk.Y)
+            else:
+                IconButton(self.action_container, **button).pack(
+                    side=tk.RIGHT, fill=tk.Y
+                )
+
+        self.secondary_container = Frame(
+            self, **self.base.theme.layout.content.editors.bar
+        )
+        self.secondary_container.pack(fill=tk.BOTH, expand=True)
+
+        self.breadcrumbs = BreadCrumbs(self.secondary_container)
+
+    def hide_breadcrumbs(self) -> None:
+        self.breadcrumbs.hide()
+
+    def show_breadcrumbs(self) -> None:
+        self.breadcrumbs.show()
+
+    def hide_tab_container(self) -> None:
+        self.tab_container.pack_forget()
+
+    def show_tab_container(self) -> None:
+        self.tab_container.pack(
+            fill=tk.BOTH, side=tk.LEFT, before=self.action_container
+        )
 
     def add_buttons(self, buttons: list[IconButton]) -> None:
         for button in buttons:
@@ -71,7 +113,8 @@ class EditorsBar(Frame):
         tab.select()
 
     def close_active_tab(self) -> None:
-        self.close_tab(self.active_tab)
+        if self.active_tab:
+            self.close_tab(self.active_tab)
 
     def save_unsaved_changes(self, e: Editor) -> None:
         if e.content and e.content.editable and e.content.unsaved_changes:
@@ -98,8 +141,8 @@ class EditorsBar(Frame):
         was_selected = tab == self.active_tab
 
         assert self.active_tabs.pop(i) == tab
-        tab.destroy()
         self.master.close_editor(tab.editor)
+        tab.destroy()
 
         if not was_selected:
             return
@@ -112,7 +155,7 @@ class EditorsBar(Frame):
         else:
             self.active_tab = None
 
-    def close_tab_helper(self, editor: str) -> None:
+    def close_tab_helper(self, editor: Editor) -> None:
         for tab in self.active_tabs:
             if tab.editor == editor:
                 try:
@@ -132,6 +175,8 @@ class EditorsBar(Frame):
         self.active_tab = selected_tab
         if selected_tab.editor.content:
             self.replace_buttons(selected_tab.editor.content.__buttons__)
+        else:
+            self.clear_buttons()
         for tab in self.active_tabs:
             if tab != selected_tab:
                 tab.deselect()
@@ -142,9 +187,13 @@ class EditorsBar(Frame):
             tab.destroy()
 
         self.active_tabs.clear()
+        self.active_tab = None
 
     def switch_tabs(self, path: str) -> None:
         for tab in self.active_tabs:
             if tab.editor.path == path:
                 tab.select()
                 return tab.editor
+
+    def scroll_left(self) -> None: ...
+    def scroll_right(self) -> None: ...

@@ -12,7 +12,7 @@ class DebugPlaceholder(Frame):
         WrappingLabel(
             self,
             text="No debugger configuration found for active editor",
-            font=("Segoe UI", 10),
+            font=self.base.settings.uifont,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content
         ).grid(row=0, sticky=tk.EW)

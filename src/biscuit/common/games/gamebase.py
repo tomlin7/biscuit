@@ -1,3 +1,4 @@
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 
@@ -40,7 +41,7 @@ class BaseGame(Frame):
         self.diff = False
         self.editable = False
 
-        self.__buttons__ = (("refresh", self.reload),)
+        self.__buttons__ = ((Icons.REFRESH, self.reload),)
 
     def add_buttons(self, icon, event) -> None:
         """Adds a button to the editor bar

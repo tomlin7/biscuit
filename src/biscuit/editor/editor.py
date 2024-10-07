@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 
-from .breadcrumbs import BreadCrumbs
+from .breadcrumbs.breadcrumbs import BreadCrumbs
 from .editorbase import BaseEditor
 
 
@@ -75,14 +75,15 @@ class Editor(BaseEditor):
             standalone=standalone,
         )
         self.filename = os.path.basename(self.path) if path else None
+
         if path and exists and self.showpath and not diff:
-            self.breadcrumbs = BreadCrumbs(self, path)
-            self.grid_rowconfigure(1, weight=1)
-            self.breadcrumbs.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
-            self.content.grid(row=1, column=0, sticky=tk.NSEW)
+            self.base.breadcrumbs.show()
+            self.base.breadcrumbs.set_path(path)
         else:
-            self.grid_rowconfigure(0, weight=1)
-            self.content.grid(row=0, column=0, sticky=tk.NSEW)
+            self.base.breadcrumbs.hide()
+
+        self.grid_rowconfigure(0, weight=1)
+        self.content.grid(row=0, column=0, sticky=tk.NSEW)
 
     def save(self, path: str = None) -> None:
         """Save the content to the file

@@ -3,6 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 from .tab import Tab
@@ -37,8 +38,8 @@ class PanelBar(Frame):
 
         # These buttons are common for all panel views
         self.default_actions = (
-            ("close", content.toggle_panel),
-            ("chevron-up", content.toggle_max_panel, "chevron-down"),
+            (Icons.CLOSE, content.toggle_panel),
+            (Icons.CHEVRON_UP, content.toggle_max_panel, Icons.CHEVRON_DOWN),
         )
 
         for button in self.default_actions:

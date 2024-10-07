@@ -6,6 +6,7 @@ import typing
 from tkinter.filedialog import askopenfilenames
 
 from biscuit.common.chat import ChatModelInterface
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Button, Entry, Frame, IconButton
 
 from .attachments import Attachments
@@ -47,7 +48,7 @@ class Chat(Frame):
         self.entrybox = Frame(self, bg=theme.border)
         self.entrybox.grid(column=0, row=1, sticky=tk.EW)
 
-        self.attachbtn = IconButton(self.entrybox, icon="attach", event=self.attach)
+        self.attachbtn = IconButton(self.entrybox, icon=Icons.ATTACH, event=self.attach)
         self.attachbtn.config(
             fg=theme.secondary_foreground, bg=theme.secondary_background, padx=5
         )
@@ -58,7 +59,7 @@ class Chat(Frame):
         self.entry.bind("<Return>", self.send)
         self.entry.pack(fill=tk.BOTH, expand=True, side=tk.LEFT, pady=(1, 0))
 
-        self.sendbtn = IconButton(self.entrybox, icon="send", event=self.send)
+        self.sendbtn = IconButton(self.entrybox, icon=Icons.SEND, event=self.send)
         self.sendbtn.config(fg=theme.biscuit, bg=theme.secondary_background, padx=5)
         self.sendbtn.pack(fill=tk.Y, pady=(1, 0))
 

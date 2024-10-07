@@ -1,9 +1,9 @@
 from .actionset import ActionSet
 from .classdrill import *
-from .codicon import get_codicon
 from .fixedstack import FixedSizeStack
 from .games import *
 from .helpers import *
+from .icons import Icons
 from .io import IO
 from .menu import Checkable, Command, Dropdown, Menu
 from .notifications import Notification, Notifications

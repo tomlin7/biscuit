@@ -103,7 +103,7 @@ class EditorsManager(Frame):
 
         self.active_editors.append(editor)
         if editor.content:
-            editor.content.create_buttons(self.editorsbar.container)
+            editor.content.create_buttons(self.editorsbar.action_container)
         self.editorsbar.add_tab(editor)
         self.base.explorer.open_editors.add_item(editor)
         self.refresh()
@@ -290,6 +290,7 @@ class EditorsManager(Frame):
 
     def refresh(self) -> None:
         if not self.active_editors:
+            self.editorsbar.clear_buttons()
             self.emptytab.grid()
             self.editorsbar.active_tabs.clear()
             self.base.set_title(
@@ -297,7 +298,9 @@ class EditorsManager(Frame):
                 if self.base.active_directory
                 else None
             )
-        elif self.active_editors:
+            self.editorsbar.hide_tab_container()
+        else:
+            self.editorsbar.show_tab_container()
             self.emptytab.grid_remove()
 
         self.base.update_statusbar()

@@ -3,6 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
 
 if typing.TYPE_CHECKING:
@@ -18,15 +19,15 @@ class DebuggerActions(Frame):
         self.config(**self.base.theme.views.sidebar)
 
         self.pause_btn = self.add_button(
-            "debug-pause", self.toggle_pause, "#72bdff", icon2="debug-continue"
+            Icons.DEBUG_PAUSE, self.toggle_pause, "#72bdff", icon2=Icons.DEBUG_CONTINUE
         )
 
         self.actions = {
-            "debug-step-over": (self.step_over, "#72bdff"),
-            "debug-step-into": (self.step_into, "#72bdff"),
-            "debug-step-out": (self.step_out, "#72bdff"),
-            "debug-restart": (self.restart, "#87d282"),
-            "debug-stop": (self.stop, "#f6876d"),
+            Icons.DEBUG_STEP_OVER: (self.step_over, "#72bdff"),
+            Icons.DEBUG_STEP_INTO: (self.step_into, "#72bdff"),
+            Icons.DEBUG_STEP_OUT: (self.step_out, "#72bdff"),
+            Icons.DEBUG_RESTART: (self.restart, "#87d282"),
+            Icons.DEBUG_STOP: (self.stop, "#f6876d"),
         }
 
         for icon, props in self.actions.items():

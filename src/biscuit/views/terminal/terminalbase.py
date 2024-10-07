@@ -51,7 +51,9 @@ class TerminalBase(PanelView):
             cwd: The current working directory"""
 
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = (("add",), ("trash", self.destroy))
+
+        # MOVED to terminal manager
+        # self.__actions__ = (("add",), ("trash", self.destroy))
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)

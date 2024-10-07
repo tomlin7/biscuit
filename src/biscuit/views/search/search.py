@@ -1,13 +1,14 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+from biscuit.common.icons import Icons
 from biscuit.common.ui import ButtonsEntry, Frame
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .results import Results
 
 
-class Search(NavigationDrawerView):
+class Search(SideBarView):
     """The Search view.
 
     The Search view allows the user to search for text in the active document.
@@ -20,9 +21,9 @@ class Search(NavigationDrawerView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = (("refresh",), ("clear-all",), ("collapse-all",))
+        self.__actions__ = ()  # TODO: (Icons.REFRESH,), (Icons.CLEAR_ALL,), (Icons.SHADOW_MINUS,))
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "search"
+        self.__icon__ = Icons.SEARCH
         self.name = "Search"
         self.searchterm = tk.StringVar(self)
 
@@ -33,16 +34,18 @@ class Search(NavigationDrawerView):
             self.container,
             hint="Search",
             buttons=(
-                ("case-sensitive", self.results.search_casesensitive),
-                ("whole-word", self.results.search_wholeword),
-                ("regex", self.results.search_regex),
-                ("search", self.results.search),
+                (Icons.CASE_SENSITIVE, self.results.search_casesensitive),
+                (Icons.WHOLE_WORD, self.results.search_wholeword),
+                (Icons.REGEX, self.results.search_regex),
+                (Icons.SEARCH, self.results.search),
             ),
         )
+        self.searchbox.bind("<Return>", self.results.search)
+
         self.replacebox = ButtonsEntry(
             self.container,
             hint="Replace",
-            buttons=(("replace-all", self.results.replace_normal),),
+            buttons=((Icons.REPLACE_ALL, self.results.replace_normal),),
         )
 
         # TODO add ignore folders & extensions boxes

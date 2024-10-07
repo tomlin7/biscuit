@@ -1,9 +1,10 @@
 import tkinter as tk
 
 from biscuit.api import notifications
+from biscuit.common.icons import Icons
 from biscuit.common.menu import Dropdown
 
-from ..drawer_view import NavigationDrawerView
+from ..sidebar_view import SideBarView
 from .actions import DebuggerActions
 from .callstack import CallStack
 from .placeholder import DebugPlaceholder
@@ -12,7 +13,7 @@ from .variables import Variables
 EMPTY_MESSAGE = "No configurations found"
 
 
-class Debug(NavigationDrawerView):
+class Debug(SideBarView):
     """A view that displays the debugger variables and call stack.
 
     - Each editor can have its own debugger.
@@ -22,14 +23,14 @@ class Debug(NavigationDrawerView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = []
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "bug"
+        self.__icon__ = Icons.DEBUG_ALT
         self.name = "Debug"
         self.running = False
         self.manager = self.base.debugger_manager
 
         self.dropdown = Dropdown(
             self.top,
-            icon="play",
+            icon=Icons.PLAY,
             callback=self.set_config,
             iconfg="#87d282",
             iconhfg="#87d282",
@@ -82,7 +83,7 @@ class Debug(NavigationDrawerView):
                         f"Debugger for {language} not found.",
                         actions=[
                             ["Configure launch...", self.open_config_editor],
-                            ["Search Extensions", self.base.drawer.show_extensions],
+                            ["Search Extensions", self.base.sidebar.show_extensions],
                         ],
                     )
         except Exception as e:

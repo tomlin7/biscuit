@@ -1,11 +1,13 @@
 import tkinter as tk
 
-from ..drawer_view import NavigationDrawerView
+from biscuit.common.icons import Icons
+
+from ..sidebar_view import SideBarView
 from .git import Git
 from .menu import SourceControlMenu
 
 
-class SourceControl(NavigationDrawerView):
+class SourceControl(SideBarView):
     """The Source Control view.
 
     The Source Control view allows the user to manage the source control of the active document.
@@ -14,7 +16,7 @@ class SourceControl(NavigationDrawerView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = "source-control"
+        self.__icon__ = Icons.GIT_COMMIT
         self.name = "Source Control"
 
         self.git = Git(self)
@@ -25,10 +27,10 @@ class SourceControl(NavigationDrawerView):
         self.menu.add_checkable("Show Staged", self.git.toggle_staged, checked=True)
         self.menu.add_separator(10)
         self.menu.add_checkable("Show Changes", self.git.toggle_changes, checked=True)
-        self.add_action("refresh", self.refresh)
-        self.add_action("repo-push", self.git.push)
-        self.add_action("repo-pull", self.git.pull)
-        self.add_action("ellipsis", self.menu.show)
+        self.add_action(Icons.REFRESH, self.refresh)
+        self.add_action(Icons.REPO_PUSH, self.git.push)
+        self.add_action(Icons.REPO_PULL, self.git.pull)
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
     def reload_tree(self, *_) -> None:
         self.git.open_repo()
