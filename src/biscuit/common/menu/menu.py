@@ -3,7 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 from typing import Callable, Union
 
-from biscuit.common.menu.submenu import SubMenu
+from biscuit.common.menu.submenu import SubMenuItem
 
 from ..ui import Frame, Toplevel
 from .checkable import Checkable
@@ -51,9 +51,6 @@ class Menu(Toplevel):
 
         self.hold_focus = False
 
-        self.config_bindings()
-
-    def config_bindings(self) -> None:
         self.bind("<FocusOut>", self.hide_check)
         self.bind("<Escape>", self.hide)
 
@@ -167,16 +164,16 @@ class Menu(Toplevel):
         self.row += 1
         return new_sep
 
-    def add_menu(self, text: str) -> SubMenu:
+    def add_menu(self, text: str) -> SubMenuItem:
         """Add a new menu to the menu
 
         Args:
             text (str): The text of the menu
 
         Returns:
-            Menu: The created menu"""
+            SubMenuItem: The created menu item"""
 
-        new_item = SubMenu(self, self.container, text)
+        new_item = SubMenuItem(self, self.container, text)
         return self.add_item(new_item)
 
     def clear(self) -> None:

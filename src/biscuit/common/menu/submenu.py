@@ -4,7 +4,7 @@ from biscuit.common.icons import Icons
 from biscuit.common.ui import IconLabelButton
 
 
-class SubMenu(IconLabelButton):
+class SubMenuItem(IconLabelButton):
     """SubMenu"""
 
     def __init__(self, main, master, text, *args, **kwargs) -> None:
@@ -26,11 +26,12 @@ class SubMenu(IconLabelButton):
             **kwargs
         )
         self.main = main
+        self.text_label.config(padx=14)
 
         from .menu import Menu
 
         class SubMenu(Menu):
-            def __init__(self, master, text, *args, **kwargs) -> None:
+            def __init__(self, master, *args, **kwargs) -> None:
                 super().__init__(master, *args, **kwargs)
 
             def get_coords(self) -> None:
@@ -47,9 +48,18 @@ class SubMenu(IconLabelButton):
     def on_enter(self, e) -> None:
         self.main.hold_focus = True
         self.menu.show()
+        super().on_enter(e)
 
     def on_leave(self, e=None) -> None:
         self.main.hold_focus = False
+
+        # TODO: Keeping highlight on the submenuitem
+        # following won't work because hide() is not called (somehow magically happens)
+
+        # if self.menu.active:
+        #     return
+
+        super().on_leave(e)
         # self.menu.hide()
 
     def on_click(self, *_) -> None: ...
