@@ -119,9 +119,7 @@ class Menubar(Frame):
     def add_menus(self) -> None:
         self.add_file_menu()
         self.add_edit_menu()
-        self.add_selection_menu()
         self.add_view_menu()
-        self.add_go_menu()
         self.add_help_menu()
 
     def add_file_menu(self) -> None:
@@ -162,31 +160,17 @@ class Menubar(Frame):
         self.edit_menu.add_command("Find", events.find_symbol)
         self.edit_menu.add_command("Replace", events.replace_symbol)
         self.edit_menu.add_command("Find in Files", events.search_files)
-        self.edit_menu.add_command("Change Language Mode", events.change_language_mode)
+        self.edit_menu.add_command("Go to Line/Column...", events.goto_line_column)
         self.edit_menu.add_separator()
+        self.edit_menu.add_command("Change Language Mode", events.change_language_mode)
         self.edit_menu.add_checkable("Word Wrap", events.toggle_wordwrap)
         self.edit_menu.add_checkable("Block Cursor", events.toggle_block_cursor)
-
-    def add_selection_menu(self) -> None:
-        events = self.events
-
-        self.selection_menu = self.add_menu("Selection")
-        self.selection_menu.add_command("Select All", events.select_all)
-        self.selection_menu.add_command("Select Line", events.select_line)
-        self.selection_menu.add_command("Delete Line", events.delete_line)
-        self.selection_menu.add_separator()
-        self.selection_menu.add_command("Copy Line Up", events.copy_line_up)
-        self.selection_menu.add_command("Copy Line Down", events.copy_line_down)
-        self.selection_menu.add_command("Move Line Up", events.move_line_up)
-        self.selection_menu.add_command("Move Line Down", events.move_line_down)
-        self.selection_menu.add_command(
-            "Duplicate Selection", events.duplicate_selection
-        )
 
     def add_view_menu(self) -> None:
         events = self.events
 
         self.view_menu = self.add_menu("View")
+        # TODO: Add the rest of the view menu items
         self.view_menu.add_command("Command Palette...", events.show_command_palette)
         self.view_menu.add_command("Explorer", events.show_explorer)
         self.view_menu.add_command("Outline", events.show_outline)
@@ -196,18 +180,6 @@ class Menubar(Frame):
         self.view_menu.add_separator()
         self.view_menu.add_command("Terminal", events.show_terminal)
         self.view_menu.add_command("Log", events.show_logs)
-
-    def add_go_menu(self) -> None:
-        events = self.events
-
-        self.view_menu = self.add_menu("Go")
-        self.view_menu.add_command("Go to File...", events.search_files)
-        self.view_menu.add_separator()
-        self.view_menu.add_command("Go to Symbol in Editor", events.show_symbol_palette)
-        self.view_menu.add_command("Go to Definition", events.go_to_symbol_definition)
-        self.view_menu.add_command("Go to References", events.find_symbol_references)
-        self.view_menu.add_separator()
-        self.view_menu.add_command("Go to Line/Column...", events.goto_line_column)
 
     def add_help_menu(self) -> None:
         events = self.events

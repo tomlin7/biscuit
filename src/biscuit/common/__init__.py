@@ -10,4 +10,5 @@ from .notifications import Notification, Notifications
 from .open_editors import OpenEditors
 from .palette import Palette
 from .sysinfo import SysInfo
+from .text_editor_menu import TextEditorContextMenu
 from .textutils import *

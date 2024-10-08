@@ -171,17 +171,22 @@ class Commands:
     def cut(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.cut()
+                editor.content.text.cut()
 
     def copy(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.copy()
+                editor.content.text.copy()
 
     def paste(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
-                editor.content.paste()
+                editor.content.text.paste()
+
+    def toggle_comment(self, *_) -> None:
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.toggle_comment()
 
     def find_symbol(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
