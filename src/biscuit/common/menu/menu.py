@@ -1,16 +1,20 @@
-# TODO Menus
-# - Have various types of menus
-# - Context menus for various buttons across the editor
-# - Make the api more clean and easy to use like palette
-#   - isolate tkinter_menus library
+from __future__ import annotations
 
 import tkinter as tk
 from typing import Callable, Union
+
+from biscuit.common.menu.submenu import SubMenu
 
 from ..ui import Frame, Toplevel
 from .checkable import Checkable
 from .command import Command
 from .separator import Separator
+
+# TODO Menus
+# - Have various types of menus
+# - Context menus for various buttons across the editor
+# - Make the api more clean and easy to use like palette
+#   - isolate tkinter_menus library
 
 
 class Menu(Toplevel):
@@ -45,10 +49,12 @@ class Menu(Toplevel):
         self.menu_items = []
         self.row = 0
 
+        self.hold_focus = False
+
         self.config_bindings()
 
     def config_bindings(self) -> None:
-        self.bind("<FocusOut>", self.hide)
+        self.bind("<FocusOut>", self.hide_check)
         self.bind("<Escape>", self.hide)
 
     def get_coords(self, *e) -> tuple:
@@ -92,6 +98,14 @@ class Menu(Toplevel):
         self.active = False
         self.withdraw()
         self.master.event_generate("<<Hide>>")
+
+    def hide_check(self, e) -> None:
+        """If submenus are active, dont hide the menu"""
+
+        if self.hold_focus:
+            return
+
+        self.hide()
 
     def add_item(self, item: Union[Command, Checkable]) -> Command:
         """Add a menu item to the menu
@@ -152,6 +166,18 @@ class Menu(Toplevel):
 
         self.row += 1
         return new_sep
+
+    def add_menu(self, text: str) -> SubMenu:
+        """Add a new menu to the menu
+
+        Args:
+            text (str): The text of the menu
+
+        Returns:
+            Menu: The created menu"""
+
+        new_item = SubMenu(self, self.container, text)
+        return self.add_item(new_item)
 
     def clear(self) -> None:
         """Clear all menu items from the menu"""
