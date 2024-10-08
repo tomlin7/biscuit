@@ -43,9 +43,8 @@ class EditorsBar(Frame):
         self.tab_container.pack(fill=tk.BOTH, side=tk.LEFT)
 
         self.menu = EditorsbarMenu(self.major_container, "tabs")
-        self.menu.add_command(
-            "Show Opened Editors", lambda: self.base.palette.show("active:")
-        )
+        self.menu.add_command("Show Opened Editors", lambda: self.base.palette.show("active:"))
+        self.menu.add_command("Restore Last Closed Editor", self.base.commands.restore_last_closed_editor)
         self.menu.add_separator(10)
         self.menu.add_command("Close All", self.master.delete_all_editors)
 

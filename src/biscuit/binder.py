@@ -30,6 +30,7 @@ class Binder:
         self.bind(self.bindings.quit, self.events.quit_biscuit)
         self.bind(self.bindings.undo, self.events.undo)
         self.bind(self.bindings.redo, self.events.redo)
+        self.bind(self.bindings.restore_closed_tab, self.events.restore_last_closed_editor)
 
     def late_bind_all(self) -> None:
         """Bindings that require full initialization"""
