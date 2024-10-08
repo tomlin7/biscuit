@@ -1,6 +1,12 @@
+from __future__ import annotations
+
 import tkinter as tk
+import typing
 
 from biscuit.common.ui import Menubutton
+
+if typing.TYPE_CHECKING:
+    from .menu import Menu
 
 
 class Command(Menubutton):
@@ -20,6 +26,7 @@ class Command(Menubutton):
 
         super().__init__(master, *args, **kwargs)
         self.command = command
+        self.menu = master.master
 
         self.config(
             text=text,
@@ -28,10 +35,10 @@ class Command(Menubutton):
             cursor="hand2",
             padx=20,
             pady=2,
-            **self.base.theme.menu.item
+            **self.base.theme.menu.item,
         )
         self.bind("<Button-1>", self.on_click)
 
     def on_click(self, *_) -> None:
-        self.master.hide()
+        self.menu.event_chosen()
         self.command()

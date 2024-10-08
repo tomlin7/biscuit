@@ -201,6 +201,7 @@ class Text(BaseText):
         # autocomplete
         self.bind("<FocusOut>", self.event_focus_out)
         self.bind("<Button-1>", self.event_mouse_down)
+        self.bind("<Button-3>", self.base.text_editor_context_menu.show)
         self.bind("<Leave>", self.event_leave)
         self.bind("<Up>", self.autocomplete.move_up)
         self.bind("<Down>", self.autocomplete.move_down)
@@ -1172,13 +1173,13 @@ class Text(BaseText):
         except Exception:
             pass
 
-    def event_copy(self, *_):
+    def copy(self, *_):
         self.event_generate("<<Copy>>")
 
-    def event_cut(self, *_):
+    def cut(self, *_):
         self.event_generate("<<Cut>>")
 
-    def event_paste(self, *_):
+    def paste(self, *_):
         self.event_generate("<<Paste>>")
 
     def clear(self) -> None:

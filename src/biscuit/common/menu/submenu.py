@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import tkinter as tk
 
 from biscuit.common.icons import Icons
@@ -23,7 +25,7 @@ class SubMenuItem(IconLabelButton):
             iconsize=10,
             iconside=tk.RIGHT,
             *args,
-            **kwargs
+            **kwargs,
         )
         self.main = main
         self.text_label.config(padx=14)
@@ -31,8 +33,11 @@ class SubMenuItem(IconLabelButton):
         from .menu import Menu
 
         class SubMenu(Menu):
-            def __init__(self, master, *args, **kwargs) -> None:
+            submenu = True
+
+            def __init__(self, master, main: Menu, *args, **kwargs) -> None:
                 super().__init__(master, *args, **kwargs)
+                self.main = main
 
             def get_coords(self) -> None:
                 return (
@@ -40,7 +45,11 @@ class SubMenuItem(IconLabelButton):
                     self.master.winfo_rooty(),
                 )
 
-        self.menu = SubMenu(self, text)
+            def event_chosen(self) -> None:
+                super().event_chosen()
+                self.main.event_chosen()
+
+        self.menu = SubMenu(self, main, text)
 
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)

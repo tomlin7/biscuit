@@ -3,6 +3,7 @@ from __future__ import annotations
 import tkinter as tk
 from typing import Callable, Union
 
+from biscuit.common.menu import submenu
 from biscuit.common.menu.submenu import SubMenuItem
 
 from ..ui import Frame, Toplevel
@@ -23,6 +24,8 @@ class Menu(Toplevel):
     that holds the menu items and separators.
 
     Supports adding commands, checkables and separators"""
+
+    submenu = False
 
     def __init__(self, master, name: str = None, *args, **kwargs) -> None:
         """Create a new menu
@@ -184,3 +187,8 @@ class Menu(Toplevel):
 
         self.menu_items = []
         self.row = 0
+
+    def event_chosen(self, *_) -> None:
+        """Event handler for when a menu item is chosen"""
+
+        self.hide()

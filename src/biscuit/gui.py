@@ -119,6 +119,8 @@ class GUIManager(Tk, ConfigManager):
         self.findreplace = FindReplace(self)
         self.notifications = Notifications(self)
 
+        self.text_editor_context_menu = TextEditorContextMenu(self)
+
         self.open_editors = OpenEditors(self)
         self.autocomplete = AutoComplete(self)
         self.peek = Peek(self)
