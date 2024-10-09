@@ -13,6 +13,7 @@ from . import editor, extensions, git  # reason: see at bottom
 @click.version_option(__version__, "-v", "--version", message="Biscuit v%(version)s")
 @click.help_option("-h", "--help")
 @click.option("--dev", is_flag=True, help="Run in development mode")
+@click.argument("path", required=False)
 def cli(path=None, dev=False):
     """Biscuit CLI"""
 
