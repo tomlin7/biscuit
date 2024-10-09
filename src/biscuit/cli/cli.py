@@ -1,15 +1,52 @@
 import os
-import sys
 from pathlib import Path
 
 import click
+from click.parser import split_opt
+from click.utils import make_str
 
 from biscuit import __version__, get_app_instance
 
 from . import editor, extensions, git  # reason: see at bottom
 
 
-@click.group(invoke_without_command=True)
+class BiscuitCLI(click.Group):
+    path = ""
+
+    def main(self, *args, **kwargs):
+        try:
+            return super(BiscuitCLI, self).main(*args, **kwargs)
+        except Exception:
+            path = self.path
+
+            if path:
+                path = Path(self.path).resolve()
+                path.mkdir(exist_ok=True)
+
+            appdir = Path(__file__).resolve().parent
+            app = get_app_instance(appdir, open_path=str(path))
+            app.run()
+
+    def resolve_command(self, ctx, args):
+        cmd_name = make_str(args[0])
+        original_cmd_name = cmd_name
+
+        cmd = self.get_command(ctx, cmd_name)
+        if cmd is None and ctx.token_normalize_func is not None:
+            cmd_name = ctx.token_normalize_func(cmd_name)
+            cmd = self.get_command(ctx, cmd_name)
+
+        if cmd is None and not ctx.resilient_parsing:
+            if split_opt(cmd_name)[0]:
+                self.parse_args(ctx, ctx.args)
+
+            # ctx.fail(_("No such command {name!r}.").format(name=original_cmd_name))
+            self.path = original_cmd_name
+
+        return cmd_name if cmd else None, cmd, args[1:]
+
+
+@click.group(cls=BiscuitCLI, invoke_without_command=True)
 @click.version_option(__version__, "-v", "--version", message="Biscuit v%(version)s")
 @click.help_option("-h", "--help")
 @click.option("--dev", is_flag=True, help="Run in development mode")
@@ -20,8 +57,7 @@ def cli(path=None, dev=False):
 
 
 @cli.result_callback()
-@click.pass_context
-def process_commands(context: click.Context, processors, path=None, dev=False):
+def process_commands(processors, path=None, dev=False):
     if path:
         path = str(Path(path).resolve())
         click.echo(f"Opening {path}")
