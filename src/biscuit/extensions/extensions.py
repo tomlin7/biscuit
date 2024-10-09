@@ -218,7 +218,7 @@ class ExtensionManager:
                 time.sleep(self.interval)
 
                 refresh_count += 1
-                if refresh_count == 10:
+                if refresh_count == 60:
                     self.base.logger.info(
                         f"Extensions server: active, {len(self.installed)} extensions loaded."
                     )

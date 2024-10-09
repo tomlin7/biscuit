@@ -86,20 +86,33 @@ class SButton(Frame):
             self.icon_label.bind("<Button-1>", self.on_click)
 
     def on_enter(self, *_) -> None:
+        # warning: bad code
         self.bubble.show()
-        # self.config(bg=self.hbg)
+        if self.highlighted:
+            self.config(bg=self.hbg)
         if self.text:
-            self.text_label.config(fg=self.hfg)  # bg=self.hbg,
+            self.text_label.config(fg=self.hfg)
+            if self.highlighted:
+                self.text_label.config(bg=self.hbg)
+
         if self.icon:
-            self.icon_label.config(fg=self.hfg)  # bg=self.hbg,
+            self.icon_label.config(fg=self.hfg)
+            if self.highlighted:
+                self.icon_label.config(bg=self.hbg)
 
     def on_leave(self, *_) -> None:
+        # warning: bad code
         self.bubble.hide()
-        # self.config(bg=self.bg)
+        if self.highlighted:
+            self.config(bg=self.bg)
         if self.text:
-            self.text_label.config(fg=self.fg)  # bg=self.bg,
+            self.text_label.config(fg=self.fg)
+            if self.highlighted:
+                self.text_label.config(bg=self.bg)
         if self.icon:
-            self.icon_label.config(fg=self.fg)  # bg=self.bg,
+            self.icon_label.config(fg=self.fg)
+            if self.highlighted:
+                self.icon_label.config(bg=self.bg)
 
     def on_click(self, *_) -> None:
         self.callback()
@@ -131,7 +144,7 @@ class SButton(Frame):
         if not self.visible:
             self.lift()
             self.visible = True
-            self.pack(**self.get_pack_data())
+            self.pack(**self.get_pack_data(), fill=tk.Y)
 
     def hide(self) -> None:
         if self.visible:

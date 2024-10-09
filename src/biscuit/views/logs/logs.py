@@ -56,6 +56,7 @@ class Logs(PanelView):
         self.text.tag_config(
             "error", foreground=self.base.theme.views.panel.logs.error, font=fontbold
         )
+        self.text.tag_config("trace", foreground=self.base.theme.border)
 
         self.gui_refresh_loop()
 
@@ -110,7 +111,16 @@ class Logs(PanelView):
     def trace(self, text: str) -> None:
         """trace level log"""
 
-        self._std_log(" [trace] ", "trace", text)
+        # traces are fully greyed out
+        self.queue.put(
+            (
+                (
+                    f"[{datetime.now().strftime('%H:%M:%S:%f')}] [trace] [{caller_class_name(skip=3)}]: {text}",
+                    "trace",
+                ),
+                "\n",
+            )
+        )
 
     def _std_log(self, kindtext: str, kind: str, text: str) -> None:
         self.log((kindtext, kind), caller_class_name(skip=3), text)
