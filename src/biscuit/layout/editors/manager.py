@@ -220,7 +220,7 @@ class EditorsManager(Frame):
         if self.closed_editors:
             editor = self.closed_editors.pop()
             self.add_editor(editor)
-            self.base.notifications.info(f"Restored {editor.filename}")
+            # self.base.notifications.info(f"Restored {editor.filename}")
         else:
             self.base.notifications.info("No recently closed editors to restore")
 
