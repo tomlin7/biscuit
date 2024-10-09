@@ -40,6 +40,9 @@ class EditorsManager(Frame):
 
         self.active_editors: List[Editor] = []
         self.closed_editors: Dict[Editor] = {}
+        
+        self.closed_editors: List[Editor] = []
+        self.max_closed_editors = 10
 
         self.emptytab = Placeholder(self)
         self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
@@ -206,12 +209,20 @@ class EditorsManager(Frame):
         if editor.content and editor.content.editable:
             self.base.language_server_manager.tab_closed(editor.content.text)
 
-        # not keeping diff/games in cache
-        if editor.content and not (editor.diff or editor.content.unsupported):
-            self.closed_editors[editor.path] = editor
-        else:
-            editor.destroy()
+        self.closed_editors.append(editor)
+        if len(self.closed_editors) > self.max_closed_editors:
+            oldest_editor = self.closed_editors.pop(0)
+            oldest_editor.destroy()
+
         self.base.open_editors.remove_item(editor)
+        
+    def restore_last_closed_editor(self) -> None:
+        if self.closed_editors:
+            editor = self.closed_editors.pop()
+            self.add_editor(editor)
+            # self.base.notifications.info(f"Restored {editor.filename}")
+        else:
+            self.base.notifications.info("No recently closed editors to restore")
 
     def close_editor_by_path(self, path: str) -> None:
         """Closes the editor with the given path.

@@ -26,3 +26,4 @@ class Bindings:
         self.panel = "<Control-grave>"
         self.undo = "<Control-z>"
         self.redo = "<Control-y>"
+        self.restore_closed_tab = "<Control-Shift-T>"
