@@ -61,7 +61,7 @@ class Commands:
 
     def open_recent_dir(self, *_):
         self.base.palette.show("recentd:")
-        
+
     def restore_last_closed_editor(self, *_) -> None:
         self.base.editorsmanager.restore_last_closed_editor()
 
@@ -134,8 +134,12 @@ class Commands:
         if platform.system() == "Windows":
             from ctypes import windll
 
-            hwnd = windll.user32.GetParent(self.base.winfo_id())
-            windll.user32.ShowWindow(hwnd, 6)
+            try:
+                hwnd = windll.user32.GetParent(self.base.winfo_id())
+                windll.user32.ShowWindow(hwnd, 6)
+            except Exception as e:
+                print(e)
+                self.base.withdraw()
         else:
             self.base.withdraw()
             self.base.notifications.hide()
