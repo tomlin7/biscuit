@@ -62,12 +62,15 @@ class IconButton(Menubutton):
 
     def onclick(self, *args) -> None:
         try:
-            self.event(*args)
-        except:
-            self.event()
+            try:
+                self.event(*args)
+            except:
+                self.event()
 
-        self.v_onclick()
-        self.toggle_icon()
+            self.v_onclick()
+            self.toggle_icon()
+        except Exception as e:
+            print(e)
 
     def v_onclick(self) -> None: ...
 

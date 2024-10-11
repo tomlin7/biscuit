@@ -73,11 +73,11 @@ class BiscuitStyle(Style):
 
 class HoverRenderer(HtmlFrame):
     def __init__(self, master: Hover, *args, **kwargs) -> None:
-        super().__init__(
-            master, messages_enabled=False, vertical_scrollbar=False, *args, **kwargs
-        )
+        super().__init__(master, messages_enabled=False, *args, **kwargs)
         self.base = master.base
-        self.html.shrink(True)
+
+        # NOTE: Causing app to crash
+        # self.html.shrink(True)
 
         self.style = BiscuitStyle(self.base.theme)
 
@@ -102,12 +102,23 @@ class HoverRenderer(HtmlFrame):
         pygments_css = self.formatter.get_style_defs(".highlight")
         self.css = f"""
             {pygments_css}
+
+            HTML {{
+                width: fit-content;
+                height: fit-content;
+            }}
+
             CODE, PRE {{
                 font-family: {self.base.settings.font['family']};
                 font-size: {self.base.settings.font['size']}pt;
                 background-color: {t.border};
                 padding: 2px;
             }}
+
+            .highlight {{
+                width: 100%;
+            }}
+
             BODY {{
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground};
@@ -144,7 +155,8 @@ class HoverRenderer(HtmlFrame):
             }}
             """
 
-    def render_markdown(self, rawmd):
-        self.load_html(self.markdown(rawmd))
+    def render_markdown(self, docs) -> None:
+        self.load_html(self.markdown(docs))
+        print(self.markdown(docs))
         self.add_css(self.css)
         self.update_idletasks()

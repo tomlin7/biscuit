@@ -32,6 +32,47 @@ from urllib.request import url2pathname
 import tarts as lsp
 
 
+# Copyright (c) 2021-2024 tomlin7
+def to_document_symbol(infos: list[lsp.SymbolInformation]) -> list[lsp.DocumentSymbol]:
+    if not infos:
+        return []
+
+    infos.sort(
+        key=lambda x: (
+            (x.location.range.start.line, x.location.range.start.character),
+            (-x.location.range.end.line, -x.location.range.end.character),
+        )
+    )
+    res: list[lsp.DocumentSymbol] = []
+    parents: list[lsp.DocumentSymbol] = []
+
+    for info in infos:
+        element = lsp.DocumentSymbol(
+            name=info.name or "Error Symbol",
+            kind=info.kind,
+            children=[],
+            range=info.location.range,
+            selectionRange=info.location.range,
+        )
+
+        while True:
+            if not parents:
+                parents.append(element)
+                res.append(element)
+                break
+            parent = parents[-1]
+            if contains_range(parent.range, element.range) and not equals_range(
+                parent.range, element.range
+            ):
+                # TODO avoid adding the same named element twice to same parent
+                parent.children.append(element)
+                parents.append(element)
+                break
+            parents.pop()
+
+    return res
+
+
 def get_completion_item_doc(item: lsp.CompletionItem) -> str:
     if not item.documentation:
         return item.label
@@ -116,44 +157,3 @@ def equals_range(a: lsp.Range, b: lsp.Range) -> bool:
         and a.end.line == b.end.line
         and a.end.character == b.end.character
     )
-
-
-# Copyright (c) 2021-2024 tomlin7
-def to_document_symbol(infos: list[lsp.SymbolInformation]) -> list[lsp.DocumentSymbol]:
-    if not infos:
-        return []
-
-    infos.sort(
-        key=lambda x: (
-            (x.location.range.start.line, x.location.range.start.character),
-            (-x.location.range.end.line, -x.location.range.end.character),
-        )
-    )
-    res: list[lsp.DocumentSymbol] = []
-    parents: list[lsp.DocumentSymbol] = []
-
-    for info in infos:
-        element = lsp.DocumentSymbol(
-            name=info.name or "Error Symbol",
-            kind=info.kind,
-            children=[],
-            range=info.location.range,
-            selectionRange=info.location.range,
-        )
-
-        while True:
-            if not parents:
-                parents.append(element)
-                res.append(element)
-                break
-            parent = parents[-1]
-            if contains_range(parent.range, element.range) and not equals_range(
-                parent.range, element.range
-            ):
-                # TODO avoid adding the same named element twice to same parent
-                parent.children.append(element)
-                parents.append(element)
-                break
-            parents.pop()
-
-    return res

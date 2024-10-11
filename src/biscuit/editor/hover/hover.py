@@ -3,7 +3,9 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Frame, Toplevel
+from biscuit.common.ui import Frame
+from biscuit.common.ui import Text as TextW
+from biscuit.common.ui import Toplevel
 
 from .renderer import HoverRenderer
 
@@ -14,25 +16,19 @@ if typing.TYPE_CHECKING:
     from ..text import Text
 
 
+def codeblock(text: str, language: str) -> str:
+    return f"```{language}\n{text}\n```\n\n---\n\n"
+
+
 class Hover(Toplevel):
     def __init__(self, master: App, bd: int = 2, *args, **kw) -> None:
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
-        self.maxsize(400, 200)
+        self.maxsize(600, 200)
         self.config(bg=self.base.theme.primary_background_highlight, bd=bd)
 
         container = Frame(self, bg=self.base.theme.border)
         container.pack(fill=tk.BOTH, expand=True)
-
-        self.label = tk.Label(
-            container,
-            padx=6,
-            font=self.base.settings.font,
-            anchor=tk.W,
-            justify=tk.LEFT,
-            **self.base.theme.editors.hover.text,
-        )
-        self.label.pack(fill=tk.BOTH, expand=True)
 
         self.renderer = HoverRenderer(container)
         self.renderer.pack(fill=tk.BOTH, expand=True)
@@ -55,26 +51,29 @@ class Hover(Toplevel):
         )
 
     def show(self, tab: Text, response: HoverResponse) -> None:
-        if response.text:
-            if response.docs:
-                self.renderer.pack_forget()
-            self.label.config(text=response.text[1])
-            self.label.pack(fill=tk.BOTH, expand=True)
-        else:
-            self.label.pack_forget()
+        if not response or not (response.text or response.docs):
+            self.hide()
+            return
 
-        if response.docs:
-            self.renderer.render_markdown(response.docs)
-            self.renderer.pack(fill=tk.BOTH, pady=(1, 0) if response.text else 0)
-        else:
-            self.renderer.pack_forget()
-
-        self.update()
-        self.deiconify()
+        docs = ""
         try:
-            self.update_position(response.location, tab)
-        except:
+            if response.text[1].strip():
+                docs += codeblock(response.text[1].strip(), tab.language_alias)
+        except IndexError:
             pass
+
+        if response.docs and response.docs.strip():
+            docs += response.docs
+
+        if not docs or not docs.strip():
+            self.hide()
+            return
+
+        self.renderer.render_markdown(docs)
+        self.update_idletasks()
+        self.deiconify()
+        self.update()
+        self.update_position(response.location, tab)
 
     def hide(self, *_) -> None:
         self.withdraw()

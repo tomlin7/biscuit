@@ -104,7 +104,7 @@ class Debug(SideBarView):
             if self.base.active_directory
             else ".biscuit/launch.toml"
         )
-        self.base.open_editor(path)
+        self.base.open_editor(str(path))
 
     def refresh(self):
         if self.manager.config_loader.config_found or self.running:
