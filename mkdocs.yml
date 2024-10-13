@@ -48,20 +48,12 @@ extra_javascript:
   - javascripts/extra.js
 nav:
   - Home: index.md
-  - CLI: cli.md
-  # - Getting Started:
-  #     - Installation: getting-started/installation.md
-  #     - Quick Start: getting-started/quick-start.md
-  # - About: about.md
-  # - Installation: installation.md
-  # - Usage:
-  #   - Quick Start: usage/quick-start.md
+  - Getting Started:
+      - Quick Start: getting-started/quick-start.md
+      - Installation: getting-started/installation.md
   #   - Configuration: usage/configuration.md
-  #   - Customization: usage/customization.md
-  # - Features:
-  #   - Code Editor: features/code-editor.md
-  #   - Language Support: features/language-support.md
-  #   - Extensions: features/extensions.md
+  - Usage:
+      - CLI: usage/cli.md
   - API Reference:
       - App: api/app.md
       - CLI: api/cli.md

@@ -28,6 +28,15 @@ pip install biscuit-editor
 
 Try running `biscuit --version` in your terminal to check if the installation was successful.
 
+> [!IMPORTANT]
+> Linux distros require some prerequisites to be installed prior to the pip installation
+>
+> ```bash
+>  sudo apt install fontconfig libfontconfig1 libfontconfig1-dev \
+>    cmake cmake-data extra-cmake-modules build-essential
+>  python -m pip install scikit-build
+> ```
+
 ### Standalone Builds
 
 - Grab the latest stable build from [**releases page**](https://github.com/tomlin7/Biscuit/releases)
@@ -37,7 +46,7 @@ For compiling from source code, please check the [installation guide](https://gi
 
 ## Contributing ❤️
 
-Your contributions are valuable and very much appreciated!
+Your contributions are very much appreciated!
 Have a peek at the [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour on project structure and to setup the environment. To contribute a new extension, check the [extension docs](https://github.com/tomlin7/biscuit-extensions).
 
 <a href="https://github.com/tomlin7/biscuit/graphs/contributors">
