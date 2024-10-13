@@ -12,7 +12,7 @@ Fork the Biscuit repository and clone locally.
 git clone http://github.com/tomlin7/biscuit
 ```
 
-In the root directory, run `poetry install`. Try to launch biscuit from source with `poetry run biscuit` and make sure everything looks good.
+In the root directory, run `poetry install`. Try to launch biscuit from source with simply `biscuit` (or `poetry run biscuit`) and make sure everything looks good.
 
 > [!IMPORTANT]
 > Linux distros require some prerequisites to be installed prior to the pip installation
