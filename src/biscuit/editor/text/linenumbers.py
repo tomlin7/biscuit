@@ -83,7 +83,7 @@ class LineNumbers(Canvas):
         if not self.text:
             return
 
-        # current_line = int(self.text.index(tk.INSERT).split('.')[0])
+        current_line = int(self.text.index(tk.INSERT).split('.')[0]) 
 
         i = self.text.index("@0,0")
         while True:
@@ -136,9 +136,9 @@ class LineNumbers(Canvas):
                 lambda _, linenum=linenum: self.toggle_breakpoint(linenum),
             )
 
-            # TODO: optional: line numbers relative to the current line
-            # if linenum != current_line:
-            #     linenum = abs(linenum - current_line)
+            if self.text.relative_line_numbers:
+                if linenum != current_line:
+                    linenum = abs(linenum - current_line)
 
             self.create_text(
                 40,

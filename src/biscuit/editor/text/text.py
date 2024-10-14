@@ -64,6 +64,7 @@ class Text(BaseText):
         self.language = language
         self.language_alias = ""
         self.unsupported = False
+        self.relative_line_numbers = False
 
         self.ctrl_down = False
         self.buffer_size = 4096
@@ -845,6 +846,10 @@ class Text(BaseText):
     def set_block_cursor(self, flag: bool) -> None:
         self.configure(blockcursor=flag)
 
+    def toggle_relative_numbering(self) -> None:
+        self.relative_line_numbers = not self.relative_line_numbers
+        # current_line = int(self.text.index(tk.INSERT).split('')[0])
+        
     def get_cursor_pos(self):
         return self.index(tk.INSERT)
 

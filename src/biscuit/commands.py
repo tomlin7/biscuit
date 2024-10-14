@@ -165,6 +165,12 @@ class Commands:
             if e.content and e.content.editable:
                 e.content.text.set_block_cursor(self.base.block_cursor)
 
+    def toggle_relative_line_numbering(self, *_) -> None:
+        self.base.relative_line_numbering = not self.base.relative_line_numbering
+        if editor := self.base.editorsmanager.active_editor:
+            if editor.content and editor.content.editable:
+                editor.content.text.toggle_relative_numbering()
+
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:

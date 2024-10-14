@@ -41,6 +41,7 @@ class ConfigManager:
     wrap_words = False
     tab_spaces = 4
     block_cursor = False
+    relative_line_numbering = False
     active_directory = None
     active_branch_name = None
     onupdate_callbacks = []
