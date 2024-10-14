@@ -40,6 +40,7 @@ class ConfigManager:
     git_found = False
     wrap_words = False
     tab_spaces = 4
+    relative_line_numbers = False
     block_cursor = False
     active_directory = None
     active_branch_name = None

@@ -165,6 +165,7 @@ class Menubar(Frame):
         self.edit_menu.add_command("Change Language Mode", events.change_language_mode)
         self.edit_menu.add_checkable("Word Wrap", events.toggle_wordwrap)
         self.edit_menu.add_checkable("Block Cursor", events.toggle_block_cursor)
+        self.edit_menu.add_checkable("Toggle Relative Line Numbering", events.toggle_relative_line_numbering)
 
     def add_view_menu(self) -> None:
         events = self.events
