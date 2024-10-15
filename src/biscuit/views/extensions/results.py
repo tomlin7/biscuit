@@ -97,3 +97,11 @@ class Results(SideBarViewItem):
                 widget.select()
             else:
                 widget.deselect()
+
+    def show_installed(self) -> None:
+        self.clear()
+        added_extensions = []
+        for ext in self.extension_list.items:
+            if ext.installed and ext.name not in added_extensions:
+                added_extensions.append(ext.name)
+                self.fetch_queue.put([ext.name, ext.data])
