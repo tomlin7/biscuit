@@ -49,6 +49,8 @@ class Results(SideBarViewItem):
         self.extension_list = ExtensionsList(self.content)
         self.extension_list.pack(fill=tk.BOTH, expand=True)
 
+        self.filter_installed = False
+
         # self.watcher = ExtensionsWatcher(self)
         # self.watcher.watch()
 
@@ -79,7 +81,8 @@ class Results(SideBarViewItem):
         if not self.fetch_queue.empty():
             name, data = self.fetch_queue.get()
             ext = ExtensionGUI(self, name, data)
-            self.extension_list.add(ext, fill=tk.X)
+            if not self.filter_installed or (self.filter_installed and ext.installed):
+                self.extension_list.add(ext, fill=tk.X)
 
         self.after(5, self.gui_refresh_loop)
 
@@ -89,6 +92,7 @@ class Results(SideBarViewItem):
             widget.destroy()
             self.content.update_idletasks()
 
+        self.extension_list.items = []
         self.fetching.set()
 
     def set_selected(self, extension: ExtensionGUI) -> None:
@@ -98,10 +102,6 @@ class Results(SideBarViewItem):
             else:
                 widget.deselect()
 
-    def show_installed(self) -> None:
-        self.clear()
-        added_extensions = []
-        for ext in self.extension_list.items:
-            if ext.installed and ext.name not in added_extensions:
-                added_extensions.append(ext.name)
-                self.fetch_queue.put([ext.name, ext.data])
+    def toggle_installed(self) -> None:
+        self.filter_installed = not self.filter_installed
+        self.refresh()
