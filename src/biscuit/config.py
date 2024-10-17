@@ -13,6 +13,7 @@ from .git import Git
 from .history import HistoryManager
 from .language import LanguageServerManager
 from .settings import Settings
+from .workspaces import WorkspaceManager
 
 
 class ConfigManager:
@@ -58,6 +59,7 @@ class ConfigManager:
         self.system = SysInfo(self)
         self.settings = Settings(self)
         self.history = HistoryManager(self)
+        self.workspaces = WorkspaceManager(self)
 
         self.resources = self.settings.resources
         self.bindings = self.settings.bindings
@@ -120,3 +122,7 @@ class ConfigManager:
             if e.content and e.content.editable:
                 e.content.text.set_tab_size(spaces)
                 self.statusbar.set_spaces(spaces)
+
+    @property
+    def active_workspace(self):
+        return self.workspaces.workspace

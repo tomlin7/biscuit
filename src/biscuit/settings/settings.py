@@ -73,12 +73,15 @@ class Settings:
         )
 
     def setup_icon(self) -> None:
-        self.base.call(
-            "wm",
-            "iconphoto",
-            self.base._w,
-            tk.PhotoImage(file=self.resources.get_res_path_platform("icon.png")),
-        )
+        try:
+            self.base.call(
+                "wm",
+                "iconphoto",
+                self.base._w,
+                tk.PhotoImage(file=self.resources.get_res_path_platform("icon.png")),
+            )
+        except tk.TclError:
+            pass
 
     def setup_font(self) -> None:
         try:
