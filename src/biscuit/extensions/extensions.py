@@ -7,6 +7,7 @@ import threading
 import time
 import typing
 from importlib import util
+from pathlib import Path
 from queue import Queue
 
 import requests
@@ -43,7 +44,7 @@ class ExtensionManager:
         self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
 
-        if not (self.base.extensionsdir and os.path.isdir(self.base.extensionsdir)):
+        if not (self.base.extensiondir and os.path.isdir(self.base.extensiondir)):
             print("Extensions directory not found.")
             return
 
@@ -166,7 +167,7 @@ class ExtensionManager:
         with open(ext.file, "w") as fp:
             fp.write(response.text)
 
-        self.load_extension(ext.filename)
+        self.load_extension(ext.file)
         ext.set_installed()
 
         self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
@@ -192,12 +193,12 @@ class ExtensionManager:
         """Load an extension from a file."""
 
         if file.endswith(".py"):
-            extension_name = os.path.splitext(file)[0]
+            extension_name = os.path.basename(file).split(".")[0]
 
             # if an extension with same name is already loaded, skip
             if extension_name in self.installed:
                 return
-            self.load_queue.put(extension_name)
+            self.load_queue.put((extension_name, file))
 
     def unload_extension(self, file: str):
         """Unload an extension from a file."""
@@ -225,12 +226,11 @@ class ExtensionManager:
                     refresh_count = 0
                 continue
 
-            ext = self.load_queue.get()
-            path = os.path.join(self.base.extensionsdir, f"{ext}.py")
+            ext, path = self.load_queue.get()
             module_name = f"extensions.{ext}"
             try:
                 # TODO support for multiple files
-                spec = util.spec_from_file_location(module_name, path)
+                spec = util.spec_from_file_location(module_name, str(path))
                 extension_module: extension = util.module_from_spec(spec)
 
                 spec.loader.exec_module(extension_module)
@@ -256,13 +256,17 @@ class ExtensionManager:
             ...
 
     def queue_installed_extensions(self) -> None:
-        for extension_file in os.listdir(self.base.extensionsdir):
-            if extension_file.endswith(".py"):
-                extension_name = os.path.splitext(extension_file)[0]
-                if extension_name in self.installed:
-                    return
+        def load_extension(dir: str):
+            for extension_file in os.listdir(dir):
+                if extension_file.endswith(".py"):
+                    extension_name = os.path.basename(extension_file).split(".")[0]
+                    if extension_name in self.installed:
+                        return
 
-                self.load_queue.put(extension_name)
+                    self.load_queue.put((extension_name, Path(dir) / extension_file))
+
+        load_extension(self.base.extensiondir)
+        load_extension(self.base.fallback_extensiondir)
 
     def start_server(self):
         self.queue_installed_extensions()
