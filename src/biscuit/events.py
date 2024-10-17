@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import multiprocessing
 import os
 import subprocess
 import sys
@@ -238,6 +239,28 @@ class EventManager(GUIManager, ConfigManager):
 
     def open_new_window(self) -> None:
         subprocess.Popen([sys.executable, sys.argv[0]])
+
+        # from .main import get_app_instance
+        # app = get_app_instance()
+        # multiprocessing.freeze_support()
+        # multiprocessing.Process(target=app.run).start()
+
+    def workspace_opened(self) -> None:
+        workspace = self.active_workspace
+        try:
+            self.open_directory(workspace.dirs[0])
+            for dir in workspace.dirs[1:]:
+                self.open_in_new_window(dir)
+        except Exception as e:
+            self.logger.error(f"Opening workspace failed: {e}")
+            self.notifications.error("Opening workspace failed: see logs")
+
+    def workspace_changed(self, dir: str) -> None:
+        self.open_in_new_window(dir)
+
+    def workspace_closed(self) -> None:
+        self.close_active_directory()
+        # TODO add cli args to flag new windows opened by workspace and close them
 
     def toggle_terminal(self) -> None:
         self.panel.switch_to_terminal()
