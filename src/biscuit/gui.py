@@ -1,4 +1,5 @@
 import platform
+import sqlite3
 
 from tkinterDnD import Tk
 
@@ -174,7 +175,52 @@ class GUIManager(Tk, ConfigManager):
         self.menubar.set_title(title)
         self.menubar.reposition_title()
 
+    def _get_opened_files(self) -> list:
+        """
+        Get the file paths of all opened files from the active editors.
+
+        Returns:
+            list: A list of file paths corresponding to the opened files.
+        """
+        opened_files = []
+
+        for editor in self.base.editorsmanager.active_editors:
+            if editor.path:
+                opened_files.append(editor.path)
+
+        return opened_files
+
     def on_close_app(self) -> None:
+        session_db_path = os.path.join(self.base.datadir, "session.db")
+        self.db = sqlite3.connect(session_db_path)
+        self.cursor = self.db.cursor()
+
+        self.cursor.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS session (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_path TEXT,
+            folder_path TEXT
+        );
+        """
+        )
+
+        self.cursor.execute("DELETE FROM session")
+
+        # Note: these two functions get_opened_files() and get_opened_directories() are two helper functions newly added to the GUIManager class
+        opened_files = self._get_opened_files()
+        opened_directories = self._get_opened_directories()
+
+        for file_path in opened_files:
+            self.cursor.execute("INSERT INTO session (file_path) VALUES (?)", (file_path,))
+
+        for folder_path in opened_directories:
+            self.cursor.execute("INSERT INTO session (folder_path) VALUES (?)", (folder_path,))
+
+        self.db.commit()
+        self.db.close()
+
+
         self.editorsmanager.delete_all_editors()
         self.destroy()
 
