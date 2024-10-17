@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit-editor"
-version = "2.99.85"
+version = "2.99.90"
 description = "A lightweight, fast, and extensible code editor with a growing community"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
