@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit-editor"
-version = "2.99.85"
+version = "2.99.95"
 description = "A lightweight, fast, and extensible code editor with a growing community"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
@@ -21,7 +21,7 @@ tkextrafont = { version = "^0.6.3", platform = "win32" }
 Pygments = "^2.18.0"
 toml = "^0.10.2"
 sv-ttk = "^2.6.0"
-Pillow = "^10.3.0"
+Pillow = ">=10.3,<12.0"
 requests = "^2.32.2"
 pyperclip = "^1.8.2"
 tkinterweb = "^3.23.9"

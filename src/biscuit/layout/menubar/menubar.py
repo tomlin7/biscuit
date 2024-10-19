@@ -134,6 +134,13 @@ class Menubar(Frame):
         self.file_menu.add_command("Open Recent File...", events.open_recent_file)
         self.file_menu.add_command("Open Recent Folder...", events.open_recent_dir)
         self.file_menu.add_separator()
+        self.file_menu.add_command("Open workspace...", events.open_workspace)
+        self.file_menu.add_command(
+            "Add Folder to Workspace...", events.add_folder_to_workspace
+        )
+        self.file_menu.add_command("Save Workspace As...", events.save_workspace_as)
+        self.file_menu.add_command("Close Workspace", events.close_workspace)
+        self.file_menu.add_separator()
         self.file_menu.add_command("Save", events.save_file)
         self.file_menu.add_command("Save As...", events.save_file_as)
         self.file_menu.add_command("Save All", events.save_all)
@@ -165,6 +172,9 @@ class Menubar(Frame):
         self.edit_menu.add_command("Change Language Mode", events.change_language_mode)
         self.edit_menu.add_checkable("Word Wrap", events.toggle_wordwrap)
         self.edit_menu.add_checkable("Block Cursor", events.toggle_block_cursor)
+        self.edit_menu.add_checkable(
+            "Toggle Relative Line Numbering", events.toggle_relative_line_numbering
+        )
 
     def add_view_menu(self) -> None:
         events = self.events

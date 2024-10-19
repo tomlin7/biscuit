@@ -95,6 +95,29 @@ class Commands:
                 if editor.content.editable:
                     editor.save()
 
+    def save_workspace_as(self, *_) -> None:
+        if path := asksaveasfilename(
+            title="Save Workspace As...",
+            initialfile="workspace.toml",
+            filetypes=[(".toml")],
+        ):
+            self.base.workspaces.save(path)
+
+    def add_folder_to_workspace(self, *_) -> None:
+        path = filedialog.askdirectory()
+        if not path or not os.path.isdir(path):
+            return
+        self.base.workspaces.add_dir(path)
+
+    def open_workspace(self, *_) -> None:
+        path = filedialog.askopenfilename()
+        if not path or not os.path.isfile(path):
+            return
+        self.base.workspaces.load(path)
+
+    def close_workspace(self, *_) -> None:
+        self.base.workspaces.close()
+
     def open_settings(self, *_) -> None:
         self.base.open_settings()
 
@@ -164,6 +187,12 @@ class Commands:
         if e := self.base.editorsmanager.active_editor:
             if e.content and e.content.editable:
                 e.content.text.set_block_cursor(self.base.block_cursor)
+
+    def toggle_relative_line_numbering(self, *_) -> None:
+        self.base.relative_line_numbers = not self.base.relative_line_numbers
+        for e in self.base.editorsmanager.active_editors:
+            if e.content and e.content.editable:
+                e.content.text.toggle_relative_numbering()
 
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
