@@ -35,7 +35,7 @@ class ExtensionGUI(Frame):
         self.data = data
         self.name = name
         self.filename = data[0]
-        self.file = os.path.join(self.base.extensionsdir, data[0])
+        self.file = os.path.join(self.base.extensiondir, data[0])
         self.author = data[1]
         self.description = data[2][:50] + "..." if len(data[2]) > 30 else data[2]
 
