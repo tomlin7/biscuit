@@ -277,3 +277,24 @@ class EventManager(GUIManager, ConfigManager):
                 )
 
         self.statusbar.toggle_editmode(False)
+
+    def log_error(self, message: str) -> None:
+        self.logger.error(message)
+        self.notifications.error(
+            message, actions=[("Show logs", self.commands.show_logs)]
+        )
+
+    def log_info(self, message: str) -> None:
+        self.logger.info(message)
+        self.notifications.info(
+            message, actions=[("Show logs", self.commands.show_logs)]
+        )
+
+    def log_warning(self, message: str) -> None:
+        self.logger.warning(message)
+        self.notifications.warning(
+            message, actions=[("Show logs", self.commands.show_logs)]
+        )
+
+    def log_trace(self, message: str) -> None:
+        self.logger.trace(message)

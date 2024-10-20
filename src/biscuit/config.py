@@ -38,7 +38,7 @@ class ConfigManager:
     # constants
     resdir: str
     appdir: str
-    extensionsdir: str
+    extensiondir: str
     git_found = False
     wrap_words = False
     tab_spaces = 4
@@ -92,7 +92,12 @@ class ConfigManager:
             self.parentdir = Path(self.appdir).parent.parent.absolute()
 
         self.configdir = os.path.join(self.parentdir, "config")
-        self.extensionsdir = os.path.join(self.parentdir, "extensions")
+
+        self.extensiondir = Path.home() / ".biscuit" / "extensions"
+        print(self.extensiondir)
+
+        self.fallback_extensiondir = os.path.join(self.parentdir, "extensions")
+
         self.datadir = os.path.join(self.parentdir, "data")
 
         self.resdir = os.path.join(self.parentdir, "resources")
@@ -100,15 +105,19 @@ class ConfigManager:
         self.second_fallback_resdir = Path(self.appdir).absolute() / "resources"
 
         try:
-            os.makedirs(self.datadir, exist_ok=True)
+            Path(self.datadir).mkdir(parents=True, exist_ok=True)
         except Exception as e:
             print(f"Data directory invalid: {e}")
 
         try:
-            # creates the extensions directory next to executable
-            os.makedirs(self.extensionsdir, exist_ok=True)
+            Path(self.extensiondir).mkdir(parents=True, exist_ok=True)
         except Exception as e:
-            print(f"Extensions failed: {e}")
+            print(f"Extensions directory invalid: {e}")
+            try:
+                # fallback
+                Path(self.fallback_extensiondir).mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                print(f"Extensions failed: {e}")
 
     def setup_extensions(self):
         # sets up the extension API & loads extensions
