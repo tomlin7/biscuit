@@ -182,9 +182,10 @@ class GUIManager(Tk, ConfigManager):
         Returns:
             list: A list of file paths corresponding to the opened files.
         """
+
         opened_files = []
 
-        for editor in self.base.editorsmanager.active_editors:
+        for editor in self.editorsmanager.active_editors:
             if editor.path:
                 opened_files.append(editor.path)
 
@@ -193,8 +194,8 @@ class GUIManager(Tk, ConfigManager):
     def on_close_app(self) -> None:
 
         opened_files = self._get_opened_files()
-        self.session_manager.clear_session()
-        self.session_manager.save_session(opened_files, self.base.active_directory)
+        self.sessions.clear_session()
+        self.sessions.save_session(opened_files, self.active_directory)
 
         self.editorsmanager.delete_all_editors()
         self.destroy()

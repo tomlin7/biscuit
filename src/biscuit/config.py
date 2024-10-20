@@ -60,8 +60,7 @@ class ConfigManager:
         self.system = SysInfo(self)
         self.settings = Settings(self)
         self.history = HistoryManager(self)
-        self.session = SessionManager(self)
-
+        self.sessions = SessionManager(self)
 
         self.resources = self.settings.resources
         self.bindings = self.settings.bindings
