@@ -191,35 +191,10 @@ class GUIManager(Tk, ConfigManager):
         return opened_files
 
     def on_close_app(self) -> None:
-        session_db_path = os.path.join(self.base.datadir, "session.db")
-        self.db = sqlite3.connect(session_db_path)
-        self.cursor = self.db.cursor()
 
-        self.cursor.executescript(
-        """
-        CREATE TABLE IF NOT EXISTS session (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            file_path TEXT,
-            folder_path TEXT
-        );
-        """
-        )
-
-        self.cursor.execute("DELETE FROM session")
-
-        # Note: these two functions get_opened_files() and get_opened_directories() are two helper functions newly added to the GUIManager class
         opened_files = self._get_opened_files()
-        opened_directories = self._get_opened_directories()
-
-        for file_path in opened_files:
-            self.cursor.execute("INSERT INTO session (file_path) VALUES (?)", (file_path,))
-
-        for folder_path in opened_directories:
-            self.cursor.execute("INSERT INTO session (folder_path) VALUES (?)", (folder_path,))
-
-        self.db.commit()
-        self.db.close()
-
+        self.session_manager.clear_session()
+        self.session_manager.save_session(opened_files, self.base.active_directory)
 
         self.editorsmanager.delete_all_editors()
         self.destroy()
