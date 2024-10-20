@@ -93,8 +93,6 @@ class ConfigManager:
         self.configdir = os.path.join(self.parentdir, "config")
 
         self.extensiondir = Path.home() / ".biscuit" / "extensions"
-        print(self.extensiondir)
-
         self.fallback_extensiondir = os.path.join(self.parentdir, "extensions")
 
         self.datadir = os.path.join(self.parentdir, "data")
