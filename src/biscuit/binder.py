@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 if typing.TYPE_CHECKING:
-    from .. import App
+    from . import App
 
 
 class Binder:
@@ -30,7 +30,9 @@ class Binder:
         self.bind(self.bindings.quit, self.events.quit_biscuit)
         self.bind(self.bindings.undo, self.events.undo)
         self.bind(self.bindings.redo, self.events.redo)
-        self.bind(self.bindings.restore_closed_tab, self.events.restore_last_closed_editor)
+        self.bind(
+            self.bindings.restore_closed_tab, self.events.restore_last_closed_editor
+        )
 
     def late_bind_all(self) -> None:
         """Bindings that require full initialization"""

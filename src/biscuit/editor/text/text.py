@@ -11,6 +11,8 @@ from tkinter.messagebox import askokcancel
 
 import chardet
 import tarts as lsp
+from editorconfig import EditorConfigError
+from editorconfig import get_properties as get_editorconfig
 
 from biscuit.common.minclosestdict import MinClosestKeyDict
 from biscuit.common.textindex import TextIndex
@@ -77,6 +79,19 @@ class Text(BaseText):
 
         self.hover_after = None
         self.last_hovered = None
+        self.tab_spaces = self.base.tab_spaces
+
+        try:
+            self.editorconfig = get_editorconfig(self.path)
+
+            self.insert_final_newline = self.editorconfig.get(
+                "insert_final_newline", False
+            )
+            self.eol = self.editorconfig.get("end_of_line", "CRLF")
+            self.encoding = self.editorconfig.get("charset", "utf-8")
+            self.tab_spaces = int(self.editorconfig.get("indent_size", 4))
+        except EditorConfigError:
+            self.editorconfig = {}
 
         # self.last_change = Change(None, None, None, None, None)
         self.highlighter = Highlighter(self, language)
@@ -94,7 +109,7 @@ class Text(BaseText):
         self.config_bindings()
         self.update_idletasks()
         self.comment_prefix = get_comment_prefix(self.language.lower())
-        tab_width = self.base.settings.font.measure(" " * self.base.tab_spaces)
+        tab_width = self.base.settings.font.measure(" " * self.tab_spaces)
         self.configure(
             tabs=(tab_width,),
             blockcursor=self.base.block_cursor,
@@ -303,12 +318,12 @@ class Text(BaseText):
 
     def calculate_indent_level(self, line: str) -> int:
         indent = len(line) - len(line.lstrip())
-        return indent // self.base.tab_spaces
+        return indent // self.tab_spaces
 
     def add_indent_guide(self, line_number: int, indent_level: int) -> None:
         for level in range(indent_level):
-            start_index = f"{line_number}.{level * self.base.tab_spaces - 1}"
-            end_index = f"{line_number}.{level * self.base.tab_spaces + 1}"
+            start_index = f"{line_number}.{level * self.tab_spaces - 1}"
+            end_index = f"{line_number}.{level * self.tab_spaces + 1}"
             self.tag_add(
                 (
                     "current_indent_guide"
@@ -615,8 +630,8 @@ class Text(BaseText):
         for line in range(start_line, end_line + 1):
             if (
                 self.get(f"{line}.0", f"{line}.1") == "\t"
-                or self.get(f"{line}.0", f"{line}.{self.base.tab_spaces}")
-                == " " * self.base.tab_spaces
+                or self.get(f"{line}.0", f"{line}.{self.tab_spaces}")
+                == " " * self.tab_spaces
             ):
                 self.delete(f"{line}.0", f"{line}.1")
 
@@ -919,9 +934,9 @@ class Text(BaseText):
         self.update_current_indent()
         if self.update_current_line():
             if self.current_line[-1] in ["{", "[", ":", "("]:
-                self.current_indent += self.base.tab_spaces
+                self.current_indent += self.tab_spaces
             elif self.current_line[-1] in ["}", "]", ")"]:
-                self.current_indent -= self.base.tab_spaces
+                self.current_indent -= self.tab_spaces
 
             self.add_newline()
             self.insert(tk.INSERT, " " * self.current_indent)

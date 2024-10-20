@@ -157,6 +157,5 @@ class HoverRenderer(HtmlFrame):
 
     def render_markdown(self, docs) -> None:
         self.load_html(self.markdown(docs))
-        print(self.markdown(docs))
         self.add_css(self.css)
         self.update_idletasks()

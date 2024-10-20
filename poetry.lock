@@ -255,6 +255,16 @@ files = [
 ]
 
 [[package]]
+name = "editorconfig"
+version = "0.12.4"
+description = "EditorConfig File Locator and Interpreter for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "EditorConfig-0.12.4.tar.gz", hash = "sha256:24857fa1793917dd9ccf0c7810a07e05404ce9b823521c7dce22a4fb5d125f80"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.2"
 description = "Backport of PEP 654 (exception groups)"
@@ -1956,4 +1966,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "57b70bf5589148371611d989b9d635487ec265e37165865bb7216df37d5ac3ab"
+content-hash = "18462bf6ee44ff6c37dc9798bb286fb350c0cf62753e06c838b359a030e625b7"
