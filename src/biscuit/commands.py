@@ -62,6 +62,9 @@ class Commands:
     def open_recent_dir(self, *_):
         self.base.palette.show("recentd:")
 
+    def restore_recent_session(self, *_) -> None:
+        self.base.sessions.restore_session()
+
     def restore_last_closed_editor(self, *_) -> None:
         self.base.editorsmanager.restore_last_closed_editor()
 

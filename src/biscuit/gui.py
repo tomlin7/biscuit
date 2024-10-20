@@ -1,4 +1,5 @@
 import platform
+import sqlite3
 
 from tkinterDnD import Tk
 
@@ -174,7 +175,28 @@ class GUIManager(Tk, ConfigManager):
         self.menubar.set_title(title)
         self.menubar.reposition_title()
 
+    def _get_opened_files(self) -> list:
+        """
+        Get the file paths of all opened files from the active editors.
+
+        Returns:
+            list: A list of file paths corresponding to the opened files.
+        """
+
+        opened_files = []
+
+        for editor in self.editorsmanager.active_editors:
+            if editor.path:
+                opened_files.append(editor.path)
+
+        return opened_files
+
     def on_close_app(self) -> None:
+
+        opened_files = self._get_opened_files()
+        self.sessions.clear_session()
+        self.sessions.save_session(opened_files, self.active_directory)
+
         self.editorsmanager.delete_all_editors()
         self.destroy()
 
