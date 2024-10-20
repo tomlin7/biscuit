@@ -47,7 +47,8 @@ class SessionManager:
             elif row[2]:
                 active_directory = row[2]
 
-        return opened_files, active_directory
+        self.base.open_directory(active_directory)
+        self.base.open_files(opened_files)
 
     def clear_session(self):
         """Clear the session table."""

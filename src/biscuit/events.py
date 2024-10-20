@@ -201,6 +201,10 @@ class EventManager(GUIManager, ConfigManager):
 
         return self.editorsmanager.open_editor(path, exists, load_file)
 
+    def open_files(self, paths: list[str]) -> None:
+        for path in paths:
+            self.open_editor(path)
+
     def open_diff(self, path: str, kind: str) -> None:
         # TODO kind kwarg
         self.editorsmanager.open_diff_editor(path, kind)  # type: ignore

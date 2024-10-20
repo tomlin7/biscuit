@@ -70,6 +70,15 @@ class Welcome(BaseEditor):
             ["Ctrl", "Shift", "O"],
         ).pack(fill=tk.X, expand=True)
 
+        # TODO add following shortcuts
+        QuickItem(
+            quick,
+            "Restore recent session",
+            Icons.HISTORY,
+            self.base.commands.restore_recent_session,
+            ["Ctrl", "Alt", "R"],
+        ).pack(fill=tk.X, expand=True)
+
         QuickItem(
             quick,
             "Config",
