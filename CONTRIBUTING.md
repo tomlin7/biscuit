@@ -4,7 +4,7 @@ Welcome to the contributing guidelines for Biscuit. This document will help you 
 
 ### Setting up Environment
 
-Python 3.10 or above is required for building Biscuit.
+Python 3.11 or above is required for building Biscuit.
 
 Fork the Biscuit repository and clone locally.
 
