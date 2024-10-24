@@ -9,7 +9,7 @@ Python 3.11 or above is required for building Biscuit.
 Fork the Biscuit repository and clone locally.
 
 ```bash
-git clone http://github.com/tomlin7/biscuit
+$ git clone http://github.com/tomlin7/biscuit.git
 ```
 
 In the root directory, run `poetry install`. Try to launch biscuit from source with simply `biscuit` (or `poetry run biscuit`) and make sure everything looks good.
@@ -18,10 +18,10 @@ In the root directory, run `poetry install`. Try to launch biscuit from source w
 > Linux distros require some prerequisites to be installed prior to the pip installation
 >
 > ```bash
->  sudo apt install python3-dev tcl-dev tk-dev \
+> $ sudo apt install python3-dev tcl-dev tk-dev \
 >    fontconfig libfontconfig1 libfontconfig1-dev \
 >    cmake cmake-data extra-cmake-modules build-essential
->  python -m pip install scikit-build
+> $ python -m pip install scikit-build
 > ```
 
 # Project Structure
