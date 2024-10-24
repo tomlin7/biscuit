@@ -31,6 +31,14 @@ $ source ./.venv/bin/activate
 >    cmake cmake-data extra-cmake-modules build-essential
 > $ python -m pip install scikit-build
 > ```
+>
+> For Arch Linux based distributions,
+> ```bash
+> $ sudo pacman -Sy
+> $ sudo pacman -S base-devel cmake extra-cmake-modules \
+>    fontconfig tcl tk
+> $ python -m pip install scikit-build
+> $ python -m pip install tkextrafont
 
 In the root directory, run `poetry install`. Try to launch biscuit from source with simply `biscuit` (or `poetry run biscuit`) and make sure everything looks good.
 
