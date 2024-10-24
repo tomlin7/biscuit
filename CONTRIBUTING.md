@@ -2,27 +2,37 @@
 
 Welcome to the contributing guidelines for Biscuit. This document will help you get started with contributing to Biscuit.
 
-### Setting up Environment
+## Setting up Environment
 
-Python 3.11 or above is required for building Biscuit.
+> [!NOTE]
+> Python 3.11 or above is required for building Biscuit.
 
 Fork the Biscuit repository and clone locally.
 
 ```bash
-$ git clone http://github.com/tomlin7/biscuit.git
+$ git clone https://github.com/tomlin7/biscuit.git
+$ cd biscuit
 ```
 
-In the root directory, run `poetry install`. Try to launch biscuit from source with simply `biscuit` (or `poetry run biscuit`) and make sure everything looks good.
+Make a virtual environment to prevent dependency conflicts.
+
+```bash
+$ python -m venv .venv
+$ source ./.venv/bin/activate
+```
 
 > [!IMPORTANT]
-> Linux distros require some prerequisites to be installed prior to the pip installation
+> Linux distribtions require some system packages to be installed prior to the poetry installation.
 >
+> For Debian based distributions,
 > ```bash
 > $ sudo apt install python3-dev tcl-dev tk-dev \
 >    fontconfig libfontconfig1 libfontconfig1-dev \
 >    cmake cmake-data extra-cmake-modules build-essential
 > $ python -m pip install scikit-build
 > ```
+
+In the root directory, run `poetry install`. Try to launch biscuit from source with simply `biscuit` (or `poetry run biscuit`) and make sure everything looks good.
 
 # Project Structure
 
