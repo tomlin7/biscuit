@@ -1,5 +1,8 @@
 ## Installation
 
+> [!NOTE]
+> Python 3.11 or above is required for building Biscuit.
+
 Recommended way to install Biscuit is via pip:
 
 ```bash
