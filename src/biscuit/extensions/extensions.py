@@ -110,6 +110,36 @@ class ExtensionManager:
         with self.extensions_lock:
             threading.Thread(target=self.fetch_extensions, daemon=True).start()
 
+    def fetch_searched_extensions(self, search_string) -> None:
+        """Fetch extensions whose name matches the search_string from Extensions repository."""
+
+        response = None
+        try:
+            response = requests.get(self.list_url)
+        except Exception:
+            pass
+
+        # FAIL - network error
+        if not response or response.status_code != 200:
+            try:
+                self.base.extensions_view.results.show_placeholder()
+            except:
+                ...
+            return
+
+        self.fetched = json.loads(response.text)
+        # SUCCESS
+        if self.fetched:
+            try:
+                self.base.extensions_view.results.show_content()
+            except:
+                ...
+
+        for name, data in self.fetched.items():
+            # More complex logic can be used using RegEx
+            if search_string in name:
+                self.fetch_queue.put((name, data))
+    
     def fetch_extensions(self) -> None:
         """Fetch extensions from Extensions repository."""
 

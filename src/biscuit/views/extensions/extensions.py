@@ -28,6 +28,7 @@ class Extensions(SideBarView):
         self.add_item(self.results)
         self.add_action(Icons.FILTER, self.results.toggle_installed)
         self.add_action(Icons.REFRESH, self.results.refresh)
+        self.add_action(Icons.SEARCH, self.results.search)
         # self.add_action(Icons.CLEAR_ALL, self.results.clear)
 
     def initialize(self) -> None:
