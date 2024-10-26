@@ -48,6 +48,7 @@ class Results(SideBarViewItem):
         self.placeholder = ExtensionsPlaceholder(self)
         self.extension_list = ExtensionsList(self.content)
         self.extension_list.pack(fill=tk.BOTH, expand=True)
+        self.master = master
 
         self.filter_installed = False
 
@@ -105,3 +106,11 @@ class Results(SideBarViewItem):
     def toggle_installed(self) -> None:
         self.filter_installed = not self.filter_installed
         self.refresh()
+
+    def search(self) -> None:
+        if self.base.testing:
+            return
+
+        self.clear()
+        self.update_idletasks()
+        self.manager.fetch_searched_extensions(self.master.searchbox.get())
