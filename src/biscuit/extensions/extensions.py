@@ -135,11 +135,14 @@ class ExtensionManager:
             except:
                 ...
 
-        for name, data in self.fetched.items():
-            # More complex logic can be used using RegEx
-            if search_string in name:
+        if not search_string:
+            for name, data in self.fetched.items():
                 self.fetch_queue.put((name, data))
-    
+        else:
+            for name, data in self.fetched.items():
+                if search_string.lower() in name.lower():
+                    self.fetch_queue.put((name, data))
+
     def fetch_extensions(self) -> None:
         """Fetch extensions from Extensions repository."""
 
