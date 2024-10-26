@@ -29,6 +29,10 @@ class Extensions(SideBarView):
         self.add_action(Icons.FILTER, self.results.toggle_installed)
         self.add_action(Icons.REFRESH, self.results.refresh)
         self.add_action(Icons.SEARCH, self.results.search)
+        self.searchbox.bind('<Return>', lambda e:self.results.search()) # Bind ENTER KEY PRESS TO Search Function
+        # Error faced & Reason for using Lambda:
+        # # https://stackoverflow.com/questions/23842770/python-function-takes-1-positional-argument-but-2-were-given-how
+
         # self.add_action(Icons.CLEAR_ALL, self.results.clear)
 
     def initialize(self) -> None:
