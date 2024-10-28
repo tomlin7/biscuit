@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import importlib
-import json
 import os
 import threading
 import time
@@ -11,6 +9,7 @@ from pathlib import Path
 from queue import Queue
 
 import requests
+import toml
 
 from biscuit.views.extensions.extension import ExtensionGUI
 
@@ -37,7 +36,7 @@ class ExtensionManager:
         self.repo_url = (
             "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
         )
-        self.list_url = self.repo_url + "extensions.json"
+        self.list_url = self.repo_url + "extensions.toml"
 
         self.fetched: dict[str, str] = {}
         self.fetch_queue = Queue()
@@ -127,7 +126,7 @@ class ExtensionManager:
                 ...
             return
 
-        self.fetched = json.loads(response.text)
+        self.fetched = toml.loads(response.text)
         # SUCCESS
         if self.fetched:
             try:
@@ -160,7 +159,7 @@ class ExtensionManager:
                 ...
             return
 
-        self.fetched = json.loads(response.text)
+        self.fetched = toml.loads(response.text)
         # SUCCESS
         if self.fetched:
             try:
