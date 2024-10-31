@@ -6,6 +6,7 @@ from tkinterDnD import Tk
 from .common import *
 from .config import ConfigManager
 from .editor import *
+from .extensions import *
 from .layout import *
 
 
@@ -119,6 +120,7 @@ class GUIManager(Tk, ConfigManager):
         self.palette = Palette(self)
         self.findreplace = FindReplace(self)
         self.notifications = Notifications(self)
+        self.extension_viewer = ExtensionViewer(self)
 
         self.text_editor_context_menu = TextEditorContextMenu(self)
 
