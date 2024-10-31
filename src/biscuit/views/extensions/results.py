@@ -103,6 +103,8 @@ class Results(SideBarViewItem):
             else:
                 widget.deselect()
 
+        self.manager.open_extension(extension)
+
     def toggle_installed(self) -> None:
         self.filter_installed = not self.filter_installed
         self.refresh()

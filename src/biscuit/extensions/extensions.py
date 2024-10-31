@@ -11,6 +11,7 @@ from queue import Queue
 import requests
 import toml
 
+from biscuit.extensions.viewer.viewer import ExtensionViewer
 from biscuit.views.extensions.extension import ExtensionGUI
 
 if typing.TYPE_CHECKING:
@@ -220,6 +221,11 @@ class ExtensionManager:
             )
         except Exception as e:
             self.base.logger.error(f"Uninstalling extension '{ext.name}' failed.\n{e}")
+
+    def open_extension(self, ext: ExtensionGUI) -> None:
+        """Open extension details."""
+
+        self.base.extension_viewer.show(ext)
 
     def load_extension(self, file: str):
         """Load an extension from a file."""
