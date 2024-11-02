@@ -7,8 +7,10 @@ import typing
 from biscuit.common import Menu
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui.bubble import Bubble
 
 from .item import MenubarItem
+from .notification import Notifications
 from .searchbar import SearchBar
 
 if typing.TYPE_CHECKING:
@@ -39,6 +41,9 @@ class Menubar(Frame):
 
         self.container_right = Frame(self, **self.base.theme.layout.menubar)
         self.container_right.pack(side=tk.RIGHT, fill=tk.BOTH)
+
+        self.notifications = Notifications(self.container_right)
+        self.notifications.pack(side=tk.LEFT, fill=tk.BOTH)
 
         # make this custom titlebar for windows
         if platform.system() == "Windows":
@@ -76,6 +81,15 @@ class Menubar(Frame):
 
         self.config(**self.base.theme.layout.menubar)
         self.add_menus()
+
+    def update_notifications(self) -> None:
+        """Updates the notifications icon and description on the status bar."""
+
+        n = self.base.notifications.count
+        self.notifications.set_icon(Icons.BELL_DOT if n else Icons.BELL)
+        self.notifications.bubble.change_text(
+            f"{n} notifications" if n else "No notifications"
+        )
 
     def change_title(self, title: str) -> None:
         """Change the title of the searchbar

@@ -18,7 +18,9 @@ class RecentItem(Frame):
         self.bg, self.fg, self.hbg, self.hfg = self.base.theme.editors.values()
 
         self.label = Label(
-            self, text=os.path.basename(path), fg=self.base.theme.biscuit_light
+            self,
+            text=os.path.basename(path),
+            fg=self.base.theme.biscuit_light,
         )
         self.label.bind("<Button-1>", self.callback)
         self.label.pack(side=tk.LEFT, padx=5)

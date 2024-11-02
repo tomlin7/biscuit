@@ -27,7 +27,7 @@ class Bubble(Toplevel):
         self.label.pack(padx=bd, pady=bd)
         self.withdraw()
 
-    def get_pos(self) -> str:
+    def get_pos(self, *_) -> str:
         """Get the position of the bubble.
         To be reconfigured in inherited classes."""
 

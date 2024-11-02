@@ -25,21 +25,23 @@ class Placeholder(BaseEditor):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        try:
-            self.logo = tk.Label(
-                self,
-                image=self.base.settings.resources.logo,
-                **self.base.theme.editors.labels,
-            )
-            self.logo.grid(row=0, column=0)
-        except tk.TclError:
-            pass
+        # try:
+        #     self.logo = tk.Label(
+        #         self,
+        #         image=self.base.settings.resources.logo,
+        #         **self.base.theme.editors.labels,
+        #     )
+        #     self.logo.grid(row=0, column=0)
+        # except tk.TclError:
+        #     pass
 
         self.shortcuts = Shortcuts(self, **self.base.theme.editors)
-        self.shortcuts.grid(row=1, column=0, pady=(0, 40))
+        self.shortcuts.grid(row=0, column=0)
 
-        self.shortcuts.add_shortcut("Show all commands", ["Ctrl", "Shift", "p"])
+        self.shortcuts.add_shortcut("Show all commands", ["Ctrl", "Shift", "P"])
         self.shortcuts.add_shortcut("Toggle terminal", ["Ctrl", "`"])
-        self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "o"])
+        self.shortcuts.add_shortcut("Open Folder", ["Ctrl", "Shift", "O"])
+        self.shortcuts.add_shortcut("View Extensions", ["Ctrl", "Shift", "X"])
+        self.shortcuts.add_shortcut("Open Settings", ["Ctrl", ","])
 
         self.bind("<Double-Button-1>", self.base.commands.new_file)

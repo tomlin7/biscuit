@@ -134,16 +134,6 @@ class Statusbar(Frame):
         )
 
         # ---------------------------------------------------------------------
-        self.notif = self.add_button(
-            icon=Icons.BELL,
-            callback=self.base.notifications.toggle,
-            description="No notifications",
-            side=tk.RIGHT,
-            padx=(0, 10),
-        )
-        self.notif.show()
-
-        # ---------------------------------------------------------------------
 
         self.secondary_activitybar = ActivityBar(self)
         self.secondary_activitybar.pack(side=tk.RIGHT)
@@ -258,13 +248,6 @@ class Statusbar(Frame):
         self.file_type.change_text(text.language)
         self.encoding.change_text(text.encoding.upper())
         self.eol.change_text(get_eol_label(text.eol))
-
-    def update_notifications(self) -> None:
-        """Updates the notifications icon and description on the status bar."""
-
-        n = self.base.notifications.count
-        self.notif.change_icon(Icons.BELL_DOT if n else Icons.BELL)
-        self.notif.change_description(f"{n} notifications" if n else "No notifications")
 
     def set_line_col_info(self, line: int, col: int, selected: int = None) -> None:
         """Sets the line and column information on the status bar.

@@ -47,6 +47,7 @@ class Notifications(Toplevel):
 
         self.latest: Notification = None
         self.count = 0
+        self.toggle_button: IconButton = None
         self.notifications: list[Notification] = []
 
         topbar = Frame(self, **self.base.theme.notifications)
@@ -65,8 +66,12 @@ class Notifications(Toplevel):
         close_button.config(**self.base.theme.notifications.title)
         close_button.pack(side=tk.RIGHT, fill=tk.BOTH, pady=(0, 1))
 
-        self.base.bind("<FocusIn>", lambda *_: self.lift, add=True)
-        self.base.bind("<Configure>", self._follow_root, add=True)
+        # self.base.bind("<FocusIn>", lambda *_: self.lift, add=True)
+        # self.base.bind("<Configure>", self.refresh_position, add=True)
+
+        self.bind("<FocusIn>", lambda *_: self.lift(), add=True)
+        self.bind("<FocusOut>", self.hide, add=True)
+
         self.lift()
         self.withdraw()
 
@@ -85,7 +90,7 @@ class Notifications(Toplevel):
         self.count += 1
         self.show()
         self.update_idletasks()
-        self._follow_root()
+        self.refresh_position()
 
         self.notifications.append(instance)
         self.latest = instance
@@ -106,7 +111,7 @@ class Notifications(Toplevel):
         self.count += 1
         self.show()
         self.update_idletasks()
-        self._follow_root()
+        self.refresh_position()
 
         self.notifications.append(instance)
         self.latest = instance
@@ -125,7 +130,7 @@ class Notifications(Toplevel):
         self.count += 1
         self.show()
         self.update_idletasks()
-        self._follow_root()
+        self.refresh_position()
 
         self.notifications.append(instance)
         self.latest = instance
@@ -154,25 +159,40 @@ class Notifications(Toplevel):
             case _:
                 self.info(text, actions)
 
-    def _follow_root(self, *_) -> None:
+    def set_button(self, button: IconButton) -> None:
+        """Set button to show notifications
+
+        Args:
+            button (IconButton): button to show notifications"""
+
+        self.toggle_button = button
+
+    def refresh_position(self, *_) -> None:
         """Follow root window position"""
 
         if not self.active:
             return
 
         try:
+            # x = (
+            #     self.base.winfo_x()
+            #     + self.base.winfo_width()
+            #     - self.winfo_width()
+            #     - self.xoffset
+            # )
+            # y = (
+            #     self.base.winfo_y()
+            #     + self.base.winfo_height()
+            #     - self.winfo_height()
+            #     - self.yoffset
+            # )
+
             x = (
-                self.base.winfo_x()
-                + self.base.winfo_width()
+                self.toggle_button.winfo_rootx()
+                + self.toggle_button.winfo_width()
                 - self.winfo_width()
-                - self.xoffset
             )
-            y = (
-                self.base.winfo_y()
-                + self.base.winfo_height()
-                - self.winfo_height()
-                - self.yoffset
-            )
+            y = self.toggle_button.winfo_rooty() + self.toggle_button.winfo_height() - 2
 
             self.geometry(f"+{int(x)}+{int(y)}")
         except tk.TclError:
@@ -198,9 +218,9 @@ class Notifications(Toplevel):
 
         self.active = True
         self.deiconify()
-        self._follow_root()
-        self.lift()
-        self.base.statusbar.update_notifications()
+        self.refresh_position()
+        self.focus_force()
+        self.base.menubar.update_notifications()
 
     def hide(self, *_) -> None:
         """Hide notifications"""
@@ -226,9 +246,9 @@ class Notifications(Toplevel):
         self.count -= 1
 
         self.update_idletasks()
-        self._follow_root()
+        self.refresh_position()
 
         if not self.count:
             self.hide()
 
-        self.base.statusbar.update_notifications()
+        self.base.menubar.update_notifications()

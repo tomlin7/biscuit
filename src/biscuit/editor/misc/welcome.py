@@ -86,7 +86,7 @@ class Welcome(BaseEditor):
             "Config",
             Icons.SETTINGS,
             self.base.commands.open_settings,
-            ["Ctrl", "Alt", "S"],
+            ["Ctrl", ","],
         ).pack(fill=tk.X, expand=True)
 
         QuickItem(
@@ -94,7 +94,7 @@ class Welcome(BaseEditor):
             "Extensions",
             Icons.EXTENSIONS,
             self.base.commands.show_extensions,
-            ["Ctrl", "Alt", "X"],
+            ["Ctrl", "Shift", "X"],
         ).pack(fill=tk.X, expand=True)
 
     def create_recent_group(self):
