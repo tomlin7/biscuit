@@ -3,7 +3,7 @@ import tkinter as tk
 
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconLabelButton, Label, LinkLabel, Shortcut
-from biscuit.editor.misc.quickitem import QuickItem
+from biscuit.editor.misc.quickitem import QuickItem, RecentItem
 
 from ..editorbase import BaseEditor
 
@@ -40,7 +40,9 @@ class Welcome(BaseEditor):
         self.title.pack(fill=tk.BOTH, padx=20)
 
         self.create_quick_group()
-        self.create_recent_group()
+
+        # TODO: make this optional
+        # self.create_recent_group()
 
     def create_quick_group(self):
         quick = Frame(self.container, **self.base.theme.editors)
@@ -104,8 +106,9 @@ class Welcome(BaseEditor):
         ).pack(pady=(40, 0), anchor=tk.W)
         recents = Frame(self.container, **self.base.theme.editors)
         recents.pack(fill=tk.BOTH, expand=True, padx=5)
+        recents.grid_columnconfigure(0, weight=1)
 
         for i, p in enumerate(self.base.history.folder_history.list):
-            LinkLabel(recents, os.path.basename(p[0]), p[1]).grid(
-                row=i, column=0, sticky=tk.W, pady=2
+            RecentItem(recents, os.path.basename(p[0]), p[1]).grid(
+                row=i, column=0, sticky=tk.EW, pady=2
             )

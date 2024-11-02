@@ -15,11 +15,14 @@ class KeyB(Frame):
         self.key = key
         self.config(bg=self.base.theme.border)
 
+        frame = Frame(self, bg=self.base.theme.editors.background)
+        frame.pack(pady=1, padx=1)
+
         self.label = tk.Label(
-            self,
+            frame,
             text=key,
-            bg=self.base.theme.editors.background,
-            fg=self.base.theme.border,
+            bg=self.base.theme.border,  # self.base.theme.editors.background,
+            fg=self.base.theme.editors.foreground,  # self.base.theme.border,
             font=("Consolas", 8),
         )
         self.label.pack(pady=(1, 3), padx=1, side=tk.LEFT)

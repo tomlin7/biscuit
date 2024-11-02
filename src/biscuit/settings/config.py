@@ -2,6 +2,7 @@ import os
 
 import toml
 
+from .theme.catppuccin_mocha import CatppuccinMocha
 from .theme.gruvbox_dark import GruvboxDark
 
 # from .theme import Dark, Light, Theme
