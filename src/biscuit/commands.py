@@ -142,9 +142,11 @@ class Commands:
 
     def change_tab_forward(self, *_) -> None:
         self.base.editorsbar.change_tab_forward()
+        return "break"
 
     def change_tab_back(self, *_) -> None:
         self.base.editorsbar.change_tab_back()
+        return "break"
 
     def maximize_biscuit(self, *_) -> None:
         match platform.system():
