@@ -76,12 +76,6 @@ class Editor(BaseEditor):
         )
         self.filename = os.path.basename(self.path) if path else None
 
-        if path and exists and self.showpath and not diff:
-            self.base.breadcrumbs.show()
-            self.base.breadcrumbs.set_path(path)
-        else:
-            self.base.breadcrumbs.hide()
-
         self.grid_rowconfigure(0, weight=1)
         self.content.grid(row=0, column=0, sticky=tk.NSEW)
 

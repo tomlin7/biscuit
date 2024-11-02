@@ -40,7 +40,7 @@ class EditorsManager(Frame):
 
         self.active_editors: List[Editor] = []
         self.closed_editors: Dict[Editor] = {}
-        
+
         self.closed_editors: List[Editor] = []
         self.max_closed_editors = 10
 
@@ -215,7 +215,7 @@ class EditorsManager(Frame):
             oldest_editor.destroy()
 
         self.base.open_editors.remove_item(editor)
-        
+
     def restore_last_closed_editor(self) -> None:
         if self.closed_editors:
             editor = self.closed_editors.pop()
@@ -276,7 +276,7 @@ class EditorsManager(Frame):
             if tab.editor == editor:
                 self.editorsbar.set_active_tab(tab)
         self.base.open_editors.set_active(editor)
-
+        self.refresh()
         return editor
 
     def set_active_editor_by_path(self, path: str) -> Editor:
