@@ -37,10 +37,10 @@ class Palette(Toplevel):
             width (int, optional): The width of the palette. Defaults to 80."""
 
         super().__init__(master, *args, **kwargs)
-        self.config(pady=1, padx=1, bg=self.base.theme.border)
+        self.config(pady=2, padx=2, bg=self.base.theme.border)
 
-        self.container = Frame(self, **self.base.theme.palette, padx=5, pady=5)
-        self.container.pack(fill=tk.BOTH)
+        self.container = Frame(self, **self.base.theme.palette, padx=2, pady=2)
+        self.container.pack(fill=tk.BOTH, expand=True)
 
         self.width = round(width * self.base.scale)
         self.active = False
@@ -60,9 +60,7 @@ class Palette(Toplevel):
         self.active_set = None
 
         self.searchbar = SearchBar(self)
-        self.searchbar.grid(
-            row=0, sticky=tk.EW, pady=(1, 7), padx=1, in_=self.container
-        )
+        self.searchbar.grid(row=0, sticky=tk.EW, in_=self.container, pady=(0, 2))
 
         self.configure_bindings()
 
@@ -248,7 +246,7 @@ class Palette(Toplevel):
         x = self.master.winfo_rootx() + int(
             (self.master.winfo_width() - self.winfo_width()) / 2
         )
-        y = self.master.winfo_rooty() + self.base.menubar.searchbar.winfo_y()
+        y = self.master.winfo_rooty() + int((self.master.winfo_height() / 2) - 200)
         self.geometry(f"+{x}+{y}")
         self.deiconify()
 
