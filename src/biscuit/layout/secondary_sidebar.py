@@ -27,8 +27,8 @@ class SecondarySideBar(Frame):
         self.columnconfigure(1, weight=1)
 
         self.views = []
-
         self.active_view = None
+        self.visible = False
 
         self.secondary_activitybar = activitybar
         self.secondary_activitybar.attach_sidebar(self)
@@ -45,7 +45,13 @@ class SecondarySideBar(Frame):
     def toggle(self) -> None:
         """Toggle the sidebar."""
 
-        self.show_explorer()
+        if self.visible:
+            self.hide()
+        else:
+            if not self.active_view:
+                self.show_source_control()
+            else:
+                self.pack()
 
     def add_views(self, views: list[SideBarView]) -> None:
         """Adds multiple views to the sidebar at once."""
@@ -150,6 +156,8 @@ class SecondarySideBar(Frame):
 
     def pack(self):
         super().pack(side=tk.LEFT, fill=tk.Y, after=self.base.contentpane, padx=(1, 0))
+        self.visible = True
 
     def hide(self):
         super().pack_forget()
+        self.visible = False

@@ -28,6 +28,7 @@ class SideBar(Frame):
 
         self.views = []
         self.active_view = None
+        self.visible = False
 
         self.activitybar = activitybar
         self.activitybar.attach_sidebar(self)
@@ -42,7 +43,13 @@ class SideBar(Frame):
     def toggle(self) -> None:
         """Toggle the sidebar."""
 
-        self.show_explorer()
+        if self.visible:
+            self.hide()
+        else:
+            if not self.active_view:
+                self.show_explorer()
+            else:
+                self.pack()
 
     def add_views(self, views: list[SideBarView]) -> None:
         """Adds multiple views to the sidebar at once."""
@@ -124,6 +131,8 @@ class SideBar(Frame):
 
     def pack(self):
         super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1))
+        self.visible = True
 
     def hide(self):
         super().pack_forget()
+        self.visible = False

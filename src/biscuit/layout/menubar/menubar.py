@@ -145,8 +145,8 @@ class Menubar(Frame):
         self.file_menu.add_separator()
         self.file_menu.add_command("Open File", events.open_file)
         self.file_menu.add_command("Open Folder", events.open_directory)
-        self.file_menu.add_command("Open Recent File...", events.open_recent_file)
-        self.file_menu.add_command("Open Recent Folder...", events.open_recent_dir)
+        self.file_menu.add_command("Open Recent File...", events.show_recent_files)
+        self.file_menu.add_command("Open Recent Folder...", events.show_recent_folders)
         self.file_menu.add_separator()
         self.file_menu.add_command("Open workspace...", events.open_workspace)
         self.file_menu.add_command(
@@ -196,7 +196,7 @@ class Menubar(Frame):
         self.view_menu = self.add_menu("View")
         # TODO: Add the rest of the view menu items
         self.view_menu.add_command("Command Palette...", events.show_command_palette)
-        self.view_menu.add_command("Explorer", events.show_explorer)
+        self.view_menu.add_command("Explorer", events.show_directory_tree)
         self.view_menu.add_command("Outline", events.show_outline)
         self.view_menu.add_command("Search", events.show_search)
         self.view_menu.add_command("Source Control", events.show_source_control)

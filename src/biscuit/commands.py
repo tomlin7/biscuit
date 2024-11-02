@@ -56,10 +56,10 @@ class Commands:
         self.base.open_directory(path)
         self.base.history.register_folder_history(path)
 
-    def open_recent_file(self, *_):
+    def show_recent_files(self, *_):
         self.base.palette.show("recentf:")
 
-    def open_recent_dir(self, *_):
+    def show_recent_folders(self, *_):
         self.base.palette.show("recentd:")
 
     def restore_recent_session(self, *_) -> None:
@@ -127,12 +127,26 @@ class Commands:
     def close_editor(self, *_) -> None:
         self.base.close_active_editor()
 
+    def close_all_editors(self, *_) -> None:
+        self.base.editorsmanager.delete_all_editors()
+
     def close_folder(self, *_) -> None:
         self.base.close_active_directory()
 
     def quit_biscuit(self, *_) -> None:
         self.base.on_close_app()
         # self.base.destroy()
+
+    def split_editor(self, *_) -> None:
+        self.base.editorsmanager.split_editor()
+
+    def change_tab_forward(self, *_) -> None:
+        self.base.editorsbar.change_tab_forward()
+        return "break"
+
+    def change_tab_back(self, *_) -> None:
+        self.base.editorsbar.change_tab_back()
+        return "break"
 
     def maximize_biscuit(self, *_) -> None:
         match platform.system():
@@ -319,7 +333,14 @@ class Commands:
         if self.base.debugger_manager.latest:
             self.base.debugger_manager.latest.stop()
 
-    def show_explorer(self, *_) -> None:
+    def toggle_sidebar(self, *_) -> None:
+        self.base.sidebar.toggle()
+
+    def toggle_secondary_sidebar(self, *_) -> None:
+        self.base.secondary_sidebar.toggle()
+
+    def show_directory_tree(self, *_) -> None:
+        # TODO: some renaming needed
         self.base.sidebar.show_explorer()
 
     def show_outline(self, *_) -> None:
@@ -336,6 +357,15 @@ class Commands:
 
     def show_extensions(self, *_) -> None:
         self.base.secondary_sidebar.show_extensions()
+
+    def show_assistant(self, *_) -> None:
+        self.base.secondary_sidebar.show_ai()
+
+    def show_outline(self, *_) -> None:
+        self.base.secondary_sidebar.show_outline()
+
+    def show_github(self, *_) -> None:
+        self.base.secondary_sidebar.show_github()
 
     def show_terminal(self, *_) -> None:
         self.base.panel.show_terminal()

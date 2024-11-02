@@ -125,6 +125,13 @@ class EditorsManager(Frame):
         self.base.open_editors.clear()
         self.refresh()
 
+    def close_all_editors(self) -> None:
+        for tab in self.editorsbar.active_tabs:
+            if e := tab.editor:
+                self.editorsbar.save_unsaved_changes(e)
+                self.close_editor(e)
+        self.refresh()
+
     def reopen_active_editor(self, *_) -> None:
         if self.active_editor and self.active_editor.exists:
             self.delete_editor(self.active_editor)
@@ -279,6 +286,16 @@ class EditorsManager(Frame):
         self.refresh()
         return editor
 
+    def set_active_editor_by_index(self, index: int) -> Editor:
+        """Set an existing editor to currently shown one by index.
+
+        Args:
+            index (int): The index of the editor to set as active."""
+
+        if index < len(self.editorsbar.active_tabs):
+            self.editorsbar.set_active_tab(self.editorsbar.active_tabs[index])
+            return self.editorsbar.active_tabs[index].editor
+
     def set_active_editor_by_path(self, path: str) -> Editor:
         """Set an existing editor to currently shown one by path.
 
@@ -293,6 +310,16 @@ class EditorsManager(Frame):
             ):
                 self.editorsbar.set_active_tab(tab)
                 return tab.editor
+
+    def split_editor(self) -> None:
+        # TODO: Implement split editor
+        ...
+
+    def change_tab_forward(self) -> None:
+        self.editorsbar.change_tab_forward()
+
+    def change_tab_back(self) -> None:
+        self.editorsbar.change_tab_back()
 
     @property
     def active_editor(self) -> Editor:
