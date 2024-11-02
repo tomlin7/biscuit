@@ -61,6 +61,7 @@ class ConfigManager:
         self.settings = Settings(self)
         self.history = HistoryManager(self)
         self.sessions = SessionManager(self)
+        self.workspaces = WorkspaceManager(self)
 
         self.resources = self.settings.resources
         self.bindings = self.settings.bindings
