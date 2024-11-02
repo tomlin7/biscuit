@@ -32,11 +32,11 @@ class Logs(PanelView):
             padx=10,
             pady=10,
             font=("Consolas", 11),
-            **self.base.theme.views.panel.logs,
+            **self.base.theme.editors.text,
         )
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(self)
+        self.scrollbar = Scrollbar(self, style="EditorScrollbar")
         self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
 
         self.text.config(yscrollcommand=self.scrollbar.set)

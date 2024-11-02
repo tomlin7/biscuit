@@ -1,1 +1,1 @@
-from .control import Control
+from .control import Inspect

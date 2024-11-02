@@ -12,8 +12,8 @@ class Tab(Frame):
         self.terminal = terminal
         self.selected = False
 
-        self.bg, self.fg, self.hbg, self.hfg = (
-            self.base.theme.views.panel.terminal.tab.values()
+        self.hbg, self.hfg, self.bg, self.fg = (
+            self.base.theme.layout.content.editors.bar.tab.values()
         )
         self.config(bg=self.bg)
 
@@ -21,7 +21,7 @@ class Tab(Frame):
             self,
             icon=terminal.icon or Icons.TERMINAL,
             width=3,
-            **self.base.theme.views.panel.terminal.content
+            **self.base.theme.layout.content.editors.bar.tab.icon
         )
         self.icon.pack(side=tk.LEFT)
 
@@ -40,9 +40,9 @@ class Tab(Frame):
             self,
             Icons.CLOSE,
             event=self.close,
-            **self.base.theme.views.panel.terminal.tab
+            **self.base.theme.layout.content.editors.bar.tab.icon
         )
-        self.closebtn.pack(padx=5)
+        self.closebtn.pack(padx=(0, 5))
 
         self.bind("<Button-1>", self.select)
         self.icon.bind("<Button-1>", self.select)

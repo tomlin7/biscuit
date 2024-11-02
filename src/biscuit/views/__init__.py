@@ -1,5 +1,5 @@
 from .ai import AI
-from .control import Control
+from .control import Inspect
 from .debug import Debug
 from .explorer import Explorer
 from .extensions import Extensions

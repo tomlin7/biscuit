@@ -25,7 +25,7 @@ class Tab(Menubutton):
             padx=5,
             pady=5,
             font=self.base.settings.uifont,
-            **self.base.theme.layout.content.panel.bar.tab,
+            **self.base.theme.layout.content.editors.bar.tab,
         )
 
         self.bind("<Button-1>", self.select)
@@ -33,7 +33,10 @@ class Tab(Menubutton):
     def deselect(self, *_) -> None:
         if self.selected:
             self.view.grid_remove()
-            self.config(fg=self.base.theme.layout.content.panel.bar.tab.foreground)
+            self.config(
+                fg=self.base.theme.layout.content.editors.bar.tab.foreground,
+                bg=self.base.theme.layout.content.editors.bar.tab.background,
+            )
             self.selected = False
 
     def select(self, *_) -> None:
@@ -41,6 +44,7 @@ class Tab(Menubutton):
             self.master.set_active_tab(self)
             self.view.grid(column=0, row=1, sticky=tk.NSEW)
             self.config(
-                fg=self.base.theme.layout.content.panel.bar.tab.selectedforeground
+                fg=self.base.theme.layout.content.editors.bar.tab.selectedforeground,
+                bg=self.base.theme.layout.content.editors.bar.tab.selectedbackground,
             )
             self.selected = True

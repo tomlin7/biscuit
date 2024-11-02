@@ -29,9 +29,7 @@ class TerminalText(Text):
         self.mark_gravity("input", "left")
 
         self.proxy_enabled = proxy_enabled
-        self.config(
-            **self.base.theme.views.panel.terminal.content, highlightthickness=0
-        )
+        self.config(**self.base.theme.editors.text, highlightthickness=0)
 
         self._history = []
         self._history_level = 0

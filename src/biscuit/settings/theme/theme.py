@@ -138,7 +138,7 @@ class ContentPane(FrameThemeObject):
         self.theme: Theme = master.theme
 
         self.editors = EditorsPane(self)
-        self.panel = PanelPane(self)
+        self.panel = PanelPane(self, *self.theme.secondary)
 
 
 class DrawerPane(FrameThemeObject):

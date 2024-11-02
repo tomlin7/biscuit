@@ -79,15 +79,18 @@ class Statusbar(Frame):
             "Change indentation",
             "indent:",
             [
-                ("2 Spaces", lambda e=None: self.base.set_tab_spaces(2)),
-                ("4 Spaces", lambda e=None: self.base.set_tab_spaces(4)),
-                ("Custom: {} spaces", self.change_custom_indentation),
+                ("2 spaces", lambda e=None: self.base.set_tab_spaces(2)),
+                ("4 spaces", lambda e=None: self.base.set_tab_spaces(4)),
+                ("8 spaces", lambda e=None: self.base.set_tab_spaces(8)),
+            ],
+            pinned=[
+                ["custom: {} spaces", self.change_custom_indentation],
             ],
         )
         self.indentation = self.add_button(
-            text=f"Spaces: {self.base.tab_spaces}",
+            text=f"{self.base.tab_spaces}sp",
             callback=self.base.commands.change_indentation_level,
-            description="Select indentation",
+            description="Change indentation",
             side=tk.RIGHT,
         )
 
@@ -100,7 +103,7 @@ class Statusbar(Frame):
         self.encoding = self.add_button(
             text="UTF-8",
             callback=self.base.commands.change_encoding,
-            description="Select encoding",
+            description="Change encoding",
             side=tk.RIGHT,
         )
 
@@ -113,7 +116,7 @@ class Statusbar(Frame):
         self.eol = self.add_button(
             text="CRLF",
             callback=self.base.commands.change_end_of_line_character,
-            description="Select End of Line sequence",
+            description="Change End of Line sequence",
             side=tk.RIGHT,
         )
 
@@ -129,14 +132,14 @@ class Statusbar(Frame):
         self.file_type = self.add_button(
             text="Plain Text",
             callback=self.base.commands.change_language_mode,
-            description="Select Language Mode",
+            description="Change Language Mode",
             side=tk.RIGHT,
         )
 
         # ---------------------------------------------------------------------
 
         self.secondary_activitybar = ActivityBar(self)
-        self.secondary_activitybar.pack(side=tk.RIGHT)
+        self.secondary_activitybar.pack(side=tk.RIGHT, padx=(0, 10))
 
         # ---------------------------------------------------------------------
 
@@ -221,8 +224,9 @@ class Statusbar(Frame):
 
         widgets = [
             self.file_type,
-            self.eol,
-            self.encoding,
+            # TODO: EOL, Encoding should be optional
+            # self.eol,
+            # self.encoding,
             self.indentation,
             self.line_col_info,
         ]
@@ -246,8 +250,8 @@ class Statusbar(Frame):
         """
 
         self.file_type.change_text(text.language)
-        self.encoding.change_text(text.encoding.upper())
-        self.eol.change_text(get_eol_label(text.eol))
+        # self.encoding.change_text(text.encoding.upper())
+        # self.eol.change_text(get_eol_label(text.eol))
 
     def set_line_col_info(self, line: int, col: int, selected: int = None) -> None:
         """Sets the line and column information on the status bar.
@@ -278,7 +282,7 @@ class Statusbar(Frame):
             spaces (int): The number of spaces to set for indentation.
         """
 
-        self.indentation.change_text(text=f"Spaces: {spaces}")
+        self.indentation.change_text(text=f"{spaces}sp")
 
     def pack(self):
         """Packs the status bar into the application."""
@@ -310,7 +314,8 @@ class Statusbar(Frame):
             print("failed change indentation", line)
 
     def change_eol(self, val: str) -> typing.Callable:
-        """Changes the end-of-line sequence.
+        """Palette helper function
+        Changes the end-of-line sequence.
 
         Args:
             val (str): The end-of-line sequence to change to.
@@ -324,7 +329,8 @@ class Statusbar(Frame):
         )
 
     def change_language(self, language: str) -> typing.Callable:
-        """Changes the language mode of the active editor.
+        """Palette helper function
+        Changes the language mode of the active editor.
 
         Args:
             language (str): The language mode to change to.

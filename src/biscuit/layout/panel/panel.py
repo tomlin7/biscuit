@@ -25,14 +25,14 @@ class Panel(Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.grid_propagate(False)
-        self.config(height=300, **self.base.theme.layout.content.panel)
+        self.config(height=300, bg=self.base.theme.border)
 
         self.panelbar = PanelBar(self)
-        self.panelbar.grid(row=0, column=0, sticky=tk.EW)
+        self.panelbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
 
         self.views: list[PanelView] = []
 
-        self.default_views = [Problems(self), Logs(self), Control(self), Terminal(self)]
+        self.default_views = [Problems(self), Logs(self), Inspect(self), Terminal(self)]
         self.add_views(self.default_views)
 
     def add_views(self, views: list[PanelView]) -> None:
@@ -81,7 +81,7 @@ class Panel(Frame):
         return self.default_views[1]
 
     @property
-    def control(self) -> Control:
+    def control(self) -> Inspect:
         return self.default_views[2]
 
     @property

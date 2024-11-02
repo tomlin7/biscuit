@@ -26,10 +26,10 @@ class PanelBar(Frame):
         super().__init__(master, *args, **kwargs)
         content: Content = master.master
 
-        self.config(**self.base.theme.layout.content.panel.bar)
+        self.config(**self.base.theme.layout.content.editors.bar)
 
-        self.tab_container = Frame(self, **self.base.theme.layout.content.panel.bar)
-        self.tab_container.pack(fill=tk.X, side=tk.LEFT, expand=True)
+        self.tab_container = Frame(self, bg=self.base.theme.border)
+        self.tab_container.pack(fill=tk.Y, side=tk.LEFT)
 
         self.active_tabs: list[Tab] = []
         self.active_tab = None
@@ -43,7 +43,9 @@ class PanelBar(Frame):
         )
 
         for button in self.default_actions:
-            IconButton(self, *button).pack(side=tk.RIGHT)
+            IconButton(
+                self, *button, **self.base.theme.layout.content.editors.bar.tab
+            ).pack(side=tk.RIGHT)
 
     def add_actions(self, buttons: list[IconButton]) -> None:
         """Add the buttons to the control buttons
@@ -52,7 +54,7 @@ class PanelBar(Frame):
             buttons (list[IconButton]): buttons to be added"""
 
         for button in buttons:
-            button.pack(side=tk.LEFT)
+            button.pack(side=tk.RIGHT)
             self.actions.append(button)
 
     def replace_actions(self, buttons: list[IconButton]) -> None:
@@ -76,7 +78,7 @@ class PanelBar(Frame):
             view (PanelView): panel view to be added to the tabs"""
 
         tab = Tab(self, view)
-        tab.pack(fill=tk.Y, side=tk.LEFT, in_=self.tab_container)
+        tab.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1), in_=self.tab_container)
         self.active_tabs.append(tab)
 
         tab.select()

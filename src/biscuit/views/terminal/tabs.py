@@ -11,7 +11,7 @@ class Tabs(Frame):
     def __init__(self, master, width=170, *args, **kwargs) -> None:
         super().__init__(master, width=width, *args, **kwargs)
         self.pack_propagate(False)
-        self.config(**self.base.theme.views.panel.terminal)
+        self.config(**self.base.theme.editors)
 
         self.tabs = []
         self.active_tab = None

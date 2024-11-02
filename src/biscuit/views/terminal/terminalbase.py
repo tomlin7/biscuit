@@ -70,7 +70,7 @@ class TerminalBase(PanelView):
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
         self.text.bind("<Return>", self.enter)
 
-        self.terminal_scrollbar = Scrollbar(self)
+        self.terminal_scrollbar = Scrollbar(self, style="EditorScrollbar")
         self.terminal_scrollbar.grid(row=0, column=1, sticky="NSW")
 
         self.text.config(yscrollcommand=self.terminal_scrollbar.set)

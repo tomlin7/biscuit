@@ -1,14 +1,17 @@
 import tkinter as tk
 
+from hintedtext import HintedEntry
+
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry, Frame, Scrollbar
 
 from ..panelview import PanelView
 
 HELP = """
-Welcome to Biscuit Control Panel!
+Welcome to Biscuit Inspect Console
+----------------------------------
 
-This is a Python console that allows you to interact with the application at runtime.
+This is a Python console that allows you to interact with the Biscuit at runtime.
 You can use this console to run commands, check the status of the application, and more.
 `self` refers to the App instance, and you can access all the attributes and methods of the App class.
 
@@ -21,8 +24,8 @@ Custom commands:
 """
 
 
-class Control(PanelView):
-    """The Control view."""
+class Inspect(PanelView):
+    """The Inspect view."""
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -43,20 +46,30 @@ class Control(PanelView):
             padx=10,
             pady=10,
             font=("Consolas", 11),
-            **self.base.theme.views.panel.logs,
+            **self.base.theme.editors.text,
         )
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(container)
+        self.scrollbar = Scrollbar(container, style="EditorScrollbar")
         self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
 
-        self.entry = Entry(
+        frame = Frame(
             self,
+            padx=5,
+            pady=5,
+            bg=self.base.theme.layout.background,
+        )
+        frame.grid(row=1, column=0, sticky=tk.NSEW, pady=(1, 0))
+
+        self.entry = HintedEntry(
+            frame,
             relief=tk.FLAT,
             font=("Consolas", 11),
-            hint="Type help to get started...",
+            hint="Use /help for help",
+            bg=self.base.theme.layout.background,
+            fg=self.base.theme.layout.foreground,
         )
-        self.entry.grid(row=1, column=0, sticky=tk.NSEW)
+        self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.entry.bind("<Return>", self.enter)
         self.entry.bind("<Up>", self.previous_command)
         self.entry.bind("<Down>", self.next_command)
@@ -86,9 +99,9 @@ class Control(PanelView):
             self.history_index = len(self.history)
 
         match text:
-            case "help":
+            case "/help":
                 self.show_help()
-            case "clear":
+            case "/clear":
                 self.clear()
 
         if result := self.base.control_execute(text):

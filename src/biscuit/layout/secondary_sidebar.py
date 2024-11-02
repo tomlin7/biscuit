@@ -35,10 +35,10 @@ class SecondarySideBar(Frame):
 
         self.default_views = {
             "Outline": Outline(self),
-            "Source Control": SourceControl(self),
-            "AI": AI(self),
             "GitHub": GitHub(self),
             "Extensions": Extensions(self),
+            "AI": AI(self),
+            "Source Control": SourceControl(self),
         }
         self.add_views(self.default_views.values())
 
