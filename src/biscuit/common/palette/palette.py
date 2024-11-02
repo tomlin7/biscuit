@@ -53,11 +53,13 @@ class Palette(Toplevel):
 
         self.row = 1
         self.selected = 0
+        self.start_index = 0
 
         self.shown_items = []
 
         self.actionsets = []
         self.active_set = None
+        self.active_items = None
 
         self.searchbar = SearchBar(self)
         self.searchbar.grid(row=0, sticky=tk.EW, in_=self.container, pady=(0, 2))
@@ -121,6 +123,19 @@ class Palette(Toplevel):
         self.row += 1
         self.refresh_selected()
 
+    def reset_start_index(self) -> None:
+        self.start_index = 0
+
+    def on_mousewheel(self, event) -> str:
+        if not self.active_items:
+            return "break"
+
+        # start_index must be between 0 and len(active_items) - 10
+        self.start_index = min(
+            max(0, self.start_index - event.delta // 120), len(self.active_items) - 10
+        )
+        self.show_items(self.active_items)
+
     def pick_actionset(self, actionset: ActionSet) -> None:
         """Picks an actionset to display in the palette
 
@@ -158,6 +173,8 @@ class Palette(Toplevel):
 
         self.withdraw()
         self.reset()
+
+        self.container.unbind_all("<MouseWheel>")
 
     def hide_all_items(self) -> None:
         """Hides all items in the palette"""
@@ -226,8 +243,9 @@ class Palette(Toplevel):
             items (list[PaletteItem]): The items to display in the palette"""
 
         self.hide_all_items()
+        self.active_items = items
 
-        for i in items[:10]:
+        for i in self.active_items[self.start_index : self.start_index + 10]:
             item = self.add_item(*i)
             item.mark_term(self.searchbar.term)
 
@@ -256,3 +274,5 @@ class Palette(Toplevel):
 
         if default:
             self.searchbar.set_search_term(default)
+
+        self.container.bind_all("<MouseWheel>", self.on_mousewheel)

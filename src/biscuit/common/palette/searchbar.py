@@ -118,6 +118,7 @@ class SearchBar(Frame):
                 includes.append(i)
 
         new = list(chain(actionset.get_pinned(term), exact, starts, includes))
+        self.master.reset_start_index()
         if any(new):
             self.master.show_items(new)
         else:
