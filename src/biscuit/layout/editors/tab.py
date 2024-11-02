@@ -24,6 +24,7 @@ class Tab(Frame):
 
     def __init__(self, master: EditorsBar, editor: Editor, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
+        self.master: EditorsBar = master
         self.editor = editor
         self.selected = False
 
@@ -109,3 +110,14 @@ class Tab(Frame):
             self.apply_color(self.hbg)
             self.closebtn.config(activeforeground=self.hfg, fg=self.fg)
             self.selected = True
+
+        if (
+            self.editor.path
+            and self.editor.exists
+            and self.editor.showpath
+            and not self.editor.diff
+        ):
+            self.master.show_breadcrumbs()
+            self.base.breadcrumbs.set_path(self.editor.path)
+        else:
+            self.master.hide_breadcrumbs()

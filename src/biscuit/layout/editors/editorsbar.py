@@ -43,8 +43,12 @@ class EditorsBar(Frame):
         self.tab_container.pack(fill=tk.BOTH, side=tk.LEFT)
 
         self.menu = EditorsbarMenu(self.major_container, "tabs")
-        self.menu.add_command("Show Opened Editors", lambda: self.base.palette.show("active:"))
-        self.menu.add_command("Restore Last Closed Editor", self.base.commands.restore_last_closed_editor)
+        self.menu.add_command(
+            "Show Opened Editors", lambda: self.base.palette.show("active:")
+        )
+        self.menu.add_command(
+            "Restore Last Closed Editor", self.base.commands.restore_last_closed_editor
+        )
         self.menu.add_separator(10)
         self.menu.add_command("Close All", self.master.delete_all_editors)
 
@@ -76,12 +80,14 @@ class EditorsBar(Frame):
         self.secondary_container.pack(fill=tk.BOTH, expand=True)
 
         self.breadcrumbs = BreadCrumbs(self.secondary_container)
+        self.breadcrumbs.show()
 
     def hide_breadcrumbs(self) -> None:
-        self.breadcrumbs.hide()
+        self.secondary_container.pack_forget()
 
     def show_breadcrumbs(self) -> None:
-        self.breadcrumbs.show()
+        self.breadcrumbs.clear()
+        self.secondary_container.pack(fill=tk.BOTH, expand=True)
 
     def hide_tab_container(self) -> None:
         self.tab_container.pack_forget()
@@ -147,6 +153,7 @@ class EditorsBar(Frame):
         if not was_selected:
             return
 
+        self.hide_breadcrumbs()
         if self.active_tabs:
             if i < len(self.active_tabs):
                 self.active_tabs[i].select()
@@ -165,6 +172,8 @@ class EditorsBar(Frame):
                     return
 
     def delete_tab(self, editor: Editor):
+        self.hide_breadcrumbs()
+
         for tab in self.active_tabs:
             if tab.editor == editor:
                 self.active_tabs.remove(tab)

@@ -32,7 +32,7 @@ class ImageViewer(BaseEditor):
         self.after(100, self.create_image)
 
     def create_image(self):
-        print(self.canvas.winfo_width() // 2, self.canvas.winfo_height() // 2)
+        # print(self.canvas.winfo_width() // 2, self.canvas.winfo_height() // 2)
         self.canvas.create_image(
             self.canvas.winfo_width() // 2,
             self.canvas.winfo_height() // 2,
