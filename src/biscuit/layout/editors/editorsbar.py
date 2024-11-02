@@ -82,6 +82,18 @@ class EditorsBar(Frame):
         self.breadcrumbs = BreadCrumbs(self.secondary_container)
         self.breadcrumbs.show()
 
+    def change_tab_forward(self) -> None:
+        if self.active_tab:
+            i = self.active_tabs.index(self.active_tab)
+            next_index = (i + 1) % len(self.active_tabs)
+            self.active_tabs[next_index].select()
+
+    def change_tab_back(self) -> None:
+        if self.active_tab:
+            i = self.active_tabs.index(self.active_tab)
+            prev_index = (i - 1) % len(self.active_tabs)
+            self.active_tabs[prev_index].select()
+
     def hide_breadcrumbs(self) -> None:
         self.secondary_container.pack_forget()
 
