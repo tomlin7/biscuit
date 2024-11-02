@@ -12,7 +12,8 @@
 
 A lightweight, fast code editor with extensions, semantic code completions, refactoring features, symbol references tracker, and more. Features include breakpoint-based code debugging, AI-assisted workflow, fast workspace search, and built-in Git support. Scroll down to see [biscuit in action](https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features).
 
-![image](https://github.com/tomlin7/biscuit/assets/70792552/74118e72-e7de-48dd-a34f-a5abd6664e42)
+![image](https://github.com/user-attachments/assets/d20a0ded-04a9-4f27-9729-3b41f1a70e92)
+
 
 - 🎀 **Explore all community-made extensions and their authors at the [Biscuit Extension Center](https://tomlin7.github.io/biscuit-extensions/)**
 - 🪛 For contributing/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit)
