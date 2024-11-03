@@ -1,4 +1,5 @@
 import tkinter as tk
+import sqlite3
 
 from biscuit.common.ui import Button, Frame, ScrollableFrame
 from biscuit.editor import BaseEditor
@@ -45,6 +46,7 @@ class SettingsEditor(BaseEditor):
     def add_sections(self):
         self.add_commonly_used()
         self.add_text_editor()
+        self.load_settings()
 
     def add_commonly_used(self):
         """Add commonly used settings to the settings editor"""
@@ -98,3 +100,38 @@ class SettingsEditor(BaseEditor):
     def show_no_results(self):
         """Show no results found message in the settings editor"""
         ...
+
+    def load_settings(self):
+        """Load settings from the config manager and update the editor state"""
+        config = self.base.settings.config
+        config.load_data()
+
+        for section in self.sections:
+            for item in section.items:
+                if isinstance(item, DropdownItem):
+                    item.var.set(config.get(item.name, item.var.get()))
+                elif isinstance(item, IntegerItem):
+                    item.entry.delete(0, tk.END)
+                    item.entry.insert(0, config.get(item.name, item.entry.get()))
+                elif isinstance(item, StringItem):
+                    item.entry.delete(0, tk.END)
+                    item.entry.insert(0, config.get(item.name, item.entry.get()))
+                elif isinstance(item, CheckboxItem):
+                    item.var.set(config.get(item.name, item.var.get()))
+
+    def save_settings(self):
+        """Save settings from the editor state to the config manager"""
+        config = self.base.settings.config
+
+        for section in self.sections:
+            for item in section.items:
+                if isinstance(item, DropdownItem):
+                    config.set(item.name, item.var.get())
+                elif isinstance(item, IntegerItem):
+                    config.set(item.name, item.entry.get())
+                elif isinstance(item, StringItem):
+                    config.set(item.name, item.entry.get())
+                elif isinstance(item, CheckboxItem):
+                    config.set(item.name, item.var.get())
+
+        config.save_data()

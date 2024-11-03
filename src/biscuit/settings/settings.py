@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sqlite3
 import tkinter as tk
 import tkinter.font as tkfont
 import typing
@@ -33,8 +34,6 @@ class Formattable(str):
         return super().format(f"{default}{term}")
 
 
-# TODO: functional settings editor
-# TODO: load/store config in sqlite3 db
 class Settings:
     """Settings for the application
 
@@ -128,6 +127,8 @@ class Settings:
 
         self.symbols_actionset = ActionSet("Go to symbol in editor", "@", [])
         self.base.palette.register_actionset(lambda: self.symbols_actionset)
+
+        self.config.load_data()
 
     @property
     def actionset(self):
