@@ -32,6 +32,10 @@ class Commands:
         self.minimized = False
         self.previous_pos = None
 
+        self.vim_mode = "NORMAL"
+        self.vim_visual_mode = False
+        self.vim_insert_mode = False
+
     def new_file(self, *_) -> None:
         self.base.open_editor(f"Untitled-{self.count}", exists=False)
         self.count += 1
@@ -454,3 +458,137 @@ class Commands:
     def toggle_vim_mode(self, *_) -> None:
         self.base.settings.vim.enabled = not self.base.settings.vim.enabled
         self.base.update_statusbar()
+
+    def vim_normal_mode(self, *_) -> None:
+        self.vim_mode = "NORMAL"
+        self.vim_visual_mode = False
+        self.vim_insert_mode = False
+        self.base.statusbar.update_vim_mode_indicator(self.vim_mode)
+
+    def vim_insert_mode(self, *_) -> None:
+        self.vim_mode = "INSERT"
+        self.vim_visual_mode = False
+        self.vim_insert_mode = True
+        self.base.statusbar.update_vim_mode_indicator(self.vim_mode)
+
+    def vim_visual_mode(self, *_) -> None:
+        self.vim_mode = "VISUAL"
+        self.vim_visual_mode = True
+        self.vim_insert_mode = False
+        self.base.statusbar.update_vim_mode_indicator(self.vim_mode)
+
+    def vim_command_mode(self, *_) -> None:
+        self.vim_mode = "COMMAND"
+        self.vim_visual_mode = False
+        self.vim_insert_mode = False
+        self.base.statusbar.update_vim_mode_indicator(self.vim_mode)
+
+    def vim_handle_key(self, event: tk.Event) -> str:
+        key = event.keysym
+
+        if self.vim_mode == "NORMAL":
+            if key in ["h", "j", "k", "l"]:
+                self.vim_handle_navigation(key)
+            elif key == "i":
+                self.vim_insert_mode()
+            elif key == "v":
+                self.vim_visual_mode()
+            elif key == ":":
+                self.vim_command_mode()
+            elif key == "u":
+                self.undo()
+            elif key == "r" and event.state & 0x4:
+                self.redo()
+            elif key == "x":
+                self.vim_delete_char()
+            elif key == "d":
+                self.vim_delete_line()
+            elif key == "y":
+                self.vim_yank_line()
+            elif key == "p":
+                self.vim_paste()
+            elif key == "w":
+                self.vim_delete_word()
+            elif key == "c":
+                self.vim_cut_word()
+            elif key == "g":
+                self.vim_goto_line()
+            elif key == "G":
+                self.vim_goto_end_of_file()
+            elif key == "esc":
+                self.vim_normal_mode()
+
+        elif self.vim_mode == "INSERT":
+            if key == "esc":
+                self.vim_normal_mode()
+
+        elif self.vim_mode == "VISUAL":
+            if key == "esc":
+                self.vim_normal_mode()
+
+        elif self.vim_mode == "COMMAND":
+            if key == "esc":
+                self.vim_normal_mode()
+
+        return "break"
+
+    def vim_handle_navigation(self, key: str) -> None:
+        if key == "h":
+            self.base.editorsmanager.active_editor.content.text.mark_set(
+                "insert", "insert-1c"
+            )
+        elif key == "j":
+            self.base.editorsmanager.active_editor.content.text.mark_set(
+                "insert", "insert+1l"
+            )
+        elif key == "k":
+            self.base.editorsmanager.active_editor.content.text.mark_set(
+                "insert", "insert-1l"
+            )
+        elif key == "l":
+            self.base.editorsmanager.active_editor.content.text.mark_set(
+                "insert", "insert+1c"
+            )
+
+    def vim_delete_char(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.delete("insert")
+
+    def vim_delete_line(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.delete(
+            "insert linestart", "insert lineend"
+        )
+
+    def vim_yank_line(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.clipboard_clear()
+        self.base.editorsmanager.active_editor.content.text.clipboard_append(
+            self.base.editorsmanager.active_editor.content.text.get(
+                "insert linestart", "insert lineend"
+            )
+        )
+
+    def vim_paste(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.insert(
+            "insert", self.base.editorsmanager.active_editor.content.text.clipboard_get()
+        )
+
+    def vim_delete_word(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.delete(
+            "insert", "insert wordend"
+        )
+
+    def vim_cut_word(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.clipboard_clear()
+        self.base.editorsmanager.active_editor.content.text.clipboard_append(
+            self.base.editorsmanager.active_editor.content.text.get(
+                "insert", "insert wordend"
+            )
+        )
+        self.base.editorsmanager.active_editor.content.text.delete(
+            "insert", "insert wordend"
+        )
+
+    def vim_goto_line(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.mark_set("insert", "1.0")
+
+    def vim_goto_end_of_file(self) -> None:
+        self.base.editorsmanager.active_editor.content.text.mark_set("insert", "end")
