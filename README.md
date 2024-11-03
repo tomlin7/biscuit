@@ -1,76 +1,44 @@
-<h1 align="center">
-    <img src="https://github.com/tomlin7/Biscuit/assets/70792552/0ea8e958-92de-4659-b1c9-ab5a72f05d7d" width=500><br>
-    <a href=https://github.com/tomlin7/Biscuit/actions/workflows/nightly.yml> 
-        <img src="https://img.shields.io/github/actions/workflow/status/tomlin7/biscuit/nightly.yml?style=for-the-badge"> 
-    </a> 
-    <img alt="Project License" src="https://img.shields.io/github/license/tomlin7/Biscuit?style=for-the-badge"> 
-    <a href=https://github.com/tomlin7/Biscuit/releases> 
-        <img alt="Download Latest" src="https://img.shields.io/github/v/release/tomlin7/biscuit?style=for-the-badge"> 
-    </a>
-    <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/tomlin7/Biscuit?style=for-the-badge">
-</h1>
+![image](https://github.com/user-attachments/assets/a578d600-a4a8-4ce4-904d-4aa0e73fc124)
 
-A lightweight, fast code editor with extensions, semantic code completions, refactoring features, symbol references tracker, and more. Features include breakpoint-based code debugging, AI-assisted workflow, fast workspace search, and built-in Git support. Scroll down to see [biscuit in action](https://github.com/tomlin7/Biscuit/tree/main?tab=readme-ov-file#features).
+Aesthetic, lightweight code editor with extension support. Draws inspiration from mainstream editors like VSC, Zed, and Vim. Hobby project. 
+> - - - -  Check all extensions and their authors [`~extension repository`](https://tomlin7.github.io/biscuit-extensions/)
+> - - - -  Contributing/User guides, API reference [`~documentation`](https://tomlin7.github.io/biscuit)
+> - - - -  Scroll down to see list of all supported [`~features`](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features) 
 
-![image](https://github.com/user-attachments/assets/d20a0ded-04a9-4f27-9729-3b41f1a70e92)
+![image](https://github.com/user-attachments/assets/3ff11be7-754b-4159-87bd-0cf48406821d)
+> Theme inspired by [`morhetz/gruvbox`](https://github.com/morhetz/gruvbox)
 
+## `Installing`
 
-- 🎀 **Explore all community-made extensions and their authors at the [Biscuit Extension Center](https://tomlin7.github.io/biscuit-extensions/)**
-- 🪛 For contributing/user guides or API reference, check the [documentation here](https://tomlin7.github.io/biscuit)
-- 🌟 Scroll down to the [features section](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features) for a list of all features
-
-## Installing
-
-You can install the latest release from PyPI by running:
-
+Install the latest release from PyPI by running:
 ```bash
-$ pip install biscuit-editor
+> pip install biscuit-editor
 ```
+Quickly open up a project using **`biscuit path/to/src`** and start editing. See other [installation methods](https://tomlin7.github.io/biscuit/getting-started/installation/).
 
-Try running `biscuit --version` in your terminal to check if the installation was successful.
-> [!IMPORTANT]
-> Linux distribtions require some system packages to be installed prior to the poetry installation.
->
-> For Debian based distributions,
-> ```bash
-> $ sudo apt install python3-dev tcl-dev tk-dev \
->    fontconfig libfontconfig1 libfontconfig1-dev \
->    cmake cmake-data extra-cmake-modules build-essential
-> $ python -m pip install scikit-build
-> ```
->
-> For Arch Linux based distributions,
-> ```bash
-> $ sudo pacman -Sy
-> $ sudo pacman -S base-devel cmake extra-cmake-modules \
->    fontconfig tcl tk
-> $ python -m pip install scikit-build
-> > $ python -m pip install tkextrafont
+## `Contributing`
 
-### Standalone Builds
-
-- Grab the latest stable build from [**releases page**](https://github.com/tomlin7/Biscuit/releases)
-- Unstable nightly builds from [GitHub actions](https://github.com/tomlin7/Biscuit/actions)
-
-For compiling from source code, please check the [installation guide](https://github.com/tomlin7/Biscuit/tree/main/scripts).
-
-## Contributing ❤️
-
-Your contributions are very much appreciated!
-Have a peek at the [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour on project structure and to setup the environment. To contribute a new extension, check the [extension docs](https://github.com/tomlin7/biscuit-extensions).
+- - - Please check the [docs](https://tomlin7.github.io/biscuit/getting-started/quick-start/) and [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour of the project structure and to set up the environment. 
+- - - To make a new extension, read the [extension docs](https://github.com/tomlin7/biscuit-extensions)
 
 <a href="https://github.com/tomlin7/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg" />
 </a><br>
 
-- For opening feature requests and bug reports, use the [issue tracker](https://github.com/tomlin7/Biscuit/issues)
-- Community made extensions are published at the [extensions repository](https://github.com/tomlin7/biscuit-extensions)
+## `Features`
 
-## Features
+### Language Server Support
 
-- **Language Server Support** for code completions, refactoring, symbol references, and more
+- code completions
+- hover
+- symbol outline (palette `Ctrl + J`)
+- symbol references
+- goto-definition/declaration
 
-![peek](https://github.com/tomlin7/biscuit/assets/70792552/be132f5b-776c-4045-8a62-c9d29d463762)
+More language servers are registered through extensions, see the [Rust](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/rust.py), [Typescript](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/javascript_typescript.py) extensions
+for reference. Feel free to open issues/discussions for help!
+
+![peek](https://github.com/user-attachments/assets/16350a91-8d87-422d-b779-1db21033e979)
 
 <table>
     <tr>
@@ -78,33 +46,91 @@ Have a peek at the [contributing guide](https://github.com/tomlin7/Biscuit/blob/
     </tr>
     <tr> 
         <img src=https://github.com/tomlin7/biscuit/assets/70792552/68a26ccb-b309-4c21-b75e-3e5cf5fa6500 height=270>
-    </tr>
+    </tr><br>
+    <figcaption>
+        <a href=https://github.com/tomlin7/biscuit/blob/main/src/biscuit/settings/theme/vscdark.py><code>Biscuit VS dark theme</code></a>
+    </figcaption>
 </table>
 
-<hr>
+### Breakpoint-based Code Debugging
 
-- **Breakpoint-based Code Debugging** with variable inspection, call stack, and more
+- breakpoints in multiple files
+- variable inspection
+- modify variables at runtime
+- call stack
 
-![peek](https://github.com/tomlin7/biscuit/assets/70792552/29541b9e-e084-42bc-85b2-4d7c54cd8d34)
+Built-in Python debugger is available right now, more debuggers can be registered through extensions.
+- TODO: Debugger Adapter Protocol support, [DAP client](https://github.com/tomlin7/debug-adapter-client) integration
 
-<hr>
+![breakpoint](https://github.com/user-attachments/assets/a34d6e59-4743-43ee-a1a1-b7a5eac589bf)
 
-- **AI Assisted Workflow** for refactoring, code generation, and more
+### Git Support
+- Diff viewer
+- Git operations GUI-fied (push, pull, commit, stage, unstage, switch branches)
+- Clone repositories within editor, and open them up
+- View GitHub issues/pr within editor (NOTE: will be converted to an extension)
 
-![peek](https://github.com/tomlin7/biscuit/assets/70792552/97913c12-5493-4783-b1f0-ee904f67ff2d)
+![image](https://github.com/user-attachments/assets/c23c0338-7c19-4636-831e-3d97b539df46)
+![image](https://github.com/user-attachments/assets/41cdbe73-4b24-4502-95f6-fcc17a2002be)
 
-<hr>
+### Assistant
 
-- **Fast Workspace Search** with regex support and file preview
+- Attach files for context in chat
+- Generate terminal commands within integrated terminal (use `# prompt` in terminal, then accept/decline response)
+- Run local LLMs with Ollama extension
+- Google Gemini built-in support (key)
+  
+More providers can be added with extensions, see [ollama extension](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/ollama.py) for reference.
 
-![peek](https://github.com/tomlin7/biscuit/assets/70792552/de0540b2-2b34-4be6-aa86-97e17a20d47d)
+![Assistant](https://github.com/user-attachments/assets/898d5223-87c2-4368-acd2-8ae060daab70)
 
-<hr>
+### Workspace Search
+- regex support
+- file preview, occurrence count, etc
+- search within editors with find-replace widget
 
-- **Built-in Git Support** for version control and diff viewer
+![image](https://github.com/user-attachments/assets/6dd1baa2-c89c-437d-9613-00e72fa9e009)
 
-![image](https://github.com/tomlin7/biscuit/assets/70792552/ad650048-7e74-420b-bd3a-d0c059ff69cd)
+### More features
+- **Integrated Terminals**
+  - Set up and store run command for each editor for ease
+  - Use `# prompt here...` commands to generate commands with assistant (key)
+  - Multiple terminals can be opened (Built in support for powershell, bash, cmd, python REPL, etc.)
+  
+  ![image](https://github.com/user-attachments/assets/733fbd70-8377-4907-92fa-83e0dcad9368)
 
-## License
+- **Extension center**
+  - Install and manage all available extensions
+  - Filter all installed extensions
+  - Search for extensions
+  
+  ![image](https://github.com/user-attachments/assets/9f6d67f2-b00f-43e6-804a-8f66e03b8183)
 
-Biscuit is released under the MIT License; for more information, see [LICENSE](https://github.com/tomlin7/Biscuit/blob/main/LICENSE.md).
+- Split-pane **Markdown** editor, HTML renderer
+  - Split-pane editing
+  - Syntax highlighting support
+  - TODO: CSS support for HTML editor
+  
+  ![image](https://github.com/user-attachments/assets/ac086e4d-023e-4dd1-ae26-96271d900656)
+
+- Rich Command palette (commands added to [commands.py](https://github.com/tomlin7/biscuit/blob/main/src/biscuit/commands.py) are automatically made available)
+- **Drag and drop** to open files or folders in Biscuit
+- Built-in [editorconfig](https://editorconfig.org/) support
+- Toggle relative line numbering
+- Formatter extensions support
+  - See [black](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/black.py), [Ruff](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/ruff.py), [YAPF](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/yapf.py), [autopep8](https://github.com/tomlin7/biscuit-extensions/blob/main/extensions/autopep8.py) for reference.
+  
+  ![image](https://github.com/user-attachments/assets/73a86fb6-89f8-4cd9-8552-5c1fb9c2e3b0)
+
+
+## `License`
+
+Biscuit uses the MIT License. For more information, see [LICENSE.md](https://github.com/tomlin7/Biscuit/blob/main/LICENSE.md).
+
+<a href=https://github.com/tomlin7/Biscuit/actions/workflows/nightly.yml><img src="https://img.shields.io/github/actions/workflow/status/tomlin7/biscuit/nightly.yml"></a> 
+<img alt="Project License" src="https://img.shields.io/github/license/tomlin7/Biscuit"> 
+<a href=https://github.com/tomlin7/Biscuit/releases> <img alt="Download Latest" src="https://img.shields.io/github/v/release/tomlin7/biscuit"></a>
+<img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed-raw/tomlin7/Biscuit">
+
+
+![image](https://github.com/user-attachments/assets/0df70dbd-b4e2-46ae-9715-045bdf85ed13)
