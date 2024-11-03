@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import sqlite3
 import os
+import sqlite3
 
 
 class FixedSizeStack:
@@ -21,13 +21,7 @@ class FixedSizeStack:
 
     @property
     def list(self):
-        def open_item(item):
-            if item in self.stack:
-                self.stack.remove(item)
-                self.stack.append(item)
-            return self.base.open(item)
-
-        return [(i, lambda _, i=i: open_item(i)) for i in self.stack[::-1]]
+        return [(i, lambda _, i=i: self.open_item(i)) for i in self.stack[::-1]]
 
     def push(self, item):
         if len(self.stack) == self.capacity:
@@ -76,10 +70,8 @@ class FixedSizeStack:
 
     def open_item(self, item):
         if os.path.exists(item):
-            if item in self.stack:
-                self.stack.remove(item)
-                self.stack.append(item)
-            return self.base.open(item)
+            self.push(item)
+            self.base.open(item)
         else:
             self.stack.remove(item)
-            return None
+            self.base.notifications.error(f"Path '{item}' does not exist anymore.")
