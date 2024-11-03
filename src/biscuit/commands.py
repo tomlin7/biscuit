@@ -450,3 +450,7 @@ class Commands:
     def show_about(self, *_) -> None:
         messagebox.showinfo("Biscuit", str(self.base.system))
         self.base.logger.info(str(self.base.system))
+
+    def toggle_vim_mode(self, *_) -> None:
+        self.base.settings.vim.enabled = not self.base.settings.vim.enabled
+        self.base.update_statusbar()

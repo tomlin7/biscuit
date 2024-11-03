@@ -154,6 +154,16 @@ class Statusbar(Frame):
 
         self.panel_toggle.show()
 
+        # Add Vim mode indicators
+        self.vim_mode_indicator = self.add_button(
+            text="NORMAL",
+            callback=None,
+            description="Vim mode indicator",
+            side=tk.LEFT,
+            padx=(2, 0),
+        )
+        self.vim_mode_indicator.show()
+
     def add_button(
         self,
         text="",
@@ -342,3 +352,11 @@ class Statusbar(Frame):
         return lambda _: self.base.editorsmanager.active_editor.content.text.highlighter.change_language(
             language
         )
+
+    def update_vim_mode_indicator(self, mode: str) -> None:
+        """Updates the Vim mode indicator on the status bar.
+
+        Args:
+            mode (str): The current Vim mode.
+        """
+        self.vim_mode_indicator.change_text(mode)

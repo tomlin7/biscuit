@@ -15,6 +15,9 @@ class Commands(Endpoint):
 
         self.register_command = self.settings.register_command
 
+        # Register the toggle Vim mode command in the command palette
+        self.register_command("toggle_vim_mode", self.base.commands.toggle_vim_mode)
+
     @property
     def commands(self) -> None:
         """Return all registered commands"""
