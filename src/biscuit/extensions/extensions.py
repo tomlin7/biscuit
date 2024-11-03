@@ -295,6 +295,9 @@ class ExtensionManager:
 
     def queue_installed_extensions(self) -> None:
         def load_extension(dir: str):
+            if not os.path.isdir(dir):
+                return
+
             for extension_file in os.listdir(dir):
                 if extension_file.endswith(".py"):
                     extension_name = os.path.basename(extension_file).split(".")[0]
