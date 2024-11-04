@@ -122,6 +122,10 @@ More providers can be added with extensions, see [ollama extension](https://gith
   
   ![image](https://github.com/user-attachments/assets/73a86fb6-89f8-4cd9-8552-5c1fb9c2e3b0)
 
+### Syntax Highlighting
+
+- Tree-sitter highlighter for Python files
+- Pygments as a fallback highlighter for other file types
 
 ## `License`
 

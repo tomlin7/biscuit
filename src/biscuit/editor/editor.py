@@ -3,6 +3,7 @@ import tkinter as tk
 
 from .breadcrumbs.breadcrumbs import BreadCrumbs
 from .editorbase import BaseEditor
+from .text.highlighter import Highlighter  # Import the Highlighter class
 
 
 class Editor(BaseEditor):
