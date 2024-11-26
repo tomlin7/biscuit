@@ -308,13 +308,13 @@ dev = ["flake8", "markdown", "twine", "wheel"]
 
 [[package]]
 name = "git-changelog"
-version = "2.5.2"
+version = "2.5.3"
 description = "Automatic Changelog generator using Jinja2 templates."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "git_changelog-2.5.2-py3-none-any.whl", hash = "sha256:82eca31bd80fbd85e6b252fece82fe450706a7796b92c9d2c7f17c5944fe9ca7"},
-    {file = "git_changelog-2.5.2.tar.gz", hash = "sha256:b71a404a524dc0b14a34f92d306ae011a05c5fcf7c78ee5b484af50ac44ced65"},
+    {file = "git_changelog-2.5.3-py3-none-any.whl", hash = "sha256:11c12715a6f41dc36aa3219976492ef905b45a2fc39ad75e98be2895fd750440"},
+    {file = "git_changelog-2.5.3.tar.gz", hash = "sha256:2d211a58213eaa97c73be895821c9d4c9242748eb56753f4759c0d24fe493b77"},
 ]
 
 [package.dependencies]
@@ -323,6 +323,7 @@ Jinja2 = ">=2.10"
 packaging = ">=24.0"
 semver = ">=2.13"
 tomli = {version = ">=2.0", markers = "python_version < \"3.11\""}
+typing-extensions = {version = ">=4.9", markers = "python_version < \"3.13\""}
 
 [[package]]
 name = "gitdb"
