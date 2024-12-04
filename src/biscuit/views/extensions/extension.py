@@ -29,19 +29,30 @@ class ExtensionGUI(Frame):
         super().__init__(master, *args, **kwargs)
         self.master: Results = master
         self.config(**self.base.theme.views.sidebar.item)
-        self.selected = False
         self.manager = self.base.extensions_manager
 
+        self.id = name
         self.data = data
-        self.name = name
-        self.filename = data[0]
-        self.file = os.path.join(self.base.extensiondir, data[0])
-        self.author = data[1]
-        self.description = data[2][:50] + "..." if len(data[2]) > 30 else data[2]
 
-        self.url = f"{self.manager.repo_url}extensions/{data[0]}"
+        # sample data
+        # ----------------
+        # submodule = "rust"
+        # name = "Rust"
+        # author = "tomlin7"
+        # description = "Rust language support"
+        # version = "0.1.0"
+
+        self.submodule = data["submodule"]
+        self.name = data["name"]
+        self.author = data["author"]
+        self.description = data["description"]
+        self.version = data["version"]
+
+        self.installation_directory = os.path.join(self.base.extensiondir, name)
+        self.url = f"{self.manager.extensions_repo_url}/extensions/"
         self.installed = os.path.isfile(self.file)
 
+        self.selected = False
         self.bg = self.base.theme.views.sidebar.item.background
         self.hbg = self.base.theme.views.sidebar.item.highlightbackground
 
@@ -59,7 +70,11 @@ class ExtensionGUI(Frame):
 
         self.descriptionlbl = Label(
             self.container,
-            text=self.description,
+            text=(
+                self.description[:31] + "..."
+                if len(self.description) >= 30
+                else self.description
+            ),
             font=("Segoi UI", 9),
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,

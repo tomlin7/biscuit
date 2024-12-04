@@ -8,7 +8,6 @@ import requests
 
 from biscuit.common import ActionSet
 from biscuit.common.ui import Scrollbar
-from biscuit.git import PRViewer
 
 from ..sidebar_item import SideBarViewItem
 
@@ -70,6 +69,7 @@ class PRs(SideBarViewItem):
 
     def open_editor(self, number: str) -> None:
         """Opens the issue viewer for the selected issue."""
+        from biscuit.git import PRViewer
 
         self.base.editorsmanager.add_editor(
             PRViewer(self.base.editorsmanager, self.prs[number])

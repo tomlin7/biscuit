@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import json
 import queue
 import threading
 import tkinter as tk
 import typing
-
-import requests
 
 from biscuit.common.ui import ScrollableFrame
 
@@ -115,4 +112,4 @@ class Results(SideBarViewItem):
 
         self.clear()
         self.update_idletasks()
-        self.manager.fetch_searched_extensions(self.master.searchbox.get())
+        self.manager.display_filtered_extensions(self.master.searchbox.get())
