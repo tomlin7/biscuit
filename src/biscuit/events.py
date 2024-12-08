@@ -88,8 +88,12 @@ class EventManager(GUIManager, ConfigManager):
         self.terminalmanager.open_terminal()
 
         try:
-            self.git.check_git()
-            self.update_git()
+            self.git_found, self.git.repo = self.git.check_git()
+            if self.git_found:
+                self.notifications.info("Git repository found in opened directory")
+                self.logger.info("Git repository found in opened directory")
+            self.git.update_repo_info()
+            self.update_git_GUI()
         except Exception as e:
             self.logger.error(f"Checking git failed: {e}")
             self.notifications.error("Checking git failed: see logs")
@@ -98,7 +102,7 @@ class EventManager(GUIManager, ConfigManager):
 
         self.event_generate("<<DirectoryChanged>>", data=dir)
 
-    def update_git(self) -> None:
+    def update_git_GUI(self) -> None:
         self.statusbar.update_git_info()
         self.source_control.refresh()
 
@@ -137,7 +141,7 @@ class EventManager(GUIManager, ConfigManager):
         self.editorsmanager.delete_all_editors()
         self.set_title()
         self.git_found = False
-        self.update_git()
+        self.update_git_GUI()
         self.event_generate("<<DirectoryChanged>>")
 
     def close_active_editor(self) -> None:
