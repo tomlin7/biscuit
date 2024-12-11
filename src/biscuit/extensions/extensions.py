@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import shutil
+import sys
 import threading
 import time
 import typing
@@ -12,6 +14,7 @@ import requests
 import toml
 
 from biscuit.extensions.viewer.viewer import ExtensionViewer
+from biscuit.git.repo import GitRepo
 from biscuit.views.extensions.extension import ExtensionGUI
 
 if typing.TYPE_CHECKING:
@@ -28,23 +31,29 @@ class ExtensionManager:
 
     def __init__(self, base: App) -> None:
         self.base: App = base
+        self.git = self.base.git
 
         self.extensions_loaded = False
 
         self.interval = 5
         self.installed: dict[str, bool] = {}
 
-        self.repo_url = (
-            "https://raw.githubusercontent.com/tomlin7/biscuit-extensions/main/"
-        )
-        self.list_url = self.repo_url + "extensions.toml"
+        self.repository_available = False
+        self.extensions_repository: GitRepo = None
+        self.extensions_repo_url = "https://github.com/tomlin7/biscuit-extensions"
+        self.extensions_list = "extensions_future.toml"
 
-        self.fetched: dict[str, str] = {}
+        self.available_extensions: dict[str, str] = {}
         self.fetch_queue = Queue()
         self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
 
-        if not (self.base.extensiondir and os.path.isdir(self.base.extensiondir)):
+        if not (
+            self.base.extensiondir and os.path.isdir(self.base.extensiondir)
+        ) or not (
+            self.base.fallback_extensiondir
+            and os.path.isdir(self.base.fallback_extensiondir)
+        ):
             print("Extensions directory not found.")
             return
 
@@ -53,8 +62,8 @@ class ExtensionManager:
     def install_extension_from_name(self, name: str) -> bool:
         """Install an extension from the repository by name."""
 
-        if name in self.fetched:
-            data = self.fetched[name]
+        if name in self.available_extensions:
+            data = self.available_extensions[name]
 
             t = self.run_fetch_extension(
                 ExtensionGUI(self.base.extensions_view.results, name, data)
@@ -77,24 +86,24 @@ class ExtensionManager:
     def find_extension_by_name(self, name: str) -> str:
         """Search for an extension by name."""
 
-        return self.fetched.get(name, None)
+        return self.available_extensions.get(name, None)
 
     def list_all_extensions(self) -> typing.Generator[tuple[str, str]]:
         """List all extensions."""
 
-        for name, data in self.fetched.items():
+        for name, data in self.available_extensions.items():
             yield name, data
 
     def list_installed_extensions(self) -> typing.Generator[tuple[str, str]]:
         """List installed extensions."""
 
         for name in self.installed:
-            yield name, self.fetched.get(name, None)
+            yield name, self.available_extensions.get(name, None)
 
     def list_extensions_by_user(self, user: str) -> typing.Generator[tuple[str, str]]:
         """Show extensions by a specific user."""
 
-        for id, data in self.fetched.items():
+        for id, data in self.available_extensions.items():
             if data[1] == user:
                 yield id, data
 
@@ -108,68 +117,87 @@ class ExtensionManager:
             self.fetching.wait()
 
         with self.extensions_lock:
-            threading.Thread(target=self.fetch_extensions, daemon=True).start()
+            threading.Thread(
+                target=self.update_extension_repository, daemon=True
+            ).start()
 
-    def fetch_searched_extensions(self, search_string) -> None:
-        """Fetch extensions whose name matches the search_string from Extensions repository."""
+    def update_extension_repository(self) -> bool:
+        """
+        Update the extensions repository.
 
-        response = None
+        Checks if the repository exists, clones if not,
+        and pulls the latest changes if it does.
+        """
+
         try:
-            response = requests.get(self.list_url)
-        except Exception:
-            pass
+            self.repository_available, self.extensions_repository = self.git.check_git(
+                self.base.fallback_extensiondir
+            )
 
-        # FAIL - network error
-        if not response or response.status_code != 200:
+            if self.repository_available:
+                self.extensions_repository.pull()
+            else:
+                self.extensions_repository = self.git.clone(
+                    self.extensions_repo_url,
+                    self.base.fallback_extensiondir,
+                    make_folder=False,
+                )
+
+            self.available_extensions = toml.load(
+                Path(self.base.fallback_extensiondir) / self.extensions_list
+            )
+
+            self.display_all_extensions()
+
+        except Exception as e:
+            print(f"Failed to update extensions repository: {e}")
             try:
+                self.repository_available, self.extensions_repository = (
+                    self.git.check_git(self.base.extensiondir)
+                )
+
+                if self.repository_available:
+                    self.extensions_repository.pull()
+                else:
+                    self.extensions_repository = self.git.clone(
+                        self.extensions_repo_url,
+                        self.base.extensiondir,
+                        make_folder=False,
+                    )
+
+                self.available_extensions = toml.load(
+                    Path(self.base.extensiondir) / self.extensions_list
+                )
+
+                self.display_all_extensions()
+
+            except Exception as clone_error:
+                self.base.logger.error(
+                    f"Failed to update/clone extensions repository: {clone_error}"
+                )
                 self.base.extensions_view.results.show_placeholder()
-            except:
-                ...
-            return
 
-        self.fetched = toml.loads(response.text)
-        # SUCCESS
-        if self.fetched:
-            try:
-                self.base.extensions_view.results.show_content()
-            except:
-                ...
+    def display_filtered_extensions(self, search_string) -> None:
+        """Display filtered extensions from the repository."""
+
+        if self.available_extensions:
+            self.base.extensions_view.results.show_content()
 
         if not search_string:
-            for name, data in self.fetched.items():
+            for name, data in self.available_extensions.items():
                 self.fetch_queue.put((name, data))
         else:
-            for name, data in self.fetched.items():
-                if search_string.lower() in name.lower():
+            for name, data in self.available_extensions.items():
+                if search_string.lower() in name:
                     self.fetch_queue.put((name, data))
 
-    def fetch_extensions(self) -> None:
-        """Fetch extensions from Extensions repository."""
+    def display_all_extensions(self) -> None:
+        """Display all extensions from the repository."""
 
-        response = None
-        try:
-            response = requests.get(self.list_url)
-        except Exception:
-            pass
+        if self.available_extensions:
+            self.base.extensions_view.results.show_content()
 
-        # FAIL - network error
-        if not response or response.status_code != 200:
-            try:
-                self.base.extensions_view.results.show_placeholder()
-            except:
-                ...
-            return
-
-        self.fetched = toml.loads(response.text)
-        # SUCCESS
-        if self.fetched:
-            try:
-                self.base.extensions_view.results.show_content()
-            except:
-                ...
-
-        for name, data in self.fetched.items():
-            # TODO add further loops for folders
+        for name, data in self.available_extensions.items():
             self.fetch_queue.put((name, data))
 
     def run_fetch_extension(self, ext: ExtensionGUI) -> None:
@@ -190,24 +218,27 @@ class ExtensionManager:
         try:
             response = requests.get(ext.url)
             if response.status_code == 200:
-                self.save_extension(ext, response)
-        except:
+                with open(ext.file, "w") as fp:
+                    fp.write(response.text)
+
+                self.load_extension(ext.file)
+                ext.set_installed()
+
+                self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
+                self.base.notifications.info(
+                    f"Extension '{ext.name}' has been installed!"
+                )
+        except Exception as e:
             ext.set_unavailable()
-
-    def save_extension(self, ext: ExtensionGUI, response: requests.Response) -> None:
-        """Save a fetched extension. Saves the extension and loads it."""
-
-        with open(ext.file, "w") as fp:
-            fp.write(response.text)
-
-        self.load_extension(ext.file)
-        ext.set_installed()
-
-        self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
-        self.base.notifications.info(f"Extension '{ext.name}' has been installed!")
+            self.base.logger.error(f"Installing extension '{ext.name}' failed: {e}")
+            self.base.notifications.error(f"Installing extension '{ext.name}' failed.")
 
     def remove_extension(self, ext: ExtensionGUI) -> None:
         """Remove an extension from the system."""
+
+        # 1. git submodule deinit -f -- a/submodule
+        # 2. rm -rf .git/modules/a/submodule
+        # 3. git rm -f a/submodule
 
         try:
             os.remove(ext.file)
@@ -265,10 +296,18 @@ class ExtensionManager:
                 continue
 
             ext, path = self.load_queue.get()
+            path = Path(path)
             module_name = f"extensions.{ext}"
             try:
+                extension_path = path
+                module_name = f"extensions.{ext}"
+
+                if path.is_dir():
+                    extension_path = path / "extension.py"
+                    sys.path.insert(0, str(path))
+
                 # TODO support for multiple files
-                spec = util.spec_from_file_location(module_name, str(path))
+                spec = util.spec_from_file_location(module_name, str(extension_path))
                 extension_module: extension = util.module_from_spec(spec)
 
                 spec.loader.exec_module(extension_module)
@@ -281,6 +320,10 @@ class ExtensionManager:
                 self.base.notifications.error(f"Extension '{ext}' failed: see logs.")
                 if ext in self.installed:
                     self.installed.pop(ext)
+            finally:
+                # remove extension directory to prevent potential conflicts
+                if path.is_dir() and str(path) in sys.path:
+                    sys.path.remove(str(path))
 
     def register_installed(self, name: str, extension: object) -> None:
         """Register an installed extension."""
@@ -299,7 +342,7 @@ class ExtensionManager:
                 return
 
             for extension_file in os.listdir(dir):
-                if extension_file.endswith(".py"):
+                if extension_file.endswith(".py") or extension_file == "foo":
                     extension_name = os.path.basename(extension_file).split(".")[0]
                     if extension_name in self.installed:
                         return
