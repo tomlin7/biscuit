@@ -27,7 +27,7 @@ class TestApp:
 
     # Tests that the App handles updating Git status and source control without errors
     def test_git_handling(self, app_instance):
-        app_instance.update_git()
+        app_instance.update_git_GUI()
         assert app_instance.git_found is False
 
     # Tests that the App handles opening settings and games without errors
@@ -36,4 +36,3 @@ class TestApp:
         assert app_instance.editorsmanager.active_editor is not None
         app_instance.close_active_editor()
         assert app_instance.editorsmanager.active_editor is None
-    

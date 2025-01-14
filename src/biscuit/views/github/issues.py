@@ -8,7 +8,6 @@ import requests
 
 from biscuit.common import ActionSet
 from biscuit.common.ui import Scrollbar
-from biscuit.git import IssueViewer
 
 from ..sidebar_item import SideBarViewItem
 
@@ -70,6 +69,7 @@ class Issues(SideBarViewItem):
 
     def open_editor(self, number: str) -> None:
         """Opens the issue viewer for the selected issue."""
+        from biscuit.git import IssueViewer
 
         self.base.editorsmanager.add_editor(
             IssueViewer(self.base.editorsmanager, self.issues[number])
