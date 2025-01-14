@@ -8,6 +8,8 @@ from pygments import lex
 from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
 from pygments.style import Style
 
+from .treesitter import TreeSitterHighlighter
+
 if typing.TYPE_CHECKING:
     from biscuit import App
 
@@ -75,6 +77,11 @@ class Highlighter:
         self.tag_colors = self.base.theme.syntax
         self.setup_highlight_tags()
 
+        # Initialize Tree-sitter highlighter for Python
+        self.tree_sitter_highlighter = None
+        if self.language == "python":
+            self.tree_sitter_highlighter = TreeSitterHighlighter(language)
+
     def detect_language(self) -> None:
         """Detect the language from the file extension and set the lexer
         Refreshes language attribute of the text instance."""
@@ -117,6 +124,11 @@ class Highlighter:
         self.text.master.on_change()
         self.base.statusbar.on_open_file(self.text)
 
+        # Initialize Tree-sitter highlighter for Python
+        self.tree_sitter_highlighter = None
+        if self.language == "python":
+            self.tree_sitter_highlighter = TreeSitterHighlighter(language)
+
     def setup_highlight_tags(self) -> None:
         """Setup the tags for highlighting the text content"""
 
@@ -145,6 +157,26 @@ class Highlighter:
         TODO: As of now, it highlights the entire text content.
         It needs to be optimized to highlight only the visible area."""
 
+        if self.tree_sitter_highlighter:
+            self.highlight_with_tree_sitter()
+        else:
+            self.highlight_with_pygments()
+
+    def highlight_with_tree_sitter(self) -> None:
+        """Highlight the text content using Tree-sitter"""
+
+        self.clear()
+        text = self.text.get_all_text()
+        highlight_info = self.tree_sitter_highlighter.highlight(text)
+
+        for info in highlight_info:
+            start_index = self.text.index(f"1.0 + {info['start_byte']}c")
+            end_index = self.text.index(f"1.0 + {info['end_byte']}c")
+            self.text.tag_add(info["type"], start_index, end_index)
+
+    def highlight_with_pygments(self) -> None:
+        """Highlight the text content using Pygments"""
+
         if not self.lexer or not self.tag_colors:
             return
 
@@ -153,21 +185,8 @@ class Highlighter:
 
         text = self.text.get_all_text()
 
-        # NOTE:  Highlighting only visible area
-        # total_lines = int(self.text.index('end-1c').split('.')[0])
-        # start_line = int(self.text.yview()[0] * total_lines)
-        # first_visible_index = f"{start_line}.0"
-        # last_visible_index =f"{self.text.winfo_height()}.end"
-        # for token, _ in self.tag_colors.items():
-        #     self.text.tag_remove(str(token), first_visible_index, last_visible_index)
-        # text = self.text.get(first_visible_index, last_visible_index)
-
         self.text.mark_set("range_start", "1.0")
         for token, content in lex(text, self.lexer):
             self.text.mark_set("range_end", f"range_start + {len(content)}c")
             self.text.tag_add(str(token), "range_start", "range_end")
             self.text.mark_set("range_start", "range_end")
-
-            # DEBUG
-            # print(f"{content} is recognized as a <{str(token)}>")
-        # print("==================================")
