@@ -1497,3 +1497,77 @@ class Text(BaseText):
             self.event_generate("<<Scroll>>", when="tail")
 
         return result
+
+    def handle_vim_visual_mode(self, event: tk.Event) -> str:
+        key = event.keysym
+
+        if key in ["h", "j", "k", "l"]:
+            self.vim_handle_navigation(key)
+        elif key == "v":
+            self.vim_visual_mode = False
+            self.tag_remove(tk.SEL, "1.0", tk.END)
+        elif key == "V":
+            self.vim_visual_mode = False
+            self.tag_remove(tk.SEL, "1.0", tk.END)
+        elif key == "esc":
+            self.vim_visual_mode = False
+            self.tag_remove(tk.SEL, "1.0", tk.END)
+
+        return "break"
+
+    def handle_vim_visual_line_mode(self, event: tk.Event) -> str:
+        key = event.keysym
+
+        if key in ["h", "j", "k", "l"]:
+            self.vim_handle_navigation(key)
+        elif key == "v":
+            self.vim_visual_line_mode = False
+            self.tag_remove(tk.SEL, "1.0", tk.END)
+        elif key == "V":
+            self.vim_visual_line_mode = False
+            self.tag_remove(tk.SEL, "1.0", tk.END)
+        elif key == "esc":
+            self.vim_visual_line_mode = False
+            self.tag_remove(tk.SEL, "1.0", tk.END)
+
+        return "break"
+
+    def vim_handle_navigation(self, key: str) -> None:
+        if key == "h":
+            self.mark_set(tk.INSERT, "insert-1c")
+        elif key == "j":
+            self.mark_set(tk.INSERT, "insert+1l")
+        elif key == "k":
+            self.mark_set(tk.INSERT, "insert-1l")
+        elif key == "l":
+            self.mark_set(tk.INSERT, "insert+1c")
+
+        if self.vim_visual_mode:
+            self.tag_add(tk.SEL, "insert", "insert+1c")
+        elif self.vim_visual_line_mode:
+            self.tag_add(tk.SEL, "insert linestart", "insert lineend")
+
+    def vim_visual_mode(self, *_) -> None:
+        self.vim_visual_mode = True
+        self.vim_visual_line_mode = False
+        self.tag_add(tk.SEL, "insert", "insert+1c")
+
+    def vim_visual_line_mode(self, *_) -> None:
+        self.vim_visual_mode = False
+        self.vim_visual_line_mode = True
+        self.tag_add(tk.SEL, "insert linestart", "insert lineend")
+
+    def vim_handle_key(self, event: tk.Event) -> str:
+        key = event.keysym
+
+        if self.vim_visual_mode:
+            return self.handle_vim_visual_mode(event)
+        elif self.vim_visual_line_mode:
+            return self.handle_vim_visual_line_mode(event)
+
+        if key == "v":
+            self.vim_visual_mode()
+        elif key == "V":
+            self.vim_visual_line_mode()
+
+        return "break"
