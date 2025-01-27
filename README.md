@@ -1,9 +1,9 @@
 ![image](https://github.com/user-attachments/assets/a578d600-a4a8-4ce4-904d-4aa0e73fc124)
 
 Aesthetic, lightweight code editor with extension support. Draws inspiration from mainstream editors like VSC, Zed, and Vim. Hobby project. 
-> - - - -  Check all extensions and their authors [`~extension repository`](https://tomlin7.github.io/biscuit-extensions/)
-> - - - -  Contributing/User guides, API reference [`~documentation`](https://tomlin7.github.io/biscuit)
-> - - - -  Scroll down to see list of all supported [`~features`](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features) 
+> - - -  Check all extensions and their authors [`~extension repository`](https://tomlin7.github.io/biscuit-extensions/)
+> - - -  Contributing/User guides, API reference [`~documentation`](https://tomlin7.github.io/biscuit)
+> - - -  Scroll down to see list of all supported [`~features`](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features) 
 
 ![image](https://github.com/user-attachments/assets/3ff11be7-754b-4159-87bd-0cf48406821d)
 > Theme inspired by [`morhetz/gruvbox`](https://github.com/morhetz/gruvbox)
