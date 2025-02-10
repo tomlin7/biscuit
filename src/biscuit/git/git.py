@@ -5,6 +5,8 @@ import re
 import typing
 from tkinter import messagebox
 
+import git.repo
+
 from ..common import ActionSet
 
 if typing.TYPE_CHECKING:
@@ -36,7 +38,7 @@ class Git(git.Git):
     def __init__(self, master: App, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.base = master
-        self.repo = None
+        self.repo: GitRepo = None
         self.ignore = GitIgnore(self)
         self.branches = {}
 
@@ -64,24 +66,27 @@ class Git(git.Git):
 
         self.base.palette.register_actionset(lambda: self.actionset)
 
-    def check_git(self) -> None:
-        """Check if git is available and the active directory is a git repository
-        If git is available and the active directory is a git repository, the branches are updated.
+    def check_git(self, dir: str) -> tuple[bool, GitRepo]:
+        """Check if git is installed and the directory is a git repository
+
+        Returns:
+            (bool, GitRepo): Tuple of success bool and GitRepo object
         """
 
-        if not (git_available and self.base.active_directory):
-            self.base.git_found = False
-            return
+        if not dir:
+            dir = self.base.active_directory
+
+        if not (git_available and dir):
+            return False, None
 
         try:
-            self.repo = GitRepo(self, self.base.active_directory)
-            self.base.git_found = True
+            repo = GitRepo(self, dir)
             self.ignore.load()
-            self.base.notifications.info("Git repository found in opened directory")
-            self.base.logger.info("Git repository found in opened directory")
-            self.update_repo_info()
-        except git.exc.InvalidGitRepositoryError:
-            self.base.git_found = False
+
+        except Exception as e:  # git.exc.InvalidGitRepositoryError
+            return False, None
+
+        return True, repo
 
     def update_repo_info(self) -> None:
         """Update the branches in the repository and add them to the actionset
@@ -127,7 +132,7 @@ class Git(git.Git):
         self.base.notifications.info(f"Checked out branch {branch}")
         self.base.logger.info(f"Checked out branch {branch}")
 
-    def clone(self, url: str, dir: str) -> str:
+    def clone(self, url: str, dir: str, make_folder=True) -> GitRepo:
         """Clone a git repository to the specified directory
 
         Args:
@@ -138,13 +143,14 @@ class Git(git.Git):
             str: The path to the cloned repository"""
 
         if not URL.match(url):
-            # assumes github as repo host
+            # assumes github as host
             url = f"http://github.com/{url}"
 
-        if name := self.repo_name(url):
+        if make_folder and (name := self.repo_name(url)):
             dir = os.path.join(dir, name)
-            GitRepo(self).clone_from(url, dir)
-            return dir
+
+        repo = GitRepo.clone_from(url, dir)
+        return repo
 
         raise Exception(f"The url `{url}` does not point to a git repo")
 
