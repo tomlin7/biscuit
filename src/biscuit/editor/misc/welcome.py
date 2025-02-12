@@ -97,6 +97,14 @@ class Welcome(BaseEditor):
             ["Ctrl", "Shift", "X"],
         ).pack(fill=tk.X, expand=True)
 
+        QuickItem(
+            quick,
+            "Toggle Vim Mode",
+            Icons.KEYBOARD,
+            self.base.commands.toggle_vim_mode,
+            ["Ctrl", "Shift", "V"],
+        ).pack(fill=tk.X, expand=True)
+
     def create_recent_group(self):
         Label(
             self.container,
