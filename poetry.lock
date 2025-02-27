@@ -1792,21 +1792,21 @@ scikit-build = "*"
 
 [[package]]
 name = "tkinterweb"
-version = "3.25.19"
+version = "4.0.0"
 description = "HTML/CSS viewer for Tkinter"
 optional = false
 python-versions = "*"
 files = [
-    {file = "tkinterweb-3.25.19-py3-none-any.whl", hash = "sha256:f4d8735b5eff5fe663b87a3e1308f49325a5ccc9fcc6b96b5f6ca0b1d35759d6"},
-    {file = "tkinterweb-3.25.19-py3-none-linux_armv7l.whl", hash = "sha256:b26a40cc41e50489bee4ac171e7baefb722a37d4b4d35b05f557ae8db67a575c"},
-    {file = "tkinterweb-3.25.19-py3-none-macosx_10_6_x86_64.whl", hash = "sha256:ea828558038a91b796da900a25527c3accf677a6dc044f7bca59d35a6f81551d"},
-    {file = "tkinterweb-3.25.19-py3-none-macosx_11_0_arm64.whl", hash = "sha256:fbfc55af233792ee48508c4caaa7eab79ed08861d26321271c4bd16d181e5ed7"},
-    {file = "tkinterweb-3.25.19-py3-none-manylinux1_i686.whl", hash = "sha256:e44c9273566156dd590c91c71eb72295f7ac37337d0f5e8b45833e5043483d6f"},
-    {file = "tkinterweb-3.25.19-py3-none-manylinux1_x86_64.whl", hash = "sha256:652319a5599793b34689e42e8ff2c38933812275744ba40ad8ab50a1f2bf1c9e"},
-    {file = "tkinterweb-3.25.19-py3-none-manylinux2014_aarch64.whl", hash = "sha256:39e234d424b9cf36aa6b4c218d55755d9b4a9f1415fe6c58526c77ef601541c6"},
-    {file = "tkinterweb-3.25.19-py3-none-win32.whl", hash = "sha256:3affc0027246a9a679cd9e0012c6c2016e9110362c63b483e227e06dc7fd2610"},
-    {file = "tkinterweb-3.25.19-py3-none-win_amd64.whl", hash = "sha256:6eb07af4f238e11b4c39b17d1c364a6d05ae95cfb93478e14ca0aad9ffedba6b"},
-    {file = "tkinterweb-3.25.19.tar.gz", hash = "sha256:7e0c5ae86c7c56d8817d3e0e1d0a0c7a98af40693dba11bfde4ee50218f75a26"},
+    {file = "tkinterweb-4.0.0-py3-none-any.whl", hash = "sha256:d8fb939d3182bf7882df9278eb70262654c066f1bf32b80c030830f97e64d99c"},
+    {file = "tkinterweb-4.0.0-py3-none-linux_armv7l.whl", hash = "sha256:6baa28bae7f9d9a3d0a55aee7fe47ef57a89fbd5e1eaf82129dd838e918e4c8a"},
+    {file = "tkinterweb-4.0.0-py3-none-macosx_10_6_x86_64.whl", hash = "sha256:f397e4d7c48e5865546dbacaeb2e7b4c383ebdad92d6788d6624ea005a3ab709"},
+    {file = "tkinterweb-4.0.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:74f346e444acc9d4f10101bcea5caca54f8668b388eff0038c77f95ab34b080a"},
+    {file = "tkinterweb-4.0.0-py3-none-manylinux1_i686.whl", hash = "sha256:a65f3036015399970885983ab25f95628a2815db9ed3da60585abee73f7225ad"},
+    {file = "tkinterweb-4.0.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:9f2b4e3d1cdbe0071b0134c8f82d3c7502cca4d73e76f5209fe0b2b484d3d987"},
+    {file = "tkinterweb-4.0.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:dfe30d1c0dbea4effc5d14e95e18aa96ef25cd36a578c9ddb2aa7ac15c638705"},
+    {file = "tkinterweb-4.0.0-py3-none-win32.whl", hash = "sha256:b70af16c110eacd5d2d541df04c05d2b88d7e123d259a151ef1a740c9f2e1019"},
+    {file = "tkinterweb-4.0.0-py3-none-win_amd64.whl", hash = "sha256:e598df985d264ee14a289fd8312e2968f60215ac497998a41519a667b0c73d7c"},
+    {file = "tkinterweb-4.0.0.tar.gz", hash = "sha256:72e45b6b6284ea89447e710b39aaec9482f5e48becf81d10d544a42ea324d197"},
 ]
 
 [package.dependencies]
@@ -1965,4 +1965,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e1ab8f2ee1a9c118c41bd2dba07004a9de437900ee6e9041969e792f8738fba8"
+content-hash = "a400b1437e944e8884f43aa623a5c25fdd06ff02c0d8b36179f427135a8e30e7"
