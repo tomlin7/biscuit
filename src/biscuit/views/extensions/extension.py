@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import os
 import tkinter as tk
 import typing
+from pathlib import Path
 
 from biscuit.common.ui import Button, Frame, Label
 
@@ -48,10 +48,15 @@ class ExtensionGUI(Frame):
         self.description = data["description"]
         self.version = data["version"]
 
-        self.installation_directory = os.path.join(self.base.extensiondir, name)
-        self.url = f"{self.manager.extensions_repo_url}/extensions/"
-        self.installed = os.path.isfile(self.file)
+        self.submodule_name = f"extensions/{self.submodule}"
+        self.submodule_repo = self.manager.extensions_repository.get_submodule(
+            self.submodule_name
+        )
 
+        self.path = Path(self.base.extensiondir) / "extensions" / self.submodule
+        self.entry_point = self.path / "extension.py"
+
+        # GUI ----------------
         self.selected = False
         self.bg = self.base.theme.views.sidebar.item.background
         self.hbg = self.base.theme.views.sidebar.item.highlightbackground
@@ -98,14 +103,14 @@ class ExtensionGUI(Frame):
         self.install = Button(
             self.subcontainer,
             "Install",
-            self.run_fetch_extension,
+            self.install_extension,
             padx=10,
         )
         self.install.config(font=("Segoi UI", 8), pady=2)
         self.install.pack(side=tk.RIGHT, fill=tk.X)
         if self.installed:
             self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
-            self.install.set_command(self.remove_extension)
+            self.install.set_command(self.uninstall_extension)
 
         self.bind("<Button-1>", self.set_selected)
         self.namelbl.bind("<Button-1>", self.set_selected)
@@ -118,22 +123,26 @@ class ExtensionGUI(Frame):
         self.bind("<Leave>", self.hoveroff)
         self.hoveroff()
 
-    def remove_extension(self, *_):
-        self.manager.remove_extension(self)
+    @property
+    def installed(self):
+        return self.submodule_repo and self.submodule_repo.module_exists()
 
-    def run_fetch_extension(self, *_):
-        self.manager.run_fetch_extension(self)
+    def uninstall_extension(self, *_):
+        self.manager.uninstall_extension(self)
+
+    def install_extension(self, *_):
+        self.manager.install_extension(self)
 
     def set_unavailable(self):
         self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
     def set_installed(self):
         self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
-        self.install.set_command(self.remove_extension)
+        self.install.set_command(self.uninstall_extension)
 
     def set_uninstalled(self):
         self.install.config(text="Install", bg=self.base.theme.biscuit)
-        self.install.set_command(self.run_fetch_extension)
+        self.install.set_command(self.install_extension)
 
     def set_fetching(self):
         self.install.config(text="Fetching...", bg=self.base.theme.biscuit_dark)

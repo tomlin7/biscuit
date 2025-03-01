@@ -157,3 +157,9 @@ class GitRepo(git.Repo):
     # TODO: push, pull, fetch
     def get_active_branch(self):
         return self.active_branch.name
+
+    def get_submodule(self, path: str) -> git.Submodule:
+        for submodule in self.submodules:
+            if submodule.name == path:
+                return submodule
+        return None

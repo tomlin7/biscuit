@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import shutil
 import sys
 import threading
 import time
@@ -10,15 +9,14 @@ from importlib import util
 from pathlib import Path
 from queue import Queue
 
-import requests
 import toml
 
-from biscuit.extensions.viewer.viewer import ExtensionViewer
-from biscuit.git.repo import GitRepo
-from biscuit.views.extensions.extension import ExtensionGUI
+from biscuit.extensions.installed import Installed
 
 if typing.TYPE_CHECKING:
     from biscuit import App
+    from biscuit.git.repo import GitRepo
+    from biscuit.views.extensions.extension import ExtensionGUI
 
     from . import extension
 
@@ -36,17 +34,21 @@ class ExtensionManager:
         self.extensions_loaded = False
 
         self.interval = 5
-        self.installed: dict[str, bool] = {}
 
+        # fetching
         self.repository_available = False
         self.extensions_repository: GitRepo = None
         self.extensions_repo_url = "https://github.com/tomlin7/biscuit-extensions"
         self.extensions_list = "extensions_future.toml"
+        self.installed = Installed(self)
 
         self.available_extensions: dict[str, str] = {}
         self.fetch_queue = Queue()
         self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
+
+        # running extensions
+        self.loaded_extensions = {}
 
         if not (
             self.base.extensiondir and os.path.isdir(self.base.extensiondir)
@@ -59,13 +61,33 @@ class ExtensionManager:
 
         self.load_queue = Queue()
 
+    def start_server(self):
+        self.queue_installed_extensions()
+        self.alive = True
+        self.server = threading.Thread(target=self.load_extensions, daemon=True)
+        self.server.start()
+
+        self.base.logger.info(f"Extensions server started.")
+
+    def restart_server(self):
+        self.loaded_extensions.clear()
+        self.queue_installed_extensions()
+
+    def stop_server(self):
+        print(f"Extensions server stopped.")
+        self.alive = False
+
+    # CLI commands ----------------
+
     def install_extension_from_name(self, name: str) -> bool:
         """Install an extension from the repository by name."""
 
         if name in self.available_extensions:
             data = self.available_extensions[name]
 
-            t = self.run_fetch_extension(
+            from biscuit.views.extensions.extension import ExtensionGUI
+
+            t = self.install_extension(
                 ExtensionGUI(self.base.extensions_view.results, name, data)
             )
             t.join()
@@ -78,7 +100,7 @@ class ExtensionManager:
         """Uninstall an extension by name."""
 
         if name in self.installed:
-            self.remove_extension(self.installed[name])
+            self.uninstall_extension(self.installed[name])
             return True
 
         return False
@@ -107,6 +129,8 @@ class ExtensionManager:
             if data[1] == user:
                 yield id, data
 
+    # core functions ----------------
+
     def run_fetch_extensions(self, *_) -> None:
         """Called from the Extensions View to fetch extensions."""
 
@@ -125,7 +149,7 @@ class ExtensionManager:
         """
         Update the extensions repository.
 
-        Checks if the repository exists, clones if not,
+        Checks if the extensions repository exists locally, clones if not,
         and pulls the latest changes if it does.
         """
 
@@ -177,8 +201,8 @@ class ExtensionManager:
                 )
                 self.base.extensions_view.results.show_placeholder()
 
-    def display_filtered_extensions(self, search_string) -> None:
-        """Display filtered extensions from the repository."""
+    def display_filtered_extensions(self, search_string: str) -> None:
+        """Display filtered extensions from the repository in the Extensions View."""
 
         if self.available_extensions:
             self.base.extensions_view.results.show_content()
@@ -192,7 +216,7 @@ class ExtensionManager:
                     self.fetch_queue.put((name, data))
 
     def display_all_extensions(self) -> None:
-        """Display all extensions from the repository."""
+        """Display all extensions from the repository in the Extensions View."""
 
         if self.available_extensions:
             self.base.extensions_view.results.show_content()
@@ -200,7 +224,7 @@ class ExtensionManager:
         for name, data in self.available_extensions.items():
             self.fetch_queue.put((name, data))
 
-    def run_fetch_extension(self, ext: ExtensionGUI) -> None:
+    def install_extension(self, ext: ExtensionGUI) -> None:
         """Called from the Extension View to fetch an extension."""
 
         if ext.installed:
@@ -208,32 +232,51 @@ class ExtensionManager:
 
         ext.set_fetching()
 
-        t = threading.Thread(target=self.fetch_extension, args=(ext,), daemon=True)
+        t = threading.Thread(
+            target=self.fetch_extension_thread, args=(ext,), daemon=True
+        )
         t.start()
         return t
 
-    def fetch_extension(self, ext: ExtensionGUI) -> None:
-        """Fetch an extension from the repository."""
+    def fetch_extension_thread(self, ext: ExtensionGUI) -> None:
+        # 1. git submodule update --init extensions/{ext.submodule}
 
-        try:
-            response = requests.get(ext.url)
-            if response.status_code == 200:
-                with open(ext.file, "w") as fp:
-                    fp.write(response.text)
+        if not (ext and ext.submodule_repo):
+            print("Extension not found.")
+            return
 
-                self.load_extension(ext.file)
-                ext.set_installed()
+        # try:
+        # Deprecated in favor of git submodules (v3.0.0)
 
-                self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
-                self.base.notifications.info(
-                    f"Extension '{ext.name}' has been installed!"
-                )
-        except Exception as e:
-            ext.set_unavailable()
-            self.base.logger.error(f"Installing extension '{ext.name}' failed: {e}")
-            self.base.notifications.error(f"Installing extension '{ext.name}' failed.")
+        # response = requests.get(ext.url)
+        # if response.status_code == 200:
+        #     with open(ext.file, "w") as fp:
+        #         fp.write(response.text)
 
-    def remove_extension(self, ext: ExtensionGUI) -> None:
+        # I forgot what i was doing at this point
+
+        # self.extensions_repository.submodule_update(
+        #     ext.submodule_name, ext.submodule_repo
+        # )
+
+        # edit: i guess this is easier
+        ext.submodule_repo.update(init=True, force=True)
+
+        print("executed")
+        ext.set_installed()
+        self.installed[ext.name] = ext.data
+
+        # self.load_extension(ext)
+
+        self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
+        self.base.notifications.info(f"Extension '{ext.name}' has been installed!")
+
+        # except Exception as e:
+        #     ext.set_unavailable()
+        #     self.base.logger.error(f"Installing extension '{ext.name}' failed: {e}")
+        #     self.base.notifications.error(f"Installing extension '{ext.name}' failed.")
+
+    def uninstall_extension(self, ext: ExtensionGUI) -> None:
         """Remove an extension from the system."""
 
         # 1. git submodule deinit -f -- a/submodule
@@ -325,15 +368,20 @@ class ExtensionManager:
                 if path.is_dir() and str(path) in sys.path:
                     sys.path.remove(str(path))
 
-    def register_installed(self, name: str, extension: object) -> None:
-        """Register an installed extension."""
+    def register_this_installed(self, name: str, extension: object) -> None:
+        """Register an installed extension instance.
+        (No particular use case for now, still keeping for future use.)
 
-        self.installed[name] = extension
+        NOTE: Called from the extension itself
+        """
+
+        self.loaded_extensions[name] = extension
         try:
             extension.install()
         except Exception as e:
             print(e)
-            # most likely the extension does not implement the install method
+            # most likely the extension object does not follow standard
+            # still allow the extension to be registered
             ...
 
     def queue_installed_extensions(self) -> None:
@@ -352,21 +400,7 @@ class ExtensionManager:
         load_extension(self.base.extensiondir)
         load_extension(self.base.fallback_extensiondir)
 
-    def start_server(self):
-        self.queue_installed_extensions()
-        self.alive = True
-        self.server = threading.Thread(target=self.load_extensions, daemon=True)
-        self.server.start()
-
-        self.base.logger.info(f"Extensions server started.")
-
-    def restart_server(self):
-        self.installed.clear()
-        self.queue_installed_extensions()
-
-    def stop_server(self):
-        print(f"Extensions server stopped.")
-        self.alive = False
+    # Sandboxed execution was planned but removed due to some issues faced
 
     # def restricted_import(self, name, globals={}, locals={}, fromlist=[], level=0):
     #     # sandboxed import function
