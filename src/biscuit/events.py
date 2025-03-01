@@ -270,7 +270,7 @@ class EventManager(GUIManager, ConfigManager):
         self.contentpane.toggle_panel()
 
     def update_statusbar(self) -> None:
-        if editor := self.editorsmanager.active_editor:
+        if (editor := self.editorsmanager.active_editor) in self.editorsmanager.active_editors:
             if editor.content and editor.content.editable:
                 self.statusbar.toggle_editmode(True)
                 active_text = editor.content.text

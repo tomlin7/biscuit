@@ -21,7 +21,7 @@ class Resources:
         self.load_data()
 
     def load_data(self) -> None:
-        self.logo = self.load_image("logo.png")
+        # self.logo = self.load_image("logo.png")
         self.stipple = self.get_res_path("bitmap/stipple.xbm")
         self.indent_guide = self.get_res_path("bitmap/indentguide.xbm")
         self.line = self.get_res_path("bitmap/line.xbm")
