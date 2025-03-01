@@ -24,18 +24,18 @@ sv-ttk = "^2.6.0"
 Pillow = ">=10.3,<12.0"
 requests = "^2.32.2"
 pyperclip = "^1.8.2"
-tkinterweb = "^3.23.9"
+tkinterweb = ">=3.23.9,<5.0.0"
 mistune = "^3.0.2"
 chardet = "^5.2.0"
 pywinpty = { version = "^2.0.13", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
 python-tkdnd = "^0.2.1"
-psutil = ">=5.9.8,<7.0.0"
+psutil = ">=5.9.8,<8.0.0"
 google-generativeai = ">=0.7,<0.9"
 sortedcontainers = "^2.4.0"
 click = "^8.1.7"
 tarts = "0.14.0"
-editorconfig = "^0.12.4"
+editorconfig = ">=0.12.4,<0.18.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
