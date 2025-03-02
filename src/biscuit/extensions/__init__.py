@@ -1,3 +1,3 @@
 from .extension import Extension
-from .extensions import ExtensionManager
+from .manager import ExtensionManager
 from .viewer import ExtensionViewer

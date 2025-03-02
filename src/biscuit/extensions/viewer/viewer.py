@@ -86,10 +86,10 @@ class ExtensionViewer(Toplevel):
 
         if ext.installed:
             self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
-            self.install.set_command(ext.remove_extension)
+            self.install.set_command(ext.uninstall_extension)
         else:
             self.install.config(text="Install", bg=self.base.theme.biscuit)
-            self.install.set_command(ext.run_fetch_extension)
+            self.install.set_command(ext.install_extension)
 
         self.deiconify()
         self.focus_set()

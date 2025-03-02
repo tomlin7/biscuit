@@ -110,12 +110,12 @@ class GitRepo(git.Repo):
 
         return self.index.commit(message, author=self.author, **kwargs)
 
-    def push_files(self, remote="origin", branch="", **kwargs):
+    def push(self, remote="origin", branch="", **kwargs):
         if not branch:
             branch = self.active_branch.name
         return self.do(self.remotes[remote].push, branch, **kwargs)
 
-    def pull_files(self, remote="", branch="", **kwargs):
+    def pull(self, remote="", branch="", **kwargs):
         if not remote:
             remote = "origin"
         if not branch:
@@ -157,3 +157,9 @@ class GitRepo(git.Repo):
     # TODO: push, pull, fetch
     def get_active_branch(self):
         return self.active_branch.name
+
+    def get_submodule(self, path: str) -> git.Submodule:
+        for submodule in self.submodules:
+            if submodule.name == path:
+                return submodule
+        return None
