@@ -4,6 +4,8 @@ import tkinter as tk
 import typing
 from pathlib import Path
 
+from git import Submodule
+
 from biscuit.common.ui import Button, Frame, Label
 
 if typing.TYPE_CHECKING:
@@ -49,8 +51,21 @@ class ExtensionGUI(Frame):
         self.version = data["version"]
 
         self.submodule_name = f"extensions/{self.submodule}"
-        self.submodule_repo = self.manager.extensions_repository.get_submodule(
+        self.submodule_repo = s = self.manager.extensions_repository.get_submodule(
             self.submodule_name
+        )
+        self.submodule_repo = Submodule(
+            s.repo,
+            s.binsha,
+            s.mode,
+            s.path,
+            s.name,
+            s.parent_commit,
+            s.url,
+            # A really bad hack to get gitpython working with our system
+            # since gitpython is stupid and doesn't let us modify the default target branch
+            # i.e it has default=`master` and we use `main`
+            "refs/heads/main",
         )
 
         self.path = Path(self.base.extensiondir) / "extensions" / self.submodule
