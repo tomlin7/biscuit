@@ -972,14 +972,14 @@ python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 
 [[package]]
 name = "mkdocstrings-python"
-version = "1.16.4"
+version = "1.16.5"
 description = "A Python handler for mkdocstrings."
 optional = false
 python-versions = ">=3.9"
 groups = ["docs"]
 files = [
-    {file = "mkdocstrings_python-1.16.4-py3-none-any.whl", hash = "sha256:db5dbe7d1ab506d673a798703331854052b14820e8c038f1341da6150b2a41c4"},
-    {file = "mkdocstrings_python-1.16.4.tar.gz", hash = "sha256:869af98e7f692021d9fd589cd9d0b3f1041998a4a011834cd976300889305a9b"},
+    {file = "mkdocstrings_python-1.16.5-py3-none-any.whl", hash = "sha256:0899a12e356eab8e83720c63e15d0ff51cd96603216c837618de346e086b39ba"},
+    {file = "mkdocstrings_python-1.16.5.tar.gz", hash = "sha256:706b28dd0f59249a7c22cc5d517c9521e06c030b57e2a5478e1928a58f900abb"},
 ]
 
 [package.dependencies]
