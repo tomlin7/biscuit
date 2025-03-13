@@ -38,7 +38,9 @@ class ConfigManager:
     # constants
     resdir: str
     appdir: str
-    extensiondir: str
+    extensiondir: Path
+    fallback_extensiondir: Path
+    datadir: str
     git_found = False
     wrap_words = False
     tab_spaces = 4
@@ -91,10 +93,12 @@ class ConfigManager:
             self.appdir = os.path.dirname(os.path.abspath(__file__))
             self.parentdir = Path(self.appdir).parent.parent.absolute()
 
+        # TODO everything `parentdir` should be moved to Home / .biscuit
+
         self.configdir = os.path.join(self.parentdir, "config")
 
         self.extensiondir = Path.home() / ".biscuit" / "extensions"
-        self.fallback_extensiondir = os.path.join(self.parentdir, "extensions")
+        self.fallback_extensiondir = Path(self.parentdir) / "extensions"
 
         self.datadir = os.path.join(self.parentdir, "data")
 

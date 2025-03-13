@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-import importlib
+import errno
 import os
+import platform
+import shutil
+import stat
+import subprocess
 import sys
 import threading
 import time
@@ -12,6 +16,7 @@ from queue import Queue
 
 import toml
 
+from biscuit.extensions import installed
 from biscuit.extensions.installed import Installed
 
 if typing.TYPE_CHECKING:
@@ -56,8 +61,7 @@ class ExtensionManager:
         self.fetching = threading.Event()
         self.extensions_lock = threading.Lock()
 
-
-        if p := Path(self.base.fallback_extensiondir):
+        if p := Path(self.base.extensiondir):
             if p.exists():
                 self.extension_dir = p
             else:
@@ -69,6 +73,53 @@ class ExtensionManager:
  
         self.load_queue: Queue[Path] = Queue()
         sys.path.append(str(self.extension_dir))
+
+    def run_fetch_extensions(self, *_) -> None:
+        """Called from the Extensions View to fetch extensions."""
+
+        if self.base.testing:
+            return
+
+        if self.fetching.is_set():
+            self.fetching.wait()
+
+        with self.extensions_lock:
+            threading.Thread(
+                target=self.update_extension_repository, daemon=True
+            ).start()
+    
+    def update_extension_repository(self) -> bool:
+        """Update the extensions repository.
+
+        Checks if the extensions repository exists locally, clones if not,
+        and pulls the latest changes if it does."""
+
+        def update_or_clone_repo(extension_dir: Path) -> None:
+            self.repository_available, self.extensions_repository = self.git.check_git(extension_dir)
+
+            if self.repository_available:
+                self.extensions_repository.pull()
+            else:
+                self.extensions_repository = self.git.clone(
+                    self.extensions_repo_url,
+                    extension_dir,
+                    make_folder=False,
+                )
+
+            self.available_extensions = toml.load(extension_dir / self.extensions_list)
+            self.display_all_extensions()
+
+        try:
+            update_or_clone_repo(self.base.extensiondir)
+        except Exception as e:
+            self.base.logger.error(f"Failed to update extensions repository: {e}")
+            try:
+                update_or_clone_repo(self.base.fallback_extensiondir)
+            except Exception as clone_error:
+                self.base.logger.error(
+                    f"Failed to update/clone extensions repository: {clone_error}"
+                )
+                self.base.extensions_view.results.show_placeholder()
 
     def start_server(self):
         self.queue_installed_extensions()
@@ -147,78 +198,6 @@ class ExtensionManager:
                 if path.is_dir() and str(path) in sys.path:
                     sys.path.remove(str(path))
 
-    def run_fetch_extensions(self, *_) -> None:
-        """Called from the Extensions View to fetch extensions."""
-
-        if self.base.testing:
-            return
-
-        if self.fetching.is_set():
-            self.fetching.wait()
-
-        with self.extensions_lock:
-            threading.Thread(
-                target=self.update_extension_repository, daemon=True
-            ).start()
-
-    def update_extension_repository(self) -> bool:
-        """
-        Update the extensions repository.
-
-        Checks if the extensions repository exists locally, clones if not,
-        and pulls the latest changes if it does.
-        """
-
-        try:
-            self.repository_available, self.extensions_repository = self.git.check_git(
-                self.base.fallback_extensiondir
-            )
-
-            # update the repo if already cloned (TODO: conflict possibility?)
-            # otherwise clone the repo
-
-            if self.repository_available:
-                self.extensions_repository.pull()
-            else:
-                self.extensions_repository = self.git.clone(
-                    self.extensions_repo_url,
-                    self.base.fallback_extensiondir,
-                    make_folder=False,
-                )
-
-            self.available_extensions = toml.load(
-                Path(self.base.fallback_extensiondir) / self.extensions_list
-            )
-
-            self.display_all_extensions()
-
-        except Exception as e:
-            print(f"Failed to update extensions repository: {e}")
-            try:
-                self.repository_available, self.extensions_repository = (
-                    self.git.check_git(self.base.extensiondir)
-                )
-
-                if self.repository_available:
-                    self.extensions_repository.pull()
-                else:
-                    self.extensions_repository = self.git.clone(
-                        self.extensions_repo_url,
-                        self.base.extensiondir,
-                        make_folder=False,
-                    )
-
-                self.available_extensions = toml.load(
-                    Path(self.base.extensiondir) / self.extensions_list
-                )
-
-                self.display_all_extensions()
-
-            except Exception as clone_error:
-                self.base.logger.error(
-                    f"Failed to update/clone extensions repository: {clone_error}"
-                )
-                self.base.extensions_view.results.show_placeholder()
 
     def install_extension(self, ext: ExtensionGUI) -> None:
         if ext.installed:
@@ -233,64 +212,27 @@ class ExtensionManager:
         return t
 
     def fetch_extension_thread(self, ext: ExtensionGUI) -> None:
-        # 1. git submodule update --init extensions/{ext.submodule}
 
         if not (ext and ext.submodule_repo):
             print("Extension not found.")
             return
 
         try:
-            # Deprecated in favor of git submodules (v3.0.0)
-
-            # response = requests.get(ext.url)
-            # if response.status_code == 200:
-            #     with open(ext.file, "w") as fp:
-            #         fp.write(response.text)
-
-
-            # self.extensions_repository.submodule_update(
-            #     ext.submodule_name, ext.submodule_repo
-            # )
-            
-            # Actually, this is easier
+            # 1. git submodule update --init extensions/{ext.submodule}
             ext.submodule_repo.update(init=True, force=True)
 
             ext.set_installed()
-            self.installed[ext.name] = ext.data
+            self.installed[ext.id] = ext.data
 
-            self.load_extension(ext.submodule_id_partial)
+            self.load_extension(ext.id)
 
-            self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
-            self.base.notifications.info(f"Extension '{ext.name}' has been installed!")
+            self.base.logger.info(f"Fetching extension '{ext.display_name}' successful.")
+            self.base.notifications.info(f"Extension '{ext.display_name}' has been installed!")
 
         except Exception as e:
             ext.set_unavailable()
-            self.base.logger.error(f"Installing extension '{ext.name}' failed: {e}")
-            self.base.notifications.error(f"Installing '{ext.name}' failed.")
-
-    def uninstall_extension(self, ext: ExtensionGUI) -> None: 
-        """Remove an extension from the system."""
-
-        # TODO
-        # 1. git submodule deinit -f -- a/submodule
-        # 2. rm -rf .git/modules/a/submodule
-        # 3. git rm -f a/submodule
-
-        try:
-            os.remove(ext.file)
-            self.unload_extension(ext.filename)
-
-            ext.set_uninstalled()
-
-            self.base.logger.info(f"Uninstalling extension '{ext.name}' successful.")
-            self.base.notifications.info(
-                f"Extension '{ext.name}' has been uninstalled!"
-            )
-        except Exception as e:
-            self.base.logger.error(f"Uninstalling extension '{ext.name}' failed.\n{e}")
-
-    def open_extension(self, ext: ExtensionGUI) -> None:
-        self.base.extension_viewer.show(ext)
+            self.base.logger.error(f"Installing extension '{ext.display_name}' failed: {e}")
+            self.base.notifications.error(f"Installing '{ext.display_name}' failed.")
 
     def load_extension(self, ext_id: str):
         if ext_id:
@@ -299,13 +241,56 @@ class ExtensionManager:
                 return
             
             self.load_queue.put(self.extension_dir / "extensions" / ext_id)
+    
+    def uninstall_extension(self, ext: ExtensionGUI) -> None:
 
-    def unload_extension(self, file: str):
-        if file.endswith(".py"):
-            file = os.path.splitext(file)[0]
+        try:
+            if not ext.submodule_repo:
+                self.base.logger.error(f"Cannot uninstall '{ext.display_name}': not a valid submodule")
+                return
+            
+            # ext.submodule_repo.deinit(force=True)
+            # i wish that was a thing, but it's not
+            # so we'll have to access git directly
+            
+            # 1. git submodule deinit -f -- a/submodule
+            self.extensions_repository.git.submodule('deinit', '-f', ext.submodule_name)
+            
+            # 2. rm -rf .git/modules/a/submodule
+            module_path = Path(self.extensions_repository.git_dir) / 'modules' / ext.submodule_name
+            if module_path.exists():
+                if platform.system() == 'Windows':
+                    subprocess.run(f'rmdir /s /q "{module_path}"', shell=True, cwd=Path.home())
+                else:
+                    shutil.rmtree(module_path)
+            else:
+                self.base.logger.error(f"Module path for '{ext.display_name}' doesn't exist: was this ever initialized?")
 
-        if file in self.installed:
-            self.installed.pop(file)
+            # TODO: because git still holds this empty sm directory, we can't remove it
+            # side effect: you can't install -> uninstall -> install the same extension
+            # 3. rmdir a/submodule
+            # Path(ext.submodule_repo.abspath).rmdir()
+
+            self.unload_extension(ext.id)
+            ext.set_uninstalled()
+
+            self.base.logger.info(f"Uninstalling extension '{ext.display_name}' successful.")
+            self.base.notifications.info(
+                f"Extension '{ext.display_name}' has been uninstalled!"
+            )
+        except Exception as e:
+            self.base.logger.error(f"Uninstalling extension '{ext.display_name}' failed.\n{e}")
+            self.base.notifications.error(f"Failed to uninstall '{ext.display_name}': {str(e)}")
+
+    def unload_extension(self, ext_id: str):
+        if ext_id in self.installed:
+            self.installed.pop(ext_id)
+    
+    def check_installed(self, ext: ExtensionGUI) -> bool:
+        return ext.partial_id in self.installed
+
+    def open_extension(self, ext: ExtensionGUI) -> None:
+        self.base.extension_viewer.show(ext)
 
     def register_this_installed(self, name: str, extension: Extension) -> None:
         """

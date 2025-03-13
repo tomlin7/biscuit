@@ -79,7 +79,7 @@ class ExtensionViewer(Toplevel):
 
     def show(self, ext: ExtensionGUI) -> None:
         self.ext = ext
-        self.name.config(text=ext.name)
+        self.name.config(text=ext.display_name)
         self.version.config(text=f"v0.1.0")
         self.author.config(text=f"by @{ext.author}")
         self.description.config(text=ext.description)

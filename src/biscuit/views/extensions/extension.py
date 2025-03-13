@@ -6,7 +6,7 @@ from pathlib import Path
 
 from git import Submodule
 
-from biscuit.common.ui import Button, Frame, Label
+from biscuit.common.ui import Frame, HoverChangeButton, Label
 
 if typing.TYPE_CHECKING:
     from .results import Results
@@ -33,7 +33,7 @@ class ExtensionGUI(Frame):
         self.config(**self.base.theme.views.sidebar.item)
         self.manager = self.base.extensions_manager
 
-        self.id = name
+        self.partial_id = name
         self.data = data
 
         # sample data
@@ -44,13 +44,13 @@ class ExtensionGUI(Frame):
         # description = "Rust language support"
         # version = "0.1.0"
 
-        self.submodule_id_partial = data["submodule"]
-        self.name = data["name"]
+        self.id = data["submodule"]
+        self.display_name = data["name"]
         self.author = data["author"]
         self.description = data["description"]
         self.version = data["version"]
 
-        self.submodule_name = f"extensions/{self.submodule_id_partial}"
+        self.submodule_name = f"extensions/{self.id}"
         self.submodule_repo = s = self.manager.extensions_repository.get_submodule(
             self.submodule_name
         )
@@ -70,7 +70,7 @@ class ExtensionGUI(Frame):
             "refs/heads/main",
         )
 
-        self.path = Path(self.base.extensiondir) / "extensions" / self.submodule_id_partial
+        self.path = Path(self.base.extensiondir) / "extensions" / self.id
         self.entry_point = self.path / "extension.py"
 
         # GUI ----------------
@@ -117,17 +117,14 @@ class ExtensionGUI(Frame):
         self.authorlbl.config(fg="grey")
         self.authorlbl.pack(side=tk.LEFT, fill=tk.X)
 
-        self.install = Button(
-            self.subcontainer,
-            "Install",
-            self.install_extension,
-            padx=10,
-        )
+        self.install = HoverChangeButton(self.subcontainer, "Install", padx=10)
         self.install.config(font=("Segoi UI", 8), pady=2)
         self.install.pack(side=tk.RIGHT, fill=tk.X)
+        
         if self.installed:
-            self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
-            self.install.set_command(self.uninstall_extension)
+            self.set_installed()
+        else:
+            self.set_uninstalled()
 
         self.bind("<Button-1>", self.set_selected)
         self.namelbl.bind("<Button-1>", self.set_selected)
@@ -142,7 +139,9 @@ class ExtensionGUI(Frame):
 
     @property
     def installed(self):
-        return self.submodule_repo and self.submodule_repo.module_exists()
+        return self.submodule_repo and self.submodule_repo.module_exists() and (
+            (self.manager.extension_dir / f"extensions/{self.id}/.git").exists()
+        )
 
     def uninstall_extension(self, *_):
         self.manager.uninstall_extension(self)
@@ -151,19 +150,29 @@ class ExtensionGUI(Frame):
         self.manager.install_extension(self)
 
     def set_unavailable(self):
-        self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
+        self.install.text = "Error"
+        self.install.hovertext = "Retry"
+        self.install.config(text="Error", bg=self.base.theme.biscuit_dark)
 
     def set_installed(self):
+        self.install.set_command(self.uninstall_extension)
+
+        self.install.text = "Installed"
+        self.install.hovertext = "Uninstall"
         self.install.config(
             text="Installed",
             bg=self.base.theme.biscuit_dark,
             activebackground="#c61c1c",
         )
-        self.install.set_command(self.uninstall_extension)
 
     def set_uninstalled(self):
-        self.install.config(text="Install", bg=self.base.theme.biscuit)
         self.install.set_command(self.install_extension)
+
+        self.install.config(
+            text="Install", bg=self.base.theme.biscuit, activebackground=self.base.theme.biscuit
+        )
+        self.install.text = "Install"
+        self.install.hovertext = "Click to install"
 
     def set_fetching(self):
         self.install.config(text="Fetching...", bg=self.base.theme.biscuit_dark)
@@ -216,3 +225,4 @@ class ExtensionGUI(Frame):
             self.subcontainer.config(bg=self.bg)
         except:
             pass
+

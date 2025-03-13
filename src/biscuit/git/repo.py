@@ -14,7 +14,7 @@ if typing.TYPE_CHECKING:
 class GitRepo(git.Repo):
     """Git Repository
 
-    This class is a wrapper around the `git.Repo` class to manage git repositories and branches.
+    wrapper around the `git.Repo` class to manage git repositories and branches.
     """
 
     def __init__(self, master: Git = None, path=None, *args, **kwargs) -> None:
