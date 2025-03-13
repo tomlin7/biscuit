@@ -73,7 +73,7 @@ class ExtensionManager:
     def start_server(self):
         self.queue_installed_extensions()
         self.alive = True
-        self.server = threading.Thread(target=self.load_extensions, daemon=True)
+        self.server = threading.Thread(target=self.run_queued_extensions, daemon=True)
         self.server.start()
 
         self.base.logger.info(f"Extensions server started.")
@@ -91,6 +91,9 @@ class ExtensionManager:
         if not os.path.isdir(ext_subdir):
             return
         
+        # TODO: iterate the available git submodules instead of the directory
+        # since we know all the initialized submodules, that would be better
+
         for ext in ext_subdir.iterdir():
             if ext.name in self.installed:
                 continue
@@ -99,9 +102,7 @@ class ExtensionManager:
 
             self.load_queue.put(ext)
 
-    def load_extensions(self):
-        """Not to be called directly. Use `start_server` instead."""
-
+    def run_queued_extensions(self):
         refresh_count = 0
         while self.alive:
             if self.load_queue.empty():
@@ -122,6 +123,10 @@ class ExtensionManager:
 
             path = path / "src" / name / "__init__.py"
             module_name = f"src.{name}"
+
+            if not path.exists():
+                # submodule is not yet initialized. i.e not installed yet.
+                continue
 
             try:
                 spec = util.spec_from_file_location(module_name, path)
@@ -253,7 +258,7 @@ class ExtensionManager:
             ext.set_installed()
             self.installed[ext.name] = ext.data
 
-            self.load_extension(ext)
+            self.load_extension(ext.submodule_id_partial)
 
             self.base.logger.info(f"Fetching extension '{ext.name}' successful.")
             self.base.notifications.info(f"Extension '{ext.name}' has been installed!")
@@ -287,13 +292,13 @@ class ExtensionManager:
     def open_extension(self, ext: ExtensionGUI) -> None:
         self.base.extension_viewer.show(ext)
 
-    def load_extension(self, id: str):
-        if id:
+    def load_extension(self, ext_id: str):
+        if ext_id:
             # if an extension with same name is already loaded, skip
-            if id in self.installed:
+            if ext_id in self.installed:
                 return
             
-            self.load_queue.put(self.extension_dir / "extensions" / id)
+            self.load_queue.put(self.extension_dir / "extensions" / ext_id)
 
     def unload_extension(self, file: str):
         if file.endswith(".py"):

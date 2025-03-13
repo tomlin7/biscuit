@@ -44,16 +44,18 @@ class ExtensionGUI(Frame):
         # description = "Rust language support"
         # version = "0.1.0"
 
-        self.submodule = data["submodule"]
+        self.submodule_id_partial = data["submodule"]
         self.name = data["name"]
         self.author = data["author"]
         self.description = data["description"]
         self.version = data["version"]
 
-        self.submodule_name = f"extensions/{self.submodule}"
+        self.submodule_name = f"extensions/{self.submodule_id_partial}"
         self.submodule_repo = s = self.manager.extensions_repository.get_submodule(
             self.submodule_name
         )
+
+        # TODO: don't do this here, do it when install is called
         self.submodule_repo = Submodule(
             s.repo,
             s.binsha,
@@ -68,7 +70,7 @@ class ExtensionGUI(Frame):
             "refs/heads/main",
         )
 
-        self.path = Path(self.base.extensiondir) / "extensions" / self.submodule
+        self.path = Path(self.base.extensiondir) / "extensions" / self.submodule_id_partial
         self.entry_point = self.path / "extension.py"
 
         # GUI ----------------
