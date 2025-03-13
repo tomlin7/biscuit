@@ -149,10 +149,10 @@ class Git(git.Git):
         if make_folder and (name := self.repo_name(url)):
             dir = os.path.join(dir, name)
 
-        repo = GitRepo.clone_from(url, dir)
+        repo = GitRepo().clone_from(url, dir)
         return repo
 
-        raise Exception(f"The url `{url}` does not point to a git repo")
+        # raise Exception(f"The url `{url}` does not point to a git repo")
 
     def repo_name(self, url: str) -> None:
         match = re.search(r"/([^/]+?)(\.git)?$", url)

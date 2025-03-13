@@ -62,8 +62,8 @@ class ExtensionGUI(Frame):
             s.name,
             s.parent_commit,
             s.url,
-            # A really bad hack to get gitpython working with our system
-            # since gitpython is stupid and doesn't let us modify the default target branch
+            # hack to get gitpython working with our setup
+            # since gitpython is stupid and doesn't let us modify the default target branch easily
             # i.e it has default=`master` and we use `main`
             "refs/heads/main",
         )
@@ -152,7 +152,11 @@ class ExtensionGUI(Frame):
         self.install.config(text="Unavailable", bg=self.base.theme.biscuit_dark)
 
     def set_installed(self):
-        self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
+        self.install.config(
+            text="Installed",
+            bg=self.base.theme.biscuit_dark,
+            activebackground="#c61c1c",
+        )
         self.install.set_command(self.uninstall_extension)
 
     def set_uninstalled(self):
