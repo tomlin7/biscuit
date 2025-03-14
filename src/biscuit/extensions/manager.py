@@ -46,7 +46,7 @@ class ExtensionManager:
         self.extension_dir: Path
         self.extensions_repository: GitRepo = None
         self.extensions_repo_url = "https://github.com/tomlin7/biscuit-extensions"
-        self.extensions_list = "extensions_future.toml"
+        self.extensions_list = "extensions.toml"
         # this flag marks if extensions repo has already been cloned
         self.repository_available = False
 
