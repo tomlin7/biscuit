@@ -154,12 +154,12 @@ class Git(Frame):
 
     def push(self, *_) -> None:
         try:
-            self.base.git.repo.push_files()
+            self.base.git.repo.push()
         except AttributeError:
             self.base.logger.error("No git repository found.")
 
     def pull(self, *_) -> None:
         try:
-            self.base.git.repo.pull_files()
+            self.base.git.repo.pull()
         except AttributeError:
             self.base.logger.error("No git repository found.")

@@ -79,17 +79,17 @@ class ExtensionViewer(Toplevel):
 
     def show(self, ext: ExtensionGUI) -> None:
         self.ext = ext
-        self.name.config(text=ext.name)
+        self.name.config(text=ext.display_name)
         self.version.config(text=f"v0.1.0")
         self.author.config(text=f"by @{ext.author}")
         self.description.config(text=ext.description)
 
         if ext.installed:
             self.install.config(text="Installed", bg=self.base.theme.biscuit_dark)
-            self.install.set_command(ext.remove_extension)
+            self.install.set_command(ext.uninstall_extension)
         else:
             self.install.config(text="Install", bg=self.base.theme.biscuit)
-            self.install.set_command(ext.run_fetch_extension)
+            self.install.set_command(ext.install_extension)
 
         self.deiconify()
         self.focus_set()

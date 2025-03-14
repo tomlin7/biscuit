@@ -22,6 +22,53 @@ class Button(Menubutton):
 
         self.bind("<Button-1>", command)
 
+class HoverChangeButton(Menubutton):
+    """A flat style button changing text on hover"""
+
+    def __init__(self, master, text, command=lambda _: None, hovertext=None, *args, **kwargs) -> None:
+        super().__init__(master, text=text, *args, **kwargs)
+        self.config(
+            pady=5,
+            font=self.base.settings.uifont,
+            cursor="hand2",
+            **self.base.theme.utils.button
+        )
+        self.set_command(command)
+        self.text = text
+        self.hovertext = hovertext
+
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def set_command(self, command) -> None:
+        """Set the command for the button"""
+
+        self.bind("<Button-1>", command)
+
+    def on_enter(self, *_) -> None:
+        if self.hovertext:
+            self.config(text=self.hovertext)
+
+    def on_leave(self, *_) -> None:
+        self.config(text=self.text)
+
+class BorderedHoverChangeButton(Frame):
+    """A flat style button changing text on hover"""
+
+    def __init__(self, master, text, command=lambda _: None, hovertext=None, *args, **kwargs) -> None:
+        super().__init__(master, padx=1, pady=1)
+        super().config(bg=self.base.theme.border)
+
+        self.btn = HoverChangeButton(self, text, command, hovertext, *args, **kwargs)
+        self.btn.pack(fill=tk.X, expand=True)
+
+    def config(self, **kwargs) -> None:
+        self.btn.config(**kwargs)
+
+    def set_command(self, command) -> None:
+        """Set the command for the button"""
+
+        self.btn.set_command(command)
 
 class IconLabelButton(Frame):
     """Icon label button with both text and icon
