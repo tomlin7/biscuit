@@ -16,8 +16,7 @@ from queue import Queue
 
 import toml
 
-from biscuit.extensions import installed
-from biscuit.extensions.installed import Installed
+from .installed import Installed
 
 if typing.TYPE_CHECKING:
     from biscuit import App
@@ -25,6 +24,7 @@ if typing.TYPE_CHECKING:
     from biscuit.git.repo import GitRepo
     from biscuit.views.extensions.extension import ExtensionGUI
 
+    # type hinting for dynamically loaded extension modules
     from . import extension
 
 
@@ -146,6 +146,8 @@ class ExtensionManager:
         # since we know all the initialized submodules, that would be better
 
         for ext in ext_subdir.iterdir():
+            # id is also the name of the submodule folder
+            # so this is a valid check
             if ext.name in self.installed:
                 continue
             if not ext.is_dir():
@@ -218,11 +220,12 @@ class ExtensionManager:
             return
 
         try:
-            # 1. git submodule update --init extensions/{ext.submodule}
+            # `git submodule update --init extensions/{ext.submodule}`
             ext.submodule_repo.update(init=True, force=True)
 
-            ext.set_installed()
             self.installed[ext.id] = ext.data
+            self.installed.dump()
+            ext.set_installed()  # GUI update
 
             self.load_extension(ext.id)
 
@@ -234,7 +237,7 @@ class ExtensionManager:
             self.base.logger.error(f"Installing extension '{ext.display_name}' failed: {e}")
             self.base.notifications.error(f"Installing '{ext.display_name}' failed.")
 
-    def load_extension(self, ext_id: str):
+    def load_extension(self, ext_id: str) -> None:
         if ext_id:
             # if an extension with same name is already loaded, skip
             if ext_id in self.installed:
@@ -253,10 +256,10 @@ class ExtensionManager:
             # i wish that was a thing, but it's not
             # so we'll have to access git directly
             
-            # 1. git submodule deinit -f -- a/submodule
+            # `git submodule deinit -f -- extensions/{ext.submodule}`
             self.extensions_repository.git.submodule('deinit', '-f', ext.submodule_name)
             
-            # 2. rm -rf .git/modules/a/submodule
+            # `rm -rf .git/modules/extensions/{ext.submodule}`
             module_path = Path(self.extensions_repository.git_dir) / 'modules' / ext.submodule_name
             if module_path.exists():
                 if platform.system() == 'Windows':
@@ -267,12 +270,16 @@ class ExtensionManager:
                 self.base.logger.error(f"Module path for '{ext.display_name}' doesn't exist: was this ever initialized?")
 
             # TODO: because git still holds this empty sm directory, we can't remove it
-            # side effect: you can't install -> uninstall -> install the same extension
-            # 3. rmdir a/submodule
+            # as a result, you can't install -> uninstall -> install the same extension
+            # `rmdir /s /q extensions/{ext.submodule}`
             # Path(ext.submodule_repo.abspath).rmdir()
 
             self.unload_extension(ext.id)
+            
             ext.set_uninstalled()
+            if ext.id in self.installed:
+                self.installed.pop(ext.id)
+                self.installed.dump()
 
             self.base.logger.info(f"Uninstalling extension '{ext.display_name}' successful.")
             self.base.notifications.info(
@@ -283,8 +290,8 @@ class ExtensionManager:
             self.base.notifications.error(f"Failed to uninstall '{ext.display_name}': {str(e)}")
 
     def unload_extension(self, ext_id: str):
-        if ext_id in self.installed:
-            self.installed.pop(ext_id)
+        # TODO: unload the extension from queue if it's still there
+        ...
     
     def check_installed(self, ext: ExtensionGUI) -> bool:
         return ext.partial_id in self.installed

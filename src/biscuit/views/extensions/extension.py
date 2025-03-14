@@ -152,7 +152,9 @@ class ExtensionGUI(Frame):
     def set_unavailable(self):
         self.install.text = "Error"
         self.install.hovertext = "Retry"
-        self.install.config(text="Error", bg=self.base.theme.biscuit_dark)
+        self.install.config(
+            text="Error", bg=self.base.theme.border, activebackground=self.base.theme.biscuit
+        )
 
     def set_installed(self):
         self.install.set_command(self.uninstall_extension)
@@ -161,7 +163,7 @@ class ExtensionGUI(Frame):
         self.install.hovertext = "Uninstall"
         self.install.config(
             text="Installed",
-            bg=self.base.theme.biscuit_dark,
+            bg=self.base.theme.border,
             activebackground="#c61c1c",
         )
 
@@ -172,7 +174,7 @@ class ExtensionGUI(Frame):
             text="Install", bg=self.base.theme.biscuit, activebackground=self.base.theme.biscuit
         )
         self.install.text = "Install"
-        self.install.hovertext = "Click to install"
+        self.install.hovertext = None
 
     def set_fetching(self):
         self.install.config(text="Fetching...", bg=self.base.theme.biscuit_dark)

@@ -23,6 +23,11 @@ class Extension:
         ...
 
 
-def setup(api: ExtensionsAPI) -> Extension:
-    """Just for type hinting."""
+# Placeholder for type hinting.
+# `setup` is the entry point for the extension.
+def setup(api: ExtensionsAPI):
+    """Defines the entrypoint to the extension.
+
+    Normally, `api.register(id, instance)` is called within `setup`
+    if you are expecting it to communicate with other loaded extensions."""
     ...

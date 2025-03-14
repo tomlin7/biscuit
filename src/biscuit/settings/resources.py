@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import importlib.resources as resources
 import os
-import sys
 import tkinter as tk
 import typing
 from contextlib import ExitStack
@@ -43,12 +41,12 @@ class Resources:
 
     def _fallback_get_res_path(self, relative_path: str) -> str:
         paths = [
-            os.path.join(self.base.resdir, relative_path),
-            os.path.join(self.base.fallback_resdir, relative_path),
-            os.path.join(self.base.second_fallback_resdir, relative_path),
+            self.base.resdir / relative_path,
+            self.base.fallback_resdir / relative_path,
+            self.base.second_fallback_resdir / relative_path,
         ]
         for path in paths:
-            if os.path.exists(path):
+            if path.exists():
                 return path
 
         raise FileNotFoundError(f"Resource not found: {relative_path}")

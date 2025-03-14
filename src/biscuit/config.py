@@ -1,6 +1,11 @@
+from __future__ import annotations
+
 import os
 import sys
+import typing
 from pathlib import Path
+
+from biscuit.layout.statusbar.statusbar import Statusbar
 
 from .api import ExtensionsAPI
 from .binder import Binder
@@ -15,6 +20,11 @@ from .language import LanguageServerManager
 from .session import SessionManager
 from .settings import Settings
 from .workspaces import WorkspaceManager
+
+if typing.TYPE_CHECKING:
+    from biscuit.layout.editors.manager import EditorsManager
+    from biscuit.views.extensions.extensions import Extensions
+
 
 
 class ConfigManager:
@@ -34,13 +44,23 @@ class ConfigManager:
     git_found: bool
     active_directory: str
     active_branch_name: str
-
+    
     # constants
-    resdir: str
     appdir: str
+    configdir: Path
+    datadir: Path
     extensiondir: Path
+    userdir: Path
     fallback_extensiondir: Path
-    datadir: str
+    resdir: Path
+    fallback_resdir: Path
+    second_fallback_resdir: Path
+
+    # for type hinting
+    extensions_view: Extensions
+    editorsmanager: EditorsManager
+    statusbar: Statusbar
+
     git_found = False
     wrap_words = False
     tab_spaces = 4
@@ -88,21 +108,22 @@ class ConfigManager:
         # resources, config, extensions are outside src/
         if self.frozen:
             self.appdir = sys._MEIPASS
-            self.parentdir = self.appdir
+            self.parentdir = Path(self.appdir)
         else:
             self.appdir = os.path.dirname(os.path.abspath(__file__))
             self.parentdir = Path(self.appdir).parent.parent.absolute()
 
         # TODO everything `parentdir` should be moved to Home / .biscuit
 
-        self.configdir = os.path.join(self.parentdir, "config")
+        self.userdir = u = Path.home() / ".biscuit"
 
-        self.extensiondir = Path.home() / ".biscuit" / "extensions"
-        self.fallback_extensiondir = Path(self.parentdir) / "extensions"
+        self.configdir = u / "config"
+        self.extensiondir = u / "extensions"
+        self.datadir = u / "data"
 
-        self.datadir = os.path.join(self.parentdir, "data")
+        self.fallback_extensiondir = self.parentdir / "extensions"
 
-        self.resdir = os.path.join(self.parentdir, "resources")
+        self.resdir = self.parentdir / "resources"
         self.fallback_resdir = Path(self.appdir).parent.absolute() / "resources"
         self.second_fallback_resdir = Path(self.appdir).absolute() / "resources"
 
