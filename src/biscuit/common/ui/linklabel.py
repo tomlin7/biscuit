@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import tkinter as tk
 import webbrowser
-from tkinter import font
 
-from .labels import Label
+from .labels import WrappingLabel
 
 
-class LinkLabel(Label):
+class LinkLabel(WrappingLabel):
     """Label that acts as a link"""
 
     def __init__(

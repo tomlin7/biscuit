@@ -1,2 +1,2 @@
-from .gemini import Gemini1p5Flash
+from .gemini import *
 from .model import ChatModelInterface

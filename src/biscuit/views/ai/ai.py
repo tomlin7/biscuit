@@ -6,7 +6,8 @@ import tkinter as tk
 import typing
 
 from biscuit.common import Dropdown
-from biscuit.common.chat import ChatModelInterface, Gemini1p5Flash
+from biscuit.common.chat import ChatModelInterface
+from biscuit.common.chat.gemini import *
 from biscuit.common.icons import Icons
 
 from ..sidebar_view import SideBarView
@@ -51,9 +52,12 @@ class AI(SideBarView):
         self.title.grid_forget()
 
         self.api_providers = {
+            "Gemini 2.0 Flash": Gemini2p0Flash,
+            "Gemini 2.0 Flash Lite": Gemini2p0FlashLite,
             "Gemini 1.5 Flash": Gemini1p5Flash,
+            "Gemini 1.5 Pro": Gemini1p5Pro,
         }
-        self.current_provider = "Gemini 1.5 Flash"
+        self.current_provider = "Gemini 2.0 Flash"
 
         self.dropdown = Dropdown(
             self.top,
