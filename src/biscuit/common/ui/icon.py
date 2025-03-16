@@ -1,6 +1,6 @@
 from ..icons import Icons
 from .labels import Label
-from .native import Menubutton
+from .native import Frame, Menubutton
 
 
 class Icon(Label):
@@ -87,3 +87,33 @@ class IconButton(Menubutton):
     def reset_icon(self) -> None:
         self.switch = False
         self.config(text=self.icons[self.switch])
+
+
+class BorderedIconButton(Frame):
+    def __init__(
+        self,
+        master,
+        bd=1,
+        *args,
+        **kwargs
+    ) -> None:
+        super().__init__(master)
+        self.config(padx=bd, pady=bd, bg=self.base.theme.border)
+
+        self.btn = IconButton(self, *args, **kwargs)
+        self.btn.pack(fill="both", expand=True)
+        
+    def set_callback(self, event) -> None:
+        self.btn.set_callback(event)
+
+    def onclick(self, *args) -> None:
+        self.btn.onclick(*args)
+
+    def set_icon(self, icon) -> None:
+        self.btn.set_icon(icon)
+
+    def toggle_icon(self) -> None:
+        self.btn.toggle_icon()
+
+    def reset_icon(self) -> None:
+        self.btn.reset_icon()

@@ -46,23 +46,23 @@ class Shortcut(Frame):
     def render(self) -> None:
         """Render the widget."""
 
-        for key in self._keys[:-1]:
+        for key in self._keys:
             self.add_key(key)
-            self.add_separator()
-        self.add_key(self._keys[-1])
+            # self.add_separator()
 
-    def add_separator(self) -> None:
-        """Add a '+' separator between shortcuts."""
+    # TODO: fix highlight color
+    # def add_separator(self) -> None:
+    #     """Add a '+' separator between shortcuts."""
 
-        l = tk.Label(
-            self, text="+", bg=self.bg, fg=self.base.theme.border, font=("Consolas", 7)
-        )
-        l.pack(padx=2, side=tk.LEFT)
-        self.labels.append(l)
+    #     l = tk.Label(
+    #         self, text="+", bg=self.bg, fg=self.base.theme.border, font=("Consolas", 7)
+    #     )
+    #     l.pack(padx=2, side=tk.LEFT)
+    #     self.labels.append(l)
 
     def add_key(self, key: str) -> None:
         """Add a shortcut to the widget."""
 
         l = KeyB(self, key)
-        l.pack(padx=2, side=tk.LEFT)
+        l.pack(padx=5, side=tk.LEFT)
         self.labels.append(l)
