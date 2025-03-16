@@ -14,28 +14,28 @@ biscuit = "biscuit.cli:run"
 [tool.poetry.dependencies]
 python = "^3.10"
 hintedtext = "^0.6.0"
-watchdog = ">=4.0.1,<7.0.0"
+watchdog = "^6.0.0"
 filetype = "^1.2.0"
-GitPython = "^3.1.43"
-tkextrafont = { version = "^0.6.3", platform = "win32" }
-Pygments = "^2.18.0"
+gitpython = "^3.1.44"
+pygments = "^2.19.1"
 toml = "^0.10.2"
 sv-ttk = "^2.6.0"
-Pillow = ">=10.3,<12.0"
-requests = "^2.32.2"
-pyperclip = "^1.8.2"
-tkinterweb = ">=3.23.9,<5.0.0"
-mistune = "^3.0.2"
+pillow = "^11.1.0"
+requests = "^2.32.3"
+pyperclip = "^1.9.0"
+tkinterweb = "^4.2.0"
+mistune = "^3.1.2"
 chardet = "^5.2.0"
-pywinpty = { version = "^2.0.13", platform = "win32" }
-ptyprocess = { version = "^0.7.0", platform = "linux" }
+pywinpty = { version = "^2.0.15", platform = "win32" }
 python-tkdnd = "^0.2.1"
-psutil = ">=5.9.8,<8.0.0"
-google-generativeai = ">=0.7,<0.9"
+psutil = "^7.0.0"
+google-generativeai = "^0.8.4"
 sortedcontainers = "^2.4.0"
-click = "^8.1.7"
-tarts = "0.14.0"
-editorconfig = ">=0.12.4,<0.18.0"
+click = "^8.1.8"
+tarts = "^0.20.1"
+editorconfig = "^0.17.0"
+tkextrafont = { version = "^0.6.3", platform = "win32" }
+ptyprocess = { version = "^0.7.0", platform = "linux" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
