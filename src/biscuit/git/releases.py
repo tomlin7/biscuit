@@ -4,10 +4,9 @@ import requests
 
 
 class Releases:
-    """Releases API
+    """GitHub Releases API (TODO: planned for automation)
 
-    This class is used to interact with the GitHub Releases API.
-    Provides methods to get the latest release, the latest release for a specific OS
+    Provides methods to get the latest release, or the latest release for a specific platform
     or a release by tag."""
 
     def __init__(self, base=None):

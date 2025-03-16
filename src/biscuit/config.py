@@ -113,8 +113,6 @@ class ConfigManager:
             self.appdir = os.path.dirname(os.path.abspath(__file__))
             self.parentdir = Path(self.appdir).parent.parent.absolute()
 
-        # TODO everything `parentdir` should be moved to Home / .biscuit
-
         self.userdir = u = Path.home() / ".biscuit"
 
         self.configdir = u / "config"

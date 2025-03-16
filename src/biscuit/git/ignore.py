@@ -10,17 +10,17 @@ if typing.TYPE_CHECKING:
 
 
 class GitIgnore:
-    def __init__(self, master):
-        self.master: Git = master
-        self.base: App = master.base
+    def __init__(self, git):
+        self.git: Git = git
+        self.base: App = git.base
         self.path = ""
-        self.repo = self.master.repo
+        self.repo = self.git.repo
 
     def load(self) -> None:
         if not self.base.git_found:
             return
 
-        self.repo = self.master.repo
+        self.repo = self.git.repo
         self.path = os.path.join(self.base.active_directory, ".gitignore")
 
     def check(self, path: list[str]) -> list:
@@ -29,7 +29,7 @@ class GitIgnore:
         if not self.base.git_found:
             return []
 
-        return self.repo.ignored(path)
+        return self.git.repo.ignored(path)
 
     def add(self, path: str) -> None:
         """Add the given path to the .gitignore file."""

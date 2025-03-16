@@ -66,7 +66,7 @@ class Git(git.Git):
 
         self.base.palette.register_actionset(lambda: self.actionset)
 
-    def check_git(self, dir: str) -> tuple[bool, GitRepo]:
+    def check_git(self, dir: str = None) -> tuple[bool, GitRepo]:
         """Check if git is installed and the directory is a git repository
 
         Returns:
