@@ -19,7 +19,7 @@ class HistoryManager:
 
     def __init__(self, base: App) -> None:
         self.base = base
-        self.path = os.path.join(self.base.datadir, "history.db")
+        self.path = self.base.datadir / "history.db"
 
         self.db = sqlite3.connect(self.path)
         self.cursor = self.db.cursor()

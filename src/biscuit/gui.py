@@ -199,6 +199,8 @@ class GUIManager(Tk, ConfigManager):
         self.sessions.clear_session()
         self.sessions.save_session(opened_files, self.active_directory)
 
+        self.history.dump()
+
         self.editorsmanager.delete_all_editors()
         self.destroy()
 
