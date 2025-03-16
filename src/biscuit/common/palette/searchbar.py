@@ -19,6 +19,7 @@ class SearchBar(Frame):
 
     def __init__(self, master: Palette, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
+        self.master: Palette = master
         self.config(bg=self.base.theme.border)
         self.term = ""
 

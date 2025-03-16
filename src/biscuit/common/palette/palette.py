@@ -135,6 +135,7 @@ class Palette(Toplevel):
             max(0, self.start_index - event.delta // 120), len(self.active_items) - 10
         )
         self.show_items(self.active_items)
+        self.reset_selection()
 
     def pick_actionset(self, actionset: ActionSet) -> None:
         """Picks an actionset to display in the palette
@@ -232,8 +233,21 @@ class Palette(Toplevel):
         Args:
             delta (int): The change in selection"""
 
+        if not self.active_items:
+            return "break"
+        
+        selected = self.selected
+        
         self.selected += delta
         self.selected = min(max(0, self.selected), len(self.shown_items) - 1)
+        
+        if (selected == 0 and delta < 0) or (selected == len(self.shown_items) - 1 and delta > 0):
+            # start_index must be between 0 and len(active_items) - 10
+            self.start_index = min(
+                max(0, self.start_index + delta), len(self.active_items) - 10
+            )
+            self.show_items(self.active_items)
+
         self.refresh_selected()
 
     def show_items(self, items: list[PaletteItem]) -> None:
@@ -249,7 +263,7 @@ class Palette(Toplevel):
             item = self.add_item(*i)
             item.mark_term(self.searchbar.term)
 
-        self.reset_selection()
+        # self.reset_selection()
 
     def show(self, prefix: str = None, default: str = None) -> None:
         """Shows the palette
