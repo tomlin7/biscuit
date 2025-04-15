@@ -16,3 +16,6 @@ cursor_style="line"
 word_wrap=false
 exclude_dirs=[".git"]
 exclude_types=["__pycache__"]
+
+[vim]
+enabled=false
