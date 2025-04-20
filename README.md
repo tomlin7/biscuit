@@ -16,6 +16,8 @@ Install the latest release from PyPI by running:
 ```
 Quickly open up a project using **`biscuit path/to/src`** and start editing. See other [installation methods](https://tomlin7.github.io/biscuit/getting-started/installation/).
 
+![home](https://github.com/user-attachments/assets/cd18dcfa-40a9-47b3-aab4-ed38ea3c1715)
+
 ## `Contributing`
 
 - - - Please check the [docs](https://tomlin7.github.io/biscuit/getting-started/quick-start/) and [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour of the project structure and to set up the environment. 
@@ -26,7 +28,6 @@ Quickly open up a project using **`biscuit path/to/src`** and start editing. See
 </a><br>
 
 ## `Features`
-
 ### Language Server Support
 
 - code completions
