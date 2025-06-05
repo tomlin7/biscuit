@@ -1,9 +1,9 @@
 ![image](https://github.com/user-attachments/assets/a578d600-a4a8-4ce4-904d-4aa0e73fc124)
 
-Aesthetic, lightweight code editor with extension support. Draws inspiration from mainstream editors like VSC, Zed, and Vim. Hobby project. 
-> - - -  Check all extensions and their authors [`~extension repository`](https://tomlin7.github.io/biscuit-extensions/)
-> - - -  Contributing/User guides, API reference [`~documentation`](https://tomlin7.github.io/biscuit)
-> - - -  Scroll down to see list of all supported [`~features`](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features)
+Aesthetic, lightweight code editor with extension support. Draws inspiration from mainstream editors like VSC, Zed, and Vim. 
+- -  Check all extensions and their authors [`~extension repository`](https://tomlin7.github.io/biscuit-extensions/)
+- -  Contributing/User guides, API reference [`~documentation`](https://tomlin7.github.io/biscuit)
+- -  Scroll down to see list of all supported [`~features`](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features)
 
 ![Untitled11(1) (1)](https://github.com/user-attachments/assets/a9eaeb35-61fd-45a5-9dfb-dbf70bbfd257)
 > Theme inspired by [`morhetz/gruvbox`](https://github.com/morhetz/gruvbox)
@@ -20,8 +20,8 @@ Quickly open up a project using **`biscuit path/to/src`** and start editing. See
 
 ## `Contributing`
 
-- - - Please check the [docs](https://tomlin7.github.io/biscuit/getting-started/quick-start/) and [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour of the project structure and to set up the environment. 
-- - - To make a new extension, read the [extension docs](https://github.com/tomlin7/biscuit-extensions)
+- - Please check the [docs](https://tomlin7.github.io/biscuit/getting-started/quick-start/) and [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour of the project structure and to set up the environment. 
+- - To make a new extension, read the [extension docs](https://github.com/tomlin7/biscuit-extensions)
 
 <a href="https://github.com/tomlin7/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg" />
