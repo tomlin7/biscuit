@@ -44,10 +44,15 @@ class LinkLabel(WrappingLabel):
 class WebLinkLabel(LinkLabel):
     """LinkLabel that opens a web link"""
 
-    def __init__(self, master, text, link, *args, **kwargs) -> None:
+    def __init__(self, master, text, link=None, *args, **kwargs) -> None:
         super().__init__(master, text=text, *args, **kwargs)
         self.link = link
         self.set_command(self.open_link)
 
     def open_link(self, *_) -> None:
         webbrowser.open(self.link)
+
+    def set_link(self, link: str) -> None:
+        """Sets the link for the label."""
+        self.link = link
+        self.set_command(self.open_link)
