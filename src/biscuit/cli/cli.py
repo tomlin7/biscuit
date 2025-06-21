@@ -88,9 +88,7 @@ def process_commands(processors, path=None, dev=False):
         else:
             processors(app)
 
-    # only launch the GUI if user explicitly opened a dir/file
-    if path_str:
-        app.run()
+    app.run()
 
 
 @cli.command("doc")

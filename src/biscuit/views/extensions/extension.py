@@ -71,8 +71,6 @@ class ExtensionGUI(Frame):
         )
 
         self.path = Path(self.base.extensiondir) / "extensions" / self.id
-        self.entry_point = self.path / "extension.py"
-
         # GUI ----------------
         self.selected = False
         self.bg = self.base.theme.views.sidebar.item.background
