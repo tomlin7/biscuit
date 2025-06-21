@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import importlib.util as _importlib_util
-import shutil
+import re
 import sys
 import typing
 from pathlib import Path
@@ -217,7 +217,21 @@ def new(name: str | None, template: str, output: str, description: str | None, a
 
     from biscuit.extensions.scaffolder import create_extension
 
-    ext_name = name or click.prompt("Extension name", type=str)
+    raw_name = name or click.prompt("Extension name", type=str)
+
+    # slugify the extension name: lowercase, replace whitespace and invalid chars with underscore
+    def _slugify(value: str) -> str:
+        value = value.strip().lower()
+        value = re.sub(r"[\s\-]+", "_", value)
+        value = re.sub(r"[^0-9a-z_]+", "", value)
+        value = re.sub(r"_+", "_", value)
+        return value or "extension"
+
+    ext_name = _slugify(raw_name)
+
+    if ext_name != raw_name:
+        click.echo(f"Using sanitized extension name '{ext_name}' (from '{raw_name}')")
+
     dest = Path(output).expanduser().resolve() 
 
     # interactive prompts
