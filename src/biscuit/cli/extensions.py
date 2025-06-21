@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import importlib.util as _importlib_util
+import sys
 import typing
+from pathlib import Path
 
 import click
 
@@ -13,14 +16,21 @@ if typing.TYPE_CHECKING:
 @click.group(invoke_without_command=True)
 @click.help_option("-h", "--help")
 def ext():
-    """Commands for managing biscuit extensions
+    """Commands for managing and developing biscuit extensions
 
-    This command group allows you to manage biscuit extensions.
+    This command group allows you to manage and develop biscuit extensions.
 
-    Example:
-        biscuit ext list \n
-        biscuit ext install extension_name \n
+    Examples::
+
+        biscuit ext list
+        biscuit ext install extension_name
         biscuit ext uninstall extension_name
+
+    Extension Dev commands::
+
+        biscuit ext new my_extension
+        biscuit ext dev
+        biscuit ext test
     """
     ...
 
@@ -29,10 +39,15 @@ def ext():
 @click.pass_context
 def process_extension_commands(ctx, processors):
     if ctx.invoked_subcommand is None:
-        # show help
         click.echo(ctx.get_help())
-        exit()
+        return
 
+    # the invoked command returned NO processor (e.g. handled all logic
+    # internally), skip creating the Biscuit application instance.
+    if not processors:
+        return
+
+    # at this point we know the processors expect an App instance.
     app = get_app_instance()
     app.withdraw()
     print("\nLoading extensions...")
@@ -40,14 +55,11 @@ def process_extension_commands(ctx, processors):
     while not app.extensions_manager.extensions_loaded:
         ...
 
-    if processors:
-        if isinstance(processors, list):
-            for processor in processors:
-                processor(app)
-        else:
-            processors(app)
-
-    exit()
+    if isinstance(processors, list):
+        for processor in processors:
+            processor(app)
+    else:
+        processors(app)
 
 
 @ext.command("list")
@@ -56,12 +68,14 @@ def process_extension_commands(ctx, processors):
 def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
     """List all extensions or installed or filter by user
 
-    Example:
-        biscuit ext list \n
-        biscuit ext list -u user \n
+    Example::
+    
+        biscuit ext list
+        biscuit ext list -u user
         biscuit ext list -i
 
-    Args:
+    Args::
+
         user (str): Filter by user
         installed (bool): Show installed extensions
     """
@@ -104,10 +118,12 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
 def info(name: str | None) -> typing.Callable[[App], None]:
     """Show information about an extension by name
 
-    Example:
+    Example::
+
         biscuit ext info extension_name
 
-    Args:
+    Args::
+
         name (str): The name of the extension"""
 
     def f(app: App, name=name) -> None:
@@ -128,10 +144,12 @@ def info(name: str | None) -> typing.Callable[[App], None]:
 def install(name: str) -> typing.Callable[[App], None]:
     """Install an extension by name
 
-    Example:
+    Example::
+
         biscuit ext install extension_name
 
-    Args:
+    Args::
+
         name (str): The name of the extension
     """
 
@@ -149,10 +167,12 @@ def install(name: str) -> typing.Callable[[App], None]:
 def uninstall(name: str) -> typing.Callable[[App], None]:
     """Uninstall an extension by name
 
-    Example:
+    Example::
+
         biscuit ext uninstall extension_name
 
-    Args:
+    Args::
+
         name (str): The name of the extension
     """
 
@@ -184,7 +204,7 @@ def uninstall(name: str) -> typing.Callable[[App], None]:
 @click.option("-a", "--author", help="Author (Name <email@example.com>).")
 @click.option("-v", "--version", help="Initial version (default: 0.1.0).", default=None)
 @click.option("--force", is_flag=True, help="Overwrite destination if it already exists.")
-def new(name: str | None, template: str, output: str, description: str | None, author: str | None, version: str | None, force: bool) -> typing.Callable[[App], None]:
+def new(name: str | None, template: str, output: str, description: str | None, author: str | None, version: str | None, force: bool) -> None:
     """Create a new Biscuit extension project from a scaffold template.
 
     Examples::
@@ -194,47 +214,117 @@ def new(name: str | None, template: str, output: str, description: str | None, a
         biscuit ext new my_extension -t https://github.com/user/repo.git
     """
 
-    from pathlib import Path
-
     from biscuit.extensions.scaffolder import create_extension
 
-    def _processor(app: App, **kwargs):  # noqa: ANN001
-        # Prompt for missing name if needed
-        ext_name = name or click.prompt("Extension name", type=str)
+    ext_name = name or click.prompt("Extension name", type=str)
+    dest = Path(output).expanduser().resolve() 
 
-        dest = Path(output).expanduser().resolve()
+    # interactive prompts
+    ctx: dict[str, str] = {}
+    desc_val = description or click.prompt("Description", default="A Biscuit extension.")
+    ctx["description"] = desc_val
 
-        # Collect missing context via interactive prompts ---------------------
-        ctx: dict[str, str] = {}
+    author_val = author or click.prompt("Author (Name <email>)", default="Your Name <email@example.com>")
+    ctx["author"] = author_val
 
-        # Description
-        desc_val = description or click.prompt("Description", default="A Biscuit extension.")
-        ctx["description"] = desc_val
+    ver_val = version or click.prompt("Version", default="0.1.0")
+    ctx["version"] = ver_val
 
-        # Author
-        author_val = author or click.prompt("Author (Name <email>)", default="Your Name <email@example.com>")
-        ctx["author"] = author_val
+    click.echo(f"Creating extension '{ext_name}' using template '{template}' …")
+    ok = create_extension(
+        ext_name,
+        template=template,
+        output_dir=dest,
+        force=force,
+        extra_context=ctx,
+    )
 
-        # Version
-        ver_val = version or click.prompt("Version", default="0.1.0")
-        ctx["version"] = ver_val
+    if ok:
+        click.echo(f"Extension scaffold created at {dest / ext_name}")
+    else:
+        click.echo("Failed to create extension scaffold.")
 
-        click.echo(f"Creating extension '{ext_name}' using template '{template}' …")
+    return None
 
-        ok = create_extension(
-            ext_name,
-            template=template,
-            output_dir=dest,
-            force=force,
-            extra_context=ctx,
-        )
 
-        if ok:
-            click.echo(f"Extension scaffold created at {dest / ext_name}")
+@ext.command()
+def dev():
+    """Start the extension development server
+    
+    This command will load the extension located in the current working directory and
+    start Biscuit in development mode. The command assumes that the
+    current directory is the root of the extension project (i.e. it
+    contains a ``pyproject.toml`` or a ``src/<name>/`` package with a
+    ``setup`` entrypoint).
+    """
+
+    click.echo("Extension development server started!")
+
+    def f(app: App) -> None:
+        """Load the extension located in the current working directory and
+        start Biscuit in development mode. The command assumes that the
+        current directory is the root of the extension project (i.e. it
+        contains a ``pyproject.toml`` or a ``src/<name>/`` package with a
+        ``setup`` entrypoint)."""
+
+        cwd = Path.cwd()
+
+        src_dir = cwd / "src"
+        ext_name: str | None = None
+
+        if src_dir.is_dir():
+            for candidate in src_dir.iterdir():
+                if candidate.is_dir() and (candidate / "__init__.py").exists():
+                    ext_name = candidate.name
+                    break
+
+        if not ext_name:
+            click.echo(
+                "Could not find any Python package inside the 'src' directory. "
+                "Ensure your extension code is located at src/<extension_name>/"
+            )
+            return
+
+        init_py = src_dir / ext_name / "__init__.py"
+
+        if not init_py.exists():
+            click.echo(
+                "Could not locate extension package. Expected "
+                f"{init_py}. Ensure you are in the root of an extension repo."
+            )
+            return
+
+        for p in (str(cwd), str(src_dir)):
+            if p not in sys.path:
+                sys.path.insert(0, p)
+
+        spec = _importlib_util.spec_from_file_location(f"src.{ext_name}", init_py)
+        if spec is None or spec.loader is None:
+            click.echo("Failed to create import spec for the extension module.")
+            return
+
+        module = _importlib_util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module) 
+        except Exception as exc:
+            click.echo(f"Importing extension failed: {exc}")
+            return
+
+        if hasattr(module, "setup") and callable(module.setup):
+            try:
+                module.setup(app.api)
+                click.echo(f"Loaded extension '{ext_name}'.")
+            except Exception as exc:
+                click.echo(f"setup() raised an exception: {exc}")
+                return
         else:
-            click.echo("Failed to create extension scaffold.")
+            click.echo("Extension module does not define a callable setup(api) function.")
+            return
 
-    return _processor
+        app.deiconify()
+        app.run()
+
+    return f
 
 
 @ext.command()
