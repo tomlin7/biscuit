@@ -146,8 +146,6 @@ class ExtensionManager:
         for ext in ext_subdir.iterdir():
             # id is also the name of the submodule folder
             # so this is a valid check
-            if ext.name in self.installed:
-                continue
             if not ext.is_dir():
                 continue
 

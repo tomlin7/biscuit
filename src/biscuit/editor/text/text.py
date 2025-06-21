@@ -20,12 +20,13 @@ from biscuit.language.data import Diagnostic
 
 if typing.TYPE_CHECKING:
     from biscuit.language.data import (
-        WorkspaceEdits,
-        HoverResponse,
-        Jump,
         Completions,
         Diagnostic,
+        HoverResponse,
+        Jump,
+        WorkspaceEdits,
     )
+
     from . import TextEditor
 
 from biscuit.common import textutils
@@ -1481,7 +1482,10 @@ class Text(BaseText):
         if args[0] in ("insert", "replace", "delete"):
             self.event_generate("<<Change>>", when="tail")
             if self.lsp:
-                self.base.language_server_manager.content_changed(self)
+                try:
+                    self.base.language_server_manager.content_changed(self)
+                except Exception:
+                    pass
 
         # if "insert" in args[0:3] and "get" in args[0:3]:
         #     print(temp)
