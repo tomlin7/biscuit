@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 import click
@@ -51,19 +52,34 @@ class BiscuitCLI(click.Group):
 @click.help_option("-h", "--help")
 @click.option("--dev", is_flag=True, help="Run in development mode")
 def cli(path=None, dev=False):
-    """Biscuit CLI"""
+    """Biscuit CLI
+    
+    Run `biscuit <path>` to open a folder/file
+    (`biscuit .` for this directory)
+    """
 
     click.echo(f"Biscuit v{__version__} {'(dev) 🚧' if dev else '🚀'}")
 
 
 @cli.result_callback()
 def process_commands(processors, path=None, dev=False):
+    if not processors and not path:
+        # commands without processors should not open the editor
+        if len(sys.argv) > 1:
+            return
+
+    # If we have callbacks or a path (or fall through from the base command),
+    # we need an App instance.
+
+    path_str: str | None = None
     if path:
-        path = str(Path(path).resolve())
-        click.echo(f"Opening {path}")
+        path_str = str(Path(path).resolve())
+
+    if path_str:
+        click.echo(f"Opening {path_str}")
 
     appdir = Path(os.path.abspath(__file__)).parent
-    app = get_app_instance(appdir, open_path=path)
+    app = get_app_instance(appdir, open_path=path_str)
 
     if processors:
         if isinstance(processors, list):
@@ -72,7 +88,9 @@ def process_commands(processors, path=None, dev=False):
         else:
             processors(app)
 
-    app.run()
+    # only launch the GUI if user explicitly opened a dir/file
+    if path_str:
+        app.run()
 
 
 @cli.command("doc")
