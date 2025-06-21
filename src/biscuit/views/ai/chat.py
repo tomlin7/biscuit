@@ -48,7 +48,7 @@ class Chat(Frame):
         self.entrybox = Frame(self, bg=theme.border)
         self.entrybox.grid(column=0, row=1, sticky=tk.EW)
 
-        self.attachbtn = IconButton(self.entrybox, icon=Icons.ATTACH, event=self.attach)
+        self.attachbtn = IconButton(self.entrybox, icon=Icons.PLUS, event=self.attach)
         self.attachbtn.config(
             fg=theme.secondary_foreground, bg=theme.secondary_background, padx=5
         )
