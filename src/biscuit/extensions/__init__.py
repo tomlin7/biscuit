@@ -1,3 +1,3 @@
-from .extension import Extension
-from .manager import ExtensionManager
-from .viewer import ExtensionViewer
+from .extension import Extension  # noqa: F401
+from .manager import ExtensionManager  # noqa: F401
+from .viewer import ExtensionViewer  # noqa: F401

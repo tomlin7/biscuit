@@ -37,9 +37,9 @@ class ExtensionViewer(Toplevel):
         container = Frame(self, padx=10, pady=10)
         title = Frame(container)
 
-        self.name = Label(title, text=f"Extension", fg=self.base.theme.biscuit)
+        self.name = Label(title, text="Extension", fg=self.base.theme.biscuit)
         self.name.config(font=(self.base.settings.font["family"], 16, "bold"))
-        self.version = Label(title, text=f"v1.0.0", fg=self.base.theme.border)
+        self.version = Label(title, text="v1.0.0", fg=self.base.theme.border)
         self.version.config(font=(self.base.settings.font["family"], 10, "bold"))
 
         self.install = Button(

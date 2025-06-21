@@ -100,8 +100,8 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
 
 
 @ext.command()
-@click.argument("name")
-def info(name: str) -> typing.Callable[[App], None]:
+@click.argument("name", required=False)
+def info(name: str | None) -> typing.Callable[[App], None]:
     """Show information about an extension by name
 
     Example:
@@ -166,15 +166,75 @@ def uninstall(name: str) -> typing.Callable[[App], None]:
 
 
 @ext.command()
-def create():
-    """Create a new extension from template
+@click.argument("name", required=False)
+@click.option(
+    "-t",
+    "--template",
+    default="default",
+    help="Template name or git URL for the scaffold (default: 'default').",
+)
+@click.option(
+    "-o",
+    "--output",
+    default=".",
+    type=click.Path(file_okay=False, resolve_path=True),
+    help="Destination directory where the scaffolded extension will be created.",
+)
+@click.option("-d", "--description", help="Short description of the extension.")
+@click.option("-a", "--author", help="Author (Name <email@example.com>).")
+@click.option("-v", "--version", help="Initial version (default: 0.1.0).", default=None)
+@click.option("--force", is_flag=True, help="Overwrite destination if it already exists.")
+def new(name: str | None, template: str, output: str, description: str | None, author: str | None, version: str | None, force: bool) -> typing.Callable[[App], None]:
+    """Create a new Biscuit extension project from a scaffold template.
 
-    This command will create a new extension from the template
+    Examples::
 
-    NOTE: This command is not yet implemented
+        biscuit ext new my_extension                # uses default template
+        biscuit ext new my_extension -t widget      # uses a named template
+        biscuit ext new my_extension -t https://github.com/user/repo.git
     """
 
-    click.echo("Extension created!")
+    from pathlib import Path
+
+    from biscuit.extensions.scaffolder import create_extension
+
+    def _processor(app: App, **kwargs):  # noqa: ANN001
+        # Prompt for missing name if needed
+        ext_name = name or click.prompt("Extension name", type=str)
+
+        dest = Path(output).expanduser().resolve()
+
+        # Collect missing context via interactive prompts ---------------------
+        ctx: dict[str, str] = {}
+
+        # Description
+        desc_val = description or click.prompt("Description", default="A Biscuit extension.")
+        ctx["description"] = desc_val
+
+        # Author
+        author_val = author or click.prompt("Author (Name <email>)", default="Your Name <email@example.com>")
+        ctx["author"] = author_val
+
+        # Version
+        ver_val = version or click.prompt("Version", default="0.1.0")
+        ctx["version"] = ver_val
+
+        click.echo(f"Creating extension '{ext_name}' using template '{template}' …")
+
+        ok = create_extension(
+            ext_name,
+            template=template,
+            output_dir=dest,
+            force=force,
+            extra_context=ctx,
+        )
+
+        if ok:
+            click.echo(f"Extension scaffold created at {dest / ext_name}")
+        else:
+            click.echo("Failed to create extension scaffold.")
+
+    return _processor
 
 
 @ext.command()

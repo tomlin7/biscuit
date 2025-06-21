@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import errno
 import os
 import platform
 import shutil
-import stat
 import subprocess
 import sys
 import threading
@@ -127,14 +125,14 @@ class ExtensionManager:
         self.server = threading.Thread(target=self.run_queued_extensions, daemon=True)
         self.server.start()
 
-        self.base.logger.info(f"Extensions server started.")
+        self.base.logger.info("Extensions server started.")
 
     def restart_server(self):
         self.loaded_extensions.clear()
         self.queue_installed_extensions()
 
     def stop_server(self):
-        print(f"Extensions server stopped.")
+        print("Extensions server stopped.")
         self.alive = False
 
     def queue_installed_extensions(self) -> None:
