@@ -4,7 +4,7 @@ Fast, Extensible, **Native** IDE with Agents. **Not a VSCode fork**. <20 MB in s
 
 - - Explore Popular Extensions, Visit the **New** [**Extension Marketplace**](https://biscuit-extensions.github.io/marketplace/) ✨
 - - For developer/User guides & API reference, check [Documentation](https://tomlin7.github.io/biscuit)
-- - Scroll down to see the list of all [Features](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features)
+- - Packed with superpowers, [list of features](https://tomlin7.github.io/biscuit/#features)
 
 ![coverimage](https://github.com/user-attachments/assets/a9eaeb35-61fd-45a5-9dfb-dbf70bbfd257)
 
@@ -30,6 +30,16 @@ Quickly open up a project using **`biscuit path/to/src`** and start editing. See
 <a href="https://github.com/tomlin7/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg" />
 </a><br>
+
+## `Star History`
+
+<a href="https://www.star-history.com/#tomlin7/biscuit&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=tomlin7/biscuit&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=tomlin7/biscuit&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tomlin7/biscuit&type=Date" />
+ </picture>
+</a>
 
 ## `Features`
 
