@@ -1,4 +1,4 @@
-site_name: Biscuit
+site_name: BISCUIT
 site_description: "A lightweight, fast, and extensible code editor with a wide range of language support"
 site_url: "https://tomlin7.github.io/biscuit"
 repo_url: "https://github.com/tomlin7/biscuit"
@@ -9,30 +9,19 @@ docs_dir: docs
 
 theme:
   name: "material"
+  # logo: assets/logow.svg
   custom_dir: docs/overrides
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: orange
-      accent: orange
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to dark mode
-
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: orange
-      accent: orange
-      toggle:
-        icon: material/weather-night
-        name: Switch to light mode
+      accent: transparent
+      primary: transparent
   features:
     - navigation.top
     - navigation.expand
     - toc.follow
     - content.code.copy
     - content.code.select
-
 plugins:
   - mkdocstrings:
       handlers:

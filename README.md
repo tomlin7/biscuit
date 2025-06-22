@@ -2,7 +2,7 @@
 
 Fast, Extensible, **Native** IDE with Agents. **Not a VSCode fork**. <20 MB in size. Install in seconds.
 
-- - Explore Popular Extensions, Visit the **New** [**Extension Marketplace**](https://tomlin7.github.io/biscuit-extensions/) ✨
+- - Explore Popular Extensions, Visit the **New** [**Extension Marketplace**](https://biscuit-extensions.github.io/marketplace/) ✨
 - - For developer/User guides & API reference, check [Documentation](https://tomlin7.github.io/biscuit)
 - - Scroll down to see the list of all [Features](https://github.com/tomlin7/biscuit?tab=readme-ov-file#features)
 

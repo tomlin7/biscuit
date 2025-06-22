@@ -123,3 +123,59 @@ img {
     -ms-user-select: none;
 }
 
+/* --- Transparent Navbar customisation --- */
+.md-header {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Primary nav title + buttons */
+.md-header, .md-header a, .md-header__button, .md-tabs__link {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+/* Hover/active tint */
+.md-header a:hover, .md-tabs__link:hover, .md-tabs__link--active {
+    color: #ffffff !important;
+}
+
+/* ==== Search bar customization ==== */
+.md-search__form {
+    background-color: #1d2021 !important;
+    border: 1px solid #504945 !important;
+}
+.md-search__input {
+    color: #ebdbb2 !important;          /* light text */
+    caret-color: #d79921 !important;    /* orange caret */
+    padding-left: 2.5rem !important;    /* leave space for icon */
+}
+.md-search__input::placeholder {
+    color: #a89984 !important;          /* muted placeholder */
+}
+.md-search__icon {
+    color: #d79921 !important;          /* orange icon */
+}
+/* adjust icon position because of new padding */
+.md-search__inner .md-search__icon {
+    left: 0.75rem !important;
+}
+
+/* In search overlay modal */
+.md-search__overlay .md-search__form {
+    background-color: #1d2021 !important;
+}
+
+/* Hide Material nav logo image if present */
+.md-logo,
+.md-header__button.md-logo {
+    display: none !important;
+}
+
+/* Force transparent header in all color schemes and header variants */
+[data-md-color-scheme] .md-header,
+[data-md-color-scheme] .md-header--primary,
+[data-md-color-scheme] .md-header--shadow {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
