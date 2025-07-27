@@ -6,41 +6,28 @@ import tkinter as tk
 import typing
 
 from biscuit.common import Dropdown
-from biscuit.common.chat import ChatModelInterface
-from biscuit.common.chat.gemini import *
+from biscuit.common.ai import Agent
 from biscuit.common.icons import Icons
 
-from ..sidebar_view import SideBarView
-from .chat import Chat
+from ..sidebar_view_secondary import SideBarView
 from .menu import AIMenu
+from .modern_chat import ModernAIChat
 from .placeholder import AIPlaceholder
 
 if typing.TYPE_CHECKING:
     ...
 
 
-PROMPT = """You are an assistant part of Biscuit code editor named Bikkis. 
-You are an expert programmer, you'll help the user with his queries.
-
-Biscuit have many features like auto completions, git integration,
-code diagnostics, code refactoring, code navigation, advanced search, etc.
-It supports many languages like Python, JavaScript, Java, C++, etc.
-User can install extensions right within the editor's extension marketplace.
-Don't make assumptions about the existence of a feature in Biscuit.
-
-Give the user minimal responses and be straightforward. 
-If there are files attached by user, they will be appended to the question.
-You will have to consider them while responding.
-
-Reply to this message from user: """
-
-
 class AI(SideBarView):
-    """A view that displays the AI chat.
+    """Enhanced AI view with LangChain integration and multiple modes.
 
-    The AI view allows the user to chat with an AI using the Gemini API.
-    - The user can configure the API key to use for the chat, which is stored in the secrets database.
-    - The chat can be refreshed to start a new chat."""
+    The AI view provides three modes of operation:
+    1. Coding Agent: Full access with all tools
+    2. Ask Mode: Q&A with file attachments  
+    3. Edit Mode: Focused editing assistance
+    
+    All modes are powered by LangChain with selectable Gemini models.
+    """
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -48,34 +35,38 @@ class AI(SideBarView):
         self.name = "AI"
         self.chat = None
         self.api_key = ""
+        self.agent = None
 
         self.title.grid_forget()
 
-        self.api_providers = {
-            "Gemini 2.0 Flash": Gemini2p0Flash,
-            "Gemini 2.0 Flash Lite": Gemini2p0FlashLite,
-            "Gemini 1.5 Flash": Gemini1p5Flash,
-            "Gemini 1.5 Pro": Gemini1p5Pro,
+        # Available Gemini models for LangChain
+        self.available_models = {
+            "Gemini 2.0 Flash": "gemini-2.0-flash-exp",
+            "Gemini 1.5 Flash": "gemini-1.5-flash",
+            "Gemini 1.5 Pro": "gemini-1.5-pro",
+            "Gemini 2.0 Flash Thinking": "gemini-2.0-flash-thinking-exp"
         }
-        self.current_provider = "Gemini 2.0 Flash"
+        self.current_model = "Gemini 2.0 Flash"
 
         self.dropdown = Dropdown(
             self.top,
-            items=self.api_providers.keys(),
-            selected=self.current_provider,
-            callback=self.set_current_provider,
+            items=self.available_models.keys(),
+            selected=self.current_model,
+            callback=self.set_current_model,
         )
         self.top.grid_columnconfigure(self.column, weight=1)
-
         self.dropdown.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 10))
 
         self.menu = AIMenu(self)
         self.menu.add_command("New Chat", self.new_chat)
         self.menu.add_command("Configure API Key...", self.add_placeholder)
+        self.menu.add_separator()
+        self.menu.add_command("View Stats", self.show_stats)
 
         self.add_action(Icons.REFRESH, self.new_chat)
         self.add_action(Icons.ELLIPSIS, self.menu.show)
 
+        # Database setup
         self.db = sqlite3.connect(os.path.join(self.base.datadir, "secrets.db"))
         self.cursor = self.db.cursor()
         self.cursor.executescript(
@@ -93,26 +84,40 @@ class AI(SideBarView):
         else:
             self.add_placeholder()
 
-    def register_provider(self, provider: str, model: ChatModelInterface) -> None:
-        """Register a new provider for the chat.
+    def register_provider(self, provider: str, model_name: str = None) -> None:
+        """Register a new model provider.
 
         Args:
-            provider (str): The provider to register."""
+            provider (str): The display name for the provider
+            model_name (str): The actual model name (optional, uses provider name)"""
 
-        self.api_providers[provider] = model
+        if not model_name:
+            model_name = provider.lower().replace(' ', '-')
+        
+        self.available_models[provider] = model_name
         self.dropdown.add_command(provider)
 
-    def set_current_provider(self, provider: str) -> None:
-        """Set the current provider for the chat.
+    def set_current_model(self, model_name: str) -> None:
+        """Set the current model for the AI agent.
 
         Args:
-            provider (str): The provider to set as the current provider."""
+            model_name (str): The model to set as current."""
 
-        if provider == self.current_provider:
+        if model_name == self.current_model:
             return
 
-        self.current_provider = provider
-        self.add_chat()
+        self.current_model = model_name
+        
+        # Update agent if it exists
+        if self.agent:
+            try:
+                # Update agent model
+                model_id = self.available_models[model_name]
+                self.agent.update_model(model_id)
+            except Exception as e:
+                self.base.logger.error(f"Failed to update model: {e}")
+                # Recreate the chat with new agent
+                self.add_chat()
 
     def attach_file(self, *files: typing.List[str]) -> None:
         """Attach a file to the chat.
@@ -133,6 +138,10 @@ class AI(SideBarView):
         if self.chat:
             self.remove_item(self.chat)
             self.chat.destroy()
+            self.chat = None
+
+        if self.agent:
+            self.agent = None
 
     def add_chat(self, api_key: str = None) -> None:
         """Add a new chat to the view.
@@ -146,29 +155,56 @@ class AI(SideBarView):
         if not self.api_key:
             return self.add_placeholder()
 
+        # Store API key
         self.cursor.execute(
             "INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)",
             (self.api_key,),
         )
         self.db.commit()
 
+        # Clean up existing chat
         if self.chat:
             self.remove_item(self.chat)
             self.chat.destroy()
             self.chat = None
 
-        self.chat = Chat(self)
-        self.chat.set_model(self.get_model_instance(PROMPT))
-        self.add_item(self.chat)
-        self.remove_item(self.placeholder)
+        if self.agent:
+            self.agent = None
 
-    def get_model_instance(self, prompt: str) -> ChatModelInterface:
-        """Get the model instance for the current provider.
-
-        Returns:
-            ChatModelInterface: The model instance for the current provider."""
-
-        return self.api_providers[self.current_provider](self.api_key, prompt)
+        # Create enhanced chat with LangChain agent
+        try:
+            # Create agent with selected model
+            model_id = self.available_models[self.current_model]
+            self.agent = Agent(self.base, self.api_key, model_id)
+            
+            self.chat = ModernAIChat(self)
+            self.chat.set_enhanced_agent(self.agent)
+            
+            self.add_item(self.chat)
+            self.remove_item(self.placeholder)
+            
+        except Exception as e:
+            # Safe error logging - check if logger is available
+            try:
+                if hasattr(self.base, 'logger'):
+                    self.base.logger.error(f"Failed to initialize AI agent: {e}")
+                else:
+                    print(f"AI Agent Error: {e}")
+            except:
+                print(f"AI Agent Error: {e}")
+                
+            # Safe notification - check if notifications is available  
+            try:
+                if hasattr(self.base, 'notifications'):
+                    self.base.notifications.error(
+                        f"Failed to initialize AI agent: {str(e)}",
+                        actions=[
+                            ("Configure API Key", self.add_placeholder),
+                            ("Try Again", self.add_chat)
+                        ]
+                    )
+            except:
+                print(f"Failed to show notification: {e}")
 
     def new_chat(self) -> None:
         """Start a new chat with the AI assistant."""
@@ -180,3 +216,30 @@ class AI(SideBarView):
                 pass
 
         self.add_chat()
+
+    def show_stats(self) -> None:
+        """Show AI agent statistics."""
+        try:
+            if self.chat and hasattr(self.chat, 'get_stats'):
+                stats = self.chat.get_stats()
+                if stats:
+                    stats_text = f"AI Agent Statistics\\n\\nCurrent Model: {self.current_model}\\n\\n"
+                    for key, value in stats.items():
+                        stats_text += f"{key.replace('_', ' ').title()}: {value}\\n"
+                    
+                    if hasattr(self.base, 'notifications'):
+                        self.base.notifications.info(stats_text)
+                    else:
+                        print(f"AI Statistics: {stats_text}")
+                else:
+                    if hasattr(self.base, 'notifications'):
+                        self.base.notifications.info("No statistics available")
+                    else:
+                        print("No statistics available")
+            else:
+                if hasattr(self.base, 'notifications'):
+                    self.base.notifications.info("No active AI agent to show statistics for")
+                else:
+                    print("No active AI agent to show statistics for")
+        except Exception as e:
+            print(f"Error showing stats: {e}")

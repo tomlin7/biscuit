@@ -20,3 +20,7 @@ python-tkdnd
 psutil
 google-generativeai
 click
+langchain
+langchain-google-genai
+langchain-community
+langchain-core

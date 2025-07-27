@@ -8,7 +8,7 @@ from biscuit.common.icons import Icons
 from biscuit.common.ui import Closable, Toplevel
 
 if typing.TYPE_CHECKING:
-    from .chat import Chat
+    from biscuit.common.ui import Frame
 
 
 class Attachments(Toplevel):
@@ -17,9 +17,9 @@ class Attachments(Toplevel):
     The Attachments window is used to manage files attached to the AI chat.
     - The user can attach files to the AI assistant to get context based responses."""
 
-    def __init__(self, master: Chat, *args, **kwargs) -> None:
+    def __init__(self, master: Frame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.master: Chat = master
+        self.master: Frame = master
         self.config(bg=self.base.theme.biscuit, padx=1, pady=1)
 
         self.visible = False

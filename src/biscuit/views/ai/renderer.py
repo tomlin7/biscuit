@@ -99,7 +99,8 @@ class Renderer(Frame):
             ],
         )
         self.htmlframe = HtmlFrame(
-            self, messages_enabled=False, vertical_scrollbar=False
+            self, messages_enabled=False, vertical_scrollbar=False,
+            shrink=True
         )
         self.scrollbar = Scrollbar(
             self,
@@ -111,7 +112,7 @@ class Renderer(Frame):
         self.sparkles = f"<h4 color={self.base.theme.biscuit}>✨ Bikkis</h4> "
 
         self.htmlframe.html.config(yscrollcommand=self.scrollbar.set)
-        self.htmlframe.html.shrink(True)
+        # self.htmlframe.html.shrink(True)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -170,9 +171,10 @@ class Renderer(Frame):
             }}
             """
 
-    def write(self, content: str, sparkles: bool = False) -> None:
-        if sparkles:
-            self.content += self.sparkles
-        self.content += self.markdown(content)
+    def write(self, content: str, clear=False) -> None:
+        if clear:
+            self.content = self.markdown(content)
+        else:
+            self.content += self.markdown(content)
         self.htmlframe.load_html(self.content)
         self.htmlframe.add_css(self.css)

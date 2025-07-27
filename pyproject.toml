@@ -34,6 +34,10 @@ sortedcontainers = "^2.4.0"
 click = "^8.1.8"
 tarts = "^0.20.1"
 editorconfig = "^0.17.0"
+langchain = "^0.3.0"
+langchain-google-genai = "^2.0.0"
+langchain-community = "^0.3.0"
+langchain-core = "^0.3.0"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
 
