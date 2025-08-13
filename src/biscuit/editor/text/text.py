@@ -323,7 +323,7 @@ class Text(BaseText):
 
     def add_indent_guide(self, line_number: int, indent_level: int) -> None:
         for level in range(indent_level):
-            start_index = f"{line_number}.{level * self.tab_spaces - 1}"
+            start_index = f"{line_number}.{level * self.tab_spaces}"
             end_index = f"{line_number}.{level * self.tab_spaces + 1}"
             self.tag_add(
                 (
