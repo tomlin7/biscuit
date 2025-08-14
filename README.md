@@ -10,6 +10,8 @@ Fast, Extensible, **Native** IDE with Agents. **Not a VSCode fork**. <20 MB in s
 
 > Theme: [`morhetz/gruvbox`](https://github.com/morhetz/gruvbox)
 
+<img width="1825" height="897" alt="image" src="https://github.com/user-attachments/assets/5878fc45-9bc5-427d-b1e4-29390bf2b14c" />
+
 ## `Installing`
 
 Install the latest release from PyPI by running:
