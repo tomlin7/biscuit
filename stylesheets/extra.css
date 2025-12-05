@@ -1,0 +1,181 @@
+.animate {
+    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.08));
+    animation: gliding-animation 3s infinite ease-in-out;
+    transition: all 1s ease-in, filter 0.3s ease-in;
+}
+
+@keyframes gliding-animation {
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.animate:hover, .animate:focus {
+    transform: scale(1.01);
+    filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.15));
+}
+
+.md-banner {
+    color: var(--md-footer-fg-color--lighter);
+}
+
+.mdx-container {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(0, 0%, 100%, 1)' /></svg>")
+            no-repeat bottom,
+        linear-gradient(to bottom, var(--md-primary-fg-color), #aa6114 99%, var(--md-default-bg-color) 99%);
+    padding-top: 1rem;
+}
+[data-md-color-scheme="slate"] .mdx-container {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(230, 15%, 14%, 1)' /></svg>")
+            no-repeat bottom,
+        linear-gradient(to bottom, var(--md-primary-fg-color), #aa6114 99%, var(--md-default-bg-color) 99%);
+}
+
+.mdx-hero {
+    color: var(--md-primary-bg-color);
+    margin: 0 3rem;
+}
+
+.mdx-hero h1 {
+    color: var(--md-primary-bg-color);
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+
+@media screen and (max-width:29.984375em) {
+    .mdx-hero h1 {
+        font-size: 1.4rem;
+    }
+}
+
+#pip_install_code {
+    margin-top: 30px; 
+    display: block;
+    white-space: unset;
+}
+
+#pip_install_code code {
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+.code-container {
+    position: relative;
+    display: block;
+}
+
+.code-container button {
+    padding: 0.6rem 1.8rem;
+}
+
+@media screen and (min-width:60em) {
+    .mdx-hero {
+        align-items: stretch;
+        display: flex;
+    }
+    .mdx-hero__content {
+        margin-top: 3.5rem;
+        max-width: 19rem;
+        padding-bottom: 14vw;
+    }
+    .mdx-hero__image {
+        order: 1;
+        transform: translateX(4rem);
+        width: 38rem;
+    }
+}
+
+@media screen and (min-width:76.25em) {
+    .mdx-hero__image {
+        transform: translateX(15rem) translateY(5rem);
+    }
+}
+
+.mdx-hero .md-button {
+    color: var(--md-primary-bg-color);
+    margin-right: .5rem;
+    margin-top: .5rem;
+    border-radius: 5px;
+}
+
+.mdx-hero .md-button:focus, .mdx-hero .md-button:hover {
+    background-color: var(--md-accent-fg-color);
+    border-color: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color);
+}
+
+.mdx-hero .md-button--primary {
+    background-color: var(--md-primary-bg-color);
+    border-color: var(--md-primary-bg-color);
+    color: var(--md-accent-fg-color);
+    border-radius: 5px;
+}
+
+img {
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+/* --- Transparent Navbar customisation --- */
+.md-header {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Primary nav title + buttons */
+.md-header, .md-header a, .md-header__button, .md-tabs__link {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+/* Hover/active tint */
+.md-header a:hover, .md-tabs__link:hover, .md-tabs__link--active {
+    color: #ffffff !important;
+}
+
+/* ==== Search bar customization ==== */
+.md-search__form {
+    background-color: #1d2021 !important;
+    border: 1px solid #504945 !important;
+}
+.md-search__input {
+    color: #ebdbb2 !important;          /* light text */
+    caret-color: #d79921 !important;    /* orange caret */
+    padding-left: 2.5rem !important;    /* leave space for icon */
+}
+.md-search__input::placeholder {
+    color: #a89984 !important;          /* muted placeholder */
+}
+.md-search__icon {
+    color: #d79921 !important;          /* orange icon */
+}
+/* adjust icon position because of new padding */
+.md-search__inner .md-search__icon {
+    left: 0.75rem !important;
+}
+
+/* In search overlay modal */
+.md-search__overlay .md-search__form {
+    background-color: #1d2021 !important;
+}
+
+/* Hide Material nav logo image if present */
+.md-logo,
+.md-header__button.md-logo {
+    display: none !important;
+}
+
+/* Force transparent header in all color schemes and header variants */
+[data-md-color-scheme] .md-header,
+[data-md-color-scheme] .md-header--primary,
+[data-md-color-scheme] .md-header--shadow {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
