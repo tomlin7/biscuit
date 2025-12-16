@@ -3255,14 +3255,14 @@ scikit-build = "*"
 
 [[package]]
 name = "tkinterweb"
-version = "4.10.1"
+version = "4.10.3"
 description = "HTML/CSS viewer, editor, and app builder for Tkinter"
 optional = false
 python-versions = ">=3.2"
 groups = ["main"]
 files = [
-    {file = "tkinterweb-4.10.1-py3-none-any.whl", hash = "sha256:8a0c35bb95d49c77da4c35f5da8ba5fed4b3e6d8599a0ae58d442fca8403e06b"},
-    {file = "tkinterweb-4.10.1.tar.gz", hash = "sha256:ddb4f1517d77a6a969123992b9c704603c4dbb649d9521c76a18f4671dfab020"},
+    {file = "tkinterweb-4.10.3-py3-none-any.whl", hash = "sha256:786c944e38ed5f774d6f4d749db90ee5c631f5f68c722f305741b78ebcbf7705"},
+    {file = "tkinterweb-4.10.3.tar.gz", hash = "sha256:33f9a03b8f23fe445261c47abf7205000cd96e857a3f1cab89c0bcf082f5d4fd"},
 ]
 
 [package.dependencies]
