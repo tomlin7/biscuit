@@ -31,7 +31,12 @@ Quickly open up a project using **`biscuit path/to/src`** and start editing. See
 
 <a href="https://github.com/tomlin7/biscuit/graphs/contributors">
   <img src="https://opencollective.com/biscuit/contributors.svg" />
-</a><br>
+</a><br><br>
+
+<a href="https://github.com/sponsors/tomlin7">
+  <img width="350" alt="sponsorbanner1" src="https://github.com/user-attachments/assets/d71b5c69-4993-4e0b-973f-91f2a9813d89" />
+</a>
+
 
 ## `Star History`
 
