@@ -1,0 +1,1188 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A lightweight, fast, and extensible code editor with a wide range of language support">
+      
+      
+      
+        <link rel="canonical" href="https://tomlin7.github.io/biscuit/">
+      
+      
+      
+        <link rel="next" href="getting-started/quick-start/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Biscuit - BISCUIT</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="stylesheets/extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="transparent" data-md-color-accent="transparent">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="BISCUIT" class="md-header__button md-logo" aria-label="BISCUIT" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BISCUIT
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Biscuit
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="transparent" data-md-color-accent="transparent"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tomlin7/biscuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tomlin7/biscuit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+
+        
+          
+        
+      
+
+<!-- TailwindCSS via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- GSAP CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- GSAP CustomEase plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
+<!-- Existing helper script (clipboard) -->
+<script src="javascripts/extra.js" type="text/javascript"></script>
+
+<!-- TOML parser -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/toml-js@0.0.8/lib/toml.min.js"></script> -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+  rel="stylesheet"
+/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet" />
+
+<!-- Hide default Material navigation elements so the landing page occupies the full viewport -->
+<style>
+
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+
+
+  .apply-font { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+
+  .md-header { position: initial; }
+  .md-main__inner { margin: 0; }
+  .md-content { display: none; }
+  @media screen and (min-width: 60em) { .md-sidebar--secondary { display: none; } }
+  @media screen and (min-width: 76.25em) { .md-sidebar--primary { display: none; } }
+  /* Dot grid decorative styles */
+  .dot-grid { width: 100%; height: 200px; position: relative; overflow: hidden; }
+  .dot { position: absolute; font-size: 10px; color: #444; transition: all 0.15s ease; will-change: transform,color; }
+  #featureSlides {
+    position: relative;
+    min-height: 500px; /* keep height stable */
+    padding-top: 5rem; /* offset below heading */
+  }
+  .feature-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: flex-start; /* start from top to avoid overlap */
+    gap: 2rem;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .feature-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Make image column (second child) wider on large screens */
+  @media (min-width: 1024px) {
+    .feature-slide > div:last-child {
+      flex: 1.5; 
+      box-shadow: 0 10px 10px -1px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  .footer-svg-letter {
+    letter-spacing: -5px;
+  }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+</style>
+
+<!-- Canvas for the star-field warp effect (fixed, covers entire viewport) -->
+<canvas id="space" class="fixed top-0 left-0 w-screen h-screen -z-10"></canvas>
+
+<!-- Landing page markup -->
+<div class="min-h-screen bg-transparent text-[#ebdbb2] overflow-x-hidden">
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center px-6">
+    <div id="quickInstall" class="max-w-6xl mx-auto text-center">
+      <h1 class="text-6xl md:text-8xl font-black m-10 leading-tight">
+        <span class="text-[#d79921]">BISCUIT</span><br />
+        <span class="text-[#ebdbb2]">IDE</span>
+      </h1>
+      <p class="text-xl md:text-2xl text-[#a89984] mb-4 max-w-3xl mx-auto leading-relaxed">
+        Fast, Extensible, Native IDE with Agents
+      </p>
+      <p class="text-lg text-[#928374] mb-12 max-w-2xl mx-auto">
+        Not a VSCode fork. &lt;20&nbsp;MB in size. Install in seconds.
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-2xl mx-auto">
+        <div class="bg-[#3c3836] rounded-lg p-4 border border-[#504945] text-center flex flex-col items-center">
+          <span class="material-symbols-outlined text-2xl mb-1 text-[#d79921]">download</span>
+          <div class="text-lg font-bold text-[#ebdbb2]">&lt;20</div>
+          <div class="text-sm text-[#a89984]">MB Size</div>
+        </div>
+        <div class="bg-[#3c3836] rounded-lg p-4 border border-[#504945] text-center flex flex-col items-center">
+          <span class="material-symbols-outlined text-2xl mb-1 text-[#d79921]">speed</span>
+          <div class="text-lg font-bold text-[#ebdbb2]">Native</div>
+          <div class="text-sm text-[#a89984]">Performance</div>
+        </div>
+        <div class="bg-[#3c3836] rounded-lg p-4 border border-[#504945] text-center flex flex-col items-center">
+          <span class="material-symbols-outlined text-2xl mb-1 text-[#d79921]">extension</span>
+          <div class="text-lg font-bold text-[#ebdbb2]">Extensible</div>
+          <div class="text-sm text-[#a89984]">Architecture</div>
+        </div>
+      </div>
+
+      <!-- Quick Install -->
+      <div id="quickInstall" class="bg-[#1d2021] rounded-2xl p-8 mb-8 border border-[#504945] max-w-2xl mx-auto">
+        <h3 class="text-xl font-semibold mb-4 text-[#d79921]">Quick Install</h3>
+        <div class="bg-[#282828] rounded-lg border border-[#504945] relative">
+          <pre class="m-0 p-4 overflow-x-auto text-sm text-[#ebdbb2] font-mono flex items-start justify-start"><code id="install-text">$ pip install biscuit-editor</code></pre>
+          <button onclick="copyToClipboard('pip install biscuit-editor')" class="absolute right-4 top-4 text-[#d79921] hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined">content_copy</span>
+          </button>
+        </div>
+        <p class="text-sm text-[#a89984] mt-3">
+          Open a folder, run: <code class="bg-[#3c3836] px-2 py-1 rounded text-[#d79921]">biscuit .</code> and start coding.
+        </p>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="getting-started/quick-start/" class="bg-[#d79921] text-[#1d2021] px-8 py-4 rounded-lg font-semibold text-lg md:text-xl hover:bg-[#fabd2f] transition-colors duration-200">Get Started</a>
+        <a href="https://biscuit-extensions.github.io/marketplace/" target="_blank" rel="noopener" class="border border-[#504945] text-[#ebdbb2] px-8 py-4 rounded-lg font-semibold text-lg md:text-xl hover:bg-[#3c3836] transition-colors duration-200">Marketplace</a>
+      </div>
+    </div>
+
+    <!-- Decorative circles -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-[#d79921] rounded-full opacity-20 animate-pulse"></div>
+      <div class="absolute top-3/4 right-1/4 w-1 h-1 bg-[#458588] rounded-full opacity-30 animate-pulse delay-1000"></div>
+      <div class="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-[#689d6a] rounded-full opacity-25 animate-pulse delay-500"></div>
+    </div>
+  </section>
+
+  <!-- Screenshot section -->
+  <section class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="relative rounded-2xl overflow-hidden">
+        <img src="https://github.com/user-attachments/assets/a9eaeb35-61fd-45a5-9dfb-dbf70bbfd257" alt="Biscuit IDE Screenshot" class="w-full h-auto" />
+        <div class="absolute inset-0"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features grid (static) -->
+  <!-- Features slideshow (interactive) -->
+  <section id="features" class="py-20 px-6 bg-[#282828]">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6 text-[#ebdbb2]">Powerful Features</h2>
+        <p class="text-xl text-[#a89984] max-w-2xl mx-auto">Everything you need for modern development, built for speed and extensibility</p>
+      </div>
+
+      <!-- Slides container -->
+      <div id="featureSlides" class="relative">
+        <!-- Slide 1 -->
+        <div class="feature-slide flex flex-col lg:flex-row items-center gap-10 active">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold mb-4 text-[#ebdbb2]">Language Server Support</h3>
+            <ul class="list-disc ml-6 text-[#a89984] space-y-1 text-sm">
+              <li>Code completions</li>
+              <li>Hover information</li>
+              <li>Symbol outline & references</li>
+              <li>Goto-definition & declaration</li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <img src="https://github.com/user-attachments/assets/16350a91-8d87-422d-b779-1db21033e979" alt="Language Server Support" class="w-full rounded-lg border border-[#504945]" />
+          </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="feature-slide flex flex-col lg:flex-row items-center gap-10">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold mb-4 text-[#ebdbb2]">Breakpoint Debugging</h3>
+            <ul class="list-disc ml-6 text-[#a89984] space-y-1 text-sm">
+              <li>Breakpoints in multiple files</li>
+              <li>Variable inspection & modification</li>
+              <li>Call stack viewer</li>
+              <li>Python debugger built-in</li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <img src="https://github.com/user-attachments/assets/a34d6e59-4743-43ee-a1a1-b7a5eac589bf" alt="Breakpoint Debugging" class="w-full rounded-lg border border-[#504945]" />
+          </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="feature-slide flex flex-col lg:flex-row items-center gap-10">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold mb-4 text-[#ebdbb2]">Git Integration</h3>
+            <ul class="list-disc ml-6 text-[#a89984] space-y-1 text-sm">
+              <li>Diff viewer</li>
+              <li>Push / pull / commit UI</li>
+              <li>Clone repositories inside editor</li>
+              <li>GitHub issues & PRs</li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <img src="https://github.com/user-attachments/assets/c23c0338-7c19-4636-831e-3d97b539df46" alt="Git Integration" class="w-full rounded-lg border border-[#504945]" />
+          </div>
+        </div>
+        <!-- Slide 4 -->
+        <div class="feature-slide flex flex-col lg:flex-row items-center gap-10">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold mb-4 text-[#ebdbb2]">AI Agents</h3>
+            <ul class="list-disc ml-6 text-[#a89984] space-y-1 text-sm">
+              <li>Attach files for context</li>
+              <li>Generate terminal commands</li>
+              <li>Run local LLMs (Ollama)</li>
+              <li>Google Gemini integration</li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <img src="https://github.com/user-attachments/assets/898d5223-87c2-4368-acd2-8ae060daab70" alt="AI Assistant" class="w-full rounded-lg border border-[#504945]" />
+          </div>
+        </div>
+        <!-- Slide 5 -->
+        <div class="feature-slide flex flex-col lg:flex-row items-center gap-10">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold mb-4 text-[#ebdbb2]">Workspace Search</h3>
+            <ul class="list-disc ml-6 text-[#a89984] space-y-1 text-sm">
+              <li>Regex support</li>
+              <li>File preview & count</li>
+              <li>Find / replace widget</li>
+              <li>Search across project</li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <img src="https://github.com/user-attachments/assets/6dd1baa2-c89c-437d-9613-00e72fa9e009" alt="Workspace Search" class="w-full rounded-lg border border-[#504945]" />
+          </div>
+        </div>
+        <!-- Slide 6 -->
+        <div class="feature-slide flex flex-col lg:flex-row items-center gap-12">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold mb-4 text-[#ebdbb2]">Integrated Terminals</h3>
+            <ul class="list-disc ml-6 text-[#a89984] space-y-1 text-sm">
+              <li>Multiple terminals</li>
+              <li>PowerShell, Bash, CMD, Python</li>
+              <li>Per-file run command storage</li>
+              <li>Command generation AI</li>
+            </ul>
+          </div>
+          <div class="flex-1">
+            <img src="https://github.com/user-attachments/assets/733fbd70-8377-4907-92fa-83e0dcad9368" alt="Integrated Terminals" class="w-full rounded-lg border border-[#504945]" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Dot navigation -->
+      <div id="featureDots" class="flex justify-center mt-20 gap-3">
+        <span class="feature-dot w-3 h-3 rounded-full bg-[#d79921] scale-125 cursor-pointer transition-transform duration-300"></span>
+        <span class="feature-dot w-3 h-3 rounded-full bg-[#504945] hover:bg-[#a89984] cursor-pointer transition-transform duration-300"></span>
+        <span class="feature-dot w-3 h-3 rounded-full bg-[#504945] hover:bg-[#a89984] cursor-pointer transition-transform duration-300"></span>
+        <span class="feature-dot w-3 h-3 rounded-full bg-[#504945] hover:bg-[#a89984] cursor-pointer transition-transform duration-300"></span>
+        <span class="feature-dot w-3 h-3 rounded-full bg-[#504945] hover:bg-[#a89984] cursor-pointer transition-transform duration-300"></span>
+        <span class="feature-dot w-3 h-3 rounded-full bg-[#504945] hover:bg-[#a89984] cursor-pointer transition-transform duration-300"></span>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const slides = [...document.querySelectorAll('#featureSlides .feature-slide')];
+        const dots   = [...document.querySelectorAll('#featureDots .feature-dot')];
+
+        // Initially show first slide
+        gsap.set(slides, {autoAlpha: 0});
+        gsap.set(slides[0], {autoAlpha: 1});
+
+        let current = 0;
+        const duration = 0.8;
+
+        const showSlide = (idx) => {
+          if (idx === current) return;
+
+          // fade out current and fade in next
+          gsap.to(slides[current], {autoAlpha: 0, duration, onComplete: () => slides[current].classList.remove('active')});
+          gsap.to(slides[idx], {autoAlpha: 1, duration, onStart: () => slides[idx].classList.add('active')});
+
+          dots[current].classList.remove('bg-[#d79921]', 'scale-125');
+          dots[idx].classList.add('bg-[#d79921]', 'scale-125');
+
+          current = idx;
+        };
+
+        // dot click handler
+        dots.forEach((dot, idx) => {
+          dot.addEventListener('click', () => {
+            clearInterval(autoScroll);
+            showSlide(idx);
+            autoScroll = setInterval(() => showSlide((current + 1) % slides.length), 7000);
+          });
+        });
+
+        // auto scroll every 7s
+        let autoScroll = setInterval(() => showSlide((current + 1) % slides.length), 7000);
+      });
+    </script>
+  </section>
+
+  <!-- Extensions Section -->
+  <section class="py-20 px-6 bg-[#1d2021]">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6 text-[#ebdbb2]">Extension Marketplace</h2>
+        <p class="text-xl text-[#a89984] mb-8">Extend Biscuit quickly with community-made extensions</p>
+      </div>
+
+    
+    <!-- Dynamic extensions grid -->
+    <div id="extensions-grid" class="extensions-fade grid md:grid-cols-3 gap-6 mb-5"></div>
+    
+    <p class="text-center text-sm text-[#a89984] m-5">More coming soon.</p>
+    <div class="items-center justify-center flex gap-5">
+          <a href="https://github.com/tomlin7/biscuit-extensions?tab=readme-ov-file#-creating-a-new-extension" target="_blank" rel="noopener" class="bg-[#d79921] text-sm text-[#1d2021] px-8 py-4 rounded-lg font-semibold hover:bg-[#fabd2f] transition-colors duration-200 inline-block">Create Extension</a>
+        <a href="https://biscuit-extensions.github.io/marketplace/" target="_blank" rel="noopener" class="bg-[#458588] text-sm text-[#ebdbb2] px-8 py-4 rounded-lg font-semibold hover:bg-[#689d6a] transition-colors duration-200 inline-block">Visit Marketplace</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="bg-[#282828]">
+    <!-- Decorative dot grid -->
+    <div id="dotGrid" class="dot-grid"></div>
+
+    <!-- Community Section -->
+    <section id="community" class="py-20 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold mb-6 text-[#ebdbb2]">Join the Community</h2>
+        <p class="text-xl text-[#a89984] mb-12">Contribute to the future of native IDE development</p>
+        <div class="flex flex-col items-center gap-12 mb-12">
+            <!-- Contributors Card -->
+            <div id='contributors' class="bg-[#3c3836] rounded-xl p-8 border border-[#504945] w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
+              <h3 class="text-3xl font-semibold text-[#ebdbb2]">Contributors</h3>
+              <p class="text-[#a89984] text-center max-w-xl text-xs md:text-xs">Join developers worldwide building the future of code editing</p>
+
+              <!-- Marquee of avatars (duplicate img for seamless loop) -->
+              <div class="marquee-fade relative w-full overflow-hidden">
+                  <div class="animate-marquee flex gap-8 w-max">
+                      <img src="https://opencollective.com/biscuit/contributors.svg?width=1600" alt="Contributors" class="h-24 select-none" />
+                      <img src="https://opencollective.com/biscuit/contributors.svg?width=1600" alt="Contributors duplicate" class="h-24 select-none" />
+                  </div>
+              </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- SVG Footer Section (replaces previous Open-Source card) -->
+    <section id="footer" class="footer w-full">
+      <div class="footer-svg-container">
+        <svg width="100%" height="auto" viewBox="0 0 180 30" xmlns="http://www.w3.org/2000/svg">
+          <text font-family="monospace" font-weight="700" font-size="20" y="24" fill="var(--offblack)">
+              <tspan class="footer-svg-letter" x="10">O</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">P</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">E</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">N</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">S</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">O</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">U</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">R</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">C</tspan>
+              <tspan class="footer-svg-letter" dx="-0.5">E</tspan>
+          </text>
+        </svg>
+        <div class="svg-footer-overlay"></div>
+      </div>
+    </section>
+
+    <!-- End SVG Footer Replacement -->
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-[#504945]">
+        <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+            <h4 class="font-semibold text-sm md:text-xs mb-4 text-[#ebdbb2]">Product</h4>
+            <ul class="space-y-2 text-[#a89984] text-sm md:text-xs">
+                <li><a href="https://github.com/tomlin7/biscuit?tab=readme-ov-file#features" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Features</a></li>
+                <li><a href="https://biscuit-extensions.github.io/marketplace/" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Extensions</a></li>
+                <li><a href="https://github.com/morhetz/gruvbox" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Themes</a></li>
+            </ul>
+            </div>
+            <div>
+            <h4 class="font-semibold text-sm md:text-xs mb-4 text-[#ebdbb2]">Resources</h4>
+            <ul class="space-y-2 text-[#a89984] text-sm md:text-xs">
+                <li><a href="https://biscuit-extensions.github.io/marketplace/" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Marketplace</a></li>
+                <li><a href="https://tomlin7.github.io/biscuit/api/app/" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">API Reference</a></li>
+                <li><a href="https://tomlin7.github.io/biscuit/getting-started/quick-start/" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Guides</a></li>
+            </ul>
+            </div>
+            <div>
+            <h4 class="font-semibold text-sm md:text-xs mb-4 text-[#ebdbb2]">Community</h4>
+            <ul class="space-y-2 text-[#a89984] text-sm md:text-xs">
+                <li><a href="https://github.com/tomlin7/biscuit" class="hover:text-[#d79921] transition-colors">GitHub</a></li>
+                <!-- <li><a href="https://discord.gg/" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Discord</a></li> -->
+                <li><a href="https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Contributing</a></li>
+            </ul>
+            </div>
+            <div>
+            <h4 class="font-semibold text-sm md:text-xs mb-4 text-[#ebdbb2]">Support</h4>
+            <ul class="space-y-2 text-[#a89984] text-sm md:text-xs">
+                <li><a href="https://github.com/tomlin7/biscuit/issues" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Issues</a></li>
+                <li><a href="https://github.com/tomlin7/biscuit/discussions" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">Discussions</a></li>
+                <li><a href="https://github.com/tomlin7/Biscuit/blob/main/LICENSE.md" target="_blank" rel="noopener" class="hover:text-[#d79921] transition-colors">License</a></li>
+            </ul>
+            </div>
+        </div>
+        <div class="border-t border-[#504945] pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-[#a89984] mb-4 md:mb-0 text-xs md:text-xs">© 2025 Biscuit IDE. MIT Licensed.</p>
+            <div class="flex items-center gap-4">
+            <img src="https://img.shields.io/github/actions/workflow/status/tomlin7/biscuit/nightly.yml" alt="Build Status" class="h-5" />
+            <img src="https://img.shields.io/github/license/tomlin7/Biscuit" alt="License" class="h-5" />
+            <img src="https://img.shields.io/github/v/release/tomlin7/biscuit" alt="Release" class="h-5" />
+            </div>
+        </div>
+        </div>
+    </footer>
+  </div>
+</div>
+
+<style>
+/* keyframes for marquee */
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marqueeScroll 30s linear infinite;
+}
+/* ===== SVG FOOTER STYLES ===== */
+.footer {
+  --offwhite: #f5f5f0;
+  --offblack: #121212;
+  --accent-color: #d79921;
+  min-height: 30vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  background: #ebdbb2;
+  z-index: 10;
+  padding-top: 5rem;
+}
+.footer-svg-container { position:absolute; bottom:0; left:-5%; width:110%; max-height:40vh; overflow:hidden; }
+.footer-svg-paths path { opacity:0; }
+.svg-footer-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background-image:url("https://cdn.cosmos.so/00c1aedd-73e6-4e74-a278-2252a626bbff?format=jpeg"); background-position:center; background-size:contain; mix-blend-mode:screen; opacity:0.5; pointer-events:none; }
+.footer-cta { position:relative; z-index:3; display:flex; flex-direction:column; align-items:center; gap:0.25rem; opacity:0; filter:blur(5px); transform:translateY(20px); }
+.footer-button { padding:0.5rem 0; text-decoration:none; text-transform:uppercase; color:var(--accent-color); }
+.footer-email { color:var(--offblack); text-decoration:none; }
+
+/* Fade-in / out edges for contributors marquee */
+.marquee-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+
+.extensions-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+  max-height: 300px;
+  overflow: hidden;
+}
+</style>
+
+<!-- Footer Animation JS -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  gsap.registerPlugin(ScrollTrigger, CustomEase);
+
+  CustomEase.create('svgEase', '0.25,0.1,0.25,1');
+
+  const footerPaths = document.querySelectorAll('.footer-svg-letter');
+  footerPaths.forEach(path => {
+    const startY = 50 + Math.random() * 30;
+    gsap.set(path, { opacity: 0, y: startY, filter: 'blur(8px)' });
+  });
+
+  const footerTl = gsap.timeline({ paused: true });
+  footerPaths.forEach((path, idx) => {
+    footerTl.fromTo(
+      path,
+      { opacity: 0, y: 40, scaleY: 0, transformOrigin: 'center bottom', filter: 'blur(8px)' },
+      { opacity: 1, y: 0, scaleY: 1, filter: 'blur(0px)', duration: 1.6, ease: 'svgEase' },
+      idx * 0.18
+    );
+  });
+
+  ScrollTrigger.create({
+    trigger: '#community',
+    start: 'top bottom-=100',
+    onEnter: () => footerTl.restart(),
+    onLeaveBack: () => footerTl.pause(0)
+  });
+});
+</script>
+
+<!-- TOML parser -->
+<script type="module">
+  import toml from 'https://cdn.jsdelivr.net/npm/toml@3.0.0/+esm'
+
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('https://raw.githubusercontent.com/tomlin7/biscuit-extensions/refs/heads/main/extensions.toml')
+      .then(r => r.text())
+      .then(txt => {
+        const data = toml.parse(txt);
+      const keys = Object.keys(data).slice(0, 6); // first few
+      const grid = document.getElementById('extensions-grid');
+      keys.forEach(key => {
+        const ext = data[key];
+        const card = document.createElement('div');
+        card.className = 'bg-[#3c3836] rounded-lg p-3 border border-[#504945] hover:border-[#458588] transition-colors duration-200 flex flex-col gap-0.5';
+        card.innerHTML = `
+          <p class="text-sm font-semibold text-[#ebdbb2] leading-tight">${ext.name}</p>
+          <p class="text-[11px] text-[#a89984] overflow-hidden" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${ext.description}</p>
+          <div class="flex justify-between items-center text-[10px] text-[#928374] mt-1">
+            <span>${ext.author}</span><span>${ext.version}</span>
+          </div>`;
+        grid.appendChild(card);
+      });
+    })
+    .catch(err => console.error('Failed to load extensions', err));
+});
+</script>
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="BISCUIT" class="md-nav__button md-logo" aria-label="BISCUIT" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BISCUIT
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tomlin7/biscuit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tomlin7/biscuit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/app/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.top", "navigation.expand", "toc.follow", "content.code.copy", "content.code.select"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>
