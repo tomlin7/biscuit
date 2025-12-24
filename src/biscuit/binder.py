@@ -38,6 +38,9 @@ class Binder:
         self.bind(self.bindings.change_tab_back, self.events.change_tab_back)
         self.bind(self.bindings.split_tab, self.events.split_editor)
 
+        # Vim mode bindings
+        self.bind("<Key>", self.events.vim_handle_key)
+
     def late_bind_all(self) -> None:
         """Bindings that require full initialization"""
 
