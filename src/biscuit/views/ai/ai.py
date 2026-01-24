@@ -7,6 +7,7 @@ import typing
 
 from biscuit.common import Dropdown
 from biscuit.common.ai import Agent
+from biscuit.common.ai.react_agent import ReActAgent
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame
 
@@ -138,7 +139,11 @@ class AI(SideBarView):
 
         try:
             model_id = self.available_models[self.current_model]
-            self.agent = Agent(self.base, self.api_key, model_id)
+            
+            if self.current_mode == "Quick":
+                self.agent = ReActAgent(self.base, self.api_key, model_id)
+            else:
+                self.agent = Agent(self.base, self.api_key, model_id)
             
             self.chat = ModernAIChat(self)
             self.chat.set_enhanced_agent(self.agent)
