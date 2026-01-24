@@ -2,8 +2,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import typing
 
-from .native import Frame
-from .scrollbar import Scrollbar
+from biscuit.common.ui.native import Frame
+from biscuit.common.ui.scrollbar import Scrollbar
 
 
 class Tree(Frame):

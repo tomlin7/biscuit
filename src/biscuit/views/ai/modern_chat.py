@@ -43,53 +43,37 @@ class StreamingMessage(Frame):
         """Setup the message UI."""
         theme = self.base.theme
         
-        # For user messages, use simple text widget
+        # For user messages, use a box-like layout
         if self.message_type == "user":
-            # Simple header for user messages
-            header = Frame(self, bg=theme.secondary_background)
-            header.pack(fill=tk.X)
+            self.configure(bg=theme.primary_background, padx=10, pady=10)
+            
+            # Message container with border
+            self.container = Frame(self, bg=theme.secondary_background, 
+                                  highlightbackground=theme.border, highlightthickness=1)
+            self.container.pack(fill=tk.X, expand=True)
 
-            self.configure(bg=theme.secondary_background)
-            
-            sender_label = Label(
-                header,
-                text="You",
-                font=self.base.settings.uifont,
-                fg=theme.secondary_foreground,
-                bg=theme.secondary_background
-            )
-            sender_label.pack(side=tk.LEFT)
-            
             # Plain text content for user messages
             self.content_text = Text(
-                self,
+                self.container,
                 height=1,
                 bg=theme.secondary_background,
                 fg=theme.secondary_foreground,
                 font=self.base.settings.uifont,
                 border=0,
+                padx=10,
+                pady=10,
                 wrap=tk.WORD,
                 state=tk.DISABLED
             )
-            self.content_text.pack(fill=tk.X, pady=(0, 2))
+            self.content_text.pack(fill=tk.X)
             
         else:
             # AI message with markdown renderer
-            header = Frame(self, bg=theme.secondary_background)
-            header.pack(fill=tk.X)
-            
-            sender_label = Label(
-                header,
-                text="Agent",
-                font=self.base.settings.uifont,
-                fg=theme.biscuit,
-                bg=theme.secondary_background
-            )
-            sender_label.pack(side=tk.LEFT)
+            self.configure(bg=theme.primary_background, padx=10, pady=5)
             
             # Message content area using Renderer for markdown
-            self.content_frame = Frame(self, bg=theme.secondary_background)
-            self.content_frame.pack(fill=tk.X, pady=(0, 2))
+            self.content_frame = Frame(self, bg=theme.primary_background)
+            self.content_frame.pack(fill=tk.X)
             
             # Markdown renderer for AI messages
             self.content_renderer = Renderer(self.content_frame)
@@ -101,8 +85,23 @@ class StreamingMessage(Frame):
                 text="thinking...",
                 font=self.base.settings.uifont,
                 fg=theme.secondary_foreground,
-                bg=theme.secondary_background
+                bg=theme.primary_background
             )
+
+            # Actions bar for AI messages
+            self.actions_frame = Frame(self, bg=theme.primary_background)
+            self.actions_frame.pack(fill=tk.X, pady=(5, 0))
+            
+            self._add_action_icon(Icons.THUMBSUP)
+            self._add_action_icon(Icons.THUMBSDOWN)
+            self._add_action_icon(Icons.COPY)
+            self._add_action_icon(Icons.REPLY)
+            self._add_action_icon(Icons.ARROW_UP)
+
+    def _add_action_icon(self, icon):
+        btn = IconButton(self.actions_frame, icon=icon)
+        btn.config(bg=self.base.theme.primary_background, fg=self.base.theme.secondary_foreground)
+        btn.pack(side=tk.LEFT, padx=2)
         
     def start_typing(self):
         """Show typing indicator."""
@@ -201,18 +200,26 @@ class ModernAIChat(Frame):
         theme = self.base.theme
         
         header = Frame(self, bg=theme.secondary_background)
-        header.grid(row=0, column=0, sticky=tk.EW, padx=5, pady=5)
+        header.grid(row=0, column=0, sticky=tk.EW, padx=10, pady=5)
         header.grid_columnconfigure(0, weight=1)
         
-        # Simple status indicator
-        self.status_label = Label(
+        # Chat title
+        self.title_label = Label(
             header,
-            text="Ready",
+            text="Initial Greeting and Assistance Offer",
             font=self.base.settings.uifont,
-            fg=theme.secondary_foreground,
+            fg=theme.foreground,
             bg=theme.secondary_background
         )
-        self.status_label.pack(side=tk.LEFT)
+        self.title_label.pack(side=tk.LEFT)
+
+        # Header actions
+        actions = Frame(header, bg=theme.secondary_background)
+        actions.pack(side=tk.RIGHT)
+
+        IconButton(actions, icon=Icons.PLUS, iconsize=15).pack(side=tk.LEFT, padx=2)
+        IconButton(actions, icon=Icons.DASH, iconsize=15).pack(side=tk.LEFT, padx=2)
+        IconButton(actions, icon=Icons.ELLIPSIS, iconsize=15).pack(side=tk.LEFT, padx=2)
         
     def setup_main_area(self):
         """Setup the main chat area."""
@@ -226,7 +233,7 @@ class ModernAIChat(Frame):
         theme = self.base.theme
         
         # Chat container with scrollbar
-        chat_container = Frame(parent, bg=theme.secondary_background)
+        chat_container = Frame(parent, bg=theme.primary_background)
         chat_container.grid(row=1, column=0, sticky=tk.NSEW)
         chat_container.grid_columnconfigure(0, weight=1)
         chat_container.grid_rowconfigure(0, weight=1)
@@ -234,7 +241,7 @@ class ModernAIChat(Frame):
         # Scrollable chat area
         self.chat_canvas = Canvas(
             chat_container,
-            bg=theme.secondary_background,
+            bg=theme.primary_background,
             highlightthickness=0
         )
         self.chat_canvas.grid(row=0, column=0, sticky=tk.NSEW)
@@ -249,7 +256,7 @@ class ModernAIChat(Frame):
         self.chat_canvas.configure(yscrollcommand=scrollbar.set)
         
         # Messages frame inside canvas
-        self.messages_frame = Frame(self.chat_canvas, bg=theme.secondary_background)
+        self.messages_frame = Frame(self.chat_canvas, bg=theme.primary_background)
         self.canvas_window = self.chat_canvas.create_window(
             0, 0, anchor=tk.NW, window=self.messages_frame
         )
@@ -265,20 +272,24 @@ class ModernAIChat(Frame):
     def setup_input_area(self):
         """Setup the input area."""
         theme = self.base.theme
+        from biscuit.common import Dropdown
         
         # Input container
-        input_container = Frame(self, bg=theme.border)
-        input_container.grid(row=2, column=0, sticky=tk.EW, pady=(5, 0))
-        input_container.grid_columnconfigure(0, weight=1)
+        input_container = Frame(self, bg=theme.secondary_background, padx=10, pady=10)
+        input_container.grid(row=2, column=0, sticky=tk.EW)
         
-        # Input frame
-        input_frame = Frame(input_container, bg=theme.secondary_background)
-        input_frame.pack(fill=tk.X, padx=1, pady=1)
+        # Bordered frame for input
+        input_border = Frame(input_container, bg=theme.border, padx=1, pady=1)
+        input_border.pack(fill=tk.X)
+        input_border.grid_columnconfigure(0, weight=1)
+
+        input_inner = Frame(input_border, bg=theme.secondary_background)
+        input_inner.pack(fill=tk.BOTH)
         
         # Text input
         self.text_input = hintedtext.HintedText(
-            input_frame,
-            hint="What do you want me to code?",
+            input_inner,
+            hint="Message the Zed Agent - @ to include context",
             height=3,
             bg=theme.secondary_background,
             fg=theme.secondary_foreground,
@@ -288,21 +299,54 @@ class ModernAIChat(Frame):
             pady=10,
             wrap=tk.WORD
         )
-        self.text_input.pack(fill=tk.X, side=tk.LEFT, expand=True)
+        self.text_input.pack(fill=tk.X)
         
+        # Bottom tools bar
+        tools_bar = Frame(input_inner, bg=theme.secondary_background, padx=10, pady=5)
+        tools_bar.pack(fill=tk.X)
+
+        # Left side icons
+        IconButton(tools_bar, icon=Icons.MENTION, iconsize=14).pack(side=tk.LEFT, padx=2)
+        IconButton(tools_bar, icon=Icons.GLOBE, iconsize=14).pack(side=tk.LEFT, padx=2)
+
+        # Right side: status, dropdowns, send
+        right_tools = Frame(tools_bar, bg=theme.secondary_background)
+        right_tools.pack(side=tk.RIGHT)
+
+        self.status_label = Label(right_tools, text="Ready", font=("Segoe UI", 8), 
+              fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.status_label.pack(side=tk.LEFT, padx=5)
+
+        Label(right_tools, text="9k / 200k", font=("Segoe UI", 8), 
+              fg=theme.secondary_foreground, bg=theme.secondary_background).pack(side=tk.LEFT, padx=5)
+
+        # Mode selector (Ask v)
+        self.mode_dropdown = Dropdown(
+            right_tools,
+            items=self.master.modes,
+            selected=self.master.current_mode,
+            callback=self.master.set_mode,
+        )
+        self.mode_dropdown.pack(side=tk.LEFT, padx=2)
+
+        # Model selector (Claude Sonnet 4.5 v)
+        self.model_dropdown = Dropdown(
+            right_tools,
+            items=self.master.available_models.keys(),
+            selected=self.master.current_model,
+            callback=self.master.set_current_model,
+        )
+        self.model_dropdown.pack(side=tk.LEFT, padx=2)
+
         # Send button
         self.send_btn = IconButton(
-            input_frame,
+            right_tools,
             icon=Icons.SEND,
+            iconsize=16,
             event=self.send_message
         )
-        self.send_btn.config(
-            fg=theme.biscuit,
-            bg=theme.secondary_background,
-            padx=10,
-            pady=10
-        )
-        self.send_btn.pack(side=tk.RIGHT, fill=tk.Y)
+        self.send_btn.config(fg=theme.biscuit, bg=theme.secondary_background)
+        self.send_btn.pack(side=tk.LEFT, padx=(5, 0))
         
         # Bind Enter key
         self.text_input.bind('<Control-Return>', self.send_message)
@@ -431,11 +475,11 @@ class ModernAIChat(Frame):
                 self.after(0, finish_task)
                 
             except Exception as e:
-                def show_error():
+                def show_error(e):
                     error_msg = f"Error: {str(e)}"
                     response_message.append_content(f"\n\n{error_msg}")
                     self.scroll_to_bottom()
-                self.after(0, show_error)
+                self.after(0, lambda e=e: show_error(e))
             finally:
                 def cleanup():
                     self._set_execution_state(False)
@@ -500,3 +544,12 @@ class ModernAIChat(Frame):
         error_msg.set_content(f"Error: {error_message}")
         self.messages.append(error_msg)
         self.scroll_to_bottom()
+
+    def get_conversation_text(self) -> str:
+        """Get the full conversation text."""
+        text_parts = []
+        for message in self.messages:
+            role = "User" if message.message_type == "user" else "Agent"
+            content = message.content
+            text_parts.append(f"--- {role} ---\n{content}\n")
+        return "\n".join(text_parts)

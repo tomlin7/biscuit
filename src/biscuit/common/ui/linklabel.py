@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import webbrowser
 
-from .labels import WrappingLabel
+from biscuit.common.ui.labels import WrappingLabel
 
 
 class LinkLabel(WrappingLabel):

@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from .native import Frame
+from biscuit.common.ui.native import Frame
 
 
 class KeyB(Frame):

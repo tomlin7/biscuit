@@ -1,11 +1,11 @@
 import tkinter as tk
 
-from git import Optional
+from typing import Optional
 from hintedtext import HintedEntry
 
-from ..icons import Icons
-from .icon import IconButton
-from .native import Frame
+from biscuit.common.icons import Icons
+from biscuit.common.ui.icon import IconButton
+from biscuit.common.ui.native import Frame
 
 
 class ButtonsEntry(Frame):
