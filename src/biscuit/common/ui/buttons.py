@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from ..icons import Icons
-from .native import Frame, Menubutton
+from biscuit.common.icons import Icons
+from biscuit.common.ui.native import Frame, Menubutton
 
 
 class Button(Menubutton):

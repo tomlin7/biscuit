@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from ..icons import Icons
-from .icon import IconButton
-from .native import Frame
+from biscuit.common.icons import Icons
+from biscuit.common.ui.icon import IconButton
+from biscuit.common.ui.native import Frame
 
 
 class Closable(Frame):

@@ -2,7 +2,7 @@ import tkinter as tk
 
 from hintedtext import HintedEntry
 
-from .native import Frame
+from biscuit.common.ui.native import Frame
 
 
 class Entry(Frame):
