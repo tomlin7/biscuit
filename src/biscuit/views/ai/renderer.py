@@ -275,5 +275,7 @@ class Renderer(Frame):
             self.content = self.markdown(content)
         else:
             self.content += self.markdown(content)
-        self.htmlframe.load_html(self.content)
+            
+        full_html = f"{self.header}{self.content}{self.footer}"
+        self.htmlframe.load_html(full_html)
         self.htmlframe.add_css(self.css)

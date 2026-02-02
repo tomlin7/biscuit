@@ -435,15 +435,16 @@ class ModernAIChat(Frame):
                             return
                         
                         if self._current_thought is not None:
-                            self._current_thought += content + "\n"
+                            self._current_thought += content
                             return
 
                         # Basic formatting for other markers
+                        if content == "[DONE]":
+                            return
+
                         formatted_content = content
                         if content.startswith("Next:") or content.startswith("Plan:"):
                             formatted_content = f'<div class="thought">{content}</div>\n'
-                        else:
-                            formatted_content = content + "\n\n"
                             
                         response_message.append_content(formatted_content)
                         self.scroll_to_bottom()
