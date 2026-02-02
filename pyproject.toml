@@ -23,7 +23,7 @@ sv-ttk = "^2.6.0"
 pillow = ">=11.1,<13.0"
 requests = "^2.32.3"
 pyperclip = "^1.9.0"
-tkinterweb = "^4.2.0"
+tkinterweb = {extras = ["full"], version = "^4.17.6"}
 mistune = "^3.1.2"
 chardet = "^5.2.0"
 pywinpty = { version = ">=2.0.15,<4.0.0", platform = "win32" }
