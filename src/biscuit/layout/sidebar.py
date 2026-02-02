@@ -131,7 +131,7 @@ class SideBar(Frame):
 
     def pack(self, *args, **kwargs):
         if isinstance(self.master, tk.PanedWindow):
-            self.master.add(self, before=self.base.contentpane, width=250, stretch="never")
+            self.master.add(self, before=self.base.contentpane, width=260, stretch="never")
             self.master.paneconfigure(self, minsize=50)
         else:
             super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1), *args, **kwargs)

@@ -60,12 +60,17 @@ class Agent:
         # Step tracking
         self.max_steps = 15
         self.iteration_count = 0
+        
+        # Token usage tracking
+        self.input_tokens = 0
+        self.output_tokens = 0
 
         # Callbacks for UI integration
         self.progress_callbacks: List[Callable] = []
         self.step_callbacks: List[Callable] = []
         self.stream_callback: Optional[Callable[[str], None]] = None
         self.tool_callback: Optional[Callable[[str, str, str, str], None]] = None
+        self.usage_callback: Optional[Callable[[int, int], None]] = None
 
     def _initialize_gemini_client(self) -> genai.Client:
         """Initialize the Google GenAI client."""
@@ -99,6 +104,17 @@ class Agent:
 
     def set_tool_callback(self, callback: Callable[[str, str, str, str], None]):
         self.tool_callback = callback
+        
+    def set_usage_callback(self, callback: Callable[[int, int], None]):
+        self.usage_callback = callback
+
+    # --- Usage Helpers ---
+    
+    def _update_usage(self, input_tokens: int = 0, output_tokens: int = 0):
+        self.input_tokens += input_tokens
+        self.output_tokens += output_tokens
+        if self.usage_callback:
+            self.usage_callback(self.input_tokens, self.output_tokens)
 
     # --- Streaming Helpers ---
 
@@ -225,6 +241,14 @@ class Agent:
                         if part.function_call:
                             # Collector tool calls to execute after stream ends
                             model_parts.append(part)
+                    
+                    if response.usage_metadata:
+                        # Gemini returns total usage in metadata, we update based on diff or just total
+                        # For simplicity, we'll just track the absolute values from the last chunk
+                        self._update_usage(
+                            input_tokens=max(0, response.usage_metadata.prompt_token_count - self.input_tokens),
+                            output_tokens=max(0, response.usage_metadata.candidates_token_count - self.output_tokens)
+                        )
 
             except Exception as e:
                 err_msg = str(e).lower()
@@ -340,6 +364,14 @@ class Agent:
                 # Get the final response to handle tool usage
                 final_message = await stream.get_final_message()
                 messages.append({"role": "assistant", "content": final_message.content})
+                
+                # Anthropic returns usage in the final message
+                # Update usage metadata
+                if final_message.usage:
+                    self._update_usage(
+                        input_tokens=final_message.usage.input_tokens,
+                        output_tokens=final_message.usage.output_tokens
+                    )
                 
                 tool_calls = [c for c in final_message.content if c.type == "tool_use"]
                 
