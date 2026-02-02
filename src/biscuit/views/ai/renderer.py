@@ -102,7 +102,6 @@ class Renderer(Frame):
             self, messages_enabled=False, vertical_scrollbar=False,
             shrink=True
         )
-        self.sparkles = f"<h4 color={self.base.theme.biscuit}>✨ Bikkis</h4> "
 
         self.htmlframe.pack(fill=tk.BOTH, expand=True)
 
