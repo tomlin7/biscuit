@@ -160,6 +160,8 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+CLAUDE.md
+
 # Cython debug symbols
 cython_debug/
 
