@@ -255,7 +255,6 @@ class Agent:
             for call in tool_calls:
                 name = call.name
                 args = call.args
-                self._stream_content(f"Executing {name}...")
                 
                 try:
                     if name in tools_map:
@@ -355,7 +354,6 @@ class Agent:
                 for call in tool_calls:
                     name = call.name
                     args = call.input
-                    self._stream_content(f"Executing {name}...")
                     
                     try:
                         if name in tools_map:

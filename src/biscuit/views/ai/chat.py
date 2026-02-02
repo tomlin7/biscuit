@@ -108,23 +108,25 @@ class CollapsibleThought(Frame):
 class ToolActionWidget(Frame):
     """A native widget for tool executions."""
     
-    def __init__(self, master, icon="📄", action="Analyzed", target="File", extra="", lang_icon="", *args, **kwargs):
+    def __init__(self, master, icon=Icons.FILE, action="Analyzed", target="File", extra="", lang_icon=Icons.FILE_CODE, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         theme = self.base.theme
         self.configure(bg=theme.primary_background)
         
         container = Frame(self, bg=theme.primary_background)
-        container.pack(fill=tk.X, pady=6)
+        container.pack(fill=tk.X, pady=2)
         
-        Label(container, text=icon, font=("Segoe UI Emoji", 11), 
+        # Icon for the action type (e.g. search, terminal)
+        Label(container, text=icon, font=("codicon", 11), 
               bg=theme.primary_background, fg=theme.secondary_foreground).pack(side=tk.LEFT, padx=(0, 10))
         
         Label(container, text=action, font=self.base.settings.uifont,
               fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT)
         
         if lang_icon:
-            Label(container, text=lang_icon, font=("Segoe UI Emoji", 10), 
-                  bg=theme.primary_background).pack(side=tk.LEFT, padx=(8, 2))
+            # Language icon (e.g. Python, JS)
+            Label(container, text=lang_icon, font=("codicon", 10), 
+                  bg=theme.primary_background, fg=theme.biscuit).pack(side=tk.LEFT, padx=(8, 2))
 
         # Target (e.g. filename) in bold
         Label(container, text=target, font=self.base.settings.uifont_bold,
@@ -135,7 +137,7 @@ class ToolActionWidget(Frame):
             Label(container, text=extra, font=self.base.settings.font,
                   fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=2)
         
-        # Right aligned "Open diff" or similar if needed
+        # Right aligned "Open diff" link
         if "Edited" in action:
             link = Label(container, text="Open diff", font=("Segoe UI", 8), cursor="hand2",
                         fg=theme.secondary_foreground, bg=theme.primary_background)
@@ -185,7 +187,7 @@ class StreamingMessage(Frame):
             self.configure(bg=theme.primary_background, padx=10, pady=5)
             
             self.parts_container = Frame(self, bg=theme.primary_background)
-            self.parts_container.pack(fill=tk.X)
+            self.parts_container.pack(fill=tk.X, padx=10)
             
             # Internal state to track the active part
             self.current_markdown_renderer = None
@@ -237,7 +239,10 @@ class StreamingMessage(Frame):
         else:
             new_text = "thinking..."
         
-        self.typing_indicator.config(text=new_text)
+        try:
+            self.typing_indicator.config(text=new_text)
+        except tk.TclError:
+            pass
         # Store the animation ID so we can cancel it
         if hasattr(self, '_typing_active') and self._typing_active:
             self.typing_animation_id = self.after(500, self._animate_typing)
@@ -626,7 +631,7 @@ class AgentChat(Frame):
                         import os
                         import json
                         
-                        icon = "📄"
+                        icon = Icons.FILE
                         action_label = "Analyzed" if category == "analysis" else "Edited"
                         file_info = ""
                         extra_info = ""
@@ -641,11 +646,11 @@ class AgentChat(Frame):
                                 file_info = os.path.basename(path) if path != "." else os.path.basename(os.getcwd())
                                 ext = os.path.splitext(file_info)[1].lower()
                                 mapping = {
-                                    '.py': '🐍', '.js': '🟨', '.ts': '🟦', 
-                                    '.html': '🌐', '.css': '🎨', '.json': '📋', 
-                                    '.md': '📝', '.txt': '📄'
+                                    '.py': Icons.SYMBOL_METHOD, '.js': Icons.SYMBOL_EVENT, '.ts': Icons.SYMBOL_INTERFACE, 
+                                    '.html': Icons.GLOBE, '.css': Icons.SYMBOL_COLOR, '.json': Icons.JSON, 
+                                    '.md': Icons.MARKDOWN, '.txt': Icons.SYMBOL_TEXT
                                 }
-                                lang_icon = mapping.get(ext, '')
+                                lang_icon = mapping.get(ext, Icons.FILE_CODE)
 
                                 if "start_line" in data:
                                     sl = data.get('start_line')
@@ -653,16 +658,16 @@ class AgentChat(Frame):
                                     extra_info = f'#L{sl}-{el}'
                             
                             if tool_name == "execute_command":
-                                icon = "🐚"
+                                icon = Icons.TERMINAL
                                 action_label = "Executed"
                                 file_info = data.get('command', '').split(' ')[0]
                                 extra_info = f' {data.get("command")}'
                             elif "write" in tool_name or "replace" in tool_name or "create" in tool_name:
-                                icon = "📝"
+                                icon = Icons.EDIT
                                 action_label = "Edited"
                                 extra_info += ' +1 -1'
                             elif "search" in tool_name:
-                                icon = "🔍"
+                                icon = Icons.SEARCH
                                 action_label = "Searched"
                                 file_info = data.get('query', '')
         
