@@ -21,7 +21,7 @@ class SideBarView(View):
         self.__name__ = self.__class__.__name__
 
         self.pack_propagate(False)
-        self.config(width=450, **self.base.theme.views.sidebar)
+        self.config(width=250, **self.base.theme.views.sidebar)
 
         self.top = Frame(self, **self.base.theme.views.sidebar)
         self.top.pack(fill=tk.X, padx=(15, 10), pady=7)
