@@ -108,7 +108,7 @@ class CollapsibleThought(Frame):
 class ToolActionWidget(Frame):
     """A native widget for tool executions."""
     
-    def __init__(self, master, icon="📄", action="Analyzed", target="File", extra="", *args, **kwargs):
+    def __init__(self, master, icon="📄", action="Analyzed", target="File", extra="", lang_icon="", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         theme = self.base.theme
         self.configure(bg=theme.primary_background)
@@ -117,11 +117,15 @@ class ToolActionWidget(Frame):
         container.pack(fill=tk.X, pady=6)
         
         Label(container, text=icon, font=("Segoe UI Emoji", 11), 
-              bg=theme.primary_background).pack(side=tk.LEFT, padx=(0, 10))
+              bg=theme.primary_background, fg=theme.secondary_foreground).pack(side=tk.LEFT, padx=(0, 10))
         
         Label(container, text=action, font=self.base.settings.uifont,
               fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT)
         
+        if lang_icon:
+            Label(container, text=lang_icon, font=("Segoe UI Emoji", 10), 
+                  bg=theme.primary_background).pack(side=tk.LEFT, padx=(8, 2))
+
         # Target (e.g. filename) in bold
         Label(container, text=target, font=self.base.settings.uifont_bold,
               fg=theme.foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=5)
@@ -129,7 +133,7 @@ class ToolActionWidget(Frame):
         if extra:
             # Metadata with lower opacity feel
             Label(container, text=extra, font=self.base.settings.font,
-                  fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=5)
+                  fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=2)
         
         # Right aligned "Open diff" or similar if needed
         if "Edited" in action:
@@ -285,11 +289,26 @@ class StreamingMessage(Frame):
             self.current_thought_widget.set_title(f"Thought for {duration}s")
             self.current_thought_widget = None
 
-    def add_tool_action(self, icon: str, action: str, target: str, extra: str = ""):
+    def promote_last_thought(self):
+        """Promote the last thought to a normal markdown block if it's the final part."""
+        children = self.parts_container.winfo_children()
+        if not children:
+            return
+            
+        last_child = children[-1]
+        if isinstance(last_child, CollapsibleThought):
+            content = last_child.content_text
+            last_child.destroy()
+            
+            # Ensure we start a new renderer for the final result
+            self.current_markdown_renderer = None
+            self.append_content(content)
+        
+    def add_tool_action(self, icon: str, action: str, target: str, extra: str = "", lang_icon: str = ""):
         """Add a native tool action widget."""
         self.current_markdown_renderer = None
         self.current_thought_widget = None
-        widget = ToolActionWidget(self.parts_container, icon, action, target, extra)
+        widget = ToolActionWidget(self.parts_container, icon, action, target, extra, lang_icon)
         widget.pack(fill=tk.X)
         
     def set_content(self, text: str):
@@ -598,6 +617,7 @@ class ModernAIChat(Frame):
                         action_label = "Analyzed" if category == "analysis" else "Edited"
                         file_info = ""
                         extra_info = ""
+                        lang_icon = ""
                         
                         try:
                             # Robust parsing of tool input
@@ -606,6 +626,14 @@ class ModernAIChat(Frame):
                             
                             if path:
                                 file_info = os.path.basename(path) if path != "." else os.path.basename(os.getcwd())
+                                ext = os.path.splitext(file_info)[1].lower()
+                                mapping = {
+                                    '.py': '🐍', '.js': '🟨', '.ts': '🟦', 
+                                    '.html': '🌐', '.css': '🎨', '.json': '📋', 
+                                    '.md': '📝', '.txt': '📄'
+                                }
+                                lang_icon = mapping.get(ext, '')
+
                                 if "start_line" in data:
                                     sl = data.get('start_line')
                                     el = data.get('end_line') or "EOF"
@@ -619,7 +647,7 @@ class ModernAIChat(Frame):
                             elif "write" in tool_name or "replace" in tool_name or "create" in tool_name:
                                 icon = "📝"
                                 action_label = "Edited"
-                                extra_info += ' +12 -8'
+                                extra_info += ' +1 -1'
                             elif "search" in tool_name:
                                 icon = "🔍"
                                 action_label = "Searched"
@@ -630,7 +658,7 @@ class ModernAIChat(Frame):
                             file_info = tool_name
                             extra_info = f'{tool_input[:30]}...'
 
-                        response_message.add_tool_action(icon, action_label, file_info, extra_info)
+                        response_message.add_tool_action(icon, action_label, file_info, extra_info, lang_icon)
                         self.scroll_to_bottom()
                     self.after(0, update_ui)
                 
@@ -650,7 +678,9 @@ class ModernAIChat(Frame):
                 
                 # Update final response
                 def finish_task():
-                    # Final result is already streamed by AI as natural language
+                    # If the last part was a thought, it's likely the final answer
+                    # Promote it to a normal markdown block for readability
+                    response_message.promote_last_thought()
                     self.scroll_to_bottom(force=True)
                 self.after(0, finish_task)
                 
