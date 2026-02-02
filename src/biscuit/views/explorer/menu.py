@@ -35,7 +35,7 @@ class DirectoryContextMenu(Menu):
             "Copy Name without Extension", self.master.copy_name_without_extension
         )
         self.add_separator()
-        self.add_command("Attach to bikkis...", self.master.attach_to_chat)
+        self.add_command("Attach to chat...", self.master.attach_to_chat)
         self.add_command("Add to .gitignore", self.master.add_to_gitignore)
         self.add_command("Exclude from .gitignore", self.master.exclude_from_gitignore)
         self.add_separator()

@@ -202,9 +202,8 @@ class StreamingMessage(Frame):
             )
             # Not packed initially
 
-            # Actions bar for AI messages
+            # Actions bar for AI messages (not packed initially)
             self.actions_frame = Frame(self, bg=theme.primary_background)
-            self.actions_frame.pack(fill=tk.X, pady=20)
             
             self._add_action_icon(Icons.THUMBSUP)
             self._add_action_icon(Icons.THUMBSDOWN)
@@ -250,6 +249,11 @@ class StreamingMessage(Frame):
         if hasattr(self, 'typing_animation_id'):
             self.after_cancel(self.typing_animation_id)
         self.indicator_frame.pack_forget()
+        
+    def show_actions(self):
+        """Show the actions bar (like, dislike, copy, etc.)."""
+        if self.message_type == "ai":
+            self.actions_frame.pack(fill=tk.X, pady=(10, 20))
         
     def append_content(self, text: str):
         """Append text to the message content."""
@@ -333,6 +337,7 @@ class StreamingMessage(Frame):
             self.current_thought_widget = None
             
             self.append_content(text)
+            self.show_actions()
 
 class ModernAIChat(Frame):
     """Modern Cursor-like AI chat interface."""
@@ -681,6 +686,7 @@ class ModernAIChat(Frame):
                     # If the last part was a thought, it's likely the final answer
                     # Promote it to a normal markdown block for readability
                     response_message.promote_last_thought()
+                    response_message.show_actions()
                     self.scroll_to_bottom(force=True)
                 self.after(0, finish_task)
                 
