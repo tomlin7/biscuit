@@ -1,8 +1,8 @@
 """
-Modern Cursor-like AI Chat Interface for Biscuit
+Agent Chat Interface for Biscuit
 ===============================================
 
-This module provides a clean, modern chat interface similar to Cursor's AI chat,
+This module provides a clean, modern chat interface,
 with real-time streaming, progress tracking, and advanced interaction features.
 """
 
@@ -347,8 +347,8 @@ class StreamingMessage(Frame):
             self.append_content(text)
             self.show_actions()
 
-class ModernAIChat(Frame):
-    """Modern Cursor-like AI chat interface."""
+class AgentChat(Frame):
+    """Agent chat interface with multi-model support."""
     
     def __init__(self, master: AI, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -360,7 +360,7 @@ class ModernAIChat(Frame):
         self.setup_ui()
         
     def setup_ui(self):
-        """Setup the modern chat interface."""
+        """Setup the chat interface."""
         theme = self.base.theme
         
         self.grid_columnconfigure(0, weight=1)

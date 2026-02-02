@@ -12,7 +12,7 @@ from biscuit.common.ui import Frame
 
 from ..sidebar_view_secondary import SideBarView
 from .menu import AIMenu
-from .modern_chat import ModernAIChat
+from .chat import AgentChat
 from .placeholder import AIPlaceholder
 from .renderer import Renderer
 
@@ -163,7 +163,7 @@ class AI(SideBarView):
 
             self.agent = Agent(self.base, api_key, model_id)
             
-            self.chat = ModernAIChat(self)
+            self.chat = AgentChat(self)
             self.chat.set_enhanced_agent(self.agent)
             
             self.add_item(self.chat)

@@ -39,7 +39,7 @@ class Agent:
     """
     Biscuit Coding Agent - An autonomous AI assistant for coding tasks.
 
-    Powered by the modern google-genai SDK with native function calling.
+    Powered by AI SDKs with native function calling.
     Designed for maximum transparency with real-time thought streaming.
     """
 
