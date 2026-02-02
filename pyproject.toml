@@ -36,6 +36,7 @@ tarts = "^0.20.1"
 editorconfig = "^0.17.0"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
+anthropic = "^0.77.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.2.1,<10.0.0"
