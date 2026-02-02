@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 import tkinter as tk
 import typing
 
@@ -44,12 +45,37 @@ class Palette(Toplevel):
 
         self.width = round(width * self.base.scale)
         self.active = False
-
         self.withdraw()
-        self.overrideredirect(True)
+
+        if platform.system() == "Windows":
+            from ctypes import windll, c_int, byref, sizeof
+            
+            # DPI awareness (inherited from parent, but ensuring it's acknowledged)
+            GWL_STYLE = -16
+            WS_CAPTION = 0x00C00000
+            WS_THICKFRAME = 0x00040000
+            
+            self.update_idletasks()
+            hwnd = windll.user32.GetParent(self.winfo_id())
+            
+            style = windll.user32.GetWindowLongPtrW(hwnd, GWL_STYLE)
+            style &= ~WS_CAPTION
+            # style |= WS_THICKFRAME # THICKFRAME provides the native shadow on Windows
+            windll.user32.SetWindowLongPtrW(hwnd, GWL_STYLE, style)
+            
+            try:
+                DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+                dark_mode = c_int(1)
+                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, byref(dark_mode), sizeof(dark_mode))
+            except:
+                pass
+                
+            windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, 0x0027) # SWP_FRAMECHANGED
+        else:
+            self.overrideredirect(True)
 
         self.container.grid_columnconfigure(0, weight=1)
-        self.container.grid_rowconfigure(0, weight=1)
+        # self.container.grid_rowconfigure(0, weight=1) # Remove this, we want it to shrink-wrap
 
         self.row = 1
         self.selected = 0
@@ -120,7 +146,7 @@ class Palette(Toplevel):
         self.bind("<FocusOut>", self.hide)
         self.bind("<Escape>", self.hide)
 
-        self.row += 1
+        # self.row += 1 # REMOVED: was causing empty row gap
         self.refresh_selected()
 
     def reset_start_index(self) -> None:
@@ -274,11 +300,13 @@ class Palette(Toplevel):
 
         self.update_idletasks()
         self.update()
-
-        x = self.master.winfo_rootx() + int(
-            (self.master.winfo_width() - self.winfo_width()) / 2
-        )
+        width = 600
+        
+        # Center relative to the main window
+        x = self.master.winfo_rootx() + int((self.master.winfo_width() - width) / 2)
         y = self.master.winfo_rooty() + int((self.master.winfo_height() / 2) - 200)
+        
+        self.minsize(width, 0)
         self.geometry(f"+{x}+{y}")
         self.deiconify()
 
