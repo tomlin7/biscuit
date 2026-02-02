@@ -160,6 +160,118 @@ class Renderer(Frame):
 
             :link    {{ color: {t.biscuit}; }}
             :visited {{ color: {t.biscuit_dark}; }}
+            .thought {{
+                color: {t.secondary_foreground};
+                font-style: italic;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+                opacity: 0.8;
+            }}
+            .tool-call {{
+                display: inline-block;
+                padding: 2px 8px;
+                background-color: {t.secondary_background};
+                border: 1px solid {t.border};
+                border-radius: 4px;
+                font-family: {self.base.settings.font['family']};
+                font-size: 0.8em;
+                margin: 4px 0;
+            }}
+            details.tool-call {{
+                border: 1px solid {t.border};
+                border-radius: 4px;
+                margin: 8px 0;
+                background-color: {t.secondary_background};
+            }}
+            details.tool-call summary {{
+                padding: 10px;
+                cursor: pointer;
+                font-weight: bold;
+                outline: none;
+            }}
+            details.tool-call .tool-details {{
+                padding: 12px;
+                border-top: 1px solid {t.border};
+                background-color: {t.primary_background};
+                font-size: 0.95em;
+            }}
+            details.thought {{
+                margin: 2px 0;
+            }}
+            details.thought summary {{
+                color: {t.secondary_foreground};
+                cursor: pointer;
+                font-size: 0.9em;
+                padding: 4px 0;
+                list-style: none;
+                opacity: 0.7;
+            }}
+            details.thought summary::-webkit-details-marker {{
+                display: none;
+            }}
+            details.thought summary:before {{
+                content: "›";
+                display: inline-block;
+                width: 12px;
+                font-size: 1.2em;
+                transition: transform 0.1s;
+                vertical-align: middle;
+                margin-right: 4px;
+            }}
+            details.thought[open] summary:before {{
+                transform: rotate(90deg);
+            }}
+            .thought-inner {{
+                padding: 10px 0 10px 16px;
+                font-size: 0.95em;
+                line-height: 1.5;
+                color: {t.secondary_foreground};
+                border-left: 1px solid {t.border};
+                margin-left: 5px;
+            }}
+            .step {{
+                display: flex;
+                align-items: center;
+                padding: 6px 0;
+                font-size: 0.9em;
+                color: {t.secondary_foreground};
+            }}
+            .step .icon {{
+                margin-right: 10px;
+                font-size: 1.1em;
+                width: 16px;
+                text-align: center;
+            }}
+            .step b {{
+                color: {t.foreground};
+                font-weight: 500;
+                margin-right: 4px;
+            }}
+            .step .range {{
+                opacity: 0.4;
+                font-family: {self.base.settings.font['family']};
+            }}
+            .step .diff-add {{
+                color: #3fb950;
+                margin-left: 10px;
+                font-weight: 500;
+            }}
+            .step .diff-remove {{
+                color: #f85149;
+                margin-left: 6px;
+                font-weight: 500;
+            }}
+            .step .open-diff {{
+                margin-left: auto;
+                color: {t.secondary_foreground};
+                opacity: 0.5;
+                text-decoration: none;
+                font-size: 0.85em;
+            }}
+            .step .open-diff:hover {{
+                opacity: 1;
+                text-decoration: underline;
+            }}
             INPUT, TEXTAREA, SELECT, BUTTON {{ 
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground_highlight};
