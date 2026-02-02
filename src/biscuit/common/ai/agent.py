@@ -174,9 +174,7 @@ class Agent:
         
         tools_map = {t.name: t for t in self.tools}
 
-        self._stream_content("[START_THOUGHT]")
-        self._stream_content(f"Starting task: {inputs}")
-        self._stream_content("[END_THOUGHT] 0")
+
 
         system_instruction = self._get_system_instruction()
         
@@ -296,9 +294,6 @@ class Agent:
         tools_map = {t.name: t for t in self.tools}
         anthropic_tools = self._get_anthropic_tools()
 
-        self._stream_content("[START_THOUGHT]")
-        self._stream_content(f"Starting task: {inputs}")
-        self._stream_content("[END_THOUGHT] 0")
 
         system_instruction = self._get_system_instruction()
         
