@@ -186,40 +186,11 @@ class ModernAIChat(Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         
-        # Header with mode and controls
-        self.setup_header()
-        
         # Main chat area
         self.setup_main_area()
         
         # Input area at bottom
         self.setup_input_area()
-        
-    def setup_header(self):
-        """Setup the header area."""
-        theme = self.base.theme
-        
-        header = Frame(self, bg=theme.secondary_background)
-        header.grid(row=0, column=0, sticky=tk.EW, padx=10, pady=5)
-        header.grid_columnconfigure(0, weight=1)
-        
-        # Chat title
-        self.title_label = Label(
-            header,
-            text="Initial Greeting and Assistance Offer",
-            font=self.base.settings.uifont,
-            fg=theme.foreground,
-            bg=theme.secondary_background
-        )
-        self.title_label.pack(side=tk.LEFT)
-
-        # Header actions
-        actions = Frame(header, bg=theme.secondary_background)
-        actions.pack(side=tk.RIGHT)
-
-        IconButton(actions, icon=Icons.PLUS, iconsize=15).pack(side=tk.LEFT, padx=2)
-        IconButton(actions, icon=Icons.DASH, iconsize=15).pack(side=tk.LEFT, padx=2)
-        IconButton(actions, icon=Icons.ELLIPSIS, iconsize=15).pack(side=tk.LEFT, padx=2)
         
     def setup_main_area(self):
         """Setup the main chat area."""
@@ -264,7 +235,10 @@ class ModernAIChat(Frame):
         # Bind events for scrolling
         self.messages_frame.bind('<Configure>', self._on_messages_configure)
         self.chat_canvas.bind('<Configure>', self._on_canvas_configure)
-        self.chat_canvas.bind_all('<MouseWheel>', self._on_mousewheel)
+        
+        # Only bind mousewheel when mouse is over the chat area
+        self.chat_canvas.bind('<Enter>', lambda _: self.chat_canvas.bind_all('<MouseWheel>', self._on_mousewheel))
+        self.chat_canvas.bind('<Leave>', lambda _: self.chat_canvas.unbind_all('<MouseWheel>'))
         
         # Welcome message
         self.show_welcome_message()
@@ -321,7 +295,7 @@ class ModernAIChat(Frame):
               fg=theme.secondary_foreground, bg=theme.secondary_background).pack(side=tk.LEFT, padx=(5, 10))
 
 
-        # Model selector (Claude Sonnet 4.5 v)
+        # Model selector
         self.model_dropdown = Dropdown(
             right_tools,
             items=self.master.available_models.keys(),
@@ -369,10 +343,21 @@ class ModernAIChat(Frame):
         """Handle mouse wheel scrolling."""
         self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
         
-    def scroll_to_bottom(self):
+    def scroll_to_bottom(self, force=False):
         """Scroll to the bottom of the chat."""
-        self.chat_canvas.update_idletasks()
-        self.chat_canvas.yview_moveto(1.0)
+        # Only auto-scroll if we're already near the bottom (within 10%)
+        # or if forced (e.g. after sending a message)
+        if not force:
+            _, bottom = self.chat_canvas.yview()
+            if bottom < 0.9:
+                return
+
+        def _scroll():
+            self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+            self.chat_canvas.yview_moveto(1.0)
+            
+        # Small delay to ensure all layout updates (like HtmlFrame resize) are complete
+        self.after(50, _scroll)
         
     def show_welcome_message(self):
         """Show welcome message."""
@@ -382,8 +367,7 @@ class ModernAIChat(Frame):
         message.pack(fill=tk.X, pady=5, padx=10)
         message.set_content(welcome_text)
         self.messages.append(message)
-        
-        self.scroll_to_bottom()
+        self.scroll_to_bottom(force=True)
         
     def set_enhanced_agent(self, agent: Agent):
         """Set the enhanced agent."""
@@ -415,8 +399,7 @@ class ModernAIChat(Frame):
         ai_message.pack(fill=tk.X, pady=5, padx=10)
         ai_message.start_typing()
         self.messages.append(ai_message)
-        
-        self.scroll_to_bottom()
+        # self.scroll_to_bottom(force=True)
         
         # Start agent execution
         self._start_agent_execution(message_text, ai_message)
@@ -471,38 +454,45 @@ class ModernAIChat(Frame):
                     def update_ui():
                         # Parsing logic to mimic the provided UI
                         import os
+                        import json
                         
                         icon = "📄"
                         action_label = "Analyzed" if category == "analysis" else "Edited"
                         file_info = ""
                         extra_info = ""
                         
-                        # Heuristic to detect common tool patterns
-                        if "view" in tool_name or "read" in tool_name or "list" in tool_name:
-                            icon = "📄"
-                            action_label = "Analyzed"
-                            # Try to extract file path and range
-                            if "AbsolutePath" in tool_input:
-                                try:
-                                    path = tool_input.split('"AbsolutePath": "')[1].split('"')[0]
-                                    file_info = os.path.basename(path)
-                                    if "StartLine" in tool_input:
-                                        sl = tool_input.split('"StartLine": ')[1].split(',')[0]
-                                        el = tool_input.split('"EndLine": ')[1].split('}')[0]
-                                        extra_info = f'<span class="range">#L{sl}-{el}</span>'
-                                except: pass
-                        
-                        elif "replace" in tool_name or "write" in tool_name or "multi_replace" in tool_name:
-                            icon = "📄"
-                            action_label = "Edited"
-                            if "TargetFile" in tool_input:
-                                try:
-                                    path = tool_input.split('"TargetFile": "')[1].split('"')[0]
-                                    file_info = os.path.basename(path)
-                                    # Add fake diff info for aesthetics as seen in image
-                                    extra_info = '<span class="diff-add">+8</span> <span class="diff-remove">-1</span>'
-                                except: pass
-                            extra_info += ' <a href="#" class="open-diff">Open diff</a>'
+                        try:
+                            # Robust parsing of tool input
+                            data = json.loads(tool_input)
+                            path = data.get('file_path') or data.get('directory_path') or data.get('path')
+                            
+                            if path:
+                                file_info = os.path.basename(path) if path != "." else os.path.basename(os.getcwd())
+                                if "start_line" in data:
+                                    sl = data.get('start_line')
+                                    el = data.get('end_line') or "EOF"
+                                    extra_info = f'<span class="range">#L{sl}-{el}</span>'
+                            
+                            if tool_name == "execute_command":
+                                icon = "🐚"
+                                action_label = "Executed"
+                                file_info = data.get('command', '').split(' ')[0]
+                                extra_info = f' <span class="range">{data.get("command")}</span>'
+                            elif "write" in tool_name or "replace" in tool_name or "create" in tool_name:
+                                icon = "📝"
+                                action_label = "Edited"
+                                # Add fake diff info for aesthetics as seen in image
+                                extra_info += ' <span class="diff-add">+8</span> <span class="diff-remove">-1</span>'
+                                extra_info += ' <a href="#" class="open-diff">Open diff</a>'
+                            elif "search" in tool_name:
+                                icon = "🔍"
+                                action_label = "Searched"
+                                file_info = data.get('query', '')
+        
+                        except Exception as e:
+                            # Fallback if input is not JSON
+                            file_info = tool_name
+                            extra_info = f'<span class="range">{tool_input[:30]}...</span>'
 
                         tool_content = f'''
 <div class="step">
@@ -529,7 +519,7 @@ class ModernAIChat(Frame):
                 # Update final response
                 def finish_task():
                     # Final result is already streamed by AI as natural language
-                    self.scroll_to_bottom()
+                    self.scroll_to_bottom(force=True)
                 self.after(0, finish_task)
                 
             except Exception as e:

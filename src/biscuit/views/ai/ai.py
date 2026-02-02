@@ -36,14 +36,14 @@ class AI(SideBarView):
 
         self.title.grid_forget()
 
-        # Available Gemini models for LangChain
+        # Available Gemini models
         self.available_models = {
+            "Gemini 2.0 Flash": "gemini-2.0-flash",
+            "Gemini 2.0 Pro": "gemini-2.0-pro",
             "Gemini 2.5 Flash": "gemini-2.5-flash",
             "Gemini 2.5 Pro": "gemini-2.5-pro",
-            "Gemini 2.5 Flash-Lite": "gemini-2.5-flash-lite",
         }
-        self.current_model = "Gemini 2.5 Flash"
-        self.current_model = "Gemini 2.5 Flash"
+        self.current_model = "Gemini 2.0 Flash"
 
         self.top.grid_columnconfigure(self.column, weight=1)
 
@@ -91,8 +91,6 @@ class AI(SideBarView):
         self.current_model = model_name
         self.new_chat() # Restart chat with new model
 
-        self.new_chat() # Restart chat
-
     def attach_file(self, *files: typing.List[str]) -> None:
         """Attach a file to the chat."""
         if self.chat:
@@ -134,6 +132,7 @@ class AI(SideBarView):
             self.chat = None
 
         if self.agent:
+            self.agent.stop_execution()
             self.agent = None
 
         try:
