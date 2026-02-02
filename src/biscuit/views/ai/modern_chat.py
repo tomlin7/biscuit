@@ -283,6 +283,14 @@ class StreamingMessage(Frame):
     def add_thought(self, title: str = "Thought"):
         """Add a new collapsible thought block."""
         self.current_markdown_renderer = None
+        
+        # If no parts have been added to this message yet, treat the first thought 
+        # as non-collapsible markdown (similar to how we handle the final result)
+        # TODO: check if this also lets second thought be non-collapsible
+        if not self.parts_container.winfo_children():
+            self.current_thought_widget = None
+            return None
+
         self.current_thought_widget = CollapsibleThought(self.parts_container, title)
         self.current_thought_widget.pack(fill=tk.X)
         return self.current_thought_widget
