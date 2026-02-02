@@ -61,5 +61,9 @@ class Content(Frame):
 
         self._panel_maxed = not self._panel_maxed
 
-    def pack(self):
-        super().pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    def pack(self, *args, **kwargs):
+        if isinstance(self.master, tk.PanedWindow):
+            self.master.add(self, stretch="always")
+            self.master.paneconfigure(self, minsize=100)
+        else:
+            super().pack(side=tk.LEFT, fill=tk.BOTH, expand=True, *args, **kwargs)

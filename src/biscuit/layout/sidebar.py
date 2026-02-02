@@ -24,7 +24,7 @@ class SideBar(Frame):
         self.config(bg=self.base.theme.border)
 
         self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
 
         self.views = []
         self.active_view = None
@@ -129,10 +129,17 @@ class SideBar(Frame):
     def show_debug(self, *_) -> Debug:
         return self.show_view(self.debug)
 
-    def pack(self):
-        super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1))
+    def pack(self, *args, **kwargs):
+        if isinstance(self.master, tk.PanedWindow):
+            self.master.add(self, before=self.base.contentpane, width=250, stretch="never")
+            self.master.paneconfigure(self, minsize=50)
+        else:
+            super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1), *args, **kwargs)
         self.visible = True
 
     def hide(self):
-        super().pack_forget()
+        if isinstance(self.master, tk.PanedWindow):
+            self.master.forget(self)
+        else:
+            super().pack_forget()
         self.visible = False

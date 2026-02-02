@@ -24,7 +24,7 @@ class SecondarySideBar(Frame):
         self.config(bg=self.base.theme.border)
 
         self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
 
         self.views = []
         self.active_view = None
@@ -154,10 +154,18 @@ class SecondarySideBar(Frame):
     def show_extensions(self, *_) -> Extensions:
         return self.show_view(self.extensions)
 
-    def pack(self):
-        super().pack(side=tk.LEFT, fill=tk.Y, after=self.base.contentpane, padx=(1, 0))
+    def pack(self, *args, **kwargs):
+        if isinstance(self.master, tk.PanedWindow):
+            # Already handled by add() being at the end of the PanedWindow list
+            self.master.add(self, width=250, stretch="never")
+            self.master.paneconfigure(self, minsize=50)
+        else:
+            super().pack(side=tk.LEFT, fill=tk.Y, after=self.base.contentpane, padx=(1, 0), *args, **kwargs)
         self.visible = True
 
     def hide(self):
-        super().pack_forget()
+        if isinstance(self.master, tk.PanedWindow):
+            self.master.forget(self)
+        else:
+            super().pack_forget()
         self.visible = False
