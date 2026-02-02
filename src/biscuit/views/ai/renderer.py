@@ -102,22 +102,9 @@ class Renderer(Frame):
             self, messages_enabled=False, vertical_scrollbar=False,
             shrink=True
         )
-        self.scrollbar = Scrollbar(
-            self,
-            orient=tk.VERTICAL,
-            command=self.htmlframe.yview,
-            style="EditorScrollbar",
-        )
-
         self.sparkles = f"<h4 color={self.base.theme.biscuit}>✨ Bikkis</h4> "
 
-        self.htmlframe.html.config(yscrollcommand=self.scrollbar.set)
-        # self.htmlframe.html.shrink(True)
-
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.htmlframe.grid(row=0, column=1, sticky=tk.NSEW)
-        self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
+        self.htmlframe.pack(fill=tk.BOTH, expand=True)
 
         self.header = "<html><head></head><body>"
         self.footer = "</body></html>"
