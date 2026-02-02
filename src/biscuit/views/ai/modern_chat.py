@@ -60,8 +60,8 @@ class StreamingMessage(Frame):
                 fg=theme.secondary_foreground,
                 font=self.base.settings.uifont,
                 border=0,
-                padx=10,
-                pady=10,
+                padx=15,
+                pady=12,
                 wrap=tk.WORD,
                 state=tk.DISABLED
             )
@@ -90,7 +90,7 @@ class StreamingMessage(Frame):
 
             # Actions bar for AI messages
             self.actions_frame = Frame(self, bg=theme.primary_background)
-            self.actions_frame.pack(fill=tk.X, pady=(5, 0))
+            self.actions_frame.pack(fill=tk.X, pady=10)
             
             self._add_action_icon(Icons.THUMBSUP)
             self._add_action_icon(Icons.THUMBSDOWN)
@@ -99,9 +99,9 @@ class StreamingMessage(Frame):
             self._add_action_icon(Icons.ARROW_UP)
 
     def _add_action_icon(self, icon):
-        btn = IconButton(self.actions_frame, icon=icon)
+        btn = IconButton(self.actions_frame, icon=icon, iconsize=12)
         btn.config(bg=self.base.theme.primary_background, fg=self.base.theme.secondary_foreground)
-        btn.pack(side=tk.LEFT, padx=2)
+        btn.pack(side=tk.LEFT, padx=3)
         
     def start_typing(self):
         """Show typing indicator."""
@@ -289,7 +289,7 @@ class ModernAIChat(Frame):
         # Text input
         self.text_input = hintedtext.HintedText(
             input_inner,
-            hint="Message the Zed Agent - @ to include context",
+            hint="Message the Biscuit Agent - @ to include context",
             height=3,
             bg=theme.secondary_background,
             fg=theme.secondary_foreground,
@@ -315,19 +315,11 @@ class ModernAIChat(Frame):
 
         self.status_label = Label(right_tools, text="Ready", font=("Segoe UI", 8), 
               fg=theme.secondary_foreground, bg=theme.secondary_background)
-        self.status_label.pack(side=tk.LEFT, padx=5)
+        self.status_label.pack(side=tk.LEFT, padx=(10, 5))
 
         Label(right_tools, text="9k / 200k", font=("Segoe UI", 8), 
-              fg=theme.secondary_foreground, bg=theme.secondary_background).pack(side=tk.LEFT, padx=5)
+              fg=theme.secondary_foreground, bg=theme.secondary_background).pack(side=tk.LEFT, padx=(5, 10))
 
-        # Mode selector (Ask v)
-        self.mode_dropdown = Dropdown(
-            right_tools,
-            items=self.master.modes,
-            selected=self.master.current_mode,
-            callback=self.master.set_mode,
-        )
-        self.mode_dropdown.pack(side=tk.LEFT, padx=2)
 
         # Model selector (Claude Sonnet 4.5 v)
         self.model_dropdown = Dropdown(
@@ -437,18 +429,85 @@ class ModernAIChat(Frame):
                 self.after(0, lambda: self._set_execution_state(True))
                 
                 # Setup real-time streaming callback
+                self._current_thought = None
                 def stream_callback(content: str):
                     """Stream content to the UI in real-time."""
                     def update_ui():
-                        response_message.append_content(content + "\n\n")
+                        if content == "[START_THOUGHT]":
+                            self._current_thought = ""
+                            return
+                        
+                        if content.startswith("[END_THOUGHT]"):
+                            try:
+                                duration = content.split(" ")[1]
+                            except:
+                                duration = "1"
+                                
+                            thought_text = self._current_thought.strip() if self._current_thought else "..."
+                            formatted = f'''<details class="thought"><summary>Thought for {duration}s</summary><div class="thought-inner">{thought_text}</div></details>\n'''
+                            response_message.append_content(formatted)
+                            self._current_thought = None
+                            self.scroll_to_bottom()
+                            return
+                        
+                        if self._current_thought is not None:
+                            self._current_thought += content + "\n"
+                            return
+
+                        # Basic formatting for other markers
+                        formatted_content = content
+                        if content.startswith("Next:") or content.startswith("Plan:"):
+                            formatted_content = f'<div class="thought">{content}</div>\n'
+                        else:
+                            formatted_content = content + "\n\n"
+                            
+                        response_message.append_content(formatted_content)
                         self.scroll_to_bottom()
                     self.after(0, update_ui)
                 
                 # Setup tool execution callback
-                def tool_callback(tool_name: str, tool_input: str, tool_output: str):
+                def tool_callback(tool_name: str, tool_input: str, tool_output: str, category: str = "analysis"):
                     """Show tool executions in real-time."""
                     def update_ui():
-                        tool_content = f"Executed: {tool_name}\n\n"
+                        # Parsing logic to mimic the provided UI
+                        import os
+                        
+                        icon = "📄"
+                        action_label = "Analyzed" if category == "analysis" else "Edited"
+                        file_info = ""
+                        extra_info = ""
+                        
+                        # Heuristic to detect common tool patterns
+                        if "view" in tool_name or "read" in tool_name or "list" in tool_name:
+                            icon = "📄"
+                            action_label = "Analyzed"
+                            # Try to extract file path and range
+                            if "AbsolutePath" in tool_input:
+                                try:
+                                    path = tool_input.split('"AbsolutePath": "')[1].split('"')[0]
+                                    file_info = os.path.basename(path)
+                                    if "StartLine" in tool_input:
+                                        sl = tool_input.split('"StartLine": ')[1].split(',')[0]
+                                        el = tool_input.split('"EndLine": ')[1].split('}')[0]
+                                        extra_info = f'<span class="range">#L{sl}-{el}</span>'
+                                except: pass
+                        
+                        elif "replace" in tool_name or "write" in tool_name or "multi_replace" in tool_name:
+                            icon = "📄"
+                            action_label = "Edited"
+                            if "TargetFile" in tool_input:
+                                try:
+                                    path = tool_input.split('"TargetFile": "')[1].split('"')[0]
+                                    file_info = os.path.basename(path)
+                                    # Add fake diff info for aesthetics as seen in image
+                                    extra_info = '<span class="diff-add">+8</span> <span class="diff-remove">-1</span>'
+                                except: pass
+                            extra_info += ' <a href="#" class="open-diff">Open diff</a>'
+
+                        tool_content = f'''
+<div class="step">
+    <span class="icon">{icon}</span> {action_label} 👨‍💻 <b>{file_info}</b>{extra_info}
+</div>\n\n'''
                         response_message.append_content(tool_content)
                         self.scroll_to_bottom()
                     self.after(0, update_ui)
@@ -469,8 +528,7 @@ class ModernAIChat(Frame):
                 
                 # Update final response
                 def finish_task():
-                    final_response = self._generate_task_summary(task)
-                    response_message.append_content(f"\n\n---\n\n{final_response}")
+                    # Final result is already streamed by AI as natural language
                     self.scroll_to_bottom()
                 self.after(0, finish_task)
                 
@@ -504,22 +562,33 @@ class ModernAIChat(Frame):
         self.scroll_to_bottom()
         
     def _generate_task_summary(self, task: AgentTask) -> str:
-        """Generate a minimal summary of the completed task."""
-        # Just show modified files if any
+        """Generate a detailed summary of the completed task."""
+        summary = ["\n---\n### ✨ Final Results\n"]
+        
+        # Summary of actions
+        status_icon = "🎉" if task.status.value == "completed" else "❌" if task.status.value == "error" else "ℹ️"
+        summary.append(f"**Status:** {status_icon} {task.status.value.capitalize()}\n")
+        
+        # Files modified
         modified_files = []
         for step in task.steps:
             modified_files.extend(step.files_modified)
         
         if modified_files:
             unique_files = list(set(modified_files))
-            if len(unique_files) == 1:
-                return f"Modified: {unique_files[0]}"
-            elif len(unique_files) <= 3:
-                return "Modified: " + ", ".join(unique_files)
-            else:
-                return f"Modified {len(unique_files)} files"
+            summary.append("**Modified Files:**")
+            for f in unique_files:
+                summary.append(f"- 📝 `{f}`")
+            summary.append("")
         
-        return "Done"
+        # Steps summary
+        if task.steps:
+            summary.append("**Execution Timeline:**")
+            for step in task.steps:
+                icon = "✅" if step.result else "❌" if step.state.value == "error" else "➡️"
+                summary.append(f"{step.step_number}. {icon} {step.action}")
+        
+        return "\n".join(summary)
         
     def stop_execution(self, event=None):
         """Stop the current agent execution."""

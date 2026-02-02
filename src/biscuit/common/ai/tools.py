@@ -60,6 +60,13 @@ class ExecuteCommandInput(BaseModel):
 class GetWorkspaceInfoInput(BaseModel):
     pass
 
+class GetActiveEditorInput(BaseModel):
+    pass
+
+class GetDirectoryTreeInput(BaseModel):
+    directory_path: str = Field(default=".", description="Path to the directory to tree")
+    max_depth: int = Field(default=2, description="Maximum depth to traverse")
+
 
 # --- Tool Base Class ---
 
@@ -378,6 +385,73 @@ class GetWorkspaceInfoTool(BiscuitTool):
         return "\n".join(info)
 
 
+class GetActiveEditorTool(BiscuitTool):
+    name: str = "get_active_editor"
+    description: str = "Get the path and status of the currently focused editor."
+    args_schema: ClassVar[type[BaseModel]] = GetActiveEditorInput
+
+    def _run(self) -> str:
+        try:
+            if not hasattr(self.base, 'editorsmanager'):
+                return "Error: Editors manager not available."
+            
+            editor = self.base.editorsmanager.active_editor
+            if not editor:
+                return "No active editor."
+            
+            if hasattr(editor, 'path') and editor.path:
+                content_status = "unmodified"
+                if hasattr(editor, 'content') and hasattr(editor.content, 'modified'):
+                    content_status = "modified" if editor.content.modified else "unmodified"
+                
+                return f"Active Editor: {editor.path} ({content_status})"
+            
+            return "Active editor is not a file editor."
+        except Exception as e:
+            return f"Error getting active editor: {e}"
+
+
+class GetDirectoryTreeTool(BiscuitTool):
+    name: str = "get_directory_tree"
+    description: str = "Get a visual tree of the directory structure (supports depth)."
+    args_schema: ClassVar[type[BaseModel]] = GetDirectoryTreeInput
+
+    def _run(self, directory_path: str = ".", max_depth: int = 2) -> str:
+        try:
+            path = self._get_abs_path(directory_path)
+            if not os.path.exists(path) or not os.path.isdir(path):
+                return f"Error: {directory_path} is not a valid directory."
+            
+            tree = []
+            self._build_tree(path, "", tree, 0, max_depth)
+            
+            return self._shorten_output(f"Directory Tree of {directory_path}:\n" + "\n".join(tree))
+        except Exception as e:
+            return f"Error generating tree: {e}"
+
+    def _build_tree(self, path: str, prefix: str, tree: List[str], depth: int, max_depth: int):
+        if depth > max_depth:
+            return
+
+        try:
+            items = os.listdir(path)
+            items = [i for i in items if not i.startswith('.') and i not in {'.git', 'node_modules', '__pycache__', 'venv'}]
+            items.sort()
+            
+            for i, item in enumerate(items):
+                is_last = (i == len(items) - 1)
+                full_path = os.path.join(path, item)
+                is_dir = os.path.isdir(full_path)
+                
+                tree.append(f"{prefix}{'└── ' if is_last else '├── '}{item}{'/' if is_dir else ''}")
+                
+                if is_dir:
+                    new_prefix = prefix + ("    " if is_last else "│   ")
+                    self._build_tree(full_path, new_prefix, tree, depth + 1, max_depth)
+        except:
+            pass
+
+
 # --- Registry ---
 
 def get_biscuit_tools(base: App) -> List[BiscuitTool]:
@@ -391,6 +465,8 @@ def get_biscuit_tools(base: App) -> List[BiscuitTool]:
         SearchCodeTool(),
         ExecuteCommandTool(),
         GetWorkspaceInfoTool(),
+        GetActiveEditorTool(),
+        GetDirectoryTreeTool(),
     ]
     
     for tool in tools:

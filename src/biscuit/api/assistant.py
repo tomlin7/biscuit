@@ -30,19 +30,7 @@ class Assistant(Endpoint):
         return getattr(self.ai, 'agent', None)
     
     def _set_mode(self, mode_name: str):
-        """Set AI mode by name."""
-        from biscuit.common.ai import AIMode
-        
-        mode_map = {
-            'coding_agent': AIMode.CODING_AGENT,
-            'ask_mode': AIMode.ASK_MODE, 
-            'edit_mode': AIMode.EDIT_MODE
-        }
-        
-        agent = self._get_agent()
-        if agent and mode_name in mode_map:
-            agent.set_mode(mode_map[mode_name])
-            return True
+        """Set AI mode (Deprecated)."""
         return False
     
     def _attach_files(self, file_paths):

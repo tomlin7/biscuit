@@ -7,7 +7,6 @@ import typing
 
 from biscuit.common import Dropdown
 from biscuit.common.ai import Agent
-from biscuit.common.ai.react_agent import ReActAgent
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame
 
@@ -24,11 +23,7 @@ if typing.TYPE_CHECKING:
 class AI(SideBarView):
     """Enhanced AI view with LangChain integration and multiple modes.
 
-    The AI view provides two main agent modes:
-    1. Planning: Comprehensive planning and execution (Thinking Agent)
-    2. Quick: Fast, direct tool usage (ReAct Agent)
-    
-    All modes are powered by LangChain with selectable Gemini models.
+    The AI view provides a powerful autonomous coding agent powered by LangChain.
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
@@ -48,8 +43,7 @@ class AI(SideBarView):
             "Gemini 2.5 Flash-Lite": "gemini-2.5-flash-lite",
         }
         self.current_model = "Gemini 2.5 Flash"
-        self.modes = ["Planning", "Quick"]
-        self.current_mode = "Planning"
+        self.current_model = "Gemini 2.5 Flash"
 
         self.top.grid_columnconfigure(self.column, weight=1)
 
@@ -97,13 +91,7 @@ class AI(SideBarView):
         self.current_model = model_name
         self.new_chat() # Restart chat with new model
 
-    def set_mode(self, mode: str) -> None:
-        """Set the agent mode."""
-        if mode == self.current_mode:
-            return
-            
-        self.current_mode = mode
-        self.new_chat() # Restart chat with new mode
+        self.new_chat() # Restart chat
 
     def attach_file(self, *files: typing.List[str]) -> None:
         """Attach a file to the chat."""
@@ -148,14 +136,9 @@ class AI(SideBarView):
         if self.agent:
             self.agent = None
 
-        # Create agent based on mode
         try:
             model_id = self.available_models[self.current_model]
-            
-            if self.current_mode == "Quick":
-                self.agent = ReActAgent(self.base, self.api_key, model_id)
-            else:
-                self.agent = Agent(self.base, self.api_key, model_id)
+            self.agent = Agent(self.base, self.api_key, model_id)
             
             self.chat = ModernAIChat(self)
             self.chat.set_enhanced_agent(self.agent)
@@ -207,7 +190,7 @@ class AI(SideBarView):
         """Show AI agent statistics."""
         try:
             if hasattr(self.base, 'notifications'):
-                msg = f"Mode: {self.current_mode}\nModel: {self.current_model}"
+                msg = f"Model: {self.current_model}"
                 self.base.notifications.info(msg)
         except Exception as e:
             print(f"Error showing stats: {e}")
