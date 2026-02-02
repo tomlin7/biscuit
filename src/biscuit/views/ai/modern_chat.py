@@ -23,6 +23,8 @@ from biscuit.common.icons import Icons
 from biscuit.common.ui import (Button, Entry, Frame, IconButton, Label,
                                Scrollbar)
 from biscuit.common.ui.native import Canvas, Text
+from biscuit.common.ui.native import Frame as NativeFrame
+from biscuit.common.ui.native import Label as NativeLabel
 
 from .renderer import Renderer
 
@@ -30,11 +32,118 @@ if typing.TYPE_CHECKING:
     from .ai import AI
 
 
+class CollapsibleThought(Frame):
+    """A native collapsible widget for AI thoughts."""
+    
+    def __init__(self, master, title="Thought", *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.expanded = False
+        self.content_text = ""
+        
+        theme = self.base.theme
+        self.configure(bg=theme.primary_background)
+        
+        # Header frame
+        self.header = Frame(self, bg=theme.primary_background, cursor="hand2")
+        self.header.pack(fill=tk.X, pady=(5, 2))
+        
+        self.icon = Label(self.header, text=Icons.CHEVRON_RIGHT, font=("codicon", 12), 
+                         bg=theme.primary_background, fg=theme.secondary_foreground)
+        self.icon.pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.title = Label(self.header, text=title, font=self.base.settings.uifont,
+                          fg=theme.secondary_foreground, bg=theme.primary_background)
+        self.title.pack(side=tk.LEFT)
+        
+        # Content frame (hidden by default)
+        self.content_frame = Frame(self, bg=theme.primary_background)
+        
+        # Use a Text widget for thought content to allow selection/scrolling if long
+        # and to be lighter than a full HtmlFrame
+        self.text_display = Text(
+            self.content_frame,
+            height=1,
+            bg=theme.primary_background,
+            fg=theme.secondary_foreground,
+            font=self.base.settings.uifont,
+            border=0,
+            padx=20,
+            pady=5,
+            wrap=tk.WORD,
+            state=tk.DISABLED
+        )
+        self.text_display.pack(fill=tk.X)
+        
+        # Bind toggle event
+        for widget in (self.header, self.icon, self.title):
+            widget.bind("<Button-1>", self.toggle)
+            
+    def toggle(self, _=None):
+        if self.expanded:
+            self.content_frame.pack_forget()
+            self.icon.config(text=Icons.CHEVRON_RIGHT)
+        else:
+            self.content_frame.pack(fill=tk.X)
+            self.icon.config(text=Icons.CHEVRON_DOWN)
+        
+        self.expanded = not self.expanded
+        # Ensure the main chat stays scrolled to the bottom
+        self.master.master.chat.scroll_to_bottom()
+
+    def append_text(self, text: str):
+        self.content_text += text
+        self.text_display.config(state=tk.NORMAL)
+        self.text_display.delete(1.0, tk.END)
+        self.text_display.insert(1.0, self.content_text.strip())
+        
+        # Auto-resize height
+        line_count = self.content_text.count('\n') + 2
+        self.text_display.config(height=min(line_count, 15))
+        self.text_display.config(state=tk.DISABLED)
+
+    def set_title(self, title: str):
+        self.title.config(text=title)
+
+
+class ToolActionWidget(Frame):
+    """A native widget for tool executions."""
+    
+    def __init__(self, master, icon="📄", action="Analyzed", target="File", extra="", *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        theme = self.base.theme
+        self.configure(bg=theme.primary_background)
+        
+        container = Frame(self, bg=theme.primary_background)
+        container.pack(fill=tk.X, pady=6)
+        
+        Label(container, text=icon, font=("Segoe UI Emoji", 11), 
+              bg=theme.primary_background).pack(side=tk.LEFT, padx=(0, 10))
+        
+        Label(container, text=action, font=self.base.settings.uifont,
+              fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT)
+        
+        # Target (e.g. filename) in bold
+        Label(container, text=target, font=self.base.settings.uifont_bold,
+              fg=theme.foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=5)
+        
+        if extra:
+            # Metadata with lower opacity feel
+            Label(container, text=extra, font=self.base.settings.font,
+                  fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=5)
+        
+        # Right aligned "Open diff" or similar if needed
+        if "Edited" in action:
+            link = Label(container, text="Open diff", font=("Segoe UI", 8), cursor="hand2",
+                        fg=theme.secondary_foreground, bg=theme.primary_background)
+            link.pack(side=tk.RIGHT)
+
+
 class StreamingMessage(Frame):
     """Widget for displaying streaming AI messages."""
     
-    def __init__(self, master, message_type: str = "ai", *args, **kwargs):
+    def __init__(self, master, chat, message_type: str = "ai", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.chat = chat
         self.message_type = message_type
         self.content = ""
         self.setup_ui()
@@ -68,29 +177,30 @@ class StreamingMessage(Frame):
             self.content_text.pack(fill=tk.X)
             
         else:
-            # AI message with markdown renderer
+            # AI message: Container for multiple parts (thoughts, tools, markdown)
             self.configure(bg=theme.primary_background, padx=10, pady=5)
             
-            # Message content area using Renderer for markdown
-            self.content_frame = Frame(self, bg=theme.primary_background)
-            self.content_frame.pack(fill=tk.X)
+            self.parts_container = Frame(self, bg=theme.primary_background)
+            self.parts_container.pack(fill=tk.X)
             
-            # Markdown renderer for AI messages
-            self.content_renderer = Renderer(self.content_frame)
-            self.content_renderer.pack(fill=tk.X, padx=1, pady=1)
-            
+            # Internal state to track the active part
+            self.current_markdown_renderer = None
+            self.current_thought_widget = None
+
             # Typing indicator
+            self.indicator_frame = Frame(self, bg=theme.primary_background)
             self.typing_indicator = Label(
-                self.content_frame,
+                self.indicator_frame,
                 text="thinking...",
                 font=self.base.settings.uifont,
                 fg=theme.secondary_foreground,
                 bg=theme.primary_background
             )
+            # Not packed initially
 
             # Actions bar for AI messages
             self.actions_frame = Frame(self, bg=theme.primary_background)
-            self.actions_frame.pack(fill=tk.X, pady=10)
+            self.actions_frame.pack(fill=tk.X, pady=20)
             
             self._add_action_icon(Icons.THUMBSUP)
             self._add_action_icon(Icons.THUMBSDOWN)
@@ -107,7 +217,8 @@ class StreamingMessage(Frame):
         """Show typing indicator."""
         if self.message_type == "ai":
             self._typing_active = True
-            self.typing_indicator.pack(pady=2)
+            self.indicator_frame.pack(fill=tk.X, pady=2)
+            self.typing_indicator.pack(side=tk.LEFT)
             self._animate_typing()
     
     def _animate_typing(self):
@@ -134,7 +245,7 @@ class StreamingMessage(Frame):
         # Cancel animation
         if hasattr(self, 'typing_animation_id'):
             self.after_cancel(self.typing_animation_id)
-        self.typing_indicator.pack_forget()
+        self.indicator_frame.pack_forget()
         
     def append_content(self, text: str):
         """Append text to the message content."""
@@ -146,9 +257,40 @@ class StreamingMessage(Frame):
             self.content_text.insert(1.0, self.content)
             self.content_text.config(state=tk.DISABLED)
         else:
-            # For AI messages, use markdown renderer
+            # AI normal markdown response
+            if self.current_thought_widget:
+                self.current_thought_widget.append_text(text)
+                return
+
+            # Ensure we have an active markdown renderer
+            if not self.current_markdown_renderer:
+                self.current_markdown_renderer = Renderer(self.parts_container)
+                self.current_markdown_renderer.pack(fill=tk.X, pady=2)
+                self.current_markdown_renderer._buffer = ""
+            
+            self.current_markdown_renderer._buffer += text
+            self.current_markdown_renderer.write(self.current_markdown_renderer._buffer, clear=True)
             self.content += text
-            self.content_renderer.write(self.content, clear=True)
+
+    def add_thought(self, title: str = "Thought"):
+        """Add a new collapsible thought block."""
+        self.current_markdown_renderer = None
+        self.current_thought_widget = CollapsibleThought(self.parts_container, title)
+        self.current_thought_widget.pack(fill=tk.X)
+        return self.current_thought_widget
+
+    def close_thought(self, duration: str = "1"):
+        """Close the currently active thought block."""
+        if self.current_thought_widget:
+            self.current_thought_widget.set_title(f"Thought for {duration}s")
+            self.current_thought_widget = None
+
+    def add_tool_action(self, icon: str, action: str, target: str, extra: str = ""):
+        """Add a native tool action widget."""
+        self.current_markdown_renderer = None
+        self.current_thought_widget = None
+        widget = ToolActionWidget(self.parts_container, icon, action, target, extra)
+        widget.pack(fill=tk.X)
         
     def set_content(self, text: str):
         """Set the complete message content."""
@@ -164,8 +306,14 @@ class StreamingMessage(Frame):
             self.content_text.config(height=min(line_count, 5))
         else:
             # Markdown for AI messages
-            self.content = text
-            self.content_renderer.write(text, clear=True)
+            self.content = ""
+            # Clear parts container if there's anything
+            for child in self.parts_container.winfo_children():
+                child.destroy()
+            self.current_markdown_renderer = None
+            self.current_thought_widget = None
+            
+            self.append_content(text)
 
 class ModernAIChat(Frame):
     """Modern Cursor-like AI chat interface."""
@@ -364,7 +512,7 @@ class ModernAIChat(Frame):
         """Show welcome message."""
         welcome_text = "How can I help you with your code?"
         
-        message = StreamingMessage(self.messages_frame, "ai")
+        message = StreamingMessage(self.messages_frame, self, "ai")
         message.pack(fill=tk.X, pady=5, padx=10)
         message.set_content(welcome_text)
         self.messages.append(message)
@@ -390,13 +538,13 @@ class ModernAIChat(Frame):
         self._show_placeholder()
         
         # Add user message
-        user_message = StreamingMessage(self.messages_frame, "user")
+        user_message = StreamingMessage(self.messages_frame, self, "user")
         user_message.pack(fill=tk.X, pady=5, padx=10)
         user_message.set_content(message_text)
         self.messages.append(user_message)
         
         # Add AI response placeholder
-        ai_message = StreamingMessage(self.messages_frame, "ai")
+        ai_message = StreamingMessage(self.messages_frame, self, "ai")
         ai_message.pack(fill=tk.X, pady=5, padx=10)
         ai_message.start_typing()
         self.messages.append(ai_message)
@@ -418,7 +566,7 @@ class ModernAIChat(Frame):
                     """Stream content to the UI in real-time."""
                     def update_ui():
                         if content == "[START_THOUGHT]":
-                            self._current_thought = ""
+                            response_message.add_thought("Thought...")
                             return
                         
                         if content.startswith("[END_THOUGHT]"):
@@ -426,28 +574,16 @@ class ModernAIChat(Frame):
                                 duration = content.split(" ")[1]
                             except:
                                 duration = "1"
-                                
-                            thought_text = self._current_thought.strip() if self._current_thought else "..."
-                            formatted = f'''<details class="thought"><summary>Thought for {duration}s</summary><div class="thought-inner">{thought_text}</div></details>\n'''
-                            response_message.append_content(formatted)
-                            self._current_thought = None
+                            response_message.close_thought(duration)
                             self.scroll_to_bottom()
                             return
                         
-                        if self._current_thought is not None:
-                            self._current_thought += content
-                            return
-
-                        # Basic formatting for other markers
                         if content == "[DONE]":
                             return
 
-                        formatted_content = content
-                        if content.startswith("Next:") or content.startswith("Plan:"):
-                            formatted_content = f'<div class="thought">{content}</div>\n'
-                            
-                        response_message.append_content(formatted_content)
+                        response_message.append_content(content)
                         self.scroll_to_bottom()
+
                     self.after(0, update_ui)
                 
                 # Setup tool execution callback
@@ -473,19 +609,17 @@ class ModernAIChat(Frame):
                                 if "start_line" in data:
                                     sl = data.get('start_line')
                                     el = data.get('end_line') or "EOF"
-                                    extra_info = f'<span class="range">#L{sl}-{el}</span>'
+                                    extra_info = f'#L{sl}-{el}'
                             
                             if tool_name == "execute_command":
                                 icon = "🐚"
                                 action_label = "Executed"
                                 file_info = data.get('command', '').split(' ')[0]
-                                extra_info = f' <span class="range">{data.get("command")}</span>'
+                                extra_info = f' {data.get("command")}'
                             elif "write" in tool_name or "replace" in tool_name or "create" in tool_name:
                                 icon = "📝"
                                 action_label = "Edited"
-                                # Add fake diff info for aesthetics as seen in image
-                                extra_info += ' <span class="diff-add">+8</span> <span class="diff-remove">-1</span>'
-                                extra_info += ' <a href="#" class="open-diff">Open diff</a>'
+                                extra_info += ' +12 -8'
                             elif "search" in tool_name:
                                 icon = "🔍"
                                 action_label = "Searched"
@@ -494,13 +628,9 @@ class ModernAIChat(Frame):
                         except Exception as e:
                             # Fallback if input is not JSON
                             file_info = tool_name
-                            extra_info = f'<span class="range">{tool_input[:30]}...</span>'
+                            extra_info = f'{tool_input[:30]}...'
 
-                        tool_content = f'''
-<div class="step">
-    <span class="icon">{icon}</span> {action_label} 👨‍💻 <b>{file_info}</b>{extra_info}
-</div>\n\n'''
-                        response_message.append_content(tool_content)
+                        response_message.add_tool_action(icon, action_label, file_info, extra_info)
                         self.scroll_to_bottom()
                     self.after(0, update_ui)
                 
@@ -600,7 +730,7 @@ class ModernAIChat(Frame):
         
     def show_error(self, error_message: str):
         """Show an error message."""
-        error_msg = StreamingMessage(self.messages_frame, "ai")
+        error_msg = StreamingMessage(self.messages_frame, self, "ai")
         error_msg.pack(fill=tk.X, pady=5, padx=10)
         error_msg.set_content(f"Error: {error_message}")
         self.messages.append(error_msg)
