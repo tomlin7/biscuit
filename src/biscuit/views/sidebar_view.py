@@ -24,7 +24,7 @@ class SideBarView(View):
         self.config(width=250, **self.base.theme.views.sidebar)
 
         self.top = Frame(self, **self.base.theme.views.sidebar)
-        self.top.pack(fill=tk.X, padx=(15, 10), pady=7)
+        self.top.pack(fill=tk.X, padx=(5, 5), pady=7)
         self.top.grid_columnconfigure(0, weight=1)
 
         self.title = tk.Label(

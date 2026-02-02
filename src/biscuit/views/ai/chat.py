@@ -434,7 +434,7 @@ class AgentChat(Frame):
         from biscuit.common import Dropdown
         
         # Input container
-        input_container = Frame(self, bg=theme.secondary_background, padx=10, pady=10)
+        input_container = Frame(self, bg=theme.primary_background, padx=10, pady=10)
         input_container.grid(row=2, column=0, sticky=tk.EW)
         
         # Bordered frame for input
@@ -466,7 +466,7 @@ class AgentChat(Frame):
 
         # Left side icons
         IconButton(tools_bar, icon=Icons.MENTION, iconsize=14).pack(side=tk.LEFT, padx=2)
-        IconButton(tools_bar, icon=Icons.GLOBE, iconsize=14).pack(side=tk.LEFT, padx=2)
+        # IconButton(tools_bar, icon=Icons.GLOBE, iconsize=14).pack(side=tk.LEFT, padx=2)
 
         # Right side: status, dropdowns, send
         right_tools = Frame(tools_bar, bg=theme.secondary_background)
@@ -476,8 +476,9 @@ class AgentChat(Frame):
               fg=theme.secondary_foreground, bg=theme.secondary_background)
         self.status_label.pack(side=tk.LEFT, padx=(10, 5))
 
-        Label(right_tools, text="9k / 200k", font=("Segoe UI", 8), 
-              fg=theme.secondary_foreground, bg=theme.secondary_background).pack(side=tk.LEFT, padx=(5, 10))
+        self.usage_label = Label(right_tools, text="0 tokens", font=("Segoe UI", 8), 
+              fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.usage_label.pack(side=tk.LEFT, padx=(5, 10))
 
 
         # Model selector
@@ -501,11 +502,20 @@ class AgentChat(Frame):
         self.send_btn.pack(side=tk.LEFT, padx=(5, 0))
         
         # Bind Enter key
-        self.text_input.bind('<Control-Return>', self.send_message)
+        self.text_input.bind('<Control-Return>', self.add_newline)
+        self.text_input.bind('<Return>', self.return_key_send_message)
         self.text_input.bind('<KeyRelease>', self._on_text_change)
         
         # Placeholder text
         self._show_placeholder()
+    
+    def return_key_send_message(self, event):
+        self.send_message()
+        return "break"
+
+    def add_newline(self, event):
+        self.text_input.insert(tk.END, "\n")
+        return "break"
         
     def _show_placeholder(self):
         """Show placeholder text in input."""
@@ -558,6 +568,20 @@ class AgentChat(Frame):
     def set_enhanced_agent(self, agent: Agent):
         """Set the enhanced agent."""
         self.enhanced_agent = agent
+        if agent:
+            agent.set_usage_callback(self.update_usage)
+            
+    def update_usage(self, input_tokens: int, output_tokens: int):
+        """Update the usage label in the UI."""
+        total = input_tokens + output_tokens
+        if total > 1000:
+            text = f"{total/1000:.1f}k tokens"
+        else:
+            text = f"{total} tokens"
+            
+        def update():
+            self.usage_label.config(text=text)
+        self.after(0, update)
         
     def send_message(self, event=None):
         """Send message to the agent."""
@@ -640,7 +664,7 @@ class AgentChat(Frame):
                         try:
                             # Robust parsing of tool input
                             data = json.loads(tool_input)
-                            path = data.get('file_path') or data.get('directory_path') or data.get('path')
+                            path = data.get('file_path') or data.get('directory_path') or data.get('path') or data.get('AbsolutePath')
                             
                             if path:
                                 file_info = os.path.basename(path) if path != "." else os.path.basename(os.getcwd())
@@ -656,6 +680,10 @@ class AgentChat(Frame):
                                     sl = data.get('start_line')
                                     el = data.get('end_line') or "EOF"
                                     extra_info = f'#L{sl}-{el}'
+                                elif "StartLine" in data:
+                                    sl = data.get('StartLine')
+                                    el = data.get('EndLine') or "EOF"
+                                    extra_info = f'#L{sl}-{el}'
                             
                             if tool_name == "execute_command":
                                 icon = Icons.TERMINAL
@@ -665,11 +693,14 @@ class AgentChat(Frame):
                             elif "write" in tool_name or "replace" in tool_name or "create" in tool_name:
                                 icon = Icons.EDIT
                                 action_label = "Edited"
-                                extra_info += ' +1 -1'
-                            elif "search" in tool_name:
+                            elif "search" in tool_name or "grep" in tool_name:
                                 icon = Icons.SEARCH
                                 action_label = "Searched"
-                                file_info = data.get('query', '')
+                                file_info = data.get('query', data.get('Query', ''))
+                            elif "read" in tool_name or "view" in tool_name:
+                                icon = Icons.FILE
+                                action_label = "Analyzed"
+                                # file_info is already set from path
         
                         except Exception as e:
                             # Fallback if input is not JSON

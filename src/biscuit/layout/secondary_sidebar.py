@@ -157,7 +157,7 @@ class SecondarySideBar(Frame):
     def pack(self, *args, **kwargs):
         if isinstance(self.master, tk.PanedWindow):
             # Already handled by add() being at the end of the PanedWindow list
-            self.master.add(self, width=250, stretch="never")
+            self.master.add(self, width=350, stretch="never")
             self.master.paneconfigure(self, minsize=50)
         else:
             super().pack(side=tk.LEFT, fill=tk.Y, after=self.base.contentpane, padx=(1, 0), *args, **kwargs)

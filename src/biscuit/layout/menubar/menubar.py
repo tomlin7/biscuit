@@ -257,4 +257,4 @@ class Menubar(Frame):
             item.menu.show()
 
     def pack(self):
-        super().pack(fill=tk.BOTH)
+        super().pack(fill=tk.BOTH, pady=(0, 1))

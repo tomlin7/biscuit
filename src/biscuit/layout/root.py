@@ -44,12 +44,12 @@ class Root(Frame):
         super().__init__(base, *args, **kwargs)
         self.config(bg=self.base.theme.primary_background)
 
-        container = Frame(self, bg=self.base.theme.primary_background)
+        container = Frame(self, bg=self.base.theme.border)
 
         self.menubar = Menubar(container)
         self.statusbar = Statusbar(container)
 
-        self.subcontainer = PanedWindow(container, orient=tk.HORIZONTAL, bg=self.base.theme.primary_background, bd=0, sashwidth=3, sashpad=0, opaqueresize=False)
+        self.subcontainer = PanedWindow(container, orient=tk.HORIZONTAL, bg=self.base.theme.border, bd=0, sashwidth=3, sashpad=0, opaqueresize=False)
         self.content = Content(self.subcontainer)
         self.sidebar = SideBar(self.subcontainer, activitybar=self.statusbar.activitybar)
         self.secondary_sidebar = SecondarySideBar(
@@ -62,7 +62,7 @@ class Root(Frame):
         self.subcontainer.pack(fill=tk.BOTH, expand=True)
         self.statusbar.pack()
 
-        self.content.pack()
+        self.content.pack(padx=1)
         self.pack(fill=tk.BOTH, expand=True)
 
     def toggle_sidebar(self) -> None:
