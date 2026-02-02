@@ -301,6 +301,7 @@ class ModernAIChat(Frame):
             items=self.master.available_models.keys(),
             selected=self.master.current_model,
             callback=self.master.set_current_model,
+            open_upwards=True,
         )
         self.model_dropdown.pack(side=tk.LEFT, padx=2)
 

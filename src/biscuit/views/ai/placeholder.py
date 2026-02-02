@@ -4,7 +4,7 @@ import tkinter as tk
 import typing
 
 from biscuit.common.icons import Icons
-from biscuit.common.ui import Entry, Frame, IconLabelButton, WebLinkLabel, WrappingLabel
+from biscuit.common.ui import Entry, Frame, IconLabelButton, Label, WebLinkLabel, WrappingLabel
 
 if typing.TYPE_CHECKING:
     ...
@@ -12,11 +12,8 @@ if typing.TYPE_CHECKING:
 
 class AIPlaceholder(Frame):
     """Home page for the AI assistant view.
-
-    The AIPlaceholder is displayed when the user has not configured the AI assistant.
-    - User can enter their API key to start using the AI assistant.
-    - API key can be acquired from the Google AI Studio website.
-    - The key is stored in the secrets database."""
+    
+    Now supports both Google Gemini and Anthropic Claude."""
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -28,33 +25,55 @@ class AIPlaceholder(Frame):
             justify=tk.LEFT,
             anchor=tk.W,
             **self.base.theme.views.sidebar.item.content,
-            text="AI chat to find answer to your queries, configure Google AI API key to start using",
+            text="Configure your AI providers to start chatting.",
         )
-        self.label.pack(fill=tk.X)
+        self.label.pack(fill=tk.X, pady=(0, 10))
 
-        self.api_key = tk.StringVar()
-        self.api_entry = Entry(
-            self, hint="Enter API Key here...", textvariable=self.api_key
-        )
-        self.api_entry.pack(fill=tk.X, pady=5)
+        # --- Gemini Section ---
+        gemini_frame = Frame(self, **self.base.theme.views.sidebar.item)
+        gemini_frame.pack(fill=tk.X, pady=5)
+        
+        Label(gemini_frame, text="Google Gemini", font=self.base.settings.uifont_bold, 
+              anchor=tk.W, **self.base.theme.views.sidebar.item.content).pack(fill=tk.X)
+        
+        self.gemini_key = tk.StringVar(value=self.master.api_keys.get("gemini", ""))
+        self.gemini_entry = Entry(gemini_frame, hint="Gemini API Key...", textvariable=self.gemini_key)
+        self.gemini_entry.pack(fill=tk.X, pady=2)
+        
+        # --- Anthropic Section ---
+        anthropic_frame = Frame(self, **self.base.theme.views.sidebar.item)
+        anthropic_frame.pack(fill=tk.X, pady=10)
+
+        Label(anthropic_frame, text="Anthropic Claude", font=self.base.settings.uifont_bold, 
+              anchor=tk.W, **self.base.theme.views.sidebar.item.content).pack(fill=tk.X)
+        
+        self.anthropic_key = tk.StringVar(value=self.master.api_keys.get("anthropic", ""))
+        self.anthropic_entry = Entry(anthropic_frame, hint="Anthropic API Key...", textvariable=self.anthropic_key)
+        self.anthropic_entry.pack(fill=tk.X, pady=2)
 
         confirm_btn = IconLabelButton(
             self,
-            text="Start Chat",
+            text="Save and Start",
             icon=Icons.SPARKLE_FILLED,
             callback=self.start_chat,
             pady=2,
             highlighted=True,
         )
-        confirm_btn.pack(fill=tk.X, pady=5)
+        confirm_btn.pack(fill=tk.X, pady=20)
 
         self.link = WebLinkLabel(
             self,
-            text="Don't have an API key? Get it from here.",
+            text="Get Gemini Key",
             link="https://aistudio.google.com/app/apikey",
         )
-        self.link.config(bg=self.base.theme.views.sidebar.background)
-        self.link.pack(fill=tk.X, pady=5)
+        self.link.pack(fill=tk.X)
+        
+        self.link2 = WebLinkLabel(
+            self,
+            text="Get Anthropic Key",
+            link="https://console.anthropic.com/settings/keys",
+        )
+        self.link2.pack(fill=tk.X)
 
     def start_chat(self) -> None:
-        self.master.add_chat(self.api_key.get())
+        self.master.save_keys(self.gemini_key.get(), self.anthropic_key.get())

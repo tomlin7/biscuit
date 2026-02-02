@@ -36,14 +36,22 @@ class AI(SideBarView):
 
         self.title.grid_forget()
 
-        # Available Gemini models
+        # Available models by provider
         self.available_models = {
             "Gemini 2.0 Flash": "gemini-2.0-flash",
             "Gemini 2.0 Pro": "gemini-2.0-pro",
             "Gemini 2.5 Flash": "gemini-2.5-flash",
             "Gemini 2.5 Pro": "gemini-2.5-pro",
+            "Claude 4.5 Opus": "claude-opus-4-5-20251101",
+            "Claude 4.5 Sonnet": "claude-sonnet-4-5-20250929",
+            "Claude 4.5 Haiku": "claude-haiku-4-5-20251001",
+            "Claude 4 Opus": "claude-opus-4-20250514",
+            "Claude 4 Sonnet": "claude-sonnet-4-20250514",
+            "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
+            "Claude 3.5 Haiku": "claude-3-5-haiku-20241022",
         }
         self.current_model = "Gemini 2.0 Flash"
+        self.api_keys = {"gemini": "", "anthropic": ""}
 
         self.top.grid_columnconfigure(self.column, weight=1)
 
@@ -66,12 +74,14 @@ class AI(SideBarView):
             """
         )
 
-        self.cursor.execute("SELECT value FROM secrets WHERE key='GEMINI_API_KEY'")
-        api_key = self.cursor.fetchone()
+        self.cursor.execute("SELECT key, value FROM secrets WHERE key IN ('GEMINI_API_KEY', 'ANTHROPIC_API_KEY')")
+        keys = dict(self.cursor.fetchall())
+        self.api_keys["gemini"] = keys.get("GEMINI_API_KEY", "")
+        self.api_keys["anthropic"] = keys.get("ANTHROPIC_API_KEY", "")
 
         self.placeholder = AIPlaceholder(self)
-        if api_key:
-            self.add_chat(api_key[0])
+        if self.api_keys["gemini"] or self.api_keys["anthropic"]:
+            self.add_chat()
         else:
             self.add_placeholder()
 
@@ -118,13 +128,20 @@ class AI(SideBarView):
         if not self.api_key:
             return self.add_placeholder()
 
-        # Store API key
-        self.cursor.execute(
-            "INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)",
-            (self.api_key,),
-        )
+    def save_keys(self, gemini: str = None, anthropic: str = None) -> None:
+        """Save API keys to database and start chat."""
+        if gemini:
+            self.api_keys["gemini"] = gemini
+            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)", (gemini,))
+        if anthropic:
+            self.api_keys["anthropic"] = anthropic
+            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('ANTHROPIC_API_KEY', ?)", (anthropic,))
+        
         self.db.commit()
+        self.add_chat()
 
+    def add_chat(self) -> None:
+        """Initialize the chat and agent."""
         # Clean up existing chat
         if self.chat:
             self.remove_item(self.chat)
@@ -137,7 +154,14 @@ class AI(SideBarView):
 
         try:
             model_id = self.available_models[self.current_model]
-            self.agent = Agent(self.base, self.api_key, model_id)
+            provider = "anthropic" if "claude" in model_id else "gemini"
+            api_key = self.api_keys[provider]
+
+            if not api_key:
+                self.add_placeholder()
+                return
+
+            self.agent = Agent(self.base, api_key, model_id)
             
             self.chat = ModernAIChat(self)
             self.chat.set_enhanced_agent(self.agent)

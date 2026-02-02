@@ -26,6 +26,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from google import genai
 from google.genai import types
+import anthropic
 
 from .state import AgentState, AgentStep, AgentTask
 from .tools import get_biscuit_tools
@@ -48,7 +49,8 @@ class Agent:
         self.model_name = model_name
 
         self.tools = get_biscuit_tools(base)
-        self.client: Optional[genai.Client] = None
+        self.gemini_client: Optional[genai.Client] = None
+        self.anthropic_client: Optional[anthropic.AsyncAnthropic] = None
 
         # Agent status
         self.is_running = False
@@ -65,7 +67,7 @@ class Agent:
         self.stream_callback: Optional[Callable[[str], None]] = None
         self.tool_callback: Optional[Callable[[str, str, str, str], None]] = None
 
-    def _initialize_client(self) -> genai.Client:
+    def _initialize_gemini_client(self) -> genai.Client:
         """Initialize the Google GenAI client."""
         if not self.api_key:
             raise ValueError("API key must be provided")
@@ -76,6 +78,13 @@ class Agent:
                 retry_options=types.HttpRetryOptions(attempts=3)
             )
         )
+
+    def _initialize_anthropic_client(self) -> anthropic.AsyncAnthropic:
+        """Initialize the Anthropic client."""
+        if not self.api_key:
+            raise ValueError("API key must be provided")
+        
+        return anthropic.AsyncAnthropic(api_key=self.api_key)
 
     # --- Callbacks Configuration ---
 
@@ -134,7 +143,10 @@ class Agent:
 
         try:
             # Force recreation of the client on the current loop/thread
-            self.client = self._initialize_client()
+            if "claude" in self.model_name.lower():
+                self.anthropic_client = self._initialize_anthropic_client()
+            else:
+                self.gemini_client = self._initialize_gemini_client()
             
             # Main execution loop using native function calling
             await self._run_chat_session(task, description)
@@ -151,6 +163,13 @@ class Agent:
         return task
 
     async def _run_chat_session(self, task: AgentTask, inputs: str):
+        """Routes the task to the appropriate provider."""
+        if "claude" in self.model_name.lower():
+            await self._run_anthropic_session(task, inputs)
+        else:
+            await self._run_gemini_session(task, inputs)
+
+    async def _run_gemini_session(self, task: AgentTask, inputs: str):
         """Execute task using native Google GenAI async chat sessions with real-time streaming."""
         
         tools_map = {t.name: t for t in self.tools}
@@ -182,7 +201,7 @@ class Agent:
             self._stream_content("[START_THOUGHT]")
             model_parts = []
             try:
-                stream = await self.client.aio.models.generate_content_stream(
+                stream = await self.gemini_client.aio.models.generate_content_stream(
                     model=self.model_name,
                     contents=contents,
                     config=types.GenerateContentConfig(
@@ -210,11 +229,13 @@ class Agent:
                             model_parts.append(part)
 
             except Exception as e:
-                err_msg = str(e)
-                if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
-                    self._stream_content("\n\n⚠️ **API Quota Exceeded**: You've hit your Gemini API limit. Please wait a moment or switch to Gemini 1.5 Flash in the sidebar.")
+                err_msg = str(e).lower()
+                if "429" in err_msg or "resource_exhausted" in err_msg:
+                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**: You've hit your API limit. Please wait a moment or switch to a model with a higher quota.")
+                elif "401" in err_msg or "authentication" in err_msg:
+                    self._stream_content("\n\n🔑 **Invalid API Key**: The Google Gemini API key is invalid or missing. Please check your configuration.")
                 else:
-                    self._stream_content(f"API Error: {e}")
+                    self._stream_content(f"Gemini API Error: {e}")
                 raise e
 
             self._stream_content("[END_THOUGHT] 1")
@@ -269,6 +290,137 @@ class Agent:
 
             # Update history with tool observations
             contents.append(types.Content(role="user", parts=tool_responses))
+
+    async def _run_anthropic_session(self, task: AgentTask, inputs: str):
+        """Execute task using Anthropic's native async SDK with streaming."""
+        tools_map = {t.name: t for t in self.tools}
+        anthropic_tools = self._get_anthropic_tools()
+
+        self._stream_content("[START_THOUGHT]")
+        self._stream_content(f"Starting task: {inputs}")
+        self._stream_content("[END_THOUGHT] 0")
+
+        system_instruction = self._get_system_instruction()
+        
+        # Build message history
+        messages = []
+        for msg in self.chat_history[-10:]:
+            role = "user" if msg['role'] == "User" else "assistant"
+            messages.append({"role": role, "content": msg['content']})
+        
+        # Add current input
+        messages.append({"role": "user", "content": inputs})
+
+        for i in range(self.max_steps):
+            if not self.is_running:
+                break
+            
+            self.iteration_count = i + 1
+            if i > 0:
+                await asyncio.sleep(1)
+
+            # 1. Generate Response (Async Stream)
+            self._stream_content("[START_THOUGHT]")
+            
+            full_content = []
+            current_text = ""
+            
+            try:
+                # We use the simplified stream helper from Anthropic
+                async with self.anthropic_client.messages.stream(
+                    model=self.model_name,
+                    max_tokens=4000,
+                    system=system_instruction,
+                    tools=anthropic_tools,
+                    messages=messages,
+                    temperature=0
+                ) as stream:
+                    async for event in stream:
+                        if event.type == "text":
+                            self._stream_content(event.text)
+                            current_text += event.text
+                        elif event.type == "input_json":
+                            # We'll get the final message at the end
+                            pass
+                
+                # Get the final response to handle tool usage
+                final_message = await stream.get_final_message()
+                messages.append({"role": "assistant", "content": final_message.content})
+                
+                tool_calls = [c for c in final_message.content if c.type == "tool_use"]
+                
+                # If no tool calls, we are done
+                if not tool_calls:
+                    self.chat_history.append({"role": "User", "content": inputs})
+                    self.chat_history.append({"role": "AI", "content": current_text})
+                    return
+
+                # 2. Execute Tools
+                tool_results = []
+                for call in tool_calls:
+                    name = call.name
+                    args = call.input
+                    self._stream_content(f"Executing {name}...")
+                    
+                    try:
+                        if name in tools_map:
+                            tool = tools_map[name]
+                            observation = tool.run(args)
+                            self._stream_tool(name, json.dumps(args), str(observation))
+                            
+                            step = AgentStep(
+                                step_number=self.iteration_count,
+                                state=AgentState.EDITING if any(x in name for x in ["edit", "write", "delete"]) else AgentState.SEARCHING,
+                                action=name,
+                                reasoning="Executing tool call.",
+                                result=str(observation)
+                            )
+                            task.steps.append(step)
+                            self._notify_step(step)
+                        else:
+                            observation = f"Error: Tool '{name}' not found."
+                            self._stream_content(observation)
+                    except Exception as e:
+                        observation = f"Error executing tool: {e}"
+                        self._stream_content(observation)
+
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": call.id,
+                        "content": str(observation)
+                    })
+
+                # Update history with tool observations
+                messages.append({"role": "user", "content": tool_results})
+
+            except Exception as e:
+                err_msg = str(e).lower()
+                if "429" in err_msg or "rate_limit" in err_msg:
+                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**: You've hit your Anthropic API limit. Please wait a moment.")
+                elif "401" in err_msg or "authentication" in err_msg:
+                    self._stream_content("\n\n🔑 **Invalid API Key**: The Anthropic API key is invalid or missing. Please check your configuration.")
+                else:
+                    self._stream_content(f"Anthropic API Error: {e}")
+                raise e
+            finally:
+                self._stream_content("[END_THOUGHT] 1")
+
+    def _get_anthropic_tools(self) -> List[Dict[str, Any]]:
+        """Convert tools to Anthropic's format."""
+        anthropic_tools = []
+        for tool in self.tools:
+            # Pydantic schema is mostly compatible with Anthropic's input_schema
+            schema = tool.args_schema.schema()
+            anthropic_tools.append({
+                "name": tool.name,
+                "description": tool.description,
+                "input_schema": {
+                    "type": "object",
+                    "properties": schema.get("properties", {}),
+                    "required": schema.get("required", [])
+                }
+            })
+        return anthropic_tools
 
     def _get_system_instruction(self) -> str:
         """Construct the system instruction for the model."""
@@ -331,14 +483,26 @@ Rules: Use tools to read/edit code. Execute plans immediately. Be concise."""
 
     def process_message(self, message: str) -> str:
         """Single-turn message processing (Backwards Compatibility)."""
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=message,
-            config=types.GenerateContentConfig(
-                temperature=0,
+        if "claude" in self.model_name.lower():
+            client = anthropic.Anthropic(api_key=self.api_key)
+            response = client.messages.create(
+                model=self.model_name,
+                max_tokens=1000,
+                messages=[{"role": "user", "content": message}]
             )
-        )
-        return response.text if response.candidates else ""
+            return response.content[0].text if response.content else ""
+        else:
+            if not self.gemini_client:
+                self.gemini_client = self._initialize_gemini_client()
+            
+            response = self.gemini_client.models.generate_content(
+                model=self.model_name,
+                contents=message,
+                config=types.GenerateContentConfig(
+                    temperature=0,
+                )
+            )
+            return response.text if response.candidates else ""
 
     def stop_execution(self):
         """Stop the running agent loop."""
