@@ -183,15 +183,17 @@ class Renderer(Frame):
                 font-size: 0.95em;
             }}
             details.thought {{
-                margin: 2px 0;
+                margin: 8px 0;
             }}
             details.thought summary {{
                 color: {t.secondary_foreground};
                 cursor: pointer;
                 font-size: 0.9em;
-                padding: 4px 0;
+                padding: 6px 0;
                 list-style: none;
-                opacity: 0.7;
+                outline: none;
+                opacity: 0.8;
+                user-select: none;
             }}
             details.thought summary::-webkit-details-marker {{
                 display: none;
@@ -201,17 +203,17 @@ class Renderer(Frame):
                 display: inline-block;
                 width: 12px;
                 font-size: 1.2em;
-                transition: transform 0.1s;
+                transition: transform 0.2s;
                 vertical-align: middle;
-                margin-right: 4px;
+                margin-right: 8px;
             }}
             details.thought[open] summary:before {{
                 transform: rotate(90deg);
             }}
             .thought-inner {{
-                padding: 10px 0 10px 16px;
-                font-size: 0.95em;
-                line-height: 1.5;
+                padding: 8px 0 12px 20px;
+                font-size: 0.92em;
+                line-height: 1.6;
                 color: {t.secondary_foreground};
                 border-left: 1px solid {t.border};
                 margin-left: 5px;
@@ -219,39 +221,44 @@ class Renderer(Frame):
             .step {{
                 display: flex;
                 align-items: center;
-                padding: 6px 0;
-                font-size: 0.9em;
+                padding: 8px 0;
+                font-size: 0.92em;
                 color: {t.secondary_foreground};
             }}
             .step .icon {{
-                margin-right: 10px;
-                font-size: 1.1em;
+                margin-right: 12px;
+                font-size: 1.25em;
                 width: 16px;
                 text-align: center;
+                opacity: 0.8;
             }}
             .step b {{
                 color: {t.foreground};
                 font-weight: 500;
-                margin-right: 4px;
+                margin-right: 6px;
             }}
             .step .range {{
-                opacity: 0.4;
+                color: {t.secondary_foreground};
+                opacity: 0.5;
                 font-family: {self.base.settings.font['family']};
+                margin-left: 4px;
             }}
             .step .diff-add {{
                 color: #3fb950;
-                margin-left: 10px;
-                font-weight: 500;
+                margin-left: 12px;
+                font-weight: 600;
+                font-size: 0.9em;
             }}
             .step .diff-remove {{
                 color: #f85149;
-                margin-left: 6px;
-                font-weight: 500;
+                margin-left: 8px;
+                font-weight: 600;
+                font-size: 0.9em;
             }}
             .step .open-diff {{
                 margin-left: auto;
-                color: {t.secondary_foreground};
-                opacity: 0.5;
+                color: {t.biscuit};
+                opacity: 0.8;
                 text-decoration: none;
                 font-size: 0.85em;
             }}
