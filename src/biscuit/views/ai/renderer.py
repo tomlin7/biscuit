@@ -125,6 +125,11 @@ class Renderer(Frame):
                 color: {t.primary_foreground};
                 font-family: {self.base.settings.uifont['family']};
                 font-size: {self.base.settings.uifont['size']}pt;
+                margin: 0;
+                padding: 0 5px;
+                overflow-x: hidden;
+                width: 100%;
+                word-wrap: break-word;
             }}
             img {{
                 max-width: 100%;
@@ -136,8 +141,9 @@ class Renderer(Frame):
                 border-top: 1px solid {t.border};
                 max-width: 100%;
             }}
-            li{{
-                margin-left:1px;
+            li {{
+                margin-left: 15px;
+                padding-bottom: 4px;
             }}
 
             tr, th, td {{
