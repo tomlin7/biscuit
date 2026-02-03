@@ -137,7 +137,6 @@ class GUIManager(Tk, ConfigManager):
         self.breadcrumbs = self.editorsbar.breadcrumbs
 
         self.explorer = self.sidebar.explorer
-        self.search = self.sidebar.search
         self.outline = self.sidebar.outline
         self.source_control = self.sidebar.source_control
         self.debug = self.secondary_sidebar.debug

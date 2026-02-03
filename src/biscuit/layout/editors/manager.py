@@ -8,7 +8,7 @@ from typing import Dict, List, Union
 
 from biscuit.common import ActionSet, Game
 from biscuit.common.ui import Frame
-from biscuit.editor import Editor, Welcome
+from biscuit.editor import Editor, SearchEditor, Welcome
 
 from .editorsbar import EditorsBar
 from .placeholder import Placeholder
@@ -92,6 +92,9 @@ class EditorsManager(Frame):
 
     def add_welcome(self) -> None:
         self.add_editor(Welcome(self))
+
+    def add_search(self) -> None:
+        self.add_editor(SearchEditor(self))
 
     def add_editors(self, editors: list[Editor]) -> None:
         for editor in editors:

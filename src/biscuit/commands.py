@@ -347,7 +347,7 @@ class Commands:
         self.base.secondary_sidebar.show_outline()
 
     def show_search(self, *_) -> None:
-        self.base.sidebar.show_search()
+        self.base.editorsmanager.add_search()
 
     def show_source_control(self, *_) -> None:
         self.base.secondary_sidebar.show_source_control()

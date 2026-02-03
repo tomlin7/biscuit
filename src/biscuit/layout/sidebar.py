@@ -40,12 +40,9 @@ class SideBar(Frame):
             "Outline": Outline(self),
         }
         self.add_views(self.default_views.values())
-
         self.activitybar.add_separator()
         
-        self.search_view = Search(self)
-        self.add_view(self.search_view)
-        
+        self.activitybar.add_button(Icons.SEARCH, "Search", lambda: self.base.editorsmanager.add_search())
         self.activitybar.add_button(Icons.CHECK, "Problems", lambda: self.base.panel.show_problems())
 
     def toggle(self) -> None:
@@ -115,10 +112,6 @@ class SideBar(Frame):
     def outline(self) -> Outline:
         return self.default_views["Outline"]
 
-    @property
-    def search(self) -> Search:
-        return self.search_view
-
     def show_view(self, view: SideBarView) -> SideBarView:
         """Show a view in the sidebar.
 
@@ -140,9 +133,6 @@ class SideBar(Frame):
 
     def show_outline(self, *_) -> Outline:
         return self.show_view(self.outline)
-
-    def show_search(self, *_) -> Search:
-        return self.show_view(self.search)
 
     def pack(self, *args, **kwargs):
         if isinstance(self.master, tk.PanedWindow):
