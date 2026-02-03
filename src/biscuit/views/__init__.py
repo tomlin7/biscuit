@@ -8,7 +8,6 @@ from .logs import Logs
 from .outline import Outline
 from .panelview import PanelView
 from .problems import Problems
-from .search import Search
 from .sidebar_item import SideBarViewItem
 from .sidebar_item_toolbar import SideBarItemToolBar
 from .sidebar_view import SideBarView
