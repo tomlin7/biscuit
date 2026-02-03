@@ -190,13 +190,18 @@ class TodoPanel(Frame):
         theme = self.base.theme
         self.content_container = Frame(parent, bg=theme.primary_background)
         # Not packed initially
+        self.content_container.grid_columnconfigure(0, weight=1)
+        self.content_container.grid_rowconfigure(0, weight=1)
         
         # Max height scrollable area
         self.canvas = Canvas(self.content_container, bg=theme.primary_background, 
                        highlightthickness=0, height=0)
-        self.canvas.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.canvas.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(self.content_container, orient=tk.VERTICAL, command=self.canvas.yview)
+        # Using themed Scrollbar (which uses grid internally for auto-hiding)
+        self.scrollbar = Scrollbar(self.content_container, orient=tk.VERTICAL, 
+                                 command=self.canvas.yview, style="EditorScrollbar")
+        self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         
         self.tasks_frame = Frame(self.canvas, bg=theme.primary_background)
@@ -205,24 +210,27 @@ class TodoPanel(Frame):
         def on_configure(_):
             self.canvas.configure(scrollregion=self.canvas.bbox("all"))
             h = self.tasks_frame.winfo_reqheight()
-            # Limit height to ~220px
             if h > 220:
                 self.canvas.config(height=220)
-                self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
             else:
-                self.canvas.config(height=h if h > 0 else 0)
-                self.scrollbar.pack_forget()
+                self.canvas.config(height=h if h > 0 else 1)
             
         self.tasks_frame.bind("<Configure>", on_configure)
         self.canvas.bind("<Configure>", lambda e: self.canvas.itemconfig(self.tasks_window, width=e.width))
+        
+        # Enable mousewheel scrolling
+        def _on_mousewheel(event):
+            if self.canvas.winfo_height() < self.tasks_frame.winfo_reqheight():
+                self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        
+        self.canvas.bind("<Enter>", lambda _: self.canvas.bind_all("<MouseWheel>", _on_mousewheel))
+        self.canvas.bind("<Leave>", lambda _: self.canvas.unbind_all("<MouseWheel>"))
 
     def toggle(self, _=None):
         if self.expanded:
-            self.content_container.pack_forget()
-            self.chevron.config(text=Icons.CHEVRON_RIGHT)
+            self.collapse()
         else:
             self.expand()
-        self.expanded = not self.expanded
 
     def expand(self):
         """Force expand the todo panel."""
@@ -230,6 +238,12 @@ class TodoPanel(Frame):
         self.content_container.pack(fill=tk.X)
         self.chevron.config(text=Icons.CHEVRON_DOWN)
         self.expanded = True
+
+    def collapse(self):
+        """Force collapse the todo panel."""
+        self.content_container.pack_forget()
+        self.chevron.config(text=Icons.CHEVRON_RIGHT)
+        self.expanded = False
 
     def refresh(self):
         from biscuit.common.ai.tools import TodoWriteTool
@@ -253,12 +267,28 @@ class TodoPanel(Frame):
             'completed': Icons.CHECK,
             'cancelled': Icons.X
         }
+
+        # Canonicalize status names to handle diverse model outputs
+        status_map = {
+            'pending': ['pending', 'todo', 'task'],
+            'in_progress': ['in_progress', 'doing', 'working', 'progress'],
+            'completed': ['completed', 'complete', 'done', 'finished', 'success'],
+            'cancelled': ['cancelled', 'cancel', 'failed', 'stopped']
+        }
         
+        def get_canonical_status(s):
+            s = str(s).lower()
+            for canonical, aliases in status_map.items():
+                if s == canonical or s in aliases:
+                    return canonical
+            return s
+
         for tid, todo in todos.items():
             f = Frame(self.tasks_frame, bg=theme.primary_background)
             f.pack(fill=tk.X, pady=1)
             
-            status = todo.get('status', 'pending')
+            raw_status = todo.get('status', 'pending')
+            status = get_canonical_status(raw_status)
             icon = status_icons.get(status, Icons.CIRCLE_OUTLINE)
             
             fg = theme.foreground
@@ -785,7 +815,7 @@ class AgentChat(Frame):
                 def tool_callback(tool_name: str, tool_input: str, tool_output: str, category: str = "analysis"):
                     """Show tool executions in real-time."""
                     if tool_name == "todo_write":
-                        self.after(0, self.todo_panel.expand)
+                        self.after(0, self.todo_panel.refresh)
                     def update_ui():
                         # Parsing logic to mimic the provided UI
                         import os
