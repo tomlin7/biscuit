@@ -28,8 +28,8 @@ class AI(SideBarView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = Icons.SPARKLE_FILLED
-        self.name = "AI"
+        self.__icon__ = Icons.SYMBOL_EVENT
+        self.name = "Agent"
         self.chat = None
         self.api_key = ""
         self.agent = None

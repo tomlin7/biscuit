@@ -5,6 +5,7 @@ import typing
 
 from biscuit.common.ui import Frame
 from biscuit.views import *
+from biscuit.common.ui.icon import Icons
 
 if typing.TYPE_CHECKING:
     from biscuit.layout.statusbar.activitybar import ActivityBar
@@ -33,12 +34,12 @@ class SecondarySideBar(Frame):
         self.secondary_activitybar = activitybar
         self.secondary_activitybar.attach_sidebar(self)
 
+        self.secondary_activitybar.add_button(Icons.TERMINAL, "Terminal", lambda: self.base.panel.show_terminal())
+
         self.default_views = {
-            "Outline": Outline(self),
-            "GitHub": GitHub(self),
-            "Extensions": Extensions(self),
+            "Debug": Debug(self),
             "AI": AI(self),
-            "Source Control": SourceControl(self),
+            "Extensions": Extensions(self),
         }
         self.add_views(self.default_views.values())
 
@@ -98,20 +99,12 @@ class SecondarySideBar(Frame):
         self.views.remove(view)
 
     @property
-    def outline(self) -> Outline:
-        return self.default_views["Outline"]
-
-    @property
-    def source_control(self) -> SourceControl:
-        return self.default_views["Source Control"]
+    def debug(self) -> Debug:
+        return self.default_views["Debug"]
 
     @property
     def ai(self) -> AI:
         return self.default_views["AI"]
-
-    @property
-    def github(self) -> GitHub:
-        return self.default_views["GitHub"]
 
     @property
     def extensions(self) -> Extensions:
@@ -130,26 +123,11 @@ class SecondarySideBar(Frame):
                 self.active_view = view
                 return view
 
-    def show_explorer(self, *_) -> Explorer:
-        return self.show_view(self.explorer)
-
-    def show_outline(self, *_) -> Outline:
-        return self.show_view(self.outline)
-
-    def show_search(self, *_) -> Search:
-        return self.show_view(self.search)
-
-    def show_source_control(self, *_) -> SourceControl:
-        return self.show_view(self.source_control)
-
     def show_debug(self, *_) -> Debug:
         return self.show_view(self.debug)
 
     def show_ai(self, *_) -> AI:
         return self.show_view(self.ai)
-
-    def show_github(self, *_) -> GitHub:
-        return self.show_view(self.github)
 
     def show_extensions(self, *_) -> Extensions:
         return self.show_view(self.extensions)

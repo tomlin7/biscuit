@@ -138,11 +138,10 @@ class GUIManager(Tk, ConfigManager):
 
         self.explorer = self.sidebar.explorer
         self.search = self.sidebar.search
-        self.outline = self.secondary_sidebar.outline
-        self.source_control = self.secondary_sidebar.source_control
-        self.debug = self.sidebar.debug
+        self.outline = self.sidebar.outline
+        self.source_control = self.sidebar.source_control
+        self.debug = self.secondary_sidebar.debug
         self.ai = self.secondary_sidebar.ai
-        self.github = self.secondary_sidebar.github
         self.extensions_view = self.secondary_sidebar.extensions
 
         self.terminalmanager = self.panel.terminals

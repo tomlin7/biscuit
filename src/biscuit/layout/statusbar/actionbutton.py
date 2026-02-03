@@ -24,26 +24,25 @@ class ActionButton(Menubutton):
     """Action buttons for activity bar
 
     Action buttons are used to switch between views in the sidebar,
-    view instances are attached to these buttons."""
+    view instances are attached to these buttons.
 
-    def __init__(self, master: ActivityBar, view: SideBarView, *args, **kwargs) -> None:
+    If no view is provided, the button can be used for custom actions.
+    """
+
+    def __init__(self, master: ActivityBar, icon: str, name: str, callback: typing.Callable = None, view: SideBarView = None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        """Initializes the action button.
-        
-        Args:
-            master (ActivityBar): The activity bar.
-            view (SidebarView): The view to attach to the button."""
         self.master: ActivityBar = master
 
         self.view = view
+        self.callback = callback
         self.enabled = False
 
-        self.bubble = SBubble(self, text=view.name)
+        self.bubble = SBubble(self, text=name)
         self.bind("<Enter>", self.bubble.show)
         self.bind("<Leave>", self.bubble.hide)
 
         self.config(
-            text=view.__icon__,
+            text=icon,
             relief=tk.FLAT,
             font=("codicon", 12),
             cursor="hand2",
@@ -56,6 +55,11 @@ class ActionButton(Menubutton):
         self.bind("<Button-1>", self.toggle)
 
     def toggle(self, *_) -> None:
+        if self.callback:
+            self.callback()
+            self.bubble.hide()
+            return
+
         if not self.enabled:
             self.master.set_active_slot(self)
             self.enable()

@@ -96,6 +96,12 @@ class Panel(Frame):
         self.set_active_view(self.terminals)
         self.show_panel()
 
+    def show_problems(self, *_) -> None:
+        """Shows the problems if its hidden/minimized."""
+
+        self.set_active_view(self.problems)
+        self.show_panel()
+
     def show_logs(self, *_) -> None:
         """Shows the logs if its hidden/minimized."""
 
