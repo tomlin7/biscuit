@@ -20,7 +20,7 @@ class Explorer(SideBarView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = []
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = Icons.HOME
+        self.__icon__ = Icons.LIBRARY
         self.name = "Explorer"
 
         # self.menu = ExplorerMenu(self, "files")

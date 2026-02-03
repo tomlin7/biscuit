@@ -16,7 +16,7 @@ class Extensions(SideBarView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = Icons.EXTENSIONS
+        self.__icon__ = Icons.CHIP
         self.name = "Extensions"
 
         self.searchterm = tk.StringVar(self)

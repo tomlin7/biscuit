@@ -23,7 +23,7 @@ class Debug(SideBarView):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = []
         super().__init__(master, *args, **kwargs)
-        self.__icon__ = Icons.DEBUG_ALT
+        self.__icon__ = Icons.BUG
         self.name = "Debug"
         self.running = False
         self.manager = self.base.debugger_manager

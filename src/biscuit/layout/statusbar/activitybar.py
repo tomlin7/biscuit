@@ -31,9 +31,17 @@ class ActivityBar(Frame):
         self.sidebar = sidebar
 
     def add_view(self, view: SideBarView) -> None:
-        btn = ActionButton(self, view)
+        btn = ActionButton(self, view.__icon__, view.name, view=view)
         btn.pack(side=tk.LEFT)
         self.buttons.append(btn)
+        
+    def add_button(self, icon: str, name: str, callback: typing.Callable) -> None:
+        btn = ActionButton(self, icon, name, callback=callback)
+        btn.pack(side=tk.LEFT)
+
+    def add_separator(self) -> None:
+        sep = Frame(self, width=1, bg=self.base.theme.border)
+        sep.pack(side=tk.LEFT, fill=tk.Y, padx=5, pady=5)
 
     def toggle_first_slot(self) -> None:
         self.buttons[0].toggle()
