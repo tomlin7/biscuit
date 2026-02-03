@@ -711,7 +711,8 @@ For long-running commands, set is_background=true."""
 class TodoWriteTool(BiscuitTool):
     name: str = "todo_write"
     description: str = """Create and manage a task list for complex coding sessions.
-Use for multi-step tasks. Set merge=true to update existing todos."""
+Use for multi-step tasks. Set merge=true to update existing todos.
+Available statuses: 'pending', 'in_progress', 'completed', 'cancelled'."""
     args_schema: ClassVar[type[BaseModel]] = TodoWriteInput
 
     _todos: ClassVar[Dict[str, Dict]] = {}  # Class-level todo storage
