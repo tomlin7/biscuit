@@ -44,6 +44,7 @@ class Dropdown(Frame):
         iconhfg="",
         iconhbg="",
         empty_message="No items",
+        font="",
         open_upwards=False,
         *args,
         **kwargs
@@ -91,6 +92,7 @@ class Dropdown(Frame):
             )
             self.icon_label.pack(side=iconside, fill=tk.BOTH)
 
+        font = font or self.base.settings.uifont
         self.text_label = tk.Label(
             self,
             text=self.text,
@@ -98,7 +100,7 @@ class Dropdown(Frame):
             pady=2,
             bg=self.bg,
             fg=self.fg,
-            font=self.base.settings.uifont,
+            font=font,
         )
         self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 

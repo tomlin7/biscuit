@@ -253,7 +253,7 @@ class Agent:
             except Exception as e:
                 err_msg = str(e).lower()
                 if "429" in err_msg or "resource_exhausted" in err_msg:
-                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**: You've hit your API limit. Please wait a moment or switch to a model with a higher quota.")
+                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**\nYou've hit your API quota for the current model. \nPlease wait a few seconds or switch to a different model in the sidebar.")
                 elif "401" in err_msg or "authentication" in err_msg:
                     self._stream_content("\n\n🔑 **Invalid API Key**: The Google Gemini API key is invalid or missing. Please check your configuration.")
                 else:
@@ -421,7 +421,7 @@ class Agent:
             except Exception as e:
                 err_msg = str(e).lower()
                 if "429" in err_msg or "rate_limit" in err_msg:
-                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**: You've hit your Anthropic API limit. Please wait a moment.")
+                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**\nYou've hit your Anthropic API quota. Please wait a moment or switch models.")
                 elif "401" in err_msg or "authentication" in err_msg:
                     self._stream_content("\n\n🔑 **Invalid API Key**: The Anthropic API key is invalid or missing. Please check your configuration.")
                 else:
