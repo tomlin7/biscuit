@@ -20,26 +20,28 @@ class SearchBar(Frame):
     def __init__(self, master: Palette, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master: Palette = master
-        self.config(bg=self.base.theme.border)
+        theme = self.base.theme
+        self.config(bg=theme.palette['background'])
         self.term = ""
 
         self.text_variable = tk.StringVar()
         self.text_variable.trace_add("write", self.filter)
 
-        # frame = Frame(self, bg=self.base.theme.border)
-        # frame.pack(fill=tk.BOTH, padx=2, pady=2)
-
         self.search_bar = tk.Entry(
             self,
-            font=self.base.settings.font,
+            font=self.base.settings.uifont,
             width=self.master.width,
             relief=tk.FLAT,
             textvariable=self.text_variable,
-            bg=self.base.theme.border,
-            fg=self.base.theme.biscuit,
+            bg=theme.secondary_background,
+            fg=theme.biscuit,
+            insertbackground=theme.biscuit,
+            highlightthickness=1,
+            highlightbackground=theme.border,
+            highlightcolor=theme.biscuit
         )
 
-        self.search_bar.grid(sticky=tk.EW, padx=5, pady=5)
+        self.search_bar.pack(fill=tk.X, padx=5, pady=5, ipady=5)
         self.configure_bindings()
 
     def configure_bindings(self) -> None:
@@ -119,7 +121,6 @@ class SearchBar(Frame):
                 includes.append(i)
 
         new = list(chain(actionset.get_pinned(term), exact, starts, includes))
-        self.master.reset_start_index()
         if any(new):
             self.master.show_items(new)
         else:

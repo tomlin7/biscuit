@@ -18,40 +18,47 @@ class PaletteItem(Text):
     """
 
     def __init__(
-        self, master: Palette, text: str, command: str, description="", *args, **kwargs
+        self, master: tk.Frame, palette: Palette, text: str, command: str, description="", *args, **kwargs
     ) -> None:
         """Initializes the Palette Item
-
+ 
         Args:
-            master (Palette): The parent palette instance
+            master (tk.Frame): The parent frame
+            palette (Palette): The parent palette instance
             text (str): The text to display in the item
             command (str): The command to execute when the item is selected
             description (str, optional): The description of the item. Defaults to"""
 
         super().__init__(master, *args, **kwargs)
+        self.palette = palette
         self.text = text
         self.description = description
         self.command = command
 
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.palette.item.values()
+        self.theme = self.base.theme
+        self.bg, self.fg, self.hbg, self.hfg = self.theme.palette.item.values()
+        
         self.config(
             font=self.base.settings.uifont,
             fg=self.fg,
             bg=self.bg,
             cursor="hand2",
-            padx=10,
-            pady=3,
+            padx=15,
+            pady=8,
             relief=tk.FLAT,
             highlightthickness=0,
             width=30,
             height=1,
+            spacing1=2,
+            spacing3=2
         )
 
-        self.tag_config("term", foreground=self.base.theme.biscuit)
-        self.tag_config("description", foreground=self.base.theme.primary_foreground)
+        self.tag_config("term", foreground=self.theme.biscuit, font=self.base.settings.uifont_bold)
+        self.tag_config("description", foreground=self.theme.secondary_foreground, font=self.base.settings.font)
 
         self.insert(tk.END, text)
-        self.insert(tk.END, f" {description}", "description")
+        if description:
+            self.insert(tk.END, f"   {description}", "description")
         self.config(state=tk.DISABLED)
 
         self.bind("<Button-1>", self.on_click)
@@ -63,10 +70,10 @@ class PaletteItem(Text):
 
     def on_click(self, *args) -> None:
         """Executes the command when the item is clicked"""
-
-        term = self.master.searchbar.term
-
-        self.master.hide()
+ 
+        term = self.palette.searchbar.term
+ 
+        self.palette.hide()
         self.command(term)
 
     def toggle_selection(self) -> None:
