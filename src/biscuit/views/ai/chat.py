@@ -137,11 +137,146 @@ class ToolActionWidget(Frame):
             Label(container, text=extra, font=self.base.settings.font,
                   fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=2)
         
-        # Right aligned "Open diff" link
+    # Right aligned "Open diff" link
         if "Edited" in action:
             link = Label(container, text="Open diff", font=("Segoe UI", 8), cursor="hand2",
                         fg=theme.secondary_foreground, bg=theme.primary_background)
             link.pack(side=tk.RIGHT)
+
+
+class TodoPanel(Frame):
+    """A native collapsible todo list widget for the AI agent."""
+    
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        theme = self.base.theme
+        self.configure(bg=theme.primary_background)
+        
+        self.expanded = False
+        self.container = Frame(self, bg=theme.border, padx=1, pady=1)
+        self.container.pack(fill=tk.X, pady=(0, 10))
+        
+        inner = Frame(self.container, bg=theme.primary_background)
+        inner.pack(fill=tk.X)
+
+        self.header = Frame(inner, bg=theme.secondary_background, cursor="hand2")
+        self.header.pack(fill=tk.X)
+        
+        self.icon = Label(self.header, text=Icons.TASKLIST, font=("codicon", 11), 
+                         bg=theme.secondary_background, fg=theme.biscuit)
+        self.icon.pack(side=tk.LEFT, padx=(10, 5), pady=5)
+        
+        self.title_label = Label(self.header, text="Task List", font=self.base.settings.uifont_bold,
+                           fg=theme.foreground, bg=theme.secondary_background)
+        self.title_label.pack(side=tk.LEFT, pady=5)
+        
+        self.count_label = Label(self.header, text="(0)", font=self.base.settings.uifont,
+                           fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.count_label.pack(side=tk.LEFT, padx=5, pady=5)
+
+        self.chevron = Label(self.header, text=Icons.CHEVRON_RIGHT, font=("codicon", 10),
+                           fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.chevron.pack(side=tk.RIGHT, padx=10, pady=5)
+        
+        self._setup_content(inner)
+        
+        self.header.bind("<Button-1>", self.toggle)
+        self.icon.bind("<Button-1>", self.toggle)
+        self.title_label.bind("<Button-1>", self.toggle)
+        self.chevron.bind("<Button-1>", self.toggle)
+        self.count_label.bind("<Button-1>", self.toggle)
+
+    def _setup_content(self, parent):
+        theme = self.base.theme
+        self.content_container = Frame(parent, bg=theme.primary_background)
+        # Not packed initially
+        
+        # Max height scrollable area
+        self.canvas = Canvas(self.content_container, bg=theme.primary_background, 
+                       highlightthickness=0, height=0)
+        self.canvas.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        self.scrollbar = Scrollbar(self.content_container, orient=tk.VERTICAL, command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        
+        self.tasks_frame = Frame(self.canvas, bg=theme.primary_background)
+        self.tasks_window = self.canvas.create_window((0, 0), window=self.tasks_frame, anchor=tk.NW)
+        
+        def on_configure(_):
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+            h = self.tasks_frame.winfo_reqheight()
+            # Limit height to ~220px
+            if h > 220:
+                self.canvas.config(height=220)
+                self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+            else:
+                self.canvas.config(height=h if h > 0 else 0)
+                self.scrollbar.pack_forget()
+            
+        self.tasks_frame.bind("<Configure>", on_configure)
+        self.canvas.bind("<Configure>", lambda e: self.canvas.itemconfig(self.tasks_window, width=e.width))
+
+    def toggle(self, _=None):
+        if self.expanded:
+            self.content_container.pack_forget()
+            self.chevron.config(text=Icons.CHEVRON_RIGHT)
+        else:
+            self.expand()
+        self.expanded = not self.expanded
+
+    def expand(self):
+        """Force expand the todo panel."""
+        self.refresh()
+        self.content_container.pack(fill=tk.X)
+        self.chevron.config(text=Icons.CHEVRON_DOWN)
+        self.expanded = True
+
+    def refresh(self):
+        from biscuit.common.ai.tools import TodoWriteTool
+        todos = TodoWriteTool._todos
+        theme = self.base.theme
+        
+        # Clear content (direct children of tasks_frame)
+        for child in self.tasks_frame.winfo_children():
+            child.destroy()
+            
+        self.count_label.config(text=f"({len(todos)})")
+        
+        if not todos:
+            Label(self.tasks_frame, text="No tasks active", font=self.base.settings.uifont,
+                  fg=theme.secondary_foreground, bg=theme.primary_background).pack(padx=15, pady=10, anchor=tk.W)
+            return
+
+        status_icons = {
+            'pending': Icons.CIRCLE_OUTLINE,
+            'in_progress': Icons.SYNC,
+            'completed': Icons.CHECK,
+            'cancelled': Icons.X
+        }
+        
+        for tid, todo in todos.items():
+            f = Frame(self.tasks_frame, bg=theme.primary_background)
+            f.pack(fill=tk.X, pady=1)
+            
+            status = todo.get('status', 'pending')
+            icon = status_icons.get(status, Icons.CIRCLE_OUTLINE)
+            
+            fg = theme.foreground
+            icon_fg = theme.secondary_foreground
+            
+            if status == 'in_progress':
+                icon_fg = theme.biscuit
+            elif status == 'completed':
+                icon_fg = "#3fb950" 
+            elif status == 'cancelled':
+                icon_fg = "#f85149"
+            
+            Label(f, text=icon, font=("codicon", 10), fg=icon_fg, 
+                  bg=theme.primary_background).pack(side=tk.LEFT, padx=(10, 8))
+            
+            lbl = Label(f, text=todo['content'], font=self.base.settings.uifont, 
+                  fg=fg, bg=theme.primary_background, anchor=tk.W, justify=tk.LEFT)
+            lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
 
 class StreamingMessage(Frame):
@@ -160,7 +295,7 @@ class StreamingMessage(Frame):
         
         # For user messages, use a box-like layout
         if self.message_type == "user":
-            self.configure(bg=theme.primary_background, padx=10, pady=10)
+            self.configure(bg=theme.primary_background, padx=5, pady=5)
             
             # Message container with border
             self.container = Frame(self, bg=theme.secondary_background, 
@@ -175,8 +310,8 @@ class StreamingMessage(Frame):
                 fg=theme.secondary_foreground,
                 font=self.base.settings.uifont,
                 border=0,
-                padx=15,
-                pady=12,
+                padx=10,
+                pady=10,
                 wrap=tk.WORD,
                 state=tk.DISABLED
             )
@@ -184,10 +319,10 @@ class StreamingMessage(Frame):
             
         else:
             # AI message: Container for multiple parts (thoughts, tools, markdown)
-            self.configure(bg=theme.primary_background, padx=10, pady=5)
+            self.configure(bg=theme.primary_background, padx=5, pady=5)
             
             self.parts_container = Frame(self, bg=theme.primary_background)
-            self.parts_container.pack(fill=tk.X, padx=10)
+            self.parts_container.pack(fill=tk.X, padx=5)
             
             # Internal state to track the active part
             self.current_markdown_renderer = None
@@ -214,7 +349,7 @@ class StreamingMessage(Frame):
             self._add_action_icon(Icons.ARROW_UP)
 
     def _add_action_icon(self, icon):
-        btn = IconButton(self.actions_frame, icon=icon, iconsize=12)
+        btn = IconButton(self.actions_frame, icon=icon, iconsize=10, hfg_only=True)
         btn.config(bg=self.base.theme.primary_background, fg=self.base.theme.secondary_foreground)
         btn.pack(side=tk.LEFT, padx=3)
         
@@ -258,7 +393,7 @@ class StreamingMessage(Frame):
     def show_actions(self):
         """Show the actions bar (like, dislike, copy, etc.)."""
         if self.message_type == "ai":
-            self.actions_frame.pack(fill=tk.X, pady=(10, 20))
+            self.actions_frame.pack(fill=tk.X)
         
     def append_content(self, text: str):
         """Append text to the message content."""
@@ -372,17 +507,10 @@ class AgentChat(Frame):
         self.grid_rowconfigure(1, weight=1)
         
         # Main chat area
-        self.setup_main_area()
+        self.setup_chat_area(self)
         
         # Input area at bottom
         self.setup_input_area()
-        
-    def setup_main_area(self):
-        """Setup the main chat area."""
-        theme = self.base.theme
-        
-        # Simple chat container
-        self.setup_chat_area(self)
         
     def setup_chat_area(self, parent):
         """Setup the main chat area."""
@@ -406,26 +534,23 @@ class AgentChat(Frame):
         scrollbar = Scrollbar(
             chat_container,
             orient=tk.VERTICAL,
-            command=self.chat_canvas.yview
+            command=self.chat_canvas.yview, 
+            style="EditorScrollbar"
         )
         scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.chat_canvas.configure(yscrollcommand=scrollbar.set)
         
-        # Messages frame inside canvas
         self.messages_frame = Frame(self.chat_canvas, bg=theme.primary_background)
         self.canvas_window = self.chat_canvas.create_window(
             0, 0, anchor=tk.NW, window=self.messages_frame
         )
         
-        # Bind events for scrolling
         self.messages_frame.bind('<Configure>', self._on_messages_configure)
         self.chat_canvas.bind('<Configure>', self._on_canvas_configure)
         
-        # Only bind mousewheel when mouse is over the chat area
         self.chat_canvas.bind('<Enter>', lambda _: self.chat_canvas.bind_all('<MouseWheel>', self._on_mousewheel))
         self.chat_canvas.bind('<Leave>', lambda _: self.chat_canvas.unbind_all('<MouseWheel>'))
         
-        # Welcome message
         self.show_welcome_message()
         
     def setup_input_area(self):
@@ -436,6 +561,10 @@ class AgentChat(Frame):
         # Input container
         input_container = Frame(self, bg=theme.primary_background, padx=10, pady=10)
         input_container.grid(row=2, column=0, sticky=tk.EW)
+        
+        # Todo panel above input
+        self.todo_panel = TodoPanel(input_container)
+        self.todo_panel.pack(fill=tk.X)
         
         # Bordered frame for input
         input_border = Frame(input_container, bg=theme.border, padx=1, pady=1)
@@ -448,7 +577,7 @@ class AgentChat(Frame):
         # Text input
         self.text_input = hintedtext.HintedText(
             input_inner,
-            hint="Message the Biscuit Agent - @ to include context",
+            hint="Message the Biscuit Agent\nUse @ to include context",
             height=3,
             bg=theme.secondary_background,
             fg=theme.secondary_foreground,
@@ -461,11 +590,15 @@ class AgentChat(Frame):
         self.text_input.pack(fill=tk.X)
         
         # Bottom tools bar
-        tools_bar = Frame(input_inner, bg=theme.secondary_background, padx=10, pady=5)
+        tools_bar = Frame(input_inner, bg=theme.secondary_background, padx=5, pady=5)
         tools_bar.pack(fill=tk.X)
 
         # Left side icons
-        IconButton(tools_bar, icon=Icons.MENTION, iconsize=14).pack(side=tk.LEFT, padx=2)
+        mention_btn = IconButton(tools_bar, icon=Icons.MENTION, iconsize=14, hfg_only=True)
+        mention_btn.config(bg=theme.secondary_background)
+        mention_btn.pack(side=tk.LEFT)
+
+        # IconButton(tools_bar, icon=Icons.TARGET, iconsize=14).pack(side=tk.LEFT, padx=2)
         # IconButton(tools_bar, icon=Icons.GLOBE, iconsize=14).pack(side=tk.LEFT, padx=2)
 
         # Right side: status, dropdowns, send
@@ -474,11 +607,11 @@ class AgentChat(Frame):
 
         self.status_label = Label(right_tools, text="Ready", font=("Segoe UI", 8), 
               fg=theme.secondary_foreground, bg=theme.secondary_background)
-        self.status_label.pack(side=tk.LEFT, padx=(10, 5))
+        self.status_label.pack(side=tk.LEFT, padx=(5, 5))
 
         self.usage_label = Label(right_tools, text="0 tokens", font=("Segoe UI", 8), 
               fg=theme.secondary_foreground, bg=theme.secondary_background)
-        self.usage_label.pack(side=tk.LEFT, padx=(5, 10))
+        self.usage_label.pack(side=tk.LEFT, padx=(5, 5))
 
 
         # Model selector
@@ -488,18 +621,19 @@ class AgentChat(Frame):
             selected=self.master.current_model,
             callback=self.master.set_current_model,
             open_upwards=True,
+            font=("Segoe UI", 8),
         )
-        self.model_dropdown.pack(side=tk.LEFT, padx=2)
+        self.model_dropdown.pack(side=tk.LEFT, padx=1)
 
         # Send button
         self.send_btn = IconButton(
             right_tools,
             icon=Icons.SEND,
-            iconsize=16,
+            iconsize=14,
             event=self.send_message
         )
         self.send_btn.config(fg=theme.biscuit, bg=theme.secondary_background)
-        self.send_btn.pack(side=tk.LEFT, padx=(5, 0))
+        self.send_btn.pack(side=tk.LEFT, padx=(0, 1))
         
         # Bind Enter key
         self.text_input.bind('<Control-Return>', self.add_newline)
@@ -560,7 +694,7 @@ class AgentChat(Frame):
         welcome_text = "How can I help you with your code?"
         
         message = StreamingMessage(self.messages_frame, self, "ai")
-        message.pack(fill=tk.X, pady=5, padx=10)
+        message.pack(fill=tk.X, pady=5, padx=5)
         message.set_content(welcome_text)
         self.messages.append(message)
         self.scroll_to_bottom(force=True)
@@ -600,13 +734,13 @@ class AgentChat(Frame):
         
         # Add user message
         user_message = StreamingMessage(self.messages_frame, self, "user")
-        user_message.pack(fill=tk.X, pady=5, padx=10)
+        user_message.pack(fill=tk.X, pady=5, padx=5)
         user_message.set_content(message_text)
         self.messages.append(user_message)
         
         # Add AI response placeholder
         ai_message = StreamingMessage(self.messages_frame, self, "ai")
-        ai_message.pack(fill=tk.X, pady=5, padx=10)
+        ai_message.pack(fill=tk.X, pady=5, padx=5)
         ai_message.start_typing()
         self.messages.append(ai_message)
         # self.scroll_to_bottom(force=True)
@@ -650,6 +784,8 @@ class AgentChat(Frame):
                 # Setup tool execution callback
                 def tool_callback(tool_name: str, tool_input: str, tool_output: str, category: str = "analysis"):
                     """Show tool executions in real-time."""
+                    if tool_name == "todo_write":
+                        self.after(0, self.todo_panel.expand)
                     def update_ui():
                         # Parsing logic to mimic the provided UI
                         import os
@@ -697,6 +833,9 @@ class AgentChat(Frame):
                                 icon = Icons.SEARCH
                                 action_label = "Searched"
                                 file_info = data.get('query', data.get('Query', ''))
+                            elif tool_name == "todo_write":
+                                icon = Icons.TASKLIST
+                                action_label = "Updated Plan"
                             elif "read" in tool_name or "view" in tool_name:
                                 icon = Icons.FILE
                                 action_label = "Analyzed"
@@ -811,7 +950,7 @@ class AgentChat(Frame):
     def show_error(self, error_message: str):
         """Show an error message."""
         error_msg = StreamingMessage(self.messages_frame, self, "ai")
-        error_msg.pack(fill=tk.X, pady=5, padx=10)
+        error_msg.pack(fill=tk.X, pady=5, padx=5)
         error_msg.set_content(f"Error: {error_message}")
         self.messages.append(error_msg)
         self.scroll_to_bottom()
