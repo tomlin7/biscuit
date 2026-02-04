@@ -1,4 +1,4 @@
-theme = "gruvbox_dark"
+theme = "dark"
 font = "Fira Code"
 font_size = 13
 cursor_style = "line"
