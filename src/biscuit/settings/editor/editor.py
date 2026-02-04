@@ -51,21 +51,35 @@ class SettingsEditor(BaseEditor):
 
         commonly_used = self.add_section(f"Commonly Used")
 
-        commonly_used.add_dropdown("Color Theme", ("dark", "light"))
-        commonly_used.add_intvalue("Font Size", 14)
-        commonly_used.add_stringvalue("Font Family", "Consolas")
-        commonly_used.add_intvalue("Tab Size", 4)
+        commonly_used.add_dropdown("Color Theme", ("dark", "light", "gruvbox_dark", "catppuccin_mocha"), 
+                                   self.base.config.get_value("theme", "dark"),
+                                   lambda v: self.base.config.set_value("theme", v))
+        commonly_used.add_intvalue("Font Size", self.base.config.get_value("font_size", 12),
+                                   lambda v: self.base.config.set_value("font_size", int(v) if v else 12))
+        commonly_used.add_stringvalue("Font Family", self.base.config.get_value("font", "Fira Code"),
+                                   lambda v: self.base.config.set_value("font", v))
+        commonly_used.add_intvalue("Tab Size", self.base.config.get_value("tab_size", 4),
+                                   lambda v: self.base.config.set_value("tab_size", int(v) if v else 4))
 
     def add_text_editor(self):
         """Add text editor settings to the settings editor"""
 
-        commonly_used = self.add_section(f"Text Editor")
-        commonly_used.add_checkbox("Auto Save", False)
-        commonly_used.add_checkbox("Auto Closing Pairs", True)
-        commonly_used.add_checkbox("Auto Closing Delete", True)
-        commonly_used.add_checkbox("Auto Indent", True)
-        commonly_used.add_checkbox("Auto Surround", True)
-        commonly_used.add_checkbox("Word Wrap", False)
+        text_editor = self.add_section(f"Text Editor")
+        text_editor.add_checkbox("Auto Save", self.base.config.get_value("auto_save", False),
+                                   lambda v: self.base.config.set_value("auto_save", v))
+        text_editor.add_checkbox("Auto Closing Pairs", self.base.config.get_value("auto_closing_pairs", True),
+                                   lambda v: self.base.config.set_value("auto_closing_pairs", v))
+        text_editor.add_checkbox("Auto Closing Delete", self.base.config.get_value("auto_closing_delete", True),
+                                   lambda v: self.base.config.set_value("auto_closing_delete", v))
+        text_editor.add_checkbox("Auto Indent", self.base.config.get_value("auto_indent", True),
+                                   lambda v: self.base.config.set_value("auto_indent", v))
+        text_editor.add_checkbox("Auto Surround", self.base.config.get_value("auto_surround", True),
+                                   lambda v: self.base.config.set_value("auto_surround", v))
+        text_editor.add_checkbox("Word Wrap", self.base.config.get_value("word_wrap", False),
+                                   lambda v: self.base.config.set_value("word_wrap", v))
+        text_editor.add_dropdown("Cursor Style", ("line", "block", "underline"),
+                                   self.base.config.get_value("cursor_style", "line"),
+                                   lambda v: self.base.config.set_value("cursor_style", v))
 
     def add_section(self, name: str) -> Section:
         """Add a section to the settings editor

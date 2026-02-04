@@ -105,6 +105,13 @@ class Settings:
             family=self.config.uifont[0], size=self.config.uifont[1], weight="bold"
         )
 
+    def update_font(self) -> None:
+        self.font.configure(family=self.config.font[0], size=self.config.font[1])
+        self.font_bold.configure(family=self.config.font[0], size=self.config.font[1], weight="bold")
+        self.autocomplete_font.configure(family=self.config.font[0], size=self.config.font[1] - 1)
+        self.uifont.configure(family=self.config.uifont[0], size=self.config.uifont[1])
+        self.uifont_bold.configure(family=self.config.uifont[0], size=self.config.uifont[1], weight="bold")
+
     def late_setup(self) -> None:
         """Configurations that require full initialization of editor"""
 

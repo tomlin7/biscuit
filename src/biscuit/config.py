@@ -154,7 +154,22 @@ class ConfigManager:
             if e.content and e.content.editable:
                 e.content.text.set_tab_size(spaces)
                 self.statusbar.set_spaces(spaces)
+    
+    def refresh_editors(self) -> None:
+        self.tab_spaces = self.config.tab_size
+        self.wrap_words = self.config.word_wrap
+        self.block_cursor = self.config.cursor_style == "block"
+        self.theme = self.config.theme
 
+        for editor in self.editorsmanager.active_editors:
+            if editor.content and editor.content.editable:
+                editor.content.text.configure(
+                    tabs=(self.settings.font.measure(" " * self.tab_spaces),),
+                    blockcursor=self.block_cursor,
+                    wrap=tk.WORD if self.wrap_words else tk.NONE,
+                    **self.theme.editors.text
+                )
+                
     @property
     def active_workspace(self):
         return self.workspaces.workspace
