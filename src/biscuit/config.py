@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import typing
+import tkinter as tk
 from pathlib import Path
 
 from biscuit.layout.statusbar.statusbar import Statusbar
