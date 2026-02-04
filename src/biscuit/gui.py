@@ -30,23 +30,59 @@ class GUIManager(Tk, ConfigManager):
         # remove decorations on windows only
         # config for high DPI with winAPI
         if platform.system() == "Windows":
-            from ctypes import windll
+            from ctypes import windll, c_void_p, c_int, c_long, byref, sizeof
 
-            # TODO: DPI awareness for windows
-            # disabled because it messes up the scaling
-            # windll.shcore.SetProcessDpiAwareness(1)
+            # DPI awareness
+            try:
+                windll.shcore.SetProcessDpiAwareness(1)
+            except:
+                pass
 
-            self.overrideredirect(True)
-            self.update_idletasks()
-
+            # Window styles
+            GWL_STYLE = -16
             GWL_EXSTYLE = -20
+            WS_CAPTION = 0x00C00000
+            WS_THICKFRAME = 0x00040000
+            WS_MINIMIZEBOX = 0x00020000
+            WS_MAXIMIZEBOX = 0x00010000
+            WS_SYSMENU = 0x00080000
             WS_EX_APPWINDOW = 0x00040000
-            WS_EX_TOOLWINDOW = 0x00000080
+
+            WS_CLIPCHILDREN = 0x02000000
+            WS_CLIPSIBLINGS = 0x04000000
+
+            # Get HWND
+            self.update_idletasks()
             hwnd = windll.user32.GetParent(self.winfo_id())
-            style = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
-            style = style & ~WS_EX_TOOLWINDOW
-            style = style | WS_EX_APPWINDOW
-            windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
+
+            # Remove title bar (CAPTION) but keep resizing (THICKFRAME) and shadows
+            style = windll.user32.GetWindowLongPtrW(hwnd, GWL_STYLE)
+            style &= ~WS_CAPTION
+            style |= WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS
+            windll.user32.SetWindowLongPtrW(hwnd, GWL_STYLE, style)
+
+            # Ensure taskbar icon
+            ex_style = windll.user32.GetWindowLongPtrW(hwnd, GWL_EXSTYLE)
+            ex_style |= WS_EX_APPWINDOW
+            windll.user32.SetWindowLongPtrW(hwnd, GWL_EXSTYLE, ex_style)
+
+            # Set dark mode for title bar (fixes white line/border)
+            try:
+                DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+                DWMWA_CAPTION_COLOR = 35
+                DWMWA_BORDER_COLOR = 34
+                
+                dark_mode = c_int(1)
+                color = c_int(0x000000) # Black
+                
+                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, byref(dark_mode), sizeof(dark_mode))
+                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, byref(color), sizeof(color))
+                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, byref(color), sizeof(color))
+            except:
+                pass
+
+            # Redraw window
+            windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, 0x0027) # SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER
 
             myappid = "com.tomlin7.biscuit"
             windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -65,6 +101,7 @@ class GUIManager(Tk, ConfigManager):
         x = int((self.winfo_screenwidth() - app_width) / 2)
         y = int((self.winfo_screenheight() - app_height) / 2)
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
+        self.configure(bg=self.theme.border, highlightthickness=0)
 
         # very bad hack to fix the window size on windows
         self.withdraw()
@@ -100,12 +137,10 @@ class GUIManager(Tk, ConfigManager):
         self.breadcrumbs = self.editorsbar.breadcrumbs
 
         self.explorer = self.sidebar.explorer
-        self.search = self.sidebar.search
-        self.outline = self.secondary_sidebar.outline
-        self.source_control = self.secondary_sidebar.source_control
-        self.debug = self.sidebar.debug
+        self.outline = self.sidebar.outline
+        self.source_control = self.sidebar.source_control
+        self.debug = self.secondary_sidebar.debug
         self.ai = self.secondary_sidebar.ai
-        self.github = self.secondary_sidebar.github
         self.extensions_view = self.secondary_sidebar.extensions
 
         self.terminalmanager = self.panel.terminals

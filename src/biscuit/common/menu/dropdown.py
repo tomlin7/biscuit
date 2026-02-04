@@ -13,6 +13,14 @@ class _DropdownMenu(Menu):
             self.master.winfo_rooty() + self.master.winfo_height(),
         )
 
+class _DropdownMenu2(Menu):
+    def get_coords(self, e) -> tuple:
+        self.update_idletasks()
+        return (
+            self.master.winfo_rootx(),
+            self.master.winfo_rooty() - self.winfo_height(),
+        )
+
 
 class Dropdown(Frame):
     """For implementing a dropdown menu."""
@@ -36,6 +44,8 @@ class Dropdown(Frame):
         iconhfg="",
         iconhbg="",
         empty_message="No items",
+        font="",
+        open_upwards=False,
         *args,
         **kwargs
     ) -> None:
@@ -68,7 +78,7 @@ class Dropdown(Frame):
         self.text_label = None
 
         self.selected = None
-        self.menu = _DropdownMenu(self)
+        self.menu = _DropdownMenu(self) if not open_upwards else _DropdownMenu2(self)
         self.set_items(items)
 
         if icon:
@@ -82,6 +92,7 @@ class Dropdown(Frame):
             )
             self.icon_label.pack(side=iconside, fill=tk.BOTH)
 
+        font = font or self.base.settings.uifont
         self.text_label = tk.Label(
             self,
             text=self.text,
@@ -89,7 +100,7 @@ class Dropdown(Frame):
             pady=2,
             bg=self.bg,
             fg=self.fg,
-            font=self.base.settings.uifont,
+            font=font,
         )
         self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 

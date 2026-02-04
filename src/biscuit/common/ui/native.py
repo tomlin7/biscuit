@@ -60,3 +60,12 @@ class Frame(tk.Frame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base: App = master.base
+
+
+class PanedWindow(tk.PanedWindow):
+    """PanedWindow with reference to base"""
+
+    def __init__(self, master, *args, **kwargs) -> None:
+        super().__init__(master, *args, **kwargs)
+        self.master = master
+        self.base: App = master.base

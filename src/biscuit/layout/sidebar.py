@@ -5,6 +5,7 @@ import typing
 
 from biscuit.common.ui import Frame
 from biscuit.views import *
+from biscuit.common.ui.icon import Icons
 
 if typing.TYPE_CHECKING:
     from biscuit.layout.statusbar.activitybar import ActivityBar
@@ -24,7 +25,7 @@ class SideBar(Frame):
         self.config(bg=self.base.theme.border)
 
         self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
 
         self.views = []
         self.active_view = None
@@ -35,10 +36,14 @@ class SideBar(Frame):
 
         self.default_views = {
             "Explorer": Explorer(self),
-            "Search": Search(self),
-            "Debug": Debug(self),
+            "Source Control": SourceControl(self),
+            "Outline": Outline(self),
         }
         self.add_views(self.default_views.values())
+        self.activitybar.add_separator()
+        
+        self.activitybar.add_button(Icons.SEARCH, "Search", lambda: self.base.editorsmanager.add_search())
+        self.activitybar.add_button(Icons.CHECK, "Problems", lambda: self.base.panel.show_problems())
 
     def toggle(self) -> None:
         """Toggle the sidebar."""
@@ -100,12 +105,12 @@ class SideBar(Frame):
         return self.default_views["Explorer"]
 
     @property
-    def search(self) -> Search:
-        return self.default_views["Search"]
+    def source_control(self) -> SourceControl:
+        return self.default_views["Source Control"]
 
     @property
-    def debug(self) -> Debug:
-        return self.default_views["Debug"]
+    def outline(self) -> Outline:
+        return self.default_views["Outline"]
 
     def show_view(self, view: SideBarView) -> SideBarView:
         """Show a view in the sidebar.
@@ -123,16 +128,23 @@ class SideBar(Frame):
     def show_explorer(self, *_) -> Explorer:
         return self.show_view(self.explorer)
 
-    def show_search(self, *_) -> Search:
-        return self.show_view(self.search)
+    def show_source_control(self, *_) -> SourceControl:
+        return self.show_view(self.source_control)
 
-    def show_debug(self, *_) -> Debug:
-        return self.show_view(self.debug)
+    def show_outline(self, *_) -> Outline:
+        return self.show_view(self.outline)
 
-    def pack(self):
-        super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1))
+    def pack(self, *args, **kwargs):
+        if isinstance(self.master, tk.PanedWindow):
+            self.master.add(self, before=self.base.contentpane, width=270, stretch="never")
+            self.master.paneconfigure(self, minsize=50)
+        else:
+            super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1), *args, **kwargs)
         self.visible = True
 
     def hide(self):
-        super().pack_forget()
+        if isinstance(self.master, tk.PanedWindow):
+            self.master.forget(self)
+        else:
+            super().pack_forget()
         self.visible = False

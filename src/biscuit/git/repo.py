@@ -131,13 +131,19 @@ class GitRepo(git.Repo):
             self.base.logger.error(e)
 
     def get_remote(self, name):
-        return self.remotes[name]
+        try:
+            return self.remotes[name]
+        except (IndexError, ValueError, AttributeError):
+            return None
 
     def get_remote_origin(self):
         return self.get_remote("origin")
 
     def get_remote_url(self, name):
-        return self.strip_github_url(self.get_remote(name).url)
+        remote = self.get_remote(name)
+        if remote:
+            return self.strip_github_url(remote.url)
+        return ""
 
     def get_remote_origin_url(self):
         return self.get_remote_url("origin")

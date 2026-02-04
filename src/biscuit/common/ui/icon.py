@@ -1,6 +1,6 @@
-from ..icons import Icons
-from .labels import Label
-from .native import Frame, Menubutton
+from biscuit.common.icons import Icons
+from biscuit.common.ui.labels import Label
+from biscuit.common.ui.native import Frame, Menubutton
 
 
 class Icon(Label):

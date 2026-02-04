@@ -20,11 +20,10 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Frame
+from biscuit.common.ui import Frame, PanedWindow
 from biscuit.layout.statusbar import activitybar
 
 from .content import *
-from .grip import Grip
 from .menubar import Menubar
 from .secondary_sidebar import SecondarySideBar
 from .sidebar import SideBar
@@ -43,37 +42,27 @@ class Root(Frame):
 
     def __init__(self, base: App, *args, **kwargs) -> None:
         super().__init__(base, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config(bg=self.base.theme.primary_background)
 
         container = Frame(self, bg=self.base.theme.border)
 
         self.menubar = Menubar(container)
         self.statusbar = Statusbar(container)
 
-        subcontainer = Frame(container, bg=self.base.theme.border)
-        self.content = Content(subcontainer)
-        self.sidebar = SideBar(subcontainer, activitybar=self.statusbar.activitybar)
+        self.subcontainer = PanedWindow(container, orient=tk.HORIZONTAL, bg=self.base.theme.border, bd=0, sashwidth=3, sashpad=0, opaqueresize=False)
+        self.content = Content(self.subcontainer)
+        self.sidebar = SideBar(self.subcontainer, activitybar=self.statusbar.activitybar)
         self.secondary_sidebar = SecondarySideBar(
-            subcontainer, activitybar=self.statusbar.secondary_activitybar
+            self.subcontainer, activitybar=self.statusbar.secondary_activitybar
         )
 
-        # Window Resizing Grips
-        grip_w = Grip(self, "w", "left_side")
-        grip_e = Grip(self, "e", "right_side")
-        grip_n = Grip(container, "n", "top_side")
-        grip_s = Grip(container, "s", "bottom_side")
-
-        grip_w.pack(fill=tk.Y, side=tk.LEFT)
-        container.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
-        grip_e.pack(fill=tk.Y, side=tk.LEFT)
-
-        grip_n.pack(fill=tk.X)
+        container.pack(fill=tk.BOTH, expand=True)
+        
         self.menubar.pack()
-        subcontainer.pack(fill=tk.BOTH, expand=True, pady=(1, 0))
+        self.subcontainer.pack(fill=tk.BOTH, expand=True)
         self.statusbar.pack()
-        grip_s.pack(fill=tk.X)
 
-        self.content.pack()
+        self.content.pack(padx=1)
         self.pack(fill=tk.BOTH, expand=True)
 
     def toggle_sidebar(self) -> None:

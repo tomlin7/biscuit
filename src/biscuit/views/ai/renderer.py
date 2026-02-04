@@ -102,22 +102,8 @@ class Renderer(Frame):
             self, messages_enabled=False, vertical_scrollbar=False,
             shrink=True
         )
-        self.scrollbar = Scrollbar(
-            self,
-            orient=tk.VERTICAL,
-            command=self.htmlframe.yview,
-            style="EditorScrollbar",
-        )
 
-        self.sparkles = f"<h4 color={self.base.theme.biscuit}>✨ Bikkis</h4> "
-
-        self.htmlframe.html.config(yscrollcommand=self.scrollbar.set)
-        # self.htmlframe.html.shrink(True)
-
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.htmlframe.grid(row=0, column=1, sticky=tk.NSEW)
-        self.scrollbar.grid(row=0, column=3, sticky=tk.NS)
+        self.htmlframe.pack(fill=tk.BOTH, expand=True)
 
         self.header = "<html><head></head><body>"
         self.footer = "</body></html>"
@@ -139,6 +125,11 @@ class Renderer(Frame):
                 color: {t.primary_foreground};
                 font-family: {self.base.settings.uifont['family']};
                 font-size: {self.base.settings.uifont['size']}pt;
+                margin: 0;
+                padding: 0 5px;
+                overflow-x: hidden;
+                width: 100%;
+                word-wrap: break-word;
             }}
             img {{
                 max-width: 100%;
@@ -150,8 +141,9 @@ class Renderer(Frame):
                 border-top: 1px solid {t.border};
                 max-width: 100%;
             }}
-            li{{
-                margin-left:1px;
+            li {{
+                margin-left: 15px;
+                padding-bottom: 4px;
             }}
 
             tr, th, td {{
@@ -160,6 +152,125 @@ class Renderer(Frame):
 
             :link    {{ color: {t.biscuit}; }}
             :visited {{ color: {t.biscuit_dark}; }}
+            .thought {{
+                color: {t.secondary_foreground};
+                font-style: italic;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+                opacity: 0.8;
+            }}
+            .tool-call {{
+                display: inline-block;
+                padding: 2px 8px;
+                background-color: {t.secondary_background};
+                border: 1px solid {t.border};
+                border-radius: 4px;
+                font-family: {self.base.settings.font['family']};
+                font-size: 0.8em;
+                margin: 4px 0;
+            }}
+            details.tool-call {{
+                border: 1px solid {t.border};
+                border-radius: 4px;
+                margin: 8px 0;
+                background-color: {t.secondary_background};
+            }}
+            details.tool-call summary {{
+                padding: 10px;
+                cursor: pointer;
+                font-weight: bold;
+                outline: none;
+            }}
+            details.tool-call .tool-details {{
+                padding: 12px;
+                border-top: 1px solid {t.border};
+                background-color: {t.primary_background};
+                font-size: 0.95em;
+            }}
+            details.thought {{
+                margin: 8px 0;
+            }}
+            details.thought summary {{
+                color: {t.secondary_foreground};
+                cursor: pointer;
+                font-size: 0.9em;
+                padding: 6px 0;
+                list-style: none;
+                outline: none;
+                opacity: 0.8;
+                user-select: none;
+            }}
+            details.thought summary::-webkit-details-marker {{
+                display: none;
+            }}
+            details.thought summary:before {{
+                content: "›";
+                display: inline-block;
+                width: 12px;
+                font-size: 1.2em;
+                transition: transform 0.2s;
+                vertical-align: middle;
+                margin-right: 8px;
+            }}
+            details.thought[open] summary:before {{
+                transform: rotate(90deg);
+            }}
+            .thought-inner {{
+                padding: 8px 0 12px 20px;
+                font-size: 0.92em;
+                line-height: 1.6;
+                color: {t.secondary_foreground};
+                border-left: 1px solid {t.border};
+                margin-left: 5px;
+            }}
+            .step {{
+                display: flex;
+                align-items: center;
+                padding: 8px 0;
+                font-size: 0.92em;
+                color: {t.secondary_foreground};
+            }}
+            .step .icon {{
+                margin-right: 12px;
+                font-size: 1.25em;
+                width: 16px;
+                text-align: center;
+                opacity: 0.8;
+            }}
+            .step b {{
+                color: {t.foreground};
+                font-weight: 500;
+                margin-right: 6px;
+            }}
+            .step .range {{
+                color: {t.secondary_foreground};
+                opacity: 0.5;
+                font-family: {self.base.settings.font['family']};
+                margin-left: 4px;
+            }}
+            .step .diff-add {{
+                color: #3fb950;
+                margin-left: 12px;
+                font-weight: 600;
+                font-size: 0.9em;
+            }}
+            .step .diff-remove {{
+                color: #f85149;
+                margin-left: 8px;
+                font-weight: 600;
+                font-size: 0.9em;
+            }}
+            .step .open-diff {{
+                margin-left: auto;
+                color: {t.biscuit};
+                opacity: 0.8;
+                text-decoration: none;
+                font-size: 0.85em;
+            }}
+            .step .open-diff:hover {{
+                opacity: 1;
+                text-decoration: underline;
+            }}
             INPUT, TEXTAREA, SELECT, BUTTON {{ 
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground_highlight};
@@ -176,5 +287,7 @@ class Renderer(Frame):
             self.content = self.markdown(content)
         else:
             self.content += self.markdown(content)
-        self.htmlframe.load_html(self.content)
+            
+        full_html = f"{self.header}{self.content}{self.footer}"
+        self.htmlframe.load_html(full_html)
         self.htmlframe.add_css(self.css)

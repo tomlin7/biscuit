@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from .labels import Label
-from .native import Toplevel
+from biscuit.common.ui.labels import Label
+from biscuit.common.ui.native import Toplevel
 
 
 class Bubble(Toplevel):

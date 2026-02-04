@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import platform
 import tkinter as tk
 import typing
 
 from ..actionset import ActionSet
-from ..ui import Frame, Toplevel
+from ..ui import Frame, Toplevel, Scrollbar
+from ..ui.native import Canvas
 from .item import PaletteItem
 from .searchbar import SearchBar
 
@@ -37,32 +39,73 @@ class Palette(Toplevel):
             width (int, optional): The width of the palette. Defaults to 80."""
 
         super().__init__(master, *args, **kwargs)
-        self.config(pady=2, padx=2, bg=self.base.theme.border)
+        theme = self.base.theme
+        self.config(pady=1, padx=1, **theme.palette)
 
-        self.container = Frame(self, **self.base.theme.palette, padx=2, pady=2)
-        self.container.pack(fill=tk.BOTH, expand=True)
 
         self.width = round(width * self.base.scale)
         self.active = False
-
         self.withdraw()
-        self.overrideredirect(True)
 
-        self.container.grid_columnconfigure(0, weight=1)
-        self.container.grid_rowconfigure(0, weight=1)
+        if platform.system() == "Windows":
+            from ctypes import windll, c_int, byref, sizeof
+            
+            # DPI awareness (inherited from parent, but ensuring it's acknowledged)
+            GWL_STYLE = -16
+            WS_CAPTION = 0x00C00000
+            WS_THICKFRAME = 0x00040000
+            
+            self.update_idletasks()
+            hwnd = windll.user32.GetParent(self.winfo_id())
+            
+            style = windll.user32.GetWindowLongPtrW(hwnd, GWL_STYLE)
+            style &= ~WS_CAPTION
+            # style |= WS_THICKFRAME # THICKFRAME provides the native shadow on Windows
+            windll.user32.SetWindowLongPtrW(hwnd, GWL_STYLE, style)
+            
+            try:
+                DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+                dark_mode = c_int(1)
+                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, byref(dark_mode), sizeof(dark_mode))
+            except:
+                pass
+                
+            windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, 0x0027) # SWP_FRAMECHANGED
+        else:
+            self.overrideredirect(True)
+
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         self.row = 1
         self.selected = 0
-        self.start_index = 0
 
         self.shown_items = []
-
         self.actionsets = []
         self.active_set = None
         self.active_items = None
 
         self.searchbar = SearchBar(self)
-        self.searchbar.grid(row=0, sticky=tk.EW, in_=self.container, pady=(0, 2))
+        self.searchbar.grid(row=0, sticky=tk.EW, padx=5, pady=(5, 2))
+
+        # Items area
+        self.items_container = Frame(self, **theme.palette)
+        self.items_container.grid(row=1, sticky=tk.NSEW, padx=2, pady=2)
+        self.items_container.grid_columnconfigure(0, weight=1)
+        self.items_container.grid_rowconfigure(0, weight=1)
+
+        self.canvas = Canvas(self.items_container, **theme.palette, highlightthickness=0)
+        self.canvas.grid(row=0, column=0, sticky=tk.NSEW)
+
+        self.scrollbar = Scrollbar(self.items_container, orient=tk.VERTICAL, command=self.canvas.yview, style="EditorScrollbar")
+        self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.items_frame = Frame(self.canvas, **theme.palette)
+        self.items_window = self.canvas.create_window((0, 0), window=self.items_frame, anchor=tk.NW)
+
+        self.items_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.canvas.bind("<Configure>", lambda e: self.canvas.itemconfig(self.items_window, width=e.width))
 
         self.configure_bindings()
 
@@ -98,44 +141,25 @@ class Palette(Toplevel):
         self.register_actionset(lambda: self.help_actionset)
 
     def add_item(self, text: str, command, *args, **kwargs) -> PaletteItem:
-        """Adds an item to the palette
-
-        Args:
-            text (str): The text to display on the item
-            command (str): The command to execute when the item is selected
-
-        Returns:
-            PaletteItem: The item that was added to the palette"""
-
-        new_item = PaletteItem(self, text, command, *args, **kwargs)
-        new_item.grid(row=self.row, sticky=tk.EW, in_=self.container)
-
+        """Adds an item to the palette"""
+        new_item = PaletteItem(self.items_frame, self, text, command, *args, **kwargs)
+        new_item.pack(fill=tk.X)
         self.shown_items.append(new_item)
-
-        self.row += 1
-        self.refresh_selected()
         return new_item
 
     def configure_bindings(self) -> None:
         self.bind("<FocusOut>", self.hide)
         self.bind("<Escape>", self.hide)
 
-        self.row += 1
+        # self.row += 1 # REMOVED: was causing empty row gap
         self.refresh_selected()
-
-    def reset_start_index(self) -> None:
-        self.start_index = 0
 
     def on_mousewheel(self, event) -> str:
         if not self.active_items:
             return "break"
-
-        # start_index must be between 0 and len(active_items) - 10
-        self.start_index = min(
-            max(0, self.start_index - event.delta // 120), len(self.active_items) - 10
-        )
-        self.show_items(self.active_items)
-        self.reset_selection()
+        
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        return "break"
 
     def pick_actionset(self, actionset: ActionSet) -> None:
         """Picks an actionset to display in the palette
@@ -175,16 +199,14 @@ class Palette(Toplevel):
         self.withdraw()
         self.reset()
 
-        self.container.unbind_all("<MouseWheel>")
+        self.unbind_all("<MouseWheel>")
 
     def hide_all_items(self) -> None:
         """Hides all items in the palette"""
-
         for i in self.shown_items:
             i.destroy()
-
         self.shown_items = []
-        self.row = 1
+        self.canvas.yview_moveto(0)
 
     def reset_selection(self) -> None:
         """Resets the selected item to the first item in the palette"""
@@ -197,14 +219,42 @@ class Palette(Toplevel):
 
         if not self.shown_items:
             return
-
+ 
         for i in self.shown_items:
             i.deselect()
+ 
+        try:
+            item = self.shown_items[self.selected]
+            item.select()
+            
+            # Ensure visible
+            self.after(10, self.ensure_visible, item)
+        except IndexError as e:
+            self.base.logger.error(f"Item '{self.selected}' doesnt exist: {e}")
+            
+    def ensure_visible(self, item):
+        """Scroll canvas to ensure item is visible."""
+        if not item.winfo_exists():
+            return
 
         try:
-            self.shown_items[self.selected].select()
-        except IndexError as e:
-            self.base.logger.error(f"Command '{self.selected}' doesnt exist: {e}")
+            self.update_idletasks()
+            item_y = item.winfo_y()
+            item_h = item.winfo_height()
+            
+            cw_h = self.canvas.winfo_height()
+            cv_y = self.canvas.yview()[0] * self.items_frame.winfo_height()
+            
+            total_h = self.items_frame.winfo_reqheight()
+            if total_h == 0:
+                return
+
+            if item_y < cv_y:
+                self.canvas.yview_moveto(item_y / total_h)
+            elif item_y + item_h > cv_y + cw_h:
+                self.canvas.yview_moveto((item_y + item_h - cw_h) / total_h)
+        except tk.TclError:
+            pass
 
     def reset(self) -> None:
         """Resets the palette
@@ -228,38 +278,20 @@ class Palette(Toplevel):
         self.add_item("No results found", lambda _: ...)
 
     def select(self, delta: int) -> None:
-        """Selects an item in the palette
-
-        Args:
-            delta (int): The change in selection"""
-
-        if not self.active_items:
+        """Selects an item in the palette"""
+        if not self.shown_items:
             return "break"
-        
-        selected = self.selected
         
         self.selected += delta
         self.selected = min(max(0, self.selected), len(self.shown_items) - 1)
-        
-        if (selected == 0 and delta < 0) or (selected == len(self.shown_items) - 1 and delta > 0):
-            # start_index must be between 0 and len(active_items) - 10
-            self.start_index = min(
-                max(0, self.start_index + delta), len(self.active_items) - 10
-            )
-            self.show_items(self.active_items)
-
         self.refresh_selected()
 
     def show_items(self, items: list[PaletteItem]) -> None:
-        """Shows a list of items in the palette
-
-        Args:
-            items (list[PaletteItem]): The items to display in the palette"""
-
+        """Shows a list of items in the palette"""
         self.hide_all_items()
         self.active_items = items
-
-        for i in self.active_items[self.start_index : self.start_index + 10]:
+ 
+        for i in self.active_items:
             item = self.add_item(*i)
             item.mark_term(self.searchbar.term)
 
@@ -274,12 +306,15 @@ class Palette(Toplevel):
 
         self.update_idletasks()
         self.update()
-
-        x = self.master.winfo_rootx() + int(
-            (self.master.winfo_width() - self.winfo_width()) / 2
-        )
-        y = self.master.winfo_rooty() + int((self.master.winfo_height() / 2) - 200)
-        self.geometry(f"+{x}+{y}")
+        width = 600
+        height = 400
+        
+        # Center relative to the main window
+        x = self.master.winfo_rootx() + int((self.master.winfo_width() - width) / 2)
+        y = self.master.winfo_rooty() + 100 # Closer to top
+        
+        self.minsize(width, 0)
+        self.geometry(f"{width}x{height}+{x}+{y}")
         self.deiconify()
 
         self.focus_set()
@@ -289,4 +324,4 @@ class Palette(Toplevel):
         if default:
             self.searchbar.set_search_term(default)
 
-        self.container.bind_all("<MouseWheel>", self.on_mousewheel)
+        self.bind_all("<MouseWheel>", self.on_mousewheel)

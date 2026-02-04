@@ -1,11 +1,11 @@
 import tkinter as tk
 
-from git import Optional
+from typing import Optional
 from hintedtext import HintedEntry
 
-from ..icons import Icons
-from .icon import IconButton
-from .native import Frame
+from biscuit.common.icons import Icons
+from biscuit.common.ui.icon import IconButton
+from biscuit.common.ui.native import Frame
 
 
 class ButtonsEntry(Frame):
@@ -51,13 +51,16 @@ class ButtonsEntry(Frame):
         )
         self.entry.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.column = 1
+        self.actions = Frame(self, bg=self.base.theme.secondary_background)
+        self.actions.grid(row=0, column=1, sticky=tk.NSEW)
+
+        self.column = 0
         self.add_buttons(buttons)
 
     def add_button(self, icon: Icons, event=lambda _: None, icon2: str = None):
         """Add a button to the entry"""
 
-        b = IconButton(self, icon, event, icon2)
+        b = IconButton(self.actions, icon, event, icon2)
         b.grid(row=0, column=self.column, sticky="")
         b.config(**self.base.theme.utils.buttonsentry.button)
         self.column += 1

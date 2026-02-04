@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from biscuit.common.ai import Agent, AIMode
+from biscuit.common.ai import Agent
 
 if typing.TYPE_CHECKING:
     from .terminalbase import TerminalBase
@@ -59,7 +59,6 @@ You have full autonomy to use any tools needed to understand the project and pro
                         api_key=ai_view.api_key,
                         model_name=ai_view.available_models.get(ai_view.current_model, "gemini-2.0-flash-exp")
                     )
-                    self.agent.set_mode(AIMode.AGENT)  # Full autonomous mode with all tools
                     return
         except Exception:
             pass

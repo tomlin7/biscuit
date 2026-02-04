@@ -1,8 +1,8 @@
 import textwrap
 import tkinter as tk
 
-from ..icons import Icons
-from .native import Frame, Label
+from biscuit.common.icons import Icons
+from biscuit.common.ui.native import Frame, Label
 
 
 class WrappingLabel(Label):

@@ -11,6 +11,7 @@ from .html import HTMLEditor
 from .image import ImageViewer
 from .markdown import MDEditor
 from .misc import Welcome
+from .search import SearchEditor
 from .peek import Peek
 from .rename import Rename
 from .text import Text, TextEditor

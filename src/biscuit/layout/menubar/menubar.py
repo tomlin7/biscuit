@@ -106,14 +106,27 @@ class Menubar(Frame):
         self.bind("<B1-Motion>", self.moving)
 
     def start_move(self, event) -> None:
+        if platform.system() == "Windows":
+            from ctypes import windll
+            hwnd = windll.user32.GetParent(self.base.winfo_id())
+            windll.user32.ReleaseCapture()
+            windll.user32.PostMessageW(hwnd, 0x0112, 0xF012, 0) # WM_SYSCOMMAND, SC_MOVE + 2
+            return
+
         self.x = event.x
         self.y = event.y
 
     def stop_move(self, _) -> None:
+        if platform.system() == "Windows":
+            return
+            
         self.x = None
         self.y = None
 
     def moving(self, event: tk.Event) -> None:
+        if platform.system() == "Windows":
+            return
+
         x = event.x_root - self.x
         y = event.y_root - self.y
         self.base.geometry(f"+{x}+{y}")
@@ -244,4 +257,4 @@ class Menubar(Frame):
             item.menu.show()
 
     def pack(self):
-        super().pack(fill=tk.BOTH)
+        super().pack(fill=tk.BOTH, pady=(0, 1))

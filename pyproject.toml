@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "biscuit-editor"
-version = "3.2.0"
+version = "3.5.0"
 description = "A lightweight, fast, and extensible code editor with a growing community"
 authors = ["Billy <billydevbusiness@gmail.com>"]
 license = "MIT"
@@ -23,23 +23,20 @@ sv-ttk = "^2.6.0"
 pillow = ">=11.1,<13.0"
 requests = "^2.32.3"
 pyperclip = "^1.9.0"
-tkinterweb = "^4.2.0"
+tkinterweb = {extras = ["full"], version = "^4.17.6"}
 mistune = "^3.1.2"
 chardet = "^5.2.0"
 pywinpty = { version = ">=2.0.15,<4.0.0", platform = "win32" }
 python-tkdnd = "^0.2.1"
 psutil = "^7.0.0"
-google-generativeai = "^0.8.4"
+google-genai = "^1.61.0"
 sortedcontainers = "^2.4.0"
 click = "^8.1.8"
 tarts = "^0.20.1"
 editorconfig = "^0.17.0"
-langchain = "^0.3.0"
-langchain-google-genai = "^2.0.0"
-langchain-community = "^0.3.0"
-langchain-core = "^0.3.0"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
+anthropic = "^0.77.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.2.1,<10.0.0"

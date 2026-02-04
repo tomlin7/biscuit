@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .native import Canvas, Frame
+from biscuit.common.ui.native import Canvas, Frame
 
 
 class ScrollableFrame(Frame):
