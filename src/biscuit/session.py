@@ -2,65 +2,54 @@
 
 from __future__ import annotations
 
-import sqlite3 as sq
-import typing
-
-if typing.TYPE_CHECKING:
-    from biscuit import App
-
+import toml
 
 class SessionManager:
     def __init__(self, base: App):
         self.base = base
+        self.session_path = self.base.datadir / "session.toml"
+        self.session = {}
 
-        # Initialize the session database connection
-        self.base_dir = self.base.datadir
-        self.session_db_path = self.base.datadir / "session.db"
-        self.db = sq.connect(self.session_db_path)
-        self.cursor = self.db.cursor()
-
-        # Ensure the session table is created
-        self._create_session_table()
-
-    def _create_session_table(self):
-        self.cursor.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS session (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                file_path TEXT,
-                folder_path TEXT
-            );
-            """
-        )
+        if self.session_path.exists():
+            try:
+                self.session = toml.load(self.session_path)
+            except Exception as e:
+                self.base.notifications.error(f"Failed to load session: {e}")
+                self.session = {}
 
     def restore_session(self):
-        opened_files = []
-        active_directory = ""
+        if not self.session:
+            return
 
-        self.cursor.execute("SELECT * FROM session")
-        for row in self.cursor.fetchall():
-            if row[1]:
-                opened_files.append(row[1])
-            elif row[2]:
-                active_directory = row[2]
+        active_directory = self.session.get("active_directory")
+        opened_files = self.session.get("opened_files", [])
 
-        self.base.open_directory(active_directory)
+        if active_directory:
+            self.base.open_directory(active_directory)
+        
         self.base.open_files(opened_files)
 
     def clear_session(self):
-        self.cursor.execute("DELETE FROM session")
+        self.session = {}
+        if self.session_path.exists():
+            try:
+                # Create empty file or just empty dict
+                with open(self.session_path, 'w') as f:
+                    toml.dump({}, f)
+            except Exception as e:
+                self.base.logger.error(f"Failed to clear session: {e}")
 
     def save_session(self, opened_files, active_directory):
-        for file_path in opened_files:
-            self.cursor.execute(
-                "INSERT INTO session (file_path) VALUES (?)", (file_path,)
-            )
-
-        self.cursor.execute(
-            "INSERT INTO session (folder_path) VALUES (?)", (active_directory,)
-        )
-
-        self.db.commit()
+        self.session = {
+            "active_directory": active_directory,
+            "opened_files": opened_files
+        }
+        
+        try:
+            with open(self.session_path, 'w') as f:
+                toml.dump(self.session, f)
+        except Exception as e:
+            self.base.logger.error(f"Failed to save session: {e}")
 
     def close(self):
-        self.db.close()
+        pass

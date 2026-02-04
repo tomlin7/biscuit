@@ -107,7 +107,7 @@ class SettingsEditor(BaseEditor):
         section.pack(fill=tk.X, expand=True)
         self.sections.append(section)
 
-        shortcut = Button(self.tree, name, anchor=tk.W, command=lambda: self.scroll_to_section(section))
+        shortcut = Button(self.tree, name, anchor=tk.W, command=lambda *_: self.scroll_to_section(section))
         shortcut.pack(fill=tk.X)
         shortcut.config(**self.base.theme.editors.button)
 
