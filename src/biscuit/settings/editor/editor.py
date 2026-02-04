@@ -85,6 +85,15 @@ class SettingsEditor(BaseEditor):
                                    self.base.config.get_value("cursor_style", "line"),
                                    lambda v: self.base.config.set_value("cursor_style", v))
 
+        text_editor.add_checkbox("Minimap", self.base.config.get_value("show_minimap", True),
+                                   lambda v: self.base.config.set_value("show_minimap", v))
+        text_editor.add_checkbox("Breadcrumbs", self.base.config.get_value("show_breadcrumbs", True),
+                                   lambda v: self.base.config.set_value("show_breadcrumbs", v))
+        text_editor.add_checkbox("Line Numbers", self.base.config.get_value("show_line_numbers", True),
+                                   lambda v: self.base.config.set_value("show_line_numbers", v))
+        text_editor.add_checkbox("Render Indent Guides", self.base.config.get_value("render_indent_guides", True),
+                                   lambda v: self.base.config.set_value("render_indent_guides", v))
+
     def add_section(self, name: str) -> Section:
         """Add a section to the settings editor
 

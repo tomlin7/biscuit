@@ -161,6 +161,8 @@ class ConfigManager:
         self.wrap_words = self.config.word_wrap
         self.block_cursor = self.config.cursor_style == "block"
         self.relative_line_numbers = self.config.relative_line_numbers
+        self.show_minimap = self.config.show_minimap
+        self.show_linenumbers = self.config.show_linenumbers
         self.theme = self.config.theme
 
         for editor in self.editorsmanager.active_editors:
@@ -173,6 +175,16 @@ class ConfigManager:
                 )
                 editor.content.text.relative_line_numbers = self.relative_line_numbers
                 editor.content.linenumbers.redraw()
+                
+                if self.show_minimap:
+                    editor.content.minimap.grid()
+                else:
+                    editor.content.minimap.grid_remove()
+                    
+                if self.show_linenumbers:
+                    editor.content.linenumbers.grid()
+                else:
+                    editor.content.linenumbers.grid_remove()
                 
     @property
     def active_workspace(self):
