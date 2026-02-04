@@ -32,7 +32,7 @@ class Section(Frame):
         ).pack(fill=tk.X, expand=True)
 
     def add_dropdown(
-        self, name="Example", options=["True", "False"], default=0
+        self, name="Example", options=["True", "False"], default=0, callback=None
     ) -> None:
         """Add a dropdown item to the section
 
@@ -40,44 +40,48 @@ class Section(Frame):
             name (str, optional): name of the dropdown. Defaults to "Example".
             options (list, optional): list of options for the dropdown. Defaults to ["True", "False"].
             default (int, optional): default value of the dropdown. Defaults to 0.
+            callback (function, optional): callback function to be called when the value is changed.
         """
 
-        dropdown = DropdownItem(self, name, options, default)
+        dropdown = DropdownItem(self, name, options, default, callback)
         dropdown.pack(fill=tk.X, expand=True)
         self.items.append(dropdown)
 
-    def add_stringvalue(self, name="Example", default="placeholder") -> None:
+    def add_stringvalue(self, name="Example", default="placeholder", callback=None) -> None:
         """Add a string text box item to the section
 
         Args:
             name (str, optional): name of the string. Defaults to "Example".
             default (str, optional): default value of the string. Defaults to "placeholder".
+            callback (function, optional): callback function to be called when the value is changed.
         """
 
-        string = StringItem(self, name, default)
+        string = StringItem(self, name, default, callback)
         string.pack(fill=tk.X, expand=True)
         self.items.append(string)
 
-    def add_intvalue(self, name="Example", default="0") -> None:
+    def add_intvalue(self, name="Example", default="0", callback=None) -> None:
         """Add an integer text box item to the section
 
         Args:
             name (str, optional): name of the integer. Defaults to "Example".
             default (int, optional): default value of the integer. Defaults to "0".
+            callback (function, optional): callback function to be called when the value is changed.
         """
 
-        int = IntegerItem(self, name, default)
+        int = IntegerItem(self, name, default, callback)
         int.pack(fill=tk.X, expand=True)
         self.items.append(int)
 
-    def add_checkbox(self, name="Example", default=True) -> None:
+    def add_checkbox(self, name="Example", default=True, callback=None) -> None:
         """Add a checkbox item to the section
 
         Args:
             name (str, optional): name of the checkbox. Defaults to "Example".
             default (bool, optional): default value of the checkbox. Defaults to True.
+            callback (function, optional): callback function to be called when the value is changed.
         """
 
-        dropdown = CheckboxItem(self, name, default)
+        dropdown = CheckboxItem(self, name, default, callback)
         dropdown.pack(fill=tk.X, expand=True)
         self.items.append(dropdown)

@@ -1,18 +1,20 @@
-theme="default"
-font="firacode"
-font_size=13
-
+theme = "gruvbox_dark"
+font = "Fira Code"
+font_size = 13
+cursor_style = "line"
+auto_save = false
+tab_size = 4
 
 [testing]
-font_size=14
-tab_size=4
-theme="light"
-auto_save=false
-auto_closing_pairs=true
-auto_closing_delete=true
-auto_indent=true
-auto_surround=true
-cursor_style="line"
-word_wrap=false
-exclude_dirs=[".git"]
-exclude_types=["__pycache__"]
+font_size = 14
+tab_size = 4
+theme = "light"
+auto_save = false
+auto_closing_pairs = true
+auto_closing_delete = true
+auto_indent = true
+auto_surround = true
+cursor_style = "line"
+word_wrap = false
+exclude_dirs = [ ".git",]
+exclude_types = [ "__pycache__",]
