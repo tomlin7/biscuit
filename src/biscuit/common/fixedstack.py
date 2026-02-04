@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import sqlite3
 
 
 class FixedSizeStack:
@@ -45,27 +44,13 @@ class FixedSizeStack:
     def clear(self):
         self.stack.clear()
 
-    def dump_sqlite(self, cursor: sqlite3.Cursor) -> None:
-        """Dump the stack to the database.
+    def dump(self) -> None:
+        """Dump the stack to the file."""
+        return self.stack
 
-        Args:
-            cursor (sqlite3.Cursor): the cursor to the database"""
-
-        # print(self.name, self.stack)
-        cursor.execute(f"DELETE FROM {self.name};")
-        cursor.executemany(
-            f"INSERT INTO {self.name} (path) VALUES (?);",
-            [(item,) for item in self.stack],
-        )
-
-    def load_sqlite(self, cursor: sqlite3.Cursor) -> FixedSizeStack:
-        """Load the stack from the database.
-
-        Args:
-            cursor (sqlite3.Cursor): the cursor to the database"""
-
-        cursor.execute(f"SELECT path FROM {self.name};")
-        self.stack = [item[0] for item in cursor.fetchall()]
+    def load(self, data) -> FixedSizeStack:
+        """Load the stack from the file."""
+        self.stack = data
         return self
 
     def open_item(self, item):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import typing
+import tkinter as tk
 from pathlib import Path
 
 from biscuit.layout.statusbar.statusbar import Statusbar
@@ -154,7 +155,49 @@ class ConfigManager:
             if e.content and e.content.editable:
                 e.content.text.set_tab_size(spaces)
                 self.statusbar.set_spaces(spaces)
+    
+    def refresh_editors(self) -> None:
+        self.tab_spaces = self.config.tab_size
+        self.wrap_words = self.config.word_wrap
+        self.block_cursor = self.config.cursor_style == "block"
+        self.relative_line_numbers = self.config.relative_line_numbers
+        self.show_minimap = self.config.show_minimap
+        self.show_linenumbers = self.config.show_linenumbers
+        self.theme = self.config.theme
 
+        for editor in self.editorsmanager.active_editors:
+            if editor.content and editor.content.editable:
+                editor.content.text.configure(
+                    tabs=(self.settings.font.measure(" " * self.tab_spaces),),
+                    blockcursor=self.block_cursor,
+                    wrap=tk.WORD if self.wrap_words else tk.NONE,
+                    **self.theme.editors.text
+                )
+                editor.content.text.relative_line_numbers = self.relative_line_numbers
+                editor.content.linenumbers.redraw()
+                
+                if self.show_minimap:
+                    editor.content.minimap.grid()
+                else:
+                    editor.content.minimap.grid_remove()
+                    
+                if self.show_linenumbers:
+                    editor.content.linenumbers.grid()
+                else:
+                    editor.content.linenumbers.grid_remove()
+        
+        if self.config.show_breadcrumbs:
+             self.editorsmanager.editorsbar.show_breadcrumbs()
+        else:
+             self.editorsmanager.editorsbar.hide_breadcrumbs()
+
+        # Update indent guides for all active text editors
+        # This requires manually triggering an update/refresh in the text widget
+        # providing the render_indent_guides flag is used in update_indent_guides
+        for editor in self.editorsmanager.active_editors:
+            if editor.content and editor.content.editable:
+                 editor.content.text.refresh()
+    
     @property
     def active_workspace(self):
         return self.workspaces.workspace

@@ -1,42 +1,34 @@
 from __future__ import annotations
 
 import os
-import sqlite3
+import toml
 import typing
-
 from .common import ActionSet, FixedSizeStack
 
 if typing.TYPE_CHECKING:
     from . import App
 
-
 class HistoryManager:
     """Manages the history of opened files and folders.
 
     Manages the history of opened files and folders.
-    Uses an sqlite3 database to store the history.
+    Uses a TOML file to store the history.
     """
 
     def __init__(self, base: App) -> None:
         self.base = base
-        self.path = self.base.datadir / "history.db"
+        self.path = self.base.datadir / "history.toml"
+        self.history = {}
 
-        self.db = sqlite3.connect(self.path)
-        self.cursor = self.db.cursor()
+        if self.path.exists():
+            try:
+                self.history = toml.load(self.path)
+            except Exception as e:
+                self.base.logger.error(f"History load failed: {e}")
+                self.history = {}
 
-        self.cursor.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS file_history (path TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS folder_history (path TEXT NOT NULL);
-            """
-        )
-
-        self.file_history = FixedSizeStack(self, "file_history").load_sqlite(
-            self.cursor
-        )
-        self.folder_history = FixedSizeStack(self, "folder_history").load_sqlite(
-            self.cursor
-        )
+        self.file_history = FixedSizeStack(self, "file_history").load(self.history.get("file_history", []))
+        self.folder_history = FixedSizeStack(self, "folder_history").load(self.history.get("folder_history", []))
 
     def generate_actionsets(self) -> None:
         self.base.palette.register_actionset(
@@ -53,9 +45,14 @@ class HistoryManager:
         self.folder_history.push(path)
 
     def dump(self) -> None:
-        self.file_history.dump_sqlite(self.cursor)
-        self.folder_history.dump_sqlite(self.cursor)
-        self.db.commit()
+        try:
+            with open(self.path, 'w') as f:
+                toml.dump({
+                    "file_history": self.file_history.dump(),
+                    "folder_history": self.folder_history.dump(),
+                }, f)
+        except Exception as e:
+            self.base.logger.error(f"History save failed: {e}")
 
     def clear_history(self) -> None:
         self.file_history.clear()

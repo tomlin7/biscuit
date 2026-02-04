@@ -45,6 +45,12 @@ class ScrollableFrame(Frame):
     def _on_mousewheel(self, event) -> None:
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
+    def bind_scroll(self, widget):
+        widget.bind("<MouseWheel>", self._on_mousewheel)
+        for child in widget.winfo_children():
+            self.bind_scroll(child)
+
     def add(self, content, *args, **kwargs) -> None:
         content.pack(in_=self.content, *args, **kwargs)
         self.items.append(content)
+        self.bind_scroll(content)

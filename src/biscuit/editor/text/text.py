@@ -303,7 +303,7 @@ class Text(BaseText):
             self.base.diagnostic.show(self, start, message, severity)
 
     def update_indent_guides(self) -> None:
-        if self.minimalist:
+        if self.minimalist or not self.base.config.render_indent_guides:
             return
 
         self.tag_remove("indent_guide", "1.0", "end")

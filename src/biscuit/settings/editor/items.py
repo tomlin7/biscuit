@@ -5,10 +5,11 @@ from biscuit.common.ui import Entry, Frame
 
 
 class Item(Frame):
-    def __init__(self, master, name="Example", *args, **kwargs) -> None:
+    def __init__(self, master, name="Example", callback=None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
         self.name = name
+        self.callback = callback
         self.description = None  # TODO add descriptions
 
         self.bg, self.fg, self.highlightbg, _ = self.base.theme.editors.section.values()
@@ -24,16 +25,9 @@ class Item(Frame):
         )
         self.lbl.pack(fill=tk.X, expand=True)
 
-    #     self.bind("<Enter>", self.hoverin)
-    #     self.bind("<Leave>", self.hoveroff)
-
-    # def hoverin(self, *_):
-    #     self.config(bg=self.highlightbg)
-    #     self.lbl.config(bg=self.highlightbg)
-
-    # def hoveroff(self, *_):
-    #     self.config(bg=self.bg)
-    #     self.lbl.config(bg=self.bg)
+    def change(self, *_) -> None:
+        if self.callback:
+            self.callback(self.value)
 
 
 class DropdownItem(Item):
@@ -43,12 +37,21 @@ class DropdownItem(Item):
         name="Example",
         options=["True", "False"],
         default=0,
+        callback=None,
         *args,
         **kwargs
     ) -> None:
-        super().__init__(master, name, *args, **kwargs)
+        super().__init__(master, name, callback, *args, **kwargs)
+
+        if isinstance(default, str):
+            try:
+                default = options.index(default)
+            except ValueError:
+                default = 0
 
         self.var = tk.StringVar(self, value=options[default])
+        self.var.trace_add("write", self.change)
+        
         m = ttk.OptionMenu(self, self.var, options[default], *options)
         m.config(width=30)
         m.pack(side=tk.LEFT)
@@ -59,8 +62,8 @@ class DropdownItem(Item):
 
 
 class IntegerItem(Item):
-    def __init__(self, master, name="Example", default="0", *args, **kwargs) -> None:
-        super().__init__(master, name, *args, **kwargs)
+    def __init__(self, master, name="Example", default="0", callback=None, *args, **kwargs) -> None:
+        super().__init__(master, name, callback, *args, **kwargs)
         self.base.register(self.validate)
 
         self.entry = ttk.Entry(
@@ -70,8 +73,10 @@ class IntegerItem(Item):
             validate="key",
             validatecommand=(self.register(self.validate), "%P"),
         )
-        self.entry.insert(0, default)
+        self.entry.insert(0, str(default))
         self.entry.pack(side=tk.LEFT)
+        self.entry.bind("<Return>", self.change)
+        self.entry.bind("<FocusOut>", self.change)
 
     def validate(self, value) -> None:
         return bool(value.isdigit() or value == "")
@@ -83,13 +88,15 @@ class IntegerItem(Item):
 
 class StringItem(Item):
     def __init__(
-        self, master, name="Example", default="placeholder", *args, **kwargs
+        self, master, name="Example", default="placeholder", callback=None, *args, **kwargs
     ) -> None:
-        super().__init__(master, name, *args, **kwargs)
+        super().__init__(master, name, callback, *args, **kwargs)
 
         self.entry = ttk.Entry(self, font=self.base.settings.uifont, width=30)
         self.entry.insert(tk.END, default)
         self.entry.pack(side=tk.LEFT)
+        self.entry.bind("<Return>", self.change)
+        self.entry.bind("<FocusOut>", self.change)
 
     @property
     def value(self) -> str:
@@ -97,10 +104,12 @@ class StringItem(Item):
 
 
 class CheckboxItem(Item):
-    def __init__(self, master, name="Example", default=True, *args, **kwargs) -> None:
-        super().__init__(master, name, *args, **kwargs)
+    def __init__(self, master, name="Example", default=True, callback=None, *args, **kwargs) -> None:
+        super().__init__(master, name, callback, *args, **kwargs)
 
         self.var = tk.BooleanVar(self, value=default)
+        self.var.trace_add("write", self.change)
+
         ttk.Checkbutton(self, text=name, variable=self.var, cursor="hand2").pack(
             fill=tk.X, anchor=tk.W
         )

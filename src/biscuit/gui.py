@@ -1,5 +1,4 @@
 import platform
-import sqlite3
 
 from tkinterDnD import Tk
 
