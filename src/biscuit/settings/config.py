@@ -69,6 +69,12 @@ class Config:
         self.tab_size = self.get_value("tab_size", 4)
         self.cursor_style = self.get_value("cursor_style", "line")
         self.relative_line_numbers = self.get_value("relative_line_numbers", False)
+        
+        # Display
+        self.show_minimap = self.get_value("show_minimap", True)
+        self.show_breadcrumbs = self.get_value("show_breadcrumbs", True)
+        self.show_linenumbers = self.get_value("show_line_numbers", True)
+        self.render_indent_guides = self.get_value("render_indent_guides", True)
 
     def get_value(self, key: str, default: any) -> any:
         """Get a value from the config data."""
