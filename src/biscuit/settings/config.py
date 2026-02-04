@@ -68,6 +68,7 @@ class Config:
         self.word_wrap = self.get_value("word_wrap", False)
         self.tab_size = self.get_value("tab_size", 4)
         self.cursor_style = self.get_value("cursor_style", "line")
+        self.relative_line_numbers = self.get_value("relative_line_numbers", False)
 
     def get_value(self, key: str, default: any) -> any:
         """Get a value from the config data."""

@@ -160,6 +160,7 @@ class ConfigManager:
         self.tab_spaces = self.config.tab_size
         self.wrap_words = self.config.word_wrap
         self.block_cursor = self.config.cursor_style == "block"
+        self.relative_line_numbers = self.config.relative_line_numbers
         self.theme = self.config.theme
 
         for editor in self.editorsmanager.active_editors:
@@ -170,6 +171,8 @@ class ConfigManager:
                     wrap=tk.WORD if self.wrap_words else tk.NONE,
                     **self.theme.editors.text
                 )
+                editor.content.text.relative_line_numbers = self.relative_line_numbers
+                editor.content.linenumbers.redraw()
                 
     @property
     def active_workspace(self):

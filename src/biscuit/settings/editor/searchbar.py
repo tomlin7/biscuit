@@ -41,21 +41,4 @@ class Searchbar(Frame):
 
     def filter(self, *args) -> str:
         term = self.get_search_term()
-        return
-        new = [
-            i for i in self.master.active_set if i[0].lower().startswith(term.lower())
-        ]
-        new += [
-            i
-            for i in self.master.active_set
-            if any(
-                [
-                    f.lower() in i[0].lower()
-                    or i[0].lower() in f.lower()
-                    and i not in new
-                    for f in term.lower().split()
-                ]
-            )
-        ]
-
-        self.master.show_result(new)
+        self.master.show_result(term)
