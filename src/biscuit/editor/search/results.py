@@ -2,6 +2,7 @@ import json
 import os
 import re
 import subprocess
+import threading
 import tkinter as tk
 from tkinter.messagebox import askyesno
 
@@ -63,9 +64,6 @@ class SearchResults(Frame):
         self.replace_all()
 
     def toggle_collapse(self, *_) -> None:
-        if not self.results:
-            return
-
         children = self.treeview.get_children()
         if not children:
             return
@@ -83,7 +81,7 @@ class SearchResults(Frame):
             return
         
         search_string = self.editor.searchbox.get()
-        if not search_string:
+        if not search_string or search_string == "Search all files...":
             self.editor.hide_results()
             self.clear_tree()
             return
@@ -94,7 +92,9 @@ class SearchResults(Frame):
         self.results = []
 
         if not self.base.active_directory and not self.open_editors_only:
+            self.base.logger.warning("Search: No active directory and not searching open editors.")
             self.searching = False
+            self.editor.count_label.config(text="No folder open")
             return
 
         # Prepare ripgrep command
@@ -107,43 +107,41 @@ class SearchResults(Frame):
             command.append("-w")
             
         if not self.regex:
-            command.append("-F") # Fixed strings (literal)
+            command.append("-F")
 
-        command.append(search_string)
+        command.extend(["-e", search_string])
 
-        # Includes
         include_pattern = self.editor.includes.get()
-        if include_pattern:
+        if include_pattern and not include_pattern.startswith("e.g. "):
             for pattern in include_pattern.split(","):
-                pattern = pattern.strip()
-                if pattern:
-                    command.extend(["-g", pattern])
+                if pattern.strip():
+                    command.extend(["-g", pattern.strip()])
         
-        # Excludes
         exclude_pattern = self.editor.excludes.get()
-        if exclude_pattern:
+        if exclude_pattern and not exclude_pattern.startswith("e.g. "):
             for pattern in exclude_pattern.split(","):
-                pattern = pattern.strip()
-                if pattern:
-                    command.extend(["-g", f"!{pattern}"])
+                if pattern.strip():
+                    command.extend(["-g", f"!{pattern.strip()}"])
 
         if self.open_editors_only:
-            # Gather paths from open editors
-            paths = []
-            for editor in self.base.editorsmanager.editors:
-                if editor.path and os.path.isfile(editor.path):
-                    paths.append(editor.path)
-            
+            paths = [e.path for e in self.base.editorsmanager.editors if e.path and os.path.isfile(e.path)]
             if not paths:
                 self.searching = False
                 self.editor.count_label.config(text="No open files")
                 return
-            
             command.extend(paths)
         else:
-            command.append(self.base.active_directory)
+            command.append(os.path.abspath(self.base.active_directory))
+
+        # Run search in a separate thread to prevent freezing
+        threading.Thread(target=self._run_search, args=(command, search_string), daemon=True).start()
+
+    def _run_search(self, command, search_string):
+        file_results = {}
+        total_matches = 0
 
         try:
+            self.base.logger.info(f"RG Command: {' '.join(command)}")
             process = subprocess.Popen(
                 command, 
                 stdout=subprocess.PIPE, 
@@ -152,9 +150,6 @@ class SearchResults(Frame):
                 encoding="utf-8",
                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
             )
-
-            file_results = {}
-            total_matches = 0
 
             for line in process.stdout:
                 try:
@@ -171,38 +166,43 @@ class SearchResults(Frame):
                         file_results[file_path].append((line_number, line_text))
                         total_matches += 1
                         
-                        if total_matches % 500 == 0:
-                            self.editor.count_label.config(text=f"Searching... {total_matches}")
-                            self.base.update()
+                        if total_matches % 100 == 0:
+                            self.after(0, lambda m=total_matches: self.editor.count_label.config(text=f"Searching... {m}"))
                             
-                except (json.JSONDecodeError, KeyError):
+                except:
                     continue
 
             process.wait()
-
-            for file_path, matches in file_results.items():
-                relpath = os.path.relpath(file_path, self.base.active_directory)
-                parent = self.treeview.insert("", tk.END, text=f"{relpath} ({len(matches)})", open=True)
-                for line_number, line_text in matches:
-                    child = self.treeview.insert(parent, tk.END, text=f"  {line_number:4}: {line_text}")
-                    self.treeview.item(child, tags=(file_path, line_number))
-                    
-                    self.results.append({
-                        "file_path": file_path,
-                        "line": line_number,
-                        "text": search_string 
-                    })
-
-            if total_matches > 0:
-                self.editor.count_label.config(text=f"{total_matches}/{total_matches}")
-            else:
-                self.editor.count_label.config(text="0/0")
+            self.after(0, self._populate_tree, file_results, total_matches, search_string)
 
         except Exception as e:
-            self.base.logger.error(f"Ripgrep error: {e}")
-            self.editor.count_label.config(text="rg error")
+            self.base.logger.error(f"Search error: {e}")
+            self.after(0, lambda: self.editor.count_label.config(text="rg error"))
+        finally:
+            self.searching = False
 
-        self.searching = False
+    def _populate_tree(self, file_results, total_matches, search_string):
+        self.clear_tree()
+        self.results = []
+
+        if not file_results:
+            self.editor.count_label.config(text="0/0")
+            return
+
+        for file_path, matches in file_results.items():
+            relpath = os.path.relpath(file_path, self.base.active_directory) if self.base.active_directory else file_path
+            parent = self.treeview.insert("", tk.END, text=f"{relpath} ({len(matches)})", open=True)
+            for line_number, line_text in matches:
+                child = self.treeview.insert(parent, tk.END, text=f"  {line_number:4}: {line_text}")
+                self.treeview.item(child, tags=(file_path, line_number))
+                
+                self.results.append({
+                    "file_path": file_path,
+                    "line": line_number,
+                    "text": search_string 
+                })
+
+        self.editor.count_label.config(text=f"{total_matches}/{total_matches}")
 
     def replace_single(self, *_) -> None:
         item = self.treeview.focus()
@@ -242,14 +242,14 @@ class SearchResults(Frame):
             
             self.search()
         except Exception as e:
-            self.base.logger.error(f"Replace error in {file_path}: {e}")
+            self.base.logger.error(f"Replace error: {e}")
 
     def replace_all(self, *_) -> None:
         replace_string = self.editor.replacebox.get()
         if not self.results:
             return
 
-        if askyesno("Replace Confirmation", f"Are you sure you want to replace all occurrences with '{replace_string}'?"):
+        if askyesno("Replace Confirmation", f"Replace all occurrences with '{replace_string}'?"):
             self.replacing = True
             files = {}
             for res in self.results:
@@ -257,6 +257,7 @@ class SearchResults(Frame):
                     files[res['file_path']] = []
                 files[res['file_path']].append(res)
             
+            search_string = self.editor.searchbox.get()
             for file_path, items in files.items():
                 try:
                     with open(file_path, "r", encoding="utf-8") as f:
@@ -266,22 +267,22 @@ class SearchResults(Frame):
                         line_idx = item['line'] - 1
                         if self.regex:
                             flags = 0 if self.case_sensitive else re.IGNORECASE
-                            lines[line_idx] = re.sub(self.editor.searchbox.get(), replace_string, lines[line_idx], flags=flags)
+                            lines[line_idx] = re.sub(search_string, replace_string, lines[line_idx], flags=flags)
                         elif self.whole_word:
-                            pattern = r"\b" + re.escape(self.editor.searchbox.get()) + r"\b"
+                            pattern = r"\b" + re.escape(search_string) + r"\b"
                             flags = 0 if self.case_sensitive else re.IGNORECASE
                             lines[line_idx] = re.sub(pattern, replace_string, lines[line_idx], flags=flags)
                         else:
                             if self.case_sensitive:
-                                lines[line_idx] = lines[line_idx].replace(self.editor.searchbox.get(), replace_string)
+                                lines[line_idx] = lines[line_idx].replace(search_string, replace_string)
                             else:
-                                pattern = re.compile(re.escape(self.editor.searchbox.get()), re.IGNORECASE)
+                                pattern = re.compile(re.escape(search_string), re.IGNORECASE)
                                 lines[line_idx] = pattern.sub(replace_string, lines[line_idx])
 
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.writelines(lines)
                 except Exception as e:
-                    self.base.logger.error(f"Replace error in {file_path}: {e}")
+                    self.base.logger.error(f"Replace all error: {e}")
 
             self.search() 
             self.replacing = False

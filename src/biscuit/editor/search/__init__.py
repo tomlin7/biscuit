@@ -47,6 +47,7 @@ class SearchEditor(BaseEditor):
             ),
         )
         self.searchbox.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=2)
+        # Force the internal entry to trigger search on Return
         self.searchbox.entry.bind("<Return>", self.results.search)
 
         # Extra Buttons
@@ -69,6 +70,7 @@ class SearchEditor(BaseEditor):
         # Replace Row
         self.replace_row = Frame(self.header_container, **self.base.theme.editors)
         self.replace_row.pack(fill=tk.X, padx=(30, 0)) 
+        self.replace_row.pack_forget() # Initially hidden
 
         # Normal Entry for Replace
         self.replace_entry_container = Frame(self.replace_row, **self.base.theme.utils.frame)
@@ -163,12 +165,7 @@ class SearchEditor(BaseEditor):
         Label(row, text=shortcut, anchor=tk.E, font=("Segoe UI", 10), fg=self.base.theme.border, **self.base.theme.editors.labels).pack(side=tk.RIGHT, padx=(20, 0))
 
     def results_toggle_collapse(self, *_) -> None:
-        if not self.results.results:
-            return
-        
         self.results.toggle_collapse()
-        state = self.results.treeview.item(self.results.treeview.get_children()[0], "open")
-        self.collapse_btn.set_icon(Icons.CHEVRON_DOWN if state else Icons.CHEVRON_RIGHT)
 
     def show_results(self):
         self.empty_state.place_forget()
