@@ -4,6 +4,10 @@ font_size = 13
 cursor_style = "line"
 auto_save = false
 tab_size = 4
+show_minimap = false
+render_indent_guides = false
+show_breadcrumbs = false
+show_line_numbers = false
 
 [testing]
 font_size = 14

@@ -185,7 +185,19 @@ class ConfigManager:
                     editor.content.linenumbers.grid()
                 else:
                     editor.content.linenumbers.grid_remove()
-                
+        
+        if self.config.show_breadcrumbs:
+             self.editorsmanager.editorsbar.show_breadcrumbs()
+        else:
+             self.editorsmanager.editorsbar.hide_breadcrumbs()
+
+        # Update indent guides for all active text editors
+        # This requires manually triggering an update/refresh in the text widget
+        # providing the render_indent_guides flag is used in update_indent_guides
+        for editor in self.editorsmanager.active_editors:
+            if editor.content and editor.content.editable:
+                 editor.content.text.refresh()
+    
     @property
     def active_workspace(self):
         return self.workspaces.workspace
