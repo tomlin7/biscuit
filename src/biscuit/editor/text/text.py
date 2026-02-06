@@ -95,6 +95,7 @@ class Text(BaseText):
             self.editorconfig = {}
 
         # self.last_change = Change(None, None, None, None, None)
+        self._pending_edit_info = None
         self.highlighter = Highlighter(self, language)
         if not self.standalone and not self.minimalist:
             self.base.statusbar.on_open_file(self)
@@ -583,10 +584,10 @@ class Text(BaseText):
         for line in range(start_line, end_line + 1):
             # delete comment prefix with the trailing space
             if (
-                self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+                self.get(f"{line}.0", f"{line}.{len(self.comment_prefix) + 1}")
                 == f"{self.comment_prefix} "
             ):
-                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix) + 1}")
             # trailing space not detected, delete the comment prefix
             elif (
                 self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)}")
@@ -656,7 +657,13 @@ class Text(BaseText):
         return "break"
 
     def refresh(self):
-        self.highlighter.highlight()
+        if self._pending_edit_info and hasattr(
+            self.highlighter, "incremental_highlight"
+        ):
+            self.highlighter.incremental_highlight(self._pending_edit_info)
+            self._pending_edit_info = None
+        else:
+            self.highlighter.highlight()
         self.highlight_current_word()
 
         if self.minimalist or self.standalone:
@@ -1459,19 +1466,38 @@ class Text(BaseText):
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
 
+    def _is_sel_op_without_sel(self, args) -> bool:
+        """Check if this is a get/delete on selection when nothing is selected."""
+        return (
+            len(args) >= 3
+            and args[1] == tk.SEL_FIRST
+            and args[2] == tk.SEL_LAST
+            and not self.tag_ranges(tk.SEL)
+        )
+
+    def _is_scroll_op(self, args) -> bool:
+        """Check if this is a scroll operation."""
+        return args[0:2] in (
+            ("xview", "moveto"),
+            ("yview", "moveto"),
+            ("xview", "scroll"),
+            ("yview", "scroll"),
+        )
+
+    def _notify_lsp_change(self):
+        """Notify LSP server of content change if active."""
+        if self.lsp:
+            try:
+                self.base.language_server_manager.content_changed(self)
+            except Exception:
+                pass
+
     def _proxy(self, *args):
-        if (
-            args[0] == "get"
-            and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST)
-            and not self.tag_ranges(tk.SEL)
-        ):
+        if args[0] in ("get", "delete") and self._is_sel_op_without_sel(args):
             return
-        if (
-            args[0] == "delete"
-            and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST)
-            and not self.tag_ranges(tk.SEL)
-        ):
-            return
+
+        is_edit = args[0] in ("insert", "replace", "delete")
+        edit_info = self._capture_edit_info_before(args) if is_edit else None
 
         cmd = (self._orig,) + args
         try:
@@ -1479,25 +1505,142 @@ class Text(BaseText):
         except Exception:
             return
 
-        if args[0] in ("insert", "replace", "delete"):
+        if is_edit:
+            if edit_info:
+                self._finalize_edit_info(edit_info, args)
             self.event_generate("<<Change>>", when="tail")
-            if self.lsp:
-                try:
-                    self.base.language_server_manager.content_changed(self)
-                except Exception:
-                    pass
-
-        # if "insert" in args[0:3] and "get" in args[0:3]:
-        #     print(temp)
-
+            self._notify_lsp_change()
         elif args[0:3] == ("mark", "set", "insert"):
             self.event_generate("<<Change>>", when="tail")
-        elif (
-            args[0:2] == ("xview", "moveto")
-            or args[0:2] == ("yview", "moveto")
-            or args[0:2] == ("xview", "scroll")
-            or args[0:2] == ("yview", "scroll")
-        ):
+        elif self._is_scroll_op(args):
             self.event_generate("<<Scroll>>", when="tail")
 
         return result
+
+    def _tk_index_to_point(self, index: str) -> tuple[int, int]:
+        """Convert a Tk text index to a Tree-sitter (row, col) point."""
+        try:
+            pos = self.tk.call(self._orig, "index", index)
+            line, col = str(pos).split(".")
+            return (int(line) - 1, int(col))
+        except Exception:
+            return (0, 0)
+
+    def _point_to_byte(self, point: tuple[int, int]) -> int:
+        """Compute byte offset from a (row, col) point.
+
+        Gets all text from start to the position in a single Tk call,
+        then computes its UTF-8 byte length.
+        """
+        try:
+            row, col = point
+            tk_index = f"{row + 1}.{col}"
+            text_before = self.tk.call(self._orig, "get", "1.0", tk_index)
+            return len(str(text_before).encode("utf-8"))
+        except Exception:
+            return 0
+
+    def _capture_edit_info_before(self, args) -> dict | None:
+        """Capture position info before an edit operation executes."""
+        try:
+            if args[0] == "insert":
+                # args: ("insert", index, text, ?tags, ?text, ?tags, ...)
+                start_point = self._tk_index_to_point(args[1])
+                start_byte = self._point_to_byte(start_point)
+                return {
+                    "op": "insert",
+                    "start_byte": start_byte,
+                    "old_end_byte": start_byte,
+                    "start_point": start_point,
+                    "old_end_point": start_point,
+                }
+            elif args[0] == "delete":
+                # args: ("delete", start, ?end)
+                start_point = self._tk_index_to_point(args[1])
+                start_byte = self._point_to_byte(start_point)
+                if len(args) > 2:
+                    end_point = self._tk_index_to_point(args[2])
+                else:
+                    # Single char delete
+                    end_point = self._tk_index_to_point(f"{args[1]} +1c")
+                end_byte = self._point_to_byte(end_point)
+                return {
+                    "op": "delete",
+                    "start_byte": start_byte,
+                    "old_end_byte": end_byte,
+                    "start_point": start_point,
+                    "old_end_point": end_point,
+                }
+            elif args[0] == "replace":
+                # args: ("replace", start, end, text)
+                start_point = self._tk_index_to_point(args[1])
+                start_byte = self._point_to_byte(start_point)
+                end_point = self._tk_index_to_point(args[2])
+                end_byte = self._point_to_byte(end_point)
+                return {
+                    "op": "replace",
+                    "start_byte": start_byte,
+                    "old_end_byte": end_byte,
+                    "start_point": start_point,
+                    "old_end_point": end_point,
+                }
+        except Exception:
+            pass
+        return None
+
+    def _finalize_edit_info(self, edit_info: dict, args) -> None:
+        """Compute new_end after the edit and store as pending edit info."""
+        try:
+            if edit_info["op"] == "insert":
+                # Compute new end from inserted text
+                # Collect all text parts (args may have: index, text, tags, text, tags, ...)
+                texts = []
+                i = 2
+                while i < len(args):
+                    texts.append(str(args[i]))
+                    i += 2  # skip tags
+                inserted = "".join(texts)
+                inserted_bytes = len(inserted.encode("utf-8"))
+                new_end_byte = edit_info["start_byte"] + inserted_bytes
+                # Compute new end point
+                lines = inserted.split("\n")
+                if len(lines) == 1:
+                    new_end_point = (
+                        edit_info["start_point"][0],
+                        edit_info["start_point"][1] + len(lines[0]),
+                    )
+                else:
+                    new_end_point = (
+                        edit_info["start_point"][0] + len(lines) - 1,
+                        len(lines[-1]),
+                    )
+                edit_info["new_end_byte"] = new_end_byte
+                edit_info["new_end_point"] = new_end_point
+
+            elif edit_info["op"] == "delete":
+                # After delete, new end = start (deleted region collapsed)
+                edit_info["new_end_byte"] = edit_info["start_byte"]
+                edit_info["new_end_point"] = edit_info["start_point"]
+
+            elif edit_info["op"] == "replace":
+                # Compute new end from replacement text
+                replacement = str(args[3]) if len(args) > 3 else ""
+                replacement_bytes = len(replacement.encode("utf-8"))
+                new_end_byte = edit_info["start_byte"] + replacement_bytes
+                lines = replacement.split("\n")
+                if len(lines) == 1:
+                    new_end_point = (
+                        edit_info["start_point"][0],
+                        edit_info["start_point"][1] + len(lines[0]),
+                    )
+                else:
+                    new_end_point = (
+                        edit_info["start_point"][0] + len(lines) - 1,
+                        len(lines[-1]),
+                    )
+                edit_info["new_end_byte"] = new_end_byte
+                edit_info["new_end_point"] = new_end_point
+
+            self._pending_edit_info = edit_info
+        except Exception:
+            self._pending_edit_info = None
