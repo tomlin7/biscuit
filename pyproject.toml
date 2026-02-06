@@ -37,6 +37,8 @@ editorconfig = "^0.17.0"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
 anthropic = "^0.77.0"
+tree-sitter = "^0.25.2"
+tree-sitter-language-pack = "^0.13.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.2.1,<10.0.0"
