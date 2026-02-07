@@ -334,7 +334,7 @@ class TreeSitterHighlighter:
     def clear(self) -> None:
         """Remove all Tree-sitter highlight tags."""
         for capture_name in self.tag_colors:
-            self.text.tag_remove(f"ts.{capture_name}", "1.0", tk.END)
+            self.text.clear_tag(f"ts.{capture_name}")
 
     def highlight(self) -> None:
         """Full parse and highlight (used on file load / language change)."""
@@ -347,40 +347,42 @@ class TreeSitterHighlighter:
         self._apply_highlights_full()
 
     def incremental_highlight(self, edit_info: dict) -> None:
-        """Incremental parse after an edit for fast updates.
+        """Incremental parse after an edit for fast updates."""
+        self.batch_incremental_highlight([edit_info])
 
-        Args:
-            edit_info: dict with keys: start_byte, old_end_byte, new_end_byte,
-                       start_point, old_end_point, new_end_point
-        """
+    def batch_incremental_highlight(self, edits: list[dict]) -> None:
+        """Process multiple edits at once for better performance."""
         if not self.tree or not self.parser or not self.query:
             self.highlight()
             return
 
-        self.tree.edit(
-            start_byte=edit_info["start_byte"],
-            old_end_byte=edit_info["old_end_byte"],
-            new_end_byte=edit_info["new_end_byte"],
-            start_point=edit_info["start_point"],
-            old_end_point=edit_info["old_end_point"],
-            new_end_point=edit_info["new_end_point"],
-        )
+        for edit in edits:
+            self.tree.edit(
+                start_byte=edit["start_byte"],
+                old_end_byte=edit["old_end_byte"],
+                new_end_byte=edit["new_end_byte"],
+                start_point=edit["start_point"],
+                old_end_point=edit["old_end_point"],
+                new_end_point=edit["new_end_point"],
+            )
 
-        code_bytes = self.text.get_all_text().encode("utf-8")
-        new_tree = self.parser.parse(code_bytes, self.tree)
+        try:
+            code_bytes = self.text.get_all_text().encode("utf-8")
+            new_tree = self.parser.parse(code_bytes, self.tree)
+            changed_ranges = self.tree.changed_ranges(new_tree)
+            self.tree = new_tree
 
-        changed_ranges = self.tree.changed_ranges(new_tree)
-        self.tree = new_tree
-
-        if changed_ranges:
-            self._apply_highlights_incremental(changed_ranges)
-        # If no changed ranges detected, skip (nothing visually changed)
+            if changed_ranges:
+                self._apply_highlights_incremental(changed_ranges)
+        except Exception:
+            # If incremental fails, fallback to full
+            self.highlight()
 
     def _apply_highlights_full(self) -> None:
         """Clear all tags and re-apply highlights from scratch."""
         # Clear all existing tree-sitter tags
         for capture_name in self.tag_colors:
-            self.text.tag_remove(f"ts.{capture_name}", "1.0", tk.END)
+            self.text.clear_tag(f"ts.{capture_name}")
 
         if not self.tree or not self.query:
             return

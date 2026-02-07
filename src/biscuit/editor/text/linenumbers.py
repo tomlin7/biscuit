@@ -83,7 +83,11 @@ class LineNumbers(Canvas):
         if not self.text:
             return
 
-        current_line = int(self.text.index(tk.INSERT).split('.')[0]) 
+        # Fetch insertion info once per redraw
+        insert_idx = self.text.index(tk.INSERT)
+        current_line = int(insert_idx.split('.')[0])
+        curline_info = self.text.dlineinfo(insert_idx)
+        cur_y = curline_info[1] if curline_info else None
 
         i = self.text.index("@0,0")
         while True:
@@ -93,16 +97,6 @@ class LineNumbers(Canvas):
 
             y = dline[1]
             linenum = int(float(i))
-            curline = self.text.dlineinfo(tk.INSERT)
-            cur_y = curline[1] if curline else None
-
-            # TODO: optional: skipping comments
-            #             # check if line is commented
-            # if self.text.highlighter and any((tag[1].startswith("Token.Comment") for tag in self.text.dump(i, i + " lineend", tag=True))):
-            # if self.text.get(f"{i} linestart", f"{i} lineend").strip().startswith("#"):
-            #     self.create_text(40, y, anchor=tk.NE, text="|   ", tag=i, fill=self.base.theme.border)
-            #     i = self.text.index(f"{i}+1line")
-            #     continue
 
             # Render breakpoint
             has_breakpoint = linenum in self.breakpoints
@@ -115,56 +109,35 @@ class LineNumbers(Canvas):
                 fill=self.bg if not has_breakpoint else self.bp_enabled_color,
             )
 
-            # Bind hover and click events for breakpoint
-            self.tag_bind(
-                breakpoint_id,
-                "<Enter>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_enter(
-                    breakpoint_id, flag
-                ),
-            )
-            self.tag_bind(
-                breakpoint_id,
-                "<Leave>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_leave(
-                    breakpoint_id, flag
-                ),
-            )
-            self.tag_bind(
-                breakpoint_id,
-                "<Button-1>",
-                lambda _, linenum=linenum: self.toggle_breakpoint(linenum),
-            )
+            # Bind events for breakpoint (Consider moving to static bindings if performance persists)
+            def on_enter(e, b_id=breakpoint_id, hb=has_breakpoint):
+                self.on_breakpoint_enter(b_id, hb)
+            def on_leave(e, b_id=breakpoint_id, hb=has_breakpoint):
+                self.on_breakpoint_leave(b_id, hb)
+            def on_click(e, ln=linenum):
+                self.toggle_breakpoint(ln)
 
+            self.tag_bind(breakpoint_id, "<Enter>", on_enter)
+            self.tag_bind(breakpoint_id, "<Leave>", on_leave)
+            self.tag_bind(breakpoint_id, "<Button-1>", on_click)
+
+            display_linenum = linenum
             if self.text.relative_line_numbers:
                 if linenum != current_line:
-                    linenum = abs(linenum - current_line)
+                    display_linenum = abs(linenum - current_line)
 
-            self.create_text(
+            txt_id = self.create_text(
                 40,
                 y,
                 anchor=tk.NE,
-                text=linenum,
+                text=display_linenum,
                 font=self.font,
                 tag=i,
                 fill=self.hfg if y == cur_y else self.fg,
             )
 
-            self.tag_bind(
-                i,
-                "<Enter>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_enter(
-                    breakpoint_id, flag
-                ),
-            )
-
-            self.tag_bind(
-                i,
-                "<Leave>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_leave(
-                    breakpoint_id, flag
-                ),
-            )
+            self.tag_bind(txt_id, "<Enter>", on_enter)
+            self.tag_bind(txt_id, "<Leave>", on_leave)
 
             i = self.text.index(f"{i}+1line")
 

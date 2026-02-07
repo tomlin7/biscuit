@@ -86,6 +86,12 @@ class Text(BaseText):
 
         self.hover_after = None
         self.last_hovered = None
+        
+        self._slow_refresh_after = None
+        self._words_after = None
+        self._lsp_notify_after = None
+        self._undo_after = None
+        
         self.tab_spaces = self.base.tab_spaces
 
         try:
@@ -101,7 +107,7 @@ class Text(BaseText):
             self.editorconfig = {}
 
         # self.last_change = Change(None, None, None, None, None)
-        self._pending_edit_info = None
+        self._pending_edits = deque()
         self.highlighter = Highlighter(self, language)
         if not self.standalone and not self.minimalist:
             self.base.statusbar.on_open_file(self)
@@ -133,6 +139,7 @@ class Text(BaseText):
         self._user_edit = True
         self._edit_stack = []
         self._edit_stack_index = -1
+        self._pending_edits = deque()
 
     def config_tags(self):
 
@@ -478,27 +485,6 @@ class Text(BaseText):
         self.active_start_line = 1
         self.active_end_line = int(self.index(tk.END).split(".")[0])
 
-    # TODO this wont work properly
-    # write a custom ast, parser for bracket matching
-    def highlight_current_brackets(self):
-        self.tag_remove("activebracket", "1.0", tk.END)
-        i = self.index(tk.INSERT)
-        start, end = None, None
-
-        try:
-            if start := self.search(
-                r"[\{\[\(\)\]\}]", i, i + " linestart", backwards=True, regexp=True
-            ):
-                if counter := BRACKET_MAP.get(self.get(start, start + "+1c")):
-                    end = self.search(counter, i, stopindex=i + " lineend")
-        except tk.TclError:
-            pass
-
-        if not end:
-            return
-
-        self.tag_add("activebracket", start, start + "+1c")
-        self.tag_add("activebracket", end, end + "+1c")
 
     def refresh_wrap(self):
         self.config(wrap=tk.WORD if self.base.wrap_words else tk.NONE)
@@ -593,19 +579,6 @@ class Text(BaseText):
         self.autocomplete.show(self)
         self.update_completions()
 
-    def update_words_list(self, *_):
-        if self.minimalist or self.lsp:
-            return
-
-        try:
-            content = (
-                self.get(1.0, "insert-1c wordstart-1c")
-                + " "
-                + self.get("insert+1c", tk.END)
-            )
-            self.words = list(set(re.findall(r"\w+", content)))
-        except:
-            pass
 
     def update_completions(self):
         """Helper function for `AutoComplete` popup.
@@ -699,7 +672,7 @@ class Text(BaseText):
 
             self.insert(f"{line}.0", f"{self.comment_prefix} ")
 
-        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
         return "break"
 
@@ -725,8 +698,8 @@ class Text(BaseText):
                 == f"{self.comment_prefix}"
             ):
                 self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix)}")
-
-        self.tag_remove(tk.SEL, "1.0", tk.END)
+        
+        self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
         return "break"
 
@@ -768,7 +741,7 @@ class Text(BaseText):
             ):
                 self.delete(f"{line}.0", f"{line}.1")
 
-        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
         return "break"
 
@@ -782,87 +755,132 @@ class Text(BaseText):
 
         for line in range(start_line, end_line + 1):
             self.insert(f"{line}.0", "\t")
-
-        self.tag_remove(tk.SEL, "1.0", tk.END)
+        self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
         return "break"
 
-    def refresh(self):
-        if self._pending_edit_info and hasattr(
-            self.highlighter, "incremental_highlight"
-        ):
-            self.highlighter.incremental_highlight(self._pending_edit_info)
-            self._pending_edit_info = None
-        else:
-            self.highlighter.highlight()
-        self.highlight_current_word()
+    # Debounce timers
+    _slow_refresh_after = None
+    _words_after = None
+    _lsp_notify_after = None
 
+    def refresh(self) -> None:
+        if self._pending_edits:
+            edits = list(self._pending_edits)
+            self._pending_edits.clear()
+            self.highlighter.batch_incremental_highlight(edits)
+        elif not self.highlighter.ts.tree:
+            self.highlighter.highlight()
+        
+        # Immediate visual feedback
+        self.highlight_current_line()
+        self.highlight_current_brackets()
+        
+        # Debounce/throttle expensive tasks
+        if self._slow_refresh_after:
+            self.after_cancel(self._slow_refresh_after)
+        self._slow_refresh_after = self.after(50, self.slow_refresh)
+
+        self._notify_lsp_change()
+
+    def slow_refresh(self) -> None:
+        self._slow_refresh_after = None
         if self.minimalist or self.standalone:
             return
 
+        self.highlight_current_word()
         self.current_word = self.get("insert-1c wordstart", "insert")
         self.base.language_server_manager.request_outline(self)
-        self.highlight_current_line()
-        self.highlight_current_brackets()
         self.update_indent_guides()
 
-        # TODO send only portions of text on change to the LSPServer
-        # current solution is not scalable, and will cause lag on large files
+    def clear_tag(self, tag: str) -> None:
+        """Efficiently clear a tag only where it is applied."""
+        ranges = self.tag_ranges(tag)
+        for i in range(0, len(ranges), 2):
+            self.tag_remove(tag, ranges[i], ranges[i+1])
 
-        # commenting this out for now, as the way of handling changes is not properly done
-        # the changes shall be recorded before they are actually made, but we can't do that from here
-        # this requires writing a custom change handler for text widget
-        # eg. in the 'delete' command below, i can get indices like ('sel.start', 'sel.end') but not actual indices
-        # these are useless as if we try to index() these indices we will get indices from the modified content,
-        # not the old one. and since the modified content no longer have sel, this will throw an error
+    def highlight_current_line(self, *_) -> None:
+        if self.minimalist or self.tag_ranges(tk.SEL):
+            self.clear_tag("currentline")
+            return
 
-        # if args[0] == tk.INSERT:
-        #     start_index = self.get_cursor_pos()
+        line = int(self.index(tk.INSERT).split(".")[0])
+        start = f"{line}.0"
+        end = f"{line + 1}.0"
+        
+        current_ranges = self.tag_ranges("currentline")
+        if current_ranges and self.index(current_ranges[0]) == self.index(start):
+            return
 
-        #     end_index = self.index(tk.INSERT + f"+{len(args[2])}c")
-        #     self.last_change.update(
-        #         start=[int(i) for i in start_index.split('.')],
-        #         old_end=[int(i) for i in start_index.split('.')],
-        #         new_end=[int(i) for i in end_index.split('.')],
-        #         old_text='',
-        #         new_text=args[2]
-        #     )
+        self.clear_tag("currentline")
+        self.tag_add("currentline", start, end)
 
-        # elif args[0] == 'delete':
-        #     start_index = self.get_cursor_pos()
-        #     if len(args) == 2:
-        #         # is one char deleted
-        #         # ('delete', 'insert-1c')
-        #         start_index = self.index(tk.INSERT + f"-1c")
-        #         end_index = self.get_cursor_pos()
-        #         print(start_index, self.get(start_index, end_index), "------------------------------")
-        #     else:
-        #         # there must be selection then
-        #         # ('delete', 'sel.first', 'sel.last')
-        #         start_index = self.index(tk.SEL_FIRST)
-        #         end_index = self.index(tk.SEL_LAST)
-        #         print(start_index, self.get(start_index, end_index), "------------------------------")
+    def highlight_current_brackets(self) -> None:
+        self.clear_tag("activebracket")
+        i = self.index(tk.INSERT)
+        start, end = None, None
 
-        #     self.last_change.update(
-        #         start=[int(i) for i in start_index.split('.')],
-        #         old_end=[int(i) for i in start_index.split('.')],
-        #         new_end=[int(i) for i in end_index.split('.')],
-        #         old_text='',
-        #         new_text=''
-        #     )
-        # elif args[0] == 'replace':
-        #     start_index = self.get_cursor_pos()
-        #     end_index = self.index(tk.INSERT + f"+{len(args[3])}c")
-        #     self.last_change.update(
-        #         start=[int(i) for i in start_index.split('.')],
-        #         old_end=[int(i) for i in start_index.split('.')],
-        #         new_end=[int(i) for i in end_index.split('.')],
-        #         old_text=args[3],
-        #         new_text=args[2]
-        #     )
-        # else:
-        #     return
-        # self.base.languageservermanager.content_changed(self)
+        try:
+            if start := self.search(
+                r"[\{\[\(\)\]\}]", i, i + " linestart", backwards=True, regexp=True
+            ):
+                if counter := BRACKET_MAP.get(self.get(start, start + "+1c")):
+                    end = self.search(counter, i, stopindex=i + " lineend")
+        except tk.TclError:
+            pass
+
+        if not end:
+            return
+
+        self.tag_add("activebracket", start, start + "+1c")
+        self.tag_add("activebracket", end, end + "+1c")
+
+    def highlight_current_word(self) -> None:
+        if self.tag_ranges(tk.SEL):
+            self.clear_tag("currentword")
+            return
+
+        new_word = self.get("insert wordstart", "insert wordend").strip()
+        if not new_word or not re.match(r"^\w+$", new_word):
+            self.clear_tag("currentword")
+            return
+
+        first_line = int(self.index("@0,0").split(".")[0])
+        last_line = int(self.index(f"@0,{self.winfo_height()}").split(".")[0])
+        
+        self.clear_tag("currentword")
+        self.highlight_pattern(f"\\y{new_word}\\y", "currentword", start=f"{first_line}.0", end=f"{last_line + 1}.0", regexp=True)
+
+    def update_words_list(self, *_) -> None:
+        if self.minimalist or self.lsp:
+            return
+
+        if self._words_after:
+            self.after_cancel(self._words_after)
+        self._words_after = self.after(500, self._update_words_list)
+
+    def _update_words_list(self) -> None:
+        self._words_after = None
+        try:
+            content = self.get(1.0, tk.END)
+            self.words = list(set(re.findall(r"\w+", content)))
+        except:
+            pass
+
+    def _notify_lsp_change(self) -> None:
+        if not self.lsp:
+            return
+
+        if self._lsp_notify_after:
+            self.after_cancel(self._lsp_notify_after)
+        self._lsp_notify_after = self.after(50, self._do_notify_lsp_change)
+
+    def _do_notify_lsp_change(self) -> None:
+        self._lsp_notify_after = None
+        try:
+            self.base.language_server_manager.content_changed(self)
+        except Exception:
+            pass
 
     def is_identifier(self, text: str) -> str:
         return bool(re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", text))
@@ -871,7 +889,7 @@ class Text(BaseText):
         self.ctrl_down = flag
 
     def clear_goto_marks(self):
-        self.tag_remove("hyperlink", 1.0, tk.END)
+        self.clear_tag("hyperlink")
 
     def request_definition(self, from_menu=False, *_):
         if not from_menu and (not self.lsp or not self.last_hovered):
@@ -906,9 +924,8 @@ class Text(BaseText):
             if self.ctrl_down:
                 self.tag_add("hyperlink", start, end)
         else:
-            # TODO hide with a delay, cancel hiding if mouse is on top of hover popup
             self.hover.hide()
-            self.tag_remove("hover", 1.0, tk.END)
+            self.clear_tag("hover")
             self.last_hovered = None
             return
 
@@ -916,7 +933,7 @@ class Text(BaseText):
             return
 
         self.last_hovered = word
-        self.tag_remove("hover", 1.0, tk.END)
+        self.clear_tag("hover")
         self.tag_add("hover", start, end)
 
         # TODO delayed hovers
@@ -943,10 +960,10 @@ class Text(BaseText):
         self.autocomplete.lsp_update_completions(self, response.completions)
 
     def lsp_diagnostics(self, response: list[Diagnostic]) -> None:
-        self.tag_remove("error", 1.0, tk.END)
-        self.tag_remove("warning", 1.0, tk.END)
-        self.tag_remove("information", 1.0, tk.END)
-        self.tag_remove("hint", 1.0, tk.END)
+        self.clear_tag("error")
+        self.clear_tag("warning")
+        self.clear_tag("information")
+        self.clear_tag("hint")
 
         self.diagnostics.clear()
 
@@ -1488,24 +1505,7 @@ class Text(BaseText):
         self.mark_set(tk.INSERT, position)
 
     def clear_all_selection(self):
-        self.tag_remove(tk.SEL, 1.0, tk.END)
-
-    def highlight_current_line(self, *_):
-        if self.minimalist or self.tag_ranges(tk.SEL):
-            self.tag_remove("currentline", 1.0, tk.END)
-            return
-
-        line = int(self.index(tk.INSERT).split(".")[0])
-        start = f"{line}.0"
-        end = f"{line + 1}.0"
-        
-        # Only update if the line actually changed
-        current_ranges = self.tag_ranges("currentline")
-        if current_ranges and self.index(current_ranges[0]) == self.index(start):
-            return
-
-        self.tag_remove("currentline", 1.0, tk.END)
-        self.tag_add("currentline", start, end)
+        self.clear_tag(tk.SEL)
 
     def select_line(self, line):
         self.clear_all_selection()
@@ -1517,27 +1517,6 @@ class Text(BaseText):
 
         self.move_cursor(end)
 
-    def highlight_current_word(self):
-        if self.tag_ranges(tk.SEL):
-            self.tag_remove("currentword", 1.0, tk.END)
-            return
-
-        word_range = self.tag_ranges(tk.INSERT + " wordstart") # dummy to get word
-        # This is a bit tricky, let's just use the current simple logic but only if insertion changed
-        
-        new_word = self.get("insert wordstart", "insert wordend").strip()
-        if not new_word or not re.match(r"^\w+$", new_word):
-            self.tag_remove("currentword", 1.0, tk.END)
-            return
-
-        # Optimization: only re-highlight if the word is different
-        # (This is still a bit expensive as it searches the whole file)
-        # But we can limit the search to visible range!
-        first_line = int(self.index("@0,0").split(".")[0])
-        last_line = int(self.index(f"@0,{self.winfo_height()}").split(".")[0])
-        
-        self.tag_remove("currentword", 1.0, tk.END)
-        self.highlight_pattern(f"\\y{new_word}\\y", "currentword", start=f"{first_line}.0", end=f"{last_line + 1}.0", regexp=True)
 
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
@@ -1579,6 +1558,12 @@ class Text(BaseText):
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
     def _been_modified(self, event=None):
+        if self._undo_after:
+            self.after_cancel(self._undo_after)
+        self._undo_after = self.after(1000, self._do_been_modified)
+
+    def _do_been_modified(self):
+        self._undo_after = None
         try:
             if self._user_edit:
                 text = self.get_all_text()
@@ -1601,8 +1586,9 @@ class Text(BaseText):
             if self._resetting_modified_flag:
                 return
             self.clear_modified_flag()
-        except:
-            self.base.notifications.error("Edit stack error: please restart biscuit")
+        except Exception as e:
+            # print(e)
+            pass
 
     def clear_modified_flag(self):
         self._resetting_modified_flag = True
@@ -1634,13 +1620,6 @@ class Text(BaseText):
             ("yview", "scroll"),
         )
 
-    def _notify_lsp_change(self):
-        """Notify LSP server of content change if active."""
-        if self.lsp:
-            try:
-                self.base.language_server_manager.content_changed(self)
-            except Exception:
-                pass
 
     def _proxy(self, *args):
         if args[0] in ("get", "delete") and self._is_sel_op_without_sel(args):
@@ -1791,6 +1770,6 @@ class Text(BaseText):
                 edit_info["new_end_byte"] = new_end_byte
                 edit_info["new_end_point"] = new_end_point
 
-            self._pending_edit_info = edit_info
+            self._pending_edits.append(edit_info)
         except Exception:
-            self._pending_edit_info = None
+            pass

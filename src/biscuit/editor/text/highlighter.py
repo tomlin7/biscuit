@@ -57,6 +57,10 @@ class Highlighter:
         """Incremental highlight after an edit."""
         self.ts.incremental_highlight(edit_info)
 
+    def batch_incremental_highlight(self, edits: list[dict]) -> None:
+        """Process multiple edits at once for better performance."""
+        self.ts.batch_incremental_highlight(edits)
+
 
 # =============================================================================
 # ORIGINAL PYGMENTS IMPLEMENTATION (disabled — kept for reference)
