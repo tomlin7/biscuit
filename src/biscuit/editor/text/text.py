@@ -5,6 +5,7 @@ import queue
 import re
 import threading
 import tkinter as tk
+import tkinter.font as tkfont
 import typing
 from collections import deque
 from tkinter.messagebox import askokcancel
@@ -342,6 +343,7 @@ class Text(BaseText):
             else:
                 indents[line_number] = -1 # Mark as empty
 
+        self.char_width = tkfont.Font(font=self["font"]).measure(" ")
         for line_number in range(first_line, last_line + 1):
             indent_level = indents[line_number]
             if indent_level == -1:
@@ -390,17 +392,14 @@ class Text(BaseText):
         return len(line)
 
     def add_indent_guides_to_line(self, line_number: int, indent_level: int) -> None:
-        line = self.get(f"{line_number}.0", f"{line_number}.end")
+        dline = self.dlineinfo(f"{line_number}.0")
+        if not dline:
+            return
+        
+        x_base, y, _, h, _ = dline
         for level in range(indent_level):
             col = level * self.tab_spaces
-            char_idx = self.get_char_index_at_col(line, col)
-            
-            idx = f"{line_number}.{char_idx}"
-            bbox = self.bbox(idx)
-            if not bbox:
-                continue
-            
-            x, y, w, h = bbox
+            x = x_base + (col * self.char_width)
             
             # Use a frame from the pool or create a new one
             if self.indent_guide_pool:
@@ -418,6 +417,11 @@ class Text(BaseText):
                     else self.base.theme.editors.indent_guide
                 )
             )
+            # Find char index for click-to-goto
+            line = self.get(f"{line_number}.0", f"{line_number}.end")
+            char_idx = self.get_char_index_at_col(line, col)
+            idx = f"{line_number}.{char_idx}"
+
             guide.bind("<Button-1>", lambda _, idx=idx: self.goto(idx))
             guide.place(x=x, y=y, width=1, height=h)
             self.indent_guides.append(guide)
