@@ -246,6 +246,7 @@ class TextEditor(BaseEditor):
         self.linenumbers.redraw()
         if not self.minimalist:
             self.minimap.redraw()
+        self.text.update_indent_guides()
         self.event_generate("<<Scroll>>")
 
     def unsupported_file(self) -> None:
