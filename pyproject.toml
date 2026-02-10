@@ -36,7 +36,7 @@ tarts = "^0.20.1"
 editorconfig = "^0.17.0"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
-anthropic = "^0.77.0"
+anthropic = ">=0.77,<0.80"
 tree-sitter = "^0.25.2"
 tree-sitter-language-pack = "^0.13.0"
 
