@@ -56,7 +56,14 @@ class Text(BaseText):
         *args,
         **kwargs,
     ) -> None:
-        super().__init__(master, *args, **kwargs)
+        super().__init__(
+            master,
+            undo=True,
+            autoseparators=True,
+            maxundo=1000,
+            *args,
+            **kwargs,
+        )
         self.master: TextEditor = master
         self.path = path
         self.filename = os.path.basename(path) if path else None
@@ -90,7 +97,7 @@ class Text(BaseText):
         self._slow_refresh_after = None
         self._words_after = None
         self._lsp_notify_after = None
-        self._undo_after = None
+        self._hover_after = None
         
         self.tab_spaces = self.base.tab_spaces
 
@@ -135,10 +142,7 @@ class Text(BaseText):
         )
 
         # modified event
-        self.clear_modified_flag()
         self._user_edit = True
-        self._edit_stack = []
-        self._edit_stack_index = -1
         self._pending_edits = deque()
 
     def config_tags(self):
@@ -209,7 +213,7 @@ class Text(BaseText):
         self.bind("<Shift-Tab>", self.dedent_selection)
 
         # undo-redo
-        self.bind_all("<<Modified>>", self._been_modified)
+        # undo-redo handled natively
 
         # pair completion
         self.bind("<parenleft>", self.open_bracket)
@@ -350,7 +354,10 @@ class Text(BaseText):
             else:
                 indents[line_number] = -1 # Mark as empty
 
-        self.char_width = tkfont.Font(font=self["font"]).measure(" ")
+        if not hasattr(self, "_font_metrics_cached") or self._font_metrics_cached != self["font"]:
+            self.char_width = tkfont.Font(font=self["font"]).measure(" ")
+            self._font_metrics_cached = self["font"]
+
         for line_number in range(first_line, last_line + 1):
             indent_level = indents[line_number]
             if indent_level == -1:
@@ -665,6 +672,7 @@ class Text(BaseText):
         start_line = int(float(sel_first))
         end_line = int(float(sel_last))
 
+        self.edit_separator()
         for line in range(start_line, end_line + 1):
             # skip empty lines, they won't be commented
             if not self.get(f"{line}.0", f"{line}.0 lineend").strip():
@@ -674,6 +682,7 @@ class Text(BaseText):
 
         self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
+        self.edit_separator()
         return "break"
 
     def uncomment_selection(self):
@@ -685,6 +694,7 @@ class Text(BaseText):
         start_line = int(float(sel_first))
         end_line = int(float(sel_last))
 
+        self.edit_separator()
         for line in range(start_line, end_line + 1):
             # delete comment prefix with the trailing space
             if (
@@ -701,6 +711,7 @@ class Text(BaseText):
         
         self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
+        self.edit_separator()
         return "break"
 
     def toggle_comment(self, *_):
@@ -733,6 +744,7 @@ class Text(BaseText):
         start_line = int(float(sel_first))
         end_line = int(float(sel_last))
 
+        self.edit_separator()
         for line in range(start_line, end_line + 1):
             if (
                 self.get(f"{line}.0", f"{line}.1") == "\t"
@@ -743,6 +755,7 @@ class Text(BaseText):
 
         self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
+        self.edit_separator()
         return "break"
 
     def indent_selection(self):
@@ -753,10 +766,12 @@ class Text(BaseText):
         start_line = int(float(sel_first))
         end_line = int(float(sel_last))
 
+        self.edit_separator()
         for line in range(start_line, end_line + 1):
             self.insert(f"{line}.0", "\t")
         self.clear_tag(tk.SEL)
         self.tag_add(tk.SEL, sel_first, sel_last)
+        self.edit_separator()
         return "break"
 
     # Debounce timers
@@ -936,12 +951,12 @@ class Text(BaseText):
         self.clear_tag("hover")
         self.tag_add("hover", start, end)
 
-        # TODO delayed hovers
-        # if self.hover_after:
-        #     self.after_cancel(self.hover_after)
+        if self._hover_after:
+            self.after_cancel(self._hover_after)
+        self._hover_after = self.after(500, self._do_request_hover)
 
-        # self.after(500, ...)
-
+    def _do_request_hover(self) -> None:
+        self._hover_after = None
         self.base.language_server_manager.request_hover(self)
 
     def request_autocomplete(self, _):
@@ -1072,7 +1087,7 @@ class Text(BaseText):
         self.mark_set(tk.INSERT, self.index("insert-1c wordstart"))
 
     def on_selection(self, *args):
-        self.tag_remove("hover", 1.0, tk.END)
+        self.clear_tag("hover")
 
     def update_current_indent(self):
         line = self.get("insert linestart", "insert lineend")
@@ -1541,61 +1556,20 @@ class Text(BaseText):
 
             self.tag_add(tag, "matchStart", "matchEnd")
 
-    def stack_undo(self):
-        if self._edit_stack_index > 0:
-            self._edit_stack_index = self._edit_stack_index - 1
-            self._user_edit = False
-            self.clear()
-            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
-            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
-
-    def stack_redo(self):
-        if self._edit_stack_index + 1 < len(self._edit_stack):
-            self._edit_stack_index = self._edit_stack_index + 1
-            self._user_edit = False
-            self.clear()
-            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
-            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
-
-    def _been_modified(self, event=None):
-        if self._undo_after:
-            self.after_cancel(self._undo_after)
-        self._undo_after = self.after(1000, self._do_been_modified)
-
-    def _do_been_modified(self):
-        self._undo_after = None
+    def edit_undo(self):
         try:
-            if self._user_edit:
-                text = self.get_all_text()
-                if (not self._edit_stack) or (
-                    text != self._edit_stack[self._edit_stack_index][0]
-                ):
-                    # real modified
-                    cursor_index = self.index(tk.INSERT)
-                    if (self._edit_stack_index + 1) != len(self._edit_stack):
-                        self._edit_stack = self._edit_stack[
-                            : self._edit_stack_index + 1
-                        ]
-                    self._edit_stack.append([text, cursor_index])
-                    self._edit_stack_index = self._edit_stack_index + 1
-                    if self._edit_stack_index > 200:
-                        self._edit_stack = self._edit_stack[
-                            self._edit_stack_index - 50 : self._edit_stack_index + 1
-                        ]
-                        self._edit_stack_index = len(self._edit_stack) - 1
-            if self._resetting_modified_flag:
-                return
-            self.clear_modified_flag()
-        except Exception as e:
-            # print(e)
+            self.tk.call(self._orig, "edit", "undo")
+            self.refresh()
+        except tk.TclError:
             pass
 
-    def clear_modified_flag(self):
-        self._resetting_modified_flag = True
+    def edit_redo(self):
         try:
-            self.tk.call(self._w, "edit", "modified", 0)
-        finally:
-            self._resetting_modified_flag = False
+            self.tk.call(self._orig, "edit", "redo")
+            self.refresh()
+        except tk.TclError:
+            pass
+
 
     def create_proxy(self):
         self._orig = self._w + "_orig"

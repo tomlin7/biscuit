@@ -52,6 +52,7 @@ class Minimap(Frame):
         if not self.tw:
             return
 
+        # Only fetch text if necessary (consider caching if performance persists)
         self.text = self.tw.get("1.0", tk.END)
         self.cw.create_text(
             5,
@@ -64,7 +65,24 @@ class Minimap(Frame):
         )
 
         self.y_bottom_lim = int(self.tw.index(tk.END).split(".")[0]) * 2 + 10
-        # self.y_bottom_lim = self.tw.yview()[1] * self.cw.winfo_height()
+        self.update_slider()
+
+    def update_slider(self, *_):
+        """Update slider position based on text widget scroll."""
+        if not self.tw:
+            return
+        
+        top, bottom = self.tw.yview()
+        h = self.cw.winfo_height()
+        if h <= 1:
+            h = self.master.winfo_height() # fallback
+
+        # Adjust slider position/size based on viewport
+        y_pos = top * h
+        y_end = bottom * h
+        # self.cw.coords("slider", 0, y_pos) # If slider is just an image
+        # To avoid image stretching, we just move it
+        self.cw.coords("slider", 0, y_pos)
 
     def redraw_cursor(self):
         self.cw.delete("cursor")

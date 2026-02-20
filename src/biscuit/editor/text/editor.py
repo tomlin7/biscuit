@@ -46,6 +46,8 @@ class TextEditor(BaseEditor):
         self.runmenu = None
         self.unsupported = False
         self.content_hash = ""
+        self._on_scroll_after = None
+        self._on_change_after = None
 
         if not self.standalone:
             self.__buttons__ = [
@@ -231,6 +233,12 @@ class TextEditor(BaseEditor):
         self.run_file()
 
     def on_change(self, *_) -> None:
+        if self._on_change_after:
+            self.after_cancel(self._on_change_after)
+        self._on_change_after = self.after(30, self._do_on_change)
+
+    def _do_on_change(self) -> None:
+        self._on_change_after = None
         self.linenumbers.redraw()
         try:
             if not self.standalone:
@@ -239,13 +247,20 @@ class TextEditor(BaseEditor):
             pass
         self.text.refresh()
         if not self.minimalist:
+            self.minimap.redraw()
             self.minimap.redraw_cursor()
         self.event_generate("<<Change>>")
 
     def on_scroll(self, *_) -> None:
+        if self._on_scroll_after:
+            self.after_cancel(self._on_scroll_after)
+        self._on_scroll_after = self.after(30, self._do_on_scroll)
+
+    def _do_on_scroll(self) -> None:
+        self._on_scroll_after = None
         self.linenumbers.redraw()
         if not self.minimalist:
-            self.minimap.redraw()
+            self.minimap.update_slider()
         self.text.update_indent_guides()
         self.event_generate("<<Scroll>>")
 
