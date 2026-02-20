@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/api/app/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/api/cli/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/getting-started/installation/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/getting-started/quick-start/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+    <url>
+         <loc>https://tomlin7.github.io/biscuit/usage/cli/</loc>
+         <lastmod>2026-02-20</lastmod>
+    </url>
+</urlset>
