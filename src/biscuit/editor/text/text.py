@@ -98,6 +98,7 @@ class Text(BaseText):
         self._words_after = None
         self._lsp_notify_after = None
         self._hover_after = None
+        self._autocomplete_after = None
         
         self.tab_spaces = self.base.tab_spaces
 
@@ -578,9 +579,14 @@ class Text(BaseText):
         self.autocomplete.hide()
 
     def show_autocomplete(self, event: tk.Event):
-        if self.minimalist or not self.current_word or event.keysym in ["Down", "Up"]:
+        if self.minimalist or event.keysym in ["Down", "Up"]:
             return
-        if not self.current_word.strip().isalpha() or self.current_word.strip() != ".":
+            
+        current_word = self.get_current_word()
+        if not current_word:
+            return
+            
+        if not self.is_identifier(current_word) and current_word != ".":
             self.hide_autocomplete()
 
         self.autocomplete.show(self)
@@ -597,7 +603,7 @@ class Text(BaseText):
             return
 
         if self.lsp:
-            self.request_autocomplete(self)
+            self.request_autocomplete(None)
         else:
             self.autocomplete.update_completions(self)
 
@@ -791,7 +797,6 @@ class Text(BaseText):
         self.highlight_current_line()
         self.highlight_current_brackets()
         
-        # Debounce/throttle expensive tasks
         if self._slow_refresh_after:
             self.after_cancel(self._slow_refresh_after)
         self._slow_refresh_after = self.after(50, self.slow_refresh)
@@ -804,7 +809,6 @@ class Text(BaseText):
             return
 
         self.highlight_current_word()
-        self.current_word = self.get("insert-1c wordstart", "insert")
         self.base.language_server_manager.request_outline(self)
         self.update_indent_guides()
 
@@ -888,7 +892,8 @@ class Text(BaseText):
 
         if self._lsp_notify_after:
             self.after_cancel(self._lsp_notify_after)
-        self._lsp_notify_after = self.after(50, self._do_notify_lsp_change)
+        # Reduced debounce so LSP can receive text changes before hover/autocomplete requests
+        self._lsp_notify_after = self.after(10, self._do_notify_lsp_change)
 
     def _do_notify_lsp_change(self) -> None:
         self._lsp_notify_after = None
@@ -959,11 +964,21 @@ class Text(BaseText):
         self._hover_after = None
         self.base.language_server_manager.request_hover(self)
 
-    def request_autocomplete(self, _):
+    def request_autocomplete(self, event):
         if self.minimalist or not self.lsp:
             return
 
-        if self.is_identifier(self.current_word) or self.current_word.strip() == ".":
+        if getattr(event, "keysym", None) in ["Up", "Down"]:
+            return
+
+        if self._autocomplete_after:
+            self.after_cancel(self._autocomplete_after)
+        self._autocomplete_after = self.after(50, self._do_request_autocomplete)
+
+    def _do_request_autocomplete(self) -> None:
+        self._autocomplete_after = None
+        current_word = self.get_current_word()
+        if self.is_identifier(current_word) or current_word == ".":
             return self.base.language_server_manager.request_completions(self)
 
         self.hide_autocomplete()
@@ -1045,8 +1060,7 @@ class Text(BaseText):
 
     def get_current_word(self) -> str:
         """Returns current word cut till the cursor"""
-
-        return self.current_word.strip()
+        return self.get("insert-1c wordstart", "insert").strip()
 
     def get_current_fullword(self) -> str | None:
         """Returns current word uncut and fully"""
@@ -1558,15 +1572,13 @@ class Text(BaseText):
 
     def edit_undo(self):
         try:
-            self.tk.call(self._orig, "edit", "undo")
-            self.refresh()
+            self.tk.call(self._w, "edit", "undo")
         except tk.TclError:
             pass
 
     def edit_redo(self):
         try:
-            self.tk.call(self._orig, "edit", "redo")
-            self.refresh()
+            self.tk.call(self._w, "edit", "redo")
         except tk.TclError:
             pass
 
@@ -1600,6 +1612,8 @@ class Text(BaseText):
             return
 
         is_edit = args[0] in ("insert", "replace", "delete")
+        is_undo_redo = args[0] == "edit" and len(args) > 1 and args[1] in ("undo", "redo")
+        
         edit_info = self._capture_edit_info_before(args) if is_edit else None
 
         cmd = (self._orig,) + args
@@ -1611,6 +1625,11 @@ class Text(BaseText):
         if is_edit:
             if edit_info:
                 self._finalize_edit_info(edit_info, args)
+            self.event_generate("<<Change>>", when="tail")
+            self._notify_lsp_change()
+        elif is_undo_redo:
+            self._pending_edits.clear()
+            self.highlighter.highlight()
             self.event_generate("<<Change>>", when="tail")
             self._notify_lsp_change()
         elif args[0:3] == ("mark", "set", "insert"):

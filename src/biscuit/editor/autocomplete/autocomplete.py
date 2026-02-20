@@ -159,12 +159,12 @@ class AutoComplete(Toplevel):
             i.grid_forget()
             self.menu_items.append(i)
 
-    def lsp_update_completions(self, tab: Text, completions: Completions) -> None:
+    def lsp_update_completions(self, tab: Text, completions: list[Completion]) -> None:
         """Update the completions with the data received from the language server.
 
         Args:
             tab (Text): The current tab.
-            completions (Completions): The completions received from the language server.
+            completions (list[Completion]): The completions received from the language server.
         """
 
         self.refresh_geometry(tab)
@@ -172,7 +172,26 @@ class AutoComplete(Toplevel):
         term = tab.get_current_word()
         if completions:
             self.lsp_mode = True
-            self.lsp_set_active_items(completions[:10], term)
+            
+            if term and tab.is_identifier(term):
+                exact, starts, includes = [], [], []
+                for completion in completions:
+                    word = completion.filter_text or completion.display_text
+                    if word == term:
+                        exact.append(completion)
+                    elif word.startswith(term):
+                        starts.append(completion)
+                    elif term in word:
+                        includes.append(completion)
+                new = list(chain(exact, starts, includes))
+            else:
+                new = completions
+                
+            if not new:
+                self.hide()
+                return
+
+            self.lsp_set_active_items(new[:10], term)
             self.show(tab)
         else:
             self.hide()
