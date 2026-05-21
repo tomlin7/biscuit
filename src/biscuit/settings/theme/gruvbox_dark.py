@@ -63,4 +63,6 @@ class GruvboxDark(Theme):
 
         self.editors.bracket_colors = ("ffd700", "da70d6", "179fff")
         self.editors.activebracket = "#d79921"
+        self.editors.indent_guide = "#3c3836"
+        self.editors.indent_guide_active = "#7c6f64"
         self.editors.hyperlink = "#4583b6"

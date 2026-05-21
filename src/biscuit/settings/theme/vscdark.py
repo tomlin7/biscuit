@@ -56,6 +56,9 @@ class VSCodeDark(Theme):
         self.editors.linenumbers.breakpoint.background = "#6e1b13"
         self.editors.linenumbers.breakpoint.highlightbackground = "#e51400"
 
+        self.editors.indent_guide = "#333333"
+        self.editors.indent_guide_active = "#5a5a5a"
+
         self.layout.statusbar.button_highlighted.update(
             bg=self.biscuit,
             fg="white",

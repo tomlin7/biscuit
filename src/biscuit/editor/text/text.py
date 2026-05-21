@@ -5,6 +5,7 @@ import queue
 import re
 import threading
 import tkinter as tk
+import tkinter.font as tkfont
 import typing
 from collections import deque
 from tkinter.messagebox import askokcancel
@@ -77,6 +78,11 @@ class Text(BaseText):
         self.lsp: bool = False
         self.current_indent_level = 0
         self.insert_final_newline = False
+        self.indent_guides: list[tk.Frame] = []
+        self.indent_guide_pool: list[tk.Frame] = []
+        self.active_indent_level = -1
+        self.active_start_line = -1
+        self.active_end_line = -1
 
         self.hover_after = None
         self.last_hovered = None
@@ -95,6 +101,7 @@ class Text(BaseText):
             self.editorconfig = {}
 
         # self.last_change = Change(None, None, None, None, None)
+        self._pending_edit_info = None
         self.highlighter = Highlighter(self, language)
         if not self.standalone and not self.minimalist:
             self.base.statusbar.on_open_file(self)
@@ -128,7 +135,6 @@ class Text(BaseText):
         self._edit_stack_index = -1
 
     def config_tags(self):
-        self.indentguide_stipple = self.base.resources.indent_guide
 
         self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
         self.tag_config(
@@ -153,19 +159,19 @@ class Text(BaseText):
 
         self.tag_configure(
             "indent_guide",
-            bgstipple=f"@{self.indentguide_stipple}",
-            background=self.base.theme.border,
+            background=self.base.theme.editors.indent_guide,
         )
         self.tag_configure(
             "current_indent_guide",
-            bgstipple=f"@{self.indentguide_stipple}",
-            background=self.base.theme.secondary_foreground,
+            background=self.base.theme.editors.indent_guide_active,
         )
 
         self.tag_raise(tk.SEL, "hover")
         self.tag_raise(tk.SEL, "currentline")
         self.tag_raise(tk.SEL, "currentword")
         self.tag_raise("currentword", "currentline")
+        self.tag_raise("currentline", "indent_guide")
+        self.tag_raise("currentline", "current_indent_guide")
 
         self.tag_config(
             "activebracket", background=self.base.theme.editors.activebracket
@@ -304,47 +310,173 @@ class Text(BaseText):
 
     def update_indent_guides(self) -> None:
         if self.minimalist or not self.base.config.render_indent_guides:
+            for guide in self.indent_guides:
+                guide.place_forget()
+            self.indent_guide_pool.extend(self.indent_guides)
+            self.indent_guides = []
             return
 
-        self.tag_remove("indent_guide", "1.0", "end")
-        self.tag_remove("current_indent_guide", "1.0", "end")
-        lines = self.get("1.0", "end-1c").split("\n")
+        try:
+            first_line = int(self.index("@0,0").split(".")[0])
+            last_line = int(self.index(f"@0,{self.winfo_height()}").split(".")[0])
+        except Exception:
+            return
+        
+        # Buffer for smooth scrolling
+        first_line = max(1, first_line - 5)
+        last_line = min(int(self.index(tk.END).split(".")[0]), last_line + 5)
 
-        self.current_indent_level = self.get_current_indent_level() - 1
+        # Clear existing guides
+        for guide in self.indent_guides:
+            guide.place_forget()
+        self.indent_guide_pool.extend(self.indent_guides)
+        self.indent_guides = []
 
-        for line_number, line in enumerate(lines, start=1):
-            indent_level = self.calculate_indent_level(line)
+        self.get_active_block_info()
+
+        # Cache indentation levels to handle empty lines better
+        indents = {}
+        for line_number in range(first_line, last_line + 1):
+            line = self.get(f"{line_number}.0", f"{line_number}.end")
+            if line.strip():
+                indents[line_number] = self.calculate_indent_level(line)
+            else:
+                indents[line_number] = -1 # Mark as empty
+
+        self.char_width = tkfont.Font(font=self["font"]).measure(" ")
+        for line_number in range(first_line, last_line + 1):
+            indent_level = indents[line_number]
+            if indent_level == -1:
+                prev_indent = 0
+                for l in range(line_number - 1, max(1, line_number - 50), -1):
+                    if l in indents and indents[l] != -1:
+                        prev_indent = indents[l]
+                        break
+                
+                next_indent = 0
+                for l in range(line_number + 1, min(last_line + 60, line_number + 50)):
+                    # Check beyond last_line if needed
+                    cached = indents.get(l)
+                    if cached is not None and cached != -1:
+                        next_indent = cached
+                        break
+                    elif cached is None:
+                        # Fetch and cache
+                        line = self.get(f"{l}.0", f"{l}.end")
+                        if line.strip():
+                            next_indent = self.calculate_indent_level(line)
+                            indents[l] = next_indent
+                            break
+                        else:
+                            indents[l] = -1
+                
+                indent_level = min(prev_indent, next_indent) if next_indent > 0 else prev_indent
+
             if indent_level > 0:
-                self.add_indent_guide(line_number, indent_level)
+                self.add_indent_guides_to_line(line_number, indent_level)
 
     def calculate_indent_level(self, line: str) -> int:
-        indent = len(line) - len(line.lstrip())
+        expanded = line.expandtabs(self.tab_spaces)
+        indent = len(expanded) - len(expanded.lstrip())
         return indent // self.tab_spaces
 
-    def add_indent_guide(self, line_number: int, indent_level: int) -> None:
+    def get_char_index_at_col(self, line: str, col: int) -> int:
+        current_col = 0
+        for i, char in enumerate(line):
+            if current_col >= col:
+                return i
+            if char == "\t":
+                current_col += self.tab_spaces - (current_col % self.tab_spaces)
+            else:
+                current_col += 1
+        return len(line)
+
+    def add_indent_guides_to_line(self, line_number: int, indent_level: int) -> None:
+        dline = self.dlineinfo(f"{line_number}.0")
+        if not dline:
+            return
+        
+        x_base, y, _, h, _ = dline
         for level in range(indent_level):
-            start_index = f"{line_number}.{level * self.tab_spaces}"
-            end_index = f"{line_number}.{level * self.tab_spaces + 1}"
-            self.tag_add(
-                (
-                    "current_indent_guide"
-                    if level == self.current_indent_level
-                    else "indent_guide"
-                ),
-                start_index,
-                end_index,
+            col = level * self.tab_spaces
+            x = x_base + (col * self.char_width)
+            
+            # Use a frame from the pool or create a new one
+            if self.indent_guide_pool:
+                guide = self.indent_guide_pool.pop()
+            else:
+                guide = tk.Frame(self, width=1, highlightthickness=0, bd=0)
+            
+            guide.config(
+                bg=(
+                    self.base.theme.editors.indent_guide_active
+                    if (
+                        level == self.active_indent_level
+                        and self.active_start_line <= line_number <= self.active_end_line
+                    )
+                    else self.base.theme.editors.indent_guide
+                )
             )
+            # Find char index for click-to-goto
+            line = self.get(f"{line_number}.0", f"{line_number}.end")
+            char_idx = self.get_char_index_at_col(line, col)
+            idx = f"{line_number}.{char_idx}"
 
-    def get_current_indent_level(self) -> int:
-        prev = self.get("insert-1l linestart", "insert-1l lineend")
-        line = self.get("insert linestart", "insert lineend")
-        next_line = self.get("insert+1l linestart", "insert+1l lineend")
+            guide.bind("<Button-1>", lambda _, idx=idx: self.goto(idx))
+            guide.place(x=x, y=y, width=1, height=h)
+            self.indent_guides.append(guide)
 
-        return max(
-            self.calculate_indent_level(prev),
-            self.calculate_indent_level(line),
-            self.calculate_indent_level(next_line),
-        )
+    def get_active_block_info(self) -> None:
+        self.active_indent_level = -1
+        self.active_start_line = -1
+        self.active_end_line = -1
+
+        if self.highlighter and self.highlighter.ts and self.highlighter.ts.tree:
+            try:
+                line, col = self._tk_index_to_point(tk.INSERT)
+                node = self.highlighter.ts.tree.root_node.descendant_for_point_range(
+                    (line, col), (line, col)
+                )
+
+                # Block-like node types across various languages
+                BLOCK_TYPES = (
+                    "block", "compound_statement", "function_definition", "method_definition", 
+                    "class_definition", "if_statement", "for_statement", "while_statement", 
+                    "do_statement", "try_statement", "with_statement", "switch_statement", 
+                    "match_expression", "match_arm", "unsafe_block", "impl_item", "trait_item", 
+                    "enum_definition", "struct_definition", "union_definition", "macro_definition", 
+                    "macro_invocation", "lambda", "argument_list", "parameters", "binary_expression",
+                    "parenthesized_expression", "array_expression", "dictionary_expression", 
+                    "list_expression", "set_expression", "tuple_expression", "object_expression",
+                    "module", "translation_unit"
+                )
+
+                # Find the innermost block-like node that spans multiple lines
+                temp = node
+                while temp:
+                    if temp.type in BLOCK_TYPES:
+                        # Only consider it an active block if it spans multiple lines
+                        # or if it's the only block we have.
+                        if temp.start_point[0] != temp.end_point[0] or temp.parent is None:
+                            # For standard 'block' nodes (the actual { } content), 
+                            # we usually want to align with the parent keyword's indentation.
+                            if temp.type == "block" and temp.parent:
+                                self.active_indent_level = temp.parent.start_point[1] // self.tab_spaces
+                            else:
+                                self.active_indent_level = temp.start_point[1] // self.tab_spaces
+                                
+                            self.active_start_line = temp.start_point[0] + 1
+                            self.active_end_line = temp.end_point[0] + 1
+                            return
+                    temp = temp.parent
+            except Exception:
+                pass
+
+        # Fallback to current line's indentation level
+        line_content = self.get("insert linestart", "insert lineend")
+        self.active_indent_level = self.calculate_indent_level(line_content) - 1
+        self.active_start_line = 1
+        self.active_end_line = int(self.index(tk.END).split(".")[0])
 
     # TODO this wont work properly
     # write a custom ast, parser for bracket matching
@@ -583,10 +715,10 @@ class Text(BaseText):
         for line in range(start_line, end_line + 1):
             # delete comment prefix with the trailing space
             if (
-                self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+                self.get(f"{line}.0", f"{line}.{len(self.comment_prefix) + 1}")
                 == f"{self.comment_prefix} "
             ):
-                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix) + 1}")
             # trailing space not detected, delete the comment prefix
             elif (
                 self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)}")
@@ -656,7 +788,13 @@ class Text(BaseText):
         return "break"
 
     def refresh(self):
-        self.highlighter.highlight()
+        if self._pending_edit_info and hasattr(
+            self.highlighter, "incremental_highlight"
+        ):
+            self.highlighter.incremental_highlight(self._pending_edit_info)
+            self._pending_edit_info = None
+        else:
+            self.highlighter.highlight()
         self.highlight_current_word()
 
         if self.minimalist or self.standalone:
@@ -1353,13 +1491,20 @@ class Text(BaseText):
         self.tag_remove(tk.SEL, 1.0, tk.END)
 
     def highlight_current_line(self, *_):
-        self.tag_remove("currentline", 1.0, tk.END)
         if self.minimalist or self.tag_ranges(tk.SEL):
+            self.tag_remove("currentline", 1.0, tk.END)
             return
 
         line = int(self.index(tk.INSERT).split(".")[0])
-        start = str(float(line))
-        end = str(float(line + 1))
+        start = f"{line}.0"
+        end = f"{line + 1}.0"
+        
+        # Only update if the line actually changed
+        current_ranges = self.tag_ranges("currentline")
+        if current_ranges and self.index(current_ranges[0]) == self.index(start):
+            return
+
+        self.tag_remove("currentline", 1.0, tk.END)
         self.tag_add("currentline", start, end)
 
     def select_line(self, line):
@@ -1373,14 +1518,26 @@ class Text(BaseText):
         self.move_cursor(end)
 
     def highlight_current_word(self):
-        self.tag_remove("currentword", 1.0, tk.END)
         if self.tag_ranges(tk.SEL):
+            self.tag_remove("currentword", 1.0, tk.END)
             return
 
-        if word := re.findall(r"\w+", self.get("insert wordstart", "insert wordend")):
-            # TODO: do not highlight keywords, parts of strings, etc.
-            self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", regexp=True)
-            # self.highlight_pattern(f"\\y{word[0]}\\y", "currentword", start="insert wordend", regexp=True)
+        word_range = self.tag_ranges(tk.INSERT + " wordstart") # dummy to get word
+        # This is a bit tricky, let's just use the current simple logic but only if insertion changed
+        
+        new_word = self.get("insert wordstart", "insert wordend").strip()
+        if not new_word or not re.match(r"^\w+$", new_word):
+            self.tag_remove("currentword", 1.0, tk.END)
+            return
+
+        # Optimization: only re-highlight if the word is different
+        # (This is still a bit expensive as it searches the whole file)
+        # But we can limit the search to visible range!
+        first_line = int(self.index("@0,0").split(".")[0])
+        last_line = int(self.index(f"@0,{self.winfo_height()}").split(".")[0])
+        
+        self.tag_remove("currentword", 1.0, tk.END)
+        self.highlight_pattern(f"\\y{new_word}\\y", "currentword", start=f"{first_line}.0", end=f"{last_line + 1}.0", regexp=True)
 
     def highlight_pattern(self, pattern, tag, start="1.0", end=tk.END, regexp=False):
         start = self.index(start)
@@ -1459,19 +1616,38 @@ class Text(BaseText):
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
 
+    def _is_sel_op_without_sel(self, args) -> bool:
+        """Check if this is a get/delete on selection when nothing is selected."""
+        return (
+            len(args) >= 3
+            and args[1] == tk.SEL_FIRST
+            and args[2] == tk.SEL_LAST
+            and not self.tag_ranges(tk.SEL)
+        )
+
+    def _is_scroll_op(self, args) -> bool:
+        """Check if this is a scroll operation."""
+        return args[0:2] in (
+            ("xview", "moveto"),
+            ("yview", "moveto"),
+            ("xview", "scroll"),
+            ("yview", "scroll"),
+        )
+
+    def _notify_lsp_change(self):
+        """Notify LSP server of content change if active."""
+        if self.lsp:
+            try:
+                self.base.language_server_manager.content_changed(self)
+            except Exception:
+                pass
+
     def _proxy(self, *args):
-        if (
-            args[0] == "get"
-            and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST)
-            and not self.tag_ranges(tk.SEL)
-        ):
+        if args[0] in ("get", "delete") and self._is_sel_op_without_sel(args):
             return
-        if (
-            args[0] == "delete"
-            and (args[1] == tk.SEL_FIRST and args[2] == tk.SEL_LAST)
-            and not self.tag_ranges(tk.SEL)
-        ):
-            return
+
+        is_edit = args[0] in ("insert", "replace", "delete")
+        edit_info = self._capture_edit_info_before(args) if is_edit else None
 
         cmd = (self._orig,) + args
         try:
@@ -1479,25 +1655,142 @@ class Text(BaseText):
         except Exception:
             return
 
-        if args[0] in ("insert", "replace", "delete"):
+        if is_edit:
+            if edit_info:
+                self._finalize_edit_info(edit_info, args)
             self.event_generate("<<Change>>", when="tail")
-            if self.lsp:
-                try:
-                    self.base.language_server_manager.content_changed(self)
-                except Exception:
-                    pass
-
-        # if "insert" in args[0:3] and "get" in args[0:3]:
-        #     print(temp)
-
+            self._notify_lsp_change()
         elif args[0:3] == ("mark", "set", "insert"):
             self.event_generate("<<Change>>", when="tail")
-        elif (
-            args[0:2] == ("xview", "moveto")
-            or args[0:2] == ("yview", "moveto")
-            or args[0:2] == ("xview", "scroll")
-            or args[0:2] == ("yview", "scroll")
-        ):
+        elif self._is_scroll_op(args):
             self.event_generate("<<Scroll>>", when="tail")
 
         return result
+
+    def _tk_index_to_point(self, index: str) -> tuple[int, int]:
+        """Convert a Tk text index to a Tree-sitter (row, col) point."""
+        try:
+            pos = self.tk.call(self._orig, "index", index)
+            line, col = str(pos).split(".")
+            return (int(line) - 1, int(col))
+        except Exception:
+            return (0, 0)
+
+    def _point_to_byte(self, point: tuple[int, int]) -> int:
+        """Compute byte offset from a (row, col) point.
+
+        Gets all text from start to the position in a single Tk call,
+        then computes its UTF-8 byte length.
+        """
+        try:
+            row, col = point
+            tk_index = f"{row + 1}.{col}"
+            text_before = self.tk.call(self._orig, "get", "1.0", tk_index)
+            return len(str(text_before).encode("utf-8"))
+        except Exception:
+            return 0
+
+    def _capture_edit_info_before(self, args) -> dict | None:
+        """Capture position info before an edit operation executes."""
+        try:
+            if args[0] == "insert":
+                # args: ("insert", index, text, ?tags, ?text, ?tags, ...)
+                start_point = self._tk_index_to_point(args[1])
+                start_byte = self._point_to_byte(start_point)
+                return {
+                    "op": "insert",
+                    "start_byte": start_byte,
+                    "old_end_byte": start_byte,
+                    "start_point": start_point,
+                    "old_end_point": start_point,
+                }
+            elif args[0] == "delete":
+                # args: ("delete", start, ?end)
+                start_point = self._tk_index_to_point(args[1])
+                start_byte = self._point_to_byte(start_point)
+                if len(args) > 2:
+                    end_point = self._tk_index_to_point(args[2])
+                else:
+                    # Single char delete
+                    end_point = self._tk_index_to_point(f"{args[1]} +1c")
+                end_byte = self._point_to_byte(end_point)
+                return {
+                    "op": "delete",
+                    "start_byte": start_byte,
+                    "old_end_byte": end_byte,
+                    "start_point": start_point,
+                    "old_end_point": end_point,
+                }
+            elif args[0] == "replace":
+                # args: ("replace", start, end, text)
+                start_point = self._tk_index_to_point(args[1])
+                start_byte = self._point_to_byte(start_point)
+                end_point = self._tk_index_to_point(args[2])
+                end_byte = self._point_to_byte(end_point)
+                return {
+                    "op": "replace",
+                    "start_byte": start_byte,
+                    "old_end_byte": end_byte,
+                    "start_point": start_point,
+                    "old_end_point": end_point,
+                }
+        except Exception:
+            pass
+        return None
+
+    def _finalize_edit_info(self, edit_info: dict, args) -> None:
+        """Compute new_end after the edit and store as pending edit info."""
+        try:
+            if edit_info["op"] == "insert":
+                # Compute new end from inserted text
+                # Collect all text parts (args may have: index, text, tags, text, tags, ...)
+                texts = []
+                i = 2
+                while i < len(args):
+                    texts.append(str(args[i]))
+                    i += 2  # skip tags
+                inserted = "".join(texts)
+                inserted_bytes = len(inserted.encode("utf-8"))
+                new_end_byte = edit_info["start_byte"] + inserted_bytes
+                # Compute new end point
+                lines = inserted.split("\n")
+                if len(lines) == 1:
+                    new_end_point = (
+                        edit_info["start_point"][0],
+                        edit_info["start_point"][1] + len(lines[0]),
+                    )
+                else:
+                    new_end_point = (
+                        edit_info["start_point"][0] + len(lines) - 1,
+                        len(lines[-1]),
+                    )
+                edit_info["new_end_byte"] = new_end_byte
+                edit_info["new_end_point"] = new_end_point
+
+            elif edit_info["op"] == "delete":
+                # After delete, new end = start (deleted region collapsed)
+                edit_info["new_end_byte"] = edit_info["start_byte"]
+                edit_info["new_end_point"] = edit_info["start_point"]
+
+            elif edit_info["op"] == "replace":
+                # Compute new end from replacement text
+                replacement = str(args[3]) if len(args) > 3 else ""
+                replacement_bytes = len(replacement.encode("utf-8"))
+                new_end_byte = edit_info["start_byte"] + replacement_bytes
+                lines = replacement.split("\n")
+                if len(lines) == 1:
+                    new_end_point = (
+                        edit_info["start_point"][0],
+                        edit_info["start_point"][1] + len(lines[0]),
+                    )
+                else:
+                    new_end_point = (
+                        edit_info["start_point"][0] + len(lines) - 1,
+                        len(lines[-1]),
+                    )
+                edit_info["new_end_byte"] = new_end_byte
+                edit_info["new_end_point"] = new_end_point
+
+            self._pending_edit_info = edit_info
+        except Exception:
+            self._pending_edit_info = None

@@ -26,8 +26,8 @@ class DebuggerBase:
         super().__init__()
         self.manager = manager
         self.base = manager.base
-        self.variables = self.base.sidebar.debug.variables
-        self.callstack = self.base.sidebar.debug.callstack
+        self.variables = self.base.secondary_sidebar.debug.variables
+        self.callstack = self.base.secondary_sidebar.debug.callstack
         self.breakpoints: dict[str, set[int]] = {}  # file_path -> set of line numbers
 
     def format_path(self, path: str) -> str:
