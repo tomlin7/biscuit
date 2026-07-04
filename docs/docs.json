@@ -1,0 +1,56 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Biscuit",
+  "colors": {
+    "primary": "#d97706",
+    "light": "#fbbf24",
+    "dark": "#b45309"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "pages": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/commands",
+          "guides/intelligence",
+          "guides/git",
+          "guides/debugging",
+          "guides/agents",
+          "guides/extensions",
+          "guides/cli"
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Github",
+        "href": "https://github.com/tomlin7/biscuit"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Extensions Marketplace",
+      "href": "https://biscuit-extensions.github.io/marketplace/"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/tomlin7/biscuit"
+    }
+  }
+}

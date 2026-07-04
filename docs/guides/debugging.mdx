@@ -1,0 +1,30 @@
+---
+title: "Debugger Integration"
+description: "Inspect runtime variables, set breakpoints, and trace call stacks"
+---
+
+Biscuit features integrated Debug Adapter Protocol (DAP) client capabilities to debug Python applications, with hooks to support other language debuggers through extensions.
+
+## Debugging Workflow
+
+### 1. Toggle Debug Sidebar
+Open the Debugger panel using `Ctrl + D` or from the Command Palette (`> Show Debugger`).
+
+### 2. Manage Breakpoints
+Click next to the line numbers in any text editor to toggle breakpoints. Active breakpoints are displayed in the debugger sidebar.
+
+### 3. Inspection Panel
+During execution, the inspector panel lets you:
+- View all local and global **runtime variables**.
+- **Modify variables** on the fly during a debug session.
+- Visualize the **call stack** and trace exceptions.
+
+## Control Buttons
+
+Use the control overlay or debug panel buttons to manage execution:
+- **Continue / Pause**: Resume execution or pause at the current instruction.
+- **Step Over**: Execute the next line of code without stepping into functions.
+- **Step Into**: Step into the function at the current execution line.
+- **Step Out**: Finish executing the current function and step back out.
+- **Restart**: Restart the debug session.
+- **Stop**: Terminate the debugging session.

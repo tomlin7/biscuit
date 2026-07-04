@@ -1,0 +1,32 @@
+---
+title: "Source Control & Diff Viewer"
+description: "Perform git operations and view differences side-by-side"
+---
+
+Biscuit features built-in git integration, enabling developers to perform daily repository maintenance workflows directly from the editor without switching to the terminal.
+
+## Side-by-Side Diff Viewer
+
+Biscuit provides a native split-screen diff viewer that highlights added, modified, and deleted lines between your working copy and the repository head.
+
+- **Split Diff View**: Shows changes side-by-side or inline.
+- **Support for Untracked/Deleted Files**: Open diffs for untracked or deleted files to review changes.
+
+## Git Workflow in Biscuit
+
+### 1. View Git Panel
+Toggle the Source Control view using `Ctrl + G` or select `Show Source Control` from the Command Palette.
+
+### 2. Stage and Unstage Changes
+- Unstaged files show under the **Changes** list.
+- Click the "+" button next to a file to stage it.
+- Staged files show under **Staged Changes**. Click the "-" button next to a staged file to unstage it.
+
+### 3. Commit Changes
+Type your commit message in the text box at the top of the git panel and click the checkmark button or press `Ctrl + Enter` to make a commit.
+
+### 4. Git Actions Menu
+Directly from the Git panel or Command Palette, you can:
+- **Push & Pull**: Push local commits to your remote origin or pull latest changes.
+- **Switch Branches**: Click the branch name in the status bar or trigger the `Change Git Branch` command to switch between branches.
+- **Clone Repositories**: Use the CLI `biscuit clone <url>` or `Clone Git Repository` in the command palette to download a repo and open it immediately.

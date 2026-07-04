@@ -1,0 +1,68 @@
+---
+title: "Command Palette & Keys"
+description: "Control the editor entirely from your keyboard"
+---
+
+Biscuit features a powerful command palette similar to modern text editors. Everything in Biscuit is fully accessible without ever lifting your hands off the keyboard.
+
+## Command Palette
+
+Press `Ctrl + P` (or `Ctrl + Shift + P` depending on configuration) to open the Command Palette. Type a prefix to filter and run actions:
+
+| Prefix | Action | Example |
+| :--- | :--- | :--- |
+| `>` | Run commands / actions | `> Toggle sidebar` |
+| `@` | Find symbols in file | `@my_function` |
+| `:` | Go to line/column | `:12` or `:12:5` |
+| *empty* | Search files by name | `main.py` |
+| `recentf:` | Show recent files | `recentf:` |
+| `recentd:` | Show recent folders | `recentd:` |
+| `language:` | Change language mode | `language: python` |
+| `eol:` | Change EOL characters | `eol: LF` |
+| `encoding:` | Change file encoding | `encoding: utf-8` |
+| `indent:` | Change indentation spaces | `indent: 4` |
+| `clone:` | Clone Git repository | `clone: https://...` |
+| `branch:` | Change git branch | `branch: main` |
+| `google:` | Search Google | `google: tkinter` |
+
+## Key Bindings Reference
+
+These are the default keyboard shortcuts configured in Biscuit:
+
+### File Management
+
+- `Ctrl + N`: Create new file
+- `Ctrl + Shift + N`: Open a new window
+- `Ctrl + O`: Open file
+- `Ctrl + Shift + O`: Open directory
+- `Ctrl + S`: Save file
+- `Ctrl + Shift + S`: Save file as
+- `Ctrl + W`: Close active tab
+- `Ctrl + Shift + W`: Close all tabs
+- `Ctrl + Shift + T`: Restore last closed tab
+- `Ctrl + Q`: Quit Biscuit
+
+### Editor Navigation & Editing
+
+- `Ctrl + Z`: Undo
+- `Ctrl + Y`: Redo
+- `Ctrl + F`: Search within open editor / Replace symbol
+- `Ctrl + G`: Go to line/column
+- `Ctrl + \`: Split editor tab
+- `Ctrl + Tab`: Cycle tabs forward
+- `Ctrl + Shift + Tab`: Cycle tabs backward
+- `F12`: Go to symbol definition (LSP)
+- `Shift + F12`: Find symbol references (LSP)
+
+### View Toggles
+
+- `Ctrl + B`: Toggle Sidebar
+- `Ctrl + Shift + B`: Toggle Secondary Sidebar
+- `Ctrl + E`: Show Explorer panel
+- `Ctrl + J`: Show Outline panel
+- `Ctrl + D`: Show Debugger panel
+- `Ctrl + G`: Show Git panel
+- `Ctrl + A`: Show AI Assistant panel
+- `Ctrl + U`: Show logs / terminal panel
+- `Ctrl + ~`: Toggle terminal panel (or `Ctrl + \``)
+- `Ctrl + ,`: Open settings

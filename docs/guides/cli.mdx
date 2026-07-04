@@ -1,0 +1,72 @@
+---
+title: "CLI Command Reference"
+description: "Control Biscuit and manage extensions from the shell"
+---
+
+Biscuit comes with a fully-functional command-line interface (`biscuit`), enabling you to open folders, check version states, manage extensions, and run helper scripts.
+
+## Basic Usage
+
+Launch the Biscuit GUI editor:
+```bash
+# Open the current directory
+biscuit .
+
+# Open a specific folder or file
+biscuit path/to/project
+
+# Run in development/verbose mode
+biscuit --dev
+```
+
+## Global Command Line Options
+
+- `-v`, `--version`: Output the version of Biscuit and exit.
+- `-h`, `--help`: Show CLI help page with available commands.
+
+---
+
+## Command: `doc`
+
+Opens the official Biscuit online documentation page in your default web browser.
+
+```bash
+biscuit doc
+```
+
+---
+
+## Command: `ext`
+
+The `ext` group provides tools to install, uninstall, update, and scaffold Biscuit extensions.
+
+### `biscuit ext list`
+Lists extensions matching optional filters.
+```bash
+# List all extensions available
+biscuit ext list
+
+# Filter by a specific author
+biscuit ext list --user tomlin7
+
+# List only installed extensions
+biscuit ext list --installed
+```
+
+### `biscuit ext install`
+Installs an extension by name.
+```bash
+biscuit ext install python-lsp
+```
+
+### `biscuit ext uninstall`
+Uninstalls an extension by name.
+```bash
+biscuit ext uninstall python-lsp
+```
+
+### `biscuit ext new`
+Scaffolds a new extension directory using our standard cookiecutter project template.
+```bash
+biscuit ext new my-new-plugin
+```

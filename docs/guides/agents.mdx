@@ -1,0 +1,32 @@
+---
+title: "AI Agents"
+description: "Leverage built-in LLM support and planning agents directly in Biscuit"
+---
+
+Biscuit features built-in AI assistant panel powered by LangChain, offering seamless integration with leading LLM providers like Google Gemini and Anthropic Claude.
+
+## AI Assistant Sidebar Panel
+
+You can open the AI assistant panel using `Ctrl + A` or by triggering `Show Assistant` via the Command Palette (`Ctrl + P` -> `> Show Assistant`).
+
+### Supported Providers & Models
+
+Biscuit supports key models out of the box, including:
+- **Anthropic Claude**: `claude-3-5-sonnet`, `claude-3-haiku`, `claude-4-5-opus`
+- **Google Gemini**: `gemini-2.5-flash`, `gemini-2.5-pro`
+- **Custom / Local Models**: Add more models or local models (like Ollama) using Biscuit extensions.
+
+## Core Capabilities
+
+### 1. File Context Attachments
+You can attach files to the conversation to give the AI context about your codebase. Simply click the attachment icon in the AI chat panel and select the files you want to attach.
+
+### 2. Planning Agent
+The built-in planning agent creates structured checklists of tasks to accomplish complex goals and updates them dynamically as progress is made. It uses tools to:
+- Read, edit, and delete files.
+- List directories and search using glob patterns/ripgrep.
+- Execute commands in the terminal with user confirmation.
+- Inspect workspace info and currently active editors.
+
+### 3. Prompt Execution inside Terminal
+You can run natural language prompts directly inside Biscuit terminals. Type `# your prompt` inside the terminal, hit Enter, and Biscuit will suggest a command. You can review and choose to run or reject the suggested command.

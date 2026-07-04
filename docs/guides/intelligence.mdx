@@ -1,0 +1,31 @@
+---
+title: "Code Intelligence"
+description: "Tree-sitter based syntax highlighting, autocompletions, and symbol navigation"
+---
+
+Biscuit provides fast and intelligent coding features out-of-the-box by combining local Tree-sitter parsing with Language Server Protocol (LSP) integrations.
+
+## Tree-Sitter Integration
+
+Unlike simple regex-based syntax highlighters, Biscuit parses your code into concrete syntax trees using `tree-sitter`. This provides:
+- High-fidelity, context-aware syntax highlights.
+- Fast, non-blocking rendering.
+- Code outline extraction.
+
+## Language Server Protocol (LSP) Client
+
+Biscuit includes a fully-functional LSP client allowing it to communicate with any standard language server (e.g. `pyright` for Python, `clangd` for C/C++, `rust-analyzer` for Rust).
+
+### Code Completions
+Get real-time code completion suggestions as you type, complete with symbols, types, and auto-import support.
+
+### Hover Docs & Definitions
+- **Hover**: Hover over a symbol to view its type definition and documentation string, beautifully rendered in markdown.
+- **Go to Definition**: Jump directly to where a symbol is defined (`F12` or click definition peek).
+- **Peek Widget**: View symbol definition or references in a floating non-intrusive peek widget without losing your current cursor position.
+
+### Navigation & Outline
+- **Outline Sidebar Panel**: View a hierarchical representation of classes, functions, and variables in the current file (`Ctrl + J` or `Show Outline`).
+- **Symbol Search**: Search symbols across your workspace instantly using `@` in the command palette.
+- **Find References**: Find all references of a symbol in the editor.
+- **Symbol Rename**: Rename a symbol across all occurrences in the workspace using the LSP client.

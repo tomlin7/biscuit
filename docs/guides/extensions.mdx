@@ -1,0 +1,64 @@
+---
+title: "Extension System"
+description: "Build, install, and manage Biscuit extensions using Python"
+---
+
+Biscuit features a rich, native extension system built entirely in Python. Extensions run alongside the core editor, allowing developers to inject custom views, register LSP servers, custom language formatters, command bindings, theme skins, games, and terminal integrations.
+
+## Extension Marketplace
+
+Biscuit features a GUI-based extension manager and marketplace, letting you explore, search, install, and update extensions seamlessly.
+
+- **Marketplace Web**: Check out the official extension index at [biscuit-extensions.github.io/marketplace](https://biscuit-extensions.github.io/marketplace/).
+- **In-App Explorer**: Toggle using `Ctrl + X` or trigger `Show Extensions` in the command palette.
+
+## Scaffolding a New Extension
+
+You can create a new extension project locally using the Biscuit CLI:
+
+```bash
+biscuit ext new my_extension
+```
+
+This commands pulls from our cookiecutter template at `github.com/biscuit-extensions/hello_biscuit` and prepares a boilerplate folder for you.
+
+## Writing an Extension
+
+Every Biscuit extension consists of a Python class that receives an `ExtensionsAPI` instance.
+
+### Simple Extension Example
+
+```python
+class Extension:
+    def __init__(self, api):
+        self.api = api
+        
+        # Register a command visible in the command palette (Ctrl+P -> > hello)
+        self.api.commands.registerCommand('hello', self.say_hello)
+        
+        # Log to the output panel
+        self.api.logger.info("My Extension initialized!")
+
+    def say_hello(self, *_):
+        # Display an info notification
+        self.api.notifications.info("Hello from My Extension!")
+```
+
+## Extensions API Reference
+
+The `api` object passed to your extension exposes the following endpoints:
+
+| API Component | Description | Example |
+| :--- | :--- | :--- |
+| `api.commands` | Register workspace actions | `api.commands.registerCommand(name, callback)` |
+| `api.logger` | Write to logs console | `api.logger.info(msg)` / `api.logger.error(msg)` |
+| `api.notifications`| Show top corner alerts | `api.notifications.info(msg)` / `api.notifications.warning(msg)` |
+| `api.views` | Register custom sidebar tabs | `api.views.register_view(view)` |
+| `api.releases` | Query Biscuit releases | `api.releases.get_latest()` |
+| `api.assistant` | Add AI providers/agents | `api.assistant.set_model(name)` |
+
+### Helper Registries
+- `api.register_comment_prefix(language, prefix)`: Registers commenting tokens for a language (e.g., `#` or `//`).
+- `api.register_game(name, game_class)`: Register custom game interfaces (like Tetris or Minesweeper) playable inside the editor tabs.
+- `api.register_langserver(language, server_command)`: Hook in a new LSP binary/executable for autocomplete support.
+- `api.register_run_command(name, command_string)`: Add workspace build/run shortcuts.
