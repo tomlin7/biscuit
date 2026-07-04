@@ -1,0 +1,82 @@
+---
+title: "Quickstart"
+description: "Get up and running with Biscuit in less than a minute"
+---
+
+Biscuit is packaged as a standard Python package, making installation quick and simple across Windows, macOS, and Linux.
+
+## Prerequisites
+
+Before installing Biscuit, ensure you have:
+- **Python 3.11 or above** installed.
+- **pip** (Python package installer).
+
+## Installation
+
+<Steps>
+  <Step title="Install via Pip">
+    Install the `biscuit-editor` package using pip:
+    ```bash
+    pip install biscuit-editor
+    ```
+  </Step>
+  <Step title="Verify Installation">
+    Check the installed version to ensure Biscuit is available in your PATH:
+    ```bash
+    biscuit --version
+    ```
+  </Step>
+  <Step title="Open your first project">
+    Launch the editor by passing any directory or file path:
+    ```bash
+    biscuit path/to/your/project
+    ```
+  </Step>
+</Steps>
+
+## Platform-Specific Notes
+
+### Linux System Dependencies
+
+On Linux, additional system packages are required prior to installing and running Biscuit.
+
+#### Debian / Ubuntu Based Distributions
+```bash
+sudo apt update
+sudo apt install fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential
+python -m pip install scikit-build
+```
+
+#### Arch Linux Based Distributions
+```bash
+sudo pacman -Sy
+sudo pacman -S base-devel cmake extra-cmake-modules fontconfig tcl tk
+python -m pip install scikit-build
+python -m pip install tkextrafont
+```
+
+## Running from Source (Development)
+
+If you wish to contribute or run the latest development build from source, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/tomlin7/biscuit.git
+   cd biscuit
+   ```
+2. Set up a virtual environment and activate it:
+   ```bash
+   python -m venv .venv
+   # Windows:
+   .venv\Scripts\activate
+   # Linux/macOS:
+   source .venv/bin/activate
+   ```
+3. Install dependencies using Poetry:
+   ```bash
+   poetry install
+   ```
+4. Run the editor:
+   ```bash
+   poetry run biscuit
+   ```
