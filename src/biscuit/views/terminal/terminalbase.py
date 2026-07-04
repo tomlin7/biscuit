@@ -139,10 +139,20 @@ class TerminalBase(PanelView):
         self.ai.get_response(self.last_command)
 
     def insert(self, output: str, tag="") -> None:
-        self.text.insert(tk.END, output, tag)
-        # self.terminal.tag_add("prompt", "insert linestart", "insert")
-        self.text.see(tk.END)
-        self.text.mark_set("input", "insert")
+        def _insert():
+            try:
+                if self.text.winfo_exists():
+                    self.text.insert(tk.END, output, tag)
+                    self.text.see(tk.END)
+                    self.text.mark_set("input", "insert")
+            except Exception:
+                pass
+        try:
+            self.text.after(0, _insert)
+        except RuntimeError:
+            # If tkinter calls from another thread fail with RuntimeError: main thread is not in main loop
+            # we can run it or ignore if the app is tearing down/testing.
+            pass
 
     def newline(self):
         self.insert("\n")

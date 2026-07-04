@@ -71,4 +71,4 @@ class ActionSet(list):
     def get_pinned(self, term) -> list:
         """Not to be called directly. Returns the pinned actions with the search term formatted."""
 
-        return [[item[0].format(term or "...")] + item[1:] for item in self.pinned]
+        return [[item[0].format(term or "...")] + list(item[1:]) for item in self.pinned]

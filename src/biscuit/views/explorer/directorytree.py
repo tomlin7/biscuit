@@ -179,11 +179,12 @@ class DirectoryTree(SideBarViewItem):
     def scandir(self, path: str) -> Iterator:
         """Scans the given directory and yields its contents."""
 
+        base_path = self.path or path
         for entry in os.scandir(path):
             isdir = os.path.isdir(entry.path)
             data = (
                 entry.name,
-                os.path.join(self.path, entry.path),
+                os.path.join(base_path, entry.path) if base_path else entry.path,
                 isdir,
                 entry.path.replace("\\", "/")
                 + ("/" if isdir else ""),  # unix-like path
