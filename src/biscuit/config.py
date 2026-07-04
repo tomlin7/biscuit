@@ -67,6 +67,8 @@ class ConfigManager:
     tab_spaces = 4
     relative_line_numbers = False
     block_cursor = False
+    vim_mode = False
+    keypress_display = False
     active_directory = None
     active_branch_name = None
     onupdate_callbacks = []
@@ -98,6 +100,10 @@ class ConfigManager:
         self.language_server_manager = LanguageServerManager(self)
         self.execution_manager = ExecutionManager(self)
         self.debugger_manager = DebuggerManager(self)
+
+        # Apply persistent vim_mode setting
+        self.vim_mode = self.config.vim_mode
+        self.keypress_display = getattr(self.config, "keypress_display", False)
 
     def setup_path(self, appdir: str) -> None:
         """Sets up the application paths and directories."""

@@ -35,6 +35,7 @@ from biscuit.common.ui import Text as BaseText
 
 from ..comment_prefix import get_comment_prefix
 from .highlighter import Highlighter
+from .vim import VimMode
 
 BRACKET_MAP = {"(": ")", "{": "}", "[": "]"}
 BRACKET_MAP_REV = {v: k for k, v in BRACKET_MAP.items()}
@@ -133,6 +134,13 @@ class Text(BaseText):
         self._user_edit = True
         self._edit_stack = []
         self._edit_stack_index = -1
+
+        # Vim mode instance (None when disabled)
+        self.vim: VimMode | None = None
+
+        # Auto-enable if vim mode is globally active
+        if not self.minimalist and not self.standalone and getattr(self.base, "vim_mode", False):
+            self.after_idle(self.enable_vim_mode)
 
     def config_tags(self):
 
@@ -1000,6 +1008,18 @@ class Text(BaseText):
 
     def set_block_cursor(self, flag: bool) -> None:
         self.configure(blockcursor=flag)
+
+    def enable_vim_mode(self) -> None:
+        """Activate Vim modal editing for this Text widget."""
+        if self.vim is not None:
+            return  # already active
+        self.vim = VimMode(self)
+
+    def disable_vim_mode(self) -> None:
+        """Deactivate Vim modal editing and restore normal editing."""
+        if self.vim is not None:
+            self.vim.disable()
+            self.vim = None
 
     def toggle_relative_numbering(self) -> None:
         self.relative_line_numbers = not self.relative_line_numbers

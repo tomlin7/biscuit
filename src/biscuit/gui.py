@@ -177,6 +177,12 @@ class GUIManager(Tk, ConfigManager):
         self.debugger_manager.register_actionsets()
         self.register_misc_palettes()
 
+        # Apply persistent vim_mode if enabled in config
+        if self.vim_mode:
+            for e in self.editorsmanager.active_editors:
+                if e.content and e.content.editable:
+                    e.content.text.enable_vim_mode()
+
         # force set focus on this window
         self.focus_set()
 
