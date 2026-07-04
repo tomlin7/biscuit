@@ -21,9 +21,10 @@ import tkinter as tk
 import typing
 
 from biscuit.common.ui import Frame, PanedWindow
-from biscuit.layout.statusbar import activitybar
+from biscuit.common.ui.vimbar import VimBar
+from biscuit.layout.statusbar import activitybar  # noqa: F401
 
-from .content import *
+from .content import *  # noqa: F403
 from .menubar import Menubar
 from .secondary_sidebar import SecondarySideBar
 from .sidebar import SideBar
@@ -48,22 +49,29 @@ class Root(Frame):
 
         self.menubar = Menubar(container)
         self.statusbar = Statusbar(container)
+        self.vimbar = VimBar(container)
 
-        self.subcontainer = PanedWindow(container, orient=tk.HORIZONTAL, bg=self.base.theme.border, bd=0, sashwidth=3, sashpad=0, opaqueresize=False)
-        self.content = Content(self.subcontainer)
+        self.subcontainer = PanedWindow(
+            container, orient=tk.HORIZONTAL, bg=self.base.theme.border,
+            bd=0, sashwidth=3, sashpad=0, opaqueresize=False,
+        )
+        self.content = Content(self.subcontainer)  # noqa: F405
         self.sidebar = SideBar(self.subcontainer, activitybar=self.statusbar.activitybar)
         self.secondary_sidebar = SecondarySideBar(
             self.subcontainer, activitybar=self.statusbar.secondary_activitybar
         )
 
         container.pack(fill=tk.BOTH, expand=True)
-        
+
         self.menubar.pack()
         self.subcontainer.pack(fill=tk.BOTH, expand=True)
         self.statusbar.pack()
 
         self.content.pack(padx=1)
         self.pack(fill=tk.BOTH, expand=True)
+
+        # Expose vimbar on base for global access
+        self.base.vimbar = self.vimbar
 
     def toggle_sidebar(self) -> None:
         self.sidebar.toggle()

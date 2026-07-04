@@ -257,6 +257,32 @@ class Commands:
             if e.content and e.content.editable:
                 e.content.text.toggle_relative_numbering()
 
+    def toggle_vim_mode(self, *_) -> None:
+        """Toggle Vim modal editing on the active text editor."""
+        self.base.vim_mode = not self.base.vim_mode
+        for e in self.base.editorsmanager.active_editors:
+            if e.content and e.content.editable:
+                if self.base.vim_mode:
+                    e.content.text.enable_vim_mode()
+                else:
+                    e.content.text.disable_vim_mode()
+        if not self.base.vim_mode:
+            try:
+                self.base.statusbar.clear_vim_mode()
+            except Exception:
+                pass
+
+    def toggle_keypress_display(self, *_) -> None:
+        """Toggle the streamer keypress display in the status bar."""
+        self.base.keypress_display = not self.base.keypress_display
+        try:
+            if self.base.keypress_display:
+                self.base.statusbar.enable_keypress_display()
+            else:
+                self.base.statusbar.disable_keypress_display()
+        except Exception:
+            pass
+
     def undo(self, *_) -> None:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:

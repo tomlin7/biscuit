@@ -69,7 +69,8 @@ class Config:
         self.tab_size = self.get_value("tab_size", 4)
         self.cursor_style = self.get_value("cursor_style", "line")
         self.relative_line_numbers = self.get_value("relative_line_numbers", False)
-        
+        self.vim_mode = self.get_value("vim_mode", False)
+
         # Display
         self.show_minimap = self.get_value("show_minimap", True)
         self.show_breadcrumbs = self.get_value("show_breadcrumbs", True)

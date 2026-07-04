@@ -12,6 +12,7 @@ from biscuit.common.ui import Frame
 
 from .activitybar import ActivityBar
 from .button import SButton
+from .keypresslog import KeypressDisplay
 
 if typing.TYPE_CHECKING:
     from biscuit.editor import Text
@@ -29,6 +30,23 @@ class Statusbar(Frame):
 
         self.activitybar = ActivityBar(self)
         self.activitybar.pack(side=tk.LEFT, padx=(10, 0))
+
+        # ---------------------------------------------------------------------
+        # Vim mode indicator (hidden by default; shown when Vim mode is active)
+        self._vim_mode_colors = {
+            "NORMAL": ("#1a6ebd", "#ffffff"),        # blue
+            "INSERT": ("#1a8a44", "#ffffff"),        # green
+            "VISUAL": ("#7c4dbd", "#ffffff"),        # purple
+            "VISUAL LINE": ("#b85c00", "#ffffff"),  # orange
+            "COMMAND": ("#b8a000", "#ffffff"),       # yellow-ish
+        }
+        self.vim_mode_btn = self.add_button(
+            text="NORMAL",
+            description="Vim mode (click to toggle)",
+            callback=self.base.commands.toggle_vim_mode,
+            side=tk.LEFT,
+            padx=(4, 2),
+        )
 
         # self.terminal_toggle = self.add_button(
         #     icon="symbol-class",
@@ -151,8 +169,11 @@ class Statusbar(Frame):
             icon2=Icons.LAYOUT_PANEL,
         )
         self.panel_toggle.set_pack_data(side=tk.RIGHT, padx=(0, 10))
-
         self.panel_toggle.show()
+
+        # ---------------------------------------------------------------------
+        # Keypress display (streamer mode) — hidden by default
+        self.keypresslog = KeypressDisplay(self)
 
     def add_button(
         self,
@@ -283,6 +304,33 @@ class Statusbar(Frame):
         """
 
         self.indentation.change_text(text=f"{spaces}sp")
+
+    def set_vim_mode(self, mode: str) -> None:
+        """Update the Vim mode indicator in the status bar.
+
+        Args:
+            mode (str): One of 'NORMAL', 'INSERT', 'VISUAL', 'VISUAL LINE', 'COMMAND'.
+        """
+        bg, fg = self._vim_mode_colors.get(mode, ("#444444", "#ffffff"))
+        self.vim_mode_btn.config(bg=bg)
+        if hasattr(self.vim_mode_btn, "text_label"):
+            self.vim_mode_btn.text_label.config(
+                text=f" {mode} ", bg=bg, fg=fg
+            )
+        if not self.vim_mode_btn.visible:
+            self.vim_mode_btn.show()
+
+    def clear_vim_mode(self) -> None:
+        """Hide the Vim mode indicator (called when Vim mode is disabled)."""
+        self.vim_mode_btn.hide()
+
+    def enable_keypress_display(self) -> None:
+        """Enable the streamer keypress display."""
+        self.keypresslog.enable()
+
+    def disable_keypress_display(self) -> None:
+        """Disable the streamer keypress display."""
+        self.keypresslog.disable()
 
     def pack(self):
         """Packs the status bar into the application."""

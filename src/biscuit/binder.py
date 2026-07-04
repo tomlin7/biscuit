@@ -66,6 +66,7 @@ class Binder:
         self.bind(
             self.bindings.open_recent_session, self.events.restore_last_closed_editor
         )
+        self.bind("<Control-Alt-v>", self.events.toggle_vim_mode)
 
     def bind(self, this, to_this) -> None:
         self.base.bind(this, to_this)
