@@ -91,25 +91,47 @@ class Tab(Frame):
 
     def deselect(self, *_) -> None:
         if self.selected:
-            self.editor.grid_remove()
             self.apply_color(self.bg)
             self.closebtn.config(activeforeground=self.fg, fg=self.bg)
             self.selected = False
 
     def select(self, *_) -> None:
-        if not self.selected:
-            self.master.set_active_tab(self)
-            if self.base.active_directory and self.editor.filename:
-                self.base.set_title(
-                    f"{self.editor.filename} - {os.path.basename(self.base.active_directory)}"
-                )
-            elif self.editor.filename:
-                self.base.set_title(self.editor.filename)
-            self.editor.grid(column=0, row=1, sticky=tk.NSEW, in_=self.master.master)
+        editors_manager = self.master.master
 
-            self.apply_color(self.hbg)
-            self.closebtn.config(activeforeground=self.hfg, fg=self.fg)
-            self.selected = True
+        if self.selected:
+            if (
+                self.editor.path
+                and self.editor.exists
+                and self.editor.showpath
+                and not self.editor.diff
+            ):
+                self.master.show_breadcrumbs()
+                self.base.breadcrumbs.set_path(self.editor.path)
+            else:
+                self.master.hide_breadcrumbs()
+            return
+
+        self.master.set_active_tab(self)
+
+        target_pane = editors_manager.active_pane
+        for pane in editors_manager.panes:
+            if pane.active_editor == self.editor:
+                target_pane = pane
+                break
+
+        target_pane.set_active_editor(self.editor)
+        editors_manager.set_active_pane(target_pane)
+
+        if self.base.active_directory and self.editor.filename:
+            self.base.set_title(
+                f"{self.editor.filename} - {os.path.basename(self.base.active_directory)}"
+            )
+        elif self.editor.filename:
+            self.base.set_title(self.editor.filename)
+
+        self.apply_color(self.hbg)
+        self.closebtn.config(activeforeground=self.hfg, fg=self.fg)
+        self.selected = True
 
         if (
             self.editor.path

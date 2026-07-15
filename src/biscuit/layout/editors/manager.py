@@ -4,14 +4,14 @@ import os
 import tkinter as tk
 import typing
 from tkinter.messagebox import askyesno
-from typing import Dict, List, Union
+from typing import List, Union
 
 from biscuit.common import ActionSet, Game
-from biscuit.common.ui import Frame
+from biscuit.common.ui import Frame, PanedWindow
 from biscuit.editor import Editor, SearchEditor, Welcome
 
 from .editorsbar import EditorsBar
-from .placeholder import Placeholder
+from .pane import EditorPane
 
 if typing.TYPE_CHECKING:
     from biscuit.editor import BaseEditor
@@ -20,11 +20,11 @@ if typing.TYPE_CHECKING:
 
 
 class EditorsManager(Frame):
-    """Editors Pane
+    """Editors Manager
 
     - Contains the Editorsbar
-    - Manages the Editorsbar
-    - Manages the Editors
+    - Manages split panes (EditorPane instances) via a PanedWindow
+    - Each pane shows one editor at a time
     """
 
     def __init__(self, master: Content, *args, **kwargs) -> None:
@@ -39,15 +39,32 @@ class EditorsManager(Frame):
         self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
 
         self.active_editors: List[Editor] = []
-        self.closed_editors: Dict[Editor] = {}
-
         self.closed_editors: List[Editor] = []
         self.max_closed_editors = 10
 
-        self.emptytab = Placeholder(self)
-        self.emptytab.grid(column=0, row=1, sticky=tk.NSEW)
+        self.paned_window = PanedWindow(
+            self, orient=tk.HORIZONTAL,
+            bg=self.base.theme.border, bd=0,
+            sashwidth=3, sashpad=0, opaqueresize=False,
+        )
+        self.paned_window.grid(row=1, column=0, sticky=tk.NSEW)
+
+        self.panes: List[EditorPane] = []
+        self.active_pane: EditorPane | None = None
+
+        self._create_initial_pane()
 
         self.default_editors: List[Editor] = [Welcome(self)]
+
+    def _create_initial_pane(self) -> None:
+        pane = EditorPane(self.paned_window, self)
+        self.paned_window.add(pane, stretch="always")
+        self.paned_window.paneconfigure(pane, minsize=50)
+        self.panes.append(pane)
+        self.active_pane = pane
+
+    def set_active_pane(self, pane: EditorPane) -> None:
+        self.active_pane = pane
 
     def is_empty(self) -> bool:
         return not self.active_editors
@@ -125,6 +142,8 @@ class EditorsManager(Frame):
 
         self.editorsbar.clear_all_tabs()
         self.active_editors.clear()
+        for pane in self.panes:
+            pane.clear()
         self.base.open_editors.clear()
         self.refresh()
 
@@ -136,10 +155,12 @@ class EditorsManager(Frame):
         self.refresh()
 
     def reopen_active_editor(self, *_) -> None:
-        if self.active_editor and self.active_editor.exists:
-            self.delete_editor(self.active_editor)
-            self.update()
-            self.open_editor(self.active_editor.path)
+        if editor := self.active_editor:
+            if editor.exists:
+                path = editor.path
+                self.delete_editor(editor)
+                self.update()
+                self.open_editor(path)
 
     def reopen_editor(self, path: str):
         if not askyesno(
@@ -213,6 +234,11 @@ class EditorsManager(Frame):
 
         if editor in self.active_editors:
             self.active_editors.remove(editor)
+
+        for pane in self.panes:
+            if pane.active_editor == editor:
+                pane.clear()
+
         editor.grid_forget()
         self.refresh()
 
@@ -230,7 +256,6 @@ class EditorsManager(Frame):
         if self.closed_editors:
             editor = self.closed_editors.pop()
             self.add_editor(editor)
-            # self.base.notifications.info(f"Restored {editor.filename}")
         else:
             self.base.notifications.info("No recently closed editors to restore")
 
@@ -269,6 +294,11 @@ class EditorsManager(Frame):
 
         self.active_editors.remove(editor)
         self.editorsbar.delete_tab(editor)
+
+        for pane in self.panes:
+            if pane.active_editor == editor:
+                pane.clear()
+
         if editor.path in self.closed_editors:
             self.closed_editors.pop(editor.path)
 
@@ -314,9 +344,54 @@ class EditorsManager(Frame):
                 self.editorsbar.set_active_tab(tab)
                 return tab.editor
 
+    def close_pane(self, pane: EditorPane) -> None:
+        if len(self.panes) <= 1:
+            return
+
+        if pane == self.active_pane:
+            idx = self.panes.index(pane)
+            neighbor = self.panes[idx - 1] if idx > 0 else self.panes[idx + 1]
+            self.active_pane = neighbor
+
+        self.panes.remove(pane)
+        self.paned_window.forget(pane)
+
+        if pane.active_editor and pane.active_editor in self.active_editors:
+            pane.active_editor.grid_remove()
+
+        pane.destroy()
+
+    def _unsplit(self) -> None:
+        if len(self.panes) <= 1:
+            return
+
+        for pane in self.panes[1:]:
+            if pane.active_editor and pane.active_editor in self.active_editors:
+                pane.active_editor.grid_remove()
+            self.paned_window.forget(pane)
+            pane.destroy()
+
+        self.panes = [self.panes[0]]
+        self.active_pane = self.panes[0]
+
+        if not self.panes[0].active_editor:
+            self.panes[0].placeholder.grid()
+
     def split_editor(self) -> None:
-        # TODO: Implement split editor
-        ...
+        if len(self.panes) > 1:
+            self._unsplit()
+            return
+
+        pane = EditorPane(self.paned_window, self)
+        self.paned_window.add(pane, stretch="always")
+        self.paned_window.paneconfigure(pane, minsize=50)
+        self.panes.append(pane)
+        self.active_pane = pane
+
+        self.update_idletasks()
+        total_width = self.paned_window.winfo_width()
+        if total_width > 0:
+            self.paned_window.sash_place(0, total_width // 2, 0)
 
     def change_tab_forward(self) -> None:
         self.editorsbar.change_tab_forward()
@@ -326,15 +401,13 @@ class EditorsManager(Frame):
 
     @property
     def active_editor(self) -> Editor:
-        if not self.editorsbar.active_tab:
+        if not self.active_pane:
             return
-
-        return self.editorsbar.active_tab.editor
+        return self.active_pane.active_editor
 
     def refresh(self) -> None:
         if not self.active_editors:
             self.editorsbar.clear_buttons()
-            self.emptytab.grid()
             self.editorsbar.active_tabs.clear()
             self.base.set_title(
                 os.path.basename(self.base.active_directory)
@@ -344,6 +417,5 @@ class EditorsManager(Frame):
             self.editorsbar.hide_tab_container()
         else:
             self.editorsbar.show_tab_container()
-            self.emptytab.grid_remove()
 
         self.base.update_statusbar()

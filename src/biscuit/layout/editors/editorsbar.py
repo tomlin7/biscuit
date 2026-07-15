@@ -50,6 +50,7 @@ class EditorsBar(Frame):
             "Restore Last Closed Editor", self.base.commands.restore_last_closed_editor
         )
         self.menu.add_separator(10)
+        self.menu.add_command("Split Editor", self.base.commands.split_editor)
         self.menu.add_command("Close All", self.master.delete_all_editors)
 
         self.buttons: list[IconButton] = []
