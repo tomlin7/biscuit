@@ -186,10 +186,11 @@ class ConfigManager:
                 else:
                     editor.content.linenumbers.grid_remove()
         
-        if self.config.show_breadcrumbs:
-             self.editorsmanager.editorsbar.show_breadcrumbs()
-        else:
-             self.editorsmanager.editorsbar.hide_breadcrumbs()
+        for pane in self.editorsmanager.get_all_panes():
+            if self.config.show_breadcrumbs:
+                pane.show_breadcrumbs()
+            else:
+                pane.hide_breadcrumbs()
 
         # Update indent guides for all active text editors
         # This requires manually triggering an update/refresh in the text widget
