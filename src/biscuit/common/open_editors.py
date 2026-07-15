@@ -80,8 +80,7 @@ class OpenEditors(Toplevel):
         self.nodes = {}
 
     def openfile(self, path) -> None:
-        self.base.editorsmanager.editorsbar.switch_tabs(path)
+        self.base.editorsmanager.switch_tabs(path)
 
     def closefile(self, path) -> None:
-        e = self.base.editorsmanager.close_editor_by_path(path)
-        self.base.editorsmanager.editorsbar.close_tab_helper(e)
+        self.base.editorsmanager.close_editor_by_path(path)
