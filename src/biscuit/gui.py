@@ -132,8 +132,6 @@ class GUIManager(Tk, ConfigManager):
 
         self.panel = self.contentpane.panel
         self.editorsmanager = self.root.content.editorspane
-        self.editorsbar = self.editorsmanager.editorsbar
-        self.breadcrumbs = self.editorsbar.breadcrumbs
 
         self.explorer = self.sidebar.explorer
         self.outline = self.sidebar.outline
