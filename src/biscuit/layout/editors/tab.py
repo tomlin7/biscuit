@@ -10,9 +10,7 @@ from biscuit.common.ui import Frame, Icon, IconButton
 if typing.TYPE_CHECKING:
     from biscuit.editor import Editor
 
-    from .editorsbar import EditorsBar
-
-# TODO: show modified, saved state in the tab
+    from .pane import EditorPane
 
 
 class Tab(Frame):
@@ -22,9 +20,9 @@ class Tab(Frame):
     Shows the filename, icon and close button.
     """
 
-    def __init__(self, master: EditorsBar, editor: Editor, *args, **kwargs) -> None:
+    def __init__(self, master: EditorPane, editor: Editor, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.master: EditorsBar = master
+        self.master: EditorPane = master
         self.editor = editor
         self.selected = False
 
@@ -96,31 +94,19 @@ class Tab(Frame):
             self.selected = False
 
     def select(self, *_) -> None:
-        editors_manager = self.master.master
+        pane: EditorPane = self.master
+        editors_manager = pane.editors_manager
 
         if self.selected:
-            if (
-                self.editor.path
-                and self.editor.exists
-                and self.editor.showpath
-                and not self.editor.diff
-            ):
-                self.master.show_breadcrumbs()
-                self.base.breadcrumbs.set_path(self.editor.path)
-            else:
-                self.master.hide_breadcrumbs()
+            editors_manager.set_active_pane(pane)
+            self._update_breadcrumbs()
             return
 
-        self.master.set_active_tab(self)
+        pane.set_active_tab(self)
+        editors_manager.set_active_pane(pane)
 
-        target_pane = editors_manager.active_pane
-        for pane in editors_manager.panes:
-            if pane.active_editor == self.editor:
-                target_pane = pane
-                break
-
-        target_pane.set_active_editor(self.editor)
-        editors_manager.set_active_pane(target_pane)
+        self.editor.grid(row=0, column=0, sticky=tk.NSEW, in_=pane.editor_container)
+        pane.set_active_editor(self.editor)
 
         if self.base.active_directory and self.editor.filename:
             self.base.set_title(
@@ -133,13 +119,17 @@ class Tab(Frame):
         self.closebtn.config(activeforeground=self.hfg, fg=self.fg)
         self.selected = True
 
+        self._update_breadcrumbs()
+
+    def _update_breadcrumbs(self) -> None:
+        pane = self.master
         if (
             self.editor.path
             and self.editor.exists
             and self.editor.showpath
             and not self.editor.diff
         ):
-            self.master.show_breadcrumbs()
-            self.base.breadcrumbs.set_path(self.editor.path)
+            pane.show_breadcrumbs()
+            pane.breadcrumbs.set_path(self.editor.path)
         else:
-            self.master.hide_breadcrumbs()
+            pane.hide_breadcrumbs()

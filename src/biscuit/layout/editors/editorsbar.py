@@ -6,11 +6,8 @@ from tkinter.messagebox import askyesno
 
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
-from biscuit.editor import BreadCrumbs
 
 from .menu import EditorsbarMenu
-from .tab import Tab
-from .tabscroll import TabScroll
 
 if typing.TYPE_CHECKING:
     from biscuit.editor import Editor
@@ -21,8 +18,8 @@ if typing.TYPE_CHECKING:
 class EditorsBar(Frame):
     """Editors Bar for Editors
 
-    - Manages the tabs
-    - Manages the action buttons for the tabs
+    - Manages action buttons for the editor area
+    - Shows breadcrumbs for the active editor
     """
 
     def __init__(self, master: EditorsManager, *args, **kwargs) -> None:
@@ -33,14 +30,7 @@ class EditorsBar(Frame):
         self.major_container = Frame(self, **self.base.theme.layout.content.editors.bar)
         self.major_container.pack(fill=tk.BOTH, expand=True)
 
-        self.active_tabs: list[Tab] = []
-        self.active_tab = None
-
-        self.tab_control_container = TabScroll(self.major_container)
-        self.tab_control_container.pack(fill=tk.Y, side=tk.LEFT)
-
         self.tab_container = Frame(self.major_container, bg=self.base.theme.border)
-        self.tab_container.pack(fill=tk.BOTH, side=tk.LEFT)
 
         self.menu = EditorsbarMenu(self.major_container, "tabs")
         self.menu.add_command(
@@ -75,33 +65,6 @@ class EditorsBar(Frame):
                     side=tk.RIGHT, fill=tk.Y
                 )
 
-        self.secondary_container = Frame(
-            self, **self.base.theme.layout.content.editors.bar
-        )
-        self.secondary_container.pack(fill=tk.BOTH, expand=True)
-
-        self.breadcrumbs = BreadCrumbs(self.secondary_container)
-        self.breadcrumbs.show()
-
-    def change_tab_forward(self) -> None:
-        if self.active_tab:
-            i = self.active_tabs.index(self.active_tab)
-            next_index = (i + 1) % len(self.active_tabs)
-            self.active_tabs[next_index].select()
-
-    def change_tab_back(self) -> None:
-        if self.active_tab:
-            i = self.active_tabs.index(self.active_tab)
-            prev_index = (i - 1) % len(self.active_tabs)
-            self.active_tabs[prev_index].select()
-
-    def hide_breadcrumbs(self) -> None:
-        self.secondary_container.pack_forget()
-
-    def show_breadcrumbs(self) -> None:
-        self.breadcrumbs.clear()
-        self.secondary_container.pack(fill=tk.BOTH, expand=True)
-
     def hide_tab_container(self) -> None:
         self.tab_container.pack_forget()
 
@@ -124,17 +87,6 @@ class EditorsBar(Frame):
             button.pack_forget()
         self.buttons.clear()
 
-    def add_tab(self, editor: Editor) -> None:
-        tab = Tab(self, editor)
-        tab.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1), in_=self.tab_container)
-        self.active_tabs.append(tab)
-
-        tab.select()
-
-    def close_active_tab(self) -> None:
-        if self.active_tab:
-            self.close_tab(self.active_tab)
-
     def save_unsaved_changes(self, e: Editor) -> None:
         if e.content and e.content.editable and e.content.unsaved_changes:
             if askyesno(
@@ -147,75 +99,9 @@ class EditorsBar(Frame):
                     self.base.commands.save_file_as()
                 print(f"Saved changes to {e.path}.")
 
-    def close_tab(self, tab: Tab) -> None:
-        if e := tab.editor:
-            self.save_unsaved_changes(e)
-
-        try:
-            i = self.active_tabs.index(tab)
-        except ValueError:
-            # most probably in case of diff editors, not handled
-            return
-
-        was_selected = tab == self.active_tab
-
-        assert self.active_tabs.pop(i) == tab
-        self.master.close_editor(tab.editor)
-        tab.destroy()
-
-        if not was_selected:
-            return
-
-        self.hide_breadcrumbs()
-        if self.active_tabs:
-            if i < len(self.active_tabs):
-                self.active_tabs[i].select()
-            else:
-                self.active_tabs[i - 1].select()
-        else:
-            self.active_tab = None
-
-    def close_tab_helper(self, editor: Editor) -> None:
-        for tab in self.active_tabs:
-            if tab.editor == editor:
-                try:
-                    self.active_tabs.remove(tab)
-                    tab.destroy()
-                except ValueError:
-                    return
-
-    def delete_tab(self, editor: Editor):
-        self.hide_breadcrumbs()
-
-        for tab in self.active_tabs:
-            if tab.editor == editor:
-                self.active_tabs.remove(tab)
-                tab.destroy()
-                return
-
-    def set_active_tab(self, selected_tab: Tab) -> None:
-        self.active_tab = selected_tab
-        if selected_tab.editor.content:
-            self.replace_buttons(selected_tab.editor.content.__buttons__)
-        else:
-            self.clear_buttons()
-        for tab in self.active_tabs:
-            if tab != selected_tab:
-                tab.deselect()
-        self.master.refresh()
-
-    def clear_all_tabs(self) -> None:
-        for tab in self.active_tabs:
-            tab.destroy()
-
-        self.active_tabs.clear()
-        self.active_tab = None
-
     def switch_tabs(self, path: str) -> None:
-        for tab in self.active_tabs:
-            if tab.editor.path == path:
-                tab.select()
-                return tab.editor
-
-    def scroll_left(self) -> None: ...
-    def scroll_right(self) -> None: ...
+        for pane in self.master.panes:
+            for tab in pane.active_tabs:
+                if tab.editor.path == path:
+                    tab.select()
+                    return tab.editor
