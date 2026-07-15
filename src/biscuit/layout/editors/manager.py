@@ -10,7 +10,6 @@ from biscuit.common import ActionSet, Game
 from biscuit.common.ui import Frame, PanedWindow
 from biscuit.editor import Editor, SearchEditor, Welcome
 
-from .editorsbar import EditorsBar
 from .pane import EditorPane
 
 if typing.TYPE_CHECKING:
@@ -22,9 +21,8 @@ if typing.TYPE_CHECKING:
 class EditorsManager(Frame):
     """Editors Manager
 
-    - Contains the Editorsbar
-    - Manages split panes (EditorPane instances) via a PanedWindow
-    - Each pane shows one editor at a time
+    - Manages split editor panes via a tree of nested PanedWindows
+    - Each pane can be independently split in any direction
     """
 
     def __init__(self, master: Content, *args, **kwargs) -> None:
@@ -32,39 +30,53 @@ class EditorsManager(Frame):
         self.config(bg=self.base.theme.border)
 
         self.grid_propagate(False)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-
-        self.editorsbar = EditorsBar(self)
-        self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
 
         self.active_editors: List[Editor] = []
         self.closed_editors: List[Editor] = []
         self.max_closed_editors = 10
 
-        self.paned_window = PanedWindow(
+        self.root_pw = PanedWindow(
             self, orient=tk.HORIZONTAL,
             bg=self.base.theme.border, bd=0,
             sashwidth=3, sashpad=0, opaqueresize=False,
         )
-        self.paned_window.grid(row=1, column=0, sticky=tk.NSEW)
+        self.root_pw.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.panes: List[EditorPane] = []
-        self.active_pane: EditorPane | None = None
-
+        self._active_pane: EditorPane | None = None
         self._create_initial_pane()
 
         self.default_editors: List[Editor] = [Welcome(self)]
 
     def _create_initial_pane(self) -> None:
-        pane = EditorPane(self.paned_window, self)
-        self.paned_window.add(pane, stretch="always")
-        self.paned_window.paneconfigure(pane, minsize=50)
-        self.panes.append(pane)
-        self.active_pane = pane
+        pane = EditorPane(self.root_pw, self)
+        self.root_pw.add(pane, stretch="always")
+        self.root_pw.paneconfigure(pane, minsize=50)
+        self._active_pane = pane
+
+    def get_all_panes(self) -> list[EditorPane]:
+        result: list[EditorPane] = []
+        self._collect_panes(self.root_pw, result)
+        return result
+
+    def _collect_panes(self, parent: tk.PanedWindow, result: list[EditorPane]) -> None:
+        for child_path in parent.panes():
+            child = parent.nametowidget(child_path)
+            if isinstance(child, EditorPane):
+                result.append(child)
+            elif isinstance(child, tk.PanedWindow):
+                self._collect_panes(child, result)
+
+    @property
+    def panes(self) -> list[EditorPane]:
+        return self.get_all_panes()
 
     def set_active_pane(self, pane: EditorPane) -> None:
-        self.active_pane = pane
+        self._active_pane = pane
+        if pane.active_editor:
+            self.base.open_editors.set_active(pane.active_editor)
+        self.refresh()
 
     def is_empty(self) -> bool:
         return not self.active_editors
@@ -118,40 +130,44 @@ class EditorsManager(Frame):
             self.add_editor(editor)
 
     def add_editor(self, editor: Union[Editor, BaseEditor]) -> Editor | BaseEditor:
-        """Add a new editor to the editor pane.
-
-        Args:
-            editor (Union[Editor, BaseEditor]): The editor to add."""
-
         if editor in self.active_editors:
             return self.set_active_editor(editor)
 
         self.active_editors.append(editor)
         if editor.content:
-            editor.content.create_buttons(self.editorsbar.action_container)
-        self.editorsbar.add_tab(editor)
+            editor.content.create_buttons(self.active_pane.action_container)
+        self.active_pane.add_tab(editor)
         self.base.open_editors.add_item(editor)
         self.refresh()
         return editor
 
     def delete_all_editors(self) -> None:
-        for tab in self.editorsbar.active_tabs:
-            if e := tab.editor:
-                self.editorsbar.save_unsaved_changes(e)
-                e.destroy()
-
-        self.editorsbar.clear_all_tabs()
-        self.active_editors.clear()
-        for pane in self.panes:
+        editors = list(self.active_editors)
+        for pane in self.get_all_panes():
+            pane.clear_tabs()
             pane.clear()
+        for e in editors:
+            e.destroy()
+        self.active_editors.clear()
         self.base.open_editors.clear()
         self.refresh()
 
+    def save_unsaved_changes(self, e: Editor) -> None:
+        if e.content and e.content.editable and e.content.unsaved_changes:
+            if askyesno(
+                "Unsaved changes",
+                f"Do you want to save the changes you made to {e.filename}",
+            ):
+                if e.exists:
+                    e.save()
+                else:
+                    self.base.commands.save_file_as()
+
     def close_all_editors(self) -> None:
-        for tab in self.editorsbar.active_tabs:
-            if e := tab.editor:
-                self.editorsbar.save_unsaved_changes(e)
-                self.close_editor(e)
+        for pane in list(self.get_all_panes()):
+            for tab in list(pane.active_tabs):
+                self.save_unsaved_changes(tab.editor)
+                pane.close_tab(tab)
         self.refresh()
 
     def reopen_active_editor(self, *_) -> None:
@@ -177,65 +193,40 @@ class EditorsManager(Frame):
             self.base.logger.error(f"Reopening editor failed: {e}")
             self.base.notifications.error("Reopening editor failed: see logs")
 
+    def switch_tabs(self, path: str) -> Editor | None:
+        for pane in self.get_all_panes():
+            for tab in pane.active_tabs:
+                if tab.editor.path == path:
+                    tab.select()
+                    return tab.editor
+
     def open_editor(
         self, path: str = None, exists=True, load_file=True
     ) -> Editor | BaseEditor:
-        """Open a new editor with the given path.
-
-        Args:
-            path (str): The path of the file to open.
-            exists (bool, optional): Whether the file exists. Defaults to True.
-
-        Returns:
-            Editor: The opened editor."""
-
         if path:
             if self.is_open(path):
-                return self.editorsbar.switch_tabs(path)
+                return self.switch_tabs(path)
             if path in self.closed_editors:
                 return self.add_editor(self.closed_editors[path])
 
         return self.add_editor(Editor(self, path, exists, load_file=load_file))
 
     def open_diff_editor(self, path: str, exists: bool) -> None:
-        """Open a new diff editor with the given path.
-
-        Args:
-            path (str): The path of the file to open.
-            exists (bool): Whether the file exists."""
-
         self.add_editor(Editor(self, path, exists, diff=True))
 
     def diff_files(self, file1: str, file2: str, standalone: bool = False) -> None:
-        """Diff two files.
-
-        Args:
-            file1 (str): The path of the first file.
-            file2 (str): The path of the second file."""
-
         self.add_editor(
             Editor(self, file1, True, file2, diff=True, standalone=standalone)
         )
 
     def open_game(self, id: str) -> None:
-        """Open a new game editor with the given id.
-
-        Args:
-            id (str): The id of the game."""
-
         self.add_editor(Game(self, id))
 
     def close_editor(self, editor: Editor) -> None:
-        """Closes the given editor.
-        Keeps the editor in cache.
-
-        Args:
-            editor (Editor): The editor to close."""
-
         if editor in self.active_editors:
             self.active_editors.remove(editor)
 
-        for pane in self.panes:
+        for pane in self.get_all_panes():
             if pane.active_editor == editor:
                 pane.clear()
 
@@ -260,44 +251,32 @@ class EditorsManager(Frame):
             self.base.notifications.info("No recently closed editors to restore")
 
     def close_editor_by_path(self, path: str) -> None:
-        """Closes the editor with the given path.
-        Keeps the editor in cache.
-
-        Args:
-            path (str): The path of the editor to close."""
-
         e = self.get_editor(path)
         self.close_editor(e)
         return e
 
     def get_editor(self, path: str) -> Editor:
-        """Get editor by path.
-
-        Args:
-            path (str): The path of the editor to get."""
-
         for editor in self.active_editors:
             if editor.path == path:
                 return editor
 
     def close_active_editor(self) -> None:
-        self.editorsbar.close_active_tab()
+        if self.active_pane:
+            self.active_pane.close_active_tab()
 
     def delete_editor(self, editor: Editor) -> None:
-        """Delete the given editor.
-
-        Args:
-            editor (Editor): The editor to delete."""
-
         if editor not in self.active_editors:
             return
 
         self.active_editors.remove(editor)
-        self.editorsbar.delete_tab(editor)
 
-        for pane in self.panes:
-            if pane.active_editor == editor:
-                pane.clear()
+        for pane in self.get_all_panes():
+            for tab in list(pane.active_tabs):
+                if tab.editor == editor:
+                    pane.active_tabs.remove(tab)
+                    tab.destroy()
+                    pane.clear()
+                    break
 
         if editor.path in self.closed_editors:
             self.closed_editors.pop(editor.path)
@@ -307,115 +286,189 @@ class EditorsManager(Frame):
         self.refresh()
 
     def set_active_editor(self, editor: Editor) -> Editor:
-        """Set an existing editor to currently shown one.
-
-        Args:
-            editor (Editor): The editor to set as active."""
-
-        for tab in self.editorsbar.active_tabs:
-            if tab.editor == editor:
-                self.editorsbar.set_active_tab(tab)
-        self.base.open_editors.set_active(editor)
-        self.refresh()
+        for pane in self.get_all_panes():
+            for tab in pane.active_tabs:
+                if tab.editor == editor:
+                    tab.select()
+                    self.base.open_editors.set_active(editor)
+                    self.refresh()
+                    return editor
         return editor
 
     def set_active_editor_by_index(self, index: int) -> Editor:
-        """Set an existing editor to currently shown one by index.
-
-        Args:
-            index (int): The index of the editor to set as active."""
-
-        if index < len(self.editorsbar.active_tabs):
-            self.editorsbar.set_active_tab(self.editorsbar.active_tabs[index])
-            return self.editorsbar.active_tabs[index].editor
+        for pane in self.get_all_panes():
+            if index < len(pane.active_tabs):
+                pane.active_tabs[index].select()
+                return pane.active_tabs[index].editor
+            index -= len(pane.active_tabs)
+        return None
 
     def set_active_editor_by_path(self, path: str) -> Editor:
-        """Set an existing editor to currently shown one by path.
-
-        Args:
-            path (str): The path of the editor to set as active."""
-
-        for tab in self.editorsbar.active_tabs:
-            if (
-                tab.editor.path
-                and path
-                and (os.path.abspath(tab.editor.path) == os.path.abspath(path))
-            ):
-                self.editorsbar.set_active_tab(tab)
-                return tab.editor
+        for pane in self.get_all_panes():
+            for tab in pane.active_tabs:
+                if (
+                    tab.editor.path
+                    and path
+                    and (os.path.abspath(tab.editor.path) == os.path.abspath(path))
+                ):
+                    tab.select()
+                    return tab.editor
 
     def close_pane(self, pane: EditorPane) -> None:
-        if len(self.panes) <= 1:
+        parent_pw = self._find_parent_pw(pane)
+        if not parent_pw:
             return
 
-        if pane == self.active_pane:
-            idx = self.panes.index(pane)
-            neighbor = self.panes[idx - 1] if idx > 0 else self.panes[idx + 1]
-            self.active_pane = neighbor
+        if len(self.get_all_panes()) <= 1:
+            return
 
-        self.panes.remove(pane)
-        self.paned_window.forget(pane)
+        if pane == self._active_pane:
+            sibling_paths = [p for p in parent_pw.panes() if p != str(pane)]
+            if sibling_paths:
+                focus = parent_pw.nametowidget(sibling_paths[0])
+                if isinstance(focus, tk.PanedWindow):
+                    focus = self._first_pane(focus)
+                self._active_pane = focus
 
-        if pane.active_editor and pane.active_editor in self.active_editors:
-            pane.active_editor.grid_remove()
+        for tab in list(pane.active_tabs):
+            self.close_editor(tab.editor)
 
+        parent_pw.forget(pane)
         pane.destroy()
+        self._cleanup_empty_pw(parent_pw)
 
-    def _unsplit(self) -> None:
-        if len(self.panes) <= 1:
+    def _cleanup_empty_pw(self, pw: tk.PanedWindow) -> None:
+        if pw.panes():
+            return
+        grandparent = pw.master
+        if isinstance(grandparent, tk.PanedWindow):
+            grandparent.forget(pw)
+            pw.destroy()
+            self._cleanup_empty_pw(grandparent)
+
+    def _find_parent_pw(self, pane: EditorPane) -> tk.PanedWindow | None:
+        for child_path in self.root_pw.panes():
+            child = self.root_pw.nametowidget(child_path)
+            found = self._find_parent_pw_recursive(child, pane)
+            if found:
+                return found
+        return None
+
+    def _find_parent_pw_recursive(
+        self, parent: tk.Widget, pane: EditorPane
+    ) -> tk.PanedWindow | None:
+        if isinstance(parent, tk.PanedWindow):
+            for child_path in parent.panes():
+                child = parent.nametowidget(child_path)
+                if child is pane:
+                    return parent
+                if isinstance(child, tk.PanedWindow):
+                    result = self._find_parent_pw_recursive(child, pane)
+                    if result:
+                        return result
+        return None
+
+    def _first_pane(self, pw: tk.PanedWindow) -> EditorPane | None:
+        for child_path in pw.panes():
+            child = pw.nametowidget(child_path)
+            if isinstance(child, EditorPane):
+                return child
+            if isinstance(child, tk.PanedWindow):
+                return self._first_pane(child)
+        return None
+
+    def _split_pane(self, pane: EditorPane, orient: str) -> None:
+        parent_pw = self._find_parent_pw(pane)
+        if not parent_pw:
             return
 
-        for pane in self.panes[1:]:
-            if pane.active_editor and pane.active_editor in self.active_editors:
-                pane.active_editor.grid_remove()
-            self.paned_window.forget(pane)
-            pane.destroy()
+        idx = list(parent_pw.panes()).index(str(pane))
+        current_path = (
+            pane.active_editor.path
+            if pane.active_editor and pane.active_editor.path
+            else None
+        )
 
-        self.panes = [self.panes[0]]
-        self.active_pane = self.panes[0]
+        parent_pw.forget(pane)
 
-        if not self.panes[0].active_editor:
-            self.panes[0].placeholder.grid()
+        nested = PanedWindow(
+            parent_pw, orient=orient,
+            bg=self.base.theme.border, bd=0,
+            sashwidth=3, sashpad=0, opaqueresize=False,
+        )
 
-    def split_editor(self) -> None:
-        if len(self.panes) > 1:
-            self._unsplit()
-            return
+        sibling = EditorPane(nested, self)
+        if current_path:
+            new_editor = Editor(self, current_path, exists=True)
+            self.active_editors.append(new_editor)
+            sibling.add_tab(new_editor)
+            self.base.open_editors.add_item(new_editor)
 
-        pane = EditorPane(self.paned_window, self)
-        self.paned_window.add(pane, stretch="always")
-        self.paned_window.paneconfigure(pane, minsize=50)
-        self.panes.append(pane)
-        self.active_pane = pane
+        nested.add(pane, stretch="always")
+        nested.add(sibling, stretch="always")
+        nested.paneconfigure(pane, minsize=50)
+        nested.paneconfigure(sibling, minsize=50)
 
+        remaining = list(parent_pw.panes())
+        if idx < len(remaining):
+            parent_pw.add(nested, stretch="always", before=remaining[idx])
+        else:
+            parent_pw.add(nested, stretch="always")
+
+        self._active_pane = sibling
+        self._equalize_pw(parent_pw)
+        self._equalize_pw(nested)
+
+    def split_editor(self, *_) -> None:
+        if self._active_pane:
+            self._split_pane(self._active_pane, tk.HORIZONTAL)
+
+    def split_editor_vertical(self, *_) -> None:
+        if self._active_pane:
+            self._split_pane(self._active_pane, tk.VERTICAL)
+
+    def _equalize_pw(self, pw: tk.PanedWindow) -> None:
         self.update_idletasks()
-        total_width = self.paned_window.winfo_width()
-        if total_width > 0:
-            self.paned_window.sash_place(0, total_width // 2, 0)
+        children = pw.panes()
+        n = len(children)
+        if n <= 1:
+            return
+
+        orient = pw.cget("orient")
+        total = pw.winfo_width() if orient == tk.HORIZONTAL else pw.winfo_height()
+        if total <= 0:
+            return
+
+        for i in range(n - 1):
+            pos = (i + 1) * total // n
+            if orient == tk.HORIZONTAL:
+                pw.sash_place(i, pos, 0)
+            else:
+                pw.sash_place(i, 0, pos)
 
     def change_tab_forward(self) -> None:
-        self.editorsbar.change_tab_forward()
+        if self._active_pane:
+            self._active_pane.change_tab_forward()
 
     def change_tab_back(self) -> None:
-        self.editorsbar.change_tab_back()
+        if self._active_pane:
+            self._active_pane.change_tab_back()
 
     @property
-    def active_editor(self) -> Editor:
-        if not self.active_pane:
-            return
-        return self.active_pane.active_editor
+    def active_editor(self) -> Editor | None:
+        if not self._active_pane:
+            return None
+        return self._active_pane.active_editor
+
+    @property
+    def active_pane(self) -> EditorPane | None:
+        return self._active_pane
 
     def refresh(self) -> None:
         if not self.active_editors:
-            self.editorsbar.clear_buttons()
-            self.editorsbar.active_tabs.clear()
             self.base.set_title(
                 os.path.basename(self.base.active_directory)
                 if self.base.active_directory
                 else None
             )
-            self.editorsbar.hide_tab_container()
-        else:
-            self.editorsbar.show_tab_container()
-
         self.base.update_statusbar()
