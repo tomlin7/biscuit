@@ -19,17 +19,15 @@ def show_python_not_installed_message():
 
 
 def check_python_installation():
-    """Check if python is installed and install python language server."""
+    """Check if python is installed."""
 
     try:
         if os.name == "nt":
             sp.check_call(["python", "--version"])
-            sp.Popen(["pip", "install", "python-lsp-server"])
         else:
             sp.check_call(["python3", "--version"])
-            sp.Popen(["python3", "-m", "pip", "install", "python-lsp-server"])
 
-    except sp.CalledProcessError:
+    except (sp.CalledProcessError, FileNotFoundError):
         show_python_not_installed_message()
 
 
