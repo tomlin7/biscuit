@@ -47,7 +47,7 @@ class EditorsManager(Frame):
         self._active_pane: EditorPane | None = None
         self._create_initial_pane()
 
-        self.default_editors: List[Editor] = [Welcome(self)]
+        self.default_editors: List[Editor] = [Welcome(self.active_pane)]
 
     def _create_initial_pane(self) -> None:
         pane = EditorPane(self.root_pw, self)
@@ -119,10 +119,10 @@ class EditorsManager(Frame):
         self.add_editors(self.default_editors)
 
     def add_welcome(self) -> None:
-        self.add_editor(Welcome(self))
+        self.add_editor(Welcome(self.active_pane))
 
     def add_search(self) -> None:
-        self.add_editor(SearchEditor(self))
+        self.add_editor(SearchEditor(self.active_pane))
 
     def add_editors(self, editors: list[Editor]) -> None:
         for editor in editors:
@@ -208,18 +208,18 @@ class EditorsManager(Frame):
             if path in self.closed_editors:
                 return self.add_editor(self.closed_editors[path])
 
-        return self.add_editor(Editor(self, path, exists, load_file=load_file))
+        return self.add_editor(Editor(self.active_pane, path, exists, load_file=load_file))
 
     def open_diff_editor(self, path: str, exists: bool) -> None:
-        self.add_editor(Editor(self, path, exists, diff=True))
+        self.add_editor(Editor(self.active_pane, path, exists, diff=True))
 
     def diff_files(self, file1: str, file2: str, standalone: bool = False) -> None:
         self.add_editor(
-            Editor(self, file1, True, file2, diff=True, standalone=standalone)
+            Editor(self.active_pane, file1, True, file2, diff=True, standalone=standalone)
         )
 
     def open_game(self, id: str) -> None:
-        self.add_editor(Game(self, id))
+        self.add_editor(Game(self.active_pane, id))
 
     def close_editor(self, editor: Editor) -> None:
         if editor in self.active_editors:
@@ -229,7 +229,10 @@ class EditorsManager(Frame):
             if pane.active_editor == editor:
                 pane.clear()
 
-        editor.grid_forget()
+        try:
+            editor.grid_forget()
+        except tk.TclError:
+            pass
         self.refresh()
 
         if editor.content and editor.content.editable:
@@ -407,7 +410,7 @@ class EditorsManager(Frame):
 
         sibling = EditorPane(nested, self)
         if current_path:
-            new_editor = Editor(self, current_path, exists=True)
+            new_editor = Editor(sibling, current_path, exists=True)
             self.active_editors.append(new_editor)
             sibling.add_tab(new_editor)
             self.base.open_editors.add_item(new_editor)

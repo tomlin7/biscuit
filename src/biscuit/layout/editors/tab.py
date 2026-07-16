@@ -105,7 +105,6 @@ class Tab(Frame):
         pane.set_active_tab(self)
         editors_manager.set_active_pane(pane)
 
-        self.editor.grid(row=0, column=0, sticky=tk.NSEW, in_=pane.editor_container)
         pane.set_active_editor(self.editor)
 
         if self.base.active_directory and self.editor.filename:
