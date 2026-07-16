@@ -428,7 +428,8 @@ class EditorsManager(Frame):
         nested.paneconfigure(pane, minsize=50)
         nested.paneconfigure(sibling, minsize=50)
 
-        # refresh breadcrumbs on moved pane (forget+add can lose grid state)
+        # restore pane A's grid state after forget+add (geometry collapse)
+        pane._update_tab_bar_visibility()
         if pane.active_editor and pane.active_editor.path and pane.active_editor.showpath:
             pane.show_breadcrumbs()
             pane.breadcrumbs.set_path(pane.active_editor.path)
