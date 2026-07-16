@@ -34,17 +34,12 @@ class EditorPane(Frame):
         self.breadcrumbs.pack(fill=tk.X, side=tk.TOP)
         self.breadcrumbs_container.grid_remove()
 
-        self.editor_container = Frame(self)
-        self.editor_container.grid(row=2, column=0, sticky=tk.NSEW)
-        self.editor_container.grid_rowconfigure(0, weight=1)
-        self.editor_container.grid_columnconfigure(0, weight=1)
-
         self.active_tabs: list[Tab] = []
         self.active_tab: Tab | None = None
         self.active_editor: Editor | None = None
 
-        self.placeholder = Placeholder(self.editor_container)
-        self.placeholder.grid(row=0, column=0, sticky=tk.NSEW)
+        self.placeholder = Placeholder(self)
+        self.placeholder.grid(row=2, column=0, sticky=tk.NSEW)
 
         self.bind("<Button-1>", self.focus_pane)
         self.placeholder.bind("<Button-1>", self.focus_pane)
@@ -136,15 +131,17 @@ class EditorPane(Frame):
 
     def set_active_editor(self, editor: Editor | None) -> None:
         if self.active_editor and self.active_editor != editor:
-            self.active_editor.grid_remove()
+            try:
+                self.active_editor.grid_remove()
+            except tk.TclError:
+                pass
 
         if editor:
-            editor.grid(row=0, column=0, sticky=tk.NSEW, in_=self.editor_container)
+            editor.grid(row=2, column=0, sticky=tk.NSEW)
             editor.tkraise()
             self.placeholder.grid_remove()
         else:
             self.placeholder.grid()
-
         self.active_editor = editor
 
     def add_tab(self, editor: Editor) -> Tab:
