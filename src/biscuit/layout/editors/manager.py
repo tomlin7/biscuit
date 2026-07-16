@@ -349,9 +349,12 @@ class EditorsManager(Frame):
     def _find_parent_pw(self, pane: EditorPane) -> tk.PanedWindow | None:
         for child_path in self.root_pw.panes():
             child = self.root_pw.nametowidget(child_path)
-            found = self._find_parent_pw_recursive(child, pane)
-            if found:
-                return found
+            if child is pane:
+                return self.root_pw
+            if isinstance(child, tk.PanedWindow):
+                found = self._find_parent_pw_recursive(child, pane)
+                if found:
+                    return found
         return None
 
     def _find_parent_pw_recursive(
