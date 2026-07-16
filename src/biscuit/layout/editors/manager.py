@@ -428,6 +428,13 @@ class EditorsManager(Frame):
         nested.paneconfigure(pane, minsize=50)
         nested.paneconfigure(sibling, minsize=50)
 
+        # refresh breadcrumbs on moved pane (forget+add can lose grid state)
+        if pane.active_editor and pane.active_editor.path and pane.active_editor.showpath:
+            pane.show_breadcrumbs()
+            pane.breadcrumbs.set_path(pane.active_editor.path)
+        else:
+            pane.hide_breadcrumbs()
+
         remaining = list(parent_pw.panes())
         if idx < len(remaining):
             parent_pw.add(nested, stretch="always", before=remaining[idx])
