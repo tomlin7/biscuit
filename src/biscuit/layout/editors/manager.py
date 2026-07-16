@@ -428,14 +428,6 @@ class EditorsManager(Frame):
         nested.paneconfigure(pane, minsize=50)
         nested.paneconfigure(sibling, minsize=50)
 
-        # restore pane A's grid state after forget+add (geometry collapse)
-        pane._update_tab_bar_visibility()
-        if pane.active_editor and pane.active_editor.path and pane.active_editor.showpath:
-            pane.show_breadcrumbs()
-            pane.breadcrumbs.set_path(pane.active_editor.path)
-        else:
-            pane.hide_breadcrumbs()
-
         remaining = list(parent_pw.panes())
         if idx < len(remaining):
             parent_pw.add(nested, stretch="always", before=remaining[idx])
@@ -445,6 +437,14 @@ class EditorsManager(Frame):
         self._active_pane = sibling
         self._equalize_pw(parent_pw)
         self._equalize_pw(nested)
+
+        # restore pane A's grid children after forget+add collapses geometry
+        pane._update_tab_bar_visibility()
+        if pane.active_editor and pane.active_editor.path and pane.active_editor.showpath:
+            pane.show_breadcrumbs()
+            pane.breadcrumbs.set_path(pane.active_editor.path)
+        else:
+            pane.hide_breadcrumbs()
 
     def split_editor(self, *_) -> None:
         if self._active_pane:
