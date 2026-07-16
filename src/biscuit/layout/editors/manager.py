@@ -55,13 +55,17 @@ class EditorsManager(Frame):
         self.root_pw.paneconfigure(pane, minsize=50)
         self._active_pane = pane
 
+    def _pw_child(self, pw, path):
+        return pw.nametowidget(str(path))
+
     def get_all_panes(self) -> list[EditorPane]:
         result: list[EditorPane] = []
         self._collect_panes(self.root_pw, result)
         return result
 
     def _collect_panes(self, parent: tk.PanedWindow, result: list[EditorPane]) -> None:
-        for child in parent.panes():
+        for child_path in parent.panes():
+            child = self._pw_child(parent, child_path)
             if isinstance(child, EditorPane):
                 result.append(child)
             elif isinstance(child, tk.PanedWindow):
@@ -326,7 +330,8 @@ class EditorsManager(Frame):
 
         if pane is self._active_pane:
             sibling = None
-            for child in parent_pw.panes():
+            for child_path in parent_pw.panes():
+                child = self._pw_child(parent_pw, child_path)
                 if child is not pane:
                     sibling = child
                     break
@@ -353,7 +358,8 @@ class EditorsManager(Frame):
             self._cleanup_empty_pw(grandparent)
 
     def _find_parent_pw(self, pane: EditorPane) -> tk.PanedWindow | None:
-        for child in self.root_pw.panes():
+        for child_path in self.root_pw.panes():
+            child = self._pw_child(self.root_pw, child_path)
             if child is pane:
                 return self.root_pw
             if isinstance(child, tk.PanedWindow):
@@ -365,7 +371,8 @@ class EditorsManager(Frame):
     def _find_parent_pw_recursive(
         self, pw: tk.PanedWindow, pane: EditorPane
     ) -> tk.PanedWindow | None:
-        for child in pw.panes():
+        for child_path in pw.panes():
+            child = self._pw_child(pw, child_path)
             if child is pane:
                 return pw
             if isinstance(child, tk.PanedWindow):
@@ -375,7 +382,8 @@ class EditorsManager(Frame):
         return None
 
     def _first_pane(self, pw: tk.PanedWindow) -> EditorPane | None:
-        for child in pw.panes():
+        for child_path in pw.panes():
+            child = self._pw_child(pw, child_path)
             if isinstance(child, EditorPane):
                 return child
             if isinstance(child, tk.PanedWindow):
@@ -388,8 +396,8 @@ class EditorsManager(Frame):
             return
 
         idx = None
-        for i, child in enumerate(parent_pw.panes()):
-            if child is pane:
+        for i, child_path in enumerate(parent_pw.panes()):
+            if self._pw_child(parent_pw, child_path) is pane:
                 idx = i
                 break
         if idx is None:
