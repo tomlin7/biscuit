@@ -374,11 +374,25 @@ class EditorsManager(Frame):
         return None
 
     def _split_pane(self, pane: EditorPane, orient: str) -> None:
+        pane_path = str(pane)
+        root_panes = self.root_pw.panes()
+        print(f"DEBUG split: pane_path={pane_path!r} root_panes={root_panes!r}")
+        print(f"DEBUG split: type={type(root_panes)} len={len(root_panes)}")
+        if root_panes:
+            print(f"DEBUG split: first_child={root_panes[0]!r} match={root_panes[0] == pane_path}")
+        print(f"DEBUG split: in? {pane_path in root_panes}")
+        for i, cp in enumerate(root_panes):
+            print(f"DEBUG split:  child[{i}]={cp!r}")
+            print(f"DEBUG split:  child[{i}]==path? {cp == pane_path}")
+
         parent_pw = self._find_parent_pw(pane)
         if not parent_pw:
+            print(f"DEBUG split: NO PARENT FOUND!")
             return
 
-        idx = list(parent_pw.panes()).index(str(pane))
+        print(f"DEBUG split: parent_pw={parent_pw} pw.panes()={parent_pw.panes()!r}")
+
+        idx = list(parent_pw.panes()).index(pane_path)
         current_path = (
             pane.active_editor.path
             if pane.active_editor and pane.active_editor.path
