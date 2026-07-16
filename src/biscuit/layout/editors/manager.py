@@ -61,8 +61,7 @@ class EditorsManager(Frame):
         return result
 
     def _collect_panes(self, parent: tk.PanedWindow, result: list[EditorPane]) -> None:
-        for child_path in parent.panes():
-            child = parent.nametowidget(child_path)
+        for child in parent.panes():
             if isinstance(child, EditorPane):
                 result.append(child)
             elif isinstance(child, tk.PanedWindow):
@@ -322,10 +321,14 @@ class EditorsManager(Frame):
         if len(self.get_all_panes()) <= 1:
             return
 
-        if pane == self._active_pane:
-            sibling_paths = [p for p in parent_pw.panes() if p != str(pane)]
-            if sibling_paths:
-                focus = parent_pw.nametowidget(sibling_paths[0])
+        if pane is self._active_pane:
+            sibling = None
+            for child in parent_pw.panes():
+                if child is not pane:
+                    sibling = child
+                    break
+            if sibling is not None:
+                focus = sibling
                 if isinstance(focus, tk.PanedWindow):
                     focus = self._first_pane(focus)
                 self._active_pane = focus
@@ -347,16 +350,20 @@ class EditorsManager(Frame):
             self._cleanup_empty_pw(grandparent)
 
     def _find_parent_pw(self, pane: EditorPane) -> tk.PanedWindow | None:
-        if str(pane) in self.root_pw.panes():
-            return self.root_pw
-        return self._find_parent_pw_recursive(self.root_pw, pane)
+        for child in self.root_pw.panes():
+            if child is pane:
+                return self.root_pw
+            if isinstance(child, tk.PanedWindow):
+                result = self._find_parent_pw_recursive(child, pane)
+                if result:
+                    return result
+        return None
 
     def _find_parent_pw_recursive(
         self, pw: tk.PanedWindow, pane: EditorPane
     ) -> tk.PanedWindow | None:
-        for child_path in pw.panes():
-            child = pw.nametowidget(child_path)
-            if child is pane or str(child) == str(pane):
+        for child in pw.panes():
+            if child is pane:
                 return pw
             if isinstance(child, tk.PanedWindow):
                 result = self._find_parent_pw_recursive(child, pane)
@@ -365,8 +372,7 @@ class EditorsManager(Frame):
         return None
 
     def _first_pane(self, pw: tk.PanedWindow) -> EditorPane | None:
-        for child_path in pw.panes():
-            child = pw.nametowidget(child_path)
+        for child in pw.panes():
             if isinstance(child, EditorPane):
                 return child
             if isinstance(child, tk.PanedWindow):
@@ -374,25 +380,17 @@ class EditorsManager(Frame):
         return None
 
     def _split_pane(self, pane: EditorPane, orient: str) -> None:
-        pane_path = str(pane)
-        root_panes = self.root_pw.panes()
-        print(f"DEBUG split: pane_path={pane_path!r} root_panes={root_panes!r}")
-        print(f"DEBUG split: type={type(root_panes)} len={len(root_panes)}")
-        if root_panes:
-            print(f"DEBUG split: first_child={root_panes[0]!r} match={root_panes[0] == pane_path}")
-        print(f"DEBUG split: in? {pane_path in root_panes}")
-        for i, cp in enumerate(root_panes):
-            print(f"DEBUG split:  child[{i}]={cp!r}")
-            print(f"DEBUG split:  child[{i}]==path? {cp == pane_path}")
-
         parent_pw = self._find_parent_pw(pane)
         if not parent_pw:
-            print(f"DEBUG split: NO PARENT FOUND!")
             return
 
-        print(f"DEBUG split: parent_pw={parent_pw} pw.panes()={parent_pw.panes()!r}")
-
-        idx = list(parent_pw.panes()).index(pane_path)
+        idx = None
+        for i, child in enumerate(parent_pw.panes()):
+            if child is pane:
+                idx = i
+                break
+        if idx is None:
+            return
         current_path = (
             pane.active_editor.path
             if pane.active_editor and pane.active_editor.path
