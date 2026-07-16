@@ -58,6 +58,19 @@ class EditorsManager(Frame):
     def _pw_child(self, pw, path):
         return pw.nametowidget(str(path))
 
+    def _collect_widget_paths(self, widget):
+        paths = {}
+        stack = [widget]
+        while stack:
+            w = stack.pop()
+            paths[w] = w._w
+            try:
+                for c in w.winfo_children():
+                    stack.append(c)
+            except tk.TclError:
+                continue
+        return paths
+
     def get_all_panes(self) -> list[EditorPane]:
         result: list[EditorPane] = []
         self._collect_panes(self.root_pw, result)
@@ -423,10 +436,19 @@ class EditorsManager(Frame):
             sibling.add_tab(new_editor)
             self.base.open_editors.add_item(new_editor)
 
+        # pane's _w and all children's _w become stale after nested.add() reparents.
+        # Save old paths before reparenting so we can reconstruct them.
+        old_pane_w = pane._w
+        old_paths = self._collect_widget_paths(pane)
+
         nested.add(pane, stretch="always")
         nested.add(sibling, stretch="always")
         nested.paneconfigure(pane, minsize=50)
         nested.paneconfigure(sibling, minsize=50)
+
+        pane._w = nested._w + '.' + old_pane_w.rsplit('.', 1)[1]
+        for widget, old_w in old_paths.items():
+            widget._w = old_w.replace(old_pane_w, pane._w, 1)
 
         remaining = list(parent_pw.panes())
         if idx < len(remaining):
@@ -438,7 +460,7 @@ class EditorsManager(Frame):
         self._equalize_pw(parent_pw)
         self._equalize_pw(nested)
 
-        # restore pane A's grid children after forget+add collapses geometry
+        # restore grid children after pane's geometry was collapsed by forget+add
         pane._update_tab_bar_visibility()
         if pane.active_editor and pane.active_editor.path and pane.active_editor.showpath:
             pane.show_breadcrumbs()
