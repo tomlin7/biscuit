@@ -347,20 +347,22 @@ class EditorsManager(Frame):
             self._cleanup_empty_pw(grandparent)
 
     def _find_parent_pw(self, pane: EditorPane) -> tk.PanedWindow | None:
-        pane_path = str(pane)
-        for pw in self._iter_panedwindows():
-            if pane_path in pw.panes():
-                return pw
-        return None
+        if str(pane) in self.root_pw.panes():
+            return self.root_pw
+        return self._find_parent_pw_recursive(self.root_pw, pane)
 
-    def _iter_panedwindows(self):
-        pws = [self.root_pw]
-        for pw in pws:
-            yield pw
-            for child_path in pw.panes():
-                child = pw.nametowidget(child_path)
-                if isinstance(child, tk.PanedWindow):
-                    pws.append(child)
+    def _find_parent_pw_recursive(
+        self, pw: tk.PanedWindow, pane: EditorPane
+    ) -> tk.PanedWindow | None:
+        for child_path in pw.panes():
+            child = pw.nametowidget(child_path)
+            if child is pane or str(child) == str(pane):
+                return pw
+            if isinstance(child, tk.PanedWindow):
+                result = self._find_parent_pw_recursive(child, pane)
+                if result:
+                    return result
+        return None
 
     def _first_pane(self, pw: tk.PanedWindow) -> EditorPane | None:
         for child_path in pw.panes():
