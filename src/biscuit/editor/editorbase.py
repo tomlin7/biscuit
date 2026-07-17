@@ -84,6 +84,11 @@ class BaseEditor(Frame):
 
         self.base.open(event.data, warn_for_directory=True)
 
+    def new_like(self, master) -> BaseEditor | None:
+        """Create a new editor of the same type with the same state.
+        Subclasses should override to support cloning during split."""
+        return None
+
     def add_button(self, *args):
         self.__buttons__.append(args)
 

@@ -428,22 +428,21 @@ class EditorsManager(Frame):
         if not needs_nesting:
             parent_pw.configure(orient=orient)
             sibling = EditorPane(parent_pw, self)
+            sibling_editor = None
             if current_path:
-                new_editor = Editor(self, current_path, exists=current_exists, showpath=current_showpath)
-                self.active_editors.append(new_editor)
-                sibling.add_tab(new_editor)
-                self.base.open_editors.add_item(new_editor)
+                sibling_editor = Editor(self, current_path, exists=current_exists, showpath=current_showpath)
+            elif active and active.new_like(self):
+                sibling_editor = active.new_like(self)
+            if sibling_editor:
+                self.active_editors.append(sibling_editor)
+                sibling.add_tab(sibling_editor)
+                self.base.open_editors.add_item(sibling_editor)
             parent_pw.add(pane, stretch="always")
             parent_pw.add(sibling, stretch="always")
             parent_pw.paneconfigure(pane, minsize=50)
             parent_pw.paneconfigure(sibling, minsize=50)
             self._active_pane = sibling
         else:
-            saved_editors = [tab.editor for tab in list(pane.active_tabs)]
-
-            pane.clear_tabs()
-            pane.destroy()
-
             nested = PanedWindow(
                 parent_pw, orient=orient,
                 bg=self.base.theme.border, bd=0,
@@ -455,23 +454,42 @@ class EditorsManager(Frame):
             else:
                 parent_pw.add(nested, stretch="always")
 
-            new_pane = EditorPane(nested, self)
+            same_type = all(isinstance(tab.editor, Editor) for tab in pane.active_tabs)
+            if same_type and pane.active_tabs:
+                saved_editors = [tab.editor for tab in list(pane.active_tabs)]
+                pane.clear_tabs()
+                pane.destroy()
+
+                new_pane = EditorPane(nested, self)
+
+                for editor in saved_editors:
+                    new_pane.add_tab(editor)
+
+                nested.add(new_pane, stretch="always")
+            else:
+                nested.add(pane, stretch="always")
+                pane._update_tab_bar_visibility()
+                if pane.active_editor:
+                    pane.set_active_editor(pane.active_editor)
+                nested.paneconfigure(pane, minsize=50)
+
             sibling = EditorPane(nested, self)
-
-            for editor in saved_editors:
-                new_pane.add_tab(editor)
-
-            if current_path:
-                new_editor = Editor(self, current_path, exists=current_exists, showpath=current_showpath)
-                self.active_editors.append(new_editor)
-                sibling.add_tab(new_editor)
-                self.base.open_editors.add_item(new_editor)
-
-            nested.add(new_pane, stretch="always")
             nested.add(sibling, stretch="always")
-            nested.paneconfigure(new_pane, minsize=50)
+
+            sibling_editor = None
+            if current_path:
+                sibling_editor = Editor(self, current_path, exists=current_exists, showpath=current_showpath)
+            elif active and active.new_like(self):
+                sibling_editor = active.new_like(self)
+
+            if sibling_editor:
+                self.active_editors.append(sibling_editor)
+                sibling.add_tab(sibling_editor)
+                self.base.open_editors.add_item(sibling_editor)
+
             nested.paneconfigure(sibling, minsize=50)
             self._active_pane = sibling
+            self._equalize_pw(nested)
 
         self._equalize_pw(parent_pw)
 
