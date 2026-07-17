@@ -153,23 +153,66 @@ class Commands:
 
     def maximize_biscuit(self, *_) -> None:
         match platform.system():
-            case "Windows" | "Darwin":
+            case "Windows":
+                from ctypes import windll, byref, c_ulong, c_long, Structure, sizeof
+
+                class RECT(Structure):
+                    _fields_ = [
+                        ("left", c_long),
+                        ("top", c_long),
+                        ("right", c_long),
+                        ("bottom", c_long),
+                    ]
+
+                class MONITORINFO(Structure):
+                    _fields_ = [
+                        ("cbSize", c_ulong),
+                        ("rcMonitor", RECT),
+                        ("rcWork", RECT),
+                        ("dwFlags", c_ulong),
+                    ]
+
+                hwnd = windll.user32.GetParent(self.base.winfo_id())
+
+                if not self.maximized:
+                    self.previous_pos = (
+                        self.base.winfo_x(),
+                        self.base.winfo_y(),
+                        self.base.winfo_width(),
+                        self.base.winfo_height(),
+                    )
+
+                    monitor = windll.user32.MonitorFromWindow(hwnd, 2)
+                    mi = MONITORINFO()
+                    mi.cbSize = sizeof(MONITORINFO)
+                    windll.user32.GetMonitorInfoW(monitor, byref(mi))
+
+                    work = mi.rcWork
+                    SWP_SHOWWINDOW = 0x40
+                    windll.user32.SetWindowPos(
+                        hwnd, 0,
+                        work.left, work.top,
+                        work.right - work.left, work.bottom - work.top,
+                        SWP_SHOWWINDOW,
+                    )
+                else:
+                    if self.previous_pos:
+                        x, y, w, h = self.previous_pos
+                    else:
+                        x, y = 100, 100
+                        w, h = self.base.minsize()
+                    SWP_SHOWWINDOW = 0x40
+                    windll.user32.SetWindowPos(
+                        hwnd, 0, x, y, w, h, SWP_SHOWWINDOW,
+                    )
+
+                self.maximized = not self.maximized
+            case "Darwin":
                 self.base.wm_state("normal" if self.maximized else "zoomed")
-            # TODO windows specific maximizing
-            # case "Windows":
-            #     from ctypes import windll
-            #     if not self.maximized:
-            #         hwnd = windll.user32.GetParent(self.base.winfo_id())
-            #         SWP_SHOWWINDOW = 0x40
-            #         windll.user32.SetWindowPos(hwnd, 0, 0, 0, int(self.base.winfo_screenwidth()), int(self.base.winfo_screenheight()-48),SWP_SHOWWINDOW)
-            #     else:
-            #         hwnd = windll.user32.GetParent(self.base.winfo_id())
-            #         SWP_SHOWWINDOW = 0x40
-            #         windll.user32.SetWindowPos(hwnd, 0, self.previous_pos[0], self.previous_pos[1], int(self.base.minsize()[0]), int(self.base.minsize()[1]), SWP_SHOWWINDOW)
+                self.maximized = not self.maximized
             case _:
                 self.base.wm_attributes("-zoomed", self.maximized)
-
-        self.maximized = not self.maximized
+                self.maximized = not self.maximized
 
     def minimize_biscuit(self, *_) -> None:
         self.base.update_idletasks()

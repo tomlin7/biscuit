@@ -422,51 +422,59 @@ class EditorsManager(Frame):
         )
 
         parent_pw.forget(pane)
-
-        nested = PanedWindow(
-            parent_pw, orient=orient,
-            bg=self.base.theme.border, bd=0,
-            sashwidth=3, sashpad=0, opaqueresize=False,
-        )
-
-        sibling = EditorPane(nested, self)
-        if current_path:
-            new_editor = Editor(self, current_path, exists=True)
-            self.active_editors.append(new_editor)
-            sibling.add_tab(new_editor)
-            self.base.open_editors.add_item(new_editor)
-
-        # pane's _w and all children's _w become stale after nested.add() reparents.
-        # Save old paths before reparenting so we can reconstruct them.
-        old_pane_w = pane._w
-        old_paths = self._collect_widget_paths(pane)
-
-        nested.add(pane, stretch="always")
-        nested.add(sibling, stretch="always")
-        nested.paneconfigure(pane, minsize=50)
-        nested.paneconfigure(sibling, minsize=50)
-
-        pane._w = nested._w + '.' + old_pane_w.rsplit('.', 1)[1]
-        for widget, old_w in old_paths.items():
-            widget._w = old_w.replace(old_pane_w, pane._w, 1)
-
         remaining = list(parent_pw.panes())
-        if idx < len(remaining):
-            parent_pw.add(nested, stretch="always", before=remaining[idx])
-        else:
-            parent_pw.add(nested, stretch="always")
 
-        self._active_pane = sibling
+        needs_nesting = bool(remaining) or parent_pw is not self.root_pw
+
+        if not needs_nesting:
+            parent_pw.configure(orient=orient)
+            sibling = EditorPane(parent_pw, self)
+            if current_path:
+                new_editor = Editor(self, current_path, exists=True)
+                self.active_editors.append(new_editor)
+                sibling.add_tab(new_editor)
+                self.base.open_editors.add_item(new_editor)
+            parent_pw.add(pane, stretch="always")
+            parent_pw.add(sibling, stretch="always")
+            parent_pw.paneconfigure(pane, minsize=50)
+            parent_pw.paneconfigure(sibling, minsize=50)
+            self._active_pane = sibling
+        else:
+            saved_editors = [tab.editor for tab in list(pane.active_tabs)]
+
+            pane.clear_tabs()
+            pane.destroy()
+
+            nested = PanedWindow(
+                parent_pw, orient=orient,
+                bg=self.base.theme.border, bd=0,
+                sashwidth=3, sashpad=0, opaqueresize=False,
+            )
+
+            if idx < len(remaining):
+                parent_pw.add(nested, stretch="always", before=remaining[idx])
+            else:
+                parent_pw.add(nested, stretch="always")
+
+            new_pane = EditorPane(nested, self)
+            sibling = EditorPane(nested, self)
+
+            for editor in saved_editors:
+                new_pane.add_tab(editor)
+
+            if current_path:
+                new_editor = Editor(self, current_path, exists=True)
+                self.active_editors.append(new_editor)
+                sibling.add_tab(new_editor)
+                self.base.open_editors.add_item(new_editor)
+
+            nested.add(new_pane, stretch="always")
+            nested.add(sibling, stretch="always")
+            nested.paneconfigure(new_pane, minsize=50)
+            nested.paneconfigure(sibling, minsize=50)
+            self._active_pane = sibling
+
         self._equalize_pw(parent_pw)
-        self._equalize_pw(nested)
-
-        # restore grid children after pane's geometry was collapsed by forget+add
-        pane._update_tab_bar_visibility()
-        if pane.active_editor and pane.active_editor.path and pane.active_editor.showpath:
-            pane.show_breadcrumbs()
-            pane.breadcrumbs.set_path(pane.active_editor.path)
-        else:
-            pane.hide_breadcrumbs()
 
     def split_editor(self, *_) -> None:
         if self._active_pane:
