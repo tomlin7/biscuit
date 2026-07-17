@@ -93,5 +93,9 @@ class Editor(BaseEditor):
 
         self.content.focus()
 
+    def new_like(self, master) -> BaseEditor:
+        return Editor(master, self.path, exists=self.exists, showpath=self.showpath,
+                       diff=self.diff, language=self.language)
+
     def __str__(self) -> str:
         return f"{self.content.__class__.__name__}({self.path})"
