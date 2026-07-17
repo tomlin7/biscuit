@@ -71,14 +71,14 @@ class EditorPane(Frame):
             self.base.commands.restore_last_closed_editor,
         )
         self.menu.add_separator(10)
-        self.menu.add_command("Split Editor", self.base.commands.split_editor)
+        self.menu.add_command("Split Editor", self.split_pane)
         self.menu.add_command(
-            "Split Editor Vertical", self.base.commands.split_editor_vertical
+            "Split Editor Vertical", self.split_pane_vertical
         )
         self.menu.add_separator(10)
         self.menu.add_command(
             "Close Split",
-            lambda p=self: self.editors_manager.close_pane(p),
+            lambda: self.editors_manager.close_pane(self),
         )
         self.menu.add_command("Close All", self.editors_manager.delete_all_editors)
 
@@ -86,7 +86,7 @@ class EditorPane(Frame):
         default_buttons = (
             (Icons.ELLIPSIS, self.menu.show),
             (Icons.CHEVRON_DOWN, self.base.open_editors.show),
-            (Icons.ADD, self.base.commands.open_empty_editor),
+            (Icons.ADD, self.add_empty_editor),
         )
 
         for button in default_buttons:
@@ -105,7 +105,7 @@ class EditorPane(Frame):
             iconsize=12,
             pady=6,
             hfg_only=True,
-            event=self.editors_manager.split_editor,
+            event=self.split_pane,
         ).pack(side=tk.RIGHT, fill=tk.Y)
 
     def _update_tab_bar_visibility(self) -> None:
@@ -124,6 +124,18 @@ class EditorPane(Frame):
 
     def focus_pane(self, *_) -> None:
         self.editors_manager.set_active_pane(self)
+
+    def add_empty_editor(self, *_) -> None:
+        self.focus_pane()
+        self.base.commands.new_file()
+
+    def split_pane(self, *_) -> None:
+        self.focus_pane()
+        self.editors_manager._split_pane(self, tk.HORIZONTAL)
+
+    def split_pane_vertical(self, *_) -> None:
+        self.focus_pane()
+        self.editors_manager._split_pane(self, tk.VERTICAL)
 
     def is_empty(self) -> bool:
         return not self.active_tabs
