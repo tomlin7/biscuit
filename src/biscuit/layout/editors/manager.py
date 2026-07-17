@@ -415,11 +415,10 @@ class EditorsManager(Frame):
                 break
         if idx is None:
             return
-        current_path = (
-            pane.active_editor.path
-            if pane.active_editor and pane.active_editor.path
-            else None
-        )
+        active = pane.active_editor
+        current_path = active.path if active and active.path else None
+        current_exists = active.exists if active else True
+        current_showpath = active.showpath if active else True
 
         parent_pw.forget(pane)
         remaining = list(parent_pw.panes())
@@ -430,7 +429,7 @@ class EditorsManager(Frame):
             parent_pw.configure(orient=orient)
             sibling = EditorPane(parent_pw, self)
             if current_path:
-                new_editor = Editor(self, current_path, exists=True)
+                new_editor = Editor(self, current_path, exists=current_exists, showpath=current_showpath)
                 self.active_editors.append(new_editor)
                 sibling.add_tab(new_editor)
                 self.base.open_editors.add_item(new_editor)
@@ -463,7 +462,7 @@ class EditorsManager(Frame):
                 new_pane.add_tab(editor)
 
             if current_path:
-                new_editor = Editor(self, current_path, exists=True)
+                new_editor = Editor(self, current_path, exists=current_exists, showpath=current_showpath)
                 self.active_editors.append(new_editor)
                 sibling.add_tab(new_editor)
                 self.base.open_editors.add_item(new_editor)
