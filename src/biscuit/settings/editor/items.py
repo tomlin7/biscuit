@@ -86,6 +86,20 @@ class IntegerItem(Item):
         return self.entry.get()
 
 
+class PasswordItem(Item):
+    def __init__(self, master, name="Example", default="", callback=None, *args, **kwargs) -> None:
+        super().__init__(master, name, callback, *args, **kwargs)
+        self.entry = ttk.Entry(self, font=self.base.settings.uifont, width=30, show="*")
+        self.entry.insert(tk.END, default)
+        self.entry.pack(side=tk.LEFT)
+        self.entry.bind("<Return>", self.change)
+        self.entry.bind("<FocusOut>", self.change)
+
+    @property
+    def value(self) -> str:
+        return self.entry.get()
+
+
 class StringItem(Item):
     def __init__(
         self, master, name="Example", default="placeholder", callback=None, *args, **kwargs

@@ -78,22 +78,39 @@ class Config:
         self.render_indent_guides = self.get_value("render_indent_guides", True)
 
     def get_value(self, key: str, default: any) -> any:
-        """Get a value from the config data."""
         return self.data.get(key, default)
 
     def set_value(self, key: str, value: any) -> None:
-        """Set a value in the config data and save it."""
         self.data[key] = value
         self.save()
         self.setup_properties()
-        
-        self.base.refresh_editors() 
+        self.base.refresh_editors()
         if "font" in key:
-             self.base.settings.update_font()
+            self.base.settings.update_font()
+
+    def get_nested(self, key: str, default: any = None) -> any:
+        parts = key.split(".")
+        data = self.data
+        for part in parts:
+            if isinstance(data, dict):
+                data = data.get(part)
+                if data is None:
+                    return default
+            else:
+                return default
+        return data
+
+    def set_nested(self, key: str, value: any) -> None:
+        parts = key.split(".")
+        data = self.data
+        for part in parts[:-1]:
+            if part not in data or not isinstance(data[part], dict):
+                data[part] = {}
+            data = data[part]
+        data[parts[-1]] = value
+        self.save()
 
     def save(self) -> None:
-        """Save the current config data to the config file."""
-        # ensure config directory exists
         os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
         with open(self.config_path, "w") as configfile:
             toml.dump(self.data, configfile)
