@@ -134,22 +134,6 @@ class SettingsEditor(BaseEditor):
         )
 
     def add_section(self, name: str) -> Section:
-        """Add a section to the settings editor
-
-        Args:
-            name (str): name of the section
-
-        Returns:
-            Section: section to add items to"""
-
-    def add_section(self, name: str) -> Section:
-        """Add a section to the settings editor
-
-        Args:
-            name (str): name of the section
-
-        Returns:
-            Section: section to add items to"""
 
         section = Section(self.container.content, name)
         section.pack(fill=tk.X, expand=True)
