@@ -10,13 +10,11 @@ from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
 class AnthropicProvider(AIProvider):
     name = "anthropic"
     _models: ClassVar[Dict[str, str]] = {
-        "Claude 4.5 Opus": "claude-opus-4-5-20251101",
-        "Claude 4.5 Sonnet": "claude-sonnet-4-5-20250929",
-        "Claude 4.5 Haiku": "claude-haiku-4-5-20251001",
-        "Claude 4 Opus": "claude-opus-4-20250514",
-        "Claude 4 Sonnet": "claude-sonnet-4-20250514",
-        "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
-        "Claude 3.5 Haiku": "claude-3-5-haiku-20241022",
+        "Claude Opus 4.8": "claude-opus-4-8",
+        "Claude Sonnet 4.6": "claude-sonnet-4-6",
+        "Claude Haiku 4.5": "claude-haiku-4-5",
+        "Claude Opus 4.5": "claude-opus-4-5-20251101",
+        "Claude Sonnet 4": "claude-sonnet-4-20250514",
     }
 
     def __init__(self, api_key: str, model: str):
