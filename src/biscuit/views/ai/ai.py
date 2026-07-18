@@ -1,154 +1,117 @@
 from __future__ import annotations
 
-import os
-import sqlite3
-import tkinter as tk
+import asyncio
 import typing
 
-from biscuit.common import Dropdown
 from biscuit.common.ai import Agent
+from biscuit.common.ai.providers import _auto_register, list_models, resolve
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame
 
 from ..sidebar_view_secondary import SideBarView
-from .menu import AIMenu
 from .chat import AgentChat
 from .placeholder import AIPlaceholder
-from .renderer import Renderer
 
 if typing.TYPE_CHECKING:
     ...
 
 
 class AI(SideBarView):
-    """Enhanced AI view with LangChain integration and multiple modes.
-
-    The AI view provides a powerful autonomous coding agent powered by LangChain.
-    """
+    """AI assistant sidebar view with provider-agnostic agent."""
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.__icon__ = Icons.SYMBOL_EVENT
         self.name = "Agent"
         self.chat = None
-        self.api_key = ""
         self.agent = None
+        self.attached_files: list[str] = []
 
         self.title.grid_forget()
 
-        # Available models by provider
-        self.available_models = {
-            "Gemini 2.0 Flash": "gemini-2.0-flash",
-            "Gemini 2.0 Pro": "gemini-2.0-pro",
-            "Gemini 2.5 Flash": "gemini-2.5-flash",
-            "Gemini 2.5 Pro": "gemini-2.5-pro",
-            "Claude 4.5 Opus": "claude-opus-4-5-20251101",
-            "Claude 4.5 Sonnet": "claude-sonnet-4-5-20250929",
-            "Claude 4.5 Haiku": "claude-haiku-4-5-20251001",
-            "Claude 4 Opus": "claude-opus-4-20250514",
-            "Claude 4 Sonnet": "claude-sonnet-4-20250514",
-            "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
-            "Claude 3.5 Haiku": "claude-3-5-haiku-20241022",
-            "MiniMax M3": "MiniMax-M3",
-            "MiniMax M2.7": "MiniMax-M2.7",
-        }
-        self.current_model = "Gemini 2.0 Flash"
-        self.api_keys = {"gemini": "", "anthropic": "", "minimax": ""}
+_auto_register()
+        self.available_models = list_models()
+        self.current_model = self._load_default_model()
 
         self.top.grid_columnconfigure(self.column, weight=1)
 
-        self.menu = AIMenu(self)
-        self.menu.add_command("New Chat", self.new_chat)
-        self.menu.add_command("Configure API Key...", self.add_placeholder)
-        self.menu.add_separator()
-        self.menu.add_command("View Stats", self.show_stats)
+        self.menu = self._build_menu()
 
         self.add_action(Icons.REFRESH, self.new_chat)
         self.add_action(Icons.COPY, self.copy_chat)
         self.add_action(Icons.ELLIPSIS, self.menu.show)
-
-        # Database setup
-        self.db = sqlite3.connect(os.path.join(self.base.datadir, "secrets.db"))
-        self.cursor = self.db.cursor()
-        self.cursor.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS secrets (key TEXT PRIMARY KEY NOT NULL, value TEXT);
-            """
-        )
-
-        self.cursor.execute("SELECT key, value FROM secrets WHERE key IN ('GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MINIMAX_API_KEY')")
-        keys = dict(self.cursor.fetchall())
-        self.api_keys["gemini"] = keys.get("GEMINI_API_KEY", "")
-        self.api_keys["anthropic"] = keys.get("ANTHROPIC_API_KEY", "")
-        self.api_keys["minimax"] = keys.get("MINIMAX_API_KEY", "")
+self.add_action(Icons.SETTINGS, self.open_settings)
 
         self.placeholder = AIPlaceholder(self)
-        if self.api_keys["gemini"] or self.api_keys["anthropic"] or self.api_keys["minimax"]:
+
+        if self._has_any_key():
             self.add_chat()
         else:
             self.add_placeholder()
 
-    def register_provider(self, provider: str, model_name: str = None) -> None:
-        """Register a new model provider."""
-        if not model_name:
-            model_name = provider.lower().replace(' ', '-')
-        
-        self.available_models[provider] = model_name
-        # The dropdown will be updated on next chat creation
+    def _load_default_model(self) -> str:
+        models = list_models()
+        ids = list(models.values())
+        saved = self.base.config.get_nested("ai.default_model", "")
+        if saved in ids:
+            for name, mid in models.items():
+                if mid == saved:
+                    return name
+        return ids[0] if ids else ""
+
+    def _has_any_key(self) -> bool:
+        for prov in ("gemini", "anthropic", "groq", "minimax"):
+            key = self.base.config.get_nested(f"ai.keys.{prov}", "")
+            if key:
+                return True
+        return False
+
+    def _get_key_for_model(self, model_id: str) -> str:
+        if "claude" in model_id:
+            return self.base.config.get_nested("ai.keys.anthropic", "")
+        if any(x in model_id for x in ("llama", "mixtral", "gemma", "qwen", "deepseek", "mistral")):
+            return self.base.config.get_nested("ai.keys.groq", "")
+        if "minimax" in model_id.lower():
+            return self.base.config.get_nested("ai.keys.minimax", "")
+        return self.base.config.get_nested("ai.keys.gemini", "")
+
+    def _build_menu(self):
+        from .menu import AIMenu
+        menu = AIMenu(self)
+        menu.add_command("New Chat", self.new_chat)
+        menu.add_command("Configure AI Providers...", self.open_settings)
+        menu.add_separator()
+        menu.add_command("View Stats", self.show_stats)
+        return menu
+
+    def open_settings(self, *_):
+        from biscuit.settings.editor import SettingsEditor
+        self.base.editorsmanager.add_editor(SettingsEditor(self.base.editorsmanager))
 
     def set_current_model(self, model_name: str) -> None:
-        """Set the current model."""
         if model_name == self.current_model:
             return
-
         self.current_model = model_name
-        self.new_chat() # Restart chat with new model
+        self.new_chat()
 
     def attach_file(self, *files: typing.List[str]) -> None:
-        """Attach a file to the chat."""
-        if self.chat:
-            self.chat.attach_file(*files)
+        for f in files:
+            if f not in self.attached_files:
+                self.attached_files.append(f)
+        if self.agent:
+            self.agent.set_attached_files(self.attached_files)
 
     def add_placeholder(self) -> None:
-        """Show the home page for the AI assistant view"""
         self.add_item(self.placeholder)
-        if self.api_key:
-            self.placeholder.api_key.set(self.api_key)
-
         if self.chat:
             self.remove_item(self.chat)
             self.chat.destroy()
             self.chat = None
-
         if self.agent:
+            self.agent.stop_execution()
             self.agent = None
 
-    def add_chat(self, api_key: str = None) -> None:
-        """Add a new chat to the view."""
-        if api_key:
-            self.api_key = api_key
-
-        if not self.api_key:
-            return self.add_placeholder()
-
-    def save_keys(self, gemini: str = None, anthropic: str = None, minimax: str = None) -> None:
-        """Save API keys to database and start chat."""
-        if gemini:
-            self.api_keys["gemini"] = gemini
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)", (gemini,))
-        if anthropic:
-            self.api_keys["anthropic"] = anthropic
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('ANTHROPIC_API_KEY', ?)", (anthropic,))
-        if minimax:
-            self.api_keys["minimax"] = minimax
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('MINIMAX_API_KEY', ?)", (minimax,))
-
-        self.db.commit()
-        self.add_chat()
-
-    def add_chat(self) -> None:
-        """Initialize the chat and agent."""
-        # Clean up existing chat
+def add_chat(self) -> None:
         if self.chat:
             self.remove_item(self.chat)
             self.chat.destroy()
@@ -159,72 +122,79 @@ class AI(SideBarView):
             self.agent = None
 
         try:
-            model_id = self.available_models[self.current_model]
-            if "claude" in model_id:
-                provider = "anthropic"
-            elif model_id.lower().startswith("minimax"):
-                provider = "minimax"
-            else:
-                provider = "gemini"
-            api_key = self.api_keys[provider]
+model_id = self.available_models.get(self.current_model, "")
+            api_key = self._get_key_for_model(model_id)
 
             if not api_key:
-                self.add_placeholder()
+                if not self._has_any_key():
+                    self.add_placeholder()
+                    return
+                self.base.notifications.warning(f"No API key configured for model '{self.current_model}'. Open Settings (Ctrl+,) to configure.")
                 return
 
             self.agent = Agent(self.base, api_key, model_id)
-            
+            if self.attached_files:
+                self.agent.set_attached_files(self.attached_files)
+
+            self._start_mcp()
+
             self.chat = AgentChat(self)
             self.chat.set_enhanced_agent(self.agent)
-            
             self.add_item(self.chat)
             self.remove_item(self.placeholder)
-            
+
         except Exception as e:
-            try:
-                if hasattr(self.base, 'logger'):
-                    self.base.logger.error(f"Failed to initialize AI agent: {e}")
-                else:
-                    print(f"AI Agent Error: {e}")
-                    raise e
-            except:
-                print(f"AI Agent Error: {e}")
-                raise e
-                
-            try:
-                if hasattr(self.base, 'notifications'):
-                    self.base.notifications.error(
-                        f"Failed to initialize AI agent: {str(e)}",
-                        actions=[
-                            ("Configure API Key", self.add_placeholder),
-                            ("Try Again", self.add_chat)
-                        ]
-                    )
-            except:
-                print(f"Failed to show notification: {e}")
+            if self.base.logger:
+                self.base.logger.error(f"Failed to initialize AI agent: {e}")
+            if self.base.notifications:
+                self.base.notifications.error(
+                    f"Failed to initialize AI agent: {e}",
+                    actions=[("Open Settings", self.open_settings)],
+                )
+
+    def _start_mcp(self):
+        try:
+            mcp_cfg = self.base.config.get_nested("ai.mcp_servers", {})
+            if not mcp_cfg or not isinstance(mcp_cfg, dict):
+                return
+            from biscuit.common.ai.mcp import MCPManager
+            mcp = MCPManager(self.base)
+            mcp.load_from_config(mcp_cfg)
+
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(mcp.start_all())
+
+            mcp_tools = mcp.get_all_tools()
+            if mcp_tools:
+                self.agent.set_mcp_tools(mcp_tools)
+                self._mcp = mcp
+        except Exception as e:
+            if self.base.logger:
+                self.base.logger.warning(f"MCP initialization failed: {e}")
 
     def new_chat(self) -> None:
-        """Start a new chat."""
         if self.chat:
             self.chat.destroy()
         self.add_chat()
+        if self.attached_files and self.agent:
+            self.agent.set_attached_files(self.attached_files)
 
     def copy_chat(self) -> None:
-        """Copy the current conversation to clipboard."""
         if self.chat:
             text = self.chat.get_conversation_text()
             self.base.clipboard_clear()
             self.base.clipboard_append(text)
-            self.base.update() # Required for clipboard append to work
-            if hasattr(self.base, 'notifications'):
+            self.base.update()
+            if self.base.notifications:
                 self.base.notifications.info("Conversation copied to clipboard")
 
-
     def show_stats(self) -> None:
-        """Show AI agent statistics."""
         try:
-            if hasattr(self.base, 'notifications'):
+            if self.base.notifications:
                 msg = f"Model: {self.current_model}"
+                if self.agent:
+                    msg += f" | Tokens: {self.agent.input_tokens + self.agent.output_tokens}"
                 self.base.notifications.info(msg)
         except Exception as e:
             print(f"Error showing stats: {e}")
