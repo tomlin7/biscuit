@@ -12,10 +12,10 @@ from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
 class GeminiProvider(AIProvider):
     name = "gemini"
     _models: ClassVar[Dict[str, str]] = {
-        "Gemini 2.0 Flash": "gemini-2.0-flash",
-        "Gemini 2.0 Pro": "gemini-2.0-pro",
-        "Gemini 2.5 Flash": "gemini-2.5-flash",
         "Gemini 2.5 Pro": "gemini-2.5-pro",
+        "Gemini 2.5 Flash": "gemini-2.5-flash",
+        "Gemini 2.5 Flash Lite": "gemini-2.5-flash-lite",
+        "Gemini 3 Flash Preview": "gemini-3-flash-preview",
     }
 
     def __init__(self, api_key: str, model: str):

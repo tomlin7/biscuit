@@ -13,8 +13,11 @@ class GroqProvider(AIProvider):
     _models: ClassVar[Dict[str, str]] = {
         "Groq Llama 3.3 70B": "llama-3.3-70b-versatile",
         "Groq Llama 3.1 8B": "llama-3.1-8b-instant",
-        "Groq Mixtral 8x7B": "mixtral-8x7b-32768",
+        "Groq Llama 4 Scout": "llama-4-scout-17b",
+        "Groq Llama 4 Maverick": "llama-4-maverick-17b",
         "Groq Gemma2 9B": "gemma2-9b-it",
+        "Groq Mistral Saba 24B": "mistral-saba-24b",
+        "Groq Qwen 2.5 Coder 32B": "qwen-2.5-coder-32b",
         "Groq DeepSeek R1 Distill 70B": "deepseek-r1-distill-llama-70b",
     }
 
