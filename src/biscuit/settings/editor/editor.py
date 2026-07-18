@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from biscuit.common.ui import Button, Frame, ScrollableFrame
+from biscuit.common.ai.providers import _auto_register, list_models
 from biscuit.editor import BaseEditor
 
 from .searchbar import Searchbar
@@ -45,6 +46,7 @@ class SettingsEditor(BaseEditor):
     def add_sections(self):
         self.add_commonly_used()
         self.add_text_editor()
+        self.add_ai()
 
     def add_commonly_used(self):
         """Add commonly used settings to the settings editor"""
@@ -93,6 +95,43 @@ class SettingsEditor(BaseEditor):
                                    lambda v: self.base.config.set_value("show_line_numbers", v))
         text_editor.add_checkbox("Render Indent Guides", self.base.config.get_value("render_indent_guides", True),
                                    lambda v: self.base.config.set_value("render_indent_guides", v))
+
+    def add_ai(self):
+        ai = self.add_section("AI")
+
+        _auto_register()
+        models = list_models()
+        model_ids = list(models.values())
+        model_names = list(models.keys())
+
+        current = self.base.config.get_nested("ai.default_model", "gemini-2.5-flash")
+        try:
+            default_idx = model_ids.index(current)
+        except ValueError:
+            default_idx = 0
+
+        ai.add_dropdown(
+            "Default Model",
+            model_names,
+            default_idx,
+            lambda v: self.base.config.set_nested("ai.default_model", models.get(v, model_ids[0])),
+        )
+
+        ai.add_password(
+            "Gemini API Key",
+            self.base.config.get_nested("ai.keys.gemini", ""),
+            lambda v: self.base.config.set_nested("ai.keys.gemini", v),
+        )
+        ai.add_password(
+            "Anthropic API Key",
+            self.base.config.get_nested("ai.keys.anthropic", ""),
+            lambda v: self.base.config.set_nested("ai.keys.anthropic", v),
+        )
+        ai.add_password(
+            "Groq API Key",
+            self.base.config.get_nested("ai.keys.groq", ""),
+            lambda v: self.base.config.set_nested("ai.keys.groq", v),
+        )
 
     def add_section(self, name: str) -> Section:
         """Add a section to the settings editor

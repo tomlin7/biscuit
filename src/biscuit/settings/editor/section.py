@@ -2,7 +2,7 @@ import tkinter as tk
 
 from biscuit.common.ui import Frame
 
-from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem
+from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem, PasswordItem
 
 
 class Section(Frame):
@@ -46,6 +46,11 @@ class Section(Frame):
         dropdown = DropdownItem(self, name, options, default, callback)
         dropdown.pack(fill=tk.X, expand=True)
         self.items.append(dropdown)
+
+    def add_password(self, name="Example", default="", callback=None) -> None:
+        pwd = PasswordItem(self, name, default, callback)
+        pwd.pack(fill=tk.X, expand=True)
+        self.items.append(pwd)
 
     def add_stringvalue(self, name="Example", default="placeholder", callback=None) -> None:
         """Add a string text box item to the section
