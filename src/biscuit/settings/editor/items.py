@@ -261,10 +261,10 @@ class MCPServersItem(Item):
         if self._add_mode:
             return
         self._add_mode = True
-        self.add_btn.pack_forget()
 
         form = Frame(self, bg=self.highlightbg)
         form.pack(fill=tk.X, pady=2, before=self.add_btn)
+        self.add_btn.pack_forget()
 
         fields = {}
         for label_text, key in [("Name", "name"), ("Command", "command"), ("Args", "args")]:
