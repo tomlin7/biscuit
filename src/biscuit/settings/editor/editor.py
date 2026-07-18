@@ -47,6 +47,7 @@ class SettingsEditor(BaseEditor):
         self.add_commonly_used()
         self.add_text_editor()
         self.add_ai()
+        self.add_mcp()
 
     def add_commonly_used(self):
         """Add commonly used settings to the settings editor"""
@@ -132,6 +133,10 @@ class SettingsEditor(BaseEditor):
             self.base.config.get_nested("ai.keys.groq", ""),
             lambda v: self.base.config.set_nested("ai.keys.groq", v),
         )
+
+    def add_mcp(self):
+        mcp = self.add_section("MCP Servers")
+        mcp.add_mcp_servers()
 
     def add_section(self, name: str) -> Section:
 

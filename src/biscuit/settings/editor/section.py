@@ -2,7 +2,7 @@ import tkinter as tk
 
 from biscuit.common.ui import Frame
 
-from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem, PasswordItem
+from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem, PasswordItem, MCPServersItem
 
 
 class Section(Frame):
@@ -77,6 +77,11 @@ class Section(Frame):
         int = IntegerItem(self, name, default, callback)
         int.pack(fill=tk.X, expand=True)
         self.items.append(int)
+
+    def add_mcp_servers(self, name="MCP Servers", callback=None) -> None:
+        mcp = MCPServersItem(self, name, callback)
+        mcp.pack(fill=tk.X, expand=True)
+        self.items.append(mcp)
 
     def add_checkbox(self, name="Example", default=True, callback=None) -> None:
         """Add a checkbox item to the section
