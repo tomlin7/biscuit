@@ -228,13 +228,10 @@ Provide clear instructions for the edit."""
             return f"Error editing file: {e}"
 
     def _apply_sketched_edit(self, original: str, edit: str) -> str:
-        """Apply a sketched edit with `// ... existing code ...` markers."""
-        # Split edit into sections
         marker_pattern = r'(?://|#|--|/\*)\s*\.\.\.\s*existing\s+code\s*\.\.\.(?:\s*\*/)?'
         sections = re.split(marker_pattern, edit, flags=re.IGNORECASE)
 
         if len(sections) == 1:
-            # No markers - this is a complete replacement or new content
             return edit
 
         original_lines = original.split('\n')
@@ -248,45 +245,50 @@ Provide clear instructions for the edit."""
 
             section_lines = section.split('\n')
 
-            # Find where this section starts in the original
             if i == 0:
-                # First section - find its end in original and keep everything before
-                match_end = self._find_section_end(original_lines, section_lines, 0)
-                if match_end >= 0:
+                match_start = self._find_section_start(original_lines, section_lines, 0)
+                if match_start >= 0:
                     result_lines.extend(section_lines)
-                    current_pos = match_end + 1
+                    current_pos = match_start + len(section_lines)
                 else:
-                    result_lines.extend(section_lines)
+                    match_end = self._find_section_end(original_lines, section_lines, 0)
+                    if match_end >= 0:
+                        result_lines.extend(section_lines)
+                        current_pos = match_end + 1
+                    else:
+                        result_lines.extend(section_lines)
             else:
-                # Middle/end sections - find start, keep original between
                 match_start = self._find_section_start(original_lines, section_lines, current_pos)
                 if match_start >= 0:
-                    # Add original content between last position and this match
                     result_lines.extend(original_lines[current_pos:match_start])
                     result_lines.extend(section_lines)
                     current_pos = match_start + len(section_lines)
                 else:
-                    # Couldn't find match - append section
                     result_lines.extend(section_lines)
 
-        # Add remaining original content
         if current_pos < len(original_lines):
             result_lines.extend(original_lines[current_pos:])
 
         return '\n'.join(result_lines)
 
     def _find_section_start(self, original: List[str], section: List[str], start_pos: int) -> int:
-        """Find where a section starts in the original content."""
         if not section:
             return -1
 
         first_line = section[0].strip()
+        indent = len(section[0]) - len(section[0].lstrip()) if section[0] else 0
+
         for i in range(start_pos, len(original)):
             if original[i].strip() == first_line:
-                # Check if following lines match
                 match = True
                 for j, sec_line in enumerate(section):
-                    if i + j >= len(original) or original[i + j].strip() != sec_line.strip():
+                    orig_idx = i + j
+                    if orig_idx >= len(original):
+                        match = False
+                        break
+                    orig_stripped = original[orig_idx].strip()
+                    sec_stripped = sec_line.strip()
+                    if orig_stripped != sec_stripped:
                         match = False
                         break
                 if match:
@@ -294,7 +296,6 @@ Provide clear instructions for the edit."""
         return -1
 
     def _find_section_end(self, original: List[str], section: List[str], start_pos: int) -> int:
-        """Find where a section ends in the original content."""
         if not section:
             return -1
 
@@ -686,7 +687,7 @@ For long-running commands, set is_background=true."""
                 text=True,
                 encoding='utf-8',
                 errors='replace',
-                timeout=60  # 60 second timeout
+                timeout=120  # 2 minute timeout
             )
 
             output = []
