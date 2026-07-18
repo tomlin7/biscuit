@@ -11,19 +11,11 @@ class Assistant(Endpoint):
         super().__init__(*a)
         self.ai = self.base.ai
 
-        # Legacy compatibility (now deprecated)
-        self.register_provider = self._register_provider
-        
-        # New agent functionality
         self.get_agent = self._get_agent
         self.set_mode = self._set_mode
         self.attach_files = self._attach_files
         self.process_message = self._process_message
         self.set_model = self._set_model
-        
-    def _register_provider(self, provider: str, model_name: str = None):
-        """Register a new model provider (updated for LangChain)."""
-        return self.ai.register_provider(provider, model_name)
         
     def _get_agent(self):
         """Get the current AI agent instance."""
@@ -34,9 +26,8 @@ class Assistant(Endpoint):
         return False
     
     def _attach_files(self, file_paths):
-        """Attach files to the current conversation."""
-        if self.ai.chat and hasattr(self.ai.chat, 'attach_file'):
-            self.ai.chat.attach_file(*file_paths)
+        if hasattr(self.ai, 'attach_file'):
+            self.ai.attach_file(*file_paths)
             return True
         return False
     
