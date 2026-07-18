@@ -750,7 +750,10 @@ class AgentChat(Frame):
     def send_message(self, event=None):
         """Send message to the agent."""
         if not self.enhanced_agent:
-            self.show_error("Enhanced agent not available")
+            self.show_error(
+                "No AI provider configured. "
+                "Open Settings (Ctrl+,) → AI section to add an API key."
+            )
             return
             
         # Get message text
@@ -813,9 +816,8 @@ class AgentChat(Frame):
                 
                 # Setup tool execution callback
                 def tool_callback(tool_name: str, tool_input: str, tool_output: str, category: str = "analysis"):
-                    """Show tool executions in real-time."""
                     if tool_name == "todo_write":
-                        self.after(0, self.todo_panel.refresh)
+                        self.after(0, lambda: [self.todo_panel.refresh(), self.todo_panel.expand()])
                     def update_ui():
                         # Parsing logic to mimic the provided UI
                         import os
