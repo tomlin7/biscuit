@@ -16,34 +16,34 @@ python = "^3.10"
 hintedtext = "^0.6.0"
 watchdog = "^6.0.0"
 filetype = "^1.2.0"
-gitpython = "^3.1.44"
-pygments = "^2.19.1"
+gitpython = "^3.1.52"
+pygments = "^2.20.0"
 toml = "^0.10.2"
-sv-ttk = "^2.6.0"
-pillow = ">=11.1,<13.0"
-requests = "^2.32.3"
-pyperclip = "^1.9.0"
-tkinterweb = {extras = ["full"], version = "^4.17.6"}
-mistune = "^3.1.2"
-chardet = ">=5.2,<8.0"
-pywinpty = { version = ">=2.0.15,<4.0.0", platform = "win32" }
+sv-ttk = "^2.6.1"
+pillow = "^12.3.0"
+requests = "^2.34.2"
+pyperclip = "^1.11.0"
+tkinterweb = {version = "^4.25.3", extras = ["full"]}
+mistune = "^3.3.3"
+chardet = "^7.4.3"
+pywinpty = { version = "^3.0.5", platform = "win32" }
 python-tkdnd = "^0.2.1"
-psutil = "^7.0.0"
-google-genai = ">=1.61,<3.0"
+psutil = "^7.2.2"
+google-genai = "^2.12.1"
 sortedcontainers = "^2.4.0"
-click = "^8.1.8"
+click = "^8.4.2"
 tarts = "^0.20.1"
-editorconfig = "^0.17.0"
+editorconfig = "^0.17.1"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
-anthropic = ">=0.77,<0.80"
-tree-sitter = "^0.25.2"
-tree-sitter-language-pack = ">=0.13,<1.14"
+anthropic = "^0.117.0"
+tree-sitter = "^0.26.0"
+tree-sitter-language-pack = "^1.12.5"
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=8.2.1,<10.0.0"
+pytest = "^9.1.1"
 pytest-dotenv = "^0.5.2"
-git-changelog = "^2.5.2"
+git-changelog = "^2.9.4"
 pyperclip = "^1.8.2"
 
 [tool.poetry.group.docs]
@@ -51,8 +51,8 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.6.1"
-mkdocstrings-python = ">=1.12,<3.0"
-mkdocs-material = "^9.5.40"
+mkdocstrings-python = "^2.0.5"
+mkdocs-material = "^9.7.7"
 
 [build-system]
 requires = ["poetry-core"]
