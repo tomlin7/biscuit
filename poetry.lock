@@ -3508,14 +3508,14 @@ scikit-build = "*"
 
 [[package]]
 name = "tkinterweb"
-version = "4.19.1"
-description = "HTML/CSS viewer, editor, and app builder for Tkinter"
+version = "4.25.3"
+description = "HTML/CSS widgets for Tkinter"
 optional = false
 python-versions = ">=3.2"
 groups = ["main"]
 files = [
-    {file = "tkinterweb-4.19.1-py3-none-any.whl", hash = "sha256:b49f8797a374d6d70bdcaa44eb37120a2ce9d803d93d47000def95af770ecc41"},
-    {file = "tkinterweb-4.19.1.tar.gz", hash = "sha256:715fa0f96872d95e0baa44b80631b20dc2cb59800b54f1421a098c7f1f04faaf"},
+    {file = "tkinterweb-4.25.3-py3-none-any.whl", hash = "sha256:a12cef5c5b97e1a8eb49a7a1f117787dc72b855728f0f66563054a388da8f23e"},
+    {file = "tkinterweb-4.25.3.tar.gz", hash = "sha256:5540407b77d0b6663afb88b4030c3f57766eeaa48bd1c83293a43bc59e82e3e8"},
 ]
 
 [package.dependencies]
@@ -3524,16 +3524,16 @@ cairosvg = {version = "*", optional = true, markers = "extra == \"full\""}
 pillow = {version = "*", optional = true, markers = "extra == \"full\""}
 pythonmonkey = {version = "*", optional = true, markers = "extra == \"full\""}
 tkinterweb-tkhtml = ">=2.1.1"
-tkinterweb-tkhtml-extras = {version = ">=1.3.0", optional = true, markers = "extra == \"full\""}
+tkinterweb-tkhtml-extras = {version = ">=1.3.1", optional = true, markers = "extra == \"full\""}
 
 [package.extras]
-full = ["brotli", "cairosvg", "pillow", "pythonmonkey", "tkinterweb-tkhtml-extras (>=1.3.0)"]
-html = ["tkinterweb-tkhtml-extras (>=1.3.0)"]
+full = ["brotli", "cairosvg", "pillow", "pythonmonkey", "tkinterweb-tkhtml-extras (>=1.3.1)"]
+html = ["tkinterweb-tkhtml-extras (>=1.3.1)"]
 images = ["pillow"]
 javascript = ["pythonmonkey"]
-recommended = ["pillow", "tkinterweb-tkhtml-extras (>=1.3.0)"]
+recommended = ["pillow", "tkinterweb-tkhtml-extras (>=1.3.1)"]
 requests = ["brotli"]
-svg = ["cairosvg", "pillow", "tkinterweb-tkhtml-extras (>=1.3.0)"]
+svg = ["cairosvg", "pillow", "tkinterweb-tkhtml-extras (>=1.3.1)"]
 
 [[package]]
 name = "tkinterweb-tkhtml"
@@ -3557,16 +3557,16 @@ files = [
 
 [[package]]
 name = "tkinterweb-tkhtml-extras"
-version = "1.3.0"
+version = "1.3.1"
 description = "HTML/CSS viewer for Tkinter"
 optional = false
 python-versions = ">=3.2"
 groups = ["main"]
 files = [
-    {file = "tkinterweb_tkhtml_extras-1.3.0-py3-none-any.whl", hash = "sha256:9a91d8d30f2b521425271b4173fb377b9fdaf2d2fb086887245aed5b9729ce4e"},
-    {file = "tkinterweb_tkhtml_extras-1.3.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:6f24a3616345b58b457c0a1019eb120114502491878ad2ead363c4f0176ffa93"},
-    {file = "tkinterweb_tkhtml_extras-1.3.0-py3-none-win_amd64.whl", hash = "sha256:18a79da07a66af0e06b3fd97f2179dfdb54dc7443f0cd4c407b845338ae4fa0d"},
-    {file = "tkinterweb_tkhtml_extras-1.3.0.tar.gz", hash = "sha256:ff34160b534aa388b7e416aa117225a1089c8e808fa9a03afcd8b0614a9f3090"},
+    {file = "tkinterweb_tkhtml_extras-1.3.1-py3-none-any.whl", hash = "sha256:2331331a5fbbe545a037501c9aa93f38e44d7ead6e6063ba329366db37cd2a2f"},
+    {file = "tkinterweb_tkhtml_extras-1.3.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:e77a6238d80ddfec64b1e5c535d8d2241df3ef16ecce49094d7698e7098928ed"},
+    {file = "tkinterweb_tkhtml_extras-1.3.1-py3-none-win_amd64.whl", hash = "sha256:6084cba1eb828918dd3f9ef0666796f54a1bb8c92e344127abcd6556c8d47805"},
+    {file = "tkinterweb_tkhtml_extras-1.3.1.tar.gz", hash = "sha256:09d8bf96285f8c38f7cba8a3a5c0820b8ad5b5861b8fddf79666f75b6a93e5bb"},
 ]
 
 [[package]]
