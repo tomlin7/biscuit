@@ -1,0 +1,80 @@
+---
+title: "Python Debugger"
+description: "Debug Python code using Biscuit's built-in Python debugger."
+---
+
+The Python debugger uses Python's built-in `bdb` module for debugging. It works
+with any Python script without additional dependencies.
+
+## Starting a Debug Session
+
+### From the Editor
+
+1. Open the Python file you want to debug
+2. Set at least one breakpoint (click in the gutter)
+3. Press `F5` or open command palette (`Ctrl+P`) and type `> Debug: Launch`
+
+### From the Command Palette
+
+1. Set breakpoints in your file
+2. Open command palette
+3. Type `> Debug: Launch` and press Enter
+
+### From Run Configurations
+
+For complex setups, you can create run configurations:
+
+```toml
+# .biscuit/run.toml
+[config.debug]
+program = "src/main.py"
+cwd = "/path/to/workspace"
+```
+
+## Debug Controls
+
+| Action | Shortcut | Description |
+|--------|----------|-------------|
+| Continue | `F5` | Run to next breakpoint or end |
+| Step Over | `F10` | Execute current line, step over function calls |
+| Step Into | `F11` | Step into function calls |
+| Step Out | `Shift+F11` | Run until current function returns |
+| Restart | `Ctrl+Shift+F5` | Restart the debug session |
+| Stop | `Shift+F5` | Stop debugging |
+
+## Debug Panel
+
+The debug panel (`Ctrl+D`) shows:
+
+- **Variables** — Local and global variables with typed values
+- **Call Stack** — Stack trace with file and line references
+- **Breakpoints** — All breakpoints with enable/disable toggles
+
+## Variable Inspection
+
+During a debug session, you can:
+
+- **View all variables** — Locals and globals are displayed in the Variables pane
+- **Modify variables** — Double-click a variable value to change it at runtime
+- **Inspect data structures** — Nested objects are expandable
+- **Hover for values** — Hover over variables in the editor to see their current value
+
+## Exception Handling
+
+When an exception occurs during debugging:
+
+- Execution pauses at the exception location
+- The exception type and message are displayed
+- The call stack shows the path to the exception
+- You can inspect variable values at the point of failure
+
+## Custom Debuggers
+
+Additional debuggers can be registered through the extension system:
+
+```python
+def setup(api):
+    api.base.debugger_manager.register_debugger("language", CustomDebugger)
+```
+
+See [Creating Extensions](/extensions/creating-extensions) for details.

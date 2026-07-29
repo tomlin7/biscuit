@@ -1,0 +1,6 @@
+<svg width="130" height="28" viewBox="0 0 130 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M13.5 2C7.977 2 3.5 6.477 3.5 12v4c0 5.523 4.477 10 10 10s10-4.477 10-10v-4c0-5.523-4.477-10-10-10z" fill="#D97706" opacity="0.15"/>
+  <path d="M13.5 4C9.082 4 5.5 7.582 5.5 12v4c0 4.418 3.582 8 8 8s8-3.582 8-8v-4c0-4.418-3.582-8-8-8z" fill="none" stroke="#D97706" stroke-width="1.5"/>
+  <path d="M10.5 8l3 3 3-3M7.5 14l3 3 3-3M13.5 14l3 3 3-3" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="30" y="20" font-family="'Fira Code', 'JetBrains Mono', monospace" font-size="16" font-weight="600" fill="#09090B" letter-spacing="-0.02em">biscuit</text>
+</svg>

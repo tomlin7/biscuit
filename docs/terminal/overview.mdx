@@ -1,0 +1,83 @@
+---
+title: "Terminal"
+description: "Integrated terminal with multi-tab support and AI integration."
+---
+
+Biscuit includes a fully integrated terminal that supports multiple tabs,
+shell auto-detection, ANSI escape codes, and AI-powered prompts.
+
+## Opening the Terminal
+
+| Action | Shortcut |
+|--------|----------|
+| Toggle terminal panel | `Ctrl+Backtick` |
+| New terminal tab | `Ctrl+Shift+Backtick` |
+
+The terminal appears in the bottom panel alongside Logs and Problems tabs.
+
+## Features
+
+### Multi-Tab Support
+
+Create multiple terminal tabs for different tasks:
+
+- **New tab** — `Ctrl+Shift+Backtick`
+- **Switch tabs** — Click tab headers
+- **Close tab** — Click the close button on the tab
+
+### Shell Auto-Detection
+
+Biscuit automatically detects and uses your default system shell:
+
+- **Windows** — PowerShell, cmd, or WSL
+- **Linux** — bash, zsh, fish, etc.
+- **macOS** — zsh, bash
+
+### ANSI Escape Code Support
+
+Full support for colored output, cursor positioning, and terminal control
+sequences.
+
+### External Console Support
+
+Toggle between embedded terminal and external console window for specific tasks.
+
+## AI Integration in Terminal
+
+The terminal has a unique AI integration feature. You can prefix any command
+with `#` to get AI assistance:
+
+```bash
+# how do I find all Python files that import os?
+```
+
+The AI assistant will:
+
+1. Understand your natural language question
+2. Suggest the appropriate command(s)
+3. You can accept or decline the suggestion
+
+This works for:
+
+- Command suggestions
+- File operations
+- Git operations
+- Debug commands
+- Any terminal-based task
+
+## Running Code
+
+Use the terminal to run your code:
+
+```bash
+python main.py
+node app.js
+cargo run
+```
+
+Or use the built-in run commands from the command palette:
+
+```
+> Run: Run Python File
+> Run: Run Current File
+```

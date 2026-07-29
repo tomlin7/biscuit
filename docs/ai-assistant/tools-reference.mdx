@@ -1,0 +1,186 @@
+---
+title: "AI Tools Reference"
+description: "Complete reference of all tools available to the AI agent."
+---
+
+The AI agent has access to 11 built-in tools for working with your codebase.
+
+## File Tools
+
+### ReadFileTool
+
+Read the contents of a file with optional offset and limit.
+
+```json
+{
+  "path": "src/main.py",
+  "offset": 10,
+  "limit": 50
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | string | File path relative to workspace root |
+| `offset` | number | Starting line (0-indexed, optional) |
+| `limit` | number | Number of lines to read (optional) |
+
+### EditFileTool
+
+Make targeted edits to a file using a sketch-based diff system.
+
+```json
+{
+  "path": "src/main.py",
+  "old_string": "def old_function():",
+  "new_string": "def new_function():"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | string | File path relative to workspace root |
+| `old_string` | string | The text to replace |
+| `new_string` | string | The replacement text |
+
+<Tip>
+  Use `// ... existing code ...` markers in `new_string` to indicate unchanged
+  portions, keeping edits focused and minimal.
+</Tip>
+
+### DeleteFileTool
+
+Delete a file from the workspace.
+
+```json
+{
+  "path": "src/old_file.py"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | string | File path relative to workspace root |
+
+## Search Tools
+
+### GlobFileSearchTool
+
+Search for files matching a glob pattern.
+
+```json
+{
+  "pattern": "**/*.py",
+  "path": "src"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `pattern` | string | Glob pattern (e.g., `**/*.py`) |
+| `path` | string | Base directory (optional) |
+
+### GrepTool
+
+Search file contents using regex patterns.
+
+```json
+{
+  "pattern": "def \\w+\\(",
+  "include": "*.py",
+  "path": "src"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `pattern` | string | Regex pattern to search for |
+| `include` | string | File pattern to filter (e.g., `*.py`) |
+| `path` | string | Base directory (optional) |
+
+### CodebaseSearchTool
+
+Semantic-like code search using keyword scoring.
+
+```json
+{
+  "query": "database connection",
+  "path": "src"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `query` | string | Search keywords |
+| `path` | string | Base directory (optional) |
+
+## Directory Tools
+
+### ListDirTool
+
+List the contents of a directory.
+
+```json
+{
+  "path": "src"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | string | Directory path relative to workspace root |
+
+## Execution Tools
+
+### RunTerminalCmdTool
+
+Execute a terminal command with safety checks.
+
+```json
+{
+  "command": "python -m pytest tests/"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `command` | string | Command to execute |
+
+<Warning>
+  Commands are reviewed before execution. The user can accept or decline
+  each command.
+</Warning>
+
+## Tools for Tools
+
+### TodoWriteTool
+
+Manage a task list for multi-step operations.
+
+```json
+{
+  "todos": [
+    {"content": "Create database models", "priority": "high", "status": "in_progress"},
+    {"content": "Write API endpoints", "priority": "high", "status": "pending"},
+    {"content": "Add tests", "priority": "medium", "status": "pending"}
+  ]
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `todos` | array | List of task objects with `content`, `status`, `priority` |
+
+## Information Tools
+
+### GetWorkspaceInfoTool
+
+Retrieve information about the current workspace environment.
+
+No parameters required. Returns: workspace path, OS info, Python version, etc.
+
+### GetActiveEditorTool
+
+Get the path and status of the currently active editor tab.
+
+No parameters required. Returns: file path, language, cursor position.

@@ -1,0 +1,171 @@
+---
+title: "Extension API Reference"
+description: "Complete reference for the Biscuit Extensions API."
+---
+
+## `ExtensionsAPI`
+
+The main API object passed to `setup(api)`. Provides access to all extension
+capabilities.
+
+### Registration
+
+```python
+api.register(name: str, instance: Extension) -> None
+```
+
+Register the extension instance with the given name.
+
+### Commands (`api.commands`)
+
+```python
+api.commands.register_command(
+    title: str,
+    callback: Callable,
+    category: str = ""
+) -> None
+```
+
+Register a command that appears in the command palette.
+
+| Parameter | Description |
+|-----------|-------------|
+| `title` | Display name (shown in palette) |
+| `callback` | Function to execute |
+| `category` | Optional category grouping |
+
+### Editors (`api.editors`)
+
+```python
+api.editors.add_editor(editor: BaseEditor) -> None
+api.editors.open_file(path: str) -> None
+api.editors.close_active_editor() -> None
+```
+
+### Notifications (`api.notifications`)
+
+```python
+api.notifications.info(message: str) -> None
+api.notifications.warning(message: str) -> None
+api.notifications.error(message: str) -> None
+```
+
+### Views (`api.views`)
+
+```python
+api.views.add_sidebar_view(title: str, widget_class: type) -> None
+api.views.add_panel_view(title: str, widget_class: type) -> None
+```
+
+### Assistant (`api.assistant`)
+
+```python
+api.assistant.register_provider(name: str, provider_class: type) -> None
+```
+
+### Logger (`api.logger`)
+
+```python
+api.logger.info(message: str) -> None
+api.logger.warning(message: str) -> None
+api.logger.error(message: str) -> None
+```
+
+### Releases (`api.releases`)
+
+```python
+api.releases.check_for_updates() -> dict
+api.releases.get_latest_version() -> str
+```
+
+## Registration Helper Methods
+
+These methods are available directly on the `api` object:
+
+### `api.register_comment_prefix`
+
+```python
+api.register_comment_prefix(language: str, prefix: str) -> None
+```
+
+Register a comment syntax for a language (e.g., `//` for JavaScript).
+
+### `api.register_game`
+
+```python
+api.register_game(game: Game) -> None
+```
+
+Register a built-in game accessible from the command palette.
+
+### `api.register_langserver`
+
+```python
+api.register_langserver(language: str, command: str) -> None
+```
+
+Register a language server for a specific language.
+
+| Parameter | Description |
+|-----------|-------------|
+| `language` | Language name (e.g., `"rust"`, `"cpp"`) |
+| `command` | LSP server command (e.g., `"rust-analyzer"`) |
+
+### `api.register_run_command`
+
+```python
+api.register_run_command(language: str, command: str) -> None
+```
+
+Register a run command for a specific language.
+
+## `Extension` Base Class
+
+```python
+from biscuit.extensions import Extension
+
+class MyExtension(Extension):
+    def install(self) -> None:
+        """Called when the extension is loaded. Override to set up commands, etc."""
+        pass
+
+    def setup(self) -> None:
+        """Called after install for additional setup."""
+        pass
+```
+
+## `BaseEditor` Class
+
+For creating custom editor types:
+
+```python
+from biscuit.editor.editorbase import BaseEditor
+
+class MyEditor(BaseEditor):
+    name = "my-editor"
+
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        # Build your editor UI here
+```
+
+## Example: Complete Extension
+
+```python
+# __init__.py
+def setup(api):
+    api.register("hello-world", HelloWorldExtension(api))
+
+# extension.py
+from biscuit.extensions import Extension
+
+class HelloWorldExtension(Extension):
+    def install(self):
+        self.api.commands.register_command(
+            "Hello World: Greet",
+            self.greet
+        )
+
+    def greet(self):
+        self.api.notifications.info("Hello from my extension!")
+```

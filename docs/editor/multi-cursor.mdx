@@ -1,0 +1,48 @@
+---
+title: "Multi-Cursor Editing"
+description: "Edit multiple locations simultaneously."
+---
+
+Multi-cursor editing lets you insert, delete, or replace text at multiple locations
+at the same time. This is one of the most powerful time-saving features for
+repetitive edits.
+
+## Creating Multiple Cursors
+
+| Action | Shortcut |
+|--------|----------|
+| Add cursor above | `Ctrl+Alt+Up` |
+| Add cursor below | `Ctrl+Alt+Down` |
+| Add cursor at next match | `Ctrl+D` |
+| Skip current match | `Ctrl+K, Ctrl+D` |
+| Undo last cursor | `Ctrl+U` |
+| Select all matches | `Alt+Enter` |
+
+## Using Multiple Cursors
+
+Once you have multiple cursors:
+
+1. **Type text** — Text is inserted at all cursor positions
+2. **Delete** — Deletes at all cursor positions
+3. **Paste** — Pastes at all cursor positions
+4. **Move cursor** — All cursors move simultaneously
+5. **Select text** — Selections are created at all cursor positions
+
+## Practical Examples
+
+### Rename a variable across a function
+
+1. Select the variable name
+2. Press `Ctrl+D` repeatedly to select each occurrence
+3. Type the new name — all occurrences update
+
+### Add a prefix to multiple lines
+
+1. Place cursor at the start of the first line
+2. Press `Ctrl+Alt+Down` to add cursors on each subsequent line
+3. Type the prefix text
+
+### Edit a column of text
+
+1. Hold `Alt+Shift` and drag vertically to create a column selection
+2. Type to replace the selected block

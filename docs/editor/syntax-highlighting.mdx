@@ -1,0 +1,55 @@
+---
+title: "Syntax Highlighting"
+description: "Tree-sitter based syntax highlighting for 550+ languages."
+---
+
+Biscuit uses **Tree-sitter** for syntax highlighting, providing accurate,
+incremental, and fast highlighting for a wide range of languages.
+
+## How It Works
+
+Tree-sitter parses your code into a concrete syntax tree (CST) and applies
+highlighting rules based on the parsed structure. This means:
+
+- **Accurate** — highlighting respects the actual syntax, not regex patterns
+- **Fast** — incremental parsing updates only what changed
+- **Language-aware** — understands context (e.g., highlights variables vs types differently)
+
+## Supported Languages
+
+Tree-sitter queries for syntax highlighting are located in
+`src/biscuit/editor/text/queries/`. Biscuit supports 550+ languages via its
+language detection system.
+
+## Language Mode
+
+Biscuit auto-detects the language based on file extension. To manually set or
+change the language mode:
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `language:`
+3. Select the desired language
+
+The current language mode is displayed in the status bar.
+
+## Theme-Based Colors
+
+Highlighting colors are determined by your active theme. Each theme defines
+a comprehensive set of token colors for:
+
+| Token Type | Example |
+|------------|---------|
+| Keywords | `if`, `for`, `return`, `class` |
+| Strings | `"hello"`, `'world'`, `f"template"` |
+| Comments | `# comment`, `// comment`, `/* block */` |
+| Functions | `def foo():`, `function bar()` |
+| Types | `int`, `str`, `MyClass` |
+| Variables | `x`, `counter`, `my_var` |
+| Constants | `True`, `None`, `MAX_SIZE` |
+| Operators | `+`, `->`, `==`, `:=` |
+| Numbers | `42`, `3.14`, `0xFF` |
+| Decorators | `@staticmethod`, `@property` |
+| Built-ins | `print`, `len`, `range` |
+
+Switch themes to change the entire color palette. See
+[Settings & Themes](/getting-started/settings-and-themes) for available themes.

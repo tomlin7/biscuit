@@ -1,0 +1,78 @@
+---
+title: "Installing Extensions"
+description: "Find, install, and manage Biscuit extensions."
+---
+
+## Extension Marketplace
+
+The [Biscuit Extensions Marketplace](https://biscuit-extensions.github.io/marketplace/)
+hosts community-built extensions. You can browse, install, and manage extensions
+from within the editor or via CLI.
+
+## Installing from the Editor
+
+1. Open the **Extensions** panel: secondary sidebar → **Extensions** tab (`Ctrl+X`)
+2. Browse the available extensions
+3. Click **Install** on any extension
+4. The extension is loaded immediately — no restart required
+
+## Installing via CLI
+
+```bash
+# List all available extensions
+biscuit ext list
+
+# List installed extensions
+biscuit ext list -i
+
+# List extensions by author
+biscuit ext list -u tomlin7
+
+# Show extension details
+biscuit ext info browser
+
+# Install an extension
+biscuit ext install browser
+
+# Uninstall an extension
+biscuit ext uninstall browser
+```
+
+## Managing Extensions
+
+### Extension Viewer
+
+Click on any installed extension in the Extensions panel to see:
+
+- **Name and version**
+- **Description**
+- **Author**
+- **Repository link**
+- **Enable/Disable** toggle
+
+### CLI Management
+
+```bash
+# Update all extensions
+biscuit ext update
+
+# Run extension test suite
+biscuit ext test
+
+# Scaffold a new extension
+biscuit ext new my-extension
+```
+
+## Popular Extensions
+
+| Extension | Description |
+|-----------|-------------|
+| **browser** | In-editor browser tab with WebView2 |
+| **rust** | Rust language server (rust-analyzer) |
+| **clangd** | C/C++ language server (clangd) |
+
+## Hot Reloading
+
+Extensions are loaded in a background thread with a 5-second polling interval.
+There's no need to restart Biscuit after installing or updating an extension —
+changes take effect automatically.

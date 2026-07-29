@@ -1,0 +1,91 @@
+---
+title: "Settings & Themes"
+description: "Customize Biscuit to match your workflow and visual preferences."
+---
+
+Biscuit stores its configuration in `~/.biscuit/config/settings.toml`. You can edit
+this file directly or use the Settings editor from the command palette.
+
+## Opening Settings
+
+Press `Ctrl+,` or open the command palette (`Ctrl+P`) and type `> Preferences:
+Open Settings`.
+
+## Available Settings
+
+```toml
+# Editor
+font = "Fira Code"
+font_size = 12
+uifont = "Fira Code"
+uifont_size = 10
+theme = "dark"
+auto_save = false
+auto_closing_pairs = true
+auto_closing_delete = true
+auto_indent = true
+auto_surround = true
+word_wrap = false
+tab_size = 4
+cursor_style = "line"
+relative_line_numbers = false
+vim_mode = false
+
+# Display
+show_minimap = true
+show_breadcrumbs = true
+show_line_numbers = true
+render_indent_guides = true
+```
+
+### Editor Settings
+
+| Setting | Values | Default | Description |
+|---------|--------|---------|-------------|
+| `font` | Any installed font | `Fira Code` | Editor font family |
+| `font_size` | Number | `12` | Editor font size |
+| `theme` | `dark`, `light`, `gruvbox_dark`, `catppuccin_mocha` | `dark` | Color theme |
+| `auto_save` | `true` / `false` | `false` | Auto-save on focus loss |
+| `auto_closing_pairs` | `true` / `false` | `true` | Auto-close brackets/quotes |
+| `auto_indent` | `true` / `false` | `true` | Auto-indent on new lines |
+| `word_wrap` | `true` / `false` | `false` | Wrap long lines |
+| `tab_size` | Number | `4` | Spaces per tab |
+| `cursor_style` | `line` / `block` | `line` | Cursor appearance |
+| `relative_line_numbers` | `true` / `false` | `false` | Relative vs absolute line numbers |
+| `vim_mode` | `true` / `false` | `false` | Enable Vim modal editing |
+
+## Themes
+
+Biscuit ships with several built-in themes:
+
+| Theme | Description |
+|-------|-------------|
+| **Dark** (default) | Dark theme inspired by VS Code Dark+ |
+| **Light** | Light theme inspired by VS Code Light+ |
+| **Gruvbox Dark** | Warm, retro-inspired dark theme |
+| **Catppuccin Mocha** | Soothing pastel dark theme |
+
+Switch themes by changing the `theme` setting in `settings.toml`.
+
+## Workspace Settings (EditorConfig)
+
+Biscuit supports `.editorconfig` files. Place a `.editorconfig` in your project root
+to apply project-specific formatting rules:
+
+```ini
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.py]
+indent_size = 4
+
+[*.{js,ts,jsx,tsx}]
+indent_size = 2
+```

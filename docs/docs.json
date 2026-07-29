@@ -1,0 +1,156 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Biscuit",
+  "colors": {
+    "primary": "#D97706",
+    "light": "#F59E0B",
+    "dark": "#B45309"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "pages": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "index",
+          "installation",
+          "getting-started/first-launch",
+          "getting-started/settings-and-themes",
+          "getting-started/workspace-management"
+        ]
+      },
+      {
+        "group": "Editor",
+        "pages": [
+          "editor/overview",
+          "editor/text-editor",
+          "editor/syntax-highlighting",
+          "editor/find-and-replace",
+          "editor/multi-cursor",
+          "editor/vim-mode"
+        ]
+      },
+      {
+        "group": "Code Intelligence",
+        "pages": [
+          "code-intelligence/overview",
+          "code-intelligence/lsp-integration",
+          "code-intelligence/code-completions",
+          "code-intelligence/navigation"
+        ]
+      },
+      {
+        "group": "AI Assistant",
+        "pages": [
+          "ai-assistant/overview",
+          "ai-assistant/setup",
+          "ai-assistant/supported-models",
+          "ai-assistant/agent-capabilities",
+          "ai-assistant/tools-reference"
+        ]
+      },
+      {
+        "group": "Git Integration",
+        "pages": [
+          "git-integration/overview",
+          "git-integration/basic-operations",
+          "git-integration/diff-viewer",
+          "git-integration/github"
+        ]
+      },
+      {
+        "group": "Debugger",
+        "pages": [
+          "debugger/overview",
+          "debugger/python-debugger",
+          "debugger/breakpoints",
+          "debugger/variable-inspection"
+        ]
+      },
+      {
+        "group": "Search & Terminal",
+        "pages": [
+          "search/overview",
+          "terminal/overview"
+        ]
+      },
+      {
+        "group": "Extensions",
+        "pages": [
+          "extensions/overview",
+          "extensions/installing",
+          "extensions/creating-extensions",
+          "extensions/api-reference"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "keyboard-shortcuts",
+          "cli-reference",
+          "troubleshooting"
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "/",
+          "icon": "book-open-cover"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/tomlin7/biscuit",
+          "icon": "github"
+        },
+        {
+          "anchor": "Marketplace",
+          "href": "https://biscuit-extensions.github.io/marketplace/",
+          "icon": "puzzle-piece"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/tomlin7/biscuit"
+      },
+      {
+        "label": "Marketplace",
+        "href": "https://biscuit-extensions.github.io/marketplace/"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "/installation"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/tomlin7/biscuit",
+      "x": "https://x.com/tomlin7",
+      "website": "https://tomlin7.github.io/biscuit"
+    }
+  }
+}

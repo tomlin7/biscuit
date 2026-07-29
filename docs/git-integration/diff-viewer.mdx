@@ -1,0 +1,56 @@
+---
+title: "Diff Viewer"
+description: "Side-by-side diff viewer for Git changes and file comparison."
+---
+
+Biscuit provides a built-in side-by-side diff viewer with word-level
+highlighting for comparing file versions.
+
+## Opening the Diff Viewer
+
+### From Git Panel
+
+1. Click any changed file in the Source Control panel
+2. The diff opens in a split view automatically
+
+### From Command Line
+
+```bash
+biscuit diff file1.py file2.py
+```
+
+## Diff Viewer Layout
+
+```
+┌────────────────────┬────────────────────┐
+│    Left Pane       │    Right Pane      │
+│  (original/base)   │  (current/modified)│
+│                    │                    │
+│  - removed line    │  + added line      │
+│  - removed line    │    unchanged       │
+│    unchanged       │  + added line      │
+│ ────────────────   │ ────────────────   │
+│                    │                    │
+│  LHS: Last commit  │  RHS: Current      │
+│       or file1     │       or file2     │
+└────────────────────┴────────────────────┘
+```
+
+## Features
+
+- **Side-by-side panes** — Original on the left, modified on the right
+- **Color-coded changes** — Green for additions, red for deletions
+- **Word-level diffing** — Individual word changes highlighted within lines
+- **Synchronized scrolling** — Both panes scroll together
+- **Change indicators** — Visual markers in the gutter showing change locations
+- **Stage/unstage** — Stage or unstage changes directly from the diff view
+
+## Standalone Diff Mode
+
+You can also use the diff viewer to compare any two files:
+
+```bash
+biscuit diff path/to/file1.py path/to/file2.py
+```
+
+This opens a standalone diff view without any Git context.

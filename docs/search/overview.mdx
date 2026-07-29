@@ -1,0 +1,56 @@
+---
+title: "Search"
+description: "Fast, ripgrep-powered global search with regex and replace."
+---
+
+Biscuit uses **ripgrep** for ultra-fast workspace-wide search. The search panel
+provides real-time results with powerful filtering options.
+
+## Global Search
+
+Open the search panel: **Primary Sidebar** → **Search** tab (`Ctrl+Shift+F`)
+
+### Basic Search
+
+1. Type your query in the search input
+2. Results appear in real-time with file paths and line numbers
+3. Click any result to jump to that location
+
+### Search Options
+
+| Option | Description |
+|--------|-------------|
+| **Match Case** | `Aa` — Case-sensitive matching |
+| **Whole Word** | `ab` — Match only whole words |
+| **Regex** | `.*` — Use regular expressions |
+| **File Filter** | `*.py,*.js` — Include only matching files |
+| **Exclude Pattern** | `node_modules` — Exclude directories/files |
+
+### Replace
+
+1. Enter search text
+2. Enter replacement text in the replace input
+3. Click **Replace All** to replace all occurrences
+4. Or click individual results to replace selectively
+
+## In-File Search
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+F` | Find in current file |
+| `Ctrl+H` | Find and replace in current file |
+| `F3` | Find next |
+| `Shift+F3` | Find previous |
+
+The floating find/replace widget supports:
+
+- **Match case** toggle
+- **Whole word** toggle
+- **Regex** toggle
+- **Replace all** and **Replace single**
+- Auto-highlighting of all matches in the editor
+
+## Quick File Search
+
+Press `Ctrl+Shift+P` to quickly search for files by name across the entire
+workspace. Results update as you type.

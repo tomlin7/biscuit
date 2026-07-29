@@ -1,0 +1,114 @@
+---
+title: "CLI Reference"
+description: "Command-line interface reference for Biscuit."
+---
+
+## Basic Usage
+
+```bash
+biscuit [OPTIONS] [PATH]
+```
+
+## Commands
+
+### Open a file or directory
+
+```bash
+biscuit path/to/file.py
+biscuit path/to/project
+biscuit .           # Open current directory
+```
+
+### Open explicitly
+
+```bash
+biscuit open path/to/file.py
+```
+
+### Open at specific position
+
+```bash
+biscuit goto path/to/file.py 42:10    # Open at line 42, column 10
+```
+
+### Clone a repository
+
+```bash
+biscuit clone https://github.com/user/repo.git
+```
+
+### Compare files
+
+```bash
+biscuit diff file1.py file2.py
+```
+
+### Open documentation
+
+```bash
+biscuit doc
+```
+
+## Extension Management
+
+```bash
+# List all available extensions
+biscuit ext list
+
+# List installed extensions
+biscuit ext list -i
+
+# List extensions by author
+biscuit ext list -u username
+
+# Show extension details
+biscuit ext info extension-name
+
+# Install an extension
+biscuit ext install extension-name
+
+# Uninstall an extension
+biscuit ext uninstall extension-name
+
+# Create a new extension scaffold
+biscuit ext new my-extension
+
+# Run extension in development mode
+biscuit ext dev
+
+# Run extension tests
+biscuit ext test
+
+# Publish an extension
+biscuit ext publish
+
+# Update extensions
+biscuit ext update
+```
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `--version` | Show version number |
+| `--dev` | Launch in development mode |
+| `--help` | Show help message |
+
+## Examples
+
+```bash
+# Open current directory
+biscuit .
+
+# Open a project and jump to a specific file
+biscuit goto src/main.py 10
+
+# Clone and open a repository
+biscuit clone https://github.com/tomlin7/biscuit.git
+
+# Compare two files
+biscuit diff original.py modified.py
+
+# Check version
+biscuit --version
+```

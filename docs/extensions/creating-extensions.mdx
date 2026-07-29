@@ -1,0 +1,155 @@
+---
+title: "Creating Extensions"
+description: "Build Python extensions for Biscuit using the Extensions API."
+---
+
+## Extension Structure
+
+Every extension follows this structure:
+
+```
+my-extension/
+├── __init__.py
+├── extension.py
+└── pyproject.toml
+```
+
+### Entry Point (`__init__.py`)
+
+The `setup(api)` function is called when the extension is loaded:
+
+```python
+def setup(api):
+    api.register("my-extension", MyExtension(api))
+```
+
+### Extension Class (`extension.py`)
+
+Extensions can optionally extend the `Extension` base class:
+
+```python
+from biscuit.extensions import Extension
+
+class MyExtension(Extension):
+    def install(self):
+        # Called when extension is loaded
+        # Register commands, views, language servers, etc.
+        pass
+```
+
+### Package Metadata (`pyproject.toml`)
+
+```toml
+[project]
+name = "my-extension"
+version = "0.1.0"
+description = "My custom extension"
+```
+
+## Registering Capabilities
+
+### Commands
+
+```python
+from biscuit.api import ExtensionsAPI
+
+def setup(api: ExtensionsAPI):
+    api.register("my-ext", instance)
+
+    # Register a new command
+    api.commands.register_command(
+        "My Extension: Do Something",
+        lambda: print("Done!")
+    )
+```
+
+Commands registered this way appear in the command palette automatically.
+
+### Language Servers
+
+```python
+def setup(api):
+    # Register a language server for a specific language
+    api.register_langserver("rust", "rust-analyzer")
+    api.register_langserver("cpp", "clangd")
+```
+
+### AI Providers
+
+```python
+def setup(api):
+    # Register a custom AI provider
+    api.assistant.register_provider("my-provider", MyProvider)
+```
+
+### UI Views
+
+```python
+from biscuit.api import ExtensionsAPI
+
+def setup(api: ExtensionsAPI):
+    # Add a view to the sidebar
+    api.views.add_sidebar_view("My View", MyViewWidget)
+
+    # Add a view to the panel
+    api.views.add_panel_view("My Panel", MyPanelWidget)
+```
+
+### Formatters
+
+```python
+def setup(api):
+    # Register a code formatter
+    api.register_run_command("python", "black")
+```
+
+### Notifications
+
+```python
+def setup(api):
+    api = api(api)
+
+    # Show different types of notifications
+    api.notifications.info("Extension loaded successfully")
+    api.notifications.warning("Deprecated API used")
+    api.notifications.error("Failed to load resource")
+```
+
+## Scaffolding an Extension
+
+Use the CLI to generate a new extension project:
+
+```bash
+biscuit ext new my-extension
+```
+
+This creates the directory structure with a template `__init__.py`, `extension.py`,
+and `pyproject.toml` ready for customization.
+
+## Development Mode
+
+For active development, use dev mode:
+
+```bash
+biscuit ext dev
+```
+
+This loads your extension from the current directory, allowing rapid iteration.
+Changes to the extension code are picked up automatically.
+
+## Testing
+
+```bash
+biscuit ext test
+```
+
+Runs the extension's test suite to verify functionality before publishing.
+
+## Publishing
+
+See the [Extension Marketplace](https://biscuit-extensions.github.io/marketplace/)
+for publishing guidelines:
+
+```bash
+biscuit ext publish
+```

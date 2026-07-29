@@ -1,0 +1,52 @@
+---
+title: "Extensions Overview"
+description: "Extend Biscuit with Python-based plugins."
+---
+
+Biscuit has a powerful extension system that lets you add new features using
+Python. Extensions can register language servers, AI providers, formatters,
+UI views, commands, and more.
+
+## How Extensions Work
+
+Extensions are Python packages installed in `~/.biscuit/extensions/extensions/`.
+Each extension is a directory with a `setup(api)` entry point:
+
+```
+~/.biscuit/extensions/extensions/
+├── my-extension/
+│   ├── __init__.py          # setup(api) entry point
+│   ├── extension.py         # Extension class
+│   └── pyproject.toml       # Package metadata
+```
+
+### Lifecycle
+
+1. **Discovery** — The ExtensionManager scans the extensions directory every 5 seconds
+2. **Loading** — Each extension's `setup(api)` function is called
+3. **Registration** — The extension registers its capabilities (commands, views, servers)
+4. **Runtime** — The extension's features are available immediately
+
+## Extension API
+
+The `api` object passed to `setup()` provides the following endpoints:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `api.register(name, instance)` | Register the extension |
+| `api.commands` | Register new commands |
+| `api.editors` | Open and manage editors |
+| `api.notifications` | Show notifications |
+| `api.views` | Add sidebar/panel views |
+| `api.assistant` | Register AI providers |
+| `api.logger` | Log messages |
+| `api.releases` | Check for updates |
+
+<CardGroup cols={2}>
+  <Card title="Installing Extensions" icon="download" href="/extensions/installing">
+    Find and install extensions from the marketplace.
+  </Card>
+  <Card title="Creating Extensions" icon="code" href="/extensions/creating-extensions">
+    Build your own extension with the Python API.
+  </Card>
+</CardGroup>

@@ -1,0 +1,52 @@
+---
+title: "Breakpoints"
+description: "Set, manage, and use breakpoints for debugging."
+---
+
+Breakpoints let you pause program execution at specific lines to inspect
+program state.
+
+## Setting Breakpoints
+
+### Click in Gutter
+
+Click the line number gutter to toggle a breakpoint:
+
+- **Red dot** — Active breakpoint
+- **Gray dot** — Disabled breakpoint
+- **No dot** — No breakpoint
+
+### Shortcut
+
+- `F9` — Toggle breakpoint on the current line
+
+## Managing Breakpoints
+
+Breakpoints are displayed in the debug panel's **Breakpoints** section.
+
+| Action | How |
+|--------|-----|
+| **Enable/Disable** | Click the checkbox next to the breakpoint |
+| **Remove** | Click the gutter dot again, or remove from panel |
+| **Clear all** | Use `> Debug: Clear All Breakpoints` in command palette |
+
+## Breakpoint States
+
+| Icon | State | Behavior |
+|------|-------|----------|
+| 🔴 Red dot | Active | Execution pauses at this line |
+| ⚪ Gray dot | Disabled | Breakpoint saved but not active |
+| No dot | None | No breakpoint set |
+
+## Conditional Breakpoints
+
+<Note>
+  Conditional breakpoints are not yet supported in the current version.
+  Breakpoints always pause execution when hit.
+</Note>
+
+## Breakpoints in Multiple Files
+
+Breakpoints can be set across multiple files. The debugger manages breakpoints
+per file, using line numbers to track locations. Breakpoints are preserved as
+long as the file is open in the editor.

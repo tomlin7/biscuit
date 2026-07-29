@@ -1,0 +1,58 @@
+---
+title: "AI Assistant Setup"
+description: "Configure API keys and select a model for the AI assistant."
+---
+
+## Prerequisites
+
+To use the AI assistant, you need an API key from one of the supported providers:
+
+- **Google Gemini** — Get a key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **Anthropic Claude** — Get a key from [Anthropic Console](https://console.anthropic.com/)
+
+## Setting Up Your API Key
+
+1. Open the AI assistant panel (`Ctrl+A`)
+2. Click the settings icon in the AI panel header
+3. Enter your API key for your chosen provider
+4. Select the model you want to use
+
+API keys are stored securely in a local SQLite database at
+`~/.biscuit/data/secrets.db`.
+
+## Selecting a Model
+
+Once your API key is configured, select a model from the dropdown in the AI panel:
+
+### Gemini Models
+
+| Model | Description |
+|-------|-------------|
+| Gemini 2.5 Pro | Most capable, best for complex tasks |
+| Gemini 2.5 Flash | Fast and efficient for most tasks |
+| Gemini 2.0 Pro | Previous generation, stable |
+| Gemini 2.0 Flash | Lightweight, fast responses |
+
+### Claude Models
+
+| Model | Description |
+|-------|-------------|
+| Claude 4.5 Opus | Most powerful, best for complex reasoning |
+| Claude 4.5 Sonnet | Balanced speed and capability |
+| Claude 4.5 Haiku | Fastest, best for simple tasks |
+| Claude 4 Opus | Previous generation flagship |
+| Claude 4 Sonnet | Previous generation balanced |
+
+## Custom Providers
+
+Additional AI providers can be added through the extension system. See
+[Creating Extensions](/extensions/creating-extensions) for details on registering
+new AI providers.
+
+## Using the AI Assistant
+
+Once configured, you can:
+
+1. **Chat in the AI panel** (`Ctrl+A`) — Ask questions about your codebase
+2. **Use inline AI in terminal** — Type `# your prompt` in the terminal to get AI assistance
+3. **Attach files** — Use `@` mentions in chat to reference specific files

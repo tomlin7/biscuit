@@ -1,0 +1,58 @@
+---
+title: "Code Completions"
+description: "Context-aware autocomplete with type-specific icons."
+---
+
+Biscuit provides autocomplete suggestions as you type. The completion popup
+appears automatically after a brief pause and shows contextually relevant options.
+
+## Triggering Completions
+
+- **Automatic** — Appears after a short delay while typing
+- **Manual** — Press `Ctrl+Space` to trigger completions explicitly
+
+## Completion Items
+
+Each completion item includes:
+
+- **Label** — The symbol/word being suggested
+- **Type icon** — Visual indicator of the symbol type:
+  - `f` — Function/Method
+  - `c` — Class
+  - `v` — Variable
+  - `m` — Module
+  - `p` — Property
+  - `k` — Keyword
+  - `s` — Snippet
+- **Detail** — Type signature or additional information
+- **Documentation** — Docstring or description (if available)
+
+## Completion Sources
+
+Completions come from multiple sources:
+
+1. **LSP** — Language server suggestions (symbols, methods, parameters)
+2. **Tree-sitter** — Syntax-aware local completions
+3. **Snippets** — Code templates
+4. **Words in document** — Other words found in the current file
+
+## Accepting Completions
+
+| Key | Action |
+|-----|--------|
+| `Tab` | Accept selected completion |
+| `Enter` | Accept selected completion |
+| `Up` / `Down` | Navigate completion list |
+| `Esc` | Dismiss completion popup |
+| `Ctrl+Space` | Re-trigger completions |
+
+## Customization
+
+Completion behavior is configured via settings:
+
+```toml
+# Completion settings
+auto_completion = true          # Enable automatic completions
+completion_delay = 300          # Delay before showing completions (ms)
+completion_detail = true        # Show detailed completion info
+```

@@ -1,0 +1,109 @@
+---
+title: "First Launch"
+description: "Tour the Biscuit interface and open your first project."
+---
+
+When you launch Biscuit for the first time, you'll see the main window with several
+key areas. This guide walks you through each part.
+
+## Interface Overview
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  Menubar                                                  │
+├──────────┬───────────────────────────────────┬────────────┤
+│          │                                   │            │
+│ Sidebar  │  Editors Pane                     │ Second     │
+│          │                                   │ Sidebar    │
+│ Explorer │  ┌───────────────────────────┐    │            │
+│ Search   │  │  Editor Tab               │    │ Outline    │
+│ Git      │  │                           │    │ AI         │
+│ Debug    │  │                           │    │ GitHub     │
+│          │  │                           │    │ Extensions │
+│          │  └───────────────────────────┘    │            │
+│          ├───────────────────────────────────┤            │
+│          │  Panel (Terminals / Logs /        │            │
+│          │         Problems)                 │            │
+├──────────┴───────────────────────────────────┴────────────┤
+│  Statusbar                                                 │
+└──────────────────────────────────────────────────────────┘
+```
+
+## Opening a Project
+
+There are several ways to open a project in Biscuit:
+
+### Command Line
+
+```bash
+biscuit path/to/your/project
+```
+
+### From the Editor
+
+1. Press `Ctrl+O` to open a file dialog
+2. Press `Ctrl+Shift+O` to open a directory
+3. Drag and drop a folder onto the editor window
+
+### Clone from GitHub
+
+1. Press `Ctrl+Shift+P` to open the command palette
+2. Type `clone:` and press Enter
+3. Enter the repository URL
+
+## Command Palette
+
+The command palette is your primary tool for navigation and actions:
+
+| Prefix | Action |
+|--------|--------|
+| `> ` (empty) | Commands |
+| `@` | Symbol search |
+| `:` | Go to line |
+| `active:` | Open editors |
+| `recentf:` | Recent files |
+| `recentd:` | Recent folders |
+| `branch:` | Git branch switch |
+| `clone:` | Clone repository |
+
+Press `Ctrl+P` to open the palette, or `Ctrl+Shift+P` for file search.
+
+## Sidebars
+
+### Primary Sidebar (Left, `Ctrl+B`)
+
+| Tab | Purpose |
+|-----|---------|
+| **Explorer** (`Ctrl+E`) | File tree navigation |
+| **Search** (`Ctrl+F`) | Global search and replace |
+| **Source Control** (`Ctrl+G`) | Git operations |
+| **Debug** (`Ctrl+D`) | Debugger controls and variables |
+
+### Secondary Sidebar (Right, `Ctrl+Shift+B`)
+
+| Tab | Purpose |
+|-----|---------|
+| **Outline** (`Ctrl+J`) | Symbol outline of current file |
+| **AI** (`Ctrl+A`) | AI coding assistant |
+| **GitHub** | GitHub issues and pull requests |
+| **Extensions** (`Ctrl+X`) | Extension marketplace |
+
+## Status Bar
+
+The status bar at the bottom shows:
+
+- Current branch and git status (left)
+- Language mode, encoding, line ending, indentation (right)
+- Active editor path
+- Background tasks and notifications
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Settings & Themes" icon="paintbrush" href="/getting-started/settings-and-themes">
+    Customize colors, fonts, and editor behavior.
+  </Card>
+  <Card title="Editor Overview" icon="file-text" href="/editor/overview">
+    Learn about the text editor, syntax highlighting, and editing features.
+  </Card>
+</CardGroup>

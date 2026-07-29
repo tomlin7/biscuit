@@ -1,0 +1,70 @@
+---
+title: "Agent Capabilities"
+description: "What the AI agent can do and how to use it effectively."
+---
+
+The AI assistant uses a **ReAct agent** that can reason about your request and
+execute tools to accomplish complex tasks.
+
+## Core Capabilities
+
+### Code Understanding
+
+The agent can read and analyze files across your entire workspace. It understands
+code structure, dependencies, and patterns.
+
+### Code Editing
+
+The agent can make precise edits to your files using a smart diff system:
+
+- **Targeted edits** — Modify specific lines or sections
+- **Multi-file edits** — Coordinate changes across multiple files
+- **Intelligent diff** — Uses sketch-based editing with `// ... existing code ...`
+  markers for minimal, focused changes
+
+### File Operations
+
+- Create new files
+- Delete files
+- List directory contents
+- Search files by glob patterns
+- Search file contents with regex
+
+### Command Execution
+
+The agent can run terminal commands with built-in safety checks:
+
+- Commands are displayed for review before execution
+- Long-running commands show progress
+- Results are streamed back to the chat
+
+### Task Management
+
+For multi-step tasks, the agent maintains a dynamic task list:
+
+- **Structured planning** — Breaks complex requests into steps
+- **Progress tracking** — Updates task status as work progresses
+- **Adaptive** — Can modify the plan based on new information
+
+### Real-Time Streaming
+
+The agent streams its thoughts and actions in real-time:
+
+- **Thought blocks** — Collapsible reasoning steps
+- **Tool actions** — Visible tool calls with icons
+- **Results** — Tool execution results displayed inline
+
+## Limitations
+
+- **Max steps**: 15 iterations per request
+- **No external API calls** — The agent cannot make HTTP requests
+- **Workspace scope** — The agent can only access files within the current workspace
+- **No internet search** — The agent cannot search the web
+
+## Best Practices
+
+1. **Be specific** — Clearly describe what you want to accomplish
+2. **Provide context** — Mention relevant files or sections
+3. **Break down complex tasks** — Ask for one thing at a time
+4. **Review changes** — Always review edits before accepting them
+5. **Use the terminal** — For complex command sequences, use `# prompt` in terminal

@@ -1,0 +1,56 @@
+---
+title: "Editor Overview"
+description: "Biscuit supports multiple editor types for different file formats."
+---
+
+Biscuit provides several built-in editor types tailored to different file formats.
+Each editor is opened as a tab within the editors pane and supports split views.
+
+## Editor Types
+
+| Editor | File Types | Description |
+|--------|------------|-------------|
+| **Text Editor** | `.py`, `.js`, `.ts`, `.rs`, `.cpp`, etc. | Full-featured code editor with syntax highlighting, completions, LSP |
+| **Markdown Editor** | `.md`, `.mdx` | Split editor with live preview |
+| **HTML Editor** | `.html`, `.htm` | Live HTML renderer with edit-and-preview |
+| **Image Viewer** | `.png`, `.jpg`, `.gif`, `.svg` | Built-in image display |
+| **Diff Editor** | — | Side-by-side diff viewer for git and file comparison |
+| **Settings Editor** | — | GUI-based settings management |
+
+## Managing Editors
+
+### Opening Files
+
+- `Ctrl+O` — Open file dialog
+- `Ctrl+P` — Quick file search (type filename)
+- Click files in the Explorer sidebar
+- Drag and drop files onto the editor
+
+### Tabs
+
+- `Ctrl+W` — Close current tab
+- `Ctrl+Shift+W` — Close all tabs
+- `Ctrl+Shift+T` — Restore last closed tab
+- `Ctrl+Tab` / `Ctrl+Shift+Tab` — Cycle through tabs
+
+### Split Views
+
+- `Ctrl+\` — Split the editor vertically
+- Each split can hold its own set of tabs
+- Drag tabs between splits to rearrange
+
+### Breadcrumbs
+
+When enabled (`show_breadcrumbs: true`), the breadcrumb bar above the editor shows:
+
+- File path segments (clickable for navigation)
+- Current symbol/function (from LSP outline)
+
+## The Welcome Page
+
+When no files are open, Biscuit displays a welcome page with quick links to:
+
+- Open a file or folder
+- Clone a repository
+- Open recent projects
+- View keyboard shortcuts

@@ -1,0 +1,71 @@
+---
+title: "Code Navigation"
+description: "Go to definition, find references, peek, rename, and outline."
+---
+
+## Go to Definition
+
+Jump to the definition of a symbol:
+
+| Action | Shortcut |
+|--------|----------|
+| Go to definition | `F12` |
+| Peek definition | `Alt+F12` |
+| Open in split | `Ctrl+Alt+F12` |
+
+The **peek widget** shows the definition in an inline overlay, so you can view
+it without leaving your current context.
+
+## Find References
+
+Find all usages of a symbol across the workspace:
+
+| Action | Shortcut |
+|--------|----------|
+| Find references | `Shift+F12` |
+
+Results appear in a dedicated panel with code snippets for context.
+
+## Hover Information
+
+Hover over any symbol to see:
+
+- Type signature
+- Documentation string
+- Return type
+- Parameter details
+
+This works for both built-in symbols and user-defined code when an LSP server
+is active.
+
+## Symbol Outline
+
+The outline panel (secondary sidebar, `Ctrl+J`) shows all symbols in the current
+file organized by category:
+
+- **Functions** — All function/method definitions
+- **Classes** — All class definitions
+- **Variables** — Module-level variables and constants
+- **Imports** — Imported modules and symbols
+
+Click any symbol to jump to its location in the file. The outline updates in
+real-time as you edit.
+
+## Rename Symbol
+
+Rename a symbol across all files in the workspace:
+
+| Action | Shortcut |
+|--------|----------|
+| Rename symbol | `F2` |
+
+The rename widget appears inline, letting you type the new name and preview
+all affected locations before confirming.
+
+## Symbol Search
+
+Search across all symbols in the workspace:
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `@` followed by the symbol name
+3. Select from the list of matching symbols

@@ -1,0 +1,48 @@
+---
+title: "Supported Models"
+description: "All AI models available in Biscuit's AI assistant."
+---
+
+Biscuit supports multiple AI providers and models. Below is the complete list
+of supported models.
+
+## Google Gemini
+
+| Model | Context Window | Best For |
+|-------|---------------|----------|
+| Gemini 2.5 Pro | 1M tokens | Complex reasoning, large codebases |
+| Gemini 2.5 Flash | 1M tokens | Balanced speed and capability |
+| Gemini 2.0 Pro | 2M tokens | Stable, proven performance |
+| Gemini 2.0 Flash | 1M tokens | Fast responses, simple tasks |
+
+## Anthropic Claude
+
+| Model | Context Window | Best For |
+|-------|---------------|----------|
+| Claude 4.5 Opus | 200K tokens | Most complex reasoning tasks |
+| Claude 4.5 Sonnet | 200K tokens | General coding assistance |
+| Claude 4.5 Haiku | 200K tokens | Fast, lightweight tasks |
+| Claude 4 Opus | 200K tokens | Previous generation flagship |
+| Claude 4 Sonnet | 200K tokens | Previous generation balanced |
+| Claude 3.5 Sonnet | 200K tokens | Stable, proven model |
+| Claude 3.5 Haiku | 200K tokens | Fast and efficient |
+
+## MiniMax
+
+| Model | Best For |
+|-------|----------|
+| MiniMax M3 | General coding tasks |
+| MiniMax M2.7 | Fast, efficient assistance |
+
+## Adding Custom Providers
+
+The AI assistant is extensible through the plugin system. Extensions can register
+new AI providers by implementing the provider interface. See
+[Creating Extensions](/extensions/creating-extensions) for details.
+
+## Model Selection Tips
+
+- **Complex refactoring** — Claude 4.5 Opus or Gemini 2.5 Pro
+- **Quick questions** — Claude 4.5 Haiku or Gemini 2.0 Flash
+- **Large codebase analysis** — Gemini models (larger context windows)
+- **General coding** — Claude 4.5 Sonnet or Gemini 2.5 Flash

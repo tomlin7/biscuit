@@ -1,0 +1,69 @@
+---
+title: "Basic Git Operations"
+description: "Stage, commit, push, pull, and manage branches."
+---
+
+## Staging Changes
+
+In the Source Control panel, each changed file has a checkbox:
+
+- **Check** → Stage the file
+- **Uncheck** → Unstage the file
+- Click the file name to view its diff
+
+## Committing
+
+1. Stage the files you want to commit
+2. Enter a commit message in the text area at the top of the panel
+3. Press `Ctrl+Enter` or click the commit button
+
+## Branching
+
+### Switch Branch
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `branch:` and press Enter
+3. Select the branch to switch to
+
+### Create Branch
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `> Git: Create Branch...`
+3. Enter the new branch name
+
+## Pushing and Pulling
+
+| Action | How |
+|--------|-----|
+| **Push** | Click the push button in the Source Control panel header |
+| **Pull** | Click the pull button in the Source Control panel header |
+| **Push to remote** | From command palette: `> Git: Push` |
+| **Pull from remote** | From command palette: `> Git: Pull` |
+
+## Cloning a Repository
+
+You can clone a repository directly into Biscuit:
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `clone:` and press Enter
+3. Enter the repository URL (e.g., `https://github.com/user/repo.git`)
+4. Select the destination directory
+
+Or from the command line:
+
+```bash
+biscuit clone https://github.com/user/repo.git
+```
+
+## Discarding Changes
+
+To discard uncommitted changes in a file:
+
+1. Right-click the file in the Source Control panel
+2. Select **Discard Changes**
+
+Or from the command palette:
+
+```
+> Git: Discard Changes
+```

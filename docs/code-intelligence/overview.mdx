@@ -1,0 +1,54 @@
+---
+title: "Code Intelligence Overview"
+description: "LSP-powered code analysis for 550+ languages."
+---
+
+Biscuit integrates with the **Language Server Protocol (LSP)** to provide
+rich code intelligence features. A language server provides real-time analysis
+of your code as you type.
+
+## What is LSP?
+
+The Language Server Protocol is a standard that enables editors to communicate
+with language-specific analysis servers. Instead of building parsers for every
+language, Biscuit delegates code analysis to dedicated servers.
+
+## Built-in Language Server
+
+Biscuit ships with **pylsp** (python-lsp-server) for Python, providing
+out-of-the-box code intelligence for Python development.
+
+## Core Features
+
+| Feature | Description |
+|---------|-------------|
+| **Code Completions** | Context-aware autocomplete with type-specific icons |
+| **Go to Definition** | Jump to symbol definitions |
+| **Find References** | Find all usages of a symbol |
+| **Hover Information** | View documentation, type info, and signatures |
+| **Document Symbols** | Outline of functions, classes, and variables |
+| **Rename Symbol** | Rename symbols across files |
+| **Diagnostics** | Real-time errors and warnings inline |
+
+## Supported Languages
+
+Biscuit supports adding language servers for any LSP-capable language through
+its extension system. Common examples:
+
+| Language | LSP Server |
+|----------|------------|
+| Python (built-in) | `pylsp` |
+| Rust | `rust-analyzer` (via extension) |
+| C/C++ | `clangd` (via extension) |
+| TypeScript/JavaScript | `typescript-language-server` (via extension) |
+| Go | `gopls` (via extension) |
+| Java | `jdtls` (via extension) |
+
+<CardGroup cols={2}>
+  <Card title="LSP Integration" icon="plug" href="/code-intelligence/lsp-integration">
+    Configure language servers for any language.
+  </Card>
+  <Card title="Code Completions" icon="list-checks" href="/code-intelligence/code-completions">
+    Autocomplete with type-specific icons.
+  </Card>
+</CardGroup>

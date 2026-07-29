@@ -1,0 +1,41 @@
+---
+title: "Git Integration Overview"
+description: "Built-in Git version control with diff viewer, branching, and GitHub integration."
+---
+
+Biscuit includes built-in Git integration powered by **GitPython**. You can
+perform common Git operations directly from the editor without switching to a
+terminal.
+
+## Git Panel
+
+The Git panel is accessible via:
+
+- **Primary Sidebar** → **Source Control** tab (`Ctrl+G`)
+- Shows current repository status
+
+### What You Can See
+
+- **Changed files** — Modified, added, deleted, untracked, and staged files
+- **File status icons**:
+  - `M` — Modified
+  - `A` — Added
+  - `D` — Deleted
+  - `U` — Untracked
+  - Staged vs unstaged sections
+- **Current branch** — Displayed in the status bar
+- **Pending changes** — Number of uncommitted changes
+
+## Repository Detection
+
+Biscuit automatically detects Git repositories when you open a directory.
+The status bar shows the current branch name and change count.
+
+<CardGroup cols={2}>
+  <Card title="Basic Operations" icon="git-branch" href="/git-integration/basic-operations">
+    Stage, commit, push, pull, and branching.
+  </Card>
+  <Card title="Diff Viewer" icon="file-diff" href="/git-integration/diff-viewer">
+    Side-by-side diff with word-level highlighting.
+  </Card>
+</CardGroup>

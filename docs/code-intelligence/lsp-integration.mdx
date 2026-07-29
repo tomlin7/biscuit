@@ -1,0 +1,59 @@
+---
+title: "LSP Integration"
+description: "Configure and manage language servers in Biscuit."
+---
+
+## How Language Servers Work
+
+Each language server runs as a separate process managed by Biscuit. When you open
+a file, Biscuit starts a language server for that language (if available) and
+maintains a persistent connection for the lifetime of the workspace.
+
+Clients are created per `(workspace_root, language)` pair. When all tabs using
+a language server are closed, the server is automatically terminated after a
+50-second grace period.
+
+## Registering Language Servers via Extensions
+
+Extensions can register additional language servers using the API:
+
+```python
+def setup(api):
+    api.register_langserver("rust", "rust-analyzer")
+    api.register_langserver("cpp", "clangd")
+```
+
+## Manual LSP Configuration
+
+Language server commands are configured through extensions. Each server is
+started with:
+
+```python
+api.register_langserver(language_name, command)
+```
+
+Where `command` is the executable name or path of the LSP server.
+
+## Available Extension Examples
+
+| Extension | Language | Server |
+|-----------|----------|--------|
+| `rust` | Rust | `rust-analyzer` |
+| `clangd` | C, C++ | `clangd` |
+
+Install them via the Extensions marketplace (`Ctrl+X`) or CLI:
+
+```bash
+biscuit ext install rust
+biscuit ext install clangd
+```
+
+## Troubleshooting LSP
+
+If a language server is not working:
+
+1. **Check the server is installed** — Ensure the LSP binary is in your PATH
+2. **Check the Problems panel** — LSP errors appear in the Problems panel (`Ctrl+U` for logs)
+3. **Check language mode** — Ensure the file has the correct language mode assigned
+   (status bar shows current language; use `language:` in the palette to change)
+4. **Restart the server** — Close and reopen the file to restart the LSP client

@@ -1,0 +1,40 @@
+---
+title: "Debugger Overview"
+description: "Built-in debugging with breakpoints, variable inspection, and call stack tracing."
+---
+
+Biscuit includes a built-in debugger system with a full-featured Python debugger.
+The debugger allows you to set breakpoints, inspect variables, navigate the
+call stack, and modify runtime state.
+
+## Architecture
+
+The debugger system is composed of:
+
+| Component | Description |
+|-----------|-------------|
+| **DebuggerManager** | Central manager; maps languages to debugger types |
+| **DebuggerBase** | Abstract base class with breakpoint management |
+| **PythonDebugger** | Built-in Python debugger using `bdb` module |
+
+## Debug Panel
+
+Access the debug panel from the **primary sidebar** → **Debug** tab (`Ctrl+D`).
+
+The panel shows:
+
+- **Variables** — All local and global variables with current values
+- **Call Stack** — Stack frames with line numbers
+- **Breakpoints** — List of all set breakpoints
+- **Watch** — Expressions to monitor
+
+## Getting Started
+
+<CardGroup cols={2}>
+  <Card title="Python Debugger" icon="python" href="/debugger/python-debugger">
+    Debug Python code with breakpoints, step-through, and variable inspection.
+  </Card>
+  <Card title="Breakpoints" icon="circle-slash" href="/debugger/breakpoints">
+    Set, manage, and use breakpoints effectively.
+  </Card>
+</CardGroup>

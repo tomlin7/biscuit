@@ -1,0 +1,74 @@
+---
+title: "Variable Inspection"
+description: "Inspect and modify runtime variables during debugging."
+---
+
+When execution is paused at a breakpoint, you can inspect and modify variables
+in the current scope.
+
+## Variables Panel
+
+The **Variables** section of the debug panel shows:
+
+### Locals
+
+All local variables in the current stack frame:
+
+- **Name** — Variable name
+- **Value** — Current value (formatted for readability)
+- **Type** — Variable type indicator
+
+### Globals
+
+Module-level global variables:
+
+- Filtered to show only user-defined globals
+- Built-in globals are hidden by default
+
+## Inspecting Values
+
+### Basic Values
+
+Simple types (int, str, bool, None) show their value directly:
+
+```
+x = 42
+name = "hello"
+is_active = True
+```
+
+### Complex Types
+
+Collections and objects are expandable:
+
+- **Lists** — Show length and expand to view elements
+- **Dictionaries** — Show key-value pairs
+- **Objects** — Show attributes and their values
+- **Nested structures** — Fully expandable
+
+### Hover Inspection
+
+Hover over a variable name in the editor while debugging to see:
+
+- Current value
+- Type information
+
+## Modifying Variables
+
+You can modify variable values at runtime:
+
+1. Double-click a variable value in the Variables panel
+2. Enter the new value
+3. Press Enter to confirm
+
+The change takes effect immediately and the program continues with the
+modified value.
+
+## Call Stack
+
+The **Call Stack** section shows:
+
+- Each stack frame with file name and line number
+- The current execution point highlighted
+- Click any frame to inspect its local variables
+- The call chain from the current frame to the entry point

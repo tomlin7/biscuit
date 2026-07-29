@@ -1,0 +1,98 @@
+---
+title: "Text Editor"
+description: "Core text editing features including line numbers, minimap, folding, and more."
+---
+
+The text editor is the heart of Biscuit. It provides a rich editing experience
+with syntax highlighting, code intelligence, and visual aids.
+
+## Line Numbers
+
+Line numbers are displayed on the left gutter. You can toggle between absolute
+and relative numbering:
+
+```toml
+show_line_numbers = true
+relative_line_numbers = false
+```
+
+Relative line numbers (when enabled) show the distance from the cursor position,
+which is useful for navigation commands like `:42` to jump 42 lines.
+
+## Minimap
+
+The minimap shows a scaled-down view of your entire file on the right side of the
+editor. Click or drag on the minimap to scroll quickly.
+
+```toml
+show_minimap = true
+```
+
+## Code Folding
+
+Collapse and expand code blocks (functions, classes, loops, conditionals):
+
+- Click the fold icon (▼) in the gutter
+- `Ctrl+Shift+[` — Fold current block
+- `Ctrl+Shift+]` — Unfold current block
+
+Folding regions are determined by your code's indentation and syntax structure.
+
+## Indentation Guides
+
+Vertical lines show indentation levels, making it easier to read deeply nested code:
+
+```toml
+render_indent_guides = true
+```
+
+## Auto-Indentation
+
+Biscuit automatically indents new lines based on the context:
+
+```toml
+auto_indent = true
+tab_size = 4
+```
+
+## Word Wrap
+
+Enable word wrap for long lines:
+
+```toml
+word_wrap = false
+```
+
+## Auto-Closing Pairs
+
+Biscuit automatically closes brackets, parentheses, and quotes:
+
+```toml
+auto_closing_pairs = true
+auto_closing_delete = true
+auto_surround = true
+```
+
+- **Auto-closing** — Typing `(` inserts `()` and places cursor in the middle
+- **Auto-delete** — Deleting `(` when cursor is before `)` removes both
+- **Auto-surround** — Selecting text and typing `(` surrounds it with `()`
+
+## Cursor Style
+
+Choose between a line cursor (default) or a block cursor (terminal-style):
+
+```toml
+cursor_style = "line"   # or "block"
+```
+
+## Drag and Drop
+
+Drag files from your file manager or the Explorer sidebar and drop them onto the
+editor to open them. Drag text within the editor to move it.
+
+## Formatting
+
+Biscuit supports code formatters through extensions. Built-in formatter support:
+
+- **Python**: Black, Ruff, YAPF, autopep8 (via extensions)
+- **Other languages**: Add formatters through the extension system

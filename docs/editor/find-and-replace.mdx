@@ -1,0 +1,45 @@
+---
+title: "Find & Replace"
+description: "Search within files, across the workspace, and replace text."
+---
+
+Biscuit provides two levels of search: in-file search and global workspace search.
+
+## In-File Find & Replace
+
+The floating find/replace widget is available in every text editor:
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+F` | Find in current file |
+| `Ctrl+H` | Find and replace in current file |
+
+Features:
+
+- **Match case** — Toggle case-sensitive matching
+- **Whole word** — Match only whole words
+- **Regex** — Use regular expressions
+- **Replace all** — Replace all occurrences at once
+- **Replace single** — Replace one occurrence at a time
+- **Auto-highlight** — All matches are highlighted in the editor
+
+## Global Search
+
+The global search panel (`Ctrl+Shift+F`) uses **ripgrep** for ultra-fast
+workspace-wide searching.
+
+### Features
+
+- **Regex support** — Full regular expression support
+- **Case-sensitive** — Toggle case sensitivity
+- **File filtering** — Include/exclude file patterns
+- **Bulk replace** — Replace all occurrences across the entire workspace
+- **Results preview** — Click results to jump directly to the match
+
+### Search from Status Bar
+
+Quick file search is available from the status bar:
+
+1. Press `Ctrl+Shift+P`
+2. Type the filename to search across the entire workspace
+3. Results update in real-time as you type

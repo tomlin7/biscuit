@@ -1,0 +1,43 @@
+---
+title: "GitHub Integration"
+description: "Browse issues, pull requests, and releases from within Biscuit."
+---
+
+Biscuit integrates with GitHub for browsing issues, pull requests, and releases
+without leaving the editor.
+
+## GitHub Panel
+
+Access GitHub features from the **secondary sidebar** (`Ctrl+Shift+B`) → **GitHub** tab.
+
+### Issues
+
+- Browse issues from the current repository
+- View issue details including title, body, labels, and comments
+- Open issues directly in a dedicated viewer
+
+### Pull Requests
+
+- Browse open pull requests
+- View PR details including description, changed files, and comments
+- Review PR status
+
+### Releases
+
+- View recent releases
+- Check release notes and download links
+
+## Issue and PR Viewers
+
+When you open an issue or pull request, it opens as a dedicated editor tab with:
+
+- **Title and metadata** — Status, author, labels, and timestamps
+- **Description** — Full issue or PR description rendered with formatting
+- **Comments** — Thread of comments in chronological order
+- **File changes** (for PRs) — List of modified files
+
+## Configuration
+
+GitHub integration uses the repository information from your workspace's Git
+configuration. If the current workspace is a GitHub repository, issues and PRs
+are fetched automatically.

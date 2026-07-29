@@ -1,0 +1,66 @@
+---
+title: "Vim Mode"
+description: "Modal editing with Vim keybindings inside Biscuit."
+---
+
+Biscuit includes a built-in Vim modal editing mode. When enabled, the editor
+behaves like Vim with normal, insert, and visual modes.
+
+## Enabling Vim Mode
+
+Set the following in your `settings.toml`:
+
+```toml
+vim_mode = true
+```
+
+Or toggle it at runtime with `Ctrl+Alt+V`.
+
+## Modes
+
+### Normal Mode (default when enabled)
+
+Navigate and manipulate text without inserting characters:
+
+| Key | Action |
+|-----|--------|
+| `h`, `j`, `k`, `l` | Cursor movement |
+| `w`, `b` | Word forward/backward |
+| `0`, `$` | Start/end of line |
+| `gg`, `G` | Top/bottom of file |
+| `dd` | Delete line |
+| `yy` | Yank (copy) line |
+| `p`, `P` | Paste below/above |
+| `u` | Undo |
+| `Ctrl+r` | Redo |
+| `/` | Search forward |
+| `?` | Search backward |
+| `n`, `N` | Next/previous match |
+
+### Insert Mode
+
+Press `i` to enter insert mode. Text is inserted as usual.
+
+- `i` — Insert before cursor
+- `a` — Append after cursor
+- `I` — Insert at line start
+- `A` — Append at line end
+- `o` — Open new line below
+- `O` — Open new line above
+- `Esc` — Return to normal mode
+
+### Visual Mode
+
+Press `v` to enter visual mode for text selection:
+
+- `v` — Character-wise selection
+- `V` — Line-wise selection
+- `Ctrl+v` — Block selection
+- `d` — Delete selection
+- `y` — Yank (copy) selection
+- `>` — Indent selection
+- `<` — Outdent selection
+
+## Status Indicator
+
+The current mode is indicated in the status bar when Vim mode is active.

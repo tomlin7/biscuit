@@ -1,0 +1,44 @@
+---
+title: "AI Assistant Overview"
+description: "Built-in coding agent with Gemini and Claude support."
+---
+
+Biscuit includes a built-in AI coding assistant powered by a **ReAct agent**
+(Reasoning + Acting) that can understand your codebase, edit files, run commands,
+and manage tasks.
+
+## How It Works
+
+The AI assistant uses a ReAct loop:
+
+1. **Reason** — Analyzes your request and the current context
+2. **Act** — Selects and executes tools (read files, edit, search, run commands)
+3. **Observe** — Processes tool results
+4. **Repeat** — Continues until the task is complete or the maximum step limit is reached
+
+## Capabilities
+
+- **Code understanding** — Read, search, and analyze your entire codebase
+- **Code editing** — Make targeted edits with intelligent diff
+- **File operations** — Create, delete, and manage files
+- **Command execution** — Run terminal commands with safety checks
+- **Task management** — Maintain a dynamic task list for multi-step operations
+- **Real-time streaming** — See thoughts and actions as they happen
+
+## Supported Providers
+
+| Provider | Models |
+|----------|--------|
+| **Google Gemini** | Gemini 2.5 Pro, 2.5 Flash, 2.0 Pro, 2.0 Flash |
+| **Anthropic Claude** | Claude 4.5 Opus/Sonnet/Haiku, Claude 4 Opus/Sonnet |
+| **MiniMax** | MiniMax M3, M2.7 |
+| **Custom** | Add more via extensions |
+
+<CardGroup cols={2}>
+  <Card title="Setup" icon="wrench" href="/ai-assistant/setup">
+    Configure your API keys and select a model.
+  </Card>
+  <Card title="Tools Reference" icon="hammer" href="/ai-assistant/tools-reference">
+    Full list of tools the agent can use.
+  </Card>
+</CardGroup>

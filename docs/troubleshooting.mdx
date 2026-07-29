@@ -1,0 +1,134 @@
+---
+title: "Troubleshooting"
+description: "Common issues and their solutions."
+---
+
+## Installation Issues
+
+### Missing system dependencies (Linux)
+
+```bash
+sudo apt install fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential
+pip install scikit-build
+```
+
+### `biscuit` command not found
+
+Ensure the Python scripts directory is in your PATH:
+
+```bash
+# Check where biscuit is installed
+which biscuit
+# or on Windows
+where biscuit
+
+# If using pip install --user, add to PATH:
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+## GUI Issues
+
+### Window doesn't open
+
+- Check that you have a display server running (Linux/WSL)
+- Ensure your system supports Tkinter
+- Run `python -c "import tkinter; tkinter._test()"` to verify Tkinter works
+
+### Missing fonts
+
+Install Fira Code or configure a different font in settings:
+
+```toml
+font = "Your-Font-Name"
+```
+
+## LSP Issues
+
+### Language server not starting
+
+1. Verify the LSP server is installed: `which pylsp` (or `where pylsp` on Windows)
+2. Install the server: `pip install python-lsp-server`
+3. Check the logs panel (`Ctrl+U`) for error messages
+4. Ensure the language mode is set correctly for your file
+
+### No completions or definitions
+
+- Make sure a language server is registered for your language
+- Extensions can register additional servers: `api.register_langserver("rust", "rust-analyzer")`
+- Try restarting Biscuit
+
+## AI Assistant Issues
+
+### "No API key configured" error
+
+1. Open the AI panel (`Ctrl+A`)
+2. Click the settings icon
+3. Enter your API key for the chosen provider
+4. Get a Gemini key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+5. Get a Claude key from [Anthropic Console](https://console.anthropic.com/)
+
+### Agent not responding
+
+- Check your API key is valid
+- Ensure you have an active internet connection
+- Try switching to a different model
+- Check the logs panel for error details
+
+## Git Issues
+
+### Repository not detected
+
+- Ensure the directory contains a `.git` folder
+- Run `git init` if it's a new project
+- Check the status bar shows the current branch
+
+### Authentication errors
+
+- Configure Git credentials:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+```
+
+- For GitHub: use a personal access token instead of a password
+- Check that your SSH keys are configured for SSH-based remotes
+
+## Extension Issues
+
+### Extension not loading
+
+1. Check the extension directory exists in `~/.biscuit/extensions/extensions/`
+2. Verify the extension has an `__init__.py` with a `setup(api)` function
+3. Check the logs panel (`Ctrl+U`) for extension loading errors
+4. Try reinstalling the extension
+
+### Extension installation fails
+
+- Ensure you have network access to GitHub
+- Try installing via CLI: `biscuit ext install extension-name`
+- Check the extension is available in the marketplace
+
+## Performance Issues
+
+### Editor is slow
+
+- Disable the minimap: `show_minimap = false`
+- Reduce font size
+- Close unused panels
+- Close large files when not in use
+
+### High memory usage
+
+- Close unused editor tabs
+- Disable unused extensions
+- Reduce the number of split editors
+- Restart Biscuit periodically
+
+## Getting Help
+
+If you're still having issues:
+
+- **GitHub Issues**: [https://github.com/tomlin7/biscuit/issues](https://github.com/tomlin7/biscuit/issues)
+- **DeepWiki**: [https://deepwiki.com/tomlin7/biscuit](https://deepwiki.com/tomlin7/biscuit)
+- **Extension Marketplace**: [https://biscuit-extensions.github.io/marketplace/](https://biscuit-extensions.github.io/marketplace/)

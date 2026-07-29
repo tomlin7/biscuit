@@ -1,0 +1,72 @@
+---
+title: "Workspace Management"
+description: "Manage projects, workspaces, and sessions in Biscuit."
+---
+
+## Opening Projects
+
+Biscuit provides multiple ways to open and manage projects:
+
+### From CLI
+
+```bash
+biscuit path/to/project    # Open a project
+biscuit .                  # Open current directory
+```
+
+### From the Editor
+
+- `Ctrl+Shift+O` — Open a directory
+- `Ctrl+R` — Open recent folders
+- `Ctrl+Shift+R` — Open recent files
+- `Ctrl+Alt+R` — Restore recent session
+
+## Multi-Root Workspaces
+
+Biscuit supports multi-root workspaces. You can add multiple folders to a single
+workspace, each with its own file tree, LSP clients, and git repository.
+
+### Creating a Workspace
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `> Workspace: Save As...`
+3. Choose a name and location
+
+Workspace files use the `.toml` format:
+
+```toml
+[workspace]
+name = "My Project"
+
+[[folders]]
+path = "/home/user/frontend"
+
+[[folders]]
+path = "/home/user/backend"
+```
+
+### Opening a Workspace
+
+1. Open the command palette (`Ctrl+P`)
+2. Type `> Workspace: Open...`
+3. Select your workspace file
+
+## Session Management
+
+Biscuit automatically saves your session state, including:
+
+- Open files and their positions
+- Active directory
+- Editor layout (splits, tabs)
+
+Sessions are stored in `~/.biscuit/data/session.toml`. You can restore your
+previous session on startup with `Ctrl+Alt+R`.
+
+## Recent Files & Folders
+
+Biscuit tracks recently opened files and folders:
+
+- **Recent folders** — Accessed via `Ctrl+R` or palette with `recentd:`
+- **Recent files** — Accessed via `Ctrl+Shift+R` or palette with `recentf:`
+
+The history is stored in `~/.biscuit/data/history.toml`.

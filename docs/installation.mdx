@@ -1,0 +1,104 @@
+---
+title: "Installation"
+description: "Install Biscuit on Windows, Linux, or macOS via pip, uv, or from source."
+---
+
+## Prerequisites
+
+Biscuit requires **Python 3.10 or later** (Python 3.11+ recommended for development).
+
+<Note>
+  On Linux, you may need to install additional system packages. See the
+  [Linux Prerequisites](#linux-prerequisites) section below.
+</Note>
+
+## Install via pip (recommended)
+
+```bash
+pip install biscuit-editor
+```
+
+Launch the editor:
+
+```bash
+biscuit
+```
+
+Open a project:
+
+```bash
+biscuit path/to/your/project
+```
+
+## Install via uv
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package installer:
+
+```bash
+uv tool install biscuit-editor
+```
+
+Launch with:
+
+```bash
+biscuit
+```
+
+## Install from source
+
+Clone the repository and install with Poetry:
+
+```bash
+git clone https://github.com/tomlin7/biscuit.git
+cd biscuit
+poetry install
+```
+
+Or with uv:
+
+```bash
+git clone https://github.com/tomlin7/biscuit.git
+cd biscuit
+uv sync
+```
+
+Run from source:
+
+```bash
+poetry run biscuit
+# or
+uv run biscuit
+```
+
+## Linux Prerequisites
+
+On Debian-based distributions:
+
+```bash
+sudo apt install fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential
+pip install scikit-build
+```
+
+<Note>
+  For other distributions, ensure you have `fontconfig`, a C++ compiler, and CMake installed.
+</Note>
+
+## Verify Installation
+
+```bash
+biscuit --version
+```
+
+You should see the version number (e.g., `3.5.0`). The editor window will open when
+you run `biscuit` without arguments.
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="First Launch" icon="rocket" href="/getting-started/first-launch">
+    Explore the interface and open your first project.
+  </Card>
+  <Card title="Settings & Themes" icon="paintbrush" href="/getting-started/settings-and-themes">
+    Customize the editor to your preferences.
+  </Card>
+</CardGroup>
