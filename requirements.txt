@@ -12,15 +12,11 @@ pyperclip
 tkinterweb
 mistune
 tarts
-chardet 
+chardet
 python-lsp-server
 pywinpty; platform_system == "Windows"
 ptyprocess; platform_system != "Windows"
 python-tkdnd
 psutil
-google-generativeai
+google-genai
 click
-langchain
-langchain-google-genai
-langchain-community
-langchain-core
