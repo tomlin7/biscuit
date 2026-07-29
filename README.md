@@ -24,7 +24,8 @@
 install the latest release by running:
 
 ```bash
-> pip install biscuit-editor
+pip install biscuit-editor        # using pip
+uv tool install biscuit-editor    # using uv
 ```
 
 quickly open up a project using **`biscuit path/to/src`** and start editing. see other [installation methods](https://tomlin7.github.io/biscuit/getting-started/installation/) if you'd like to (like pyinstaller).
@@ -36,6 +37,9 @@ quickly open up a project using **`biscuit path/to/src`** and start editing. see
 - please check the [docs](https://tomlin7.github.io/biscuit/getting-started/quick-start/) and [contributing guide](https://github.com/tomlin7/Biscuit/blob/main/CONTRIBUTING.md) for a quick tour of the project structure and to set up the environment.
 - to make a new extension, read the [extension docs](https://github.com/tomlin7/biscuit-extensions) :>
 - [support the work](https://github.com/sponsors/tomlin7)
+
+> [!TIP]
+> This project supports both **Poetry** and **uv** for dependency management. See the contributing guide for setup instructions.
 
 # `PROGRESS` 
 
