@@ -1,5 +1,5 @@
 {
   "framework": "nextjs",
-  "buildCommand": "bun run --cwd docs build",
+  "buildCommand": "bun run --cwd www build",
   "outputDirectory": "docs/.next"
 }
