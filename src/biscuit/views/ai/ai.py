@@ -49,9 +49,11 @@ class AI(SideBarView):
             "Claude 4 Sonnet": "claude-sonnet-4-20250514",
             "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
             "Claude 3.5 Haiku": "claude-3-5-haiku-20241022",
+            "MiniMax M3": "MiniMax-M3",
+            "MiniMax M2.7": "MiniMax-M2.7",
         }
         self.current_model = "Gemini 2.0 Flash"
-        self.api_keys = {"gemini": "", "anthropic": ""}
+        self.api_keys = {"gemini": "", "anthropic": "", "minimax": ""}
 
         self.top.grid_columnconfigure(self.column, weight=1)
 
@@ -74,13 +76,14 @@ class AI(SideBarView):
             """
         )
 
-        self.cursor.execute("SELECT key, value FROM secrets WHERE key IN ('GEMINI_API_KEY', 'ANTHROPIC_API_KEY')")
+        self.cursor.execute("SELECT key, value FROM secrets WHERE key IN ('GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'MINIMAX_API_KEY')")
         keys = dict(self.cursor.fetchall())
         self.api_keys["gemini"] = keys.get("GEMINI_API_KEY", "")
         self.api_keys["anthropic"] = keys.get("ANTHROPIC_API_KEY", "")
+        self.api_keys["minimax"] = keys.get("MINIMAX_API_KEY", "")
 
         self.placeholder = AIPlaceholder(self)
-        if self.api_keys["gemini"] or self.api_keys["anthropic"]:
+        if self.api_keys["gemini"] or self.api_keys["anthropic"] or self.api_keys["minimax"]:
             self.add_chat()
         else:
             self.add_placeholder()
@@ -128,7 +131,7 @@ class AI(SideBarView):
         if not self.api_key:
             return self.add_placeholder()
 
-    def save_keys(self, gemini: str = None, anthropic: str = None) -> None:
+    def save_keys(self, gemini: str = None, anthropic: str = None, minimax: str = None) -> None:
         """Save API keys to database and start chat."""
         if gemini:
             self.api_keys["gemini"] = gemini
@@ -136,7 +139,10 @@ class AI(SideBarView):
         if anthropic:
             self.api_keys["anthropic"] = anthropic
             self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('ANTHROPIC_API_KEY', ?)", (anthropic,))
-        
+        if minimax:
+            self.api_keys["minimax"] = minimax
+            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('MINIMAX_API_KEY', ?)", (minimax,))
+
         self.db.commit()
         self.add_chat()
 
@@ -154,7 +160,12 @@ class AI(SideBarView):
 
         try:
             model_id = self.available_models[self.current_model]
-            provider = "anthropic" if "claude" in model_id else "gemini"
+            if "claude" in model_id:
+                provider = "anthropic"
+            elif model_id.lower().startswith("minimax"):
+                provider = "minimax"
+            else:
+                provider = "gemini"
             api_key = self.api_keys[provider]
 
             if not api_key:

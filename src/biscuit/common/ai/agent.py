@@ -31,6 +31,10 @@ import anthropic
 from .state import AgentState, AgentStep, AgentTask
 from .tools import get_biscuit_tools
 
+# MiniMax exposes an Anthropic-compatible Messages API at this regional endpoint
+# (global region). The China region uses https://api.minimaxi.com/anthropic.
+MINIMAX_ANTHROPIC_BASE_URL = "https://api.minimax.io/anthropic"
+
 if typing.TYPE_CHECKING:
     from biscuit import App
 
@@ -84,12 +88,40 @@ class Agent:
             )
         )
 
-    def _initialize_anthropic_client(self) -> anthropic.AsyncAnthropic:
-        """Initialize the Anthropic client."""
+    def _initialize_anthropic_client(self, base_url: str = None) -> anthropic.AsyncAnthropic:
+        """Initialize the Anthropic client.
+
+        An optional ``base_url`` lets the client target an Anthropic-compatible
+        provider such as MiniMax, which serves the Messages API from its own
+        regional endpoint.
+        """
         if not self.api_key:
             raise ValueError("API key must be provided")
-        
-        return anthropic.AsyncAnthropic(api_key=self.api_key)
+
+        kwargs = {"api_key": self.api_key}
+        if base_url:
+            kwargs["base_url"] = base_url
+        return anthropic.AsyncAnthropic(**kwargs)
+
+    def _initialize_minimax_client(self) -> anthropic.AsyncAnthropic:
+        """Initialize the MiniMax client.
+
+        MiniMax provides an Anthropic-compatible Messages API, so the Anthropic
+        async client is reused with the MiniMax regional base URL.
+        """
+        return self._initialize_anthropic_client(base_url=MINIMAX_ANTHROPIC_BASE_URL)
+
+    def _is_minimax_model(self) -> bool:
+        """Whether the configured model is served by the MiniMax provider."""
+        return self.model_name.lower().startswith("minimax")
+
+    def _is_anthropic_compatible(self) -> bool:
+        """Whether the model can be driven through the Anthropic Messages API.
+
+        Native Anthropic models and MiniMax models both use this path; MiniMax
+        is reached through its own regional base URL.
+        """
+        return "claude" in self.model_name.lower() or self._is_minimax_model()
 
     # --- Callbacks Configuration ---
 
@@ -159,7 +191,9 @@ class Agent:
 
         try:
             # Force recreation of the client on the current loop/thread
-            if "claude" in self.model_name.lower():
+            if self._is_minimax_model():
+                self.anthropic_client = self._initialize_minimax_client()
+            elif "claude" in self.model_name.lower():
                 self.anthropic_client = self._initialize_anthropic_client()
             else:
                 self.gemini_client = self._initialize_gemini_client()
@@ -180,7 +214,7 @@ class Agent:
 
     async def _run_chat_session(self, task: AgentTask, inputs: str):
         """Routes the task to the appropriate provider."""
-        if "claude" in self.model_name.lower():
+        if self._is_anthropic_compatible():
             await self._run_anthropic_session(task, inputs)
         else:
             await self._run_gemini_session(task, inputs)
@@ -508,8 +542,11 @@ Rules: Use tools to read/edit code. Execute plans immediately. Be concise."""
 
     def process_message(self, message: str) -> str:
         """Single-turn message processing (Backwards Compatibility)."""
-        if "claude" in self.model_name.lower():
-            client = anthropic.Anthropic(api_key=self.api_key)
+        if self._is_anthropic_compatible():
+            client_kwargs = {"api_key": self.api_key}
+            if self._is_minimax_model():
+                client_kwargs["base_url"] = MINIMAX_ANTHROPIC_BASE_URL
+            client = anthropic.Anthropic(**client_kwargs)
             response = client.messages.create(
                 model=self.model_name,
                 max_tokens=1000,
