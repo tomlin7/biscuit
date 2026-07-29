@@ -6,6 +6,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/tomlin7/biscuit)](https://github.com/tomlin7/biscuit/commits/main)
 [![GitLab Issues](https://img.shields.io/github/issues/tomlin7/biscuit)](https://github.com/tomlin7/biscuit/issues)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tomlin7/biscuit)
+[![codecov](https://codecov.io/github/tomlin7/biscuit/graph/badge.svg?token=2LI71XDDHZ)](https://codecov.io/github/tomlin7/biscuit)
 
 <!--
 ![image](https://github.com/user-attachments/assets/a578d600-a4a8-4ce4-904d-4aa0e73fc124)
