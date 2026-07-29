@@ -58,6 +58,8 @@ def _auto_register() -> None:
     from .gemini import GeminiProvider
     from .anthropic import AnthropicProvider
     from .groq import GroqProvider
+    from .minimax import MiniMaxProvider
     register(GeminiProvider)
     register(AnthropicProvider)
     register(GroqProvider)
+    register(MiniMaxProvider)
