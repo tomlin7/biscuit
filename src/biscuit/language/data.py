@@ -67,7 +67,7 @@ class HoverResponse:
     docs: Optional[str] = None
 
     def __repr__(self) -> str:
-        return self.text
+        return str(self.text)
 
 
 @dataclasses.dataclass

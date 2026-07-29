@@ -38,7 +38,7 @@ class GitIgnore:
             return
 
         with open(self.path, "a") as f:
-            f.write("\n" + path.replace("\\" "/"))
+            f.write("\n" + path.replace("\\", "/"))
 
     def exclude(self, path: str) -> None:
         """Exclude the given path from the .gitignore file."""
