@@ -5,7 +5,7 @@ const config = {
     return [
       {
         source: '/docs/:path*',
-        destination: 'https://docs.biscuit.tomlin7.com/',
+        destination: 'https://biscuit.mintlify.site/',
         permanent: true,
       },
     ];
