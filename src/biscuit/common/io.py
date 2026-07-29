@@ -95,16 +95,28 @@ class IO:
 
     def _process_out(self) -> None:
         while self.alive:
-            data = self.p.stdout.read(1)
+            try:
+                data = self.p.stdout.read(1)
+            except AttributeError:
+                break
             if not data:
                 break
-            self.out_queue.put(data)
+            if isinstance(data, bytes):
+                self.out_queue.put(data)
+            else:
+                break
 
     def _process_err(self) -> None:
         while self.alive:
-            data = self.p.stderr.read(1)
+            try:
+                data = self.p.stderr.read(1)
+            except AttributeError:
+                break
             if not data:
                 break
-            print(
-                data.decode(errors="ignore"), end="", flush=True
-            )  # Print to the console
+            if isinstance(data, bytes):
+                print(
+                    data.decode(errors="ignore"), end="", flush=True
+                )  # Print to the console
+            else:
+                break

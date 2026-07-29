@@ -1,5 +1,6 @@
 import os
 import tempfile
+from unittest.mock import patch
 
 import pytest
 
@@ -8,7 +9,14 @@ from biscuit.common.classdrill import (
     extract_commands,
     formalize_command,
 )
-from biscuit.common.helpers import caller_name, caller_class_name, is_image, get_file_type
+from biscuit.common.helpers import (
+    caller_name,
+    caller_class_name,
+    check_python_installation,
+    get_file_type,
+    is_image,
+    search_google,
+)
 from biscuit.common import textutils
 
 
@@ -151,3 +159,36 @@ class TestHelpers:
             assert get_file_type(path) is None
         finally:
             os.unlink(path)
+
+    @patch("biscuit.common.helpers.webbrowser")
+    def test_search_google(self, mock_webbrowser):
+        search_google("test query")
+        mock_webbrowser.open.assert_called_once_with(
+            "https://www.google.com/search?q=test query"
+        )
+
+    @patch("biscuit.common.helpers.webbrowser")
+    def test_search_google_special_chars(self, mock_webbrowser):
+        search_google("hello world")
+        mock_webbrowser.open.assert_called_once()
+
+    @patch("biscuit.common.helpers.sp.check_call")
+    def test_check_python_installation_windows(self, mock_check_call):
+        with patch("biscuit.common.helpers.os.name", "nt"):
+            check_python_installation()
+            mock_check_call.assert_called_once_with(["python", "--version"])
+
+    @patch("biscuit.common.helpers.sp.check_call")
+    def test_check_python_installation_linux(self, mock_check_call):
+        with patch("biscuit.common.helpers.os.name", "posix"):
+            check_python_installation()
+            mock_check_call.assert_called_once_with(["python3", "--version"])
+
+    @patch("biscuit.common.helpers.sp.check_call", side_effect=FileNotFoundError)
+    @patch("biscuit.common.helpers.webbrowser")
+    @patch("biscuit.common.helpers.messagebox")
+    def test_check_python_not_installed(self, mock_msg, mock_web, mock_check):
+        with patch("biscuit.common.helpers.os.name", "nt"):
+            with pytest.raises(SystemExit):
+                check_python_installation()
+            mock_msg.showerror.assert_called_once()
