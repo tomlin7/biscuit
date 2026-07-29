@@ -1,15 +1,57 @@
-[tool.poetry]
+[project]
 name = "biscuit-editor"
 version = "3.6.0"
 description = "A lightweight, fast, and extensible code editor with a growing community"
-authors = ["Billy <billydevbusiness@gmail.com>"]
+authors = [{ name = "Billy", email = "billydevbusiness@gmail.com" }]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "hintedtext>=0.6.0,<0.7.0",
+    "watchdog>=6.0.0,<7.0.0",
+    "filetype>=1.2.0,<2.0.0",
+    "gitpython>=3.1.52,<4.0.0",
+    "pygments>=2.20.0,<3.0.0",
+    "toml>=0.10.2,<0.11.0",
+    "sv-ttk>=2.6.1,<3.0.0",
+    "pillow>=12.3.0,<13.0.0",
+    "requests>=2.34.2,<3.0.0",
+    "pyperclip>=1.11.0,<2.0.0",
+    "tkinterweb[full]>=4.25.3,<5.0.0",
+    "mistune>=3.3.3,<4.0.0",
+    "chardet>=7.4.3,<8.0.0",
+    "pywinpty>=3.0.5,<4.0.0; sys_platform == 'win32'",
+    "python-tkdnd>=0.2.1,<0.3.0",
+    "psutil>=7.2.2,<8.0.0",
+    "google-genai>=2.12.1,<3.0.0",
+    "sortedcontainers>=2.4.0,<3.0.0",
+    "click>=8.4.2,<9.0.0",
+    "tarts>=0.20.1,<0.21.0",
+    "editorconfig>=0.17.1,<0.18.0",
+    "tkextrafont>=0.6.3,<0.7.0; sys_platform == 'win32'",
+    "ptyprocess>=0.7.0,<0.8.0; sys_platform == 'linux'",
+    "anthropic>=0.117.0,<0.118.0",
+    "tree-sitter>=0.26.0,<0.27.0",
+    "tree-sitter-language-pack>=1.12.5,<2.0.0",
+]
+
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.6.1,<2.0.0",
+    "mkdocstrings-python>=2.0.5,<3.0.0",
+    "mkdocs-material>=9.7.7,<10.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/tomlin7/biscuit"
+Repository = "https://github.com/tomlin7/biscuit"
+
+[project.scripts]
+biscuit = "biscuit.cli:run"
+
+[tool.poetry]
 packages = [{ include = "biscuit", from = "src" }]
 include = ["./resources/**/*"]
-
-[tool.poetry.scripts]
-biscuit = "biscuit.cli:run"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -53,6 +95,13 @@ optional = true
 mkdocs = "^1.6.1"
 mkdocstrings-python = "^2.0.5"
 mkdocs-material = "^9.7.7"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1,<10.0.0",
+    "pytest-dotenv>=0.5.2,<0.6.0",
+    "git-changelog>=2.9.4,<3.0.0",
+]
 
 [build-system]
 requires = ["poetry-core"]
