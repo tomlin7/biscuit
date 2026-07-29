@@ -12,8 +12,8 @@ if typing.TYPE_CHECKING:
 
 class AIPlaceholder(Frame):
     """Home page for the AI assistant view.
-    
-    Now supports both Google Gemini and Anthropic Claude."""
+
+    Now supports Google Gemini, Anthropic Claude, and MiniMax."""
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -32,24 +32,35 @@ class AIPlaceholder(Frame):
         # --- Gemini Section ---
         gemini_frame = Frame(self, **self.base.theme.views.sidebar.item)
         gemini_frame.pack(fill=tk.X, pady=5)
-        
-        Label(gemini_frame, text="Google Gemini", font=self.base.settings.uifont_bold, 
+
+        Label(gemini_frame, text="Google Gemini", font=self.base.settings.uifont_bold,
               anchor=tk.W, **self.base.theme.views.sidebar.item.content).pack(fill=tk.X)
-        
+
         self.gemini_key = tk.StringVar(value=self.master.api_keys.get("gemini", ""))
         self.gemini_entry = Entry(gemini_frame, hint="Gemini API Key...", textvariable=self.gemini_key)
         self.gemini_entry.pack(fill=tk.X, pady=2)
-        
+
         # --- Anthropic Section ---
         anthropic_frame = Frame(self, **self.base.theme.views.sidebar.item)
         anthropic_frame.pack(fill=tk.X, pady=10)
 
-        Label(anthropic_frame, text="Anthropic Claude", font=self.base.settings.uifont_bold, 
+        Label(anthropic_frame, text="Anthropic Claude", font=self.base.settings.uifont_bold,
               anchor=tk.W, **self.base.theme.views.sidebar.item.content).pack(fill=tk.X)
-        
+
         self.anthropic_key = tk.StringVar(value=self.master.api_keys.get("anthropic", ""))
         self.anthropic_entry = Entry(anthropic_frame, hint="Anthropic API Key...", textvariable=self.anthropic_key)
         self.anthropic_entry.pack(fill=tk.X, pady=2)
+
+        # --- MiniMax Section ---
+        minimax_frame = Frame(self, **self.base.theme.views.sidebar.item)
+        minimax_frame.pack(fill=tk.X, pady=10)
+
+        Label(minimax_frame, text="MiniMax", font=self.base.settings.uifont_bold,
+              anchor=tk.W, **self.base.theme.views.sidebar.item.content).pack(fill=tk.X)
+
+        self.minimax_key = tk.StringVar(value=self.master.api_keys.get("minimax", ""))
+        self.minimax_entry = Entry(minimax_frame, hint="MiniMax API Key...", textvariable=self.minimax_key)
+        self.minimax_entry.pack(fill=tk.X, pady=2)
 
         confirm_btn = IconLabelButton(
             self,
@@ -67,7 +78,7 @@ class AIPlaceholder(Frame):
             link="https://aistudio.google.com/app/apikey",
         )
         self.link.pack(fill=tk.X)
-        
+
         self.link2 = WebLinkLabel(
             self,
             text="Get Anthropic Key",
@@ -75,5 +86,12 @@ class AIPlaceholder(Frame):
         )
         self.link2.pack(fill=tk.X)
 
+        self.link3 = WebLinkLabel(
+            self,
+            text="Get MiniMax Key",
+            link="https://platform.minimax.io/docs",
+        )
+        self.link3.pack(fill=tk.X)
+
     def start_chat(self) -> None:
-        self.master.save_keys(self.gemini_key.get(), self.anthropic_key.get())
+        self.master.save_keys(self.gemini_key.get(), self.anthropic_key.get(), self.minimax_key.get())
