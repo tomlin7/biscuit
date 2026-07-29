@@ -2,15 +2,8 @@
 Biscuit Coding Agent
 ====================
 
-A powerful ReAct (Reasoning + Acting) agent designed for autonomous coding tasks
-in the Biscuit IDE. Powered by Google Gemini.
-
-The agent follows the classic ReAct pattern:
-Thought:     Reason about the current state and decide what to do next.
-Action:      Select a tool to interact with the environment.
-Observation: The result/output of the tool execution.
-... (repeat) ...
-Final Answer: Solve the user's request.
+A ReAct (Reasoning + Acting) agent for autonomous coding tasks in the Biscuit IDE.
+Uses the provider registry for LLM access — any provider can be plugged in.
 """
 
 from __future__ import annotations
@@ -19,136 +12,103 @@ import asyncio
 import json
 import logging
 import os
-import re
 import time
 import typing
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional
 
-from google import genai
-from google.genai import types
-import anthropic
-
+from .providers import _auto_register, resolve, list_models
+from .providers.base import AIProvider, ProviderResponse, ToolDesc
 from .state import AgentState, AgentStep, AgentTask
 from .tools import get_biscuit_tools
 
-# MiniMax exposes an Anthropic-compatible Messages API at this regional endpoint
-# (global region). The China region uses https://api.minimaxi.com/anthropic.
-MINIMAX_ANTHROPIC_BASE_URL = "https://api.minimax.io/anthropic"
 
 if typing.TYPE_CHECKING:
     from biscuit import App
 
 
 class Agent:
-    """
-    Biscuit Coding Agent - An autonomous AI assistant for coding tasks.
+    """Autonomous coding agent with tool calling and real-time streaming."""
 
-    Powered by AI SDKs with native function calling.
-    Designed for maximum transparency with real-time thought streaming.
-    """
+    SYSTEM_PROMPT = """You are Biscuit, an expert software engineering AI assistant integrated into the Biscuit IDE.
 
-    def __init__(self, base: "App", api_key: str, model_name: str = "gemini-2.0-flash"):
+## Your Capabilities
+You have access to tools that let you read, search, and modify the codebase:
+- `read_file` — Examine file contents (use offset/limit for large files)
+- `edit_file` — Edit existing files or create new ones (use `// ... existing code ...` markers for unchanged sections)
+- `delete_file` — Remove files
+- `list_dir` — List directory contents
+- `glob_file_search` — Find files matching a pattern
+- `grep` — Search file contents using regex (supports -i, -A/-B/-C context)
+- `codebase_search` — Find code by meaning/keywords
+- `run_terminal_cmd` — Execute shell commands (build, test, lint, etc.)
+- `todo_write` — Create/manage a task list for multi-step work
+- `get_workspace_info` — Learn about the current project
+- `get_active_editor` — See which file is currently open
+
+## How to Solve Problems
+1. **Understand** the request fully before acting
+2. **Explore** the relevant code to understand the current implementation
+3. **Plan** using `todo_write` for multi-step tasks before editing
+4. **Implement** changes incrementally, one file at a time
+5. **Verify** with tests or lint commands when possible
+
+## Code Editing Rules
+- Match the existing code style, naming conventions, and patterns
+- Use `// ... existing code ...` (or `# ... existing code ...` for Python) in `edit_file` to keep unchanged sections
+- NEVER leave commented-out code
+- Handle errors gracefully with proper try/except blocks
+- Keep edits focused — don't modify unrelated code
+
+## Communication
+- Be concise and direct
+- Briefly explain your reasoning before each action
+- Summarize changes after completing the task
+- If you're unsure, explore more before acting"""
+
+    def __init__(self, base: "App", api_key: str, model_name: str):
+        _auto_register()
         self.base = base
         self.api_key = api_key
         self.model_name = model_name
 
+        self.provider: AIProvider = resolve(model_name, api_key)
         self.tools = get_biscuit_tools(base)
-        self.gemini_client: Optional[genai.Client] = None
-        self.anthropic_client: Optional[anthropic.AsyncAnthropic] = None
+        self.mcp_tools: List[ToolDesc] = []
 
-        # Agent status
         self.is_running = False
         self.current_task: Optional[AgentTask] = None
         self.chat_history: List[Dict[str, str]] = []
+        self.attached_files: List[str] = []
 
-        # Step tracking
-        self.max_steps = 15
+        self.max_steps = 20
         self.iteration_count = 0
-        
-        # Token usage tracking
         self.input_tokens = 0
         self.output_tokens = 0
 
-        # Callbacks for UI integration
-        self.progress_callbacks: List[Callable] = []
-        self.step_callbacks: List[Callable] = []
         self.stream_callback: Optional[Callable[[str], None]] = None
         self.tool_callback: Optional[Callable[[str, str, str, str], None]] = None
         self.usage_callback: Optional[Callable[[int, int], None]] = None
-
-    def _initialize_gemini_client(self) -> genai.Client:
-        """Initialize the Google GenAI client."""
-        if not self.api_key:
-            raise ValueError("API key must be provided")
-
-        return genai.Client(
-            api_key=self.api_key,
-            http_options=types.HttpOptions(
-                retry_options=types.HttpRetryOptions(attempts=3)
-            )
-        )
-
-    def _initialize_anthropic_client(self, base_url: str = None) -> anthropic.AsyncAnthropic:
-        """Initialize the Anthropic client.
-
-        An optional ``base_url`` lets the client target an Anthropic-compatible
-        provider such as MiniMax, which serves the Messages API from its own
-        regional endpoint.
-        """
-        if not self.api_key:
-            raise ValueError("API key must be provided")
-
-        kwargs = {"api_key": self.api_key}
-        if base_url:
-            kwargs["base_url"] = base_url
-        return anthropic.AsyncAnthropic(**kwargs)
-
-    def _initialize_minimax_client(self) -> anthropic.AsyncAnthropic:
-        """Initialize the MiniMax client.
-
-        MiniMax provides an Anthropic-compatible Messages API, so the Anthropic
-        async client is reused with the MiniMax regional base URL.
-        """
-        return self._initialize_anthropic_client(base_url=MINIMAX_ANTHROPIC_BASE_URL)
-
-    def _is_minimax_model(self) -> bool:
-        """Whether the configured model is served by the MiniMax provider."""
-        return self.model_name.lower().startswith("minimax")
-
-    def _is_anthropic_compatible(self) -> bool:
-        """Whether the model can be driven through the Anthropic Messages API.
-
-        Native Anthropic models and MiniMax models both use this path; MiniMax
-        is reached through its own regional base URL.
-        """
-        return "claude" in self.model_name.lower() or self._is_minimax_model()
-
-    # --- Callbacks Configuration ---
-
-    def add_progress_callback(self, callback: Callable):
-        self.progress_callbacks.append(callback)
-
-    def add_step_callback(self, callback: Callable):
-        self.step_callbacks.append(callback)
 
     def set_stream_callback(self, callback: Callable[[str], None]):
         self.stream_callback = callback
 
     def set_tool_callback(self, callback: Callable[[str, str, str, str], None]):
         self.tool_callback = callback
-        
+
     def set_usage_callback(self, callback: Callable[[int, int], None]):
         self.usage_callback = callback
 
-    # --- Usage Helpers ---
-    
+    def set_attached_files(self, files: List[str]):
+        self.attached_files = files
+
+    def set_mcp_tools(self, tools: List[ToolDesc]):
+        self.mcp_tools = tools
+
     def _update_usage(self, input_tokens: int = 0, output_tokens: int = 0):
         self.input_tokens += input_tokens
         self.output_tokens += output_tokens
         if self.usage_callback:
             self.usage_callback(self.input_tokens, self.output_tokens)
-
-    # --- Streaming Helpers ---
 
     def _stream_content(self, content: str):
         if self.stream_callback:
@@ -159,20 +119,59 @@ class Agent:
             category = "analysis" if any(k in name for k in ["read", "list", "search", "grep", "get", "codebase"]) else "edit"
             self.tool_callback(name, input_str, output, category)
 
-    def _notify_step(self, step: AgentStep):
-        for cb in self.step_callbacks:
-            try:
-                cb(step)
-            except:
-                pass
+    def _all_tool_descs(self) -> List[ToolDesc]:
+        descs = []
+        for t in self.tools:
+            schema = t.args_schema.schema()
+            descs.append(ToolDesc(
+                name=t.name,
+                description=t.description,
+                input_schema={
+                    "type": "object",
+                    "properties": schema.get("properties", {}),
+                    "required": schema.get("required", []),
+                },
+            ))
+        descs.extend(self.mcp_tools)
+        return descs
 
-    # --- Core Execution Engine ---
+    def _tools_map(self) -> Dict[str, Any]:
+        builtin = {t.name: t for t in self.tools}
+        return builtin
+
+    def _prepare_context(self, user_input: str) -> str:
+        parts = [user_input]
+        if self.attached_files:
+            ctx_parts = ["\n\n## Attached Files for Context"]
+            for fpath in self.attached_files:
+                try:
+                    with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+                        content = f.read()
+                    ctx_parts.append(f"\n### {os.path.basename(fpath)}")
+                    ctx_parts.append(f"```\n{content[:3000]}```")
+                except Exception as e:
+                    ctx_parts.append(f"\n### {os.path.basename(fpath)} (could not read: {e})")
+            parts.append("\n".join(ctx_parts))
+        return "\n".join(parts)
+
+    def _get_system_instruction(self) -> str:
+        active_editor = getattr(self.base.editorsmanager.active_editor, "path", "None")
+        workspace_path = getattr(self.base, "active_directory", os.getcwd())
+        context_parts = [
+            f"Workspace: {workspace_path}",
+            f"Active Editor: {active_editor}",
+        ]
+        if self.attached_files:
+            context_parts.append(
+                f"Attached Files: {', '.join(os.path.basename(f) for f in self.attached_files)}"
+            )
+        context = " | ".join(context_parts)
+        return f"{self.SYSTEM_PROMPT}\n\n## Current Context\n{context}"
 
     async def execute_task_with_streaming(self, description: str, **kwargs) -> AgentTask:
-        """Main entry point for task execution with UI streaming."""
         if self.is_running:
             logging.warning("Agent is already running a task. Ignoring new request.")
-            return
+            return None
 
         self.is_running = True
         self.iteration_count = 0
@@ -185,25 +184,17 @@ class Agent:
             success_criteria=kwargs.get("success_criteria", []),
             steps=[],
             status=AgentState.THINKING,
-            start_time=time.time()
+            start_time=time.time(),
         )
         self.current_task = task
 
         try:
-            # Force recreation of the client on the current loop/thread
-            if self._is_minimax_model():
-                self.anthropic_client = self._initialize_minimax_client()
-            elif "claude" in self.model_name.lower():
-                self.anthropic_client = self._initialize_anthropic_client()
-            else:
-                self.gemini_client = self._initialize_gemini_client()
-            
-            # Main execution loop using native function calling
-            await self._run_chat_session(task, description)
+            full_input = self._prepare_context(description)
+            await self._run_chat_session(task, full_input)
             task.status = AgentState.COMPLETED
         except Exception as e:
             logging.error(f"Agent Error: {e}", exc_info=True)
-            self._stream_content(f"Error: {e}")
+            self._stream_content(f"\n\n**Error:** {e}")
             task.status = AgentState.ERROR
         finally:
             self.is_running = False
@@ -213,370 +204,93 @@ class Agent:
         return task
 
     async def _run_chat_session(self, task: AgentTask, inputs: str):
-        """Routes the task to the appropriate provider."""
-        if self._is_anthropic_compatible():
-            await self._run_anthropic_session(task, inputs)
-        else:
-            await self._run_gemini_session(task, inputs)
-
-    async def _run_gemini_session(self, task: AgentTask, inputs: str):
-        """Execute task using native Google GenAI async chat sessions with real-time streaming."""
-        
-        tools_map = {t.name: t for t in self.tools}
-
-
-
+        """Execute task with provider-native tool calling and real-time streaming."""
+        tools_map = self._tools_map()
         system_instruction = self._get_system_instruction()
-        
-        # Build contents list starting with chat history
-        contents = []
+        tool_descs = self._all_tool_descs()
+
+        messages: List[Dict[str, Any]] = []
         for msg in self.chat_history[-10:]:
-            role = "user" if msg['role'] == "User" else "model"
-            contents.append(types.Content(role=role, parts=[types.Part(text=msg['content'])]))
-        
-        # Add current input
-        contents.append(types.Content(role="user", parts=[types.Part(text=inputs)]))
-
-        for i in range(self.max_steps):
-            if not self.is_running:
-                break
-            
-            self.iteration_count = i + 1
-            if i > 0:
-                await asyncio.sleep(1)
-
-            # 1. Generate Response (Async Stream)
-            self._stream_content("[START_THOUGHT]")
-            model_parts = []
-            try:
-                stream = await self.gemini_client.aio.models.generate_content_stream(
-                    model=self.model_name,
-                    contents=contents,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_instruction,
-                        tools=[types.Tool(function_declarations=self._get_tool_declarations())],
-                        temperature=0,
-                    )
-                )
-
-                async for response in stream:
-                    if not response.candidates:
-                        continue
-                    
-                    candidate = response.candidates[0]
-                    if not candidate.content or not candidate.content.parts:
-                        continue
-                        
-                    for part in candidate.content.parts:
-                        if part.text:
-                            # Stream text chunks to UI immediately
-                            self._stream_content(part.text)
-                            model_parts.append(part)
-                        if part.function_call:
-                            # Collector tool calls to execute after stream ends
-                            model_parts.append(part)
-                    
-                    if response.usage_metadata:
-                        # Gemini returns total usage in metadata, we update based on diff or just total
-                        # For simplicity, we'll just track the absolute values from the last chunk
-                        self._update_usage(
-                            input_tokens=max(0, response.usage_metadata.prompt_token_count - self.input_tokens),
-                            output_tokens=max(0, response.usage_metadata.candidates_token_count - self.output_tokens)
-                        )
-
-            except Exception as e:
-                err_msg = str(e).lower()
-                if "429" in err_msg or "resource_exhausted" in err_msg:
-                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**\nYou've hit your API quota for the current model. \nPlease wait a few seconds or switch to a different model in the sidebar.")
-                elif "401" in err_msg or "authentication" in err_msg:
-                    self._stream_content("\n\n🔑 **Invalid API Key**: The Google Gemini API key is invalid or missing. Please check your configuration.")
-                else:
-                    self._stream_content(f"Gemini API Error: {e}")
-                raise e
-
-            self._stream_content("[END_THOUGHT] 1")
-
-            # 2. Process Response
-            tool_calls = [p.function_call for p in model_parts if p.function_call]
-
-            # Update history with model response
-            contents.append(types.Content(role="model", parts=model_parts))
-
-            if not tool_calls:
-                # Task finished
-                self.chat_history.append({"role": "User", "content": inputs})
-                self.chat_history.append({"role": "AI", "content": "".join([p.text or "" for p in model_parts if p.text])})
-                return
-
-            # 3. Execute Tools
-            tool_responses = []
-            for call in tool_calls:
-                name = call.name
-                args = call.args
-                
-                try:
-                    if name in tools_map:
-                        tool = tools_map[name]
-                        observation = tool.run(args)
-                        self._stream_tool(name, json.dumps(args), str(observation))
-                        
-                        step = AgentStep(
-                            step_number=self.iteration_count,
-                            state=AgentState.EDITING if any(x in name for x in ["edit", "write", "delete"]) else AgentState.SEARCHING,
-                            action=name,
-                            reasoning="Executing tool call.",
-                            result=str(observation)
-                        )
-                        task.steps.append(step)
-                        self._notify_step(step)
-                    else:
-                        observation = f"Error: Tool '{name}' not found."
-                        self._stream_content(observation)
-                except Exception as e:
-                    observation = f"Error executing tool: {e}"
-                    self._stream_content(observation)
-
-                tool_responses.append(types.Part(
-                    function_response=types.FunctionResponse(
-                        name=name,
-                        response={"result": observation}
-                    )
-                ))
-
-            # Update history with tool observations
-            contents.append(types.Content(role="user", parts=tool_responses))
-
-    async def _run_anthropic_session(self, task: AgentTask, inputs: str):
-        """Execute task using Anthropic's native async SDK with streaming."""
-        tools_map = {t.name: t for t in self.tools}
-        anthropic_tools = self._get_anthropic_tools()
-
-
-        system_instruction = self._get_system_instruction()
-        
-        # Build message history
-        messages = []
-        for msg in self.chat_history[-10:]:
-            role = "user" if msg['role'] == "User" else "assistant"
-            messages.append({"role": role, "content": msg['content']})
-        
-        # Add current input
+            messages.append({"role": "user" if msg["role"] == "User" else "assistant", "content": msg["content"]})
         messages.append({"role": "user", "content": inputs})
 
         for i in range(self.max_steps):
             if not self.is_running:
                 break
-            
+
             self.iteration_count = i + 1
             if i > 0:
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
 
-            # 1. Generate Response (Async Stream)
+            thought_start = time.time()
             self._stream_content("[START_THOUGHT]")
-            
-            full_content = []
-            current_text = ""
-            
+
             try:
-                # We use the simplified stream helper from Anthropic
-                async with self.anthropic_client.messages.stream(
-                    model=self.model_name,
-                    max_tokens=4000,
-                    system=system_instruction,
-                    tools=anthropic_tools,
+                response = await self.provider.generate(
+                    system_instruction=system_instruction,
                     messages=messages,
-                    temperature=0
-                ) as stream:
-                    async for event in stream:
-                        if event.type == "text":
-                            self._stream_content(event.text)
-                            current_text += event.text
-                        elif event.type == "input_json":
-                            # We'll get the final message at the end
-                            pass
-                
-                # Get the final response to handle tool usage
-                final_message = await stream.get_final_message()
-                messages.append({"role": "assistant", "content": final_message.content})
-                
-                # Anthropic returns usage in the final message
-                # Update usage metadata
-                if final_message.usage:
-                    self._update_usage(
-                        input_tokens=final_message.usage.input_tokens,
-                        output_tokens=final_message.usage.output_tokens
-                    )
-                
-                tool_calls = [c for c in final_message.content if c.type == "tool_use"]
-                
-                # If no tool calls, we are done
-                if not tool_calls:
-                    self.chat_history.append({"role": "User", "content": inputs})
-                    self.chat_history.append({"role": "AI", "content": current_text})
-                    return
-
-                # 2. Execute Tools
-                tool_results = []
-                for call in tool_calls:
-                    name = call.name
-                    args = call.input
-                    
-                    try:
-                        if name in tools_map:
-                            tool = tools_map[name]
-                            observation = tool.run(args)
-                            self._stream_tool(name, json.dumps(args), str(observation))
-                            
-                            step = AgentStep(
-                                step_number=self.iteration_count,
-                                state=AgentState.EDITING if any(x in name for x in ["edit", "write", "delete"]) else AgentState.SEARCHING,
-                                action=name,
-                                reasoning="Executing tool call.",
-                                result=str(observation)
-                            )
-                            task.steps.append(step)
-                            self._notify_step(step)
-                        else:
-                            observation = f"Error: Tool '{name}' not found."
-                            self._stream_content(observation)
-                    except Exception as e:
-                        observation = f"Error executing tool: {e}"
-                        self._stream_content(observation)
-
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": call.id,
-                        "content": str(observation)
-                    })
-
-                # Update history with tool observations
-                messages.append({"role": "user", "content": tool_results})
-
-            except Exception as e:
-                err_msg = str(e).lower()
-                if "429" in err_msg or "rate_limit" in err_msg:
-                    self._stream_content("\n\n⚠️ **Rate Limit Exceeded**\nYou've hit your Anthropic API quota. Please wait a moment or switch models.")
-                elif "401" in err_msg or "authentication" in err_msg:
-                    self._stream_content("\n\n🔑 **Invalid API Key**: The Anthropic API key is invalid or missing. Please check your configuration.")
-                else:
-                    self._stream_content(f"Anthropic API Error: {e}")
-                raise e
-            finally:
-                self._stream_content("[END_THOUGHT] 1")
-
-    def _get_anthropic_tools(self) -> List[Dict[str, Any]]:
-        """Convert tools to Anthropic's format."""
-        anthropic_tools = []
-        for tool in self.tools:
-            # Pydantic schema is mostly compatible with Anthropic's input_schema
-            schema = tool.args_schema.schema()
-            anthropic_tools.append({
-                "name": tool.name,
-                "description": tool.description,
-                "input_schema": {
-                    "type": "object",
-                    "properties": schema.get("properties", {}),
-                    "required": schema.get("required", [])
-                }
-            })
-        return anthropic_tools
-
-    def _get_system_instruction(self) -> str:
-        """Construct the system instruction for the model."""
-        active_editor = getattr(self.base.editorsmanager.active_editor, 'path', 'None')
-        workspace_path = getattr(self.base, 'active_directory', os.getcwd())
-
-        return f"""Biscuit AI Assistant. Workspace: {workspace_path}, Editor: {active_editor}.
-Rules: Use tools to read/edit code. Execute plans immediately. Be concise."""
-
-    def _get_tool_declarations(self) -> List[types.FunctionDeclaration]:
-        """Convert LangChain tools to Google GenAI function declarations."""
-        declarations = []
-        for tool in self.tools:
-            # We map the JSON schema from LangChain/Pydantic to GenAI FunctionDeclaration
-            schema = tool.args_schema.schema()
-            
-            properties = {}
-            required = []
-            
-            raw_props = schema.get('properties', {})
-            for prop_name, prop_info in raw_props.items():
-                p_type = prop_info.get('type', 'string').upper()
-                if p_type == 'INTEGER': p_type = 'INTEGER'
-                elif p_type == 'NUMBER': p_type = 'NUMBER'
-                elif p_type == 'BOOLEAN': p_type = 'BOOLEAN'
-                elif p_type == 'ARRAY': p_type = 'ARRAY'
-                else: p_type = 'STRING'
-
-                kwargs = {
-                    "type": p_type,
-                    "description": prop_info.get('description', '')
-                }
-
-                if p_type == 'ARRAY':
-                    # Gemini requires 'items' for ARRAY types
-                    item_info = prop_info.get('items', {'type': 'string'})
-                    item_type = item_info.get('type', 'string').upper()
-                    if item_type == 'NUMBER': item_type = 'NUMBER'
-                    elif item_type == 'INTEGER': item_type = 'INTEGER'
-                    elif item_type == 'BOOLEAN': item_type = 'BOOLEAN'
-                    elif item_type == 'OBJECT': item_type = 'OBJECT'
-                    else: item_type = 'STRING'
-                    
-                    kwargs['items'] = types.Schema(type=item_type)
-
-                properties[prop_name] = types.Schema(**kwargs)
-                if prop_name in schema.get('required', []):
-                    required.append(prop_name)
-
-            declarations.append(types.FunctionDeclaration(
-                name=tool.name,
-                description=tool.description,
-                parameters=types.Schema(
-                    type='OBJECT',
-                    properties=properties,
-                    required=required
+                    tools=tool_descs,
+                    stream_callback=lambda t: self._stream_content(t),
                 )
-            ))
-        return declarations
+            except Exception as e:
+                self._stream_content(f"\n\n**Error:** {e}")
+                raise
+
+            self._update_usage(response.input_tokens, response.output_tokens)
+
+            thought_duration = time.time() - thought_start
+            self._stream_content(f"[END_THOUGHT] {thought_duration:.1f}")
+
+            assistant_msg: Dict[str, Any] = {"role": "assistant", "content": response.text or ""}
+
+            if not response.tool_calls:
+                messages.append(assistant_msg)
+                self.chat_history.append({"role": "User", "content": inputs})
+                self.chat_history.append({"role": "AI", "content": response.text or ""})
+                return
+
+            calls = []
+            for tc in response.tool_calls:
+                call_id = tc.id or f"call_{self.iteration_count}_{len(calls)}"
+                calls.append({"id": call_id, "name": tc.name, "args": tc.args})
+
+            assistant_msg["tool_calls"] = calls
+            messages.append(assistant_msg)
+
+            for tc in response.tool_calls:
+                name = tc.name
+                args = tc.args
+                call_id = tc.id or ""
+
+                try:
+                    if name in tools_map:
+                        tool = tools_map[name]
+                        observation = tool.run(dict(args))
+                        self._stream_tool(name, json.dumps(dict(args)), str(observation))
+                        task.steps.append(AgentStep(
+                            step_number=self.iteration_count,
+                            state=AgentState.EDITING if any(x in name for x in ["edit", "write", "delete"]) else AgentState.SEARCHING,
+                            action=name,
+                            reasoning="",
+                            result=str(observation),
+                        ))
+                    else:
+                        observation = f"Error: Tool '{name}' not found."
+                except Exception as e:
+                    observation = f"Error executing tool: {e}"
+
+                messages.append({
+                    "role": "tool",
+                    "content": str(observation),
+                    "name": name,
+                    "tool_call_id": call_id,
+                })
 
     def process_message(self, message: str) -> str:
-        """Single-turn message processing (Backwards Compatibility)."""
-        if self._is_anthropic_compatible():
-            client_kwargs = {"api_key": self.api_key}
-            if self._is_minimax_model():
-                client_kwargs["base_url"] = MINIMAX_ANTHROPIC_BASE_URL
-            client = anthropic.Anthropic(**client_kwargs)
-            response = client.messages.create(
-                model=self.model_name,
-                max_tokens=1000,
-                messages=[{"role": "user", "content": message}]
-            )
-            return response.content[0].text if response.content else ""
-        else:
-            if not self.gemini_client:
-                self.gemini_client = self._initialize_gemini_client()
-            
-            response = self.gemini_client.models.generate_content(
-                model=self.model_name,
-                contents=message,
-                config=types.GenerateContentConfig(
-                    temperature=0,
-                )
-            )
-            return response.text if response.candidates else ""
+        return self.provider.process_message(message)
+
+    def process_message_sync(self, message: str) -> str:
+        return self.process_message(message)
 
     def stop_execution(self):
-        """Stop the running agent loop."""
         self.is_running = False
-
-    # --- Backwards Compatibility ---
-
-    async def execute_task(self, description: str, **kwargs) -> AgentTask:
-        return await self.execute_task_with_streaming(description, **kwargs)
-
-    def _generate_progress_summary(self, task: AgentTask) -> str:
-        return f"Completed {len(task.steps)} steps."
-
-    def _is_task_complete(self, task: AgentTask) -> bool:
-        return task.status == AgentState.COMPLETED
