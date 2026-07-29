@@ -26,7 +26,7 @@ jobs:
           enable-cache: true
 
       - name: Sync dependencies
-        run: uv sync --dev
+        run: uv sync --dev && uv pip install flake8
 
       - name: Lint with flake8
         run: |
