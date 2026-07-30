@@ -1,11 +1,13 @@
 import os
+
 import pytest
 
 
-@pytest.mark.skip(reason="Requires display/Tkinter mainloop")
+@pytest.mark.integration
 class TestApp:
     def test_initialization(self, app_instance):
         assert app_instance is not None
+        assert app_instance.initialized
 
     def test_window_setup(self, app_instance):
         app_instance.update_idletasks()

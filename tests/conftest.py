@@ -50,3 +50,17 @@ def mock_base():
     base.settings.resources = MagicMock()
     base.settings.bindings = MagicMock()
     return base
+
+
+@pytest.fixture(scope="class")
+def app_instance():
+    from biscuit.app import App
+
+    appdir = tempfile.mkdtemp()
+    app = App(appdir=appdir)
+    app.appdir = appdir
+    yield app
+    try:
+        app.destroy()
+    except Exception:
+        pass

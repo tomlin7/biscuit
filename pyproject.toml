@@ -106,6 +106,9 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+markers = [
+    "integration: marks tests as integration tests (slower, need display/Tk)",
+]
 
 [build-system]
 requires = ["poetry-core"]
