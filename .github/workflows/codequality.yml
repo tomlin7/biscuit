@@ -41,7 +41,7 @@ jobs:
         run: uv run pytest -m "not integration" --cov=biscuit --cov-report=xml --cov-report=term
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
