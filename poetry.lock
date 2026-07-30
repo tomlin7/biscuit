@@ -1307,14 +1307,14 @@ dev = ["flake8", "markdown", "twine", "wheel"]
 
 [[package]]
 name = "git-changelog"
-version = "2.9.4"
+version = "2.9.5"
 description = "Automatic Changelog generator using Jinja2 templates."
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "git_changelog-2.9.4-py3-none-any.whl", hash = "sha256:c19a099640518fbbc545cb240250cf8129e55e668d8374ba8061ea5456da204b"},
-    {file = "git_changelog-2.9.4.tar.gz", hash = "sha256:06a38a0d174a069b760430ec41493bf53307be13f16b0e48ce379be1646ea9a0"},
+    {file = "git_changelog-2.9.5-py3-none-any.whl", hash = "sha256:387a72075000278230f2756371fd87d24b4b3799b2a03615869fdf2b71a281e7"},
+    {file = "git_changelog-2.9.5.tar.gz", hash = "sha256:ab033ad019c9895ac81de32c4a17749519102fc1be1d8327a45737092ebdd1a9"},
 ]
 
 [package.dependencies]
