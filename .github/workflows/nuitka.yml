@@ -31,7 +31,7 @@ jobs:
         run: echo Yes| uv run python -m nuitka --include-data-dir=biscuit\\res=res --include-package-data=tkextrafont --include-package-data=sv_ttk --include-package-data=pygments --include-package-data=tkinterweb --include-package-data=mistune --follow-import-to=pygments --follow-import-to=tkextrafont --follow-import-to=mistune --follow-import-to=tkinterweb --include-package=tkextrafont --include-package=pygments --include-package=mistune --include-package=tkinterweb --include-module=pygments --include-module=mistune --include-module=tkinterweb --include-module=tkextrafont --follow-imports --standalone --enable-plugin=tk-inter biscuit
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "biscuit-nuitka"
           path: "biscuit.dist"
