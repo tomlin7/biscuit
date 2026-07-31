@@ -80,7 +80,7 @@ tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
 anthropic = "^0.117.0"
 tree-sitter = "^0.26.0"
-tree-sitter-language-pack = "^1.12.5"
+tree-sitter-language-pack = "^1.13.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"
