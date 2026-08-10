@@ -122,6 +122,42 @@ class GitRepo(git.Repo):
             branch = self.active_branch.name
         return self.do(self.remotes[remote].pull, branch, **kwargs)
 
+    def stash(self, message: str = "", keep_index: bool = False):
+        args = ["push"]
+        if keep_index:
+            args.append("--keep-index")
+        if message:
+            args.extend(["-m", message])
+        res = self.do(self.git.stash, *args)
+        if self.master and hasattr(self.master, "update_repo_info"):
+            self.master.update_repo_info()
+        return res
+
+    def stash_pop(self, index: int = 0):
+        res = self.do(self.git.stash, "pop", f"stash@{{{index}}}")
+        if self.master and hasattr(self.master, "update_repo_info"):
+            self.master.update_repo_info()
+        return res
+
+    def stash_apply(self, index: int = 0):
+        res = self.do(self.git.stash, "apply", f"stash@{{{index}}}")
+        if self.master and hasattr(self.master, "update_repo_info"):
+            self.master.update_repo_info()
+        return res
+
+    def stash_drop(self, index: int = 0):
+        res = self.do(self.git.stash, "drop", f"stash@{{{index}}}")
+        if self.master and hasattr(self.master, "update_repo_info"):
+            self.master.update_repo_info()
+        return res
+
+    def stash_list(self) -> list[str]:
+        try:
+            output = self.git.stash("list")
+            return [line.strip() for line in output.splitlines() if line.strip()]
+        except Exception:
+            return []
+
     def do(self, fn, *args, **kwargs):
         # error handling
         try:
