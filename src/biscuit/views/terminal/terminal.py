@@ -8,7 +8,7 @@ from biscuit.common.icons import Icons
 
 from ..panelview import PanelView
 from .menu import TerminalMenu
-from .shells import SHELLS, Default
+from .shells import SHELLS, Default, create_custom_shell_class
 from .tabs import Tabs
 from .terminalbase import TerminalBase
 
@@ -35,8 +35,7 @@ class Terminal(PanelView):
         self.grid_propagate(False)
 
         self.addmenu = TerminalMenu(self, "addterminal")
-        for i in SHELLS:
-            self.addmenu.add_command(i.name, lambda i=i: self.open_shell(i))
+        self.refresh_shells_menu()
 
         self.menu = TerminalMenu(self, "terminal")
         self.menu.add_command("Clear Terminal", self.clear_terminal)
@@ -88,6 +87,27 @@ class Terminal(PanelView):
         self.add_terminal(
             shell(self, cwd=self.base.active_directory or get_home_directory())
         )
+
+    def refresh_shells_menu(self) -> None:
+        if not hasattr(self, "addmenu") or not self.addmenu:
+            return
+        self.addmenu.clear()
+        for i in SHELLS:
+            self.addmenu.add_command(i.name, lambda i=i: self.open_shell(i))
+
+        custom_shells = {}
+        if hasattr(self.base, "config"):
+            custom_shells = self.base.config.get_nested("terminal.shells", {}) or {}
+
+        if isinstance(custom_shells, dict):
+            for name, path in custom_shells.items():
+                if isinstance(path, str) and path.strip():
+                    cls = create_custom_shell_class(name, path.strip())
+                    self.addmenu.add_command(name, lambda c=cls: self.open_shell(c))
+
+    def open_custom_shell(self, path: str, name: str = None) -> None:
+        cls = create_custom_shell_class(name or os.path.splitext(os.path.basename(path))[0], path)
+        self.open_shell(cls)
 
     def open_terminal(self, path=None) -> None:
         """Open another instance of active terminal in the current directory.
