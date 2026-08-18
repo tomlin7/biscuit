@@ -133,3 +133,25 @@ class TestFormattable:
         f = Formattable("clone {}")
         result = f.format(None)
         assert result == "clone None"
+
+
+class TestSettingsFontSafety:
+    def test_setup_font_handles_extrafont_failure(self):
+        from biscuit.settings.settings import Settings
+
+        base = MagicMock()
+        base.call.return_value = None
+        base._w = ".mock"
+        base.game_manager.get_games.return_value = []
+        base.parentdir = os.path.dirname(os.path.dirname(__file__))
+
+        with patch("biscuit.settings.settings.extra", None):
+            s = Settings.__new__(Settings)
+            s.base = base
+            s.config = MagicMock()
+            s.config.font = ("Fira Code", 12)
+            s.config.uifont = ("Fira Code", 10)
+            s.resources = MagicMock()
+            s.setup_font()
+            assert s.iconfont is None
+
