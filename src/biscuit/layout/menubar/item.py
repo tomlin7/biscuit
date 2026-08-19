@@ -10,13 +10,15 @@ if typing.TYPE_CHECKING:
 
 
 class MenubarItem(Menubutton):
-    def __init__(self, master: Menubar, text, *args, **kwargs) -> None:
+    def __init__(self, master: Menubar, text, underline: int = -1, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.name = text
+        self.underline = underline
         self.config(
             text=text,
             padx=10,
             pady=5,
+            underline=underline,
             font=self.base.settings.uifont,
             **self.base.theme.layout.menubar.item,
         )
