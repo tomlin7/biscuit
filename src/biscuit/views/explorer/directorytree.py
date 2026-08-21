@@ -19,6 +19,37 @@ from .placeholder import DirectoryTreePlaceholder
 from .watcher import DirectoryTreeWatcher
 
 
+def get_file_icon(filename: str) -> str:
+    """Return matching icon glyph for a given filename based on extension."""
+    name = filename.lower()
+    ext = os.path.splitext(name)[1]
+
+    if ext in (
+        ".py", ".pyw", ".pyi", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx",
+        ".c", ".h", ".cpp", ".hpp", ".cc", ".cxx", ".rs", ".go", ".java",
+        ".rb", ".php", ".cs", ".lua", ".html", ".htm", ".css", ".scss",
+        ".sass", ".less", ".sql", ".sh", ".bash", ".zsh", ".toml", ".yaml",
+        ".yml", ".swift", ".kt", ".kts", ".scala", ".zig", ".dart",
+    ):
+        return Icons.FILE_CODE
+    elif ext in (".json",):
+        return Icons.JSON
+    elif ext in (".md", ".markdown", ".txt", ".rst"):
+        return Icons.MARKDOWN
+    elif ext in (
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".svg", ".webp",
+        ".mp4", ".mp3", ".wav", ".ogg", ".webm", ".flac",
+    ):
+        return Icons.FILE_MEDIA
+    elif ext in (".pdf",):
+        return Icons.FILE_PDF
+    elif ext in (".zip", ".tar", ".gz", ".bz2", ".7z", ".rar", ".xz"):
+        return Icons.FILE_ZIP
+    elif ext in (".exe", ".dll", ".so", ".dylib", ".bin", ".o", ".a"):
+        return Icons.FILE_BINARY
+    return Icons.FILE
+
+
 class DirectoryTree(SideBarViewItem):
     """A view that displays the directory tree.
 
@@ -232,9 +263,8 @@ class DirectoryTree(SideBarViewItem):
                     node = self.tree.insert(
                         parent or "",
                         "end",
-                        text=f"  {name}",
+                        text=f" {Icons.FOLDER}  {name}",
                         values=[path, "directory"],
-                        # image="foldericon",
                         open=False,
                         tags="ignored" if ignored and (unixlike in ignored) else "",
                     )
@@ -251,13 +281,12 @@ class DirectoryTree(SideBarViewItem):
                     continue
 
                 try:
-                    # TODO check filetype and get matching icon, cases
+                    icon = get_file_icon(name)
                     node = self.tree.insert(
                         parent,
                         "end",
-                        text=f"  {name}",
+                        text=f" {icon}  {name}",
                         values=[path, "file"],
-                        # image="document",
                         tags="ignored" if ignored and (unixlike in ignored) else "",
                     )
                     self.nodes[os.path.abspath(path)] = node
