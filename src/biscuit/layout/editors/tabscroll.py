@@ -48,6 +48,10 @@ class TabScroll(Frame):
         self.left.pack(side=tk.LEFT, fill=tk.BOTH)
         self.right.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(0, 1))
 
-    # TODO: Implement scroll_left and scroll_right methods
-    def scroll_left(self) -> None: ...
-    def scroll_right(self) -> None: ...
+    def scroll_left(self) -> None:
+        if hasattr(self.master, "active_pane") and self.master.active_pane:
+            self.master.active_pane.scroll_tabs_left()
+
+    def scroll_right(self) -> None:
+        if hasattr(self.master, "active_pane") and self.master.active_pane:
+            self.master.active_pane.scroll_tabs_right()
