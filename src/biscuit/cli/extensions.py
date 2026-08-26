@@ -188,6 +188,43 @@ def uninstall(name: str) -> typing.Callable[[App], None]:
 
 @ext.command()
 @click.argument("name", required=False)
+def update(name: str | None) -> typing.Callable[[App], None]:
+    """Update an installed extension or all outdated extensions.
+
+    Example::
+
+        biscuit ext update
+        biscuit ext update extension_name
+
+    Args::
+
+        name (str, optional): The name of the extension to update
+    """
+
+    def f(app: App, name=name) -> None:
+        if name:
+            if app.extensions_manager.update_extension_from_name(name):
+                click.echo(f"Updated extension {name} successfully")
+            else:
+                click.echo(f"Could not find or update extension {name}")
+        else:
+            outdated = app.extensions_manager.check_outdated_extensions()
+            if not outdated:
+                click.echo("All installed extensions are up to date.")
+                return
+            click.echo(f"Found {len(outdated)} outdated extension(s). Updating...")
+            for ext_id, info in outdated.items():
+                if app.extensions_manager.update_extension_from_name(ext_id):
+                    click.echo(f"Updated {ext_id} to v{info['available_version']}")
+                else:
+                    click.echo(f"Failed to update {ext_id}")
+
+    return f
+
+
+
+@ext.command()
+@click.argument("name", required=False)
 @click.option(
     "-t",
     "--template",
