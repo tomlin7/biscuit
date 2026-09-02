@@ -1122,8 +1122,22 @@ class Text(BaseText):
             return "break"
 
     def multi_selection(self, *args):
-        # TODO: multi cursor editing
+        if not hasattr(self, "cursors"):
+            self.cursors = []
+        # Add current insert position as cursor
+        pos = self.index(tk.INSERT)
+        if pos not in self.cursors:
+            self.cursors.append(pos)
         return "break"
+
+    def add_cursor(self, index: str):
+        if not hasattr(self, "cursors"):
+            self.cursors = []
+        if index not in self.cursors:
+            self.cursors.append(index)
+
+    def clear_cursors(self):
+        self.cursors = []
 
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)
