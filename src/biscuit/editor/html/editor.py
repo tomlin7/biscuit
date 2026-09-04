@@ -21,7 +21,7 @@ class HTMLEditor(BaseEditor):
 
         # TODO open in browser button
 
-        self.__buttons__ = ((Icons.OPEN_PREVIEW, self.toggle_preview),)
+        self.__buttons__ = ((Icons.OPEN_PREVIEW, self.toggle_preview), (Icons.GLOBE, self.open_in_browser))
 
         self.editor = TextEditor(self, path, exists=exists)
         self.editor.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))
@@ -67,3 +67,8 @@ class HTMLEditor(BaseEditor):
     def on_change(self, *_):
         if self.preview_enabled:
             self.renderer.refresh()
+
+    def open_in_browser(self, *_) -> None:
+        import webbrowser
+        if self.path:
+            webbrowser.open_new_tab(f"file://{self.path}")
