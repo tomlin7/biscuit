@@ -34,6 +34,23 @@ class Item(IconLabelButton):
 
 # TODO show current symbols when language features are enabled
 class BreadCrumbs(Frame):
+    def update_symbols(self, symbols: list) -> None:
+        self.symbols = symbols
+        # Clear existing symbol buttons
+        if hasattr(self, "symbol_buttons"):
+            for b in self.symbol_buttons:
+                b.destroy()
+        self.symbol_buttons = []
+        for sym in symbols:
+            name = sym.get("name", "") if isinstance(sym, dict) else getattr(sym, "name", str(sym))
+            btn = Item(self.container, name, callback=lambda _, s=sym: self.on_symbol_click(s))
+            btn.pack(side=tk.LEFT)
+            self.symbol_buttons.append(btn)
+
+    def on_symbol_click(self, symbol) -> None:
+        if hasattr(self.master, "on_symbol_click"):
+            self.master.on_symbol_click(symbol)
+
     """Breadcrumbs widget
 
     Breadcrumbs widget is used to display the path of the current file.
