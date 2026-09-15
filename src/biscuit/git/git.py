@@ -103,10 +103,13 @@ class Git(git.Git):
             self.branches[branch] = latest_commit.committed_datetime
         self.branches = sorted(self.branches.items(), key=lambda x: x[1], reverse=True)
 
-        # TODO: make use of the commit_time in palette items
+        # Formatted commit time in branch switcher palette items
         self.actionset.update(
             [
-                (str(branch), lambda e=None, b=branch: self.repo.switch_to_branch(b))
+                (
+                    f"{str(branch)} ({commit_time.strftime('%Y-%m-%d %H:%M') if hasattr(commit_time, 'strftime') else str(commit_time)})",
+                    lambda e=None, b=branch: self.repo.switch_to_branch(b)
+                )
                 for branch, commit_time in self.branches
             ]
         )
