@@ -50,7 +50,8 @@ class Search(SideBarView):
             buttons=((Icons.REPLACE_ALL, self.results.replace_normal),),
         )
 
-        # TODO add ignore folders & extensions boxes
+        self.exclude_box = Entry(self.container, hint="files to exclude (e.g. *.min.js, node_modules)")
+        self.exclude_box.pack(fill=tk.X, anchor=tk.N, pady=2)
 
         self.container.pack(fill=tk.BOTH, padx=10, pady=5)
         self.searchbox.pack(fill=tk.X, anchor=tk.N, pady=2)
