@@ -500,5 +500,8 @@ class DirectoryTree(SideBarViewItem):
         self.base.open_editor(path)
 
     def preview_file(self, _) -> None:
-        # TODO preview editors -- extra preview param for editors
-        return
+        if self.tree.selected_type() != "file":
+            return
+        path = self.tree.selected_path()
+        if hasattr(self.base, "open_editor"):
+            self.base.open_editor(path, preview=True)
