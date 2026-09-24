@@ -33,6 +33,7 @@ class PaletteItem(Text):
         self.palette = palette
         self.text = text
         self.description = description
+        self.shortcut = kwargs.get('shortcut', '')
         self.command = command
 
         self.theme = self.base.theme
@@ -115,3 +116,11 @@ class PaletteItem(Text):
     def deselect(self) -> None:
         self.config(bg=self.bg, fg=self.fg)
         self.selected = False
+
+    def get_full_display_text(self) -> str:
+        parts = [self.text]
+        if getattr(self, "description", ""):
+            parts.append(f" - {self.description}")
+        if getattr(self, "shortcut", ""):
+            parts.append(f" [{self.shortcut}]")
+        return "".join(parts)
