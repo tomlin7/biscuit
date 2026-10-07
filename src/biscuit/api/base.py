@@ -9,6 +9,7 @@ from .logger import Logger
 from .notifications import Notifications
 from .releases import Releases
 from .settings import Settings
+from .theme import Theme
 from .views import Views
 
 if typing.TYPE_CHECKING:
@@ -59,6 +60,7 @@ class ExtensionsAPI:
         self.releases = Releases(self.base)
         self.assistant = Assistant(self.base)
         self.settings = Settings(self.base)
+        self.theme = Theme(self.base)
 
         self.register_comment_prefix = self.base.register_comment_prefix
         self.register_game = self.base.register_game
