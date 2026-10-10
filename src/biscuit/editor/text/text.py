@@ -1154,6 +1154,12 @@ class Text(BaseText):
             self.hover.hide()
         self._hover_hide_timer = None
 
+    def toggle_word_wrap(self) -> str:
+        current = self.cget("wrap")
+        new_wrap = "none" if current == "word" else "word"
+        self.configure(wrap=new_wrap)
+        return new_wrap
+
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)
 
