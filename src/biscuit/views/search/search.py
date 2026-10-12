@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 from biscuit.common.icons import Icons
-from biscuit.common.ui import ButtonsEntry, Frame
+from biscuit.common.ui import ButtonsEntry, Entry, Frame
 
 from ..sidebar_view import SideBarView
 from .results import Results

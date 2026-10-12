@@ -5,42 +5,95 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    runs-on: windows-latest
+  lint:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up Python 3.12
+      - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
 
-      - name: Install dependencies
+      - name: Install lint tools
+        run: |
+          uv pip install --system flake8 ruff
+
+      - name: Ruff Check
+        run: |
+          ruff check src tests scripts --select=E9,F63,F7,F82
+
+      - name: Flake8 Critical Errors
+        run: |
+          flake8 src tests scripts --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Flake8 Style & Complexity Warnings
+        run: |
+          flake8 src tests scripts --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  test:
+    name: Test (${{ matrix.os }}, py${{ matrix.python-version }})
+    needs: [lint]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          - os: macos-latest
+            python-version: "3.12"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Linux Prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb libfontconfig1-dev build-essential
+
+      - name: Install Dependencies
         run: |
           uv venv
           uv pip install scikit-build
           uv pip install -e .
-          uv pip install pytest pytest-dotenv pytest-cov flake8
+          uv pip install pytest pytest-dotenv pytest-cov pytest-asyncio
 
-      - name: Lint with flake8
+      - name: Test with pytest (Linux with xvfb)
+        if: runner.os == 'Linux'
         run: |
-          uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          xvfb-run -a uv run pytest -m "not integration" --cov=biscuit --cov-report=xml --cov-report=term
 
-      - name: Test with pytest
-        run: uv run pytest -m "not integration" --cov=biscuit --cov-report=xml --cov-report=term
+      - name: Test with pytest (Windows / macOS)
+        if: runner.os != 'Linux'
+        run: |
+          uv run pytest -m "not integration" --cov=biscuit --cov-report=xml --cov-report=term
 
       - name: Upload coverage reports to Codecov
+        if: matrix.python-version == '3.12' && matrix.os == 'windows-latest'
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

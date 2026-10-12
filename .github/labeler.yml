@@ -1,0 +1,47 @@
+"area: editor":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/editor/**", "src/biscuit/layout/**"]
+
+"area: lsp":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/common/lsp/**"]
+
+"area: git":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/common/git/**", "src/biscuit/views/git/**"]
+
+"area: ai":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/common/ai/**", "src/biscuit/views/ai/**"]
+
+"area: debugger":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/common/debugger/**", "src/biscuit/views/debugger/**"]
+
+"area: terminal":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/common/terminal/**", "src/biscuit/views/terminal/**"]
+
+"area: extensions":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/extensions/**", "src/biscuit/views/extensions/**"]
+
+"area: ui":
+  - changed-files:
+      - any-glob-to-any-file: ["src/biscuit/common/ui/**", "src/biscuit/views/**", "src/biscuit/layout/**"]
+
+"area: docs":
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**", "*.md"]
+
+"area: tests":
+  - changed-files:
+      - any-glob-to-any-file: ["tests/**"]
+
+"area: cicd":
+  - changed-files:
+      - any-glob-to-any-file: [".github/**"]
+
+"area: dependencies":
+  - changed-files:
+      - any-glob-to-any-file: ["pyproject.toml", "poetry.lock", "uv.lock", "requirements.txt"]

@@ -1,6 +1,10 @@
 # Credits: RINO-GAELICO
 
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from biscuit import App
 
 import toml
 
