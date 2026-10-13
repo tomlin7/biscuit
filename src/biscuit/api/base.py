@@ -66,6 +66,8 @@ class ExtensionsAPI:
         self.register_game = self.base.register_game
         self.register_langserver = self.base.register_langserver
         self.register_run_command = self.base.register_run_command
+        self.register_debugger = self.base.register_debugger
+        self.register_dap_adapter = self.base.register_dap_adapter
 
     def register(self, name: str, extension: object) -> None:
         """Register an extension"""

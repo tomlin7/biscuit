@@ -229,6 +229,14 @@ class EventManager(GUIManager, ConfigManager):
     def register_langserver(self, language: str, command: str) -> None:
         self.language_server_manager.register_langserver(language, command)
 
+    def register_debugger(self, language: str, debugger: type) -> None:
+        self.debugger_manager.register_debugger(language, debugger)
+
+    def register_dap_adapter(
+        self, language: str, adapter_command: list[str] | str
+    ) -> None:
+        self.debugger_manager.register_dap_adapter(language, adapter_command)
+
     def register_comment_prefix(self, language: str, prefix: str) -> None:
         register_comment_prefix(language, prefix)
 
