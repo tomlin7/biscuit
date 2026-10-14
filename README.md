@@ -29,6 +29,9 @@ pip install biscuit-editor        # using pip
 uv tool install biscuit-editor    # using uv
 ```
 
+> [!NOTE]
+> Ensure Tkinter is installed on your system (`sudo apt install python3-tk` on Ubuntu/Debian, `python3-tkinter` on Fedora). Python 3.10+ is supported (with `legacy-cgi` for 3.13+).
+
 quickly open up a project using **`biscuit path/to/src`** and start editing. see other [installation methods](https://tomlin7.github.io/biscuit/getting-started/installation/) if you'd like to (like pyinstaller).
 
 <!-- ![home](https://github.com/user-attachments/assets/cd18dcfa-40a9-47b3-aab4-ed38ea3c1715) -->
