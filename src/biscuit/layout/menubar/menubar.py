@@ -131,13 +131,14 @@ class Menubar(Frame):
         y = event.y_root - self.y
         self.base.geometry(f"+{x}+{y}")
 
-    def add_menu(self, text: str) -> Menu:
+    def add_menu(self, text: str, underline: int = -1) -> Menu:
         """Add a new menu to the menubar
 
         Args:
-            text (str): Text of the menu"""
+            text (str): Text of the menu
+            underline (int): Index of the mnemonic letter to underline"""
 
-        new_menu = MenubarItem(self, text)
+        new_menu = MenubarItem(self, text, underline=underline)
         new_menu.pack(side=tk.LEFT, fill=tk.BOTH, in_=self.container)
         self.menus.append(new_menu)
 
@@ -148,11 +149,28 @@ class Menubar(Frame):
         self.add_edit_menu()
         self.add_view_menu()
         self.add_help_menu()
+        self.bind_accelerators()
+
+    def bind_accelerators(self) -> None:
+        menu_keys = {"f": "File", "e": "Edit", "v": "View", "h": "Help"}
+        for key, name in menu_keys.items():
+            for item in self.menus:
+                if item.name.lower() == name.lower():
+                    try:
+                        self.base.bind(f"<Alt-{key}>", lambda e, it=item: self._activate_menu(it))
+                        self.base.bind(f"<Alt-{key.upper()}>", lambda e, it=item: self._activate_menu(it))
+                    except Exception:
+                        pass
+
+    def _activate_menu(self, item: MenubarItem) -> str:
+        self.close_all_menus()
+        item.onclick()
+        return "break"
 
     def add_file_menu(self) -> None:
         events = self.events
 
-        self.file_menu = self.add_menu("File")
+        self.file_menu = self.add_menu("File", underline=0)
         self.file_menu.add_command("New File", events.new_file)
         self.file_menu.add_command("New Window", events.new_window)
         self.file_menu.add_separator()
@@ -183,7 +201,7 @@ class Menubar(Frame):
     def add_edit_menu(self) -> None:
         events = self.events
 
-        self.edit_menu = self.add_menu("Edit")
+        self.edit_menu = self.add_menu("Edit", underline=0)
         self.edit_menu.add_command("Undo", events.undo)
         self.edit_menu.add_command("Redo", events.redo)
         self.edit_menu.add_separator()
@@ -206,7 +224,7 @@ class Menubar(Frame):
     def add_view_menu(self) -> None:
         events = self.events
 
-        self.view_menu = self.add_menu("View")
+        self.view_menu = self.add_menu("View", underline=0)
         # TODO: Add the rest of the view menu items
         self.view_menu.add_command("Command Palette...", events.show_command_palette)
         self.view_menu.add_command("Explorer", events.show_directory_tree)
@@ -221,7 +239,7 @@ class Menubar(Frame):
     def add_help_menu(self) -> None:
         events = self.events
 
-        self.help_menu = self.add_menu("Help")
+        self.help_menu = self.add_menu("Help", underline=0)
         self.help_menu.add_command("Welcome", events.show_welcome)
         self.help_menu.add_command("Show All Commands", events.show_command_palette)
         self.help_menu.add_command("Documentation", events.open_biscuit_documentation)
