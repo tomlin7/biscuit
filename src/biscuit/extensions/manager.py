@@ -50,6 +50,8 @@ class ExtensionManager:
 
         # extensions that are available to install (from fetched list)
         self.available_extensions: dict[str, str] = {}
+        # recommended extensions list (loaded from recommended.toml or default)
+        self.recommended_extensions: list[str] = ["python", "rust"]
         # installed extensions that are available locally
         self.installed = Installed(self)
         # currently loaded extensions
@@ -325,6 +327,40 @@ class ExtensionManager:
 
         for name, data in self.available_extensions.items():
             self.fetch_queue.put((name, data))
+
+    def load_recommended_extensions(self) -> None:
+        """Load recommended extensions from recommended.toml in extension directory if available."""
+        if not hasattr(self, "extension_dir") or not self.extension_dir:
+            return
+        rec_path = self.extension_dir / "recommended.toml"
+        if rec_path.exists():
+            try:
+                import toml
+                rec_data = toml.load(rec_path)
+                exts = rec_data.get("recommended", {}).get("extensions", [])
+                if exts:
+                    self.recommended_extensions = [str(e).lower() for e in exts]
+            except Exception:
+                pass
+
+    def is_recommended(self, name: str, data: dict | list | None = None) -> bool:
+        """Check if an extension is in the recommended list."""
+        if not self.recommended_extensions:
+            return True
+        submodule = data.get("submodule") if isinstance(data, dict) else (data[0] if isinstance(data, list) and data else "")
+        candidates = {name.lower(), str(submodule).lower()}
+        return any(c in self.recommended_extensions for c in candidates if c)
+
+    def display_recommended_extensions(self) -> None:
+        """Display only recommended extensions in the extensions view."""
+        self.load_recommended_extensions()
+        if self.available_extensions:
+            self.base.extensions_view.results.show_content()
+
+        for name, data in self.available_extensions.items():
+            if self.is_recommended(name, data):
+                self.fetch_queue.put((name, data))
+
 
     # CLI commands ----------------
 
