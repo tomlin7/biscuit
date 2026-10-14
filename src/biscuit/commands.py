@@ -478,6 +478,18 @@ class Commands:
     def change_git_branch(self, *_) -> None:
         self.base.palette.show("branch:")
 
+    def git_stash(self, *_) -> None:
+        if self.base.git and self.base.git.repo:
+            self.base.git.repo.stash()
+            if self.base.notifications:
+                self.base.notifications.info("Git: Stashed changes")
+
+    def git_stash_pop(self, *_) -> None:
+        if self.base.git and self.base.git.repo:
+            self.base.git.repo.stash_pop()
+            if self.base.notifications:
+                self.base.notifications.info("Git: Applied and dropped latest stash")
+
     @command_palette_ignore
     def show_run_config_palette(self, command) -> None:
         self.base.palette.show("runconf:", command)
