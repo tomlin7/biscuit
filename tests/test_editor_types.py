@@ -153,3 +153,39 @@ class TestEditorTypes:
                 with patch("biscuit.editor.types.is_image", return_value=False):
                     et.get_editor(mock_master, path="test.md")
                     mock_md.assert_called_once()
+
+
+class TestLineNumbersBreakpoints:
+    def test_toggle_breakpoint_disabled_without_debugger(self):
+        from biscuit.editor.text.linenumbers import LineNumbers
+
+        ln = LineNumbers.__new__(LineNumbers)
+        ln.master = MagicMock()
+        ln.master.debugger = None
+        ln.breakpoints = set()
+        ln.redraw = MagicMock()
+
+        ln.toggle_breakpoint(10)
+
+        assert 10 not in ln.breakpoints
+        ln.redraw.assert_not_called()
+        ln.master.update_breakpoints.assert_not_called()
+
+    def test_toggle_breakpoint_enabled_with_debugger(self):
+        from biscuit.editor.text.linenumbers import LineNumbers
+
+        ln = LineNumbers.__new__(LineNumbers)
+        ln.master = MagicMock()
+        ln.master.debugger = MagicMock()
+        ln.breakpoints = set()
+        ln.redraw = MagicMock()
+
+        ln.toggle_breakpoint(10)
+
+        assert 10 in ln.breakpoints
+        ln.redraw.assert_called_once()
+        ln.master.update_breakpoints.assert_called_once_with(ln.breakpoints)
+
+        # toggling again removes it
+        ln.toggle_breakpoint(10)
+        assert 10 not in ln.breakpoints
