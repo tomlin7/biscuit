@@ -469,6 +469,9 @@ class Commands:
     def change_indentation_level(self, *_) -> None:
         self.base.palette.show("indent:")
 
+    def change_font_size(self, *_) -> None:
+        self.base.palette.show("zoom:")
+
     def clone_git_repository(self, *_) -> None:
         self.base.palette.show("clone:")
 
