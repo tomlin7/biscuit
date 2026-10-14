@@ -13,6 +13,7 @@ class Config:
 
         self.config_path = self.get_config_path("settings.toml")
         self.data = {}
+        self.registered_themes: dict = {}
         self.load_data()
 
     def get_config_path(self, relative_path: str) -> str:
@@ -38,6 +39,32 @@ class Config:
 
         self.setup_properties()
 
+    def register_theme(self, name: str, theme_cls_or_instance) -> None:
+        """Register a custom theme class or instance."""
+        self.registered_themes[name.lower()] = theme_cls_or_instance
+
+    def set_theme(self, theme_name: str) -> None:
+        """Set the active theme at runtime."""
+        from .theme import VSCodeDark, VSCodeLight
+        builtin = {
+            "dark": VSCodeDark,
+            "light": VSCodeLight,
+            "gruvbox_dark": GruvboxDark,
+            "catppuccin_mocha": CatppuccinMocha,
+        }
+        theme_key = str(theme_name).lower()
+        if theme_key in self.registered_themes:
+            target = self.registered_themes[theme_key]
+            self.theme = target() if callable(target) else target
+        elif theme_key in builtin:
+            self.theme = builtin[theme_key]()
+        else:
+            self.theme = VSCodeDark()
+
+        self.data["theme"] = theme_key
+        if hasattr(self.base, "theme"):
+            self.base.theme = self.theme
+
     def setup_properties(self) -> None:
         """Setup properties based on the loaded data."""
         # TODO add more properties
@@ -47,17 +74,7 @@ class Config:
         
         # Theme
         theme_name = self.get_value("theme", "dark")
-        from .theme import VSCodeDark, VSCodeLight
-        if theme_name == "dark":
-            self.theme = VSCodeDark()
-        elif theme_name == "light":
-            self.theme = VSCodeLight()
-        elif theme_name == "gruvbox_dark":
-            self.theme = GruvboxDark()
-        elif theme_name == "catppuccin_mocha":
-            self.theme = CatppuccinMocha()
-        else:
-            self.theme = VSCodeDark()
+        self.set_theme(theme_name)
 
         # Text Editor
         self.auto_save_enabled = self.get_value("auto_save", False)
