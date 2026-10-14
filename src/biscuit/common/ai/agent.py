@@ -294,3 +294,6 @@ You have access to tools that let you read, search, and modify the codebase:
 
     def stop_execution(self):
         self.is_running = False
+        self.is_aborted = True
+        self._stream_content('\n\n*[Execution stopped by user]*')
+
