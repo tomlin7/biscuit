@@ -237,6 +237,10 @@ class TreeSitterHighlighter:
         self.query: Query | None = None
         self.language_name: str | None = None
         self.tag_colors: dict = self.base.theme.treesitter_syntax
+        self.bracket_colors = getattr(
+            self.base.theme.editors, "bracket_colors", ("ffd700", "da70d6", "179fff")
+        )
+        self.bracket_map: dict[tuple[int, int], tuple[int, int]] = {}
 
         if not TREE_SITTER_AVAILABLE:
             return
@@ -331,10 +335,22 @@ class TreeSitterHighlighter:
             else:
                 self.text.tag_configure(tag, foreground=props)
 
+        self.bracket_colors = getattr(
+            self.base.theme.editors, "bracket_colors", ("ffd700", "da70d6", "179fff")
+        )
+        for i, color in enumerate(self.bracket_colors):
+            c = f"#{color}" if not str(color).startswith("#") else color
+            self.text.tag_configure(f"bracket.depth{i}", foreground=c)
+            self.text.tag_raise(f"bracket.depth{i}")
+        self.text.tag_raise("activebracket")
+
     def clear(self) -> None:
         """Remove all Tree-sitter highlight tags."""
         for capture_name in self.tag_colors:
             self.text.tag_remove(f"ts.{capture_name}", "1.0", tk.END)
+        for i in range(len(self.bracket_colors)):
+            self.text.tag_remove(f"bracket.depth{i}", "1.0", tk.END)
+        self.bracket_map.clear()
 
     def highlight(self) -> None:
         """Full parse and highlight (used on file load / language change)."""
@@ -381,6 +397,9 @@ class TreeSitterHighlighter:
         # Clear all existing tree-sitter tags
         for capture_name in self.tag_colors:
             self.text.tag_remove(f"ts.{capture_name}", "1.0", tk.END)
+        for i in range(len(self.bracket_colors)):
+            self.text.tag_remove(f"bracket.depth{i}", "1.0", tk.END)
+        self.bracket_map.clear()
 
         if not self.tree or not self.query:
             return
@@ -396,6 +415,8 @@ class TreeSitterHighlighter:
                 start = f"{node.start_point[0] + 1}.{node.start_point[1]}"
                 end = f"{node.end_point[0] + 1}.{node.end_point[1]}"
                 self.text.tag_add(tag, start, end)
+
+        self._apply_bracket_colorization()
 
     def _apply_highlights_incremental(self, changed_ranges) -> None:
         """Re-highlight only the changed ranges for speed."""
@@ -420,6 +441,54 @@ class TreeSitterHighlighter:
                     start = f"{node.start_point[0] + 1}.{node.start_point[1]}"
                     end = f"{node.end_point[0] + 1}.{node.end_point[1]}"
                     self.text.tag_add(tag, start, end)
+
+        for i in range(len(self.bracket_colors)):
+            self.text.tag_remove(f"bracket.depth{i}", "1.0", tk.END)
+        self.bracket_map.clear()
+        self._apply_bracket_colorization()
+
+    def _apply_bracket_colorization(self) -> None:
+        """Colorize bracket pairs hierarchically based on AST depth."""
+        if not self.tree or not self.tree.root_node:
+            return
+
+        bracket_pairs = {"(": ")", "[": "]", "{": "}"}
+        closing_pairs = {v: k for k, v in bracket_pairs.items()}
+        num_colors = max(1, len(self.bracket_colors))
+
+        stack: list[tuple[str, int, tuple[int, int]]] = []
+        self.bracket_map = {}
+
+        def walk(node):
+            if node.type in bracket_pairs:
+                depth = len(stack)
+                start = f"{node.start_point[0] + 1}.{node.start_point[1]}"
+                end = f"{node.end_point[0] + 1}.{node.end_point[1]}"
+                tag = f"bracket.depth{depth % num_colors}"
+                self.text.tag_add(tag, start, end)
+                stack.append((node.type, depth, (node.start_point[0] + 1, node.start_point[1])))
+            elif node.type in closing_pairs:
+                expected_open = closing_pairs[node.type]
+                start = f"{node.start_point[0] + 1}.{node.start_point[1]}"
+                end = f"{node.end_point[0] + 1}.{node.end_point[1]}"
+                if stack and stack[-1][0] == expected_open:
+                    _, depth, open_pt = stack.pop()
+                    tag = f"bracket.depth{depth % num_colors}"
+                    self.text.tag_add(tag, start, end)
+                    close_pt = (node.start_point[0] + 1, node.start_point[1])
+                    self.bracket_map[open_pt] = close_pt
+                    self.bracket_map[close_pt] = open_pt
+                else:
+                    self.text.tag_add("red", start, end)
+
+            for child in node.children:
+                walk(child)
+
+        walk(self.tree.root_node)
+
+    def get_matching_bracket(self, line: int, col: int) -> tuple[int, int] | None:
+        """Returns (line, col) of matching bracket if (line, col) is a bracket."""
+        return self.bracket_map.get((line, col))
 
     def _resolve_tag(self, capture_name: str) -> str | None:
         """Resolve a capture name to a Tkinter tag, with fallback to parent."""
