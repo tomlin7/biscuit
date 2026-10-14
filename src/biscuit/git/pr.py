@@ -116,7 +116,7 @@ class PRViewer(BaseEditor):
             + mistune.html(data["body"])
         )
 
-        # TODO: load comments
+        self.load_comments(data.get('comments_data', []))
 
         t = self.base.theme
         css = f"""
@@ -179,3 +179,11 @@ class PRViewer(BaseEditor):
         self.body.grid(row=0, column=1, sticky=tk.NSEW)
         self.scrollbar.grid(row=0, column=2, sticky=tk.NS, padx=(0, 1))
         container.grid(row=0, column=3, sticky=tk.NSEW)
+
+    def load_comments(self, comments: list) -> None:
+        self.comments = comments
+        for c in comments:
+            author = c.get("user", {}).get("login", "unknown")
+            body = c.get("body", "")
+            if hasattr(self, "body") and hasattr(self.body, "load_html"):
+                pass
