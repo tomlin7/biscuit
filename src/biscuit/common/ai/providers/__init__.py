@@ -59,7 +59,9 @@ def _auto_register() -> None:
     from .anthropic import AnthropicProvider
     from .groq import GroqProvider
     from .minimax import MiniMaxProvider
+    from .openai_compatible import OpenAICompatibleProvider
     register(GeminiProvider)
     register(AnthropicProvider)
     register(GroqProvider)
     register(MiniMaxProvider)
+    register(OpenAICompatibleProvider)
