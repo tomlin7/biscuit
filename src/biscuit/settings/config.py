@@ -8,12 +8,14 @@ from .theme.gruvbox_dark import GruvboxDark
 class Config:
     """Loads and manages configurations for biscuit."""
 
+    registered_themes: dict = {}
+
     def __init__(self, master) -> None:
         self.base = master.base
 
         self.config_path = self.get_config_path("settings.toml")
         self.data = {}
-        self.registered_themes: dict = {}
+        self.registered_themes = {}
         self.load_data()
 
     def get_config_path(self, relative_path: str) -> str:
@@ -41,6 +43,8 @@ class Config:
 
     def register_theme(self, name: str, theme_cls_or_instance) -> None:
         """Register a custom theme class or instance."""
+        if "registered_themes" not in self.__dict__:
+            self.registered_themes = dict(self.registered_themes)
         self.registered_themes[name.lower()] = theme_cls_or_instance
 
     def set_theme(self, theme_name: str) -> None:
