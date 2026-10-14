@@ -1108,6 +1108,12 @@ class Text(BaseText):
         # TODO: multi cursor editing
         return "break"
 
+    def toggle_word_wrap(self) -> str:
+        current = self.cget("wrap")
+        new_wrap = "none" if current == "word" else "word"
+        self.configure(wrap=new_wrap)
+        return new_wrap
+
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)
 
