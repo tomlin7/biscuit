@@ -7,6 +7,7 @@ from biscuit.language import Languages
 
 from .base import DebuggerBase
 from .config import ConfigLoader
+from .dap import DAPDebugger
 from .python import PythonDebugger
 
 if typing.TYPE_CHECKING:
@@ -25,6 +26,7 @@ class DebuggerManager:
             {}
         )  # language -> debugger type mapping
         self.debuggers[Languages.PYTHON] = PythonDebugger
+        self.debuggers["dap"] = DAPDebugger
 
         self.spawned: dict[str, DebuggerBase] = (
             {}
