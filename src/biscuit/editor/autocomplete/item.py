@@ -29,7 +29,7 @@ class CompletionItem(Frame):
         self.replace_end: str = ""
         self.replace_text: str = ""
         self.documentation: str = ""
-        # TODO add GUI for documentation
+        self.doc_popup_enabled = True
 
         self.kind = Kind(self)
         self.text = tk.Text(
@@ -149,3 +149,6 @@ class CompletionItem(Frame):
         self.kind.config(bg=self.bg)
         self.text.config(bg=self.bg, fg=self.fg)
         self.selected = False
+
+    def get_documentation_text(self) -> str:
+        return getattr(self, "documentation", "") or getattr(self, "detail", "")
