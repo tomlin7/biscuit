@@ -42,15 +42,28 @@ class Commands:
     def open_empty_editor(self, *_) -> None:
         self.new_file()
 
+    def _safe_dialog_options(self, **kwargs) -> dict:
+        opts = kwargs.copy()
+        if "parent" not in opts:
+            opts["parent"] = self.base
+        try:
+            self.base.option_add("*Dialog*background", self.base.theme.secondary_background)
+            self.base.option_add("*Dialog*foreground", self.base.theme.primary_foreground)
+            self.base.option_add("*FileDialog*background", self.base.theme.secondary_background)
+            self.base.option_add("*FileDialog*foreground", self.base.theme.primary_foreground)
+        except Exception:
+            pass
+        return opts
+
     def open_file(self, *_) -> None:
-        path = filedialog.askopenfilename()
+        path = filedialog.askopenfilename(**self._safe_dialog_options())
         if not path or not os.path.isfile(path):
             return
         self.base.open_editor(path)
         self.base.history.register_file_history(path)
 
     def open_directory(self, *_) -> None:
-        path = filedialog.askdirectory()
+        path = filedialog.askdirectory(**self._safe_dialog_options())
         if not path or not os.path.isdir(path):
             return
         self.base.open_directory(path)
@@ -81,8 +94,10 @@ class Commands:
         if editor := self.base.editorsmanager.active_editor:
             if editor.content and editor.content.editable:
                 if path := asksaveasfilename(
-                    title="Save As...",
-                    initialfile=(editor.filename or "Untitled.txt"),
+                    **self._safe_dialog_options(
+                        title="Save As...",
+                        initialfile=(editor.filename or "Untitled.txt"),
+                    )
                 ):
                     editor.save(path)
 
@@ -91,8 +106,10 @@ class Commands:
             if editor.content:
                 if not editor.content.exists:
                     if path := asksaveasfilename(
-                        title="Save As...",
-                        initialfile=(editor.filename or "Untitled.txt"),
+                        **self._safe_dialog_options(
+                            title="Save As...",
+                            initialfile=(editor.filename or "Untitled.txt"),
+                        )
                     ):
                         return editor.save(path)
                 if editor.content.editable:
@@ -100,20 +117,22 @@ class Commands:
 
     def save_workspace_as(self, *_) -> None:
         if path := asksaveasfilename(
-            title="Save Workspace As...",
-            initialfile="workspace.toml",
-            filetypes=[(".toml")],
+            **self._safe_dialog_options(
+                title="Save Workspace As...",
+                initialfile="workspace.toml",
+                filetypes=[(".toml")],
+            )
         ):
             self.base.workspaces.save(path)
 
     def add_folder_to_workspace(self, *_) -> None:
-        path = filedialog.askdirectory()
+        path = filedialog.askdirectory(**self._safe_dialog_options())
         if not path or not os.path.isdir(path):
             return
         self.base.workspaces.add_dir(path)
 
     def open_workspace(self, *_) -> None:
-        path = filedialog.askopenfilename()
+        path = filedialog.askopenfilename(**self._safe_dialog_options())
         if not path or not os.path.isfile(path):
             return
         self.base.workspaces.load(path)
