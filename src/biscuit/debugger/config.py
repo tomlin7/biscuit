@@ -23,6 +23,7 @@ class ConfigLoader:
 
     def check(self, *_) -> None:
         self.config_found = False
+        self.configs = []
         if not self.base.active_directory:
             self.refresh_debugger()
             return
@@ -33,12 +34,11 @@ class ConfigLoader:
             return
 
         self.config_found = True
-        self.refresh_debugger()
-
         self.load(self.path)
 
     def refresh_debugger(self):
         self.base.debug.refresh()
+        self.base.debug.refresh_configs()
 
     def load(self, path: Path) -> None:
         with open(path, "r") as f:
