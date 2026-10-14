@@ -1,6 +1,6 @@
 gitpython
 filetype
-tkextrafont
+tkextrafont; sys_platform == "win32"
 watchdog
 pygments
 Pillow
