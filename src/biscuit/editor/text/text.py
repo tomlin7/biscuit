@@ -103,6 +103,7 @@ class Text(BaseText):
 
         # self.last_change = Change(None, None, None, None, None)
         self._pending_edit_info = None
+        self.config_tags()
         self.highlighter = Highlighter(self, language)
         if not self.standalone and not self.minimalist:
             self.base.statusbar.on_open_file(self)
@@ -113,7 +114,6 @@ class Text(BaseText):
         self.diagnostics = MinClosestKeyDict()
 
         self.focus_set()
-        self.config_tags()
         self.create_proxy()
         self.config_bindings()
         self.update_idletasks()

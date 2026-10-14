@@ -57,6 +57,8 @@ class Frame(tk.Frame):
     """Frame with reference to base"""
 
     def __init__(self, master, *args, **kwargs) -> None:
+        kwargs.pop("foreground", None)
+        kwargs.pop("fg", None)
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.base: App = master.base

@@ -76,24 +76,25 @@ class DAPClient:
             "supportsMemoryEvent": supportsMemoryEvent,
         }
         # Send initialize request
+        init_args = {
+            "clientID": clientID,
+            "clientName": clientName,
+            "adapterID": adapterID,
+            "locale": locale,
+            "linesStartAt1": linesStartAt1,
+            "columnsStartAt1": columnsStartAt1,
+            "pathFormat": pathFormat,
+            "supportsVariableType": supportsVariableType,
+            "supportsVariablePaging": supportsVariablePaging,
+            "supportsRunInTerminalRequest": supportsRunInTerminalRequest,
+            "supportsMemoryReferences": supportsMemoryReferences,
+            "supportsProgressReporting": supportsProgressReporting,
+            "supportsInvalidatedEvent": supportsInvalidatedEvent,
+            "supportsMemoryEvent": supportsMemoryEvent,
+        }
         self._send_request(
             command="initialize",
-            arguments={
-                "clientID": clientID,
-                "clientName": clientName,
-                "adapterID": adapterID,
-                "locale": locale,
-                "linesStartAt1": linesStartAt1,
-                "columnsStartAt1": columnsStartAt1,
-                "pathFormat": pathFormat,
-                "supportsVariableType": supportsVariableType,
-                "supportsVariablePaging": supportsVariablePaging,
-                "supportsRunInTerminalRequest": supportsRunInTerminalRequest,
-                "supportsMemoryReferences": supportsMemoryReferences,
-                "supportsProgressReporting": supportsProgressReporting,
-                "supportsInvalidatedEvent": supportsInvalidatedEvent,
-                "supportsMemoryEvent": supportsMemoryEvent,
-            }
+            arguments={k: v for k, v in init_args.items() if v is not None}
         )
         self._state = ClientState.WAITING_FOR_INITIALIZED
 

@@ -351,7 +351,10 @@ class ExtensionManager:
 
     def display_filtered_extensions(self, search_string: str) -> None:
         if self.available_extensions:
-            self.base.extensions_view.results.show_content()
+            try:
+                self.base.extensions_view.results.show_content()
+            except Exception:
+                pass
 
         if not search_string:
             for name, data in self.available_extensions.items():
@@ -363,7 +366,10 @@ class ExtensionManager:
 
     def display_all_extensions(self) -> None:
         if self.available_extensions:
-            self.base.extensions_view.results.show_content()
+            try:
+                self.base.extensions_view.results.show_content()
+            except Exception:
+                pass
 
         for name, data in self.available_extensions.items():
             self.fetch_queue.put((name, data))
@@ -505,11 +511,12 @@ class ExtensionManager:
         for name in self.installed:
             yield name, self.available_extensions.get(name, None)
 
-    def list_extensions_by_user(self, user: str) -> typing.Generator[tuple[str, str]]:
+    def list_extensions_by_user(self, user: str) -> typing.Generator[tuple[str, typing.Any]]:
         """Show extensions by a specific user."""
 
         for id, data in self.available_extensions.items():
-            if data[1] == user:
+            author = data.get("author") if isinstance(data, dict) else (data[1] if isinstance(data, (list, tuple)) and len(data) > 1 else "")
+            if author == user:
                 yield id, data
 
     # Sandboxed execution was planned but removed due to some issues faced

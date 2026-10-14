@@ -80,7 +80,9 @@ class Results(SideBarViewItem):
             name, data = self.fetch_queue.get()
             ext = ExtensionGUI(self, name, data)
             if ext.installed and hasattr(self.master, "installed"):
-                self.master.installed.add_extension(ext)
+                ext.destroy()
+                inst_ext = ExtensionGUI(self.master.installed, name, data)
+                self.master.installed.add_extension(inst_ext)
             elif not self.filter_installed:
                 self.extension_list.add(ext, fill=tk.X)
 

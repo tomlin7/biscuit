@@ -19,10 +19,11 @@ class BiscuitCLI(click.Group):
             return super(BiscuitCLI, self).main(*args, **kwargs)
         except Exception:
             path = self.path
+            if not path:
+                raise
 
-            if path:
-                path = Path(self.path).resolve()
-                path.mkdir(exist_ok=True)
+            path = Path(self.path).resolve()
+            path.mkdir(exist_ok=True)
 
             appdir = Path(__file__).resolve().parent
             app = get_app_instance(appdir, open_path=str(path))
@@ -57,9 +58,10 @@ def cli(path=None, dev=False):
     Run `biscuit <path>` to open a folder/file
     (`biscuit .` for this directory)
     """
-
-    click.echo(f"Biscuit v{__version__} {'(dev) 🚧' if dev else '🚀'}")
-
+    try:
+        click.echo(f"Biscuit v{__version__} {'(dev) 🚧' if dev else '🚀'}")
+    except UnicodeEncodeError:
+        click.echo(f"Biscuit v{__version__} {'(dev)' if dev else ''}")
 
 @cli.result_callback()
 def process_commands(processors, path=None, dev=False):
