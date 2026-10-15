@@ -20,7 +20,11 @@ class GUIManager(Tk, ConfigManager):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        try:
+            super().__init__(*args, **kwargs)
+        except Exception:
+            import tkinter as tk
+            tk.Tk.__init__(self, *args, **kwargs)
 
     def initialize_tk(self) -> None:
         """Initialize and configure tkinter

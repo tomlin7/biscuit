@@ -115,6 +115,9 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+markers = [
+    "integration: marks integration tests",
+]
 
 [build-system]
 requires = ["poetry-core"]
