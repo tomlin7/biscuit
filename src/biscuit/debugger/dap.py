@@ -49,6 +49,9 @@ except ImportError:
     from biscuit.common.dap.protocol import ErrorResponse, Event, Request, Response
 
 from .base import DebuggerBase
+from .console import DebugConsoleSession
+from .exceptions import ExceptionBreakpointController
+from .threads import StackFrame, ThreadCallStackManager, ThreadInfo
 
 if typing.TYPE_CHECKING:
     from .manager import DebuggerManager
@@ -131,6 +134,8 @@ class DAPDebugger(DebuggerBase):
         self.reader_thread: threading.Thread | None = None
         self.is_running = False
         self.is_paused = False
+        self.session_started = False
+        self.launch_args: dict[str, Any] = {}
         self.current_thread_id: int | None = 1
         self.current_frame_id: int | None = None
         self.current_variables_ref: int | None = None
@@ -138,12 +143,16 @@ class DAPDebugger(DebuggerBase):
         self.program_path: str = ""
         self.cwd: str = ""
         self.adapter_command: list[str] = []
+        self.exception_controller = ExceptionBreakpointController()
+        self.threads_manager = ThreadCallStackManager()
+        self.console = DebugConsoleSession()
 
     def _create_client(self) -> DAPClient:
         return DAPClient(
             clientID="biscuit",
             clientName="Biscuit Code Editor",
             adapterID="dap",
+            locale="en-US",
             linesStartAt1=True,
             columnsStartAt1=True,
             pathFormat="path",
@@ -151,8 +160,34 @@ class DAPDebugger(DebuggerBase):
             supportsProgressReporting=True,
         )
 
+    def _dispatch_ui(self, func: typing.Callable[[], Any]) -> None:
+        """Execute a UI callback safely on the main thread."""
+        is_mock = hasattr(self.base, "after") and "mock" in type(self.base.after).__module__.lower()
+        if is_mock:
+            try:
+                func()
+            except Exception:
+                pass
+            return
+
+        if (
+            threading.current_thread() != threading.main_thread()
+            and hasattr(self.base, "after")
+            and callable(self.base.after)
+        ):
+            try:
+                self.base.after(0, func)
+                return
+            except Exception:
+                pass
+        try:
+            func()
+        except Exception:
+            pass
+
     def launch_config(self, config: dict[str, Any]) -> None:
         self.manager.latest = self
+        self.launch_args = dict(config)
         self.program_path = self.format_path(config.get("program", ""))
         self.cwd = self.format_path(config.get("cwd", ""))
 
@@ -170,6 +205,7 @@ class DAPDebugger(DebuggerBase):
         self.manager.latest = self
         self.program_path = path
         self.cwd = cwd or os.path.dirname(os.path.abspath(path))
+        self.launch_args = {"program": self.program_path, "cwd": self.cwd}
         if not self.adapter_command:
             self.adapter_command = [sys.executable, "-m", "debugpy.adapter"]
         self._start_adapter()
@@ -185,6 +221,7 @@ class DAPDebugger(DebuggerBase):
 
         self.is_running = True
         self.is_paused = False
+        self.session_started = False
         self.client = self._create_client()
         self.pending_requests.clear()
 
@@ -263,31 +300,62 @@ class DAPDebugger(DebuggerBase):
 
     def handle_event(self, event: str, body: dict[str, Any]) -> None:
         if event == "initialized":
-            # Send breakpoints
+            if self.session_started:
+                return
+            self.session_started = True
+
+            # 1. Send launch request
+            launch_params: dict[str, Any] = {
+                "program": self.program_path,
+                "cwd": self.cwd,
+                "stopOnEntry": self.launch_args.get("stopOnEntry", False),
+                "console": self.launch_args.get("console", "internalConsole"),
+            }
+            for k, v in self.launch_args.items():
+                if k not in ("name", "language", "adapter", "program", "cwd"):
+                    launch_params[k] = v
+
+            self.send_request("launch", launch_params)
+
+            # 2. Send initial breakpoints
             for path, lines in self.breakpoints.items():
-                self.send_request(
-                    "setBreakpoints",
-                    {
-                        "source": {"path": path},
-                        "breakpoints": [{"line": line} for line in lines],
-                    },
-                )
+                bps = []
+                for item in lines:
+                    if isinstance(item, int):
+                        bps.append({"line": item})
+                    elif hasattr(item, "line"):
+                        bp_dict: dict[str, Any] = {"line": item.line}
+                        if getattr(item, "condition", None):
+                            bp_dict["condition"] = item.condition
+                        if getattr(item, "hit_condition", None):
+                            bp_dict["hitCondition"] = str(item.hit_condition)
+                        bps.append(bp_dict)
+                    elif isinstance(item, dict):
+                        bps.append(item)
+                if bps:
+                    self.send_request(
+                        "setBreakpoints",
+                        {
+                            "source": {"path": path},
+                            "breakpoints": bps,
+                        },
+                    )
+
+            # 3. Send exception breakpoints if enabled
+            if hasattr(self, "exception_controller") and self.exception_controller:
+                filters = self.exception_controller.get_dap_filters()
+                if filters:
+                    self.send_request("setExceptionBreakpoints", {"filters": filters})
+
+            # 4. Configuration done
             self.send_request("configurationDone")
-            self.send_request(
-                "launch",
-                {
-                    "program": self.program_path,
-                    "cwd": self.cwd,
-                    "stopOnEntry": False,
-                },
-            )
 
         elif event == "stopped":
             self.is_paused = True
             if "threadId" in body:
                 self.current_thread_id = body["threadId"]
             if hasattr(self.base, "debug"):
-                self.base.debug.set_paused()
+                self._dispatch_ui(self.base.debug.set_paused)
             self.send_request(
                 "stackTrace", {"threadId": self.current_thread_id or 1}
             )
@@ -295,16 +363,27 @@ class DAPDebugger(DebuggerBase):
         elif event == "continued":
             self.is_paused = False
             if hasattr(self.base, "debug"):
-                self.base.debug.reset()
-                self.base.debug.set_running()
+                self._dispatch_ui(
+                    lambda: [self.base.debug.reset(), self.base.debug.set_running()]
+                )
+
+        elif event == "thread":
+            reason = body.get("reason")
+            thread_id = body.get("threadId")
+            if reason == "started" and thread_id is not None:
+                t_info = ThreadInfo(id=thread_id, name=f"Thread-{thread_id}", status="running")
+                self.threads_manager.update_threads(list(self.threads_manager.threads.values()) + [t_info])
+            elif reason == "exited" and thread_id is not None:
+                self.threads_manager.threads.pop(thread_id, None)
 
         elif event in ("terminated", "exited"):
             self.stop()
 
         elif event == "output":
             output_text = body.get("output", "")
+            category = body.get("category", "output")
             if hasattr(self.base, "logger"):
-                self.base.logger.info(f"[DAP output] {output_text.strip()}")
+                self.base.logger.info(f"[DAP {category}] {output_text.strip()}")
 
     def handle_response(
         self, command: str, msg: dict[str, Any]
@@ -316,14 +395,26 @@ class DAPDebugger(DebuggerBase):
         if command == "stackTrace":
             frames = body.get("stackFrames", [])
             stack = []
+            stack_objs = []
             for f in frames:
                 name = f.get("name", "<unknown>")
                 source = f.get("source", {})
                 path = source.get("path", "") if isinstance(source, dict) else ""
                 line = f.get("line", 1)
+                frame_id = f.get("id", 0)
                 stack.append((name, path, line))
+                stack_objs.append(StackFrame(id=frame_id, name=name, file=path, line=line))
             if hasattr(self, "callstack") and self.callstack:
-                self.callstack.show(stack)
+                self._dispatch_ui(lambda: self.callstack.show(stack))
+
+            if self.current_thread_id is not None:
+                t_info = ThreadInfo(
+                    id=self.current_thread_id,
+                    name=f"Thread-{self.current_thread_id}",
+                    status="paused",
+                    frames=stack_objs,
+                )
+                self.threads_manager.update_threads([t_info])
 
             if frames:
                 self.current_frame_id = frames[0].get("id")
@@ -347,15 +438,20 @@ class DAPDebugger(DebuggerBase):
             }
             scope_name = msg.get("scopeName") or "Locals"
             if hasattr(self, "variables") and self.variables:
-                self.variables.show(scope_name, vars_dict, open_=True)
+                self._dispatch_ui(lambda: self.variables.show(scope_name, vars_dict, open_=True))
 
     def _on_adapter_exit(self) -> None:
         self.is_running = False
         self.is_paused = False
+        self.session_started = False
         if hasattr(self.base, "debug"):
-            self.base.debug.reset()
-            self.base.debug.set_stopped()
-            self.base.debug.refresh()
+            self._dispatch_ui(
+                lambda: [
+                    self.base.debug.reset(),
+                    self.base.debug.set_stopped(),
+                    self.base.debug.refresh(),
+                ]
+            )
 
     def update_breakpoints(
         self, file_path: str, line_numbers: set[int]
