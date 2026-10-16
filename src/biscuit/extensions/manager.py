@@ -223,7 +223,10 @@ class ExtensionManager:
 
             self.installed[ext.id] = ext.data
             self.installed.dump()
-            ext.set_installed()  # GUI update
+            try:
+                ext.set_installed()  # GUI update
+            except Exception:
+                pass
 
             self.load_extension(ext.id)
 
@@ -231,7 +234,10 @@ class ExtensionManager:
             self.base.notifications.info(f"Extension '{ext.display_name}' has been installed!")
 
         except Exception as e:
-            ext.set_unavailable()
+            try:
+                ext.set_unavailable()
+            except Exception:
+                pass
             self.base.logger.error(f"Installing extension '{ext.display_name}' failed: {e}")
             self.base.notifications.error(f"Installing '{ext.display_name}' failed.")
 
@@ -421,7 +427,8 @@ class ExtensionManager:
             t = self.install_extension(
                 ExtensionGUI(self.base.extensions_view.results, name, data)
             )
-            t.join()
+            if t:
+                t.join()
 
             return True
 
@@ -431,7 +438,11 @@ class ExtensionManager:
         """Uninstall an extension by name."""
 
         if name in self.installed:
-            self.uninstall_extension(self.installed[name])
+            from biscuit.views.extensions.extension import ExtensionGUI
+
+            data = self.installed[name]
+            ext = ExtensionGUI(self.base.extensions_view.results, name, data)
+            self.uninstall_extension(ext)
             return True
 
         return False

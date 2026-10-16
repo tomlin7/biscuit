@@ -193,37 +193,50 @@ class ExtensionGUI(Frame):
         )
 
     def set_updating(self):
-        self.install.config(text="Updating...", bg=self.base.theme.biscuit_dark)
+        try:
+            self.install.config(text="Updating...", bg=self.base.theme.biscuit_dark)
+        except Exception:
+            pass
 
     def set_unavailable(self):
-        self.install.text = "Error"
-        self.install.hovertext = "Retry"
-        self.install.config(
-            text="Error", bg=self.base.theme.border, activebackground=self.base.theme.biscuit
-        )
+        try:
+            self.install.text = "Error"
+            self.install.hovertext = "Retry"
+            self.install.config(
+                text="Error", bg=self.base.theme.border, activebackground=self.base.theme.biscuit
+            )
+        except Exception:
+            pass
 
     def set_installed(self):
-        self.install.set_command(self.uninstall_extension)
-
-        self.install.text = "Installed"
-        self.install.hovertext = "Uninstall"
-        self.install.config(
-            text="Installed",
-            bg=self.base.theme.border,
-            activebackground="#c61c1c",
-        )
+        try:
+            self.install.set_command(self.uninstall_extension)
+            self.install.text = "Installed"
+            self.install.hovertext = "Uninstall"
+            self.install.config(
+                text="Installed",
+                bg=self.base.theme.border,
+                activebackground="#c61c1c",
+            )
+        except Exception:
+            pass
 
     def set_uninstalled(self):
-        self.install.set_command(self.install_extension)
-
-        self.install.config(
-            text="Install", bg=self.base.theme.biscuit, activebackground=self.base.theme.biscuit
-        )
-        self.install.text = "Install"
-        self.install.hovertext = None
+        try:
+            self.install.set_command(self.install_extension)
+            self.install.config(
+                text="Install", bg=self.base.theme.biscuit, activebackground=self.base.theme.biscuit
+            )
+            self.install.text = "Install"
+            self.install.hovertext = None
+        except Exception:
+            pass
 
     def set_fetching(self):
-        self.install.config(text="Fetching...", bg=self.base.theme.biscuit_dark)
+        try:
+            self.install.config(text="Fetching...", bg=self.base.theme.biscuit_dark)
+        except Exception:
+            pass
 
     def set_selected(self, *_):
         self.master.set_selected(self)

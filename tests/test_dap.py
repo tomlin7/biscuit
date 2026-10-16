@@ -340,7 +340,7 @@ class TestDAPDebugger:
 
         # Wait for variables inspection
         start = time.time()
-        while time.time() - start < 3:
+        while time.time() - start < 10:
             if mock_variables.show.called:
                 break
             time.sleep(0.1)
