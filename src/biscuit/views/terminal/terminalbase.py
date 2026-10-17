@@ -5,7 +5,10 @@ from threading import Thread
 if os.name == "nt":
     from winpty import PtyProcess as PTY
 else:
-    from ptyprocess import PtyProcessUnicode as PTY
+    try:
+        from ptyprocess import PtyProcessUnicode as PTY
+    except ImportError:
+        PTY = None
 
 from biscuit.common.ui import Scrollbar
 
