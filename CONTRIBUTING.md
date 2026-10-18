@@ -36,6 +36,12 @@ $ source ./.venv/bin/activate
 > $ sudo pacman -Sy
 > $ sudo pacman -S base-devel cmake extra-cmake-modules fontconfig tcl tk
 > ```
+>
+> For Fedora based distributions,
+>
+> ```bash
+> $ sudo dnf install fontconfig fontconfig-devel cmake extra-cmake-modules gcc-c++ python3-devel tcl-devel tk-devel
+> ```
 
 Install dependencies using either **Poetry** or **uv**:
 

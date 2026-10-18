@@ -19,6 +19,8 @@ def register(provider_class: Type[AIProvider]) -> None:
     _providers[provider_class.name] = provider_class
 
 def get_provider_for_model(model_id: str) -> Optional[Type[AIProvider]]:
+    if not _providers:
+        _auto_register()
     for cls in _providers.values():
         if cls.supports_model(model_id):
             return cls
@@ -59,7 +61,11 @@ def _auto_register() -> None:
     from .anthropic import AnthropicProvider
     from .groq import GroqProvider
     from .minimax import MiniMaxProvider
+    from .ollama import OllamaProvider
+    from .openai_compatible import OpenAICompatibleProvider
     register(GeminiProvider)
     register(AnthropicProvider)
     register(GroqProvider)
     register(MiniMaxProvider)
+    register(OllamaProvider)
+    register(OpenAICompatibleProvider)

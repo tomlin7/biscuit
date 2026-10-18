@@ -307,4 +307,93 @@ class MCPServersItem(Item):
                   relief=tk.FLAT, font=self.base.settings.uifont).pack(side=tk.RIGHT, padx=2)
 
 
-# TODO list item with add to list button for taking list values
+class ListItem(Item):
+    """Dynamic list item widget for taking list of string values with add/remove controls."""
+
+    def __init__(
+        self,
+        master,
+        name="Example",
+        value=None,
+        callback=None,
+        description=None,
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(master, name, callback, *args, **kwargs)
+        self.description = description
+        self.value = list(value) if value else []
+
+        self.rows_frame = Frame(self, bg=self.bg)
+        self.rows_frame.pack(fill=tk.X, expand=True, pady=(5, 0))
+
+        add_frame = Frame(self, bg=self.bg)
+        add_frame.pack(fill=tk.X, expand=True, pady=(5, 0))
+
+        self.add_entry_var = tk.StringVar()
+        self.add_entry = tk.Entry(
+            add_frame,
+            textvariable=self.add_entry_var,
+            font=self.base.settings.uifont,
+            bg=self.highlightbg,
+            fg=self.fg,
+            relief=tk.FLAT,
+        )
+        self.add_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        self.add_entry.bind("<Return>", lambda _: self.add_item())
+
+        tk.Button(
+            add_frame,
+            text="Add",
+            command=self.add_item,
+            font=self.base.settings.uifont,
+            bg=self.highlightbg,
+            fg=self.fg,
+            relief=tk.FLAT,
+            cursor="hand2",
+        ).pack(side=tk.RIGHT)
+
+        self.render_rows()
+
+    def render_rows(self) -> None:
+        for child in self.rows_frame.winfo_children():
+            child.destroy()
+
+        for idx, item_val in enumerate(self.value):
+            row = Frame(self.rows_frame, bg=self.bg)
+            row.pack(fill=tk.X, expand=True, pady=2)
+
+            tk.Label(
+                row,
+                text=str(item_val),
+                font=self.base.settings.uifont,
+                bg=self.bg,
+                fg=self.fg,
+                anchor=tk.W,
+            ).pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+            tk.Button(
+                row,
+                text="✕",
+                command=lambda i=idx: self.remove_item(i),
+                font=self.base.settings.uifont,
+                bg=self.bg,
+                fg=self.fg,
+                relief=tk.FLAT,
+                cursor="hand2",
+            ).pack(side=tk.RIGHT)
+
+    def add_item(self, val: str = None) -> None:
+        new_val = val if val is not None else self.add_entry_var.get().strip()
+        if not new_val:
+            return
+        self.value.append(new_val)
+        self.add_entry_var.set("")
+        self.render_rows()
+        self.change()
+
+    def remove_item(self, index: int) -> None:
+        if 0 <= index < len(self.value):
+            self.value.pop(index)
+            self.render_rows()
+            self.change()

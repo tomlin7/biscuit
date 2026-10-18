@@ -2,7 +2,7 @@ import tkinter as tk
 
 from biscuit.common.ui import Frame
 
-from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem, PasswordItem, MCPServersItem
+from .items import CheckboxItem, DropdownItem, IntegerItem, StringItem, PasswordItem, MCPServersItem, ListItem
 
 
 class Section(Frame):
@@ -95,3 +95,9 @@ class Section(Frame):
         dropdown = CheckboxItem(self, name, default, callback)
         dropdown.pack(fill=tk.X, expand=True)
         self.items.append(dropdown)
+
+    def add_list(self, name="Example", default=None, callback=None, description=None):
+        item = ListItem(self, name, default, callback, description)
+        item.pack(fill=tk.X, expand=True)
+        self.items.append(item)
+        return item
