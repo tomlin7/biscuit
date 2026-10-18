@@ -127,6 +127,29 @@ def create_extension(
         print(f"Failed to scaffold extension: {exc}", file=sys.stderr)
         return False
 
+    if extension_dir.exists():
+        manifest_path = extension_dir / "extension.toml"
+        if not manifest_path.exists():
+            import toml
+            manifest_data = {
+                "extension": {
+                    "id": name,
+                    "name": extra_ctx.get("extension_name", name),
+                    "version": extra_ctx.get("version", "0.1.0"),
+                    "description": extra_ctx.get("description", "A Biscuit extension."),
+                    "author": extra_ctx.get("author", "tomlin7"),
+                },
+                "dependencies": {
+                    "python": [],
+                    "tools": [],
+                },
+            }
+            try:
+                with open(manifest_path, "w", encoding="utf-8") as f:
+                    toml.dump(manifest_data, f)
+            except Exception:
+                pass
+
     return extension_dir.exists()
 
 
