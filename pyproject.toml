@@ -34,6 +34,10 @@ dependencies = [
     "tree-sitter>=0.26.0,<0.27.0",
     "tree-sitter-language-pack>=1.12.5,<2.0.0",
     "legacy-cgi>=2.6.0; python_version >= '3.13'",
+    "cookiecutter>=2.6.0",
+    "dap-python>=1.0.1,<2.0.0; python_version >= '3.12'",
+    "pydantic>=2.10.0,<3.0.0",
+    "debugpy>=1.8.0,<2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -83,6 +87,9 @@ anthropic = "^0.117.1"
 tree-sitter = "^0.26.0"
 tree-sitter-language-pack = "^1.22.1"
 legacy-cgi = { version = ">=2.6.0", python = ">=3.13" }
+dap-python = { version = "^1.0.1", python = ">=3.12" }
+pydantic = "^2.10.0"
+debugpy = "^1.8.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"

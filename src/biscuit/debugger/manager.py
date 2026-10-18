@@ -116,11 +116,28 @@ class DebuggerManager:
             language (str): the language
             debugger (type[DebuggerBase]): the debugger type
         """
-        self.debuggers[language] = debugger
+        self.debuggers[language.lower()] = debugger
+
+    def register_dap_adapter(
+        self, language: str, adapter_command: list[str] | str
+    ) -> None:
+        """Register a DAP-based debugger for a language using the given adapter command.
+        Args:
+            language (str): the language (e.g. 'rust', 'go', 'python')
+            adapter_command (list[str] | str): command to start the DAP adapter executable
+        """
+        cmd = [adapter_command] if isinstance(adapter_command, str) else list(adapter_command)
+
+        class CustomDAPDebugger(DAPDebugger):
+            def __init__(self, manager: DebuggerManager):
+                super().__init__(manager)
+                self.adapter_command = list(cmd)
+
+        self.register_debugger(language.lower(), CustomDAPDebugger)
 
     def unregister_debugger(self, language: str) -> None:
         """Unregister a debugger for a specific language.
         Args:
             language (str): the language
         """
-        self.debuggers.pop(language, None)
+        self.debuggers.pop(language.lower(), None)

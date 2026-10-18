@@ -142,3 +142,115 @@ class TestDAPDebugger:
         )
         mock_callstack.show.assert_called_once_with([("my_function", "/path/to/main.py", 42)])
         assert debugger.current_frame_id == 100
+
+    def test_dap_client_integration(self):
+        mock_base = MagicMock()
+        mock_base.secondary_sidebar.debug.variables = MagicMock()
+        mock_base.secondary_sidebar.debug.callstack = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+
+        # Check client integration
+        assert debugger.client is not None
+        # Send request through DAPClient
+        seq = debugger.send_request("next", {"threadId": 1})
+        assert seq == 1
+        assert debugger.pending_requests[seq] == "next"
+
+    def test_handle_client_event_event_and_response(self):
+        mock_base = MagicMock()
+        mock_base.secondary_sidebar.debug.variables = MagicMock()
+        mock_base.secondary_sidebar.debug.callstack = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+        debugger.handle_event = MagicMock()
+        debugger.handle_response = MagicMock()
+
+        try:
+            from dap.protocol import Event
+        except ImportError:
+            from biscuit.common.dap.protocol import Event
+
+        # Test event dispatch
+        evt = Event(seq=1, type="event", event="stopped", body={"threadId": 2})
+        debugger.handle_client_event(evt)
+        debugger.handle_event.assert_called_once_with("stopped", {"threadId": 2})
+
+        # Test response dispatch
+        resp_evt = Event(
+            seq=2,
+            type="event",
+            event="response",
+            body={"command": "stackTrace", "success": True, "body": {}},
+        )
+        debugger.handle_client_event(resp_evt)
+        debugger.handle_response.assert_called_once_with("stackTrace", resp_evt.body)
+
+    def test_stepping_and_continue_pause(self):
+        mock_base = MagicMock()
+        mock_base.secondary_sidebar.debug.variables = MagicMock()
+        mock_base.secondary_sidebar.debug.callstack = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+        debugger.send_request = MagicMock()
+
+        # When paused
+        debugger.is_paused = True
+        debugger.current_thread_id = 5
+
+        debugger.step_in()
+        debugger.send_request.assert_called_with("stepIn", {"threadId": 5})
+
+        debugger.step_over()
+        debugger.send_request.assert_called_with("next", {"threadId": 5})
+
+        debugger.step_out()
+        debugger.send_request.assert_called_with("stepOut", {"threadId": 5})
+
+        debugger.continue_pause()
+        debugger.send_request.assert_called_with("continue", {"threadId": 5})
+        assert debugger.is_paused is False
+
+        debugger.continue_pause()
+        debugger.send_request.assert_called_with("pause", {"threadId": 5})
+
+    def test_evaluate_and_variable(self):
+        mock_base = MagicMock()
+        mock_base.secondary_sidebar.debug.variables = MagicMock()
+        mock_base.secondary_sidebar.debug.callstack = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+        debugger.send_request = MagicMock()
+
+        debugger.current_variables_ref = 42
+        debugger.set_variable("foo", "bar")
+        debugger.send_request.assert_called_with(
+            "setVariable", {"variablesReference": 42, "name": "foo", "value": "bar"}
+        )
+
+        debugger.current_frame_id = 7
+        debugger.evaluate("x + 1")
+        debugger.send_request.assert_called_with(
+            "evaluate", {"expression": "x + 1", "frameId": 7}
+        )
+
+    def test_register_dap_adapter(self):
+        mock_base = MagicMock()
+        manager = DebuggerManager(mock_base)
+
+        manager.register_dap_adapter("rust", ["lldb-dap", "--port", "1234"])
+        assert "rust" in manager.debuggers
+
+        rust_debugger = manager.request_debugger("rust")
+        assert isinstance(rust_debugger, DAPDebugger)
+        assert rust_debugger.adapter_command == ["lldb-dap", "--port", "1234"]
+
+    def test_python_debugger_is_dap(self):
+        from biscuit.debugger.python import PythonDebugger
+        mock_base = MagicMock()
+        manager = DebuggerManager(mock_base)
+
+        py_dbg = manager.request_debugger("python")
+        assert isinstance(py_dbg, DAPDebugger)
+        assert isinstance(py_dbg, PythonDebugger)
+        assert "debugpy.adapter" in " ".join(py_dbg.adapter_command)

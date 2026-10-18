@@ -75,8 +75,8 @@ class Debug(SideBarView):
         try:
             if self.selected_config:
                 config = self.configs[self.selected_config]
-                language = config["language"]
-                if debugger := self.manager.request_debugger(config["language"]):
+                language = config.get("language", "dap")
+                if debugger := self.manager.request_debugger(language):
                     debugger.launch_config(config)
                 else:
                     self.base.notifications.error(
