@@ -235,6 +235,46 @@ class ExtensionManager:
             self.base.logger.error(f"Installing extension '{ext.display_name}' failed: {e}")
             self.base.notifications.error(f"Installing '{ext.display_name}' failed.")
 
+    def update_extension(self, ext: ExtensionGUI) -> threading.Thread | None:
+        """Update an installed extension by pulling latest submodule changes."""
+        if hasattr(ext, "set_updating"):
+            ext.set_updating()
+
+        t = threading.Thread(
+            target=self.update_extension_thread, args=(ext,), daemon=True
+        )
+        t.start()
+        return t
+
+    def update_extension_thread(self, ext: ExtensionGUI) -> None:
+        ext_id = getattr(ext, "id", None) or getattr(ext, "partial_id", None)
+        display_name = getattr(ext, "display_name", ext_id or "Unknown")
+        submodule_repo = getattr(ext, "submodule_repo", None)
+
+        try:
+            if submodule_repo and submodule_repo.module_exists():
+                mod = submodule_repo.module()
+                mod.remotes.origin.pull()
+            elif submodule_repo:
+                submodule_repo.update(init=True, force=True)
+            elif self.extensions_repository:
+                self.extensions_repository.git.submodule("update", "--remote", "--merge", f"extensions/{ext_id}")
+
+            new_data = getattr(ext, "data", None) or self.available_extensions.get(ext_id, {})
+            self.installed[ext_id] = new_data
+            self.installed.dump()
+
+            if hasattr(ext, "set_installed"):
+                ext.set_installed()
+
+            self.base.logger.info(f"Updating extension '{display_name}' successful.")
+            self.base.notifications.info(f"Extension '{display_name}' has been updated!")
+        except Exception as e:
+            if hasattr(ext, "set_unavailable"):
+                ext.set_unavailable()
+            self.base.logger.error(f"Updating extension '{display_name}' failed: {e}")
+            self.base.notifications.error(f"Updating '{display_name}' failed: {e}")
+
     def load_extension(self, ext_id: str) -> None:
         if ext_id:
             # if an extension with same name is already loaded, skip
@@ -389,6 +429,64 @@ class ExtensionManager:
             return True
 
         return False
+
+    def update_extension_from_name(self, name: str) -> bool:
+        """Update an installed extension by name or submodule id."""
+        target_id = None
+        for ext_id in self.installed:
+            if ext_id == name or ext_id.lower() == name.lower():
+                target_id = ext_id
+                break
+            inst_data = self.installed[ext_id]
+            if isinstance(inst_data, dict) and inst_data.get("name", "").lower() == name.lower():
+                target_id = ext_id
+                break
+
+        if not target_id:
+            return False
+
+        avail_data = self.available_extensions.get(target_id, {})
+        from biscuit.views.extensions.extension import ExtensionGUI
+
+        ext = ExtensionGUI(
+            self.base.extensions_view.results,
+            target_id,
+            avail_data or self.installed[target_id],
+        )
+        t = self.update_extension(ext)
+        if t:
+            t.join()
+        return True
+
+    def check_outdated_extensions(self) -> dict[str, dict]:
+        """Check for installed extensions that have newer versions available.
+
+        Returns:
+            dict[str, dict]: mapping of ext_id -> dict with installed and available versions
+        """
+        outdated: dict[str, dict] = {}
+        for ext_id, inst_data in self.installed.items():
+            if ext_id in self.available_extensions:
+                avail_data = self.available_extensions[ext_id]
+                inst_ver = inst_data.get("version", "0.0.0") if isinstance(inst_data, dict) else "0.0.0"
+                avail_ver = avail_data.get("version", "0.0.0") if isinstance(avail_data, dict) else "0.0.0"
+                if self._compare_versions(avail_ver, inst_ver) > 0:
+                    outdated[ext_id] = {
+                        "name": avail_data.get("name", ext_id) if isinstance(avail_data, dict) else ext_id,
+                        "installed_version": inst_ver,
+                        "available_version": avail_ver,
+                        "data": avail_data,
+                    }
+        return outdated
+
+    @staticmethod
+    def _compare_versions(v1: str, v2: str) -> int:
+        try:
+            t1 = tuple(int(p) for p in str(v1).strip().lstrip("v").split(".") if p.isdigit())
+            t2 = tuple(int(p) for p in str(v2).strip().lstrip("v").split(".") if p.isdigit())
+            return (t1 > t2) - (t1 < t2)
+        except Exception:
+            return 0 if v1 == v2 else 1
 
     def find_extension_by_name(self, name: str) -> str:
         """Search for an extension by name."""
