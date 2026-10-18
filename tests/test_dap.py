@@ -254,3 +254,107 @@ class TestDAPDebugger:
         assert isinstance(py_dbg, DAPDebugger)
         assert isinstance(py_dbg, PythonDebugger)
         assert "debugpy.adapter" in " ".join(py_dbg.adapter_command)
+
+    def test_duplicate_initialized_ignored(self):
+        mock_base = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+        debugger.send_request = MagicMock()
+        debugger.breakpoints = {"main.py": {10}}
+
+        debugger.handle_event("initialized", {})
+        count_first = len(debugger.send_request.call_args_list)
+        assert count_first >= 3  # launch, setBreakpoints, configurationDone
+
+        # Second initialized (e.g. from adapter server) must be ignored
+        debugger.handle_event("initialized", {})
+        assert len(debugger.send_request.call_args_list) == count_first
+
+    def test_conditional_breakpoint_serialization(self):
+        from biscuit.debugger.breakpoints import Breakpoint
+        mock_base = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+        debugger.send_request = MagicMock()
+
+        bp = Breakpoint(line=15, condition="x > 10", hit_condition=2)
+        debugger.breakpoints = {"main.py": [bp]}
+
+        debugger.handle_event("initialized", {})
+        bp_calls = [
+            c for c in debugger.send_request.call_args_list if c.args[0] == "setBreakpoints"
+        ]
+        assert len(bp_calls) == 1
+        bps = bp_calls[0].args[1]["breakpoints"]
+        assert bps[0]["line"] == 15
+        assert bps[0]["condition"] == "x > 10"
+        assert bps[0]["hitCondition"] == "2"
+
+    def test_threads_manager_integration(self):
+        mock_base = MagicMock()
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+
+        debugger.handle_event("thread", {"reason": "started", "threadId": 10})
+        assert 10 in debugger.threads_manager.threads
+
+        debugger.handle_event("thread", {"reason": "exited", "threadId": 10})
+        assert 10 not in debugger.threads_manager.threads
+
+    def test_real_debugpy_end_to_end(self, tmp_path):
+        import time
+        script = tmp_path / "target.py"
+        script.write_text("x = 42\ny = x + 10\nprint('Done', y)\n")
+
+        mock_base = MagicMock()
+        mock_callstack = MagicMock()
+        mock_variables = MagicMock()
+        mock_base.secondary_sidebar.debug.callstack = mock_callstack
+        mock_base.secondary_sidebar.debug.variables = mock_variables
+        mock_base.debug.reset = MagicMock()
+        mock_base.debug.set_paused = MagicMock()
+        mock_base.debug.set_running = MagicMock()
+        mock_base.debug.set_stopped = MagicMock()
+        mock_base.debug.refresh = MagicMock()
+
+        manager = DebuggerManager(mock_base)
+        debugger = DAPDebugger(manager)
+        debugger.callstack = mock_callstack
+        debugger.variables = mock_variables
+        debugger.breakpoints = {str(script): {2}}
+
+        debugger.launch(str(script), str(tmp_path))
+
+        # Wait up to 5 seconds for breakpoint hit
+        start = time.time()
+        while time.time() - start < 5:
+            if debugger.is_paused:
+                break
+            time.sleep(0.1)
+
+        assert debugger.is_paused is True
+        assert debugger.current_thread_id is not None
+
+        # Wait for variables inspection
+        start = time.time()
+        while time.time() - start < 3:
+            if mock_variables.show.called:
+                break
+            time.sleep(0.1)
+
+        assert mock_variables.show.called
+        # Check that x = 42 was inspected
+        found_x = False
+        for call in mock_variables.show.call_args_list:
+            vars_dict = call.args[1] if len(call.args) > 1 else call.kwargs.get("d", {})
+            if "x" in vars_dict and str(vars_dict["x"]) == "42":
+                found_x = True
+                break
+        assert found_x, f"Expected variable 'x' == '42' in {mock_variables.show.call_args_list}"
+
+        # Resume execution
+        debugger.continue_pause()
+        time.sleep(0.5)
+        debugger.stop()
+        assert debugger.is_running is False
+
