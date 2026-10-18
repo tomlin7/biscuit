@@ -99,8 +99,11 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
             for i, data in enumerate(
                 app.extensions_manager.list_installed_extensions()
             ):
+                name = data[0]
+                details = data[1]
+                version_str = f" [v{details[3]}]" if details and len(details) > 3 and details[3] else ""
                 click.echo(
-                    f"[{i}] {data[0]}: " + ", ".join(data[1]) if data[1] else " ... "
+                    f"[{i}] {name}{version_str}: " + (", ".join(details) if details else " ... ")
                 )
 
         return f
@@ -133,7 +136,8 @@ def info(name: str | None) -> typing.Callable[[App], None]:
             click.echo(f"Name: {name}")
             click.echo(f"Author: {data[1]}")
             click.echo(f"Description: {data[2]}")
-            # TODO: click.echo(f"Version: {data[3]}")
+            if len(data) > 3 and data[3]:
+                click.echo(f"Version: {data[3]}")
         else:
             click.echo(f"Could not find extension {name}")
 
