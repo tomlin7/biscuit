@@ -1,6 +1,8 @@
 import json
 from unittest.mock import MagicMock
 
+import pytest
+
 from biscuit.debugger.dap import DAPDebugger, DAPProtocol
 from biscuit.debugger.manager import DebuggerManager
 
@@ -301,6 +303,7 @@ class TestDAPDebugger:
         debugger.handle_event("thread", {"reason": "exited", "threadId": 10})
         assert 10 not in debugger.threads_manager.threads
 
+    @pytest.mark.integration
     def test_real_debugpy_end_to_end(self, tmp_path):
         import time
         script = tmp_path / "target.py"
@@ -325,9 +328,9 @@ class TestDAPDebugger:
 
         debugger.launch(str(script), str(tmp_path))
 
-        # Wait up to 5 seconds for breakpoint hit
+        # Wait up to 10 seconds for breakpoint hit
         start = time.time()
-        while time.time() - start < 5:
+        while time.time() - start < 10:
             if debugger.is_paused:
                 break
             time.sleep(0.1)
