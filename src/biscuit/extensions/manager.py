@@ -168,15 +168,17 @@ class ExtensionManager:
                     refresh_count = 0
                 continue
 
-            path = self.load_queue.get()
-            name = path.name
-            sys.path.append(str(path))
+            ext_dir = self.load_queue.get()
+            name = ext_dir.name
+            sys.path.append(str(ext_dir))
 
-            path = path / "src" / name / "__init__.py"
+            path = ext_dir / "src" / name / "__init__.py"
             module_name = f"src.{name}"
 
             if not path.exists():
                 # submodule is not yet initialized. i.e not installed yet.
+                if str(ext_dir) in sys.path:
+                    sys.path.remove(str(ext_dir))
                 continue
 
             try:
@@ -195,8 +197,8 @@ class ExtensionManager:
                     self.installed.pop(name)
             finally:
                 # remove from PATH to prevent potential conflicts
-                if path.is_dir() and str(path) in sys.path:
-                    sys.path.remove(str(path))
+                if str(ext_dir) in sys.path:
+                    sys.path.remove(str(ext_dir))
 
 
     def install_extension(self, ext: ExtensionGUI) -> None:
