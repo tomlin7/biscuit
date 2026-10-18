@@ -1139,6 +1139,21 @@ class Text(BaseText):
     def clear_cursors(self):
         self.cursors = []
 
+    def request_hide_hover(self, delay: int = 300) -> None:
+        if hasattr(self, "_hover_hide_timer") and self._hover_hide_timer:
+            self.after_cancel(self._hover_hide_timer)
+        self._hover_hide_timer = self.after(delay, self._dismiss_hover_if_outside)
+
+    def cancel_hide_hover(self) -> None:
+        if hasattr(self, "_hover_hide_timer") and self._hover_hide_timer:
+            self.after_cancel(self._hover_hide_timer)
+            self._hover_hide_timer = None
+
+    def _dismiss_hover_if_outside(self) -> None:
+        if hasattr(self, "hover") and self.hover:
+            self.hover.hide()
+        self._hover_hide_timer = None
+
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)
 
