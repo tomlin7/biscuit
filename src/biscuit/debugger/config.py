@@ -5,6 +5,8 @@ from pathlib import Path
 
 import toml
 
+from .watcher import DebuggerConfigWatcher
+
 if typing.TYPE_CHECKING:
     from .manager import DebuggerManager
 
@@ -18,6 +20,7 @@ class ConfigLoader:
         self.config_found = False
         self.configs: list[dict] = []
         self.path: Path = None
+        self.watcher = DebuggerConfigWatcher(self)
 
         self.base.bind("<<DirectoryChanged>>", self.check, add=True)
 
@@ -25,8 +28,11 @@ class ConfigLoader:
         self.config_found = False
         self.configs = []
         if not self.base.active_directory:
+            self.watcher.stop_watch()
             self.refresh_debugger()
             return
+
+        self.watcher.start_watch()
 
         self.path = Path(self.base.active_directory) / ".biscuit" / CONFIG_FILE
         if not self.path.exists():
