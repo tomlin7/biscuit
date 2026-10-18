@@ -252,6 +252,100 @@ def update(name: str | None) -> typing.Callable[[App], None]:
     return f
 
 
+@ext.command("deps")
+@click.argument("name", required=False)
+@click.option("--install", is_flag=True, help="Install dependencies into isolated .deps")
+@click.option("--force", is_flag=True, help="Force reinstallation even if already present")
+def deps(name: str | None, install: bool, force: bool) -> typing.Callable[[App], None] | None:
+    """Inspect and manage extension dependencies.
+
+    Example::
+
+        biscuit ext deps
+        biscuit ext deps python
+        biscuit ext deps python --install
+        biscuit ext deps --install
+    """
+    from biscuit.extensions.dependencies import DependencyManager
+    dep_mgr = DependencyManager()
+
+    cwd = Path.cwd()
+    # Check if run directly in an extension development directory
+    if not name and ((cwd / "extension.toml").exists() or (cwd / "src").is_dir()):
+        python_pkgs, tools = dep_mgr.get_declared_dependencies(cwd)
+        ext_name = cwd.name
+        click.echo(f"Extension '{ext_name}' (local dev):")
+        if python_pkgs:
+            click.echo(f"  Python packages: {', '.join(python_pkgs)}")
+            deps_dir = cwd / ".deps"
+            installed = (deps_dir / ".installed").exists()
+            click.echo(f"  Isolated .deps status: {'Installed' if installed else 'Not installed'}")
+        else:
+            click.echo("  Python packages: (none declared)")
+
+        if tools:
+            missing = dep_mgr.check_tools(ext_name, tools)
+            tool_status = [f"{t} ({'found' if t not in missing else 'MISSING'})" for t in tools]
+            click.echo(f"  System tools: {', '.join(tool_status)}")
+        else:
+            click.echo("  System tools: (none declared)")
+
+        if install:
+            click.echo(f"Installing dependencies for '{ext_name}'...")
+            ok = dep_mgr.ensure_dependencies(cwd, force=force)
+            if ok:
+                click.echo("Dependencies successfully resolved.")
+            else:
+                click.echo("Failed to resolve dependencies.")
+        return None
+
+    def f(app: App, name=name, install=install, force=force) -> None:
+        mgr = app.extensions_manager
+        targets = []
+        if name:
+            target_dir = mgr.extension_dir / "extensions" / name
+            if not target_dir.exists():
+                click.echo(f"Extension '{name}' is not installed locally.")
+                return
+            targets.append((name, target_dir))
+        else:
+            for ext_id in mgr.installed:
+                target_dir = mgr.extension_dir / "extensions" / ext_id
+                if target_dir.exists():
+                    targets.append((ext_id, target_dir))
+
+        if not targets:
+            click.echo("No installed extensions found.")
+            return
+
+        for ext_id, ext_dir in targets:
+            python_pkgs, tools = mgr.dependency_manager.get_declared_dependencies(ext_dir)
+            click.echo(f"Extension '{ext_id}':")
+            if python_pkgs:
+                click.echo(f"  Python packages: {', '.join(python_pkgs)}")
+                deps_dir = ext_dir / ".deps"
+                installed = (deps_dir / ".installed").exists()
+                click.echo(f"  Isolated .deps status: {'Installed' if installed else 'Not installed'}")
+            else:
+                click.echo("  Python packages: (none declared)")
+
+            if tools:
+                missing = mgr.dependency_manager.check_tools(ext_id, tools)
+                tool_status = [f"{t} ({'found' if t not in missing else 'MISSING'})" for t in tools]
+                click.echo(f"  System tools: {', '.join(tool_status)}")
+            else:
+                click.echo("  System tools: (none declared)")
+
+            if install:
+                click.echo(f"Installing dependencies for '{ext_id}'...")
+                ok = mgr.ensure_dependencies(ext_dir, force=force)
+                if ok:
+                    click.echo(f"Dependencies for '{ext_id}' successfully installed.")
+                else:
+                    click.echo(f"Failed to install dependencies for '{ext_id}'.")
+
+    return f
+
 
 @ext.command()
 @click.argument("name", required=False)
@@ -375,6 +469,11 @@ def dev():
                 f"{init_py}. Ensure you are in the root of an extension repo."
             )
             return
+
+        from biscuit.extensions.dependencies import DependencyManager
+        dep_mgr = DependencyManager()
+        dep_mgr.ensure_dependencies(cwd)
+        dep_mgr.add_to_sys_path(cwd)
 
         for p in (str(cwd), str(src_dir)):
             if p not in sys.path:
@@ -562,9 +661,9 @@ Once the PR is reviewed and merged, your extension will appear in the Biscuit ma
     return None
 
 
-@ext.command()
+@ext.command("publish-update")
 @click.option("--skip-tests", is_flag=True, help="Skip running tests before preparing update instructions.")
-def update(skip_tests: bool):
+def publish_update(skip_tests: bool):
     """Guide for updating an *already published* extension.
 
     Produces a checklist for bumping your extension to a new version in the

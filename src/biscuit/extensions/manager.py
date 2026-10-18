@@ -14,6 +14,7 @@ from queue import Queue
 
 import toml
 
+from .dependencies import DependencyManager
 from .installed import Installed
 
 if typing.TYPE_CHECKING:
@@ -56,6 +57,10 @@ class ExtensionManager:
         self.installed = Installed(self)
         # currently loaded extensions
         self.loaded_extensions = {}
+        self.dependency_manager = DependencyManager(
+            logger=getattr(self.base, "logger", None),
+            notifications=getattr(self.base, "notifications", None),
+        )
         
         self.fetch_queue = Queue()
         self.fetching = threading.Event()
@@ -182,6 +187,9 @@ class ExtensionManager:
                 continue
 
             try:
+                self.ensure_dependencies(ext_dir)
+                self.dependency_manager.add_to_sys_path(ext_dir)
+
                 spec = util.spec_from_file_location(module_name, path)
                 module: extension = util.module_from_spec(spec)
                 spec.loader.exec_module(module)
@@ -191,6 +199,7 @@ class ExtensionManager:
 
                 self.base.logger.info(f"Extension '{name}' loaded.")
             except Exception as e:
+                self.dependency_manager.remove_from_sys_path(ext_dir)
                 self.base.logger.error(f"Failed to load extension '{name}': {e}")
                 self.base.notifications.error(f"Extension '{name}' failed: see logs.")
                 if name in self.installed:
@@ -222,6 +231,10 @@ class ExtensionManager:
         try:
             # `git submodule update --init extensions/{ext.submodule}`
             ext.submodule_repo.update(init=True, force=True)
+
+            ext_dir = self.extension_dir / "extensions" / ext.id
+            if ext_dir.exists():
+                self.ensure_dependencies(ext_dir)
 
             self.installed[ext.id] = ext.data
             self.installed.dump()
@@ -267,6 +280,10 @@ class ExtensionManager:
                 submodule_repo.update(init=True, force=True)
             elif self.extensions_repository:
                 self.extensions_repository.git.submodule("update", "--remote", "--merge", f"extensions/{ext_id}")
+
+            ext_dir = self.extension_dir / "extensions" / ext_id
+            if ext_dir.exists():
+                self.ensure_dependencies(ext_dir)
 
             new_data = getattr(ext, "data", None) or self.available_extensions.get(ext_id, {})
             self.installed[ext_id] = new_data
@@ -315,10 +332,11 @@ class ExtensionManager:
             else:
                 self.base.logger.error(f"Module path for '{ext.display_name}' doesn't exist: was this ever initialized?")
 
-            # TODO: because git still holds this empty sm directory, we can't remove it
-            # as a result, you can't install -> uninstall -> install the same extension
-            # `rmdir /s /q extensions/{ext.submodule}`
-            # Path(ext.submodule_repo.abspath).rmdir()
+            # Clean up isolated .deps directory
+            ext_dir = self.extension_dir / "extensions" / ext.id
+            if ext_dir.exists():
+                self.dependency_manager.remove_from_sys_path(ext_dir)
+                self.dependency_manager.clean_dependencies(ext_dir)
 
             self.unload_extension(ext.id)
             
@@ -336,8 +354,17 @@ class ExtensionManager:
             self.base.notifications.error(f"Failed to uninstall '{ext.display_name}': {str(e)}")
 
     def unload_extension(self, ext_id: str):
-        # TODO: unload the extension from queue if it's still there
-        ...
+        if ext_id in self.loaded_extensions:
+            ext = self.loaded_extensions.pop(ext_id)
+            if hasattr(ext, "uninstall"):
+                try:
+                    ext.uninstall()
+                except Exception as e:
+                    self.base.logger.error(f"Error during uninstall for '{ext_id}': {e}")
+
+        ext_dir = self.extension_dir / "extensions" / ext_id
+        if ext_dir.exists():
+            self.dependency_manager.remove_from_sys_path(ext_dir)
     
     def check_installed(self, ext: ExtensionGUI) -> bool:
         return ext.partial_id in self.installed
@@ -356,6 +383,26 @@ class ExtensionManager:
         self.loaded_extensions[name] = extension
         if hasattr(extension, 'install'):
             extension.install()
+
+    def ensure_dependencies(self, ext_dir: Path | str, force: bool = False) -> bool:
+        """Ensure isolated dependencies are installed and system tools are checked."""
+        return self.dependency_manager.ensure_dependencies(ext_dir, force=force)
+
+    def get_extension_manifest(self, ext_id: str) -> dict:
+        """Get manifest data for an extension from its directory or available extensions list."""
+        if hasattr(self, "extension_dir") and self.extension_dir:
+            ext_dir = self.extension_dir / "extensions" / ext_id
+            if ext_dir.exists():
+                return self.dependency_manager.load_manifest(ext_dir)
+        return self.available_extensions.get(ext_id, {})
+
+    def get_extension_dependencies(self, ext_id: str) -> tuple[list[str], list[str]]:
+        """Get declared dependencies (python_pkgs, tools) for an extension."""
+        if hasattr(self, "extension_dir") and self.extension_dir:
+            ext_dir = self.extension_dir / "extensions" / ext_id
+            if ext_dir.exists():
+                return self.dependency_manager.get_declared_dependencies(ext_dir)
+        return [], []
 
     def display_filtered_extensions(self, search_string: str) -> None:
         if self.available_extensions:
