@@ -107,7 +107,7 @@ class EventManager(GUIManager, ConfigManager):
         self.source_control.refresh()
 
     def clone_repo(self, url: str, new_window: bool = True) -> None:
-        path = filedialog.askdirectory()
+        path = filedialog.askdirectory(parent=self)
         if not path:
             return
 

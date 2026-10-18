@@ -70,6 +70,9 @@ class LineNumbers(Canvas):
         self.configure(width=width)
 
     def toggle_breakpoint(self, line):
+        if not getattr(self.master, "debugger", None):
+            return
+
         if line in self.breakpoints:
             self.breakpoints.remove(line)
         else:

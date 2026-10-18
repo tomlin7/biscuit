@@ -79,7 +79,9 @@ class Results(SideBarViewItem):
         if not self.fetch_queue.empty():
             name, data = self.fetch_queue.get()
             ext = ExtensionGUI(self, name, data)
-            if not self.filter_installed or (self.filter_installed and ext.installed):
+            if ext.installed and hasattr(self.master, "installed"):
+                self.master.installed.add_extension(ext)
+            elif not self.filter_installed:
                 self.extension_list.add(ext, fill=tk.X)
 
         self.after(5, self.gui_refresh_loop)
@@ -91,6 +93,8 @@ class Results(SideBarViewItem):
             self.content.update_idletasks()
 
         self.extension_list.items = []
+        if hasattr(self.master, "installed"):
+            self.master.installed.clear()
         self.fetching.set()
 
     def set_selected(self, extension: ExtensionGUI) -> None:
@@ -112,4 +116,9 @@ class Results(SideBarViewItem):
 
         self.clear()
         self.update_idletasks()
-        self.manager.display_filtered_extensions(self.master.searchbox.get())
+        query = self.master.searchbox.get().strip() if hasattr(self.master, "searchbox") else ""
+        if not query:
+            self.manager.display_recommended_extensions()
+        else:
+            self.manager.display_filtered_extensions(query)
+

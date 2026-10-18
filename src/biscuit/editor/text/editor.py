@@ -46,6 +46,8 @@ class TextEditor(BaseEditor):
         self.runmenu = None
         self.unsupported = False
         self.content_hash = ""
+        self.cursor_history: list[str] = []
+        self.cursor_history_index: int = -1
 
         if not self.standalone:
             self.__buttons__ = [
@@ -240,7 +242,23 @@ class TextEditor(BaseEditor):
         self.text.refresh()
         if not self.minimalist:
             self.minimap.redraw_cursor()
+        self.record_cursor_position()
         self.event_generate("<<Change>>")
+
+    def record_cursor_position(self, pos: str = None) -> None:
+        try:
+            if not pos and hasattr(self, "text"):
+                pos = self.text.index(tk.INSERT)
+            if not pos:
+                return
+            if not self.cursor_history or self.cursor_history[-1] != pos:
+                self.cursor_history.append(pos)
+                self.cursor_history_index = len(self.cursor_history) - 1
+                if len(self.cursor_history) > 100:
+                    self.cursor_history.pop(0)
+                    self.cursor_history_index -= 1
+        except Exception:
+            pass
 
     def on_scroll(self, *_) -> None:
         self.linenumbers.redraw()

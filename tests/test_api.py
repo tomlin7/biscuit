@@ -108,3 +108,28 @@ class TestAPIEndpoints:
     def test_assistant_init(self, mock_base):
         a = Assistant(mock_base)
         assert a.base == mock_base
+
+    def test_settings_endpoint(self, mock_base):
+        from biscuit.api.settings import Settings
+
+        mock_base.settings = MagicMock()
+        mock_base.settings.config = MagicMock()
+        mock_base.settings.config.data = {"existing_key": "val1"}
+        mock_base.settings.config.get_value.side_effect = lambda k, d=None: mock_base.settings.config.data.get(k, d)
+
+        s = Settings(mock_base)
+        assert s.get("existing_key") == "val1"
+        assert s.get("missing_key", "default_val") == "default_val"
+
+        s.set("new_key", "val2")
+        assert mock_base.settings.config.data["new_key"] == "val2"
+
+        s.register_setting("my_ext.enabled", "boolean", True, "Enable my extension")
+        registered = s.get_registered_settings()
+        assert "my_ext.enabled" in registered
+        assert registered["my_ext.enabled"]["default"] is True
+        assert mock_base.settings.config.data["my_ext.enabled"] is True
+
+        all_settings = s.get_all()
+        assert "existing_key" in all_settings
+

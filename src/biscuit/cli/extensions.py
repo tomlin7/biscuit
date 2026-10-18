@@ -99,8 +99,11 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
             for i, data in enumerate(
                 app.extensions_manager.list_installed_extensions()
             ):
+                name = data[0]
+                details = data[1]
+                version_str = f" [v{details[3]}]" if details and len(details) > 3 and details[3] else ""
                 click.echo(
-                    f"[{i}] {data[0]}: " + ", ".join(data[1]) if data[1] else " ... "
+                    f"[{i}] {name}{version_str}: " + (", ".join(details) if details else " ... ")
                 )
 
         return f
@@ -133,7 +136,8 @@ def info(name: str | None) -> typing.Callable[[App], None]:
             click.echo(f"Name: {name}")
             click.echo(f"Author: {data[1]}")
             click.echo(f"Description: {data[2]}")
-            # TODO: click.echo(f"Version: {data[3]}")
+            if len(data) > 3 and data[3]:
+                click.echo(f"Version: {data[3]}")
         else:
             click.echo(f"Could not find extension {name}")
 
@@ -184,6 +188,43 @@ def uninstall(name: str) -> typing.Callable[[App], None]:
             click.echo(f"Could not find extension {name}")
 
     return f
+
+
+@ext.command()
+@click.argument("name", required=False)
+def update(name: str | None) -> typing.Callable[[App], None]:
+    """Update an installed extension or all outdated extensions.
+
+    Example::
+
+        biscuit ext update
+        biscuit ext update extension_name
+
+    Args::
+
+        name (str, optional): The name of the extension to update
+    """
+
+    def f(app: App, name=name) -> None:
+        if name:
+            if app.extensions_manager.update_extension_from_name(name):
+                click.echo(f"Updated extension {name} successfully")
+            else:
+                click.echo(f"Could not find or update extension {name}")
+        else:
+            outdated = app.extensions_manager.check_outdated_extensions()
+            if not outdated:
+                click.echo("All installed extensions are up to date.")
+                return
+            click.echo(f"Found {len(outdated)} outdated extension(s). Updating...")
+            for ext_id, info in outdated.items():
+                if app.extensions_manager.update_extension_from_name(ext_id):
+                    click.echo(f"Updated {ext_id} to v{info['available_version']}")
+                else:
+                    click.echo(f"Failed to update {ext_id}")
+
+    return f
+
 
 
 @ext.command()
