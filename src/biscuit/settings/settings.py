@@ -5,7 +5,10 @@ import tkinter as tk
 import tkinter.font as tkfont
 import typing
 
-import tkextrafont as extra
+try:
+    import tkextrafont as extra
+except Exception:
+    extra = None
 
 from ..common import ActionSet, extract_commands, formalize_command
 from .bindings import Bindings
@@ -84,12 +87,14 @@ class Settings:
             pass
 
     def setup_font(self) -> None:
-        try:
-            self.iconfont = extra.Font(
-                file=self.resources.get_font("codicon.ttf"), family="codicon"
-            )
-        except tk.TclError:
-            pass
+        self.iconfont = None
+        if extra is not None:
+            try:
+                self.iconfont = extra.Font(
+                    file=self.resources.get_font("codicon.ttf"), family="codicon"
+                )
+            except Exception:
+                self.iconfont = None
 
         self.font = tkfont.Font(family=self.config.font[0], size=self.config.font[1])
         self.font_bold = tkfont.Font(

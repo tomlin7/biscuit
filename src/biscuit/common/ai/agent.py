@@ -154,6 +154,23 @@ You have access to tools that let you read, search, and modify the codebase:
             parts.append("\n".join(ctx_parts))
         return "\n".join(parts)
 
+    def _get_project_instructions(self) -> str:
+        instructions = []
+        if hasattr(self, "base") and hasattr(self.base, "config"):
+            custom = self.base.config.get_nested("ai.system_prompt", "")
+            if custom:
+                instructions.append(f"## Custom User Instructions\n{custom}")
+        if hasattr(self, "base") and hasattr(self.base, "active_directory") and self.base.active_directory:
+            for candidate in [".biscuit/agent.md", ".biscuit/instructions.md"]:
+                p = os.path.join(self.base.active_directory, candidate)
+                if os.path.exists(p):
+                    try:
+                        with open(p, "r", encoding="utf-8") as f:
+                            instructions.append(f"## Project Instructions ({candidate})\n{f.read()}")
+                    except Exception:
+                        pass
+        return "\n\n".join(instructions)
+
     def _get_system_instruction(self) -> str:
         active_editor = getattr(self.base.editorsmanager.active_editor, "path", "None")
         workspace_path = getattr(self.base, "active_directory", os.getcwd())
@@ -166,7 +183,9 @@ You have access to tools that let you read, search, and modify the codebase:
                 f"Attached Files: {', '.join(os.path.basename(f) for f in self.attached_files)}"
             )
         context = " | ".join(context_parts)
-        return f"{self.SYSTEM_PROMPT}\n\n## Current Context\n{context}"
+        base_sys = f"{self.SYSTEM_PROMPT}\n\n## Current Context\n{context}"
+        proj = self._get_project_instructions()
+        return f"{base_sys}\n\n{proj}" if proj else base_sys
 
     async def execute_task_with_streaming(self, description: str, **kwargs) -> AgentTask:
         if self.is_running:
@@ -294,3 +313,6 @@ You have access to tools that let you read, search, and modify the codebase:
 
     def stop_execution(self):
         self.is_running = False
+        self.is_aborted = True
+        self._stream_content('\n\n*[Execution stopped by user]*')
+

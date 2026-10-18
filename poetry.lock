@@ -2991,14 +2991,14 @@ typing-extensions = ">=4.14.1"
 
 [[package]]
 name = "pygments"
-version = "2.20.0"
+version = "2.21.0"
 description = "Pygments is a syntax highlighting package written in Python."
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev", "docs"]
 files = [
-    {file = "pygments-2.20.0-py3-none-any.whl", hash = "sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"},
-    {file = "pygments-2.20.0.tar.gz", hash = "sha256:6757cd03768053ff99f3039c1a36d6c0aa0b263438fcab17520b30a303a82b5f"},
+    {file = "pygments-2.21.0-py3-none-any.whl", hash = "sha256:2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"},
+    {file = "pygments-2.21.0.tar.gz", hash = "sha256:610ca751c9bc2492b38eb9a38a7fbc93edbbb2d7182edaf34e66ae493dee5c8c"},
 ]
 
 [package.extras]
@@ -3740,19 +3740,19 @@ tests = ["tree-sitter-html (==0.23.2)", "tree-sitter-javascript (==0.25.0)", "tr
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.22.1"
-description = "Pre-compiled tree-sitter grammars for 372 programming languages"
+version = "1.12.5"
+description = "Pre-compiled tree-sitter grammars for 306 programming languages"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tree_sitter_language_pack-1.22.1-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:d34a528bdd845d024c42da3fa43495c5d51c66151597ea6e46a1e9d79d863e89"},
-    {file = "tree_sitter_language_pack-1.22.1-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:b85116c8a8d7bbdca2e1be8068d6c3d4f0ac66e95b3310a6dbdd21fc87332323"},
-    {file = "tree_sitter_language_pack-1.22.1-cp310-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:852a0129463a94f898dda2aa9616fb19e598d9a0a9d3024ec9dc2bffb3fa7945"},
-    {file = "tree_sitter_language_pack-1.22.1-cp310-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:8a476b71c2f6c71f23b0b63f5ff6f72a8ba2c11901db63c360ebcaf1fc51af5c"},
-    {file = "tree_sitter_language_pack-1.22.1-cp310-abi3-win_amd64.whl", hash = "sha256:624d90afb8b210584bdcb871935385035872eeb12b26e41f487c0c8e1cab350b"},
-    {file = "tree_sitter_language_pack-1.22.1-cp310-abi3-win_arm64.whl", hash = "sha256:34e4e7a77d02d102abf95c7b088962fcd56825bd48eabbe80f93e1d43665e7ad"},
-    {file = "tree_sitter_language_pack-1.22.1.tar.gz", hash = "sha256:e0cba16312890fc7747da5fb5edb7aabfc68aac7db0ebab5212986a67cd01ed4"},
+    {file = "tree_sitter_language_pack-1.12.5-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:c3613f26f1660d757626b50e2f7fd50ce269193ec9e8e0ad699ae47bf03fd664"},
+    {file = "tree_sitter_language_pack-1.12.5-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:30010156a06179e7c179ae51ba6f2da148bd0bc364f750bcc5ef81ab1c4e0c53"},
+    {file = "tree_sitter_language_pack-1.12.5-cp310-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:1609b9cc2518e4657f6ef80a8ac533a8f5a04d4a74135d744fb171eca434e6eb"},
+    {file = "tree_sitter_language_pack-1.12.5-cp310-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:de5ec0c1b184176443fc6093f07fe5a1c403ee51ec8593bde372bd5960819941"},
+    {file = "tree_sitter_language_pack-1.12.5-cp310-abi3-win_amd64.whl", hash = "sha256:eb58ecee144247d8cde52a567bbe5c6f950ed1d2c416295e00f0e31389f1751e"},
+    {file = "tree_sitter_language_pack-1.12.5-cp310-abi3-win_arm64.whl", hash = "sha256:41399bdd45eb4ced5840ddf1d44aa02fe69763c867bd7286aa20d182bfe397af"},
+    {file = "tree_sitter_language_pack-1.12.5.tar.gz", hash = "sha256:e6ca8fd7f1cc24496f2fff73156d0ce20284ce56e18a84f4c0c10388a1e4c951"},
 ]
 
 [package.dependencies]
@@ -4122,4 +4122,4 @@ docs = ["mkdocs", "mkdocs-material", "mkdocstrings-python"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "2aceae62f08104a8f79085311af07ff746ddf29e6aca68044575f5477967a260"
+content-hash = "c0749d3a444fed691e61eb6695e044dd110a7fce09df88024f32c01680015882"

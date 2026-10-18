@@ -38,20 +38,30 @@ class LanguageServerManager:
         self, tab: Text, resp: typing.List[lsp.SymbolInformation]
     ) -> None:
         try:
-            self.base.settings.symbols_actionset.update(
-                [
-                    (
-                        i.name,
-                        lambda _, i=i: self.base.goto_location_in_active_editor(
-                            decode_position(i.location.range.start)
-                        ),
-                    )
-                    for i in resp
-                ]
-            )
+            flat_symbols = []
+            def extract_symbols(items):
+                for item in items:
+                    pos = getattr(item, "location", None)
+                    if pos:
+                        start_pos = decode_position(pos.range.start)
+                    elif hasattr(item, "range"):
+                        start_pos = decode_position(item.range.start)
+                    elif isinstance(item, dict) and "range" in item:
+                        start_pos = decode_position(item["range"]["start"])
+                    else:
+                        start_pos = (1, 0)
+                    name = item.name if hasattr(item, "name") else item.get("name", "symbol")
+                    flat_symbols.append((
+                        name,
+                        lambda _, p=start_pos: self.base.goto_location_in_active_editor(p)
+                    ))
+                    children = getattr(item, "children", None) or (item.get("children") if isinstance(item, dict) else None)
+                    if children:
+                        extract_symbols(children)
+            extract_symbols(resp)
+            self.base.settings.symbols_actionset.update(flat_symbols)
             self.base.palette.update()
-        except:
-            # TODO: currently only supports lsp.SymbolInformation; implement this for lsp.DocumentSymbol
+        except Exception:
             pass
 
     def register_langserver(self, language: str, command: str) -> None:
