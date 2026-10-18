@@ -51,5 +51,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['../resources/windows/logo.png'],
+    icon=['../resources/linux/logo.png'],
 )

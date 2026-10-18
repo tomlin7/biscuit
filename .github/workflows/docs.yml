@@ -1,0 +1,44 @@
+name: Documentation Verification
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "docs/**"
+      - "tests/test_docs.py"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "docs/**"
+      - "tests/test_docs.py"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-docs:
+    name: Validate Mintlify Docs & Assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install test runner
+        run: |
+          uv pip install --system pytest
+
+      - name: Run Docs Integrity Tests
+        run: |
+          pytest tests/test_docs.py -v

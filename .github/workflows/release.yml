@@ -1,0 +1,138 @@
+name: Release Pipeline
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-python:
+    name: Build Python Wheel & Sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Build packages
+        run: |
+          uv build
+
+      - name: Upload Python artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: python-dist
+          path: dist/*
+
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies & PyInstaller
+        run: |
+          uv venv
+          uv pip install -e .
+          uv pip install pyinstaller
+
+      - name: Build standalone executable
+        run: |
+          uv run pyinstaller scripts/windows.spec
+
+      - name: Compress Windows bundle
+        run: |
+          Compress-Archive -Path dist\biscuit.exe -DestinationPath dist\biscuit-windows-x86_64.zip
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-dist
+          path: dist\biscuit-windows-x86_64.zip
+
+  build-linux:
+    name: Build Linux Executable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install system prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev tcl-dev tk-dev fontconfig libfontconfig1-dev cmake build-essential
+
+      - name: Install dependencies & PyInstaller
+        run: |
+          uv venv
+          uv pip install -e .
+          uv pip install pyinstaller
+
+      - name: Build standalone executable
+        run: |
+          uv run pyinstaller scripts/linux.spec
+
+      - name: Compress Linux bundle
+        run: |
+          tar -czvf dist/biscuit-linux-x86_64.tar.gz -C dist biscuit
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-dist
+          path: dist/biscuit-linux-x86_64.tar.gz
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: [build-python, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: release-artifacts
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: |
+            release-artifacts/python-dist/*
+            release-artifacts/windows-dist/*
+            release-artifacts/linux-dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
