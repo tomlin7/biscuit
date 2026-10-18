@@ -137,29 +137,46 @@ def _parse_one_message(
 ) -> t.Optional[t.Iterable[t.Union[Request, Response, Event]]]:
     """Parse a single DAP message from a bytearray."""
     
+    # Strip any leading junk before Content-Length
+    raw_bytes = bytes(response_buf)
+    lower_buf = raw_bytes.lower()
+    cl_idx = lower_buf.find(b"content-length:")
+    if cl_idx > 0:
+        del response_buf[:cl_idx]
+        raw_bytes = bytes(response_buf)
+
     if b"\r\n\r\n" not in response_buf:
         return None
 
-    header_lines, raw_content = bytes(response_buf).split(b"\r\n\r\n", 1)
+    header_lines, raw_content = raw_bytes.split(b"\r\n\r\n", 1)
 
-    headers = {"content-type": "application/vscode-jsonrpc; charset=utf-8"}
+    headers = {}
     for header_line in header_lines.split(b"\r\n"):
         if b":" in header_line:
-            key, value = header_line.decode("ascii").split(": ", 1)
-            headers[key.lower()] = value
+            key, _, value = header_line.decode("ascii", errors="replace").partition(":")
+            headers[key.strip().lower()] = value.strip()
     
-    assert "content-length" in headers
+    if "content-length" not in headers:
+        del response_buf[:len(header_lines) + 4]
+        return None
+
+    try:
+        content_length = int(headers["content-length"])
+    except ValueError:
+        del response_buf[:len(header_lines) + 4]
+        return None
     
     # Content-Type and encoding (default if not provided)
     if "content-type" in headers:
-        content_type, metadata = _parse_content_type(headers["content-type"])
-        assert content_type == "application/vscode-jsonrpc"
-        encoding = metadata.get("charset", "utf-8")
+        try:
+            content_type, metadata = _parse_content_type(headers["content-type"])
+            encoding = metadata.get("charset", "utf-8")
+        except Exception:
+            encoding = "utf-8"
     else:
         # Default to utf-8 if no content-type header
         encoding = "utf-8"
 
-    content_length = int(headers["content-length"])
     if len(raw_content) < content_length:
         return None
     unused_bytes_count = len(raw_content) - content_length

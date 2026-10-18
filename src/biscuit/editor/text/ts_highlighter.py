@@ -341,8 +341,10 @@ class TreeSitterHighlighter:
         for i, color in enumerate(self.bracket_colors):
             c = f"#{color}" if not str(color).startswith("#") else color
             self.text.tag_configure(f"bracket.depth{i}", foreground=c)
-            self.text.tag_raise(f"bracket.depth{i}")
-        self.text.tag_raise("activebracket")
+        try:
+            self.text.tag_raise("activebracket")
+        except Exception:
+            pass
 
     def clear(self) -> None:
         """Remove all Tree-sitter highlight tags."""

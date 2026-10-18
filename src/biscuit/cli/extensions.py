@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util as _importlib_util
 import re
 import sys
+import time
 import typing
 from pathlib import Path
 
@@ -53,8 +54,13 @@ def process_extension_commands(ctx, processors):
     app.withdraw()
     print("\nLoading extensions...")
 
-    while not app.extensions_manager.extensions_loaded:
-        ...
+    start_time = time.time()
+    while not app.extensions_manager.extensions_loaded and time.time() - start_time < 5:
+        try:
+            app.update()
+        except Exception:
+            pass
+        time.sleep(0.05)
 
     if isinstance(processors, list):
         for processor in processors:
@@ -88,7 +94,8 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
             for i, data in enumerate(
                 app.extensions_manager.list_extensions_by_user(user)
             ):
-                click.echo(f"[{i}] {data[0]}: " + data[1][-1])
+                desc = data[1].get("description", "") if isinstance(data[1], dict) else data[1][-1]
+                click.echo(f"[{i}] {data[0]}: " + desc)
 
         return f
 
@@ -101,10 +108,15 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
             ):
                 name = data[0]
                 details = data[1]
-                version_str = f" [v{details[3]}]" if details and len(details) > 3 and details[3] else ""
-                click.echo(
-                    f"[{i}] {name}{version_str}: " + (", ".join(details) if details else " ... ")
-                )
+                if isinstance(details, dict):
+                    version_str = f" [v{details['version']}]" if "version" in details and details["version"] else ""
+                    desc = details.get("description", " ... ")
+                    click.echo(f"[{i}] {name}{version_str}: {desc}")
+                else:
+                    version_str = f" [v{details[3]}]" if details and len(details) > 3 and details[3] else ""
+                    click.echo(
+                        f"[{i}] {name}{version_str}: " + (", ".join(details) if details else " ... ")
+                    )
 
         return f
     else:
@@ -112,7 +124,14 @@ def list_ext(user, installed) -> typing.Callable[[App], typing.List[str]]:
 
         def f(app: App) -> None:
             for i, data in enumerate(app.extensions_manager.list_all_extensions()):
-                click.echo(f"[{i}] {data[0]}: " + ", ".join(data[1][1:]))
+                name = data[0]
+                details = data[1]
+                if isinstance(details, dict):
+                    version_str = f" [v{details['version']}]" if "version" in details and details["version"] else ""
+                    desc = details.get("description", "")
+                    click.echo(f"[{i}] {name}{version_str}: {desc}")
+                else:
+                    click.echo(f"[{i}] {data[0]}: " + ", ".join(data[1][1:]))
 
         return f
 
@@ -133,11 +152,18 @@ def info(name: str | None) -> typing.Callable[[App], None]:
     def f(app: App, name=name) -> None:
         data = app.extensions_manager.find_extension_by_name(name)
         if data:
-            click.echo(f"Name: {name}")
-            click.echo(f"Author: {data[1]}")
-            click.echo(f"Description: {data[2]}")
-            if len(data) > 3 and data[3]:
-                click.echo(f"Version: {data[3]}")
+            if isinstance(data, dict):
+                click.echo(f"Name: {data.get('name', name)}")
+                click.echo(f"Author: {data.get('author', '')}")
+                click.echo(f"Description: {data.get('description', '')}")
+                if "version" in data and data["version"]:
+                    click.echo(f"Version: {data['version']}")
+            else:
+                click.echo(f"Name: {name}")
+                click.echo(f"Author: {data[1]}")
+                click.echo(f"Description: {data[2]}")
+                if len(data) > 3 and data[3]:
+                    click.echo(f"Version: {data[3]}")
         else:
             click.echo(f"Could not find extension {name}")
 
@@ -411,7 +437,7 @@ def test(keyword: str | None, verbose: bool):
 
     click.echo("Running pytest…")
 
-    args: list[str] = []
+    args: list[str] = ["--rootdir", str(cwd), str(cwd / "tests")]
     if verbose:
         args.append("-v")
     if keyword:
@@ -420,7 +446,10 @@ def test(keyword: str | None, verbose: bool):
     exit_code = pytest.main(args, plugins=None)
 
     if exit_code == 0:
-        click.echo("All tests passed! 🎉")
+        try:
+            click.echo("All tests passed! 🎉")
+        except UnicodeEncodeError:
+            click.echo("All tests passed!")
     else:
         click.echo(f"Tests failed with exit code {exit_code}.")
         sys.exit(exit_code)

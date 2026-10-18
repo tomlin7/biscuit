@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 from typing import Callable
 
@@ -83,6 +84,13 @@ class Notifications(Toplevel):
         Args:
             text (str): notification text"""
 
+        if threading.current_thread() != threading.main_thread():
+            try:
+                self.after(0, lambda: self.info(text, actions))
+            except Exception:
+                pass
+            return None
+
         instance = Notification(
             self, Icons.INFO, text=text, fg=self.base.theme.biscuit, actions=actions
         )
@@ -104,6 +112,13 @@ class Notifications(Toplevel):
         Args:
             text (str): notification text"""
 
+        if threading.current_thread() != threading.main_thread():
+            try:
+                self.after(0, lambda: self.warning(text, actions))
+            except Exception:
+                pass
+            return None
+
         instance = Notification(
             self, Icons.WARNING, text=text, fg="yellow", actions=actions
         )
@@ -124,6 +139,13 @@ class Notifications(Toplevel):
 
         Args:
             text (str): notification text"""
+
+        if threading.current_thread() != threading.main_thread():
+            try:
+                self.after(0, lambda: self.error(text, actions))
+            except Exception:
+                pass
+            return None
 
         instance = Notification(self, Icons.ERROR, text=text, fg="red", actions=actions)
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
