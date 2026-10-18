@@ -13,6 +13,16 @@ if typing.TYPE_CHECKING:
 # TODO update minimap when scrollbar is used
 # TODO rewrite the handling with proper yview (percentage change)
 class Minimap(Frame):
+    def update_from_yview(self, first: float, last: float) -> None:
+        try:
+            height = self.cw.winfo_height()
+            if height > 1:
+                target_y = int(float(first) * height)
+                self.cw.coords("slider", 0, target_y)
+                self.yvalue = target_y
+        except Exception:
+            pass
+
     def __init__(self, master: TextEditor, text: Text = None, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.tw = text

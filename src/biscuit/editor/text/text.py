@@ -486,13 +486,30 @@ class Text(BaseText):
         self.active_start_line = 1
         self.active_end_line = int(self.index(tk.END).split(".")[0])
 
-    # TODO this wont work properly
-    # write a custom ast, parser for bracket matching
     def highlight_current_brackets(self):
         self.tag_remove("activebracket", "1.0", tk.END)
         i = self.index(tk.INSERT)
-        start, end = None, None
 
+        # 1. Try AST-based bracket matching via tree-sitter highlighter
+        if hasattr(self, "highlighter") and hasattr(self.highlighter, "get_matching_bracket"):
+            try:
+                parts = i.split(".")
+                line, col = int(parts[0]), int(parts[1])
+                match = self.highlighter.get_matching_bracket(line, col)
+                current_pos = f"{line}.{col}"
+                if not match and col > 0:
+                    match = self.highlighter.get_matching_bracket(line, col - 1)
+                    current_pos = f"{line}.{col - 1}"
+                if match and current_pos:
+                    match_pos = f"{match[0]}.{match[1]}"
+                    self.tag_add("activebracket", current_pos, current_pos + "+1c")
+                    self.tag_add("activebracket", match_pos, match_pos + "+1c")
+                    return
+            except Exception:
+                pass
+
+        # 2. Fallback to basic regexp search
+        start, end = None, None
         try:
             if start := self.search(
                 r"[\{\[\(\)\]\}]", i, i + " linestart", backwards=True, regexp=True
@@ -1105,8 +1122,22 @@ class Text(BaseText):
             return "break"
 
     def multi_selection(self, *args):
-        # TODO: multi cursor editing
+        if not hasattr(self, "cursors"):
+            self.cursors = []
+        # Add current insert position as cursor
+        pos = self.index(tk.INSERT)
+        if pos not in self.cursors:
+            self.cursors.append(pos)
         return "break"
+
+    def add_cursor(self, index: str):
+        if not hasattr(self, "cursors"):
+            self.cursors = []
+        if index not in self.cursors:
+            self.cursors.append(index)
+
+    def clear_cursors(self):
+        self.cursors = []
 
     def open_find_replace(self, *_):
         self.base.findreplace.show(self)

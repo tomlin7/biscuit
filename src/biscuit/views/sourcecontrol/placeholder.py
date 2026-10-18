@@ -18,7 +18,24 @@ class ChangesTreePlaceholder(Frame):
             text="Open a folder containing a git repository."
         ).grid(row=0, sticky=tk.EW)
 
-        # TODO add init repo button if no repo is found for opened folder
+        self.init_btn = IconLabelButton(
+            self,
+            text="Initialize Repository",
+            icon=Icons.GIT_COMMIT,
+            callback=self.init_repo,
+            pady=2,
+            highlighted=True,
+        )
+        self.init_btn.grid(row=1, pady=5, sticky=tk.EW)
+
+    def init_repo(self, *_) -> None:
+        if hasattr(self.base, "git") and hasattr(self.base.git, "repo") and hasattr(self.base, "active_directory") and self.base.active_directory:
+            import git
+            try:
+                git.Repo.init(self.base.active_directory)
+                self.base.git.check_git()
+            except Exception:
+                pass
 
     #     open_btn = IconLabelButton(
     #         self,

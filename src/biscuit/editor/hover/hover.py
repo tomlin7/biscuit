@@ -35,7 +35,17 @@ class Hover(Toplevel):
 
         self.withdraw()
 
-    def update_position(self, pos: str, tab: Text):
+    def calculate_size(self, docs: str) -> tuple[int, int]:
+        """Calculate responsive width and height based on documentation text length and lines."""
+        lines = docs.strip().split("\n")
+        line_count = len(lines)
+        max_line_len = max((len(l) for l in lines), default=20)
+
+        width = min(max(max_line_len * 8 + 30, 220), 550)
+        height = min(max(line_count * 22 + 40, 50), 220)
+        return width, height
+
+    def update_position(self, pos: str, tab: Text, width: int | None = None, height: int | None = None):
         tab.update_idletasks()
 
         pos_x, pos_y = tab.winfo_rootx(), tab.winfo_rooty()
@@ -46,9 +56,16 @@ class Hover(Toplevel):
             return
 
         bbx_x, bbx_y, _, _ = bbox
-        self.geometry(
-            "+{}+{}".format(pos_x + bbx_x - 1, pos_y + bbx_y - self.winfo_height())
-        )
+        h = height if height else self.winfo_height()
+        w = width if width else self.winfo_width()
+        top_y = pos_y + bbx_y - h
+        if top_y < 0:
+            top_y = pos_y + bbx_y + 20
+
+        if width and height:
+            self.geometry(f"{w}x{h}+{pos_x + bbx_x - 1}+{top_y}")
+        else:
+            self.geometry(f"+{pos_x + bbx_x - 1}+{top_y}")
 
     def show(self, tab: Text, response: HoverResponse) -> None:
         if not response or not (response.text or response.docs):
@@ -69,11 +86,11 @@ class Hover(Toplevel):
             self.hide()
             return
 
+        w, h = self.calculate_size(docs)
         self.renderer.render_markdown(docs)
         self.update_idletasks()
         self.deiconify()
-        self.update()
-        self.update_position(response.location, tab)
+        self.update_position(response.location, tab, width=w, height=h)
 
     def hide(self, *_) -> None:
         self.withdraw()

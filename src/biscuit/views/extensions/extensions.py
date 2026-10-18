@@ -4,6 +4,7 @@ from biscuit.common.icons import Icons
 from biscuit.common.ui import Entry
 
 from ..sidebar_view import SideBarView
+from .installed import Installed
 from .results import Results
 
 
@@ -24,6 +25,8 @@ class Extensions(SideBarView):
         self.searchbox = Entry(self, hint="Search extensions")
         self.searchbox.pack(fill=tk.X, anchor=tk.N, padx=10, pady=7)
 
+        self.installed = Installed(self)
+        self.add_item(self.installed)
         self.results = Results(self)
         self.add_item(self.results)
         self.add_action(Icons.FILTER, self.results.toggle_installed)

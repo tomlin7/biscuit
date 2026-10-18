@@ -237,6 +237,13 @@ class Results(Frame):
 
             return [file_path, occurrences, line_number]
 
+    def refresh_open_editors(self, file_path: str = None) -> None:
+        if hasattr(self.base, "editorsmanager") and hasattr(self.base.editorsmanager, "editors"):
+            for editor in getattr(self.base.editorsmanager, "active_editors", []):
+                if hasattr(editor, "path") and (file_path is None or editor.path == file_path):
+                    if hasattr(editor, "reload"):
+                        editor.reload()
+
     def replace(self) -> None:
         """
         Replace all occurrences from the search with new text
