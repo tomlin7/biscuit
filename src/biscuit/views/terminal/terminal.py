@@ -11,6 +11,7 @@ from .menu import TerminalMenu
 from .shells import SHELLS, Default, create_custom_shell_class
 from .tabs import Tabs
 from .terminalbase import TerminalBase
+from .queue import TerminalCommandQueue
 
 
 def get_home_directory() -> str:
@@ -50,6 +51,9 @@ class Terminal(PanelView):
         self.tabs.grid(row=0, column=1, padx=(1, 0), sticky=tk.NS)
 
         self.active_terminals = []
+        self.command_queue = TerminalCommandQueue(
+            lambda cmd: self.active_terminal.run_command(cmd) if self.active_terminal else None
+        )
 
         self.run_actionset = ActionSet(
             "Run Command in Terminal",
@@ -151,11 +155,12 @@ class Terminal(PanelView):
 
     def run_command(self, command: str) -> None:
         if not self.active_terminal:
-            default = self.add_default_terminal()
-            default.run_command(command)
-            # this won't work, TODO: implement a queue for commands
+            self.command_queue.set_ready(False)
+            self.command_queue.put(command)
+            self.add_default_terminal()
+            self.command_queue.set_ready(True)
         else:
-            self.active_terminal.run_command(command)
+            self.command_queue.put(command)
 
     def run_external_console(self, command: str) -> None:
         "Run a command in external console."
