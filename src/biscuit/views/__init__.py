@@ -4,6 +4,7 @@ from .debug import Debug
 from .explorer import Explorer
 from .extensions import Extensions
 from .github import GitHub
+from .gitgraph import GitGraph
 from .logs import Logs
 from .outline import Outline
 from .panelview import PanelView

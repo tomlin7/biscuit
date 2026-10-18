@@ -50,9 +50,8 @@ class FindReplace(Toplevel):
         buttons.grid(row=0, column=2, sticky=tk.NSEW, pady=2)
         IconButton(buttons, Icons.ARROW_UP, self.prev_match).pack(side=tk.LEFT)
         IconButton(buttons, Icons.ARROW_DOWN, self.next_match).pack(side=tk.LEFT)
-        IconButton(buttons, Icons.LIST_SELECTION).pack(
-            side=tk.LEFT
-        )  # TODO add finding from selection
+        self.find_in_sel_btn = IconButton(buttons, Icons.LIST_SELECTION, self.toggle_find_in_selection)
+        self.find_in_sel_btn.pack(side=tk.LEFT)
         IconButton(buttons, Icons.CLOSE, self.hide).pack(side=tk.LEFT)
 
         # replace
@@ -236,3 +235,9 @@ class FindReplace(Toplevel):
             self.next_match()
             self.replace()
         self.text.mark_set("insert", f"1.0 + {current}c")
+
+    def toggle_find_in_selection(self, *_):
+        self.find_in_selection = not getattr(self, "find_in_selection", False)
+        if hasattr(self, "find_in_sel_btn"):
+            self.find_in_sel_btn.set_color(self.base.theme.biscuit if self.find_in_selection else None)
+        return self.find_in_selection

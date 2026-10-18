@@ -33,6 +33,7 @@ dependencies = [
     "anthropic>=0.117.0,<0.118.0",
     "tree-sitter>=0.26.0,<0.27.0",
     "tree-sitter-language-pack>=1.12.5,<2.0.0",
+    "legacy-cgi>=2.6.0; python_version >= '3.13'",
 ]
 
 [project.optional-dependencies]
@@ -59,14 +60,14 @@ hintedtext = "^0.6.0"
 watchdog = "^6.0.0"
 filetype = "^1.2.0"
 gitpython = "^3.1.57"
-pygments = "^2.20.0"
+pygments = "^2.21.0"
 toml = "^0.10.2"
 sv-ttk = "^2.6.1"
 pillow = "^12.3.0"
 requests = "^2.34.2"
 pyperclip = "^1.11.0"
 tkinterweb = {version = "^4.25.3", extras = ["full"]}
-mistune = "^3.3.3"
+mistune = "^3.3.4"
 chardet = "^7.4.3"
 pywinpty = { version = "^3.0.5", platform = "win32" }
 python-tkdnd = "^0.2.1"
@@ -78,9 +79,10 @@ tarts = "^0.20.1"
 editorconfig = "^0.17.1"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", platform = "linux" }
-anthropic = "^0.117.0"
+anthropic = "^0.117.1"
 tree-sitter = "^0.26.0"
 tree-sitter-language-pack = "^1.12.5"
+legacy-cgi = { version = ">=2.6.0", python = ">=3.13" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"
@@ -93,7 +95,7 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.6.1"
-mkdocstrings-python = "^2.0.5"
+mkdocstrings-python = "^2.0.9"
 mkdocs-material = "^9.7.7"
 
 [dependency-groups]

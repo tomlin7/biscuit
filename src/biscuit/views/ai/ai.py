@@ -36,6 +36,7 @@ class AI(SideBarView):
         self.menu = self._build_menu()
 
         self.add_action(Icons.REFRESH, self.new_chat)
+        self.add_action(Icons.DEBUG_STOP, self.stop_chat)
         self.add_action(Icons.COPY, self.copy_chat)
         self.add_action(Icons.ELLIPSIS, self.menu.show)
         self.add_action(Icons.SETTINGS, self.open_settings)
@@ -175,3 +176,6 @@ class AI(SideBarView):
                 self.base.notifications.info(msg)
         except Exception as e:
             print(f"Error showing stats: {e}")
+    def stop_chat(self) -> None:
+        if self.agent:
+            self.agent.stop_execution()

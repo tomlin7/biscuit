@@ -175,6 +175,55 @@ class EditorPane(Frame):
         self._update_tab_bar_visibility()
         return tab
 
+    def reorder_tab(self, tab: Tab, new_index: int) -> None:
+        """Reorder tab to a new position in active_tabs and update display."""
+        if tab not in self.active_tabs:
+            return
+        old_index = self.active_tabs.index(tab)
+        new_index = max(0, min(new_index, len(self.active_tabs) - 1))
+        if old_index == new_index:
+            return
+        self.active_tabs.pop(old_index)
+        self.active_tabs.insert(new_index, tab)
+        for t in self.active_tabs:
+            t.pack_forget()
+        for t in self.active_tabs:
+            t.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1), in_=self.tab_container)
+
+    def drag_tab(self, tab: Tab, root_x: int) -> None:
+        """Handle dragging tab over neighboring tabs to swap positions."""
+        if len(self.active_tabs) <= 1:
+            return
+        idx = self.active_tabs.index(tab)
+        try:
+            if idx > 0 and root_x < (self.active_tabs[idx - 1].winfo_rootx() + self.active_tabs[idx - 1].winfo_width() // 2):
+                self.reorder_tab(tab, idx - 1)
+            elif idx < len(self.active_tabs) - 1 and root_x > (self.active_tabs[idx + 1].winfo_rootx() + self.active_tabs[idx + 1].winfo_width() // 2):
+                self.reorder_tab(tab, idx + 1)
+        except Exception:
+            pass
+
+    def scroll_tabs_left(self, *_) -> None:
+        """Scroll tab bar left (shift first tab to end)."""
+        if len(self.active_tabs) > 1:
+            first = self.active_tabs.pop(0)
+            self.active_tabs.append(first)
+            for t in self.active_tabs:
+                t.pack_forget()
+            for t in self.active_tabs:
+                t.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1), in_=self.tab_container)
+
+    def scroll_tabs_right(self, *_) -> None:
+        """Scroll tab bar right (shift last tab to front)."""
+        if len(self.active_tabs) > 1:
+            last = self.active_tabs.pop()
+            self.active_tabs.insert(0, last)
+            for t in self.active_tabs:
+                t.pack_forget()
+            for t in self.active_tabs:
+                t.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1), in_=self.tab_container)
+
+
     def close_tab(self, tab: Tab) -> None:
         if e := tab.editor:
             if e.content and e.content.editable and e.content.unsaved_changes:

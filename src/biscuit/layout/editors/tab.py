@@ -63,8 +63,15 @@ class Tab(Frame):
         self.bind("<Button-1>", self.select)
         self.name.bind("<Button-1>", self.select)
 
+        self.bind("<B1-Motion>", self.on_drag)
+        self.name.bind("<B1-Motion>", self.on_drag)
+
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)
+
+    def on_drag(self, event: tk.Event) -> None:
+        if hasattr(self.master, "drag_tab"):
+            self.master.drag_tab(self, event.x_root)
 
     def close(self, *_) -> None:
         self.master.close_tab(self)
