@@ -48,15 +48,18 @@ class TabScroll(Frame):
         self.left.pack(side=tk.LEFT, fill=tk.BOTH)
         self.right.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(0, 1))
 
-    # Implement scroll_left and scroll_right methods
     def scroll_left(self) -> None:
-        if hasattr(self.master, "tabs") and hasattr(self.master.tabs, "xview_scroll"):
+        if hasattr(self.master, "active_pane") and self.master.active_pane:
+            self.master.active_pane.scroll_tabs_left()
+        elif hasattr(self.master, "tabs") and hasattr(self.master.tabs, "xview_scroll"):
             self.master.tabs.xview_scroll(1, "units")
         elif hasattr(self.master, "scroll_tabs"):
             self.master.scroll_tabs(1)
 
     def scroll_right(self) -> None:
-        if hasattr(self.master, "tabs") and hasattr(self.master.tabs, "xview_scroll"):
+        if hasattr(self.master, "active_pane") and self.master.active_pane:
+            self.master.active_pane.scroll_tabs_right()
+        elif hasattr(self.master, "tabs") and hasattr(self.master.tabs, "xview_scroll"):
             self.master.tabs.xview_scroll(-1, "units")
         elif hasattr(self.master, "scroll_tabs"):
             self.master.scroll_tabs(-1)

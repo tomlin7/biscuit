@@ -56,19 +56,22 @@ class ExtensionGUI(Frame):
         )
 
         # TODO: don't do this here, do it when install is called
-        self.submodule_repo = Submodule(
-            s.repo,
-            s.binsha,
-            s.mode,
-            s.path,
-            s.name,
-            s.parent_commit,
-            s.url,
-            # hack to get gitpython working with our setup
-            # since gitpython is stupid and doesn't let us modify the default target branch easily
-            # i.e it has default=`master` and we use `main`
-            "refs/heads/main",
-        )
+        try:
+            self.submodule_repo = Submodule(
+                s.repo,
+                s.binsha,
+                s.mode,
+                s.path,
+                s.name,
+                s.parent_commit,
+                s.url,
+                # hack to get gitpython working with our setup
+                # since gitpython is stupid and doesn't let us modify the default target branch easily
+                # i.e it has default=`master` and we use `main`
+                "refs/heads/main",
+            )
+        except Exception:
+            self.submodule_repo = s
 
         self.path = Path(self.base.extensiondir) / "extensions" / self.id
         # GUI ----------------
@@ -118,9 +121,12 @@ class ExtensionGUI(Frame):
         self.install = HoverChangeButton(self.subcontainer, "Install", padx=10)
         self.install.config(font=("Segoi UI", 8), pady=2)
         self.install.pack(side=tk.RIGHT, fill=tk.X)
-        
+
         if self.installed:
-            self.set_installed()
+            if self.outdated:
+                self.set_outdated()
+            else:
+                self.set_installed()
         else:
             self.set_uninstalled()
 
@@ -136,6 +142,32 @@ class ExtensionGUI(Frame):
         self.hoveroff()
 
     @property
+    def installed_version(self) -> str | None:
+        if self.id in self.manager.installed:
+            inst = self.manager.installed[self.id]
+            if isinstance(inst, dict):
+                return inst.get("version")
+        return None
+
+    @property
+    def outdated(self) -> bool:
+        if not self.installed:
+            return False
+        inst_ver = self.installed_version
+        if not inst_ver or not self.version:
+            return False
+        return self._compare_versions(self.version, inst_ver) > 0
+
+    @staticmethod
+    def _compare_versions(v1: str, v2: str) -> int:
+        try:
+            t1 = tuple(int(p) for p in str(v1).strip().lstrip("v").split(".") if p.isdigit())
+            t2 = tuple(int(p) for p in str(v2).strip().lstrip("v").split(".") if p.isdigit())
+            return (t1 > t2) - (t1 < t2)
+        except Exception:
+            return 0 if v1 == v2 else 1
+
+    @property
     def installed(self):
         return self.submodule_repo and self.submodule_repo.module_exists() and (
             (self.manager.extension_dir / f"extensions/{self.id}/.git").exists()
@@ -146,6 +178,22 @@ class ExtensionGUI(Frame):
 
     def install_extension(self, *_):
         self.manager.install_extension(self)
+
+    def update_extension(self, *_):
+        self.manager.update_extension(self)
+
+    def set_outdated(self):
+        self.install.set_command(self.update_extension)
+        self.install.text = "Update"
+        self.install.hovertext = f"v{self.version}"
+        self.install.config(
+            text="Update",
+            bg="#2e7d32",
+            activebackground="#1b5e20",
+        )
+
+    def set_updating(self):
+        self.install.config(text="Updating...", bg=self.base.theme.biscuit_dark)
 
     def set_unavailable(self):
         self.install.text = "Error"

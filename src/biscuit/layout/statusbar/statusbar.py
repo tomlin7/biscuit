@@ -139,6 +139,33 @@ class Statusbar(Frame):
         )
 
         # ---------------------------------------------------------------------
+        self.zoom_actionset = self.create_actionset(
+            "Change editor font size",
+            "zoom:",
+            [
+                ("8pt (Small)", lambda e=None: self.change_font_size(8)),
+                ("10pt (Normal)", lambda e=None: self.change_font_size(10)),
+                ("12pt (Default)", lambda e=None: self.change_font_size(12)),
+                ("14pt (Medium)", lambda e=None: self.change_font_size(14)),
+                ("16pt (Large)", lambda e=None: self.change_font_size(16)),
+                ("18pt (Extra Large)", lambda e=None: self.change_font_size(18)),
+                ("20pt (Huge)", lambda e=None: self.change_font_size(20)),
+            ],
+            pinned=[
+                ["custom: {}pt", self.change_custom_font_size],
+            ],
+        )
+        current_font_size = 12
+        if hasattr(self.base, "config") and hasattr(self.base.config, "font"):
+            current_font_size = self.base.config.font[1]
+        self.font_size_btn = self.add_button(
+            text=f"{current_font_size}pt",
+            callback=self.base.commands.change_font_size,
+            description="Change editor font size",
+            side=tk.RIGHT,
+        )
+
+        # ---------------------------------------------------------------------
         items = [
             (aliases[0], self.change_language(aliases[0]))
             for _, _, aliases, _, _ in LEXERS.values()
@@ -390,3 +417,30 @@ class Statusbar(Frame):
         return lambda _: self.base.editorsmanager.active_editor.content.text.highlighter.change_language(
             language
         )
+
+    def change_font_size(self, size: int) -> None:
+        try:
+            size = int(size)
+        except (ValueError, TypeError):
+            return
+
+        if hasattr(self.base, "settings") and hasattr(self.base.settings, "font"):
+            try:
+                self.base.settings.font.configure(size=size)
+            except Exception:
+                pass
+
+        if hasattr(self.base, "editorsmanager"):
+            editor = self.base.editorsmanager.active_editor
+            if editor and hasattr(editor, "content") and hasattr(editor.content, "set_fontsize"):
+                try:
+                    editor.content.set_fontsize(size)
+                except Exception:
+                    pass
+
+        self.font_size_btn.set_text(f"{size}pt")
+
+    def change_custom_font_size(self, text: str = None) -> None:
+        if text and text.strip().isnumeric():
+            self.change_font_size(int(text.strip()))
+

@@ -177,12 +177,16 @@ class SettingsEditor(BaseEditor):
         Args:
             term (str): the search term"""
         
-        term = term.lower()
+        term = term.lower().strip()
+        total_visible = 0
         
         for section in self.sections:
             visible_items = 0
             for item in section.items:
-                if term in item.name.lower():
+                desc = getattr(item, "description", None)
+                matches_name = term in item.name.lower()
+                matches_desc = desc is not None and term in str(desc).lower()
+                if not term or matches_name or matches_desc:
                     item.pack(fill=tk.X, expand=True)
                     visible_items += 1
                 else:
@@ -190,8 +194,12 @@ class SettingsEditor(BaseEditor):
             
             if visible_items > 0:
                 section.pack(fill=tk.X, expand=True)
+                total_visible += visible_items
             else:
                 section.pack_forget()
+
+        if total_visible == 0 and term:
+            self.show_no_results()
 
     def show_no_results(self):
         """Show no results found message in the settings editor"""

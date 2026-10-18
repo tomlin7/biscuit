@@ -3,13 +3,17 @@ title: "Installation"
 description: "Install Biscuit on Windows, Linux, or macOS via pip, uv, or from source."
 ---
 
-## Prerequisites
-
-Biscuit requires **Python 3.10 or later** (Python 3.11+ recommended for development).
+Biscuit requires **Python 3.10 or later** with Tkinter support (Python 3.11+ recommended).
 
 <Note>
-  On Linux, you may need to install additional system packages. See the
-  [Linux Prerequisites](#linux-prerequisites) section below.
+  Tkinter is required by Biscuit. Some Python distributions (especially on Linux or minimal Python installs) do not bundle Tkinter by default.
+  Please install Tkinter in advance:
+  - **Debian / Ubuntu**: `sudo apt install python3-tk`
+  - **Fedora / RHEL**: `sudo dnf install python3-tkinter`
+  - **Arch Linux**: `sudo pacman -S tk`
+  - **macOS (Homebrew)**: `brew install python-tk`
+
+  On **Python 3.13+**, standard library `cgi` was removed; Biscuit automatically installs and uses `legacy-cgi` for compatibility.
 </Note>
 
 ## Install via pip (recommended)
@@ -76,6 +80,13 @@ On Debian-based distributions:
 
 ```bash
 sudo apt install fontconfig libfontconfig1 libfontconfig1-dev cmake cmake-data extra-cmake-modules build-essential
+pip install scikit-build
+```
+
+On Fedora-based distributions:
+
+```bash
+sudo dnf install fontconfig fontconfig-devel cmake extra-cmake-modules gcc-c++ python3-devel tcl-devel tk-devel
 pip install scikit-build
 ```
 

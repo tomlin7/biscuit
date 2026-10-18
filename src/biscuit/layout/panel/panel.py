@@ -32,7 +32,13 @@ class Panel(Frame):
 
         self.views: list[PanelView] = []
 
-        self.default_views = [Problems(self), Logs(self), Inspect(self), Terminal(self)]
+        self.default_views = [
+            Problems(self),
+            Logs(self),
+            Inspect(self),
+            Terminal(self),
+            GitGraph(self),
+        ]
         self.add_views(self.default_views)
 
     def add_views(self, views: list[PanelView]) -> None:
@@ -106,6 +112,17 @@ class Panel(Frame):
         """Shows the logs if its hidden/minimized."""
 
         self.set_active_view(self.logger)
+        self.show_panel()
+
+    @property
+    def gitgraph(self) -> GitGraph:
+        return self.default_views[4]
+
+    def show_gitgraph(self, *_) -> None:
+        """Shows the git graph if its hidden/minimized."""
+
+        self.set_active_view(self.gitgraph)
+        self.gitgraph.refresh()
         self.show_panel()
 
     def toggle_panel(self, *_) -> None:

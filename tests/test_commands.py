@@ -160,3 +160,16 @@ class TestCommands:
     def test_show_terminal(self, commands):
         commands.show_terminal()
         commands.base.panel.show_terminal.assert_called_once()
+
+    def test_safe_dialog_options(self, commands):
+        commands.base.theme = MagicMock()
+        commands.base.theme.secondary_background = "#252526"
+        commands.base.theme.primary_foreground = "#cccccc"
+        commands.base.option_add = MagicMock()
+
+        opts = commands._safe_dialog_options(title="Test")
+        assert opts["parent"] == commands.base
+        assert opts["title"] == "Test"
+        commands.base.option_add.assert_any_call("*Dialog*background", "#252526")
+        commands.base.option_add.assert_any_call("*Dialog*foreground", "#cccccc")
+
