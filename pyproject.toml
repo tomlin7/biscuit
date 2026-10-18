@@ -29,7 +29,7 @@ dependencies = [
     "tarts>=0.20.1,<0.21.0",
     "editorconfig>=0.17.1,<0.18.0",
     "tkextrafont>=0.6.3,<0.7.0; sys_platform == 'win32'",
-    "ptyprocess>=0.7.0,<0.8.0; sys_platform == 'linux'",
+    "ptyprocess>=0.7.0,<0.8.0; sys_platform != 'win32'",
     "anthropic>=0.117.0,<0.118.0",
     "tree-sitter>=0.26.0,<0.27.0",
     "tree-sitter-language-pack>=1.12.5,<2.0.0",
@@ -82,7 +82,7 @@ click = "^8.4.2"
 tarts = "^0.20.1"
 editorconfig = "^0.17.1"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
-ptyprocess = { version = "^0.7.0", platform = "linux" }
+ptyprocess = { version = "^0.7.0", markers = "sys_platform != 'win32'" }
 anthropic = "^0.117.1"
 tree-sitter = "^0.26.0"
 tree-sitter-language-pack = "^1.22.1"
