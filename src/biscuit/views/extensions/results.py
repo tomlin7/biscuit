@@ -112,4 +112,9 @@ class Results(SideBarViewItem):
 
         self.clear()
         self.update_idletasks()
-        self.manager.display_filtered_extensions(self.master.searchbox.get())
+        query = self.master.searchbox.get().strip() if hasattr(self.master, "searchbox") else ""
+        if not query:
+            self.manager.display_recommended_extensions()
+        else:
+            self.manager.display_filtered_extensions(query)
+
