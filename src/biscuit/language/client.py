@@ -67,9 +67,11 @@ class LangServerClient:
         self.root_dir = root_dir
         self._counter = itertools.count()
 
-        # TODO: Make this configurable from settings
-        # when all tabs using this lsp are closed, delete the lsp client after deletion_delay milliseconds
-        self.deletion_delay = 10000
+        # Configurable language server deletion delay and options from settings
+        delay = 10000
+        if hasattr(master, "base") and hasattr(master.base, "config"):
+            delay = master.base.config.get_nested("lsp.deletion_delay", 10000)
+        self.deletion_delay = delay
         self.tabs_opened: set[Text] = set()
         self._count = 0
 
