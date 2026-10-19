@@ -34,7 +34,7 @@ dependencies = [
     "tree-sitter>=0.26.0,<0.27.0",
     "tree-sitter-language-pack>=1.12.5,<2.0.0",
     "legacy-cgi>=2.6.0; python_version >= '3.13'",
-    "cookiecutter>=2.6.0",
+    "cookiecutter>=2.7.1",
     "dap-python>=1.0.1,<2.0.0; python_version >= '3.12'",
     "pydantic>=2.10.0,<3.0.0",
     "debugpy>=1.8.0,<2.0.0",
