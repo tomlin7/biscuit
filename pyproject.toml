@@ -78,7 +78,7 @@ python-tkdnd = "^0.2.1"
 psutil = "^7.2.2"
 google-genai = "^2.29.0"
 sortedcontainers = "^2.4.0"
-click = "^8.4.2"
+click = "^8.5.0"
 tarts = "^0.20.1"
 editorconfig = "^0.17.1"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
