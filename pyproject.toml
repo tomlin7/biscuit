@@ -73,7 +73,7 @@ pyperclip = "^1.11.0"
 tkinterweb = {version = "^4.25.3", extras = ["full"]}
 mistune = "^3.3.4"
 chardet = "^7.4.3"
-pywinpty = { version = "^3.0.5", platform = "win32" }
+pywinpty = { version = "^3.1.0", platform = "win32" }
 python-tkdnd = "^0.2.1"
 psutil = "^7.2.2"
 google-genai = "^2.29.0"
