@@ -223,16 +223,25 @@ You have access to tools that let you read, search, and modify the codebase:
 
         return task
 
+    def _get_message_history(self) -> List[Dict[str, Any]]:
+        """Copy native history, falling back to the existing text-only history."""
+        if self._native_history:
+            return list(self._native_history)
+        return [
+            {
+                "role": "user" if msg["role"] == "User" else "assistant",
+                "content": msg["content"],
+            }
+            for msg in self.chat_history[-10:]
+        ]
+
     async def _run_chat_session(self, task: AgentTask, inputs: str):
         """Execute task with provider-native tool calling and real-time streaming."""
         tools_map = self._tools_map()
         system_instruction = self._get_system_instruction()
         tool_descs = self._all_tool_descs()
 
-        messages: List[Dict[str, Any]] = list(self._native_history)
-        if not messages:
-            for msg in self.chat_history[-10:]:
-                messages.append({"role": "user" if msg["role"] == "User" else "assistant", "content": msg["content"]})
+        messages = self._get_message_history()
         messages.append({"role": "user", "content": inputs})
 
         for i in range(self.max_steps):
