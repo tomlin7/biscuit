@@ -131,7 +131,8 @@ class MiniMaxProvider(AIProvider):
                 raise RuntimeError("Invalid MiniMax API key") from e
             raise RuntimeError(f"MiniMax API error: {e}") from e
 
-    def _parse_response(self, message: anthropic.types.Message) -> ProviderResponse:
+    @staticmethod
+    def _parse_response(message: anthropic.types.Message) -> ProviderResponse:
         """Expose text and tools while retaining every native block for replay."""
         tool_calls = [
             ToolCallData(name=block.name, args=dict(block.input), id=block.id)
