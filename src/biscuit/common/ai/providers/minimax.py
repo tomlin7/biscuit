@@ -14,11 +14,16 @@ MINIMAX_ANTHROPIC_BASE_URL = "https://api.minimax.io/anthropic"
 class MiniMaxProvider(AIProvider):
     name = "minimax"
     _models: ClassVar[Dict[str, str]] = {
-        "MiniMax M1": "minimax-m1",
-        "MiniMax Text-01": "minimax-text-01",
+        "MiniMax M3.1 Flash": "MiniMax-M3.1-Flash",
+        "MiniMax M3": "MiniMax-M3",
     }
 
-    def __init__(self, api_key: str, model: str):
+    @classmethod
+    def supports_model(cls, model_id: str) -> bool:
+        # Keep explicitly configured legacy/custom IDs out of the default catalog.
+        return model_id.lower().startswith("minimax-")
+
+    def __init__(self, api_key: str, model: str = "MiniMax-M3.1-Flash"):
         super().__init__(api_key, model)
         self._client: Optional[anthropic.AsyncAnthropic] = None
 
@@ -67,10 +72,17 @@ class MiniMaxProvider(AIProvider):
                 continue
 
             if role == "assistant" and tool_calls:
-                blocks = []
-                if content:
+                # Preserve native blocks, including thinking signatures.
+                blocks = list(content) if isinstance(content, list) else []
+                if content and isinstance(content, str):
                     blocks.append({"type": "text", "text": content})
                 for tc in tool_calls:
+                    if any(
+                        block.get("type") == "tool_use"
+                        and block.get("id") == tc.get("id")
+                        for block in blocks
+                    ):
+                        continue
                     blocks.append({
                         "type": "tool_use",
                         "id": tc.get("id", f"toolu_{i}"),
@@ -102,15 +114,22 @@ class MiniMaxProvider(AIProvider):
                 system=system_instruction,
                 tools=anthrow_tools or anthropic.NOT_GIVEN,
                 messages=anthrow_messages,
-                temperature=0,
+                # Omit thinking/effort: Flash defaults to adaptive/max;
+                # M3 defaults to thinking off on this API.
             ) as stream:
-                current_text = ""
                 async for event in stream:
                     if event.type == "text" and stream_callback:
                         stream_callback(event.text)
-                        current_text += event.text
 
                 final_message = await stream.get_final_message()
+                current_text = "".join(
+                    block.text for block in final_message.content
+                    if block.type == "text"
+                )
+                assistant_content = [
+                    block.model_dump(exclude_none=True)
+                    for block in final_message.content
+                ]
 
                 input_tokens = 0
                 output_tokens = 0
@@ -125,6 +144,7 @@ class MiniMaxProvider(AIProvider):
                 if tool_calls:
                     return ProviderResponse(
                         text=current_text,
+                        assistant_content=assistant_content,
                         tool_calls=[
                             ToolCallData(
                                 name=tc.name,
@@ -139,6 +159,7 @@ class MiniMaxProvider(AIProvider):
 
                 return ProviderResponse(
                     text=current_text,
+                    assistant_content=assistant_content,
                     input_tokens=input_tokens,
                     output_tokens=output_tokens,
                 )
@@ -152,14 +173,15 @@ class MiniMaxProvider(AIProvider):
             raise RuntimeError(f"MiniMax API error: {e}") from e
 
     def process_message(self, message: str) -> str:
-        import anthropic as _anthropic
-        client = _anthropic.Anthropic(
+        with anthropic.Anthropic(
             api_key=self.api_key,
             base_url=MINIMAX_ANTHROPIC_BASE_URL,
+        ) as client:
+            response = client.messages.create(
+                model=self.model,
+                max_tokens=8000,
+                messages=[{"role": "user", "content": message}],
+            )
+        return "".join(
+            block.text for block in response.content if block.type == "text"
         )
-        response = client.messages.create(
-            model=self.model,
-            max_tokens=1000,
-            messages=[{"role": "user", "content": message}],
-        )
-        return response.content[0].text if response.content else ""

@@ -19,6 +19,8 @@ class ProviderResponse:
     tool_calls: Optional[List[ToolCallData]] = None
     input_tokens: int = 0
     output_tokens: int = 0
+    # Optional native blocks for providers that require complete tool history.
+    assistant_content: Optional[List[Dict[str, Any]]] = None
 
 
 @dataclass
