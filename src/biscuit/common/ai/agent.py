@@ -78,6 +78,7 @@ You have access to tools that let you read, search, and modify the codebase:
         self.is_running = False
         self.current_task: Optional[AgentTask] = None
         self.chat_history: List[Dict[str, str]] = []
+        self._native_history: List[Dict[str, Any]] = []
         self.attached_files: List[str] = []
 
         self.max_steps = 20
@@ -228,9 +229,10 @@ You have access to tools that let you read, search, and modify the codebase:
         system_instruction = self._get_system_instruction()
         tool_descs = self._all_tool_descs()
 
-        messages: List[Dict[str, Any]] = []
-        for msg in self.chat_history[-10:]:
-            messages.append({"role": "user" if msg["role"] == "User" else "assistant", "content": msg["content"]})
+        messages: List[Dict[str, Any]] = list(self._native_history)
+        if not messages:
+            for msg in self.chat_history[-10:]:
+                messages.append({"role": "user" if msg["role"] == "User" else "assistant", "content": msg["content"]})
         messages.append({"role": "user", "content": inputs})
 
         for i in range(self.max_steps):
@@ -260,10 +262,19 @@ You have access to tools that let you read, search, and modify the codebase:
             thought_duration = time.time() - thought_start
             self._stream_content(f"[END_THOUGHT] {thought_duration:.1f}")
 
-            assistant_msg: Dict[str, Any] = {"role": "assistant", "content": response.text or ""}
+            assistant_msg: Dict[str, Any] = {
+                "role": "assistant",
+                "content": (
+                    response.assistant_content
+                    if response.assistant_content is not None
+                    else response.text or ""
+                ),
+            }
 
             if not response.tool_calls:
                 messages.append(assistant_msg)
+                if response.assistant_content is not None:
+                    self._native_history = messages
                 self.chat_history.append({"role": "User", "content": inputs})
                 self.chat_history.append({"role": "AI", "content": response.text or ""})
                 return

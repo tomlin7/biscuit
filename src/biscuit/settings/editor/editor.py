@@ -101,11 +101,10 @@ class SettingsEditor(BaseEditor):
         ai = self.add_section("AI")
 
         _auto_register()
-        models = list_models()
+        current = self.base.config.get_nested("ai.default_model", "gemini-2.5-flash")
+        models = list_models(current)
         model_ids = list(models.values())
         model_names = list(models.keys())
-
-        current = self.base.config.get_nested("ai.default_model", "gemini-2.5-flash")
         try:
             default_idx = model_ids.index(current)
         except ValueError:

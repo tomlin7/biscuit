@@ -28,7 +28,9 @@ class AI(SideBarView):
 
         self.title.grid_forget()
         _auto_register()
-        self.available_models = list_models()
+        self.available_models = list_models(
+            self.base.config.get_nested("ai.default_model", "")
+        )
         self.current_model = self._load_default_model()
 
         self.top.grid_columnconfigure(self.column, weight=1)
@@ -44,14 +46,12 @@ class AI(SideBarView):
         self.add_chat()
 
     def _load_default_model(self) -> str:
-        models = list_models()
-        ids = list(models.values())
         saved = self.base.config.get_nested("ai.default_model", "")
-        if saved in ids:
-            for name, mid in models.items():
-                if mid == saved:
-                    return name
-        return ids[0] if ids else ""
+        models = list_models(saved)
+        for name, mid in models.items():
+            if mid == saved:
+                return name
+        return next(iter(models), "")
 
     def _has_any_key(self) -> bool:
         for prov in ("gemini", "anthropic", "groq", "minimax"):

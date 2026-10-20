@@ -31,8 +31,13 @@ of supported models.
 
 | Model | Best For |
 |-------|----------|
+| MiniMax M3.1 Flash | Default MiniMax model for coding tasks |
 | MiniMax M3 | General coding tasks |
-| MiniMax M2.7 | Fast, efficient assistance |
+
+MiniMax requests use the Anthropic-compatible API. Flash always uses thinking,
+with the API's default `max` effort; M3 uses the API's default of thinking off.
+Saved legacy or custom model IDs remain selected and are sent unchanged. Their
+availability depends on the API.
 
 ## Adding Custom Providers
 

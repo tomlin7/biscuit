@@ -38,10 +38,13 @@ def resolve(model_id: str, api_key: str) -> AIProvider:
         )
     return cls(api_key, model_id)
 
-def list_models() -> Dict[str, str]:
+def list_models(selected_model: Optional[str] = None) -> Dict[str, str]:
     models = {}
     for cls in _providers.values():
         models.update(cls.get_models())
+    if selected_model and selected_model not in models.values():
+        # Retain an explicit saved/custom selection without advertising it globally.
+        models[selected_model] = selected_model
     return models
 
 def list_provider_names() -> List[str]:
