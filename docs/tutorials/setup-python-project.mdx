@@ -1,0 +1,59 @@
+---
+title: Set Up a Python Project
+description: Open a project, configure an interpreter, and enable LSP features.
+---
+
+This tutorial walks you through opening a Python project in Biscuit and getting completions, diagnostics, and go-to-definition working end to end.
+
+## Prerequisites
+
+- Biscuit installed. See [Installation](/installation).
+- Python 3.9+ available on your `PATH`.
+
+## 1. Open your project folder
+
+1. Launch Biscuit.
+2. From the Welcome view, select **Open Folder** (or press `Ctrl+K Ctrl+O`).
+3. Choose the root of your Python project.
+
+Biscuit remembers recent workspaces. See [Workspace Management](/getting-started/workspace-management) for details.
+
+## 2. Create or activate a virtual environment
+
+Open the integrated terminal with `` Ctrl+` `` and run:
+
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## 3. Install the Python language server
+
+Biscuit uses LSP for code intelligence. Install `pylsp` (or `pyright`) inside your environment:
+
+```bash
+pip install python-lsp-server
+```
+
+Biscuit auto-detects installed language servers. See [LSP Integration](/code-intelligence/lsp-integration) to override or configure.
+
+## 4. Verify code intelligence
+
+Open any `.py` file and confirm:
+
+- Completions appear as you type. See [Code Completions](/code-intelligence/code-completions).
+- `F12` jumps to a definition. See [Code Navigation](/code-intelligence/navigation).
+- Diagnostics show in the Problems panel.
+
+## 5. Run and debug
+
+Open the file you want to run, then use the [Python Debugger](/debugger/python-debugger) to launch it with breakpoints.
+
+## Next steps
+
+- [Debug your first program](/tutorials/debug-first-program)
+- [Use the AI assistant](/tutorials/using-ai-assistant)

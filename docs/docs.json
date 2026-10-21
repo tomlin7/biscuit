@@ -76,6 +76,19 @@
         ]
       },
       {
+        "group": "Tutorials",
+        "icon": "graduation-cap",
+        "pages": [
+          "tutorials/overview",
+          "tutorials/setup-python-project",
+          "tutorials/debug-first-program",
+          "tutorials/using-ai-assistant",
+          "tutorials/git-workflow",
+          "tutorials/customize-biscuit",
+          "tutorials/build-first-extension"
+        ]
+      },
+      {
         "group": "Extensions",
         "pages": [
           "extensions/overview",

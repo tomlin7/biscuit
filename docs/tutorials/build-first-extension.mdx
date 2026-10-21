@@ -1,0 +1,72 @@
+---
+title: Build Your First Extension
+description: Create, install, and test a Python extension for Biscuit.
+---
+
+Build a simple "Hello, world" extension that adds a command to Biscuit.
+
+## Prerequisites
+
+- Biscuit installed. See [Installation](/installation).
+- Familiarity with Python.
+- Read [Extensions Overview](/extensions/overview) for context.
+
+## 1. Scaffold the extension
+
+Create a folder `hello-biscuit/` with this structure:
+
+```
+hello-biscuit/
+  extension.toml
+  hello.py
+```
+
+`extension.toml`:
+
+```toml
+name = "hello-biscuit"
+version = "0.1.0"
+description = "Says hello from Biscuit"
+author = "you"
+entry = "hello.py"
+```
+
+## 2. Write the extension
+
+`hello.py`:
+
+```python
+class Extension:
+    def __init__(self, api):
+        self.api = api
+        self.api.commands.register("hello.sayHi", self.say_hi)
+
+    def say_hi(self):
+        self.api.notifications.info("Hello from your extension!")
+
+    def uninstall(self):
+        pass
+```
+
+See [Extension API Reference](/extensions/api-reference) for the full API surface.
+
+## 3. Install locally
+
+1. Open the command palette (`Ctrl+Shift+P`).
+2. Run **Extensions: Install from Folder**.
+3. Select `hello-biscuit/`.
+
+More install options in [Installing Extensions](/extensions/installing).
+
+## 4. Run your command
+
+Open the command palette and run **Hello: Say Hi**. A notification appears.
+
+## 5. Iterate
+
+Edit `hello.py`, then run **Extensions: Reload** to pick up changes.
+
+## Next steps
+
+- [Creating Extensions](/extensions/creating-extensions) for deeper patterns.
+- Publish to the [Marketplace](https://biscuit-extensions.github.io/marketplace/).
