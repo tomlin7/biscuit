@@ -1,0 +1,52 @@
+---
+title: Debug Your First Program
+description: Set breakpoints, step through code, and inspect variables in Biscuit.
+---
+
+Learn how to use Biscuit's built-in debugger with a small Python example.
+
+## Prerequisites
+
+- A Python file open in Biscuit. If you don't have one, follow [Set Up a Python Project](/tutorials/setup-python-project).
+
+## 1. Write a small program
+
+Create `example.py`:
+
+```python
+def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+if __name__ == "__main__":
+    print(fib(10))
+```
+
+## 2. Set a breakpoint
+
+Click the gutter to the left of the line `a, b = b, a + b`. A red dot appears. See [Breakpoints](/debugger/breakpoints) for more options like conditional breakpoints.
+
+## 3. Start debugging
+
+1. Open the Debug panel from the activity bar.
+2. Select the [Python Debugger](/debugger/python-debugger).
+3. Press **Start Debugging** (or `F5`).
+
+Execution pauses on your breakpoint.
+
+## 4. Step through and inspect
+
+Use the debug toolbar to:
+
+- **Step Over** (`F10`) to advance one line.
+- **Step Into** (`F11`) to descend into function calls.
+- **Continue** (`F5`) to resume until the next breakpoint.
+
+Watch `a` and `b` change in the Variables panel. See [Variable Inspection](/debugger/variable-inspection) for editing values on the fly.
+
+## Next steps
+
+- [Use the AI assistant to explain code](/tutorials/using-ai-assistant)
+- [Debugger Overview](/debugger/overview)

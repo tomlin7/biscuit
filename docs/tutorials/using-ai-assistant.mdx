@@ -1,0 +1,51 @@
+---
+title: Use the AI Assistant
+description: Configure an API key and use the AI agent to edit and explain code.
+---
+
+This tutorial gets you from zero to a working AI assistant in Biscuit.
+
+## 1. Choose a model
+
+Biscuit supports multiple providers. Review [Supported Models](/ai-assistant/supported-models) and pick one you have API access to (for example, Gemini or Claude).
+
+## 2. Add your API key
+
+1. Open the command palette (`Ctrl+Shift+P`).
+2. Run **AI: Configure Provider**.
+3. Paste your API key and select your model.
+
+Full steps live in [AI Assistant Setup](/ai-assistant/setup).
+
+## 3. Ask your first question
+
+Open the AI panel from the activity bar and try:
+
+> Explain what this file does.
+
+The agent reads your open file and responds inline.
+
+## 4. Let the agent edit code
+
+Select a function and ask:
+
+> Add type hints and a docstring.
+
+The agent proposes a diff. Review it, then accept or reject. See [Agent Capabilities](/ai-assistant/agent-capabilities) for what the agent can do and [AI Tools Reference](/ai-assistant/tools-reference) for the full tool list.
+
+## 5. Use the terminal for agent commands
+
+The agent can run shell commands with your approval. Try:
+
+> Run the tests and fix any failures.
+
+## Tips
+
+- Keep prompts scoped to one task.
+- Review diffs before accepting.
+- Use follow-up messages to iterate rather than rewriting from scratch.
+
+## Next steps
+
+- [AI Assistant Overview](/ai-assistant/overview)
+- [Build your first extension](/tutorials/build-first-extension)
