@@ -373,34 +373,48 @@ class TreeSitterHighlighter:
             edit_info: dict with keys: start_byte, old_end_byte, new_end_byte,
                        start_point, old_end_point, new_end_point
         """
+        self.incremental_highlight_many([edit_info])
+
+    def incremental_highlight_many(self, edit_infos: list[dict]) -> None:
+        """Apply a batch of queued edits, then parse and highlight once.
+
+        Edits are replayed in order against the same tree. Each edit's
+        coordinates are relative to the text after the previous edit, which
+        matches the order in which the edits were made in the widget.
+        """
         if not self.tree or not self.parser or not self.query:
             self.highlight()
             return
 
-        self.tree.edit(
-            start_byte=edit_info["start_byte"],
-            old_end_byte=edit_info["old_end_byte"],
-            new_end_byte=edit_info["new_end_byte"],
-            start_point=edit_info["start_point"],
-            old_end_point=edit_info["old_end_point"],
-            new_end_point=edit_info["new_end_point"],
-        )
+        try:
+            for edit_info in edit_infos:
+                self.tree.edit(
+                    start_byte=edit_info["start_byte"],
+                    old_end_byte=edit_info["old_end_byte"],
+                    new_end_byte=edit_info["new_end_byte"],
+                    start_point=edit_info["start_point"],
+                    old_end_point=edit_info["old_end_point"],
+                    new_end_point=edit_info["new_end_point"],
+                )
 
-        code = self.text.get_all_text()
-        if (
-            hasattr(self.text, "line_byte_cache_stale")
-            and self.text.line_byte_cache_stale()
-        ):
-            self.text.set_line_byte_starts(code)
-        code_bytes = code.encode("utf-8")
-        new_tree = self.parser.parse(code_bytes, self.tree)
+            code = self.text.get_all_text()
+            if (
+                hasattr(self.text, "line_byte_cache_stale")
+                and self.text.line_byte_cache_stale()
+            ):
+                self.text.set_line_byte_starts(code)
+            code_bytes = code.encode("utf-8")
+            new_tree = self.parser.parse(code_bytes, self.tree)
 
-        changed_ranges = self.tree.changed_ranges(new_tree)
-        self.tree = new_tree
+            changed_ranges = self.tree.changed_ranges(new_tree)
+            self.tree = new_tree
 
-        if changed_ranges:
-            self._apply_highlights_incremental(changed_ranges)
-        # If no changed ranges detected, skip (nothing visually changed)
+            if changed_ranges:
+                self._apply_highlights_incremental(changed_ranges)
+            # If no changed ranges detected, skip (nothing visually changed)
+        except Exception:
+            # Never leave the tree in a half-edited state.
+            self.highlight()
 
     def _apply_highlights_full(self) -> None:
         """Clear all tags and re-apply highlights from scratch."""

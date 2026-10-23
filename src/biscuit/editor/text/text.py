@@ -102,7 +102,8 @@ class Text(BaseText):
             self.editorconfig = {}
 
         # self.last_change = Change(None, None, None, None, None)
-        self._pending_edit_info = None
+        self._pending_edit_infos: list[dict] = []
+        self._force_full_highlight = False
         self.config_tags()
         self.highlighter = Highlighter(self, language)
         if not self.standalone and not self.minimalist:
@@ -815,11 +816,21 @@ class Text(BaseText):
         return "break"
 
     def refresh(self):
-        if self._pending_edit_info and hasattr(
-            self.highlighter, "incremental_highlight"
-        ):
-            self.highlighter.incremental_highlight(self._pending_edit_info)
-            self._pending_edit_info = None
+        # A direct refresh supersedes any debounced refresh scheduled by the editor.
+        cancel_refresh = getattr(self.master, "cancel_text_refresh", None)
+        if cancel_refresh:
+            cancel_refresh()
+
+        edit_infos = self._pending_edit_infos
+        self._pending_edit_infos = []
+        if self._force_full_highlight or not edit_infos:
+            self._force_full_highlight = False
+            self.highlighter.highlight()
+        elif hasattr(self.highlighter, "incremental_highlight_many"):
+            self.highlighter.incremental_highlight_many(edit_infos)
+        elif hasattr(self.highlighter, "incremental_highlight"):
+            for edit_info in edit_infos:
+                self.highlighter.incremental_highlight(edit_info)
         else:
             self.highlighter.highlight()
         self.highlight_current_word()
@@ -1672,9 +1683,11 @@ class Text(BaseText):
         """Refresh editor state after an undo or redo.
 
         Undo/redo bypasses the editor proxy, so discard any queued incremental
-        edit and let the next refresh reparse the current text.
+        edits and cached byte offsets, then reparse the current text.
         """
-        self._pending_edit_info = None
+        self._pending_edit_infos.clear()
+        self._force_full_highlight = True
+        self._line_byte_starts = None
         self.event_generate("<<Change>>", when="tail")
         self._notify_lsp_change()
 
@@ -1740,6 +1753,8 @@ class Text(BaseText):
         if is_edit:
             if edit_info:
                 self._finalize_edit_info(edit_info, args)
+            else:
+                self._force_full_highlight = True
             self.event_generate("<<Change>>", when="tail")
             self._notify_lsp_change()
         elif args[0:3] == ("mark", "set", "insert"):
@@ -1943,6 +1958,11 @@ class Text(BaseText):
                 edit_info["new_end_point"] = new_end_point
                 self._line_byte_starts = None
 
-            self._pending_edit_info = edit_info
+            self._pending_edit_infos.append(edit_info)
+            if len(self._pending_edit_infos) > 128:
+                # Too many edits to replay incrementally; reparse from scratch.
+                self._pending_edit_infos = []
+                self._force_full_highlight = True
         except Exception:
-            self._pending_edit_info = None
+            self._pending_edit_infos = []
+            self._force_full_highlight = True

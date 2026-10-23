@@ -28,13 +28,17 @@ def test_after_undo_redo_clears_pending_edit_and_notifies():
     events = []
     notifications = []
     text = SimpleNamespace(
-        _pending_edit_info={"op": "insert"},
+        _pending_edit_infos=[{"op": "insert"}],
+        _force_full_highlight=False,
+        _line_byte_starts=[0],
         event_generate=lambda *args, **kwargs: events.append((args, kwargs)),
         _notify_lsp_change=lambda: notifications.append(True),
     )
 
     Text._after_undo_redo(text)
 
-    assert text._pending_edit_info is None
+    assert text._pending_edit_infos == []
+    assert text._force_full_highlight is True
+    assert text._line_byte_starts is None
     assert events == [(("<<Change>>",), {"when": "tail"})]
     assert notifications == [True]
