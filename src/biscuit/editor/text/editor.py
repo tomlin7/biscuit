@@ -48,6 +48,7 @@ class TextEditor(BaseEditor):
         self.content_hash = ""
         self.cursor_history: list[str] = []
         self.cursor_history_index: int = -1
+        self._minimap_redraw_job = None
 
         if not self.standalone:
             self.__buttons__ = [
@@ -242,6 +243,7 @@ class TextEditor(BaseEditor):
         self.text.refresh()
         if not self.minimalist:
             self.minimap.redraw_cursor()
+            self._schedule_minimap_redraw()
         self.record_cursor_position()
         self.event_generate("<<Change>>")
 
@@ -263,9 +265,30 @@ class TextEditor(BaseEditor):
     def on_scroll(self, *_) -> None:
         self.linenumbers.redraw()
         if not self.minimalist:
-            self.minimap.redraw()
+            self.minimap.update_from_yview(*self.text.yview())
         self.text.update_indent_guides()
         self.event_generate("<<Scroll>>")
+
+    def _schedule_minimap_redraw(self) -> None:
+        """Rebuild the minimap preview after edits settle, not on every event."""
+        if self._minimap_redraw_job is not None:
+            try:
+                self.after_cancel(self._minimap_redraw_job)
+            except Exception:
+                pass
+            self._minimap_redraw_job = None
+        self._minimap_redraw_job = self.after(500, self._redraw_minimap)
+
+    def _redraw_minimap(self) -> None:
+        """Rebuild the minimap preview if it is still visible."""
+        self._minimap_redraw_job = None
+        try:
+            if not self.winfo_exists() or not self.minimap.winfo_ismapped():
+                return
+            self.minimap.redraw()
+            self.minimap.update_from_yview(*self.text.yview())
+        except Exception:
+            pass
 
     def unsupported_file(self) -> None:
         self.unsupported = True
