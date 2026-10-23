@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from typing import Any, Callable, ClassVar, Dict, List, Optional
 
-import httpx
-
 from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
 
 
@@ -83,6 +81,8 @@ class GroqProvider(AIProvider):
         tools: Optional[List[ToolDesc]] = None,
         stream_callback: Optional[Callable[[str], None]] = None,
     ) -> ProviderResponse:
+        import httpx
+
         oai_messages = self._build_messages(system_instruction, messages)
         oai_tools = self._convert_tools(tools) if tools else None
 

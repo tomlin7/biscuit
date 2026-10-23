@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Callable, ClassVar, Dict, List, Optional
-
-import anthropic
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional
 
 from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
+
+if TYPE_CHECKING:
+    import anthropic
 
 # MiniMax exposes an Anthropic-compatible Messages API at this regional endpoint
 # (global region). The China region uses https://api.minimaxi.com/anthropic.
@@ -24,6 +25,8 @@ class MiniMaxProvider(AIProvider):
 
     def _get_client(self) -> anthropic.AsyncAnthropic:
         if not self._client:
+            import anthropic
+
             self._client = anthropic.AsyncAnthropic(
                 api_key=self.api_key,
                 base_url=MINIMAX_ANTHROPIC_BASE_URL,
@@ -91,6 +94,8 @@ class MiniMaxProvider(AIProvider):
         tools: Optional[List[ToolDesc]] = None,
         stream_callback: Optional[Callable[[str], None]] = None,
     ) -> ProviderResponse:
+        import anthropic
+
         client = self._get_client()
         anthrow_tools = self._convert_tools(tools) if tools else None
         anthrow_messages = self._build_messages(messages)

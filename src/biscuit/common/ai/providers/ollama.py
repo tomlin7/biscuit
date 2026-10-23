@@ -4,8 +4,6 @@ import json
 import os
 from typing import Any, Callable, ClassVar, Dict, List, Optional
 
-import httpx
-
 from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
 
 
@@ -84,6 +82,8 @@ class OllamaProvider(AIProvider):
         tools: Optional[List[ToolDesc]] = None,
         stream_callback: Optional[Callable[[str], None]] = None,
     ) -> ProviderResponse:
+        import httpx
+
         url = f"{self.base_url}/chat/completions"
         headers = {"Content-Type": "application/json"}
         if self.api_key:
