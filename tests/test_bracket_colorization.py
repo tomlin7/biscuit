@@ -68,6 +68,19 @@ class TestBracketPairColorization:
         assert highlighter.get_matching_bracket(2, 11) == (2, 23)
         assert highlighter.get_matching_bracket(2, 23) == (2, 11)
 
+    @staticmethod
+    def test_refresh_visible_brackets_rebuilds_matching_map():
+        """Refreshing viewport brackets rebuilds the matching bracket map."""
+        code = "value = (1 + 2)\n"
+        text = MockText(code)
+        highlighter = TreeSitterHighlighter(text, language="python")
+        highlighter.highlight()
+
+        highlighter.refresh_visible_brackets()
+
+        assert highlighter.get_matching_bracket(1, 8) == (1, 14)
+        assert highlighter.get_matching_bracket(1, 14) == (1, 8)
+
     def test_clear_removes_bracket_tags(self):
         code = "x = (1 + 2)\n"
         text = MockText(code)

@@ -212,6 +212,9 @@ class Text(BaseText):
         # undo-redo
         self.bind_all("<<Modified>>", self._been_modified)
 
+        # bracket colors are viewport-local; refresh them as the viewport moves
+        self.bind("<<Scroll>>", self.refresh_visible_brackets)
+
         # pair completion
         self.bind("<parenleft>", self.open_bracket)
         self.bind("<braceleft>", self.open_bracket)
@@ -1383,9 +1386,17 @@ class Text(BaseText):
     def event_leave(self, _: tk.Event):
         self.hover.hide()
 
+    def refresh_visible_brackets(self, *_):
+        """Re-color brackets in the visible viewport after scrolling."""
+        try:
+            self.highlighter.refresh_visible_brackets()
+        except Exception:
+            pass
+
     def event_mapped(self, _):
         try:
             self.lsp = self.base.language_server_manager.tab_opened(self)
+            self.refresh_visible_brackets()
         except Exception as e:
             self.base.notifications.warning(
                 f"{self.language} language server failed, check logs."
