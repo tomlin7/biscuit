@@ -1441,14 +1441,14 @@ dev = ["flake8", "markdown", "twine", "wheel"]
 
 [[package]]
 name = "git-changelog"
-version = "2.9.4"
+version = "2.10.0"
 description = "Automatic Changelog generator using Jinja2 templates."
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "git_changelog-2.9.4-py3-none-any.whl", hash = "sha256:c19a099640518fbbc545cb240250cf8129e55e668d8374ba8061ea5456da204b"},
-    {file = "git_changelog-2.9.4.tar.gz", hash = "sha256:06a38a0d174a069b760430ec41493bf53307be13f16b0e48ce379be1646ea9a0"},
+    {file = "git_changelog-2.10.0-py3-none-any.whl", hash = "sha256:fca6bdaaa966a9cdda11076891a39291ef15fdf38d33820b6f16057e365d1ab5"},
+    {file = "git_changelog-2.10.0.tar.gz", hash = "sha256:1b6a7d6a12561919be598c3bf4beb2b42a403fb26724b61b810dd58276eb22da"},
 ]
 
 [package.dependencies]
@@ -4336,4 +4336,4 @@ docs = ["mkdocs", "mkdocs-material", "mkdocstrings-python"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "64d0a3311ffa32fb6c8e8cc55e9ce4bd9290269ebb034a77b64329ee58e7e89d"
+content-hash = "68ec5d9b26dd04c9c1a4f9b81351ed7a2a17bdf2ee2435aa053c8a807e8ad597"
