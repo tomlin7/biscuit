@@ -72,7 +72,7 @@ requests = "^2.34.2"
 pyperclip = "^1.11.0"
 tkinterweb = {version = "^4.25.3", extras = ["full"]}
 mistune = "^3.3.4"
-chardet = "^7.4.3"
+chardet = "^7.7.0"
 pywinpty = { version = "^3.0.5", platform = "win32" }
 python-tkdnd = "^0.2.1"
 psutil = "^7.2.2"
