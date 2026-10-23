@@ -360,6 +360,8 @@ class TreeSitterHighlighter:
             return
 
         code = self.text.get_all_text()
+        if hasattr(self.text, "set_line_byte_starts"):
+            self.text.set_line_byte_starts(code)
         code_bytes = code.encode("utf-8")
         self.tree = self.parser.parse(code_bytes)
         self._apply_highlights_full()
@@ -384,7 +386,13 @@ class TreeSitterHighlighter:
             new_end_point=edit_info["new_end_point"],
         )
 
-        code_bytes = self.text.get_all_text().encode("utf-8")
+        code = self.text.get_all_text()
+        if (
+            hasattr(self.text, "line_byte_cache_stale")
+            and self.text.line_byte_cache_stale()
+        ):
+            self.text.set_line_byte_starts(code)
+        code_bytes = code.encode("utf-8")
         new_tree = self.parser.parse(code_bytes, self.tree)
 
         changed_ranges = self.tree.changed_ranges(new_tree)

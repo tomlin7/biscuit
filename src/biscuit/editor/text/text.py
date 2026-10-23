@@ -134,6 +134,7 @@ class Text(BaseText):
 
         # modified event
         self.clear_modified_flag()
+        self._line_byte_starts: list[int] | None = None
 
         # Vim mode instance (None when disabled)
         self.vim: VimMode | None = None
@@ -1757,14 +1758,72 @@ class Text(BaseText):
         except Exception:
             return (0, 0)
 
+    def set_line_byte_starts(self, text: str) -> None:
+        """Cache the UTF-8 byte offset of each line start for offset lookups."""
+        starts = [0]
+        total = 0
+        for line in text.splitlines(keepends=True):
+            total += len(line.encode("utf-8"))
+            starts.append(total)
+        self._line_byte_starts = starts
+
+    def line_byte_cache_stale(self) -> bool:
+        """Whether cached line byte offsets need rebuilding."""
+        return self._line_byte_starts is None
+
+    def _shift_line_byte_cache_for_insert(
+        self, start_row: int, start_byte: int, inserted: str
+    ) -> None:
+        """Update cached line offsets after inserting text."""
+        starts = self._line_byte_starts
+        if starts is None or not 0 <= start_row < len(starts):
+            return
+        inserted_bytes = len(inserted.encode("utf-8"))
+        if "\n" not in inserted:
+            for i in range(start_row + 1, len(starts)):
+                starts[i] += inserted_bytes
+            return
+
+        new_starts = []
+        offset = 0
+        for line in inserted.splitlines(keepends=True):
+            offset += len(line.encode("utf-8"))
+            if line.endswith("\n"):
+                new_starts.append(start_byte + offset)
+        starts[start_row + 1 : start_row + 1] = new_starts
+        for i in range(start_row + 1 + len(new_starts), len(starts)):
+            starts[i] += inserted_bytes
+
+    def _shift_line_byte_cache_for_delete(
+        self, start_row: int, start_byte: int, old_end_byte: int, old_end_row: int
+    ) -> None:
+        """Update cached line offsets after deleting text."""
+        starts = self._line_byte_starts
+        if starts is None:
+            return
+        if old_end_row == start_row:
+            removed = old_end_byte - start_byte
+            for i in range(start_row + 1, len(starts)):
+                starts[i] -= removed
+            return
+        self._line_byte_starts = None
+
     def _point_to_byte(self, point: tuple[int, int]) -> int:
         """Compute byte offset from a (row, col) point.
 
-        Gets all text from start to the position in a single Tk call,
-        then computes its UTF-8 byte length.
+        Uses cached line-start byte offsets and only fetches the current line
+        prefix. The previous implementation fetched the entire document prefix
+        from Tk on every edit.
         """
         try:
             row, col = point
+            starts = self._line_byte_starts
+            if starts is not None and 0 <= row < len(starts):
+                line_prefix = self.tk.call(
+                    self._orig, "get", f"{row + 1}.0", f"{row + 1}.{col}"
+                )
+                return starts[row] + len(str(line_prefix).encode("utf-8"))
+
             tk_index = f"{row + 1}.{col}"
             text_before = self.tk.call(self._orig, "get", "1.0", tk_index)
             return len(str(text_before).encode("utf-8"))
@@ -1847,11 +1906,22 @@ class Text(BaseText):
                     )
                 edit_info["new_end_byte"] = new_end_byte
                 edit_info["new_end_point"] = new_end_point
+                self._shift_line_byte_cache_for_insert(
+                    edit_info["start_point"][0],
+                    edit_info["start_byte"],
+                    inserted,
+                )
 
             elif edit_info["op"] == "delete":
                 # After delete, new end = start (deleted region collapsed)
                 edit_info["new_end_byte"] = edit_info["start_byte"]
                 edit_info["new_end_point"] = edit_info["start_point"]
+                self._shift_line_byte_cache_for_delete(
+                    edit_info["start_point"][0],
+                    edit_info["start_byte"],
+                    edit_info["old_end_byte"],
+                    edit_info["old_end_point"][0],
+                )
 
             elif edit_info["op"] == "replace":
                 # Compute new end from replacement text
@@ -1871,6 +1941,7 @@ class Text(BaseText):
                     )
                 edit_info["new_end_byte"] = new_end_byte
                 edit_info["new_end_point"] = new_end_point
+                self._line_byte_starts = None
 
             self._pending_edit_info = edit_info
         except Exception:
