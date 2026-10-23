@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, ClassVar, Dict, List, Optional
-
-from google import genai
-from google.genai import types
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional
 
 from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
+
+if TYPE_CHECKING:
+    from google import genai
+    from google.genai import types
 
 
 class GeminiProvider(AIProvider):
@@ -24,6 +25,9 @@ class GeminiProvider(AIProvider):
 
     def _get_client(self) -> genai.Client:
         if not self._client:
+            from google import genai
+            from google.genai import types
+
             self._client = genai.Client(
                 api_key=self.api_key,
                 http_options=types.HttpOptions(
@@ -33,6 +37,8 @@ class GeminiProvider(AIProvider):
         return self._client
 
     def _convert_messages(self, messages: List[Dict]) -> List[types.Content]:
+        from google.genai import types
+
         contents = []
         for msg in messages:
             role = msg.get("role", "user")
@@ -70,6 +76,8 @@ class GeminiProvider(AIProvider):
         return contents
 
     def _convert_tools(self, tools: List[ToolDesc]) -> List[types.Tool]:
+        from google.genai import types
+
         declarations = []
         for tool in tools:
             schema = tool.input_schema
@@ -130,6 +138,8 @@ class GeminiProvider(AIProvider):
         tools: Optional[List[ToolDesc]] = None,
         stream_callback: Optional[Callable[[str], None]] = None,
     ) -> ProviderResponse:
+        from google.genai import types
+
         client = self._get_client()
         contents = self._convert_messages(messages)
 

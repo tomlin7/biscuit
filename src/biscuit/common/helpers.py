@@ -66,22 +66,21 @@ def caller_name(skip=2):
     An empty string is returned if skipped levels exceed stack height
     """
 
-    stack = inspect.stack()
-    start = 0 + skip
-    if len(stack) < start + 1:
-        return ""
-    parentframe = stack[start][0]
+    frame = inspect.currentframe()
+    for _ in range(skip):
+        if frame is None:
+            return ""
+        frame = frame.f_back
 
     name = []
-    module = inspect.getmodule(parentframe)
-    # modname can be None when frame is executed directly in console
-    if module:
-        name.append(module.__name__)
+    module_name = frame.f_globals.get("__name__")
+    if module_name:
+        name.append(module_name)
     # detect classname
-    if "self" in parentframe.f_locals:
-        name.append(parentframe.f_locals["self"].__class__.__name__)
+    if "self" in frame.f_locals:
+        name.append(frame.f_locals["self"].__class__.__name__)
 
-    del parentframe, stack
+    del frame
 
     return ".".join(name)
 
@@ -95,18 +94,18 @@ def caller_class_name(skip=2):
 
     An empty string is returned if skipped levels exceed the stack height.
     """
-    stack = inspect.stack()
-    start = 0 + skip
-    if len(stack) < start + 1:
-        return ""
+    frame = inspect.currentframe()
+    for _ in range(skip):
+        if frame is None:
+            return None
+        frame = frame.f_back
 
-    parentframe = stack[start][0]
     class_name = None
 
     # detect classname
-    if "self" in parentframe.f_locals:
-        class_name = parentframe.f_locals["self"].__class__.__name__
+    if "self" in frame.f_locals:
+        class_name = frame.f_locals["self"].__class__.__name__
 
-    del parentframe, stack
+    del frame
 
     return class_name

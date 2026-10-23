@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Callable, ClassVar, Dict, List, Optional
-
-import anthropic
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional
 
 from .base import AIProvider, ProviderResponse, ToolCallData, ToolDesc
+
+if TYPE_CHECKING:
+    import anthropic
 
 
 class AnthropicProvider(AIProvider):
@@ -23,6 +24,8 @@ class AnthropicProvider(AIProvider):
 
     def _get_client(self) -> anthropic.AsyncAnthropic:
         if not self._client:
+            import anthropic
+
             self._client = anthropic.AsyncAnthropic(api_key=self.api_key)
         return self._client
 
@@ -87,6 +90,8 @@ class AnthropicProvider(AIProvider):
         tools: Optional[List[ToolDesc]] = None,
         stream_callback: Optional[Callable[[str], None]] = None,
     ) -> ProviderResponse:
+        import anthropic
+
         client = self._get_client()
         anthrow_tools = self._convert_tools(tools) if tools else None
         anthrow_messages = self._build_messages(messages)
