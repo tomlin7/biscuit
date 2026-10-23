@@ -126,14 +126,14 @@ class Text(BaseText):
             relief=tk.FLAT,
             highlightthickness=0,
             bd=0,
+            undo=True,
+            autoseparators=True,
+            maxundo=-1,
             **self.base.theme.editors.text,
         )
 
         # modified event
         self.clear_modified_flag()
-        self._user_edit = True
-        self._edit_stack = []
-        self._edit_stack_index = -1
 
         # Vim mode instance (None when disabled)
         self.vim: VimMode | None = None
@@ -210,7 +210,7 @@ class Text(BaseText):
         self.bind("<Shift-Tab>", self.dedent_selection)
 
         # undo-redo
-        self.bind_all("<<Modified>>", self._been_modified)
+        self.bind("<<Modified>>", self._been_modified)
 
         # pair completion
         self.bind("<parenleft>", self.open_bracket)
@@ -265,8 +265,6 @@ class Text(BaseText):
         self.tag_bind("hint", "<Leave>", self.base.diagnostic.hide)
 
     def key_release_events(self, event: tk.Event):
-        self._user_edit = True
-
         match event.keysym.lower():
             case (
                 "button-2"
@@ -1318,6 +1316,8 @@ class Text(BaseText):
                 if chunk is None:
                     # Finished loading file -- reached EOF 🚧
                     try:
+                        self.edit_reset()
+                        self.clear_modified_flag()
                         self.master.on_change()
                         self.master.on_scroll()
                         self.update_idletasks()
@@ -1635,45 +1635,43 @@ class Text(BaseText):
             self.tag_add(tag, "matchStart", "matchEnd")
 
     def stack_undo(self):
-        if self._edit_stack_index > 0:
-            self._edit_stack_index = self._edit_stack_index - 1
-            self._user_edit = False
-            self.clear()
-            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
-            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
+        self.edit_undo()
 
     def stack_redo(self):
-        if self._edit_stack_index + 1 < len(self._edit_stack):
-            self._edit_stack_index = self._edit_stack_index + 1
-            self._user_edit = False
-            self.clear()
-            self.write(self._edit_stack[self._edit_stack_index][0][:-1])
-            self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
+        self.edit_redo()
+
+    def edit_undo(self):
+        """Undo the last edit using the widget's native undo stack."""
+        try:
+            super().edit_undo()
+        except tk.TclError:
+            return
+        self._after_undo_redo()
+
+    def edit_redo(self):
+        """Redo the last undone edit using the native undo stack."""
+        try:
+            super().edit_redo()
+        except tk.TclError:
+            return
+        self._after_undo_redo()
+
+    def _after_undo_redo(self):
+        """Refresh editor state after an undo or redo.
+
+        Undo/redo bypasses the editor proxy, so discard any queued incremental
+        edit and let the next refresh reparse the current text.
+        """
+        self._pending_edit_info = None
+        self.event_generate("<<Change>>", when="tail")
+        self._notify_lsp_change()
 
     def _been_modified(self, event=None):
         try:
-            if self._user_edit:
-                text = self.get_all_text()
-                if (not self._edit_stack) or (
-                    text != self._edit_stack[self._edit_stack_index][0]
-                ):
-                    # real modified
-                    cursor_index = self.index(tk.INSERT)
-                    if (self._edit_stack_index + 1) != len(self._edit_stack):
-                        self._edit_stack = self._edit_stack[
-                            : self._edit_stack_index + 1
-                        ]
-                    self._edit_stack.append([text, cursor_index])
-                    self._edit_stack_index = self._edit_stack_index + 1
-                    if self._edit_stack_index > 200:
-                        self._edit_stack = self._edit_stack[
-                            self._edit_stack_index - 50 : self._edit_stack_index + 1
-                        ]
-                        self._edit_stack_index = len(self._edit_stack) - 1
             if self._resetting_modified_flag:
                 return
             self.clear_modified_flag()
-        except:
+        except Exception:
             self.base.notifications.error("Edit stack error: please restart biscuit")
 
     def clear_modified_flag(self):
