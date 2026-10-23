@@ -48,6 +48,7 @@ class TextEditor(BaseEditor):
         self.content_hash = ""
         self.cursor_history: list[str] = []
         self.cursor_history_index: int = -1
+        self._text_refresh_job = None
 
         if not self.standalone:
             self.__buttons__ = [
@@ -239,11 +240,35 @@ class TextEditor(BaseEditor):
                 self.base.update_statusbar()
         except ValueError:
             pass
-        self.text.refresh()
+        self._schedule_text_refresh()
         if not self.minimalist:
             self.minimap.redraw_cursor()
         self.record_cursor_position()
         self.event_generate("<<Change>>")
+
+    def _schedule_text_refresh(self) -> None:
+        """Coalesce expensive highlighting while the user is typing."""
+        self.cancel_text_refresh()
+        self._text_refresh_job = self.after(120, self._refresh_text)
+
+    def cancel_text_refresh(self) -> None:
+        """Cancel a pending debounced text refresh, if any."""
+        if self._text_refresh_job is not None:
+            try:
+                self.after_cancel(self._text_refresh_job)
+            except Exception:
+                pass
+            self._text_refresh_job = None
+
+    def _refresh_text(self) -> None:
+        """Run the debounced text refresh if the editor still exists."""
+        self._text_refresh_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            self.text.refresh()
+        except Exception:
+            pass
 
     def record_cursor_position(self, pos: str = None) -> None:
         try:
