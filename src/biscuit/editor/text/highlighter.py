@@ -57,6 +57,10 @@ class Highlighter:
         """Incremental highlight after an edit."""
         self.ts.incremental_highlight(edit_info)
 
+    def incremental_highlight_many(self, edit_infos: list[dict]) -> None:
+        """Incremental highlight after a batch of edits."""
+        self.ts.incremental_highlight_many(edit_infos)
+
     def get_matching_bracket(self, line: int, col: int) -> tuple[int, int] | None:
         """Get matching bracket coordinates from tree-sitter highlighter."""
         return self.ts.get_matching_bracket(line, col)
