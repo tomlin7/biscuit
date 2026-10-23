@@ -449,8 +449,30 @@ class TreeSitterHighlighter:
         self.bracket_map.clear()
         self._apply_bracket_colorization()
 
+    def _visible_line_range(self) -> tuple[int, int] | None:
+        """Return the zero-based line range currently visible in the editor."""
+        try:
+            if not self.text.winfo_ismapped() or self.text.winfo_height() <= 1:
+                return None
+            first = int(str(self.text.index("@0,0")).split(".")[0]) - 1
+            last = int(
+                str(self.text.index(f"@0,{self.text.winfo_height()}")).split(".")[0]
+            ) - 1
+            return first, max(first, last)
+        except Exception:
+            return None
+
+    def refresh_visible_brackets(self) -> None:
+        """Re-color brackets in the current viewport."""
+        self._apply_bracket_colorization()
+
     def _apply_bracket_colorization(self) -> None:
-        """Colorize bracket pairs hierarchically based on AST depth."""
+        """Colorize bracket pairs hierarchically based on AST depth.
+
+        Only the visible line range needs bracket colors. Walking the entire
+        AST on every keystroke is O(file size) and dominates refresh time on
+        large files, so prune subtrees that do not intersect the viewport.
+        """
         if not self.tree or not self.tree.root_node:
             return
 
@@ -458,10 +480,15 @@ class TreeSitterHighlighter:
         closing_pairs = {v: k for k, v in bracket_pairs.items()}
         num_colors = max(1, len(self.bracket_colors))
 
+        visible = self._visible_line_range()
+        first_line, last_line = visible if visible else (0, 2**31 - 1)
+
         stack: list[tuple[str, int, tuple[int, int]]] = []
         self.bracket_map = {}
 
         def walk(node):
+            if node.end_point[0] < first_line or node.start_point[0] > last_line:
+                return
             if node.type in bracket_pairs:
                 depth = len(stack)
                 start = f"{node.start_point[0] + 1}.{node.start_point[1]}"
