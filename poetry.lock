@@ -1527,14 +1527,14 @@ urllib3 = ["packaging (>=20.0)", "urllib3 (>=1.26.15,<3.0.0)"]
 
 [[package]]
 name = "google-genai"
-version = "2.29.0"
+version = "2.31.0"
 description = "GenAI Python SDK"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "google_genai-2.29.0-py3-none-any.whl", hash = "sha256:7adda55cb6746fb46d38ad3202c3372840b96eede964b5fb3df1469cd4998570"},
-    {file = "google_genai-2.29.0.tar.gz", hash = "sha256:124d3eef9ff6b9e4ea548f95ff5b7721683e7990c0a936b006d9e2ab61ea897d"},
+    {file = "google_genai-2.31.0-py3-none-any.whl", hash = "sha256:c87b9d495a24b09dedb29b852a201bea69ecd0b3f6c2561dc68f4055451b1b90"},
+    {file = "google_genai-2.31.0.tar.gz", hash = "sha256:71518537de2ba967a61960cba844691dca3dd4ff07726c01a6917d132213541e"},
 ]
 
 [package.dependencies]
@@ -4336,4 +4336,4 @@ docs = ["mkdocs", "mkdocs-material", "mkdocstrings-python"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "64d0a3311ffa32fb6c8e8cc55e9ce4bd9290269ebb034a77b64329ee58e7e89d"
+content-hash = "5735e0bcce728c6a283e7e9745eba7681d82ca4e425b4d9a541053430dc3db5a"
