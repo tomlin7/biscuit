@@ -34,19 +34,21 @@ class CodeFoldingManager:
                 continue
             indent = len(line) - len(line.lstrip())
             is_header = stripped.endswith(":") or stripped.endswith("{")
-            has_indented_child = (
-                i + 1 < len(lines)
-                and lines[i + 1].strip() != ""
-                and (len(lines[i + 1]) - len(lines[i + 1].lstrip())) > indent
-            )
+            next_indent = None
+            for k in range(i + 1, len(lines)):
+                if lines[k].strip():
+                    next_indent = len(lines[k]) - len(lines[k].lstrip())
+                    break
+            has_indented_child = next_indent is not None and next_indent > indent
             if is_header or has_indented_child:
                 found = False
                 for j in range(i + 1, len(lines)):
                     next_line = lines[j]
                     if next_line.strip() and (len(next_line) - len(next_line.lstrip())) <= indent:
-                        folds.append((i + 1, j))
+                        if j > i + 1:
+                            folds.append((i + 1, j))
                         found = True
                         break
-                if not found and len(lines) > i + 1:
+                if not found and len(lines) > i + 1 and has_indented_child:
                     folds.append((i + 1, len(lines)))
         return folds

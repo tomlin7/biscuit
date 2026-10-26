@@ -40,23 +40,31 @@ class GitBlameController:
         if not self.repo or not file_path:
             return None
         try:
-            if hasattr(self.repo, "blame"):
+            if callable(getattr(self.repo, "blame", None)):
                 blames = self.repo.blame("HEAD", file_path, L=f"{line_number},{line_number}")
                 if blames and len(blames) > 0:
                     return self.parse_blame_line(blames[0])
-            elif hasattr(self.repo, "git") and hasattr(self.repo.git, "blame"):
+            elif hasattr(self.repo, "git") and callable(getattr(self.repo.git, "blame", None)):
                 out = self.repo.git.blame("-L", f"{line_number},{line_number}", "--porcelain", file_path)
                 lines = out.splitlines()
                 if lines:
                     hash_val = lines[0].split()[0][:7]
                     author = "Unknown"
                     summary = "commit"
+                    date_str = "recently"
                     for l in lines[1:]:
                         if l.startswith("author "):
                             author = l[len("author "):]
                         elif l.startswith("summary "):
                             summary = l[len("summary "):]
-                    return BlameInfo(author=author, date="recently", commit_hash=hash_val, summary=summary)
+                        elif l.startswith("author-time "):
+                            try:
+                                import datetime
+                                ts = int(l[len("author-time "):].strip())
+                                date_str = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+                            except Exception:
+                                pass
+                    return BlameInfo(author=author, date=date_str, commit_hash=hash_val, summary=summary)
         except Exception:
             return None
         return None

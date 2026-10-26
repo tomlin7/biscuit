@@ -505,14 +505,16 @@ class Commands:
             self.base.statusbar.toggle_word_wrap()
         elif hasattr(self.base, "editorsmanager"):
             editor = self.base.editorsmanager.active_editor
-            if editor and hasattr(editor, "content") and hasattr(editor.content, "text"):
-                editor.content.text.toggle_word_wrap()
+            text_widget = getattr(getattr(editor, "content", None), "text", None) or getattr(editor, "text", None)
+            if text_widget and hasattr(text_widget, "toggle_word_wrap"):
+                text_widget.toggle_word_wrap()
 
     def toggle_whitespace(self, *_) -> None:
         if hasattr(self.base, "editorsmanager"):
             editor = self.base.editorsmanager.active_editor
-            if editor and hasattr(editor, "content") and hasattr(editor.content, "text"):
-                editor.content.text.toggle_whitespace()
+            text_widget = getattr(getattr(editor, "content", None), "text", None) or getattr(editor, "text", None)
+            if text_widget and hasattr(text_widget, "toggle_whitespace"):
+                text_widget.toggle_whitespace()
 
     def git_stash(self, *_) -> None:
         if self.base.git and self.base.git.repo:

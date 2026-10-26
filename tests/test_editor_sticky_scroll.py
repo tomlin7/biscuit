@@ -61,3 +61,18 @@ def test_sticky_scroll_header():
     StickyScrollHeader.hide(header)
     assert header.visible is False
     header.place_forget.assert_called()
+
+def test_sticky_scroll_sibling_eviction():
+    controller = StickyScrollController()
+    controller.set_scopes([
+        StickyHeaderScope(10, "class MyService:"),
+        StickyHeaderScope(25, "    def handle_request(self):"),
+        StickyHeaderScope(50, "    def cleanup(self):"),
+    ])
+
+    # Inside cleanup (line 55): handle_request must NOT be active, MyService must be preserved
+    active = controller.get_active_headers(55)
+    assert len(active) == 2
+    assert active[0] == "class MyService:"
+    assert "def cleanup" in active[1]
+    assert "def handle_request" not in active

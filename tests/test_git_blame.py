@@ -55,3 +55,31 @@ def test_text_git_blame_integration():
 
     Text.clear_git_blame(text)
     assert text._current_blame_line is None
+
+def test_git_blame_reposition_x_offset():
+    text = MagicMock(spec=Text)
+    text._current_blame_line = 3
+    text._blame_label = MagicMock()
+    # bbox on line 3.end returns (100, 40, 500, 16) where 500 is remaining line width
+    text.bbox.return_value = (100, 40, 500, 16)
+
+    Text._reposition_blame_label(text)
+    # x must be bbox[0] + 20 = 120, NOT 100 + 500 + 20 = 620
+    text._blame_label.place.assert_called_with(x=120, y=40)
+
+def test_git_blame_porcelain_author_time():
+    mock_repo = MagicMock()
+    mock_repo.blame = None
+    mock_repo.git.blame.return_value = (
+        "abcdef1234567890 1 1 1\n"
+        "author Dave\n"
+        "author-time 1700000000\n"
+        "summary Add feature\n"
+        "\tline content\n"
+    )
+    ctrl = GitBlameController(repo=mock_repo)
+    info = ctrl.get_blame("test.py", 1)
+    assert info is not None
+    assert info.author == "Dave"
+    assert info.summary == "Add feature"
+    assert info.date != "recently"  # Parsed from author-time timestamp!

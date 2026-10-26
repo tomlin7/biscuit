@@ -154,7 +154,7 @@ class LineNumbers(Canvas):
         i = self.text.index("@0,0")
         while True:
             dline = self.text.dlineinfo(i)
-            if dline is None:
+            if dline is None or (len(dline) > 3 and dline[3] == 0):
                 try:
                     linenum = int(float(i))
                     if linenum >= max_line:
@@ -208,7 +208,7 @@ class LineNumbers(Canvas):
             )
 
             # Render code folding indicator
-            if self.folding_manager and linenum in self.folding_manager.folds:
+            if self.folding_manager and linenum in self.folding_manager.folds and self.folding_manager.folds[linenum].end_line > linenum:
                 is_folded = self.folding_manager.is_line_folded(linenum)
                 arrow = "▶" if is_folded else "▼"
                 fold_tag = f"fold_arrow_{linenum}"

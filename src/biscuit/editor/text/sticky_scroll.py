@@ -10,31 +10,40 @@ from biscuit.common.ui import Frame
 class StickyHeaderScope:
     line_number: int
     header_text: str
+    indent: int = 0
+    end_line: int = 999999
 
 class StickyScrollController:
     def __init__(self):
         self.scopes: List[StickyHeaderScope] = []
 
     def set_scopes(self, scopes: List[StickyHeaderScope]):
-        self.scopes = sorted(scopes, key=lambda s: s.line_number)
-
-    def get_active_headers(self, current_top_line: int) -> List[str]:
-        active = []
-        for s in self.scopes:
-            if s.line_number < current_top_line:
-                active.append(s.header_text)
-            else:
-                break
-        return active[-2:] # Show up to 2 enclosing scopes
+        sorted_scopes = sorted(scopes, key=lambda s: s.line_number)
+        for idx, s in enumerate(sorted_scopes):
+            if s.indent == 0 and s.header_text:
+                s.indent = len(s.header_text) - len(s.header_text.lstrip())
+            if s.end_line == 999999:
+                for next_s in sorted_scopes[idx + 1:]:
+                    next_indent = next_s.indent if next_s.indent != 0 else (len(next_s.header_text) - len(next_s.header_text.lstrip()))
+                    if next_indent <= s.indent:
+                        s.end_line = next_s.line_number - 1
+                        break
+        self.scopes = sorted_scopes
 
     def get_active_scopes(self, current_top_line: int) -> List[StickyHeaderScope]:
-        active = []
-        for s in self.scopes:
-            if s.line_number < current_top_line:
-                active.append(s)
-            else:
-                break
-        return active[-2:]
+        candidates = [
+            s for s in self.scopes
+            if s.line_number < current_top_line <= s.end_line
+        ]
+        hierarchy: List[StickyHeaderScope] = []
+        for s in candidates:
+            while hierarchy and hierarchy[-1].indent >= s.indent:
+                hierarchy.pop()
+            hierarchy.append(s)
+        return hierarchy[-2:]
+
+    def get_active_headers(self, current_top_line: int) -> List[str]:
+        return [s.header_text for s in self.get_active_scopes(current_top_line)]
 
     def compute_scopes_from_text(self, text: str) -> List[StickyHeaderScope]:
         lines = text.split("\n")
@@ -50,7 +59,14 @@ class StickyScrollController:
                 or stripped.startswith("fn ")
                 or (stripped.endswith(":") and ("def " in stripped or "class " in stripped))
             ):
-                scopes.append(StickyHeaderScope(line_number=i + 1, header_text=line.rstrip()))
+                indent = len(line) - len(line.lstrip())
+                end_line = len(lines)
+                for j in range(i + 1, len(lines)):
+                    next_l = lines[j]
+                    if next_l.strip() and (len(next_l) - len(next_l.lstrip())) <= indent:
+                        end_line = j
+                        break
+                scopes.append(StickyHeaderScope(line_number=i + 1, header_text=line.rstrip(), indent=indent, end_line=end_line))
         self.set_scopes(scopes)
         return scopes
 

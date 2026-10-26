@@ -211,6 +211,7 @@ class Text(BaseText):
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events)
+        self.bind("<ButtonRelease-1>", lambda _: self.highlight_current_line(), add=True)
 
         self.bind("<Control-f>", self.open_find_replace)
         self.bind("<Control-g>", lambda _: self.base.palette.show(":"))
@@ -332,6 +333,7 @@ class Text(BaseText):
                     self.show_autocomplete(event)
 
         self.update_words_list()
+        self.highlight_current_line()
 
     def diagnostic_hover(self, severity: int) -> str:
         if pos := self.get_mouse_pos():
@@ -1191,6 +1193,9 @@ class Text(BaseText):
         current = self.cget("wrap")
         new_wrap = "none" if current == "word" else "word"
         self.configure(wrap=new_wrap)
+        master = getattr(self, "master", None)
+        if master and hasattr(master, "on_scroll"):
+            master.on_scroll()
         return new_wrap
 
     def open_find_replace(self, *_):
@@ -1324,6 +1329,12 @@ class Text(BaseText):
                 self.update()
             if eol:
                 self.eol = eol
+
+            try:
+                self.master.on_change()
+                self.master.on_scroll()
+            except Exception:
+                pass
 
             if not self.standalone:
                 self.base.statusbar.on_open_file(self)
@@ -1581,6 +1592,9 @@ class Text(BaseText):
             self.configure(wrap=tk.WORD)
         else:
             self.configure(wrap=tk.NONE)
+        master = getattr(self, "master", None)
+        if master and hasattr(master, "on_scroll"):
+            master.on_scroll()
 
     def set_active(self, flag=True):
         if flag:
@@ -1687,13 +1701,16 @@ class Text(BaseText):
             fg = getattr(getattr(theme_editors, "linenumbers", None), "number", None)
             fg_color = getattr(fg, "foreground", "#6e7681") if fg else "#6e7681"
             font = getattr(getattr(base, "settings", None), "font", None)
-            kwargs = {"text": annotation, "fg": fg_color, "bg": bg, "anchor": tk.W, "bd": 0, "padx": 0, "pady": 0}
+            kwargs = {"text": annotation, "fg": fg_color, "bg": bg, "anchor": tk.W, "bd": 0, "padx": 0, "pady": 0, "cursor": "xterm"}
             if font:
                 kwargs["font"] = font
             self._blame_label = tk.Label(self, **kwargs)
-            self._blame_label.bind("<Button-1>", lambda _: self.focus_set())
+            self._blame_label.bind(
+                "<Button-1>",
+                lambda _: (self.goto_line(getattr(self, "_current_blame_line", 1)), self.focus_set()),
+            )
 
-        self._blame_label.config(text=annotation)
+        self._blame_label.config(text=annotation, bg=self.cget("bg"))
         self._reposition_blame_label()
 
     def _reposition_blame_label(self) -> None:
@@ -1715,8 +1732,7 @@ class Text(BaseText):
                 x = bbox[0] + 20
                 y = bbox[1]
             else:
-                line_content = self.get(f"{line}.0", f"{line}.end")
-                x = bbox[0] + (bbox[2] if line_content else 0) + 20
+                x = bbox[0] + 20
                 y = bbox[1]
 
             self._blame_label.place(x=x, y=y)
@@ -1742,6 +1758,11 @@ class Text(BaseText):
             lbl.place_forget()
         self.whitespace_pool.extend(self.whitespace_labels)
         self.whitespace_labels = []
+
+        is_selection_mode = self.whitespace_renderer.mode == "selection"
+        sel_ranges = self.tag_ranges(tk.SEL) if is_selection_mode else None
+        if is_selection_mode and not sel_ranges:
+            return
 
         try:
             first_line = int(self.index("@0,0").split(".")[0])
@@ -1775,23 +1796,41 @@ class Text(BaseText):
             for col, symbol in decorations:
                 if col == len(line_text):
                     idx = f"{line_num}.end"
+                    is_eol = True
                 else:
                     idx = f"{line_num}.{col}"
+                    is_eol = False
+
+                if is_selection_mode and sel_ranges:
+                    if self.compare(idx, "<", sel_ranges[0]) or self.compare(idx, ">=", sel_ranges[1]):
+                        continue
 
                 bbox = self.bbox(idx)
-                if not bbox:
+                if not bbox or (len(bbox) > 3 and bbox[3] == 0):
                     continue
 
-                width = bbox[2] if bbox[2] > 0 else 10
+                width = 12 if is_eol else (bbox[2] if bbox[2] > 0 else 8)
                 height = bbox[3] if bbox[3] > 0 else 14
+                anchor = tk.W if is_eol else tk.CENTER
 
                 if self.whitespace_pool:
                     lbl = self.whitespace_pool.pop()
-                    lbl.config(text=symbol, bg=bg, fg=fg_color)
+                    lbl.config(text=symbol, bg=bg, fg=fg_color, anchor=anchor)
                 else:
-                    lbl = tk.Label(self, text=symbol, bg=bg, fg=fg_color, font=font, bd=0, padx=0, pady=0)
-                    lbl.bind("<Button-1>", lambda _, pos=idx: (self.mark_set(tk.INSERT, pos), self.focus_set()))
+                    lbl = tk.Label(
+                        self,
+                        text=symbol,
+                        bg=bg,
+                        fg=fg_color,
+                        font=font,
+                        anchor=anchor,
+                        bd=0,
+                        padx=0,
+                        pady=0,
+                        cursor="xterm",
+                    )
 
+                lbl.bind("<Button-1>", lambda _, pos=idx: (self.mark_set(tk.INSERT, pos), self.focus_set()))
                 lbl.place(x=bbox[0], y=bbox[1], width=width, height=height)
                 self.whitespace_labels.append(lbl)
 

@@ -287,6 +287,11 @@ class EventManager(GUIManager, ConfigManager):
                 self.statusbar.toggle_editmode(True)
                 active_text = editor.content.text
                 self.statusbar.set_encoding(active_text.encoding)
+                if hasattr(self.statusbar, "set_word_wrap"):
+                    try:
+                        self.statusbar.set_word_wrap(active_text.cget("wrap"))
+                    except Exception:
+                        pass
                 return self.statusbar.set_line_col_info(
                     active_text.line, active_text.column, len(active_text.selection)
                 )
