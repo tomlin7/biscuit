@@ -70,13 +70,13 @@ sv-ttk = "^2.6.1"
 pillow = "^12.3.0"
 requests = "^2.34.2"
 pyperclip = "^1.11.0"
-tkinterweb = {version = "^4.25.3", extras = ["full"]}
-mistune = "^3.3.4"
-chardet = "^7.4.3"
+tkinterweb = {version = "^4.25.5", extras = ["full"]}
+mistune = "^3.4.0"
+chardet = "^7.7.0"
 pywinpty = { version = "^3.0.5", platform = "win32" }
 python-tkdnd = "^0.2.1"
 psutil = "^7.2.2"
-google-genai = "^2.29.0"
+google-genai = "^2.33.0"
 sortedcontainers = "^2.4.0"
 click = "^8.5.0"
 tarts = "^0.20.1"
@@ -94,7 +94,7 @@ debugpy = "^1.8.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.1.1"
 pytest-dotenv = "^0.5.2"
-git-changelog = "^2.9.4"
+git-changelog = "^2.10.0"
 pyperclip = "^1.8.2"
 
 [tool.poetry.group.docs]
