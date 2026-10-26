@@ -500,6 +500,20 @@ class Commands:
     def change_git_branch(self, *_) -> None:
         self.base.palette.show("branch:")
 
+    def toggle_word_wrap(self, *_) -> None:
+        if hasattr(self.base, "statusbar") and hasattr(self.base.statusbar, "toggle_word_wrap"):
+            self.base.statusbar.toggle_word_wrap()
+        elif hasattr(self.base, "editorsmanager"):
+            editor = self.base.editorsmanager.active_editor
+            if editor and hasattr(editor, "content") and hasattr(editor.content, "text"):
+                editor.content.text.toggle_word_wrap()
+
+    def toggle_whitespace(self, *_) -> None:
+        if hasattr(self.base, "editorsmanager"):
+            editor = self.base.editorsmanager.active_editor
+            if editor and hasattr(editor, "content") and hasattr(editor.content, "text"):
+                editor.content.text.toggle_whitespace()
+
     def git_stash(self, *_) -> None:
         if self.base.git and self.base.git.repo:
             self.base.git.repo.stash()

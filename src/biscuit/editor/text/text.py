@@ -33,9 +33,12 @@ if typing.TYPE_CHECKING:
 from biscuit.common import textutils
 from biscuit.common.ui import Text as BaseText
 
+from biscuit.git.blame import GitBlameController, BlameInfo
 from ..comment_prefix import get_comment_prefix
+from .folding import CodeFoldingManager
 from .highlighter import Highlighter
 from .vim import VimMode
+from .whitespace import WhitespaceRenderer
 
 BRACKET_MAP = {"(": ")", "{": "}", "[": "]"}
 BRACKET_MAP_REV = {v: k for k, v in BRACKET_MAP.items()}
@@ -143,6 +146,22 @@ class Text(BaseText):
         # Auto-enable if vim mode is globally active
         if not self.minimalist and not self.standalone and getattr(self.base, "vim_mode", False):
             self.after_idle(self.enable_vim_mode)
+
+        # Git Blame controller and state
+        repo = getattr(getattr(self.base, "git", None), "repo", None)
+        self.git_blame_controller = GitBlameController(repo=repo)
+        self._blame_label: tk.Label | None = None
+        self._current_blame_line: int | None = None
+        self._blame_req_id = 0
+
+        # Whitespace renderer
+        ws_mode = "all" if getattr(getattr(self.base, "config", None), "render_whitespace", False) else "none"
+        self.whitespace_renderer = WhitespaceRenderer(mode=ws_mode)
+        self.whitespace_labels: list[tk.Label] = []
+        self.whitespace_pool: list[tk.Label] = []
+
+        # Code folding manager
+        self.folding_manager = getattr(getattr(self.master, "linenumbers", None), "folding_manager", None) or CodeFoldingManager()
 
     def config_tags(self):
 
@@ -843,6 +862,7 @@ class Text(BaseText):
         self.highlight_current_line()
         self.highlight_current_brackets()
         self.update_indent_guides()
+        self.update_whitespace()
 
         # TODO send only portions of text on change to the LSPServer
         # current solution is not scalable, and will cause lag on large files
@@ -1588,6 +1608,7 @@ class Text(BaseText):
     def highlight_current_line(self, *_):
         if self.minimalist or self.tag_ranges(tk.SEL):
             self.tag_remove("currentline", 1.0, tk.END)
+            self.clear_git_blame()
             return
 
         line = int(self.index(tk.INSERT).split(".")[0])
@@ -1597,10 +1618,12 @@ class Text(BaseText):
         # Only update if the line actually changed
         current_ranges = self.tag_ranges("currentline")
         if current_ranges and self.index(current_ranges[0]) == self.index(start):
+            self._reposition_blame_label()
             return
 
         self.tag_remove("currentline", 1.0, tk.END)
         self.tag_add("currentline", start, end)
+        self.update_git_blame(line)
 
     def select_line(self, line):
         self.clear_all_selection()
@@ -1611,6 +1634,192 @@ class Text(BaseText):
         self.tag_add(tk.SEL, start, end)
 
         self.move_cursor(end)
+
+    def update_git_blame(self, line: int = None) -> None:
+        if self.minimalist or self.standalone or not self.exists or not self.path:
+            self.clear_git_blame()
+            return
+
+        if line is None:
+            try:
+                line = int(self.index(tk.INSERT).split(".")[0])
+            except Exception:
+                self.clear_git_blame()
+                return
+
+        if not hasattr(self, "git_blame_controller") or self.git_blame_controller is None:
+            repo = getattr(getattr(self.base, "git", None), "repo", None)
+            self.git_blame_controller = GitBlameController(repo=repo)
+        elif getattr(self.git_blame_controller, "repo", None) is None:
+            self.git_blame_controller.repo = getattr(getattr(self.base, "git", None), "repo", None)
+
+        self._blame_req_id = getattr(self, "_blame_req_id", 0) + 1
+        req_id = self._blame_req_id
+        path = self.path
+        ctrl = self.git_blame_controller
+
+        def fetch():
+            info = ctrl.get_blame(path, line)
+            try:
+                self.after(0, lambda: self._render_git_blame(req_id, line, info))
+            except Exception:
+                pass
+
+        threading.Thread(target=fetch, daemon=True).start()
+
+    def _render_git_blame(self, req_id: int, line: int, info: Optional[BlameInfo]) -> None:
+        if req_id != getattr(self, "_blame_req_id", None):
+            return
+        if not info:
+            self.clear_git_blame()
+            return
+
+        annotation = f"    {info.format_annotation()}"
+        self._current_blame_line = line
+        self._current_blame_text = annotation
+
+        if not hasattr(self, "_blame_label") or self._blame_label is None:
+            if not hasattr(self, "tk"):
+                return
+            bg = self.cget("bg")
+            base = getattr(self, "base", None)
+            theme_editors = getattr(getattr(base, "theme", None), "editors", None)
+            fg = getattr(getattr(theme_editors, "linenumbers", None), "number", None)
+            fg_color = getattr(fg, "foreground", "#6e7681") if fg else "#6e7681"
+            font = getattr(getattr(base, "settings", None), "font", None)
+            kwargs = {"text": annotation, "fg": fg_color, "bg": bg, "anchor": tk.W, "bd": 0, "padx": 0, "pady": 0}
+            if font:
+                kwargs["font"] = font
+            self._blame_label = tk.Label(self, **kwargs)
+            self._blame_label.bind("<Button-1>", lambda _: self.focus_set())
+
+        self._blame_label.config(text=annotation)
+        self._reposition_blame_label()
+
+    def _reposition_blame_label(self) -> None:
+        if not hasattr(self, "_blame_label") or self._blame_label is None:
+            return
+        line = getattr(self, "_current_blame_line", None)
+        if line is None:
+            self._blame_label.place_forget()
+            return
+
+        try:
+            line_end_idx = f"{line}.end"
+            bbox = self.bbox(line_end_idx)
+            if not bbox:
+                bbox = self.bbox(f"{line}.0")
+                if not bbox:
+                    self._blame_label.place_forget()
+                    return
+                x = bbox[0] + 20
+                y = bbox[1]
+            else:
+                line_content = self.get(f"{line}.0", f"{line}.end")
+                x = bbox[0] + (bbox[2] if line_content else 0) + 20
+                y = bbox[1]
+
+            self._blame_label.place(x=x, y=y)
+            self._blame_label.lift()
+        except Exception:
+            self._blame_label.place_forget()
+
+    def clear_git_blame(self) -> None:
+        self._current_blame_line = None
+        self._current_blame_text = None
+        if hasattr(self, "_blame_label") and self._blame_label:
+            self._blame_label.place_forget()
+
+    def update_whitespace(self) -> None:
+        if self.minimalist or not hasattr(self, "whitespace_renderer") or self.whitespace_renderer.mode == "none":
+            for lbl in self.whitespace_labels:
+                lbl.place_forget()
+            self.whitespace_pool.extend(self.whitespace_labels)
+            self.whitespace_labels = []
+            return
+
+        for lbl in self.whitespace_labels:
+            lbl.place_forget()
+        self.whitespace_pool.extend(self.whitespace_labels)
+        self.whitespace_labels = []
+
+        try:
+            first_line = int(self.index("@0,0").split(".")[0])
+            last_line = int(self.index(f"@0,{self.winfo_height()}").split(".")[0])
+        except Exception:
+            return
+
+        first_line = max(1, first_line)
+        try:
+            total_lines = int(self.index(tk.END).split(".")[0])
+        except Exception:
+            total_lines = last_line + 1
+        last_line = min(total_lines, last_line + 1)
+
+        bg = self.cget("bg")
+        base = getattr(self, "base", None)
+        theme_editors = getattr(getattr(base, "theme", None), "editors", None)
+        fg = getattr(getattr(theme_editors, "linenumbers", None), "number", None)
+        fg_color = getattr(fg, "foreground", "#555555") if fg else "#555555"
+        font = getattr(getattr(base, "settings", None), "font", None)
+
+        for line_num in range(first_line, last_line + 1):
+            line_text = self.get(f"{line_num}.0", f"{line_num}.end")
+            if not line_text and line_num == total_lines:
+                continue
+            line_with_nl = line_text + "\n"
+            decorations = self.whitespace_renderer.get_whitespace_decorations(line_with_nl)
+            if not decorations:
+                continue
+
+            for col, symbol in decorations:
+                if col == len(line_text):
+                    idx = f"{line_num}.end"
+                else:
+                    idx = f"{line_num}.{col}"
+
+                bbox = self.bbox(idx)
+                if not bbox:
+                    continue
+
+                width = bbox[2] if bbox[2] > 0 else 10
+                height = bbox[3] if bbox[3] > 0 else 14
+
+                if self.whitespace_pool:
+                    lbl = self.whitespace_pool.pop()
+                    lbl.config(text=symbol, bg=bg, fg=fg_color)
+                else:
+                    lbl = tk.Label(self, text=symbol, bg=bg, fg=fg_color, font=font, bd=0, padx=0, pady=0)
+                    lbl.bind("<Button-1>", lambda _, pos=idx: (self.mark_set(tk.INSERT, pos), self.focus_set()))
+
+                lbl.place(x=bbox[0], y=bbox[1], width=width, height=height)
+                self.whitespace_labels.append(lbl)
+
+    def toggle_whitespace(self) -> str:
+        new_mode = "none" if self.whitespace_renderer.mode != "none" else "all"
+        self.whitespace_renderer.mode = new_mode
+        self.update_whitespace()
+        return new_mode
+
+    def set_whitespace_mode(self, mode: str) -> None:
+        self.whitespace_renderer.mode = mode
+        self.update_whitespace()
+
+    def toggle_fold(self, line: int = None) -> bool:
+        if line is None:
+            line = int(self.index(tk.INSERT).split(".")[0])
+        if hasattr(self.master, "linenumbers") and hasattr(self.master.linenumbers, "toggle_fold"):
+            return self.master.linenumbers.toggle_fold(line)
+        if hasattr(self, "folding_manager"):
+            return self.folding_manager.toggle_fold(line)
+        return False
+
+    def is_line_folded(self, line: int) -> bool:
+        if hasattr(self.master, "linenumbers") and hasattr(self.master.linenumbers, "is_line_folded"):
+            return self.master.linenumbers.is_line_folded(line)
+        if hasattr(self, "folding_manager"):
+            return self.folding_manager.is_line_folded(line)
+        return False
 
     def highlight_current_word(self):
         if self.tag_ranges(tk.SEL):

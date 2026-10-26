@@ -29,12 +29,24 @@ class CodeFoldingManager:
     def compute_indent_folds(self, lines: List[str]) -> List[Tuple[int, int]]:
         folds = []
         for i, line in enumerate(lines):
+            stripped = line.rstrip()
+            if not stripped:
+                continue
             indent = len(line) - len(line.lstrip())
-            if line.rstrip().endswith(":") or line.rstrip().endswith("{"):
-                # find end
+            is_header = stripped.endswith(":") or stripped.endswith("{")
+            has_indented_child = (
+                i + 1 < len(lines)
+                and lines[i + 1].strip() != ""
+                and (len(lines[i + 1]) - len(lines[i + 1].lstrip())) > indent
+            )
+            if is_header or has_indented_child:
+                found = False
                 for j in range(i + 1, len(lines)):
                     next_line = lines[j]
                     if next_line.strip() and (len(next_line) - len(next_line.lstrip())) <= indent:
                         folds.append((i + 1, j))
+                        found = True
                         break
+                if not found and len(lines) > i + 1:
+                    folds.append((i + 1, len(lines)))
         return folds

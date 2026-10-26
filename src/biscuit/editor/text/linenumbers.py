@@ -8,6 +8,7 @@ if typing.TYPE_CHECKING:
     from .editor import TextEditor
 
 from biscuit.common.ui import Canvas, Menubutton
+from .folding import CodeFoldingManager
 
 
 class LineNumbers(Canvas):
@@ -40,9 +41,11 @@ class LineNumbers(Canvas):
             self.base.theme.editors.linenumbers.breakpoint.values()
         )
         self.breakpoints: set[int] = set()
+        self.folding_manager = CodeFoldingManager()
 
     def attach(self, text):
         self.text = text
+        self.text.folding_manager = self.folding_manager
 
     def mark_line(self, line):
         dline = self.text.dlineinfo(line)
@@ -80,6 +83,61 @@ class LineNumbers(Canvas):
         self.redraw()
         self.master.update_breakpoints(self.breakpoints)
 
+    def update_folds(self) -> None:
+        if not self.text:
+            return
+        try:
+            content = self.text.get("1.0", "end-1c")
+            lines = content.split("\n")
+            folds = self.folding_manager.compute_indent_folds(lines)
+            current_folded = {l: f.is_folded for l, f in self.folding_manager.folds.items() if f.is_folded}
+            self.folding_manager.folds.clear()
+            for start, end in folds:
+                f = self.folding_manager.add_fold(start, end)
+                if current_folded.get(start, False):
+                    f.is_folded = True
+        except Exception:
+            pass
+
+    def toggle_fold(self, linenum: int) -> bool:
+        if not self.text or not self.folding_manager or linenum not in self.folding_manager.folds:
+            return False
+
+        fold = self.folding_manager.folds[linenum]
+        is_folded = self.folding_manager.toggle_fold(linenum)
+        tag_name = f"fold_{linenum}"
+
+        if is_folded:
+            start_idx = f"{linenum + 1}.0"
+            end_idx = f"{fold.end_line + 1}.0"
+            self.text.tag_config(tag_name, elide=True)
+            self.text.tag_add(tag_name, start_idx, end_idx)
+        else:
+            self.text.tag_remove(tag_name, "1.0", tk.END)
+            self.text.tag_delete(tag_name)
+
+        self.redraw()
+        if hasattr(self.master, "on_scroll"):
+            self.master.on_scroll()
+        return is_folded
+
+    def fold_line(self, linenum: int) -> bool:
+        if not self.folding_manager or linenum not in self.folding_manager.folds:
+            return False
+        if not self.folding_manager.is_line_folded(linenum):
+            return self.toggle_fold(linenum)
+        return True
+
+    def unfold_line(self, linenum: int) -> bool:
+        if not self.folding_manager or linenum not in self.folding_manager.folds:
+            return False
+        if self.folding_manager.is_line_folded(linenum):
+            return self.toggle_fold(linenum)
+        return False
+
+    def is_line_folded(self, linenum: int) -> bool:
+        return self.folding_manager.is_line_folded(linenum)
+
     def redraw(self, *_):
         self.delete(tk.ALL)
 
@@ -87,25 +145,35 @@ class LineNumbers(Canvas):
             return
 
         current_line = int(self.text.index(tk.INSERT).split('.')[0]) 
+        win_height = self.winfo_height()
+        try:
+            max_line = int(self.text.index(tk.END).split(".")[0])
+        except Exception:
+            max_line = 999999
 
         i = self.text.index("@0,0")
         while True:
             dline = self.text.dlineinfo(i)
             if dline is None:
-                break
+                try:
+                    linenum = int(float(i))
+                    if linenum >= max_line:
+                        break
+                    last_visible = self.text.index(f"@0,{win_height}")
+                    if self.text.compare(i, ">", last_visible):
+                        break
+                except Exception:
+                    break
+                i = self.text.index(f"{i}+1line")
+                continue
 
             y = dline[1]
+            if y > win_height + 50:
+                break
+
             linenum = int(float(i))
             curline = self.text.dlineinfo(tk.INSERT)
             cur_y = curline[1] if curline else None
-
-            # TODO: optional: skipping comments
-            #             # check if line is commented
-            # if self.text.highlighter and any((tag[1].startswith("Token.Comment") for tag in self.text.dump(i, i + " lineend", tag=True))):
-            # if self.text.get(f"{i} linestart", f"{i} lineend").strip().startswith("#"):
-            #     self.create_text(40, y, anchor=tk.NE, text="|   ", tag=i, fill=self.base.theme.border)
-            #     i = self.text.index(f"{i}+1line")
-            #     continue
 
             # Render breakpoint
             has_breakpoint = linenum in self.breakpoints
@@ -138,6 +206,36 @@ class LineNumbers(Canvas):
                 "<Button-1>",
                 lambda _, linenum=linenum: self.toggle_breakpoint(linenum),
             )
+
+            # Render code folding indicator
+            if self.folding_manager and linenum in self.folding_manager.folds:
+                is_folded = self.folding_manager.is_line_folded(linenum)
+                arrow = "▶" if is_folded else "▼"
+                fold_tag = f"fold_arrow_{linenum}"
+                fold_id = self.create_text(
+                    54,
+                    y + 7,
+                    anchor=tk.CENTER,
+                    text=arrow,
+                    font=self.font,
+                    fill=self.fg,
+                    tags=(fold_tag,),
+                )
+                self.tag_bind(
+                    fold_tag,
+                    "<Button-1>",
+                    lambda _, l=linenum: self.toggle_fold(l),
+                )
+                self.tag_bind(
+                    fold_tag,
+                    "<Enter>",
+                    lambda _, fid=fold_id: (self.itemconfig(fid, fill=self.hfg), self.config(cursor="hand2")),
+                )
+                self.tag_bind(
+                    fold_tag,
+                    "<Leave>",
+                    lambda _, fid=fold_id: (self.itemconfig(fid, fill=self.fg), self.config(cursor="")),
+                )
 
             if self.text.relative_line_numbers:
                 if linenum != current_line:

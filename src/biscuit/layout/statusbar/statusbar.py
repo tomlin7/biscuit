@@ -93,6 +93,14 @@ class Statusbar(Frame):
         )
 
         # ---------------------------------------------------------------------
+        self.word_wrap_btn = self.add_button(
+            text="Wrap: Off",
+            callback=self.toggle_word_wrap,
+            description="Toggle Word Wrap",
+            side=tk.RIGHT,
+        )
+
+        # ---------------------------------------------------------------------
         self.indent_actionset = self.create_actionset(
             "Change indentation",
             "indent:",
@@ -275,6 +283,7 @@ class Statusbar(Frame):
             # TODO: EOL, Encoding should be optional
             # self.eol,
             # self.encoding,
+            self.word_wrap_btn,
             self.indentation,
             self.line_col_info,
         ]
@@ -298,8 +307,21 @@ class Statusbar(Frame):
         """
 
         self.file_type.change_text(text.language)
+        self.set_word_wrap(text.cget("wrap"))
         # self.encoding.change_text(text.encoding.upper())
         # self.eol.change_text(get_eol_label(text.eol))
+
+    def toggle_word_wrap(self, *_) -> None:
+        if hasattr(self.base, "editorsmanager"):
+            editor = self.base.editorsmanager.active_editor
+            if editor and hasattr(editor, "content") and hasattr(editor.content, "text"):
+                new_wrap = editor.content.text.toggle_word_wrap()
+                self.set_word_wrap(new_wrap)
+
+    def set_word_wrap(self, wrap: str) -> None:
+        text = "Wrap: On" if wrap == "word" else "Wrap: Off"
+        if hasattr(self, "word_wrap_btn"):
+            self.word_wrap_btn.change_text(text)
 
     def set_line_col_info(self, line: int, col: int, selected: int = None) -> None:
         """Sets the line and column information on the status bar.

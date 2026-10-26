@@ -13,12 +13,50 @@ class BlameInfo:
         return f"{self.author}, {self.date} • {self.summary}"
 
 class GitBlameController:
+    repo = None
+
     def __init__(self, repo=None):
         self.repo = repo
 
     def parse_blame_line(self, blame_entry) -> BlameInfo:
-        commit = getattr(blame_entry, "commit", blame_entry)
+        if isinstance(blame_entry, (list, tuple)) and len(blame_entry) > 0:
+            commit = blame_entry[0]
+        else:
+            commit = getattr(blame_entry, "commit", blame_entry)
         author = str(getattr(commit, "author", "Unknown"))
         summary = str(getattr(commit, "summary", "commit"))
         hexsha = str(getattr(commit, "hexsha", ""))[:7]
-        return BlameInfo(author=author, date="recently", commit_hash=hexsha, summary=summary)
+        date_str = "recently"
+        if hasattr(commit, "authored_datetime"):
+            try:
+                date_str = commit.authored_datetime.strftime("%Y-%m-%d")
+            except Exception:
+                pass
+        elif hasattr(commit, "date"):
+            date_str = str(commit.date)
+        return BlameInfo(author=author, date=date_str, commit_hash=hexsha, summary=summary)
+
+    def get_blame(self, file_path: str, line_number: int) -> Optional[BlameInfo]:
+        if not self.repo or not file_path:
+            return None
+        try:
+            if hasattr(self.repo, "blame"):
+                blames = self.repo.blame("HEAD", file_path, L=f"{line_number},{line_number}")
+                if blames and len(blames) > 0:
+                    return self.parse_blame_line(blames[0])
+            elif hasattr(self.repo, "git") and hasattr(self.repo.git, "blame"):
+                out = self.repo.git.blame("-L", f"{line_number},{line_number}", "--porcelain", file_path)
+                lines = out.splitlines()
+                if lines:
+                    hash_val = lines[0].split()[0][:7]
+                    author = "Unknown"
+                    summary = "commit"
+                    for l in lines[1:]:
+                        if l.startswith("author "):
+                            author = l[len("author "):]
+                        elif l.startswith("summary "):
+                            summary = l[len("summary "):]
+                    return BlameInfo(author=author, date="recently", commit_hash=hash_val, summary=summary)
+        except Exception:
+            return None
+        return None

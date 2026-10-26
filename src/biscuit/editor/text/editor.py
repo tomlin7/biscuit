@@ -11,6 +11,7 @@ from ..editorbase import BaseEditor
 from .linenumbers import LineNumbers
 from .menu import RunMenu
 from .minimap import Minimap
+from .sticky_scroll import StickyScrollHeader
 from .text import Text
 
 if typing.TYPE_CHECKING:
@@ -143,6 +144,7 @@ class TextEditor(BaseEditor):
         self.linenumbers.attach(self.text)
         if not self.minimalist:
             self.minimap.attach(self.text)
+        self.sticky_scroll = StickyScrollHeader(self, self.text)
         self.scrollbar.config(command=self.text.yview)
 
         self.text.config(font=self.font)
@@ -235,7 +237,12 @@ class TextEditor(BaseEditor):
         self.run_file()
 
     def on_change(self, *_) -> None:
-        self.linenumbers.redraw()
+        if hasattr(self, "linenumbers"):
+            self.linenumbers.update_folds()
+            self.linenumbers.redraw()
+        if hasattr(self, "sticky_scroll"):
+            self.sticky_scroll.update_scopes()
+            self.sticky_scroll.update_sticky_headers()
         try:
             if not self.standalone:
                 self.base.update_statusbar()
@@ -288,10 +295,18 @@ class TextEditor(BaseEditor):
             pass
 
     def on_scroll(self, *_) -> None:
-        self.linenumbers.redraw()
+        if hasattr(self, "linenumbers"):
+            self.linenumbers.redraw()
+        if hasattr(self, "sticky_scroll"):
+            self.sticky_scroll.update_sticky_headers()
         if not self.minimalist:
             self.minimap.update_from_yview(*self.text.yview())
-        self.text.update_indent_guides()
+        if hasattr(self.text, "update_indent_guides"):
+            self.text.update_indent_guides()
+        if hasattr(self.text, "_reposition_blame_label"):
+            self.text._reposition_blame_label()
+        if hasattr(self.text, "update_whitespace"):
+            self.text.update_whitespace()
         self.event_generate("<<Scroll>>")
 
     def _schedule_minimap_redraw(self) -> None:
