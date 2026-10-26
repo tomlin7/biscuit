@@ -3765,14 +3765,14 @@ scikit-build = "*"
 
 [[package]]
 name = "tkinterweb"
-version = "4.25.4"
+version = "4.25.5"
 description = "HTML/CSS widgets for Tkinter"
 optional = false
 python-versions = ">=3.2"
 groups = ["main"]
 files = [
-    {file = "tkinterweb-4.25.4-py3-none-any.whl", hash = "sha256:22be8a4d914a93ade160d6155dc2bc54597cb59df8ef00f3936c02a2ae7ad38e"},
-    {file = "tkinterweb-4.25.4.tar.gz", hash = "sha256:ee1a458d693dff74b6e4cae47b5b64f741c591a72ef8172b104ceb241c98d2d8"},
+    {file = "tkinterweb-4.25.5-py3-none-any.whl", hash = "sha256:90f817a0015126e2c17b23f01ef08dc34b6aacf2455808649d97e7dae7d897cf"},
+    {file = "tkinterweb-4.25.5.tar.gz", hash = "sha256:52f62f29cbcc000774bafc46465e18fce214de24163f3cbe26735a843125673d"},
 ]
 
 [package.dependencies]
@@ -4347,4 +4347,4 @@ docs = ["mkdocs", "mkdocs-material", "mkdocstrings-python"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "ed682f5e67143121ad668d5ae7f677a14e56bcfdbfbc4cf959d6f471f9d102c4"
+content-hash = "54937fcdf880606e74d4adac9d9ee08d4b79ff36ae2b39c7a37ead405b593e80"
