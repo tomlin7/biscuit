@@ -110,7 +110,7 @@ dev = [
     "pytest>=9.1.1,<10.0.0",
     "pytest-dotenv>=0.5.2,<0.6.0",
     "git-changelog>=2.9.4,<3.0.0",
-    "pytest-asyncio (>=1.4.0,<2.0.0)",
+    "pytest-asyncio (>=1.4.1,<2.0.0)",
 ]
 
 [tool.pytest.ini_options]
