@@ -51,6 +51,8 @@ class TextEditor(BaseEditor):
         self.cursor_history_index: int = -1
         self._minimap_redraw_job = None
         self._text_refresh_job = None
+        self._fold_update_job = None
+        self._scope_update_job = None
 
         if not self.standalone:
             self.__buttons__ = [
@@ -238,11 +240,10 @@ class TextEditor(BaseEditor):
 
     def on_change(self, *_) -> None:
         if hasattr(self, "linenumbers"):
-            self.linenumbers.update_folds()
             self.linenumbers.redraw()
+            self._schedule_fold_update()
         if hasattr(self, "sticky_scroll"):
-            self.sticky_scroll.update_scopes()
-            self.sticky_scroll.update_sticky_headers()
+            self._schedule_scope_update()
         try:
             if not self.standalone:
                 self.base.update_statusbar()
@@ -276,6 +277,47 @@ class TextEditor(BaseEditor):
             if not self.winfo_exists():
                 return
             self.text.refresh()
+        except Exception:
+            pass
+
+    def _schedule_fold_update(self) -> None:
+        """Debounce expensive fold computation while the user is typing."""
+        if self._fold_update_job is not None:
+            try:
+                self.after_cancel(self._fold_update_job)
+            except Exception:
+                pass
+        self._fold_update_job = self.after(150, self._update_folds)
+
+    def _update_folds(self) -> None:
+        """Run the debounced fold update if the editor still exists."""
+        self._fold_update_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if hasattr(self, "linenumbers"):
+                self.linenumbers.update_folds()
+        except Exception:
+            pass
+
+    def _schedule_scope_update(self) -> None:
+        """Debounce expensive sticky scroll scope computation."""
+        if self._scope_update_job is not None:
+            try:
+                self.after_cancel(self._scope_update_job)
+            except Exception:
+                pass
+        self._scope_update_job = self.after(150, self._update_scopes)
+
+    def _update_scopes(self) -> None:
+        """Run the debounced scope update if the editor still exists."""
+        self._scope_update_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if hasattr(self, "sticky_scroll"):
+                self.sticky_scroll.update_scopes()
+                self.sticky_scroll.update_sticky_headers()
         except Exception:
             pass
 
