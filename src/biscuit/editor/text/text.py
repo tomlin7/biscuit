@@ -107,6 +107,7 @@ class Text(BaseText):
         # self.last_change = Change(None, None, None, None, None)
         self._pending_edit_infos: list[dict] = []
         self._force_full_highlight = False
+        self._cached_all_text: str | None = None
         self.config_tags()
         self.highlighter = Highlighter(self, language)
         if not self.standalone and not self.minimalist:
@@ -1544,7 +1545,9 @@ class Text(BaseText):
         return self.index(tk.END + "-1c")
 
     def get_all_text(self):
-        return self.get(1.0, tk.END)
+        if self._cached_all_text is None:
+            self._cached_all_text = self.get(1.0, tk.END)
+        return self._cached_all_text
 
     @property
     def selection(self) -> str:
@@ -1936,6 +1939,7 @@ class Text(BaseText):
         self._pending_edit_infos.clear()
         self._force_full_highlight = True
         self._line_byte_starts = None
+        self._cached_all_text = None
         self.event_generate("<<Change>>", when="tail")
         self._notify_lsp_change()
 
@@ -2003,6 +2007,7 @@ class Text(BaseText):
                 self._finalize_edit_info(edit_info, args)
             else:
                 self._force_full_highlight = True
+            self._cached_all_text = None
             self.event_generate("<<Change>>", when="tail")
             self._notify_lsp_change()
         elif args[0:3] == ("mark", "set", "insert"):
