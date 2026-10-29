@@ -53,6 +53,11 @@ class TextEditor(BaseEditor):
         self._text_refresh_job = None
         self._fold_update_job = None
         self._scope_update_job = None
+        self._linenumbers_redraw_job = None
+        self._sticky_scroll_update_job = None
+        self._minimap_update_job = None
+        self._indent_guides_update_job = None
+        self._whitespace_update_job = None
 
         if not self.standalone:
             self.__buttons__ = [
@@ -252,6 +257,7 @@ class TextEditor(BaseEditor):
         self._schedule_text_refresh()
         if not self.minimalist:
             self.minimap.redraw_cursor()
+            self.minimap.mark_dirty()
             self._schedule_minimap_redraw()
         self.record_cursor_position()
         self.event_generate("<<Change>>")
@@ -321,6 +327,109 @@ class TextEditor(BaseEditor):
         except Exception:
             pass
 
+<<<<<<< HEAD
+    def _schedule_linenumbers_redraw(self) -> None:
+        """Debounce expensive line numbers redraw during scroll."""
+        if self._linenumbers_redraw_job is not None:
+            try:
+                self.after_cancel(self._linenumbers_redraw_job)
+            except Exception:
+                pass
+        self._linenumbers_redraw_job = self.after(50, self._redraw_linenumbers)
+
+    def _redraw_linenumbers(self) -> None:
+        """Run the debounced line numbers redraw if the editor still exists."""
+        self._linenumbers_redraw_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if hasattr(self, "linenumbers"):
+                self.linenumbers.redraw()
+        except Exception:
+            pass
+
+    def _schedule_sticky_scroll_update(self) -> None:
+        """Debounce sticky scroll update during scroll."""
+        if self._sticky_scroll_update_job is not None:
+            try:
+                self.after_cancel(self._sticky_scroll_update_job)
+            except Exception:
+                pass
+        self._sticky_scroll_update_job = self.after(50, self._update_sticky_scroll)
+
+    def _update_sticky_scroll(self) -> None:
+        """Run the debounced sticky scroll update if the editor still exists."""
+        self._sticky_scroll_update_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if hasattr(self, "sticky_scroll"):
+                self.sticky_scroll.update_sticky_headers()
+        except Exception:
+            pass
+
+    def _schedule_minimap_update(self) -> None:
+        """Debounce minimap update during scroll."""
+        if self._minimap_update_job is not None:
+            try:
+                self.after_cancel(self._minimap_update_job)
+            except Exception:
+                pass
+        self._minimap_update_job = self.after(50, self._update_minimap)
+
+    def _update_minimap(self) -> None:
+        """Run the debounced minimap update if the editor still exists."""
+        self._minimap_update_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if not self.minimalist and hasattr(self, "minimap"):
+                self.minimap.update_from_yview(*self.text.yview())
+        except Exception:
+            pass
+
+    def _schedule_indent_guides_update(self) -> None:
+        """Debounce indent guides update during scroll."""
+        if self._indent_guides_update_job is not None:
+            try:
+                self.after_cancel(self._indent_guides_update_job)
+            except Exception:
+                pass
+        self._indent_guides_update_job = self.after(50, self._update_indent_guides)
+
+    def _update_indent_guides(self) -> None:
+        """Run the debounced indent guides update if the editor still exists."""
+        self._indent_guides_update_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if hasattr(self.text, "update_indent_guides"):
+                self.text.update_indent_guides()
+        except Exception:
+            pass
+
+    def _schedule_whitespace_update(self) -> None:
+        """Debounce whitespace update during scroll."""
+        if self._whitespace_update_job is not None:
+            try:
+                self.after_cancel(self._whitespace_update_job)
+            except Exception:
+                pass
+        self._whitespace_update_job = self.after(50, self._update_whitespace)
+
+    def _update_whitespace(self) -> None:
+        """Run the debounced whitespace update if the editor still exists."""
+        self._whitespace_update_job = None
+        try:
+            if not self.winfo_exists():
+                return
+            if hasattr(self.text, "update_whitespace"):
+                self.text.update_whitespace()
+        except Exception:
+            pass
+
+=======
+>>>>>>> origin/main
     def record_cursor_position(self, pos: str = None) -> None:
         try:
             if not pos and hasattr(self, "text"):
@@ -338,17 +447,17 @@ class TextEditor(BaseEditor):
 
     def on_scroll(self, *_) -> None:
         if hasattr(self, "linenumbers"):
-            self.linenumbers.redraw()
+            self._schedule_linenumbers_redraw()
         if hasattr(self, "sticky_scroll"):
-            self.sticky_scroll.update_sticky_headers()
+            self._schedule_sticky_scroll_update()
         if not self.minimalist:
-            self.minimap.update_from_yview(*self.text.yview())
+            self._schedule_minimap_update()
         if hasattr(self.text, "update_indent_guides"):
-            self.text.update_indent_guides()
+            self._schedule_indent_guides_update()
         if hasattr(self.text, "_reposition_blame_label"):
             self.text._reposition_blame_label()
         if hasattr(self.text, "update_whitespace"):
-            self.text.update_whitespace()
+            self._schedule_whitespace_update()
         self.event_generate("<<Scroll>>")
 
     def _schedule_minimap_redraw(self) -> None:

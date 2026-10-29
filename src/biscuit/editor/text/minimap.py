@@ -48,6 +48,10 @@ class Minimap(Frame):
         self.y_top_lim = 0
         self._drag_data = {"y": 0, "item": None}
         self.yvalue = 0
+        
+        # Cache for minimap content to avoid re-rendering on every scroll
+        self._cached_text_content = None
+        self._content_dirty = True
 
         self.cw.tag_bind("slider", "<ButtonPress-1>", self.drag_start)
         self.cw.tag_bind("slider", "<ButtonRelease-1>", self.drag_stop)
@@ -55,26 +59,56 @@ class Minimap(Frame):
 
     def attach(self, textw):
         self.tw = textw
+        self._content_dirty = True
+
+    def mark_dirty(self):
+        """Mark that the content has changed and needs re-rendering."""
+        self._content_dirty = True
 
     def redraw(self):
+        """Only re-render if content has actually changed."""
+        if not self._content_dirty:
+            return
+            
         self.cw.delete("redrawn")
 
         if not self.tw:
             return
 
-        self.text = self.tw.get("1.0", tk.END)
-        self.cw.create_text(
-            5,
-            0,
-            text=self.text,
-            anchor=tk.NW,
-            font=self.font,
-            fill="grey",
-            tag="redrawn",
-        )
+        # Get current text and cache it
+        current_text = self.tw.get("1.0", tk.END)
+        
+        # Only re-render if text actually changed
+        if current_text != self._cached_text_content:
+            self._cached_text_content = current_text
+            
+            # Create ultra-condensed representation for performance
+            # Only render every 10th line, first 30 chars
+            lines = current_text.split("\n")
+            condensed_lines = []
+            for i, line in enumerate(lines):
+                if i % 10 == 0:  # Only every 10th line
+                    if len(line) > 30:
+                        condensed_lines.append(line[:30])
+                    else:
+                        condensed_lines.append(line)
+                else:
+                    condensed_lines.append("")  # Empty line for spacing
+            condensed_text = "\n".join(condensed_lines)
+            
+            self.cw.create_text(
+                5,
+                0,
+                text=condensed_text,
+                anchor=tk.NW,
+                font=self.font,
+                fill="grey",
+                tag="redrawn",
+            )
 
-        self.y_bottom_lim = int(self.tw.index(tk.END).split(".")[0]) * 2 + 10
-        # self.y_bottom_lim = self.tw.yview()[1] * self.cw.winfo_height()
+            self.y_bottom_lim = int(self.tw.index(tk.END).split(".")[0]) * 2 + 10
+        
+        self._content_dirty = False
 
     def redraw_cursor(self):
         self.cw.delete("cursor")
