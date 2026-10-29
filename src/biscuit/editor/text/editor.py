@@ -327,7 +327,6 @@ class TextEditor(BaseEditor):
         except Exception:
             pass
 
-<<<<<<< HEAD
     def _schedule_linenumbers_redraw(self) -> None:
         """Debounce expensive line numbers redraw during scroll."""
         if self._linenumbers_redraw_job is not None:
@@ -427,9 +426,6 @@ class TextEditor(BaseEditor):
                 self.text.update_whitespace()
         except Exception:
             pass
-
-=======
->>>>>>> origin/main
     def record_cursor_position(self, pos: str = None) -> None:
         try:
             if not pos and hasattr(self, "text"):
