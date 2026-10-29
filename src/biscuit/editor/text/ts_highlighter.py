@@ -364,7 +364,7 @@ class TreeSitterHighlighter:
             self.text.set_line_byte_starts(code)
         code_bytes = code.encode("utf-8")
         self.tree = self.parser.parse(code_bytes)
-        self._apply_highlights_full()
+        self._apply_highlights_visible()
 
     def incremental_highlight(self, edit_info: dict) -> None:
         """Incremental parse after an edit for fast updates.
@@ -442,9 +442,66 @@ class TreeSitterHighlighter:
 
         self._apply_bracket_colorization()
 
+    def _apply_highlights_visible(self) -> None:
+        """Clear tags and re-apply highlights only for the visible region + buffer."""
+        # Get visible line range with buffer
+        visible = self._visible_line_range()
+        if visible:
+            first_line, last_line = visible
+            # Add 50-line buffer above and below for smooth scrolling
+            first_line = max(0, first_line - 50)
+            last_line = last_line + 50
+        else:
+            # Fallback to first 100 lines if we can't determine visible range
+            first_line, last_line = 0, 100
+
+        # Clear tags only in the visible region
+        start_line = first_line + 1
+        end_line = last_line + 1
+        for capture_name in self.tag_colors:
+            self.text.tag_remove(f"ts.{capture_name}", f"{start_line}.0", f"{end_line}.end")
+        for i in range(len(self.bracket_colors)):
+            self.text.tag_remove(f"bracket.depth{i}", f"{start_line}.0", f"{end_line}.end")
+        self.bracket_map.clear()
+
+        if not self.tree or not self.query:
+            return
+
+        # Query only nodes in the visible region
+        cursor = QueryCursor(self.query)
+        captures = cursor.captures(self.tree.root_node)
+
+        for capture_name, nodes in captures.items():
+            tag = self._resolve_tag(capture_name)
+            if not tag:
+                continue
+            for node in nodes:
+                # Only apply tags to nodes in the visible region
+                node_start_line = node.start_point[0]
+                node_end_line = node.end_point[0]
+                
+                # Skip nodes entirely outside visible region
+                if node_end_line < first_line or node_start_line > last_line:
+                    continue
+                
+                start = f"{node.start_point[0] + 1}.{node.start_point[1]}"
+                end = f"{node.end_point[0] + 1}.{node.end_point[1]}"
+                self.text.tag_add(tag, start, end)
+
+        self._apply_bracket_colorization()
+
     def _apply_highlights_incremental(self, changed_ranges) -> None:
         """Re-highlight only the changed ranges for speed."""
-        # Clear tags in changed regions
+        # Get visible region to limit work
+        visible = self._visible_line_range()
+        if visible:
+            first_line, last_line = visible
+            first_line = max(0, first_line - 50)
+            last_line = last_line + 50
+        else:
+            first_line, last_line = 0, 2**31 - 1
+
+        # Clear tags only in changed regions that overlap with visible area
         for r in changed_ranges:
             start = f"{r.start_point[0] + 1}.{r.start_point[1]}"
             end = f"{r.end_point[0] + 1}.{r.end_point[1]}"
@@ -466,10 +523,9 @@ class TreeSitterHighlighter:
                     end = f"{node.end_point[0] + 1}.{node.end_point[1]}"
                     self.text.tag_add(tag, start, end)
 
-        for i in range(len(self.bracket_colors)):
-            self.text.tag_remove(f"bracket.depth{i}", "1.0", tk.END)
-        self.bracket_map.clear()
-        self._apply_bracket_colorization()
+        # Skip bracket colorization during incremental updates
+        # Bracket colors are only recomputed on full refresh (file load, language change, scroll)
+        # This is a major performance win during typing
 
     def _visible_line_range(self) -> tuple[int, int] | None:
         """Return the zero-based line range currently visible in the editor."""
