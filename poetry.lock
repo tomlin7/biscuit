@@ -3244,14 +3244,14 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests
 
 [[package]]
 name = "pytest-asyncio"
-version = "1.4.0"
+version = "1.4.1"
 description = "Pytest support for asyncio"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest_asyncio-1.4.0-py3-none-any.whl", hash = "sha256:933ca923a23075a87fb7070c0ec272a6848489824d887c85c812670932835aa1"},
-    {file = "pytest_asyncio-1.4.0.tar.gz", hash = "sha256:c6c0d2259945122819f171a32ecea2c349ead889ee28176caaf492143424be42"},
+    {file = "pytest_asyncio-1.4.1-py3-none-any.whl", hash = "sha256:507afa78ec77c6661164ef1a2368bc7820383fd1a14b2a7f813de8b5a92949cc"},
+    {file = "pytest_asyncio-1.4.1.tar.gz", hash = "sha256:e8266eb094e5ee9ffdb2068c9836f33e209ea77a970eb846933d416b5602669b"},
 ]
 
 [package.dependencies]
@@ -4347,4 +4347,4 @@ docs = ["mkdocs", "mkdocs-material", "mkdocstrings-python"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "54937fcdf880606e74d4adac9d9ee08d4b79ff36ae2b39c7a37ead405b593e80"
+content-hash = "2c36a6f9de8e1918016c94f4b3f212e801e36095c40c34d3fbca45cc97869430"
