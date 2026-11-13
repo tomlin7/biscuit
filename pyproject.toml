@@ -84,7 +84,7 @@ editorconfig = "^0.17.1"
 tkextrafont = { version = "^0.6.3", platform = "win32" }
 ptyprocess = { version = "^0.7.0", markers = "sys_platform != 'win32'" }
 anthropic = "^0.117.1"
-tree-sitter = "^0.26.0"
+tree-sitter = "^0.26.1"
 tree-sitter-language-pack = "^1.23.1"
 legacy-cgi = { version = ">=2.6.0", python = ">=3.13" }
 dap-python = { version = "^1.0.1", python = ">=3.12" }
