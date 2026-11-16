@@ -161,6 +161,8 @@ class MiniMaxProvider(AIProvider):
         )
 
     def process_message(self, message: str) -> str:
+        import anthropic
+
         with anthropic.Anthropic(
             api_key=self.api_key,
             base_url=MINIMAX_ANTHROPIC_BASE_URL,
