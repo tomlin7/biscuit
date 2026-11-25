@@ -306,6 +306,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.298.0** | Focus Search view from palette | shipped |
 | **0.299.0** | Focus Extensions view from palette | shipped |
 | **0.300.0** | Focus Debug view from palette | shipped |
+| **0.301.0** | Focus Outline view from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

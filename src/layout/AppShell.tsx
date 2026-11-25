@@ -950,6 +950,10 @@ function ShellChrome() {
         setSidebarMode("debug");
         setSidebarOpen(true);
       },
+      focusOutline: () => {
+        setSidebarMode("outline");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,

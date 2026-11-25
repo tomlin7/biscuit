@@ -992,4 +992,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.focusDebug(),
   },
+  {
+    id: "workbench.action.focusOutline",
+    title: "Focus on Outline View",
+    category: "View",
+    run: (ctx) => ctx.focusOutline(),
+  },
 ];
