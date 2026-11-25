@@ -62,10 +62,13 @@ type AiState = {
   removeAttachment: (path: string) => void;
   attachPath: (path: string, name: string, content: string) => void;
   cycleEffort: () => void;
+  exportSession: () => void;
+  importSession: () => Promise<void>;
 };
 
 const SETTINGS_KEY = "t3d.ai.settings";
 const SESSIONS_KEY = "t3d.ai.sessions";
+const MAX_SESSIONS = 40;
 const AiContext = createContext<AiState | null>(null);
 
 function defaultSettings(): AiSettings {
@@ -104,7 +107,14 @@ function loadSessions(): { sessions: ChatSession[]; activeSessionId: string } {
         sessions: ChatSession[];
         activeSessionId: string;
       };
-      if (parsed.sessions?.length) return parsed;
+      if (parsed.sessions?.length) {
+        const pruned = [...parsed.sessions]
+          .sort((a, b) => b.updatedAt - a.updatedAt)
+          .slice(0, MAX_SESSIONS);
+        const active =
+          pruned.find((s) => s.id === parsed.activeSessionId)?.id ?? pruned[0].id;
+        return { sessions: pruned, activeSessionId: active };
+      }
     }
   } catch {
     /* ignore */
@@ -138,9 +148,12 @@ export function AiProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
+      const pruned = [...sessions]
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+        .slice(0, MAX_SESSIONS);
       localStorage.setItem(
         SESSIONS_KEY,
-        JSON.stringify({ sessions, activeSessionId }),
+        JSON.stringify({ sessions: pruned, activeSessionId }),
       );
     } catch {
       /* ignore */
@@ -187,7 +200,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
 
   const newChat = useCallback(() => {
     const session = emptySession();
-    setSessions((all) => [session, ...all]);
+    setSessions((all) => [session, ...all].slice(0, MAX_SESSIONS));
     setActiveSessionId(session.id);
     setAttachments([]);
     setError(null);
@@ -438,6 +451,65 @@ export function AiProvider({ children }: { children: ReactNode }) {
     setBusy(false);
   }, []);
 
+  const exportSession = useCallback(() => {
+    const payload = {
+      version: 1,
+      exportedAt: Date.now(),
+      session: active,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = globalThis.document.createElement("a");
+    link.href = url;
+    link.download = `${(active.title || "chat").replace(/[^\w.-]+/g, "_").slice(0, 40)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [active]);
+
+  const importSession = useCallback(async () => {
+    const selected = await open({
+      multiple: false,
+      title: "Import chat JSON",
+      filters: [{ name: "JSON", extensions: ["json"] }],
+    });
+    if (selected === null) return;
+    const path = Array.isArray(selected) ? selected[0] : selected;
+    if (!path) return;
+    try {
+      const text = await readTextFile(path);
+      const parsed = JSON.parse(text) as {
+        session?: Partial<ChatSession>;
+        messages?: ChatMessage[];
+        title?: string;
+      };
+      const source = parsed.session ?? parsed;
+      const msgs = Array.isArray(source.messages) ? source.messages : [];
+      const session: ChatSession = {
+        id: crypto.randomUUID(),
+        title:
+          typeof source.title === "string" && source.title.trim()
+            ? source.title.trim()
+            : "Imported chat",
+        messages: msgs.filter(
+          (m) =>
+            m &&
+            typeof m === "object" &&
+            typeof m.content === "string" &&
+            (m.role === "user" || m.role === "assistant" || m.role === "system"),
+        ),
+        updatedAt: Date.now(),
+      };
+      setSessions((all) => [session, ...all].slice(0, MAX_SESSIONS));
+      setActiveSessionId(session.id);
+      setShowHistory(false);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       sessions,
@@ -459,6 +531,8 @@ export function AiProvider({ children }: { children: ReactNode }) {
       removeAttachment,
       attachPath,
       cycleEffort,
+      exportSession,
+      importSession,
     }),
     [
       sessions,
@@ -479,6 +553,8 @@ export function AiProvider({ children }: { children: ReactNode }) {
       removeAttachment,
       attachPath,
       cycleEffort,
+      exportSession,
+      importSession,
     ],
   );
 

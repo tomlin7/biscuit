@@ -4,6 +4,7 @@ import {
   BookOpen,
   Command,
   Copy,
+  Download,
   FilePlus,
   Flame,
   Mic,
@@ -13,6 +14,7 @@ import {
   Sparkles,
   Square,
   Trash2,
+  Upload,
   X,
 } from "lucide-react";
 import { useAi } from "./AiContext";
@@ -49,6 +51,8 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     removeAttachment,
     attachPath,
     cycleEffort,
+    exportSession,
+    importSession,
   } = useAi();
   const { document, tabs } = useWorkspace();
   const { toggleAi } = useLayout();
@@ -198,6 +202,20 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
               />
             </div>
           ))}
+          <div className="ai-panel__history-tools">
+            <IconButton
+              icon={Download}
+              label="Export active chat"
+              size={13}
+              onClick={exportSession}
+            />
+            <IconButton
+              icon={Upload}
+              label="Import chat"
+              size={13}
+              onClick={() => void importSession()}
+            />
+          </div>
         </div>
       ) : null}
 

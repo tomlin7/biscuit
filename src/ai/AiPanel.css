@@ -291,10 +291,12 @@
   border-bottom: 1px solid var(--border-subtle);
 }
 
-.ai-panel__history-row {
+.ai-panel__history-tools {
   display: flex;
-  align-items: center;
   gap: 2px;
+  padding: 6px 4px 2px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 4px;
 }
 
 .ai-panel__history-item {

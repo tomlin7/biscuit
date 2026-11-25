@@ -88,6 +88,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.80.0** | Terminal Escape clears selection | shipped |
 | **0.81.0** | Go to File across workspace roots | shipped |
 | **0.82.0** | Stop in-flight agent generation | shipped |
+| **0.83.0** | AI chat export, import, and session prune | shipped |
+| **0.84.0** | Problems panel grouped by file | shipped |
+| **0.85.0** | Rename a terminal tab | shipped |
+| **0.86.0** | Git commit amend when HEAD is local | shipped |
+| **0.87.0** | Editor sticky scroll setting | shipped |
+| **0.88.0** | Agent model preset chips | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
