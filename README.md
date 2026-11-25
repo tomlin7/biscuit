@@ -1,108 +1,93 @@
+<div align="center">
+
 # Morsel
 
-Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2).
+**`/ℳℴ𝓇𝓈ℯ𝓁/`**
 
-A focused desktop code editor built on Tauri&nbsp;2, React&nbsp;19, and Monaco.
+*A code editor that respects your palate (AKA Biscuit-v2).*
 
-Morsel pairs a native Rust application core with a modern web frontend. It provides sub-second startup, an integrated terminal with real PTY support, split-pane editing, source control, an extensible theme and plugin system, and optional local or cloud AI assistance.
+<br />
 
-[Releases](https://github.com/tomlin7/Morsel/releases) · [Milestones](MILESTONES.md) · [Versioning](VERSIONING.md) · [Website](https://t3d.sh)
+[![Morsel Editor](www/public/hero.png)](https://github.com/tomlin7/Morsel)
+
+<br />
+
+[Downloads](#downloads) &ensp;·&ensp; [Quickstart](#quickstart) &ensp;·&ensp; [Workspaces](#packages) &ensp;·&ensp; [Milestones](MILESTONES.md) &ensp;·&ensp; [Website](https://t3d.sh)
+
+</div>
+
+---
+
+### Highlights
+
+- **Sub-100ms startup**: Native Rust core powered by Tauri 2 and `portable-pty`.
+- **Focused editing**: Monaco engine with multi-pane drag-to-split grids, breadcrumbs, and call/type hierarchies.
+- **Specialized inspection**: Built-in PDF viewer, interactive Hex editor, and tabular CSV/TSV mode.
+- **Extensible & isolated**: Web Worker extension host, theme contributions, and installable icon themes.
+- **Dual runtimes**: Desktop Tauri application alongside the experimental GPU-accelerated cockpit in `gpuix/`.
+
+---
+
+## Quickstart
+
+Requires [Bun](https://bun.sh/) and the [Rust](https://rustup.rs/) stable toolchain.
+
+```bash
+# Clone and install dependencies
+git clone https://github.com/tomlin7/Morsel.git
+cd Morsel
+bun install
+
+# Run Desktop Editor (Tauri 2 + React 19)
+bun run tauri:dev
+
+# Run GPU-Accelerated Cockpit (GPUIX)
+bun run gpuix:dev
+```
+
+---
+
+## Packages
+
+Morsel is structured as a minimalist monorepo:
+
+| Directory | Target | Tech Stack |
+|---|---|---|
+| [`tauri/`](tauri/) | Primary desktop code editor | Tauri 2 (Rust) + React 19 + Monaco |
+| [`gpuix/`](gpuix/) | GPU-accelerated editor cockpit | GPUIX + React 19 native bindings |
+| [`www/`](www/) | Project website and documentation | Next.js 16 (App Router) + Tailwind CSS |
 
 ---
 
 ## Downloads
 
-Official multi-platform binaries are built on every release tag using GitHub Actions.
+Official multi-platform binaries are generated on every tagged release:
 
 | Platform | Format | Description |
 |---|---|---|
-| **Windows** | `.exe` / `.msi` | 64-bit installer and WiX package |
+| **Windows** | `.exe` / `.msi` | 64-bit standalone installer and MSI package |
 | **macOS** | `.dmg` | Universal binary (Apple Silicon and Intel) |
 | **Linux** | `.AppImage` / `.deb` | Standalone AppImage and Debian package |
 
-Download the latest version (`v1.212.0`) from the [GitHub Releases](https://github.com/tomlin7/Morsel/releases) page.
-
-> Release versioning: Following the 0.255 milestone, versions transitioned to 1.x (`1.212.0` = milestone 467) to comply with Windows MSI installer minor version limits (minor &le; 255). Stable 2.0 will ship when the full roadmap is complete.
+Latest stable builds: **[GitHub Releases](https://github.com/tomlin7/Morsel/releases)**
 
 ---
 
-## Architecture
-
-| Layer | Technology | Role |
-|---|---|---|
-| **GPUIX Cockpit** | GPUIX + React 19 | GPU-rendered desktop editor & orchestration in `gpuix/` |
-| **Desktop Shell** | Tauri 2 (Rust) | Native window management and desktop application in `tauri/` |
-| **Terminal Core** | `portable-pty` | Direct pseudoterminal spawning for PowerShell, Bash, and Zsh |
-| **Editor Engine** | Monaco Editor | Syntax highlighting, multi-cursor editing, minimap, diff viewer |
-| **Frontend UI** | React 19 + TypeScript | Split layouts, tabs, command palette, settings, file tree |
-| **Extensions** | Sandboxed Webviews | Isolated iframe execution with a scoped JSON-RPC bridge |
-| **Landing Page** | Next.js 16 (App Router) | Static site in `www/` with tailwind styling |
-
----
-
-## Core Capabilities
-
-- **Editor**: Monaco core with split editor panes, file tabs, minimap, find & replace with regex support, and markdown live preview.
-- **Terminal**: Embedded xterm.js powered by native `portable-pty` sessions with split terminals and shell selection.
-- **Source Control**: Git status, visual diff viewer, stage/unstage, commits, branch switcher, and git ignore management.
-- **Extension Registry**: Installable first-party extensions packaged with manifest validation, checksum verification, and sandboxed runtimes.
-- **AI Composer**: Optional assistant panel with support for local Ollama instances or cloud API keys.
-- **Themes & Layout**: Dark/Light modes, customizable UI presets, and responsive panel resizing.
-
----
-
-## Local Development
-
-### Prerequisites
-
-- [Bun](https://bun.sh/) (v1.1 or later)
-- [Rust](https://www.rust-lang.org/tools/install) (stable toolchain)
-- Platform build dependencies:
-  - **Windows**: Microsoft C++ Build Tools
-  - **macOS**: Xcode Command Line Tools
-  - **Linux**: `libwebkit2gtk-4.1-dev`, `build-essential`, `curl`, `wget`, `file`, `libxdo-dev`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`
-
-### Running the Editors
+## Verification
 
 ```bash
-# Clone the repository
-git clone https://github.com/tomlin7/Morsel.git
-cd Morsel
+# Typecheck all packages
+bun run typecheck
 
-# Install root dependencies
-bun install
+# Run test suites (Tauri unit tests + GPUIX suites)
+bun run test
 
-# Run GPUIX Cockpit (GPU accelerated)
-bun run gpuix:dev
-
-# Run Tauri Editor (Vite + Tauri)
-bun run tauri:dev
-```
-
-### Running Tests & Verification
-
-```bash
-# GPUIX typecheck and tests
-bun run gpuix:typecheck
-bun run gpuix:test
-
-# Tauri frontend typecheck
-cd tauri && bunx tsc --noEmit
-
-# Tauri Rust unit tests
+# Rust backend tests
 cargo test --manifest-path tauri/src-tauri/Cargo.toml --lib
-```
-
-### Landing Page (`www/`)
-
-```bash
-cd www
-bun install
-bun run dev
 ```
 
 ---
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © [Tomlin7](https://github.com/tomlin7)
