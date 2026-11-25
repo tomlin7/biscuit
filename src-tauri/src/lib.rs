@@ -9,7 +9,10 @@ use extensions::{
     install_sample_extension, list_extensions, set_extension_enabled,
 };
 use fsops::{fs_create_file, fs_mkdir, fs_remove, fs_rename};
-use git::{git_commit, git_stage, git_summary, git_unstage};
+use git::{
+    git_branches, git_checkout, git_commit, git_diff, git_discard, git_pull, git_push, git_stage,
+    git_summary, git_unstage,
+};
 use pty::{pty_kill, pty_resize, pty_spawn, pty_write, PtyState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -29,6 +32,12 @@ pub fn run() {
             git_stage,
             git_unstage,
             git_commit,
+            git_branches,
+            git_checkout,
+            git_push,
+            git_pull,
+            git_discard,
+            git_diff,
             list_extensions,
             set_extension_enabled,
             install_sample_extension,

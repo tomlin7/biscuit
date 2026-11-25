@@ -27,10 +27,14 @@ export function ScmPanel({ onBranch }: Props) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [acting, setActing] = useState(false);
+  const [branches, setBranches] = useState<string[]>([]);
+  const [diffText, setDiffText] = useState<string | null>(null);
+  const [diffPath, setDiffPath] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!rootPath) {
       setSummary(null);
+      setBranches([]);
       onBranch(null);
       return;
     }
@@ -40,8 +44,11 @@ export function ScmPanel({ onBranch }: Props) {
       const next = await invoke<GitSummary>("git_summary", { cwd: rootPath });
       setSummary(next);
       onBranch(next.branch);
+      const names = await invoke<string[]>("git_branches", { cwd: rootPath });
+      setBranches(names);
     } catch (err) {
       setSummary(null);
+      setBranches([]);
       onBranch(null);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -85,15 +92,52 @@ export function ScmPanel({ onBranch }: Props) {
         <span className="scm-panel__branch">
           {summary?.branch ?? (loading ? "…" : "—")}
         </span>
-        <button
-          type="button"
-          className="scm-panel__refresh"
-          onClick={() => void refresh()}
-          disabled={busy || loading}
-        >
-          Refresh
-        </button>
+        <span className="scm-panel__toolbar-actions">
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || busy}
+            onClick={() => void run("git_pull", {})}
+          >
+            Pull
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || busy}
+            onClick={() => void run("git_push", {})}
+          >
+            Push
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            onClick={() => void refresh()}
+            disabled={busy || loading}
+          >
+            Refresh
+          </button>
+        </span>
       </div>
+      {branches.length > 0 ? (
+        <div className="scm-panel__branches">
+          {branches.map((branch) => (
+            <button
+              key={branch}
+              type="button"
+              className={
+                branch === summary?.branch
+                  ? "scm-panel__branch-btn scm-panel__branch-btn--current"
+                  : "scm-panel__branch-btn"
+              }
+              disabled={acting || branch === summary?.branch}
+              onClick={() => void run("git_checkout", { branch })}
+            >
+              {branch}
+            </button>
+          ))}
+        </div>
+      ) : null}
       {error ? <p className="scm-panel__error">{error}</p> : null}
       <div className="scm-panel__commit">
         <textarea
@@ -157,7 +201,56 @@ export function ScmPanel({ onBranch }: Props) {
                   Unstage
                 </button>
               ) : null}
+              {entry.worktree !== " " || entry.index === "?" ? (
+                <button
+                  type="button"
+                  className="scm-panel__action"
+                  disabled={acting}
+                  onClick={() => {
+                    const untracked = entry.index === "?";
+                    const ok = window.confirm(
+                      untracked
+                        ? `Delete untracked ${entry.path}?`
+                        : `Discard changes in ${entry.path}?`,
+                    );
+                    if (!ok) return;
+                    void run("git_discard", { path: entry.path, untracked });
+                  }}
+                >
+                  Discard
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="scm-panel__action"
+                disabled={acting}
+                onClick={() => {
+                  if (diffPath === entry.path) {
+                    setDiffPath(null);
+                    setDiffText(null);
+                    return;
+                  }
+                  const staged = entry.index !== " " && entry.index !== "?" && entry.worktree === " ";
+                  void invoke<string>("git_diff", {
+                    cwd: rootPath,
+                    path: entry.path,
+                    staged,
+                  })
+                    .then((text) => {
+                      setDiffPath(entry.path);
+                      setDiffText(text);
+                    })
+                    .catch((err) => {
+                      setError(err instanceof Error ? err.message : String(err));
+                    });
+                }}
+              >
+                Diff
+              </button>
             </div>
+            {diffPath === entry.path && diffText ? (
+              <pre className="scm-panel__diff">{diffText}</pre>
+            ) : null}
           </li>
         ))}
       </ul>

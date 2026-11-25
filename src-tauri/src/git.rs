@@ -101,6 +101,79 @@ pub fn git_unstage(cwd: String, paths: Vec<String>) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn git_branches(cwd: String) -> Result<Vec<String>, String> {
+    let output = run_git(
+        &cwd,
+        &["branch".into(), "--format=%(refname:short)".into()],
+    )?;
+    Ok(output
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect())
+}
+
+fn valid_branch(branch: &str) -> Result<&str, String> {
+    let branch = branch.trim();
+    if branch.is_empty()
+        || branch.starts_with('-')
+        || branch.contains('\n')
+        || branch.contains('\0')
+    {
+        return Err("invalid branch name".into());
+    }
+    Ok(branch)
+}
+
+#[tauri::command]
+pub fn git_checkout(cwd: String, branch: String) -> Result<(), String> {
+    let branch = valid_branch(&branch)?;
+    run_git(&cwd, &["checkout".into(), branch.to_string()])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_push(cwd: String) -> Result<(), String> {
+    run_git(&cwd, &["push".into()])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_pull(cwd: String) -> Result<(), String> {
+    run_git(&cwd, &["pull".into()])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_discard(cwd: String, path: String, untracked: bool) -> Result<(), String> {
+    if path.trim().is_empty() {
+        return Err("No file selected".into());
+    }
+    if untracked {
+        run_git(&cwd, &["clean".into(), "-f".into(), "--".into(), path])?;
+    } else {
+        run_git(&cwd, &["restore".into(), "--".into(), path])?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_diff(cwd: String, path: String, staged: bool) -> Result<String, String> {
+    let mut args = vec!["diff".into()];
+    if staged {
+        args.push("--cached".into());
+    }
+    args.push("--".into());
+    args.push(path);
+    let text = run_git(&cwd, &args)?;
+    if text.trim().is_empty() {
+        return Ok("No diff.".into());
+    }
+    Ok(text)
+}
+
+#[tauri::command]
 pub fn git_commit(cwd: String, message: String) -> Result<(), String> {
     let message = message.trim();
     if message.is_empty() {

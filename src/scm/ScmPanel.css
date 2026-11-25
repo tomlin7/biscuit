@@ -27,6 +27,45 @@
   white-space: nowrap;
 }
 
+.scm-panel__toolbar-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.scm-panel__branches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.scm-panel__branch-btn {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.scm-panel__branch-btn--current,
+.scm-panel__branch-btn:hover:not(:disabled) {
+  background: var(--bg-active);
+  color: var(--fg);
+}
+
+.scm-panel__diff {
+  margin: 0 8px 8px;
+  padding: 8px;
+  max-height: 220px;
+  overflow: auto;
+  border-radius: var(--radius-control);
+  background: var(--bg-root);
+  color: var(--fg-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
 .scm-panel__refresh {
   padding: 4px 8px;
   border-radius: 6px;
