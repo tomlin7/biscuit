@@ -344,6 +344,16 @@ export function ScmPanel({ onBranch }: Props) {
           >
             Discard all
           </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || selectedPaths.length === 0}
+            onClick={() => {
+              void navigator.clipboard.writeText(selectedPaths.join("\n"));
+            }}
+          >
+            Copy path
+          </button>
         </div>
         <label className="scm-panel__amend">
           <input
