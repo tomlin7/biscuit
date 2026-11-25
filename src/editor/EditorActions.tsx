@@ -69,7 +69,10 @@ export type EditorCommand =
   | "deleteLine"
   | "undo"
   | "redo"
-  | "selectAll";
+  | "selectAll"
+  | "cut"
+  | "copy"
+  | "paste";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -235,6 +238,15 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "selectAll":
         handle.trigger("editor.action.selectAll");
+        break;
+      case "cut":
+        handle.trigger("editor.action.clipboardCutAction");
+        break;
+      case "copy":
+        handle.trigger("editor.action.clipboardCopyAction");
+        break;
+      case "paste":
+        handle.trigger("editor.action.clipboardPasteAction");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

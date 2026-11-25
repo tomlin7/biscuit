@@ -82,7 +82,10 @@ export type CommandContext = {
       | "deleteLine"
       | "undo"
       | "redo"
-      | "selectAll",
+      | "selectAll"
+      | "cut"
+      | "copy"
+      | "paste",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;

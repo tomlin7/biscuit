@@ -387,6 +387,27 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("selectAll"),
   },
   {
+    id: "editor.action.clipboardCutAction",
+    title: "Cut",
+    category: "Edit",
+    keybinding: "Ctrl+X",
+    run: (ctx) => ctx.runEditorCommand("cut"),
+  },
+  {
+    id: "editor.action.clipboardCopyAction",
+    title: "Copy",
+    category: "Edit",
+    keybinding: "Ctrl+C",
+    run: (ctx) => ctx.runEditorCommand("copy"),
+  },
+  {
+    id: "editor.action.clipboardPasteAction",
+    title: "Paste",
+    category: "Edit",
+    keybinding: "Ctrl+V",
+    run: (ctx) => ctx.runEditorCommand("paste"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",
