@@ -116,6 +116,7 @@ export function DockDropOverlay({
     <div
       testId={`dock-drop-overlay-${groupId}`}
       onMouseMove={handleMouseMove}
+      onMouseUp={(e: any) => handleZoneCommit(e, activeZone)}
       style={{
         position: 'absolute',
         left: 0,
@@ -147,6 +148,7 @@ export function DockDropOverlay({
         <div
           testId="dock-drop-zone-top"
           onMouseEnter={() => handleZoneEnter('top')}
+          onMouseMove={() => handleZoneEnter('top')}
           onClick={(e: any) => handleZoneCommit(e, 'top')}
           onMouseUp={(e: any) => handleZoneCommit(e, 'top')}
           style={{
@@ -172,6 +174,7 @@ export function DockDropOverlay({
         <div
           testId="dock-drop-zone-bottom"
           onMouseEnter={() => handleZoneEnter('bottom')}
+          onMouseMove={() => handleZoneEnter('bottom')}
           onClick={(e: any) => handleZoneCommit(e, 'bottom')}
           onMouseUp={(e: any) => handleZoneCommit(e, 'bottom')}
           style={{
@@ -197,6 +200,7 @@ export function DockDropOverlay({
         <div
           testId="dock-drop-zone-left"
           onMouseEnter={() => handleZoneEnter('left')}
+          onMouseMove={() => handleZoneEnter('left')}
           onClick={(e: any) => handleZoneCommit(e, 'left')}
           onMouseUp={(e: any) => handleZoneCommit(e, 'left')}
           style={{
@@ -222,6 +226,7 @@ export function DockDropOverlay({
         <div
           testId="dock-drop-zone-right"
           onMouseEnter={() => handleZoneEnter('right')}
+          onMouseMove={() => handleZoneEnter('right')}
           onClick={(e: any) => handleZoneCommit(e, 'right')}
           onMouseUp={(e: any) => handleZoneCommit(e, 'right')}
           style={{
@@ -247,6 +252,7 @@ export function DockDropOverlay({
         <div
           testId="dock-drop-zone-center"
           onMouseEnter={() => handleZoneEnter('center')}
+          onMouseMove={() => handleZoneEnter('center')}
           onClick={(e: any) => handleZoneCommit(e, 'center')}
           onMouseUp={(e: any) => handleZoneCommit(e, 'center')}
           style={{

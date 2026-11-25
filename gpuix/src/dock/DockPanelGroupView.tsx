@@ -11,6 +11,8 @@ export interface DockPanelGroupViewProps {
   onCloseTab: (panelId: string) => void
   onAddTab: (groupId: string) => void
   onStartDragTab: (e: any, panel: DockPanel, groupId: string) => void
+  onCancelDrag?: () => void
+  onMouseMove?: (e: any) => void
   onSplitHorizontal?: (groupId: string) => void
   onSplitVertical?: (groupId: string) => void
   isDragHovered?: boolean
@@ -30,6 +32,8 @@ export function DockPanelGroupView({
   onCloseTab,
   onAddTab,
   onStartDragTab,
+  onCancelDrag,
+  onMouseMove,
   onSplitHorizontal,
   onSplitVertical,
   isDragHovered = false,
@@ -47,6 +51,7 @@ export function DockPanelGroupView({
   return (
     <div
       testId={`dock-group-${group.id}`}
+      onMouseMove={onMouseMove}
       onClick={() => onSelectGroup(group.id)}
       style={{
         display: 'flex',
@@ -66,6 +71,7 @@ export function DockPanelGroupView({
       {/* Group Tab Bar Header */}
       <div
         testId={`dock-group-header-${group.id}`}
+        onMouseMove={onMouseMove}
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -84,6 +90,7 @@ export function DockPanelGroupView({
         {/* Tabs */}
         <div
           testId={`dock-group-tabs-${group.id}`}
+          onMouseMove={onMouseMove}
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -99,6 +106,7 @@ export function DockPanelGroupView({
               <div
                 key={panel.id}
                 testId={`dock-tab-${panel.id}`}
+                onMouseMove={onMouseMove}
                 onClick={(e: any) => {
                   e.stopPropagation?.()
                   onSelectTab(group.id, panel.id)
@@ -106,6 +114,9 @@ export function DockPanelGroupView({
                 onMouseDown={(e: any) => {
                   if (hoveredCloseId === panel.id) return
                   onStartDragTab(e, panel, group.id)
+                }}
+                onMouseUp={() => {
+                  onCancelDrag?.()
                 }}
                 style={{
                   display: 'flex',

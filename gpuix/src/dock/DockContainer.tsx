@@ -13,6 +13,7 @@ import type {
 } from './types'
 import {
   addPanelToGroup,
+  calculateDropZone,
   closePanel,
   createInitialDockLayout,
   deserializeDockLayout,
@@ -116,31 +117,84 @@ export function DockContainer({
     [layout.root]
   )
 
-  // Start dragging a tab to dock
+    interface PendingTabDrag {
+    panel: DockPanel
+    sourceGroupId: string
+    startX: number
+    startY: number
+  }
+
+  const pendingDragRef = useRef<PendingTabDrag | null>(null)
+
+  // Start dragging a tab to dock: stage pending drag, wait for movement threshold
   const handleStartDragTab = useCallback(
     (e: any, panel: DockPanel, sourceGroupId: string) => {
       e.stopPropagation?.()
       const clientX = e.clientX ?? e.x ?? 0
       const clientY = e.clientY ?? e.y ?? 0
 
-      setDragState({
-        panelId: panel.id,
-        sourceGroupId,
+      pendingDragRef.current = {
         panel,
-        currentX: clientX,
-        currentY: clientY,
-        targetGroupId: sourceGroupId,
-        targetZone: undefined,
-      })
+        sourceGroupId,
+        startX: clientX,
+        startY: clientY,
+      }
     },
     []
   )
+
+  const commitDock = useCallback(
+    (targetZone?: DockDropZone) => {
+      if (!dragState) return
+      const zone = targetZone ?? dragState.targetZone ?? 'center'
+      if (dragState.targetGroupId) {
+        updateLayout((prev) => {
+          const next = dockPanel(
+            prev,
+            dragState.panelId,
+            dragState.targetGroupId!,
+            zone
+          )
+          return next
+        })
+      }
+      setDragState(null)
+      pendingDragRef.current = null
+    },
+    [dragState, updateLayout]
+  )
+
+  const handleCancelDrag = useCallback(() => {
+    if (!dragState) {
+      pendingDragRef.current = null
+      return
+    }
+    commitDock()
+  }, [dragState, commitDock])
 
   // Mouse move over container
   const handleContainerMouseMove = useCallback(
     (e: any) => {
       const clientX = e.clientX ?? e.x ?? 0
       const clientY = e.clientY ?? e.y ?? 0
+      
+      // Only enter drag state if pointer moved beyond 4px drag threshold
+      if (pendingDragRef.current && !dragState) {
+        const dx = clientX - pendingDragRef.current.startX
+        const dy = clientY - pendingDragRef.current.startY
+        if (Math.hypot(dx, dy) >= 4) {
+          const { panel, sourceGroupId } = pendingDragRef.current
+          setDragState({
+            panelId: panel.id,
+            sourceGroupId,
+            panel,
+            currentX: clientX,
+            currentY: clientY,
+            targetGroupId: sourceGroupId,
+            targetZone: undefined,
+          })
+        }
+      }
 
       // Handle split divider resizing
       if (resizeState) {
@@ -154,7 +208,30 @@ export function DockContainer({
 
       // Handle tab dragging
       if (dragState) {
-        setDragState((prev) => (prev ? { ...prev, currentX: clientX, currentY: clientY } : null))
+        let detectedZone: DockDropZone = dragState.targetZone ?? 'center'
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect?.()
+          const x = rect?.left ?? 0
+          const y = rect?.top ?? 0
+          const w = rect?.width ?? containerRef.current.offsetWidth ?? containerRef.current.clientWidth ?? 1000
+          const h = rect?.height ?? containerRef.current.offsetHeight ?? containerRef.current.clientHeight ?? 700
+          if (w > 0 && h > 0) {
+            detectedZone = calculateDropZone({ x, y, width: w, height: h }, clientX, clientY, 0.25)
+          }
+        } else {
+          detectedZone = calculateDropZone({ x: 0, y: 0, width: 1000, height: 700 }, clientX, clientY, 0.25)
+        }
+
+        setDragState((prev) =>
+          prev
+            ? {
+                ...prev,
+                currentX: clientX,
+                currentY: clientY,
+                targetZone: detectedZone,
+              }
+            : null
+        )
       }
     },
     [resizeState, dragState, updateLayout]
@@ -162,24 +239,16 @@ export function DockContainer({
 
   // Mouse up over container (finish drag or resize)
   const handleContainerMouseUp = useCallback(() => {
+    pendingDragRef.current = null
+
     if (resizeState) {
       setResizeState(null)
     }
 
     if (dragState) {
-      if (dragState.targetGroupId && dragState.targetZone) {
-        updateLayout((prev) =>
-          dockPanel(
-            prev,
-            dragState.panelId,
-            dragState.targetGroupId!,
-            dragState.targetZone!
-          )
-        )
-      }
-      setDragState(null)
+      commitDock()
     }
-  }, [resizeState, dragState, updateLayout])
+  }, [resizeState, dragState, commitDock])
 
   // Hover drop zone on a group during drag
   const handleHoverZone = useCallback(
@@ -398,6 +467,8 @@ export function DockContainer({
         onCloseTab={handleCloseTab}
         onAddTab={handleAddTab}
         onStartDragTab={handleStartDragTab}
+        onCancelDrag={handleCancelDrag}
+        onMouseMove={handleContainerMouseMove}
         onSplitHorizontal={handleSplitHorizontal}
         onSplitVertical={handleSplitVertical}
         isDragHovered={isDragHovered}

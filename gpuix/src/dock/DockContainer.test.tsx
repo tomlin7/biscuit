@@ -136,6 +136,7 @@ describeNative('DockContainer component', () => {
     const x = bounds.x + bounds.width / 2
     const y = bounds.y + bounds.height / 2
     await app.mouse.down({ x, y })
+    await app.mouse.move({ x: x + 15, y: y + 15 }, { pressedButton: 0 })
 
     // The drop overlay should appear because group has multiple panels
     const overlay = app.getByTestId(`dock-drop-overlay-${layout.activeGroupId}`)
@@ -145,7 +146,9 @@ describeNative('DockContainer component', () => {
     // Click right drop zone to dock to right
     const rightZone = app.getByTestId('dock-drop-zone-right')
     await rightZone.waitFor({ timeoutMs: 5000 })
-    await rightZone.click()
+    const rBounds = await rightZone.bounds()
+    await app.mouse.move({ x: rBounds.x + rBounds.width / 2, y: rBounds.y + rBounds.height / 2 }, { pressedButton: 0 })
+    await app.mouse.up({ x: rBounds.x + rBounds.width / 2, y: rBounds.y + rBounds.height / 2 })
 
     // Layout should now be split with Tab 1 on left and Tab 2 on right
     expect(updatedLayout.root?.type).toBe('split')
@@ -165,6 +168,35 @@ describeNative('DockContainer component', () => {
     const restoreBtn = app.getByTestId('dock-restore-btn')
     await restoreBtn.waitFor({ timeoutMs: 5000 })
     await restoreBtn.click()
+
+    await app.close()
+  })
+
+  it('does not enter drag state or show drop overlays on a simple tab click', async () => {
+    const layout = createInitialDockLayout([
+      { id: 'tab-1', title: 'Panel 1' },
+      { id: 'tab-2', title: 'Panel 2' },
+    ])
+    const { render, renderer } = createTestRoot({ width: 1000, height: 700 })
+    render(<DockContainer initialLayout={layout} />)
+    const app = await connectTest(renderer)
+
+    // Click tab 2 without moving
+    const tab2 = app.getByTestId('dock-tab-tab-2')
+    await tab2.waitFor({ timeoutMs: 5000 })
+    const bounds = await tab2.bounds()
+    const x = bounds.x + bounds.width / 2
+    const y = bounds.y + bounds.height / 2
+    await app.mouse.down({ x, y })
+    await app.mouse.up({ x, y })
+
+    // Ghost element should not be rendered
+    const ghost = app.getByTestId('dock-drag-ghost')
+    expect(await ghost.count()).toBe(0)
+
+    // Overlay should not be rendered
+    const overlay = app.getByTestId(`dock-drop-overlay-${layout.activeGroupId}`)
+    expect(await overlay.count()).toBe(0)
 
     await app.close()
   })
