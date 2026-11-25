@@ -101,6 +101,18 @@
   flex: 1;
 }
 
+.scm-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.scm-panel__check {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
 .scm-panel__file {
   display: flex;
   flex: 1;

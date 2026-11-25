@@ -43,6 +43,7 @@ export function ScmPanel({ onBranch }: Props) {
   const [branches, setBranches] = useState<string[]>([]);
   const [amend, setAmend] = useState(false);
   const [canAmend, setCanAmend] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
 
   const refresh = useCallback(async () => {
     if (!rootPath) {
@@ -56,6 +57,10 @@ export function ScmPanel({ onBranch }: Props) {
     try {
       const next = await invoke<GitSummary>("git_summary", { cwd: rootPath });
       setSummary(next);
+      setSelected((current) => {
+        const paths = new Set(next.entries.map((entry) => entry.path));
+        return new Set([...current].filter((path) => paths.has(path)));
+      });
       onBranch({
         branch: next.branch,
         ahead: next.ahead ?? null,
@@ -149,6 +154,19 @@ export function ScmPanel({ onBranch }: Props) {
   const staged = summary?.entries.filter((entry) => entry.index !== " " && entry.index !== "?") ?? [];
   const unstaged =
     summary?.entries.filter((entry) => entry.worktree !== " " || entry.index === "?") ?? [];
+  const selectedPaths = summary?.entries.filter((entry) => selected.has(entry.path)).map((e) => e.path) ?? [];
+  const selectedUnstaged = selectedPaths.filter((path) =>
+    unstaged.some((entry) => entry.path === path),
+  );
+
+  const toggleSelected = (path: string) => {
+    setSelected((current) => {
+      const next = new Set(current);
+      if (next.has(path)) next.delete(path);
+      else next.add(path);
+      return next;
+    });
+  };
 
   if (!rootPath) {
     return (
@@ -247,6 +265,14 @@ export function ScmPanel({ onBranch }: Props) {
           onChange={(event) => setMessage(event.target.value)}
         />
         <div className="scm-panel__bulk">
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || selectedUnstaged.length === 0}
+            onClick={() => void run("git_stage", { paths: selectedUnstaged })}
+          >
+            Stage selected
+          </button>
           <button
             type="button"
             className="scm-panel__refresh"
@@ -360,6 +386,14 @@ export function ScmPanel({ onBranch }: Props) {
         {summary?.entries.map((entry) => (
           <li key={entry.path}>
             <div className="scm-panel__row">
+              <label className="scm-panel__check">
+                <input
+                  type="checkbox"
+                  checked={selected.has(entry.path)}
+                  onChange={() => toggleSelected(entry.path)}
+                  aria-label={`Select ${entry.path}`}
+                />
+              </label>
               <button
                 type="button"
                 className="scm-panel__file"
