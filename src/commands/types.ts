@@ -199,6 +199,7 @@ export type CommandContext = {
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
   notifyGitDirtyCount: () => void;
+  closeBottomPanel: () => void;
 };
 
 export type Command = {

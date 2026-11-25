@@ -112,7 +112,10 @@ function ShellChrome() {
     messages,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
-  const { push: notify, clear: clearNotificationsList } = useNotifications();
+  const {
+    push: notify,
+    clear: clearNotificationsList,
+  } = useNotifications();
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -1178,6 +1181,9 @@ function ShellChrome() {
         );
         setSidebarMode("scm");
         setSidebarOpen(true);
+      },
+      closeBottomPanel: () => {
+        setBottomOpen(false);
       },
     }),
     [

@@ -1196,4 +1196,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.notifyGitDirtyCount(),
   },
+  {
+    id: "workbench.action.closeBottomPanel",
+    title: "Close Bottom Panel",
+    category: "View",
+    run: (ctx) => ctx.closeBottomPanel(),
+  },
 ];
