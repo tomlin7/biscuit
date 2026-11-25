@@ -26,6 +26,7 @@ type StatusBarProps = {
   gitBranch?: string | null;
   gitAhead?: number | null;
   gitBehind?: number | null;
+  gitDirtyCount?: number;
 };
 
 export function StatusBar({
@@ -37,6 +38,7 @@ export function StatusBar({
   gitBranch = null,
   gitAhead = null,
   gitBehind = null,
+  gitDirtyCount = 0,
 }: StatusBarProps) {
   const { dirty, busy, rootName, rootPath, document, selectionChars, selectionLines, setEol, setLanguageAt } =
     useWorkspace();
@@ -87,6 +89,11 @@ export function StatusBar({
               {gitAhead != null && gitAhead > 0 ? `↑${gitAhead}` : null}
               {gitBehind != null && gitBehind > 0 ? `↓${gitBehind}` : null}
               {gitAhead === 0 && gitBehind === 0 ? "✓" : null}
+            </span>
+          ) : null}
+          {gitDirtyCount > 0 ? (
+            <span className="status-bar__sync" title="Changed files">
+              ●{gitDirtyCount}
             </span>
           ) : null}
         </button>

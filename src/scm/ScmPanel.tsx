@@ -26,6 +26,7 @@ export type GitBranchInfo = {
   branch: string;
   ahead: number | null;
   behind: number | null;
+  dirtyCount: number;
 };
 
 type Props = {
@@ -59,6 +60,7 @@ export function ScmPanel({ onBranch }: Props) {
         branch: next.branch,
         ahead: next.ahead ?? null,
         behind: next.behind ?? null,
+        dirtyCount: next.entries.length,
       });
       const names = await invoke<string[]>("git_branches", { cwd: rootPath });
       setBranches(names);
