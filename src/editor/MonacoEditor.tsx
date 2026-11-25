@@ -179,6 +179,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     editorRef.current?.updateOptions({
       minimap: { enabled: settings.editor.minimap, scale: 1 },
       stickyScroll: { enabled: settings.editor.stickyScroll },
+      inlayHints: { enabled: settings.editor.inlayHints ? "on" : "off" },
       tabSize: settings.editor.tabSize,
       fontSize: settings.editor.fontSize,
       fontFamily: settings.editor.fontFamily,
@@ -198,6 +199,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   }, [
     settings.editor.minimap,
     settings.editor.stickyScroll,
+    settings.editor.inlayHints,
     settings.editor.tabSize,
     settings.editor.fontSize,
     settings.editor.fontFamily,
@@ -633,6 +635,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
             lineHeight: Math.round(settings.editor.fontSize * 1.55),
             minimap: { enabled: settings.editor.minimap, scale: 1 },
             stickyScroll: { enabled: settings.editor.stickyScroll },
+            inlayHints: { enabled: settings.editor.inlayHints ? "on" : "off" },
             wordWrap: settings.editor.wordWrap ? "bounded" : "off",
             wordWrapColumn: settings.editor.wordWrapColumn,
             wrappingStrategy: "advanced",

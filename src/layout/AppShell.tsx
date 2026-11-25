@@ -688,6 +688,11 @@ function ShellChrome() {
         setSidebarMode("typeHierarchy");
         setSidebarOpen(true);
       },
+      toggleInlayHints: () => {
+        const next = !settings.editor.inlayHints;
+        updateEditor({ inlayHints: next });
+        notify("settings", `Inlay hints ${next ? "enabled" : "disabled"}`);
+      },
       toggleWordWrap: () =>
         updateEditor({ wordWrap: !settings.editor.wordWrap }),
       toggleRenderWhitespace: () =>
@@ -2321,6 +2326,7 @@ function ShellChrome() {
       settings.editor.minimap,
       settings.editor.stickyScroll,
       settings.editor.stickyOutline,
+      settings.editor.inlayHints,
       settings.editor.wordWrap,
       settings.editor.renderWhitespace,
       settings.editor.lineNumbers,

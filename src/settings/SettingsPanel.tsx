@@ -336,6 +336,14 @@ export function SettingsPanel({
                       onChange={(e) => updateEditor({ stickyOutline: e.target.checked })}
                     />
                   </label>
+                  <label className="settings-row settings-row--check">
+                    <span>Inlay hints (JS/TS)</span>
+                    <input
+                      type="checkbox"
+                      checked={settings.editor.inlayHints}
+                      onChange={(e) => updateEditor({ inlayHints: e.target.checked })}
+                    />
+                  </label>
                 </section>
               )}
 

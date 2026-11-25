@@ -471,6 +471,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.463.0** | Sticky condensed outline beside the minimap | shipped |
 | **0.464.0** | Call Hierarchy view for JS/TS | shipped |
 | **0.465.0** | Type Hierarchy view for JS/TS | shipped |
+| **0.466.0** | Inlay hints for JS/TS parameter names and inferred types | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

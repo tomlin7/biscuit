@@ -279,6 +279,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.showTypeHierarchy(),
   },
   {
+    id: "editor.action.toggleInlayHints",
+    title: "Toggle Inlay Hints",
+    category: "View",
+    run: (ctx) => ctx.toggleInlayHints(),
+  },
+  {
     id: "editor.action.formatDocument",
     title: "Format Document",
     category: "Edit",

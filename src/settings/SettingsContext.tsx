@@ -33,6 +33,8 @@ export type EditorSettings = {
   stickyScroll: boolean;
   /** Sticky condensed outline beside the minimap. */
   stickyOutline: boolean;
+  /** Inlay hints for JS/TS parameter names and inferred types. */
+  inlayHints: boolean;
   /** 0 = off; otherwise idle milliseconds before auto-save. */
   autoSaveMs: number;
   /** Integrated terminal font size. */
@@ -87,6 +89,7 @@ const DEFAULTS: AppSettings = {
     relativeLineNumbers: false,
     stickyScroll: true,
     stickyOutline: false,
+    inlayHints: false,
     autoSaveMs: 0,
     terminalFontSize: 13,
   },
