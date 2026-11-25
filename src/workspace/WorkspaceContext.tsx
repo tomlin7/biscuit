@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
+import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
 import { exists, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { listDirectory, type TreeNode } from "./fsTree";
 import {
@@ -70,6 +70,7 @@ export type WorkspaceState = {
   setCursor: (line: number, column: number) => void;
   clearRevealTarget: () => void;
   save: () => Promise<void>;
+  saveAs: () => Promise<void>;
   saveAll: () => Promise<void>;
   closeAll: () => void;
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
@@ -588,6 +589,49 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, [rootPath]);
 
+  const saveAs = useCallback(async () => {
+    const path = activePathRef.current;
+    const tab = tabsRef.current.find((item) => item.path === path);
+    if (!tab) return;
+    const dest = await saveDialog({ defaultPath: tab.path, title: "Save As" });
+    if (!dest) return;
+    setBusy(true);
+    setTreeError(null);
+    try {
+      const config = await editorConfigFor(dest, rootPath);
+      const text = applyEditorConfigText(tab.value, config);
+      await writeTextFile(dest, text);
+      setTabs((current) => {
+        const next = {
+          path: dest,
+          title: basename(dest),
+          language: languageFromPath(dest),
+          value: text,
+          baseline: text,
+        };
+        const others = current.filter((item) => item.path !== tab.path);
+        if (others.some((item) => item.path === dest)) {
+          return others.map((item) => (item.path === dest ? { ...item, ...next } : item));
+        }
+        return current.map((item) => (item.path === tab.path ? { ...item, ...next } : item));
+      });
+      setActivePath(dest);
+      rememberFile(dest);
+      const parent = parentPath(dest);
+      if (
+        parent &&
+        rootPath &&
+        dest.replace(/\\/g, "/").toLowerCase().startsWith(rootPath.replace(/\\/g, "/").toLowerCase())
+      ) {
+        await reloadDirectory(parent);
+      }
+    } catch (err) {
+      setTreeError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }, [rootPath, reloadDirectory]);
+
   const state = useMemo<WorkspaceState>(
     () => ({
       rootPath,
@@ -618,6 +662,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCursor,
       clearRevealTarget,
       save,
+      saveAs,
       saveAll,
       closeAll,
       createEntry,
@@ -649,6 +694,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCursor,
       clearRevealTarget,
       save,
+      saveAs,
       saveAll,
       closeAll,
       createEntry,

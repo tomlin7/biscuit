@@ -5,6 +5,7 @@ export type CommandContext = {
   openFile: (path: string) => Promise<void> | void;
   reopenClosed: () => Promise<void> | void;
   save: () => Promise<void> | void;
+  saveAs: () => Promise<void> | void;
   saveAll: () => Promise<void> | void;
   closeActive: () => void;
   closeAll: () => void;

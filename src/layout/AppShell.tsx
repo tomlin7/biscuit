@@ -33,6 +33,7 @@ import { ResizeHandle } from "./ResizeHandle";
 function ShellChrome() {
   const {
     save,
+    saveAs,
     saveAll,
     closeTab,
     closeAll,
@@ -198,6 +199,7 @@ function ShellChrome() {
       openFile,
       reopenClosed,
       save,
+      saveAs,
       saveAll,
       closeActive: () => {
         if (activePath) closeTab(activePath);
@@ -225,6 +227,7 @@ function ShellChrome() {
       openFile,
       reopenClosed,
       save,
+      saveAs,
       saveAll,
       closeAll,
       activePath,
@@ -357,6 +360,13 @@ function ShellChrome() {
         return;
       }
 
+      if (mod && event.shiftKey && key === "s" && !chord) {
+        event.preventDefault();
+        void saveAs();
+        clearChord();
+        return;
+      }
+
       if (chord === "ctrl+k" && key === "s") {
         event.preventDefault();
         void saveAll();
@@ -428,6 +438,7 @@ function ShellChrome() {
     findInFile,
     runEditorCommand,
     save,
+    saveAs,
     saveAll,
     closeAll,
     activePath,

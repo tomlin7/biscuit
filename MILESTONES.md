@@ -33,6 +33,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.25.0** | Rename a JavaScript or TypeScript symbol | shipped |
 | **0.26.0** | EditorConfig indent, newlines, and trailing whitespace | shipped |
 | **0.27.0** | Stage all and unstage all | shipped |
+| **0.28.0** | Save the open file under a new path | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

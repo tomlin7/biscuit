@@ -36,6 +36,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.save(),
   },
   {
+    id: "workbench.action.files.saveAs",
+    title: "Save As…",
+    category: "File",
+    keybinding: "Ctrl+Shift+S",
+    run: (ctx) => void ctx.saveAs(),
+  },
+  {
     id: "workbench.action.files.saveAll",
     title: "Save All",
     category: "File",
