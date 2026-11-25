@@ -68,7 +68,8 @@ export type EditorCommand =
   | "selectLine"
   | "deleteLine"
   | "undo"
-  | "redo";
+  | "redo"
+  | "selectAll";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -231,6 +232,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "redo":
         handle.trigger("redo");
+        break;
+      case "selectAll":
+        handle.trigger("editor.action.selectAll");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

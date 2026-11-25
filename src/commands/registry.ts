@@ -368,6 +368,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("redo"),
   },
   {
+    id: "editor.action.selectAll",
+    title: "Select All",
+    category: "Edit",
+    keybinding: "Ctrl+A",
+    run: (ctx) => ctx.runEditorCommand("selectAll"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

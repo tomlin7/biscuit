@@ -81,7 +81,8 @@ export type CommandContext = {
       | "selectLine"
       | "deleteLine"
       | "undo"
-      | "redo",
+      | "redo"
+      | "selectAll",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;
