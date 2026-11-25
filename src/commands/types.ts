@@ -205,6 +205,7 @@ export type CommandContext = {
   increaseTerminalFontSize: () => void;
   decreaseTerminalFontSize: () => void;
   maximizeAiPanelWidth: () => void;
+  minimizeAiPanelWidth: () => void;
 };
 
 export type Command = {

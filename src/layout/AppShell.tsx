@@ -1206,6 +1206,10 @@ function ShellChrome() {
         setAiWidth(560);
         setAiOpen(true);
       },
+      minimizeAiPanelWidth: () => {
+        setAiWidth(260);
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,

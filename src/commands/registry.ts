@@ -1232,4 +1232,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.maximizeAiPanelWidth(),
   },
+  {
+    id: "workbench.action.minimizeAiPanelWidth",
+    title: "Minimize AI Panel Width",
+    category: "View",
+    run: (ctx) => ctx.minimizeAiPanelWidth(),
+  },
 ];

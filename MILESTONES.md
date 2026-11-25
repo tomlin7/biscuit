@@ -344,6 +344,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.336.0** | Mark notifications as read from palette | shipped |
 | **0.337.0** | Increase and decrease terminal font size from palette | shipped |
 | **0.338.0** | Maximize AI panel width from palette | shipped |
+| **0.339.0** | Minimize AI panel width from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
