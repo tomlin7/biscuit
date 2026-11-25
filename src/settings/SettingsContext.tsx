@@ -10,6 +10,8 @@ import {
 
 export type EditorSettings = {
   fontSize: number;
+  /** CSS font-family stack for the editor. */
+  fontFamily: string;
   tabSize: number;
   wordWrap: boolean;
   /** Preferred wrap column when word wrap is on. */
@@ -46,6 +48,7 @@ const STORAGE_KEY = "t3d.settings.v1";
 const DEFAULTS: AppSettings = {
   editor: {
     fontSize: 14,
+    fontFamily: "Cascadia Code, Consolas, Courier New, monospace",
     tabSize: 2,
     wordWrap: false,
     wordWrapColumn: 80,

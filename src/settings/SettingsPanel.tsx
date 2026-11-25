@@ -59,6 +59,19 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => updateEditor({ fontSize: Number(e.target.value) || 13 })}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Font family</span>
+              <input
+                value={settings.editor.fontFamily}
+                onChange={(e) =>
+                  updateEditor({
+                    fontFamily:
+                      e.target.value.trim() ||
+                      "Cascadia Code, Consolas, Courier New, monospace",
+                  })
+                }
+              />
+            </label>
             <label className="settings-row">
               <span>Tab size</span>
               <input

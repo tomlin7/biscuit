@@ -128,21 +128,28 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       minimap: { enabled: settings.editor.minimap, scale: 1 },
       stickyScroll: { enabled: settings.editor.stickyScroll },
       tabSize: settings.editor.tabSize,
+      fontSize: settings.editor.fontSize,
+      fontFamily: settings.editor.fontFamily,
+      lineHeight: Math.round(settings.editor.fontSize * 1.55),
       wordWrap: settings.editor.wordWrap ? "bounded" : "off",
       wordWrapColumn: settings.editor.wordWrapColumn,
       wrappingStrategy: "advanced",
       renderWhitespace: settings.editor.renderWhitespace ? "all" : "none",
       cursorStyle: settings.editor.cursorStyle,
+      lineNumbers: settings.editor.lineNumbers ? "on" : "off",
       rulers: parseRulers(settings.editor.rulers),
     });
   }, [
     settings.editor.minimap,
     settings.editor.stickyScroll,
     settings.editor.tabSize,
+    settings.editor.fontSize,
+    settings.editor.fontFamily,
     settings.editor.wordWrap,
     settings.editor.wordWrapColumn,
     settings.editor.renderWhitespace,
     settings.editor.cursorStyle,
+    settings.editor.lineNumbers,
     settings.editor.rulers,
   ]);
 
@@ -554,7 +561,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
         }}
         loading={<div className="monaco-editor-host__loading">Loading editor…</div>}
         options={{
-          fontFamily: "Cascadia Code, Consolas, Courier New, monospace",
+          fontFamily: settings.editor.fontFamily,
           fontSize: settings.editor.fontSize,
           lineHeight: Math.round(settings.editor.fontSize * 1.55),
           minimap: { enabled: settings.editor.minimap, scale: 1 },
