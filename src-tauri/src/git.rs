@@ -146,6 +146,12 @@ pub fn git_pull(cwd: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn git_fetch(cwd: String) -> Result<(), String> {
+    run_git(&cwd, &["fetch".into(), "--all".into(), "--prune".into()])?;
+    Ok(())
+}
+
+#[tauri::command]
 pub fn git_discard(cwd: String, path: String, untracked: bool) -> Result<(), String> {
     if path.trim().is_empty() {
         return Err("No file selected".into());

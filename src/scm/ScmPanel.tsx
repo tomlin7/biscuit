@@ -118,6 +118,14 @@ export function ScmPanel({ onBranch }: Props) {
             type="button"
             className="scm-panel__refresh"
             disabled={acting || busy}
+            onClick={() => void run("git_fetch", {})}
+          >
+            Fetch
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || busy}
             onClick={() => void run("git_push", {})}
           >
             Push
