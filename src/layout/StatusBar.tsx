@@ -199,6 +199,16 @@ export function StatusBar({
             {settings.editor.stickyScroll ? "Sticky" : "No Sticky"}
           </button>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Toggle minimap"
+            onClick={() => updateEditor({ minimap: !settings.editor.minimap })}
+          >
+            {settings.editor.minimap ? "Minimap" : "No Map"}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
