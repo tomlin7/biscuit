@@ -1,24 +1,27 @@
-import { useEditorSession } from "../editor/EditorSession";
+import { languageLabel } from "../editor/languages";
+import { useWorkspace } from "../workspace/WorkspaceContext";
 
 export function StatusBar() {
-  const session = useEditorSession();
+  const { document, dirty, cursorLine, cursorColumn, busy } = useWorkspace();
 
   return (
     <footer className="status-bar" role="contentinfo">
       <div className="status-bar__group">
-        <button type="button" className="status-bar__btn" title="Branch">
-          main
-        </button>
-        <span className="status-bar__item">T3D 0.2.1</span>
+        <span className="status-bar__item">T3D 0.3.0</span>
+        {busy ? <span className="status-bar__item">Working…</span> : null}
+        {dirty ? <span className="status-bar__item">Unsaved</span> : null}
       </div>
       <div className="status-bar__group">
-        <span className="status-bar__item">
-          Ln {session.cursorLine}, Col {session.cursorColumn}
-        </span>
-        <span className="status-bar__item">{session.languageLabel}</span>
-        <button type="button" className="status-bar__btn" title="Terminal">
-          Terminal
-        </button>
+        {document.path ? (
+          <>
+            <span className="status-bar__item">
+              Ln {cursorLine}, Col {cursorColumn}
+            </span>
+            <span className="status-bar__item">
+              {languageLabel(document.language)}
+            </span>
+          </>
+        ) : null}
       </div>
     </footer>
   );

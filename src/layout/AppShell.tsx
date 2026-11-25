@@ -1,23 +1,42 @@
+import { useEffect } from "react";
 import "./AppShell.css";
-import { EditorSessionProvider } from "../editor/EditorSession";
+import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { TitleBar } from "./TitleBar";
 import { Sidebar } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
-import { AiPanel } from "./AiPanel";
 import { StatusBar } from "./StatusBar";
+
+function ShellChrome() {
+  const { save } = useWorkspace();
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const mod = event.ctrlKey || event.metaKey;
+      if (mod && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        void save();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [save]);
+
+  return (
+    <div className="app-shell">
+      <TitleBar />
+      <div className="app-shell__workspace">
+        <Sidebar />
+        <EditorArea />
+      </div>
+      <StatusBar />
+    </div>
+  );
+}
 
 export function AppShell() {
   return (
-    <EditorSessionProvider>
-      <div className="app-shell">
-        <TitleBar />
-        <div className="app-shell__workspace">
-          <Sidebar />
-          <EditorArea />
-          <AiPanel />
-        </div>
-        <StatusBar />
-      </div>
-    </EditorSessionProvider>
+    <WorkspaceProvider>
+      <ShellChrome />
+    </WorkspaceProvider>
   );
 }

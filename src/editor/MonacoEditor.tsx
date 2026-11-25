@@ -1,12 +1,12 @@
 import { useRef } from "react";
 import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditorNS } from "monaco-editor";
-import { useEditorSession } from "./EditorSession";
+import { useWorkspace } from "../workspace/WorkspaceContext";
 import { defineT3dTheme, T3D_THEME } from "./theme";
 import "./MonacoEditor.css";
 
 export function MonacoEditor() {
-  const { language, value, setValue, setCursor } = useEditorSession();
+  const { document, setValue, setCursor } = useWorkspace();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
 
   const handleBeforeMount = (monaco: Monaco) => {
@@ -31,9 +31,10 @@ export function MonacoEditor() {
   return (
     <div className="monaco-editor-host">
       <Editor
+        path={document.path ?? undefined}
         theme={T3D_THEME}
-        language={language}
-        value={value}
+        language={document.language}
+        value={document.value}
         beforeMount={handleBeforeMount}
         onMount={handleMount}
         onChange={(next) => {
