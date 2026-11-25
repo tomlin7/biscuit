@@ -234,6 +234,18 @@ export function StatusBar({
                         </button>
                       </div>
                       {n.detail ? <span>{n.detail}</span> : null}
+                      {n.action ? (
+                        <button
+                          type="button"
+                          className="status-bar__notify-action"
+                          onClick={() => {
+                            n.action?.run();
+                            dismiss(n.id);
+                          }}
+                        >
+                          {n.action.label}
+                        </button>
+                      ) : null}
                     </li>
                   ))}
                 </ul>

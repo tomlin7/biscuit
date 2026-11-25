@@ -7,17 +7,28 @@ import {
   type ReactNode,
 } from "react";
 
+export type NotificationAction = {
+  label: string;
+  run: () => void;
+};
+
 export type AppNotification = {
   id: string;
   title: string;
   detail?: string;
   createdAt: number;
+  action?: NotificationAction;
+};
+
+type PushOptions = {
+  detail?: string;
+  action?: NotificationAction;
 };
 
 type NotificationsState = {
   items: AppNotification[];
   unread: number;
-  push: (title: string, detail?: string) => void;
+  push: (title: string, detailOrOptions?: string | PushOptions) => void;
   markRead: () => void;
   dismiss: (id: string) => void;
   clear: () => void;
@@ -29,16 +40,23 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<AppNotification[]>([]);
   const [unread, setUnread] = useState(0);
 
-  const push = useCallback((title: string, detail?: string) => {
-    setItems((current) => [
-      {
-        id: crypto.randomUUID(),
-        title,
-        detail,
-        createdAt: Date.now(),
-      },
-      ...current,
-    ].slice(0, 50));
+  const push = useCallback((title: string, detailOrOptions?: string | PushOptions) => {
+    const options =
+      typeof detailOrOptions === "string"
+        ? { detail: detailOrOptions }
+        : (detailOrOptions ?? {});
+    setItems((current) =>
+      [
+        {
+          id: crypto.randomUUID(),
+          title,
+          detail: options.detail,
+          action: options.action,
+          createdAt: Date.now(),
+        },
+        ...current,
+      ].slice(0, 50),
+    );
     setUnread((n) => n + 1);
   }, []);
 

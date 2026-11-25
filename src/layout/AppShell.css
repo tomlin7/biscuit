@@ -616,3 +616,17 @@
 .status-bar__notify-row button:hover {
   color: var(--fg);
 }
+
+.status-bar__notify-action {
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg-input);
+  color: var(--fg-muted);
+  font-size: var(--font-size-xs);
+}
+
+.status-bar__notify-action:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
