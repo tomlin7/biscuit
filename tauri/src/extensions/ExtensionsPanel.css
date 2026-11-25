@@ -100,6 +100,7 @@
 .ext-panel__pills-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 4px;
   padding: 2px 8px 6px;
   border-bottom: 1px solid var(--border-subtle);
@@ -110,6 +111,13 @@
 
 .ext-panel__pills-row::-webkit-scrollbar {
   display: none;
+}
+
+.ext-panel__tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
 }
 
 .ext-panel__pill {
@@ -261,6 +269,7 @@
 
 .ext-panel__row:focus-visible {
   outline: 1px solid var(--accent);
+  outline-offset: -1px;
 }
 
 .ext-panel__icon-box {
@@ -305,6 +314,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.25;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .ext-panel__version {
@@ -385,6 +396,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
+  min-width: 0;
 }
 
 .ext-panel__row-tags {
@@ -611,6 +623,10 @@
   color: var(--fg-dim);
 }
 
+.ext-panel__inspector-status--warn {
+  color: #fbbf24;
+}
+
 .ext-panel__inspector-desc {
   margin: 2px 0 0;
   font-size: 10.5px;
@@ -690,6 +706,14 @@
   gap: 6px;
   padding-top: 4px;
   border-top: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.ext-panel__inspector-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 /* Updates banner */

@@ -38,13 +38,49 @@ function activationLabel(ext: ExtensionManifest, record: ActivationRecord | unde
   return { text: `Active (${record.ms ?? 0}ms)`, title: `Activated by ${record.reason}`, tone: "ok" };
 }
 
-function isNewer(remote: string, local: string): boolean {
-  const parse = (v: string) => v.split(".").map((n) => parseInt(n, 10) || 0);
-  const [r1, r2, r3] = parse(remote);
-  const [l1, l2, l3] = parse(local);
+export function isNewer(remote: string, local: string): boolean {
+  const parse = (v: string) =>
+    v
+      .replace(/^v/i, "")
+      .split(".")
+      .map((n) => parseInt(n, 10) || 0);
+  const [r1 = 0, r2 = 0, r3 = 0] = parse(remote);
+  const [l1 = 0, l2 = 0, l3 = 0] = parse(local);
   if (r1 !== l1) return r1 > l1;
   if (r2 !== l2) return r2 > l2;
-  return (r3 ?? 0) > (l3 ?? 0);
+  return r3 > l3;
+}
+
+export async function copyToClipboard(text: string): Promise<boolean> {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fall through to document.execCommand fallback
+    }
+  }
+
+  if (typeof document !== "undefined") {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      textarea.style.top = "0";
+      textarea.setAttribute("readonly", "");
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const success = document.execCommand("copy");
+      document.body.removeChild(textarea);
+      return Boolean(success);
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
 }
 
 export type ExtensionsPanelProps = {
@@ -87,6 +123,7 @@ export function ExtensionsPanel({
   const [query, setQuery] = useState(initialQuery);
   const [enabledOnly, setEnabledOnly] = useState(initialEnabledOnly);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [updatingAll, setUpdatingAll] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(initialInspectedId);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -159,21 +196,31 @@ export function ExtensionsPanel({
   };
 
   const handleUpdateAll = async () => {
-    for (const ext of installedWithUpdates) {
-      const match = registry.find((r) => r.id === ext.id);
-      if (match) {
-        await handleInstallRemote(match);
+    if (updatingAll) return;
+    setUpdatingAll(true);
+    try {
+      for (const ext of installedWithUpdates) {
+        const match = registry.find((r) => r.id === ext.id);
+        if (match) {
+          setBusyId(match.id);
+          try {
+            await installFromRegistry(match);
+          } catch {
+            // Proceed with next update even if one fails
+          }
+        }
       }
+    } finally {
+      setBusyId(null);
+      setUpdatingAll(false);
     }
   };
 
   const handleCopyId = async (id: string) => {
-    try {
-      await navigator.clipboard.writeText(id);
+    const ok = await copyToClipboard(id);
+    if (ok) {
       setCopiedId(id);
       setTimeout(() => setCopiedId((cur) => (cur === id ? null : cur)), 1500);
-    } catch {
-      // Fallback or ignore
     }
   };
 
@@ -181,13 +228,38 @@ export function ExtensionsPanel({
     setInspectedId((cur) => (cur === id ? null : id));
   };
 
+  const handleTabKeyDown = (e: KeyboardEvent<HTMLButtonElement>, currentTab: PanelTab) => {
+    const tabs: PanelTab[] = ["installed", "marketplace", "updates"];
+    const idx = tabs.indexOf(currentTab);
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const next = tabs[(idx + 1) % tabs.length];
+      setTab(next);
+      if (next === "marketplace" && registry.length === 0) void fetchRegistry();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+      setTab(prev);
+      if (prev === "marketplace" && registry.length === 0) void fetchRegistry();
+    }
+  };
+
   const handleRowKeyDown = (e: KeyboardEvent<HTMLDivElement>, id: string) => {
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       toggleInspect(id);
     } else if (e.key === "Escape" && inspectedId === id) {
       e.preventDefault();
       setInspectedId(null);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const nextRow = e.currentTarget.parentElement?.nextElementSibling?.querySelector<HTMLElement>(".ext-panel__row");
+      nextRow?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prevRow = e.currentTarget.parentElement?.previousElementSibling?.querySelector<HTMLElement>(".ext-panel__row");
+      prevRow?.focus();
     }
   };
 
@@ -265,44 +337,49 @@ export function ExtensionsPanel({
       </div>
 
       {/* Compact category filter pills */}
-      <div className="ext-panel__pills-row" role="tablist" aria-label="Extension categories">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "installed"}
-          className={`ext-panel__pill ${tab === "installed" ? "ext-panel__pill--active" : ""}`}
-          onClick={() => setTab("installed")}
-        >
-          <span>Installed</span>
-          <span className="ext-panel__pill-count">{extensions.length}</span>
-        </button>
+      <div className="ext-panel__pills-row">
+        <div className="ext-panel__tabs-group" role="tablist" aria-label="Extension categories">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "installed"}
+            className={`ext-panel__pill ${tab === "installed" ? "ext-panel__pill--active" : ""}`}
+            onClick={() => setTab("installed")}
+            onKeyDown={(e) => handleTabKeyDown(e, "installed")}
+          >
+            <span>Installed</span>
+            <span className="ext-panel__pill-count">{extensions.length}</span>
+          </button>
 
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "marketplace"}
-          className={`ext-panel__pill ${tab === "marketplace" ? "ext-panel__pill--active" : ""}`}
-          onClick={() => {
-            setTab("marketplace");
-            if (registry.length === 0) void fetchRegistry();
-          }}
-        >
-          <span>Marketplace</span>
-          <span className="ext-panel__pill-count">{registry.length}</span>
-        </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "marketplace"}
+            className={`ext-panel__pill ${tab === "marketplace" ? "ext-panel__pill--active" : ""}`}
+            onClick={() => {
+              setTab("marketplace");
+              if (registry.length === 0) void fetchRegistry();
+            }}
+            onKeyDown={(e) => handleTabKeyDown(e, "marketplace")}
+          >
+            <span>Marketplace</span>
+            <span className="ext-panel__pill-count">{registry.length}</span>
+          </button>
 
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "updates"}
-          className={`ext-panel__pill ${tab === "updates" ? "ext-panel__pill--active" : ""} ${
-            installedWithUpdates.length > 0 ? "ext-panel__pill--has-updates" : ""
-          }`}
-          onClick={() => setTab("updates")}
-        >
-          <span>Updates</span>
-          <span className="ext-panel__pill-count">{installedWithUpdates.length}</span>
-        </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "updates"}
+            className={`ext-panel__pill ${tab === "updates" ? "ext-panel__pill--active" : ""} ${
+              installedWithUpdates.length > 0 ? "ext-panel__pill--has-updates" : ""
+            }`}
+            onClick={() => setTab("updates")}
+            onKeyDown={(e) => handleTabKeyDown(e, "updates")}
+          >
+            <span>Updates</span>
+            <span className="ext-panel__pill-count">{installedWithUpdates.length}</span>
+          </button>
+        </div>
 
         {tab === "installed" && (
           <button
@@ -339,12 +416,23 @@ export function ExtensionsPanel({
                 ]}
               />
             ) : shownInstalled.length === 0 ? (
-              <EmptyState
-                compact
-                icon={SearchX}
-                title="No extensions match"
-                description={<>No extensions match &ldquo;{query}&rdquo;.</>}
-              />
+              enabledOnly && !query.trim() ? (
+                <EmptyState
+                  compact
+                  icon={Blocks}
+                  title="No enabled extensions"
+                  description="All installed extensions are currently disabled."
+                  actions={[{ label: "Show All", onClick: () => setEnabledOnly(false), primary: true }]}
+                />
+              ) : (
+                <EmptyState
+                  compact
+                  icon={SearchX}
+                  title="No extensions match"
+                  description={<>No extensions match &ldquo;{query}&rdquo;.</>}
+                  actions={query ? [{ label: "Clear Search", onClick: () => setQuery(""), primary: true }] : undefined}
+                />
+              )
             ) : (
               <div className="ext-panel__rows" role="list">
                 {shownInstalled.map((ext) => {
@@ -367,8 +455,8 @@ export function ExtensionsPanel({
                       <div
                         className="ext-panel__row"
                         tabIndex={0}
-                        role="button"
                         aria-expanded={isInspected}
+                        aria-label={`${ext.name} (v${ext.version}) - Click or press Enter to inspect details`}
                         onClick={() => toggleInspect(ext.id)}
                         onKeyDown={(e) => handleRowKeyDown(e, ext.id)}
                       >
@@ -420,7 +508,11 @@ export function ExtensionsPanel({
                         </div>
 
                         {/* Row Actions */}
-                        <div className="ext-panel__row-actions" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="ext-panel__row-actions"
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        >
                           {hasUpdate && (
                             <button
                               type="button"
@@ -470,9 +562,33 @@ export function ExtensionsPanel({
                                 className="ext-panel__copy-btn"
                                 onClick={() => void handleCopyId(ext.id)}
                                 title="Copy Extension ID"
+                                aria-label="Copy Extension ID"
                               >
                                 {copiedId === ext.id ? <Check size={11} /> : <Copy size={11} />}
                               </button>
+                            </div>
+
+                            <div className="ext-panel__inspector-row">
+                              <span className="ext-panel__inspector-label">Status:</span>
+                              <span
+                                className={`ext-panel__inspector-status ${
+                                  !isGloballyEnabled
+                                    ? "ext-panel__inspector-status--idle"
+                                    : ext.workspaceDisabled
+                                    ? "ext-panel__inspector-status--warn"
+                                    : status
+                                    ? `ext-panel__inspector-status--${status.tone}`
+                                    : "ext-panel__inspector-status--ok"
+                                }`}
+                              >
+                                {!isGloballyEnabled
+                                  ? "Disabled globally"
+                                  : ext.workspaceDisabled
+                                  ? "Disabled for workspace"
+                                  : status
+                                  ? status.text
+                                  : "Enabled"}
+                              </span>
                             </div>
 
                             {ext.path && (
@@ -480,15 +596,6 @@ export function ExtensionsPanel({
                                 <span className="ext-panel__inspector-label">Path:</span>
                                 <span className="ext-panel__inspector-val ext-panel__inspector-path" title={ext.path}>
                                   {ext.path}
-                                </span>
-                              </div>
-                            )}
-
-                            {status && (
-                              <div className="ext-panel__inspector-row">
-                                <span className="ext-panel__inspector-label">Runtime:</span>
-                                <span className={`ext-panel__inspector-status ext-panel__inspector-status--${status.tone}`}>
-                                  {status.text}
                                 </span>
                               </div>
                             )}
@@ -532,13 +639,24 @@ export function ExtensionsPanel({
 
                           {/* Inspector Action Footer */}
                           <div className="ext-panel__inspector-actions">
-                            <button
-                              type="button"
-                              className={`ext-panel__btn ${ext.workspaceDisabled ? "ext-panel__btn--warn" : ""}`}
-                              onClick={() => toggleWorkspaceEnablement(ext.id)}
-                            >
-                              {ext.workspaceDisabled ? "Enable for Workspace" : "Disable for Workspace"}
-                            </button>
+                            <div className="ext-panel__inspector-btn-group">
+                              <button
+                                type="button"
+                                className="ext-panel__btn"
+                                disabled={busyId === ext.id}
+                                onClick={() => void setEnabled(ext.id, !isGloballyEnabled)}
+                              >
+                                {isGloballyEnabled ? "Disable (Global)" : "Enable (Global)"}
+                              </button>
+
+                              <button
+                                type="button"
+                                className={`ext-panel__btn ${ext.workspaceDisabled ? "ext-panel__btn--warn" : ""}`}
+                                onClick={() => toggleWorkspaceEnablement(ext.id)}
+                              >
+                                {ext.workspaceDisabled ? "Enable for Workspace" : "Disable for Workspace"}
+                              </button>
+                            </div>
 
                             <button
                               type="button"
@@ -587,6 +705,7 @@ export function ExtensionsPanel({
                 icon={SearchX}
                 title="No matches"
                 description={<>No marketplace extensions match &ldquo;{query}&rdquo;.</>}
+                actions={query ? [{ label: "Clear Search", onClick: () => setQuery(""), primary: true }] : undefined}
               />
             ) : (
               <div className="ext-panel__rows" role="list">
@@ -604,8 +723,8 @@ export function ExtensionsPanel({
                       <div
                         className="ext-panel__row"
                         tabIndex={0}
-                        role="button"
                         aria-expanded={isInspected}
+                        aria-label={`${item.name} (v${item.version}) - Click or press Enter to inspect details`}
                         onClick={() => toggleInspect(item.id)}
                         onKeyDown={(e) => handleRowKeyDown(e, item.id)}
                       >
@@ -633,7 +752,11 @@ export function ExtensionsPanel({
                           </div>
                         </div>
 
-                        <div className="ext-panel__row-actions" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="ext-panel__row-actions"
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        >
                           {installed ? (
                             <>
                               {hasUpdate ? (
@@ -688,6 +811,7 @@ export function ExtensionsPanel({
                                 className="ext-panel__copy-btn"
                                 onClick={() => void handleCopyId(item.id)}
                                 title="Copy Extension ID"
+                                aria-label="Copy Extension ID"
                               >
                                 {copiedId === item.id ? <Check size={11} /> : <Copy size={11} />}
                               </button>
@@ -748,10 +872,10 @@ export function ExtensionsPanel({
                 <button
                   type="button"
                   className="ext-panel__btn ext-panel__btn--update"
-                  disabled={Boolean(busyId)}
+                  disabled={Boolean(busyId) || updatingAll}
                   onClick={() => void handleUpdateAll()}
                 >
-                  <ArrowUpCircle size={11} /> Update All
+                  <ArrowUpCircle size={11} /> {updatingAll ? "Updating…" : "Update All"}
                 </button>
               </div>
             )}
@@ -769,6 +893,7 @@ export function ExtensionsPanel({
                 icon={SearchX}
                 title="No matches"
                 description={<>No updates match &ldquo;{query}&rdquo;.</>}
+                actions={query ? [{ label: "Clear Search", onClick: () => setQuery(""), primary: true }] : undefined}
               />
             ) : (
               <div className="ext-panel__rows" role="list">
@@ -786,8 +911,8 @@ export function ExtensionsPanel({
                       <div
                         className="ext-panel__row"
                         tabIndex={0}
-                        role="button"
                         aria-expanded={isInspected}
+                        aria-label={`${ext.name} (v${ext.version}) - Click or press Enter to inspect details`}
                         onClick={() => toggleInspect(ext.id)}
                         onKeyDown={(e) => handleRowKeyDown(e, ext.id)}
                       >
@@ -813,11 +938,15 @@ export function ExtensionsPanel({
                           </div>
                         </div>
 
-                        <div className="ext-panel__row-actions" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="ext-panel__row-actions"
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        >
                           <button
                             type="button"
                             className="ext-panel__btn ext-panel__btn--update"
-                            disabled={busyId === ext.id}
+                            disabled={busyId === ext.id || updatingAll}
                             onClick={() => void handleInstallRemote(regMatch)}
                           >
                             <ArrowUpCircle size={11} /> Update
@@ -846,6 +975,15 @@ export function ExtensionsPanel({
                             <div className="ext-panel__inspector-row">
                               <span className="ext-panel__inspector-label">ID:</span>
                               <code className="ext-panel__inspector-val">{ext.id}</code>
+                              <button
+                                type="button"
+                                className="ext-panel__copy-btn"
+                                onClick={() => void handleCopyId(ext.id)}
+                                title="Copy Extension ID"
+                                aria-label="Copy Extension ID"
+                              >
+                                {copiedId === ext.id ? <Check size={11} /> : <Copy size={11} />}
+                              </button>
                             </div>
                           </div>
 
@@ -857,7 +995,7 @@ export function ExtensionsPanel({
                             <button
                               type="button"
                               className="ext-panel__btn ext-panel__btn--update"
-                              disabled={busyId === ext.id}
+                              disabled={busyId === ext.id || updatingAll}
                               onClick={() => void handleInstallRemote(regMatch)}
                             >
                               <ArrowUpCircle size={11} /> {`Update to v${regMatch.version}`}

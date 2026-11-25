@@ -1,6 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import { renderToString } from "react-dom/server";
-import { ExtensionsPanel, type ExtensionsPanelProps } from "./ExtensionsPanel";
+import {
+  ExtensionsPanel,
+  isNewer,
+  copyToClipboard,
+  type ExtensionsPanelProps,
+} from "./ExtensionsPanel";
 import {
   ExtensionsContext,
   type ExtensionManifest,
@@ -98,6 +103,101 @@ function renderPanelWithState(state: ExtensionsState, props?: ExtensionsPanelPro
   );
 }
 
+describe("ExtensionsPanel Version Comparison (isNewer)", () => {
+  it("correctly identifies when remote version is newer", () => {
+    expect(isNewer("1.2.0", "1.0.0")).toBe(true);
+    expect(isNewer("2.0.0", "1.9.9")).toBe(true);
+    expect(isNewer("1.0.1", "1.0.0")).toBe(true);
+  });
+
+  it("handles 'v' prefix in version numbers gracefully", () => {
+    expect(isNewer("v1.2.0", "1.0.0")).toBe(true);
+    expect(isNewer("1.2.0", "v1.0.0")).toBe(true);
+    expect(isNewer("v2.0.0", "v1.9.9")).toBe(true);
+  });
+
+  it("returns false when versions are identical or remote is older", () => {
+    expect(isNewer("1.0.0", "1.0.0")).toBe(false);
+    expect(isNewer("v1.0.0", "1.0.0")).toBe(false);
+    expect(isNewer("1.0.0", "1.2.0")).toBe(false);
+    expect(isNewer("0.9.0", "1.0.0")).toBe(false);
+  });
+});
+
+describe("ExtensionsPanel Clipboard Fallback", () => {
+  it("calls navigator.clipboard.writeText when available and resolves", async () => {
+    const origClipboard = globalThis.navigator?.clipboard;
+    let written = "";
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      value: {
+        writeText: async (t: string) => {
+          written = t;
+        },
+      },
+      configurable: true,
+    });
+
+    const res = await copyToClipboard("t3d.vim");
+    expect(res).toBe(true);
+    expect(written).toBe("t3d.vim");
+
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      value: origClipboard,
+      configurable: true,
+    });
+  });
+
+  it("falls back to document.execCommand when navigator.clipboard.writeText throws", async () => {
+    const origClipboard = globalThis.navigator?.clipboard;
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      value: {
+        writeText: async () => {
+          throw new Error("Permission denied");
+        },
+      },
+      configurable: true,
+    });
+
+    let execCommandCalledWith = "";
+    const origExec = (globalThis as any).document?.execCommand;
+    if (typeof (globalThis as any).document === "undefined") {
+      (globalThis as any).document = {
+        createElement: () => ({
+          style: {},
+          setAttribute: () => {},
+          focus: () => {},
+          select: () => {},
+        }),
+        body: {
+          appendChild: () => {},
+          removeChild: () => {},
+        },
+        execCommand: (cmd: string) => {
+          execCommandCalledWith = cmd;
+          return true;
+        },
+      };
+    } else {
+      (globalThis as any).document.execCommand = (cmd: string) => {
+        execCommandCalledWith = cmd;
+        return true;
+      };
+    }
+
+    const res = await copyToClipboard("t3d.theme-dracula");
+    expect(res).toBe(true);
+    expect(execCommandCalledWith).toBe("copy");
+
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      value: origClipboard,
+      configurable: true,
+    });
+    if (origExec) {
+      (globalThis as any).document.execCommand = origExec;
+    }
+  });
+});
+
 describe("ExtensionsPanel UI & Structure", () => {
   it("renders streamlined unbloated header, search bar, and category filter pills", () => {
     const html = renderPanelWithState(createMockState());
@@ -121,6 +221,10 @@ describe("ExtensionsPanel UI & Structure", () => {
     expect(html).toContain("Updates");
     // 1 update available (t3d.vim is 1.0.0 locally, 1.2.0 in registry)
     expect(html).toContain("ext-panel__pill--has-updates");
+
+    // Clean ARIA tabs group separating role="tablist" from checkbox filter chip
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain('class="ext-panel__tabs-group"');
 
     // Filter chip for enabled
     expect(html).toContain("Enabled");
@@ -148,6 +252,9 @@ describe("ExtensionsPanel UI & Structure", () => {
     expect(html).toContain('role="switch"');
     expect(html).toContain('aria-label="Toggle Vim Keymap"');
     expect(html).toContain("ext-panel__switch--checked");
+
+    // Keyboard accessible row with aria-expanded
+    expect(html).toContain('aria-expanded="false"');
   });
 
   it("filters installed extensions by search query", () => {
@@ -158,6 +265,7 @@ describe("ExtensionsPanel UI & Structure", () => {
     expect(html).toContain("Rust Analyzer LSP");
     expect(html).not.toContain("Vim Keymap");
     expect(html).not.toContain("Dracula Official Theme");
+    expect(html).toContain('aria-label="Clear search"');
   });
 
   it("renders empty state when search query matches nothing", () => {
@@ -167,6 +275,33 @@ describe("ExtensionsPanel UI & Structure", () => {
 
     expect(html).toContain("No extensions match");
     expect(html).toContain("non-existent-extension-query");
+    expect(html).toContain("Clear Search");
+  });
+
+  it("renders custom empty state when enabledOnly filter leaves no matches", () => {
+    const disabledState = createMockState({
+      extensions: [
+        {
+          id: "t3d.disabled-one",
+          name: "Disabled One",
+          version: "1.0.0",
+          description: "A disabled extension",
+          enabled: false,
+          globallyEnabled: false,
+          workspaceDisabled: false,
+          path: "/path",
+        },
+      ],
+    });
+
+    const html = renderPanelWithState(disabledState, {
+      initialEnabledOnly: true,
+      initialQuery: "",
+    });
+
+    expect(html).toContain("No enabled extensions");
+    expect(html).toContain("All installed extensions are currently disabled.");
+    expect(html).toContain("Show All");
   });
 
   it("filters by enabledOnly chip in installed view", () => {
@@ -244,7 +379,7 @@ describe("ExtensionsPanel UI & Structure", () => {
     expect(html).toContain("Installed extensions are running their latest versions.");
   });
 
-  it("renders detail inspection drawer when an extension is inspected", () => {
+  it("renders detail inspection drawer with status and global/workspace actions", () => {
     const html = renderPanelWithState(createMockState(), {
       initialInspectedId: "t3d.vim",
     });
@@ -258,6 +393,9 @@ describe("ExtensionsPanel UI & Structure", () => {
     expect(html).toContain("/path/to/extensions/t3d.vim");
     expect(html).toContain("dist/index.js");
 
+    // Status indicator
+    expect(html).toContain("Status:");
+
     // Permissions chips
     expect(html).toContain("workspace:read");
     expect(html).toContain("editor:commands");
@@ -270,6 +408,7 @@ describe("ExtensionsPanel UI & Structure", () => {
     expect(html).toContain("vim.normalMode");
 
     // Actions
+    expect(html).toContain("Disable (Global)");
     expect(html).toContain("Disable for Workspace");
     expect(html).toContain("Uninstall");
   });
