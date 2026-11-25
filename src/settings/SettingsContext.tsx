@@ -20,6 +20,8 @@ export type EditorSettings = {
   trimTrailingWhitespace: boolean;
   /** Insert a final newline on save when EditorConfig is silent. */
   insertFinalNewline: boolean;
+  /** Show whitespace characters in the editor. */
+  renderWhitespace: boolean;
   minimap: boolean;
   lineNumbers: boolean;
   stickyScroll: boolean;
@@ -48,6 +50,7 @@ const DEFAULTS: AppSettings = {
     rulers: "",
     trimTrailingWhitespace: false,
     insertFinalNewline: false,
+    renderWhitespace: false,
     minimap: true,
     lineNumbers: true,
     stickyScroll: true,

@@ -124,6 +124,16 @@ export function SettingsPanel({ open, onClose }: Props) {
               />
             </label>
             <label className="settings-row settings-row--check">
+              <span>Render whitespace</span>
+              <input
+                type="checkbox"
+                checked={settings.editor.renderWhitespace}
+                onChange={(e) =>
+                  updateEditor({ renderWhitespace: e.target.checked })
+                }
+              />
+            </label>
+            <label className="settings-row settings-row--check">
               <span>Minimap</span>
               <input
                 type="checkbox"
