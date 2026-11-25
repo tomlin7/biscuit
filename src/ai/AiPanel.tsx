@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUp,
   Command,
@@ -11,6 +11,8 @@ import {
   Search,
   Settings2,
   Sparkles,
+  Trash2,
+  X,
 } from "lucide-react";
 import { useAi } from "./AiContext";
 import { useWorkspace } from "../workspace/WorkspaceContext";
@@ -24,10 +26,34 @@ type Props = {
 };
 
 export function AiPanel({ onOpenSettings }: Props) {
-  const { messages, settings, busy, error, send, clear } = useAi();
+  const {
+    messages,
+    sessions,
+    activeSessionId,
+    settings,
+    busy,
+    error,
+    attachments,
+    showHistory,
+    setShowHistory,
+    send,
+    newChat,
+    selectSession,
+    deleteSession,
+    attachFiles,
+    removeAttachment,
+    attachPath,
+    cycleEffort,
+  } = useAi();
   const { document } = useWorkspace();
   const { toggleAi } = useLayout();
   const [draft, setDraft] = useState("");
+  const [listening, setListening] = useState(false);
+
+  useEffect(() => {
+    if (!document) return;
+    // Keep active file as a soft context chip via attachments if empty name match
+  }, [document]);
 
   const title = useMemo(() => {
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
@@ -38,16 +64,57 @@ export function AiPanel({ onOpenSettings }: Props) {
     return "Agent";
   }, [messages]);
 
+  const effortLabel =
+    settings.effort === "high"
+      ? "High"
+      : settings.effort === "medium"
+        ? "Med"
+        : "Low";
+
   const submit = () => {
     const text = draft.trim();
     if (!text) return;
     setDraft("");
-    const withContext =
-      document != null
+    const withActive =
+      document != null && !attachments.some((a) => a.path === document.path)
         ? `Regarding file \`${document.path}\`:\n\n${text}`
         : text;
-    void send(withContext);
+    void send(withActive);
   };
+
+  const startVoice = () => {
+    const SR =
+      (
+        window as unknown as {
+          SpeechRecognition?: new () => SpeechRecognition;
+          webkitSpeechRecognition?: new () => SpeechRecognition;
+        }
+      ).SpeechRecognition ||
+      (
+        window as unknown as {
+          webkitSpeechRecognition?: new () => SpeechRecognition;
+        }
+      ).webkitSpeechRecognition;
+    if (!SR) {
+      window.alert("Speech recognition is not available in this runtime.");
+      return;
+    }
+    const rec = new SR();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.onstart = () => setListening(true);
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    rec.onresult = (event: SpeechRecognitionEvent) => {
+      const text = event.results[0]?.[0]?.transcript ?? "";
+      if (text) setDraft((d) => (d ? `${d} ${text}` : text));
+    };
+    rec.start();
+  };
+
+  const filteredHistory = useMemo(() => {
+    return [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
+  }, [sessions]);
 
   return (
     <aside className="ai-panel island" aria-label="AI">
@@ -56,12 +123,50 @@ export function AiPanel({ onOpenSettings }: Props) {
           {title}
         </h2>
         <div className="ai-panel__actions">
-          <IconButton icon={Search} label="Search chat" size={14} disabled />
-          <IconButton icon={History} label="History" size={14} onClick={clear} />
-          <IconButton icon={Plus} label="New chat" size={14} onClick={clear} />
+          <IconButton
+            icon={Search}
+            label="Search chats"
+            size={14}
+            active={showHistory}
+            onClick={() => setShowHistory(!showHistory)}
+          />
+          <IconButton
+            icon={History}
+            label="History"
+            size={14}
+            active={showHistory}
+            onClick={() => setShowHistory(!showHistory)}
+          />
+          <IconButton icon={Plus} label="New chat" size={14} onClick={newChat} />
           <IconButton icon={PanelRightClose} label="Hide AI" size={14} onClick={toggleAi} />
         </div>
       </div>
+
+      {showHistory ? (
+        <div className="ai-panel__history">
+          {filteredHistory.map((session) => (
+            <div key={session.id} className="ai-panel__history-row">
+              <button
+                type="button"
+                className={
+                  session.id === activeSessionId
+                    ? "ai-panel__history-item ai-panel__history-item--active"
+                    : "ai-panel__history-item"
+                }
+                onClick={() => selectSession(session.id)}
+              >
+                {session.title || "Untitled"}
+              </button>
+              <IconButton
+                icon={Trash2}
+                label="Delete chat"
+                size={12}
+                onClick={() => deleteSession(session.id)}
+              />
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       <div className="ai-panel__body">
         {messages.length === 0 ? (
@@ -80,22 +185,20 @@ export function AiPanel({ onOpenSettings }: Props) {
               }
             >
               <div className="ai-panel__bubble-text">{msg.content}</div>
-              {msg.role === "user" ? (
-                <div className="ai-panel__bubble-meta">
-                  <span>
-                    {new Date().toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                  <IconButton
-                    icon={Copy}
-                    label="Copy"
-                    size={12}
-                    onClick={() => void navigator.clipboard.writeText(msg.content)}
-                  />
-                </div>
-              ) : null}
+              <div className="ai-panel__bubble-meta">
+                <span>
+                  {new Date(msg.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                <IconButton
+                  icon={Copy}
+                  label="Copy"
+                  size={12}
+                  onClick={() => void navigator.clipboard.writeText(msg.content)}
+                />
+              </div>
             </div>
           ))
         )}
@@ -118,8 +221,19 @@ export function AiPanel({ onOpenSettings }: Props) {
           }}
         />
         <div className="ai-panel__composer-actions">
-          <IconButton icon={Plus} label="Attach" size={14} disabled />
-          <IconButton icon={Mic} label="Voice" size={14} disabled />
+          <IconButton
+            icon={Plus}
+            label="Attach files"
+            size={14}
+            onClick={() => void attachFiles()}
+          />
+          <IconButton
+            icon={Mic}
+            label={listening ? "Listening…" : "Voice input"}
+            size={14}
+            active={listening}
+            onClick={startVoice}
+          />
           <IconButton
             icon={ArrowUp}
             label="Send"
@@ -133,15 +247,32 @@ export function AiPanel({ onOpenSettings }: Props) {
 
       <div className="ai-panel__chips">
         {document ? (
-          <span className="ai-panel__chip">
+          <button
+            type="button"
+            className="ai-panel__chip"
+            title="Pin active file to context"
+            onClick={() =>
+              attachPath(document.path, document.title, document.value)
+            }
+          >
             <FileIcon name={document.title} kind="file" size={12} />
             {document.title}
-          </span>
+          </button>
         ) : null}
-        <span className="ai-panel__chip">
-          <Search size={12} strokeWidth={1.75} aria-hidden />
-          Search
-        </span>
+        {attachments.map((a) => (
+          <span key={a.path} className="ai-panel__chip ai-panel__chip--attached">
+            <FileIcon name={a.name} kind="file" size={12} />
+            {a.name}
+            <button
+              type="button"
+              className="ai-panel__chip-x"
+              aria-label={`Remove ${a.name}`}
+              onClick={() => removeAttachment(a.path)}
+            >
+              <X size={10} strokeWidth={2} />
+            </button>
+          </span>
+        ))}
       </div>
 
       <div className="ai-panel__footer">
@@ -153,12 +284,36 @@ export function AiPanel({ onOpenSettings }: Props) {
           <Sparkles size={12} strokeWidth={1.75} aria-hidden />
           {settings.model}
         </button>
-        <button type="button" className="ai-panel__pill" title="Effort">
+        <button
+          type="button"
+          className="ai-panel__pill"
+          title="Cycle effort"
+          onClick={cycleEffort}
+        >
           <Flame size={12} strokeWidth={1.75} aria-hidden />
-          High
+          {effortLabel}
         </button>
-        <IconButton icon={Command} label="Commands" size={13} disabled />
+        <IconButton
+          icon={Command}
+          label="Open settings"
+          size={13}
+          onClick={onOpenSettings}
+        />
       </div>
     </aside>
   );
 }
+
+type SpeechRecognition = {
+  continuous: boolean;
+  interimResults: boolean;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  start: () => void;
+};
+
+type SpeechRecognitionEvent = {
+  results: ArrayLike<ArrayLike<{ transcript: string }>>;
+};

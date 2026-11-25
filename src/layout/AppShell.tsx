@@ -14,6 +14,7 @@ import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsConte
 import { DebugProvider } from "../debug/DebugContext";
 import { SettingsProvider } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
+import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { CommandPalette } from "../commands/CommandPalette";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
@@ -403,9 +404,11 @@ export function AppShell() {
             <ExtensionsProvider>
               <DebugProvider>
                 <SettingsProvider>
-                  <LayoutProvider>
-                    <ShellChrome />
-                  </LayoutProvider>
+                  <NotificationsProvider>
+                    <LayoutProvider>
+                      <ShellChrome />
+                    </LayoutProvider>
+                  </NotificationsProvider>
                 </SettingsProvider>
               </DebugProvider>
             </ExtensionsProvider>

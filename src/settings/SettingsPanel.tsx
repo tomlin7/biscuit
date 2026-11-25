@@ -114,6 +114,21 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => setAi({ model: e.target.value })}
               />
             </label>
+            <label className="settings-row">
+              <span>Effort</span>
+              <select
+                value={ai.effort}
+                onChange={(e) =>
+                  setAi({
+                    effort: e.target.value as "low" | "medium" | "high",
+                  })
+                }
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
           </section>
 
           <button type="button" className="settings-reset" onClick={reset}>
