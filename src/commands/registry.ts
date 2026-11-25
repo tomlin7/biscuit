@@ -17,13 +17,13 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "git.clone",
-    title: "Clone Repository…",
+    title: "Clone Repositoryâ€¦",
     category: "Git",
     run: (ctx) => void ctx.cloneRepository(),
   },
   {
     id: "workbench.action.files.openFolder",
-    title: "Open Folder…",
+    title: "Open Folderâ€¦",
     category: "File",
     keybinding: "Ctrl+K Ctrl+O",
     run: (ctx) => void ctx.openFolder(),
@@ -54,7 +54,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.quickOpen",
-    title: "Go to File…",
+    title: "Go to Fileâ€¦",
     category: "Go",
     keybinding: "Ctrl+P",
     run: (ctx) => ctx.openGoToFile(),
@@ -68,7 +68,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.addRootFolder",
-    title: "Add Folder to Workspace…",
+    title: "Add Folder to Workspaceâ€¦",
     category: "File",
     run: (ctx) => void ctx.addFolderRoot(),
   },
@@ -80,7 +80,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.removeRootFolder",
-    title: "Remove Folder from Workspace…",
+    title: "Remove Folder from Workspaceâ€¦",
     category: "File",
     run: (ctx) => {
       const path = window.prompt("Folder path to remove from the workspace:");
@@ -103,7 +103,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.files.saveAs",
-    title: "Save As…",
+    title: "Save Asâ€¦",
     category: "File",
     keybinding: "Ctrl+Shift+S",
     run: (ctx) => void ctx.saveAs(),
@@ -307,6 +307,12 @@ export const COMMANDS: Command[] = [
     title: "Toggle Word Wrap",
     category: "View",
     run: (ctx) => ctx.toggleWordWrap(),
+  },
+  {
+    id: "editor.action.toggleRenderWhitespace",
+    title: "Toggle Render Whitespace",
+    category: "View",
+    run: (ctx) => ctx.toggleRenderWhitespace(),
   },
   {
     id: "editor.action.toggleMinimap",

@@ -26,6 +26,7 @@ export type CommandContext = {
   toggleMinimap: () => void;
   toggleStickyScroll: () => void;
   toggleWordWrap: () => void;
+  toggleRenderWhitespace: () => void;
   openPalette: () => void;
   openSymbols: () => void;
   openWorkspaceSymbols: () => void;
