@@ -39,7 +39,7 @@ export type EditorSettings = {
 
 export type AppSettings = {
   editor: EditorSettings;
-  /** Win11 acrylic on shell crease (title/status/gutters). Islands stay opaque. */
+  /** Win11 acrylic on shell crease and the dedicated settings window. Islands stay opaque. */
   chromeAcrylic: boolean;
   /** Experimental vim-mode scaffold (status badge + block caret). */
   vimMode: boolean;
@@ -132,6 +132,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       /* ignore */
     }
   }, [settings]);
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || event.newValue == null) return;
+      setSettings(load());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const updateEditor = useCallback((patch: Partial<EditorSettings>) => {
     setSettings((s) => ({

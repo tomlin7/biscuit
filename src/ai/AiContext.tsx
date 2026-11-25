@@ -175,6 +175,15 @@ export function AiProvider({ children }: { children: ReactNode }) {
   const [activeSessionId, setActiveSessionId] = useState(initial.activeSessionId);
   const [attachments, setAttachments] = useState<AiAttachment[]>([]);
   const [settings, setSettingsState] = useState<AiSettings>(() => loadSettings());
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== SETTINGS_KEY || event.newValue == null) return;
+      setSettingsState(loadSettings());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);

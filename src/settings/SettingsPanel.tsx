@@ -13,9 +13,16 @@ type Props = {
   open: boolean;
   onClose: () => void;
   initialTab?: SettingsCategory;
+  /** Modal overlay (browser fallback) or fill a dedicated acrylic window. */
+  variant?: "modal" | "window";
 };
 
-export function SettingsPanel({ open, onClose, initialTab = "editor" }: Props) {
+export function SettingsPanel({
+  open,
+  onClose,
+  initialTab = "editor",
+  variant = "modal",
+}: Props) {
   const { theme, extras, setTheme } = useTheme();
   const { settings, updateEditor, updateChromeAcrylic, reset } = useSettings();
   const { settings: ai, setSettings: setAi } = useAi();
@@ -49,8 +56,19 @@ export function SettingsPanel({ open, onClose, initialTab = "editor" }: Props) {
   const totalMatches = (matchesAppearance ? 1 : 0) + (matchesEditorTypography || matchesEditorDisplay || matchesEditorFormatting ? 1 : 0) + (matchesAiConnection || matchesAiPrompt || matchesAiAdvanced ? 1 : 0);
 
   return (
-    <div className="settings-overlay" role="dialog" aria-modal="true" aria-label="Settings">
-      <button type="button" className="settings-overlay__backdrop" onClick={onClose} aria-label="Close" />
+    <div
+      className={
+        variant === "window"
+          ? "settings-overlay settings-overlay--window"
+          : "settings-overlay"
+      }
+      role="dialog"
+      aria-modal={variant === "modal"}
+      aria-label="Settings"
+    >
+      {variant === "modal" ? (
+        <button type="button" className="settings-overlay__backdrop" onClick={onClose} aria-label="Close" />
+      ) : null}
       <div className="settings-panel island">
         <div className="settings-panel__header">
           <div className="settings-panel__tabs" role="tablist" aria-label="Settings categories">
@@ -160,7 +178,7 @@ export function SettingsPanel({ open, onClose, initialTab = "editor" }: Props) {
                 />
               </label>
               <p className="settings-hint">
-                Windows 11 acrylic on the title bar, status bar, and outer gutters. Editor and side panels stay solid.
+                Windows 11 acrylic on the title bar, status bar, gutters, and the settings window. Editor and side panels stay solid.
               </p>
             </section>
           )}

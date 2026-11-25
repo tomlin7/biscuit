@@ -2,7 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main", "t3d-*"],
+  "windows": ["main", "t3d-*", "settings"],
   "permissions": [
     "core:default",
     "core:window:allow-close",
@@ -14,6 +14,8 @@
     "core:window:allow-start-dragging",
     "core:window:allow-is-maximized",
     "core:window:allow-set-effects",
+    "core:window:allow-set-focus",
+    "core:window:allow-show",
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-fullscreen",
     "core:window:allow-is-fullscreen",

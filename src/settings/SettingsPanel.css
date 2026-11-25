@@ -23,7 +23,7 @@
   flex-direction: column;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-island);
   background: var(--bg-island);
   overflow: hidden;
 }
@@ -35,7 +35,7 @@
   gap: 12px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--bg-surface);
+  background: var(--bg-island-elevated);
   flex-shrink: 0;
 }
 
@@ -63,12 +63,12 @@
 
 .settings-panel__tab:hover {
   color: var(--fg);
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .settings-panel__tab--active {
-  color: var(--fg);
-  background: var(--bg-active);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
   font-weight: 600;
 }
 
@@ -103,8 +103,10 @@
 }
 
 .settings-panel__search-input:focus {
-  border-color: var(--accent);
-  background: var(--bg-hover);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: var(--bg-input);
+  outline: none;
+  box-shadow: none;
 }
 
 .settings-panel__search-clear {
@@ -125,7 +127,7 @@
 
 .settings-panel__search-clear:hover {
   color: var(--fg);
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .settings-panel__body {
@@ -150,7 +152,7 @@
   gap: 8px;
   padding: 12px;
   border-radius: 8px;
-  background: var(--bg-surface);
+  background: var(--bg-island-elevated);
   border: 1px solid var(--border-subtle);
 }
 
@@ -232,6 +234,10 @@
   grid-template-columns: 1fr auto;
 }
 
+.settings-row input[type="checkbox"] {
+  accent-color: rgba(255, 255, 255, 0.7);
+}
+
 .settings-hint {
   margin: -4px 0 8px;
   padding: 0 2px;
@@ -260,8 +266,10 @@
 .settings-row input:focus,
 .settings-row select:focus,
 .settings-row textarea:focus {
-  border-color: var(--accent);
-  background: var(--bg-hover);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: var(--bg-input);
+  outline: none;
+  box-shadow: none;
 }
 
 .settings-row textarea {
@@ -294,9 +302,9 @@
 
 .settings-preset:hover,
 .settings-preset--active {
-  color: var(--fg);
-  background: var(--bg-active);
-  border-color: var(--border-subtle);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .settings-reset {
@@ -313,8 +321,8 @@
 }
 
 .settings-reset:hover {
-  color: var(--fg);
-  background: var(--bg-hover);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .settings-empty {

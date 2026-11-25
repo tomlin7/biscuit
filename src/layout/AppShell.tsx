@@ -7,6 +7,7 @@ import { open as openDialog, save as saveDialog } from "@tauri-apps/plugin-dialo
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import { applyChromeAcrylic } from "./chromeAcrylic";
+import { openSettingsWindow } from "../settings/openSettingsWindow";
 import "./AppShell.css";
 import { editorConfigFor } from "../editor/editorconfig";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
@@ -426,8 +427,11 @@ function ShellChrome() {
 
   const [settingsCategory, setSettingsCategory] = useState<"appearance" | "editor" | "ai">("editor");
   const openSettings = useCallback((tab?: "appearance" | "editor" | "ai") => {
-    if (tab) setSettingsCategory(tab);
-    setSettingsOpen(true);
+    const next = tab ?? "editor";
+    setSettingsCategory(next);
+    void openSettingsWindow(next).then((opened) => {
+      if (!opened) setSettingsOpen(true);
+    });
   }, []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const cloneRepository = useCallback(async () => {

@@ -1,0 +1,210 @@
+html[data-settings-window],
+html[data-settings-window] body,
+html[data-settings-window] #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+/* Same crease pattern as the main shell: acrylic outside, opaque island inside. */
+.settings-window {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: #ffffff;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-ui);
+}
+
+.settings-window__titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: var(--titlebar-height);
+  padding: 0 10px 0 var(--gap-shell);
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+}
+
+.settings-window__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.settings-window__titlebar .icon-btn {
+  color: #ffffff;
+}
+
+.settings-window__titlebar .icon-btn:hover:not(:disabled) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Left / right / bottom gutters stay clear so Win11 acrylic shows. */
+.settings-window__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 0 var(--gap-shell) var(--gap-shell);
+  background: transparent;
+}
+
+.settings-window .settings-overlay {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  place-items: stretch;
+}
+
+.settings-window .settings-overlay__backdrop {
+  display: none;
+}
+
+/* Opaque island — same language as editor / sidebar panels. */
+.settings-window .settings-panel.island,
+.settings-window .settings-panel {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border-radius: var(--radius-island);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-island);
+  box-shadow: var(--shadow-island);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--fg);
+  overflow: hidden;
+}
+
+.settings-window .settings-panel__header {
+  background: var(--bg-island-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.settings-window .settings-panel__header .icon-btn {
+  display: none;
+}
+
+.settings-window .settings-panel__tab {
+  color: var(--fg-muted);
+}
+
+.settings-window .settings-panel__tab:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.settings-window .settings-panel__tab--active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  font-weight: 600;
+}
+
+.settings-window .settings-panel__search-icon,
+.settings-window .settings-panel__search-clear {
+  color: var(--fg-muted);
+}
+
+.settings-window .settings-panel__search-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--fg);
+}
+
+.settings-window .settings-panel__search-input:focus {
+  background: var(--bg-input);
+  border-color: rgba(255, 255, 255, 0.28);
+  outline: none;
+  box-shadow: none;
+}
+
+.settings-window .settings-panel__search-clear:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.settings-window .settings-section {
+  background: var(--bg-island-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.settings-window .settings-section__title {
+  color: var(--fg-dim);
+}
+
+.settings-window .settings-row,
+.settings-window .settings-hint,
+.settings-window .settings-section__toggle,
+.settings-window .settings-empty {
+  color: var(--fg-muted);
+}
+
+.settings-window .settings-section__toggle:hover {
+  color: var(--fg);
+}
+
+.settings-window .settings-category-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--fg);
+}
+
+.settings-window .settings-row input[type="number"],
+.settings-window .settings-row input[type="text"],
+.settings-window .settings-row input[type="password"],
+.settings-window .settings-row select,
+.settings-window .settings-row textarea,
+.settings-window .settings-preset,
+.settings-window .settings-reset {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--fg);
+}
+
+.settings-window .settings-row input:focus,
+.settings-window .settings-row select:focus,
+.settings-window .settings-row textarea:focus {
+  background: var(--bg-input);
+  border-color: rgba(255, 255, 255, 0.28);
+  outline: none;
+  box-shadow: none;
+}
+
+.settings-window .settings-row input[type="checkbox"] {
+  accent-color: rgba(255, 255, 255, 0.75);
+}
+
+.settings-window .settings-preset:hover,
+.settings-window .settings-preset--active,
+.settings-window .settings-reset:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.settings-window .settings-row option {
+  background: var(--bg-island);
+  color: var(--fg);
+}
+
+.settings-window button:focus-visible,
+.settings-window input:focus-visible,
+.settings-window textarea:focus-visible,
+.settings-window select:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+  outline-offset: -1px;
+}

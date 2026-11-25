@@ -58,6 +58,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme, extras]);
 
   useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || event.newValue == null) return;
+      setThemeState(readStoredTheme());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  useEffect(() => {
     if (!extrasReady) return;
     if (theme.startsWith("ext:") && !extras.some((item) => `ext:${item.id}` === theme)) {
       setThemeState("dark");
