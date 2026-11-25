@@ -131,6 +131,31 @@ function TerminalSession({
       }
     };
 
+    term.attachCustomKeyEventHandler((event) => {
+      if (event.type !== "keydown") return true;
+      const mod = event.ctrlKey || event.metaKey;
+      if (!mod || !event.shiftKey) return true;
+      if (event.key.toLowerCase() === "c") {
+        const selection = term.getSelection();
+        if (selection) {
+          void navigator.clipboard.writeText(selection);
+          event.preventDefault();
+          return false;
+        }
+      }
+      if (event.key.toLowerCase() === "v") {
+        void navigator.clipboard.readText().then((text) => {
+          if (!text) return;
+          const current = ptyIdRef.current;
+          if (!current) return;
+          void invoke("pty_write", { id: current, data: text });
+        });
+        event.preventDefault();
+        return false;
+      }
+      return true;
+    });
+
     term.onData((data) => {
       const current = ptyIdRef.current;
       if (!current) return;
