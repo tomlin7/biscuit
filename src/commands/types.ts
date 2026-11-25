@@ -10,6 +10,7 @@ export type CommandContext = {
   closeActive: () => void;
   closeAll: () => void;
   toggleTheme: () => void;
+  toggleMinimap: () => void;
   openPalette: () => void;
   openSymbols: () => void;
   closePalette: () => void;

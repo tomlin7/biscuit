@@ -39,6 +39,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.31.0** | Sandboxed HTML preview beside the editor | shipped |
 | **0.32.0** | Add a changed path to .gitignore | shipped |
 | **0.33.0** | Breadcrumbs from the workspace root to the open file | shipped |
+| **0.34.0** | Minimap toggle, UTF-8 label, and end-of-line switch | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

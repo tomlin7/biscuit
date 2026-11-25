@@ -84,6 +84,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("wordWrap"),
   },
   {
+    id: "editor.action.toggleMinimap",
+    title: "Toggle Minimap",
+    category: "View",
+    run: (ctx) => ctx.toggleMinimap(),
+  },
+  {
     id: "editor.action.toggleRelativeLineNumbers",
     title: "Toggle Relative Line Numbers",
     category: "View",

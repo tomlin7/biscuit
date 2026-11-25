@@ -67,6 +67,7 @@ export type WorkspaceState = {
   closeTab: (path: string) => void;
   moveTab: (fromPath: string, toPath: string) => void;
   setValue: (value: string) => void;
+  setEol: (eol: "lf" | "crlf") => void;
   setValueAt: (path: string, value: string) => void;
   applyDiskValue: (path: string, value: string) => void;
   setCursor: (line: number, column: number) => void;
@@ -461,6 +462,19 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const setEol = useCallback((eol: "lf" | "crlf") => {
+    const path = activePathRef.current;
+    if (!path) return;
+    setTabs((current) =>
+      current.map((tab) => {
+        if (tab.path !== path) return tab;
+        const value =
+          eol === "lf" ? tab.value.replace(/\r\n/g, "\n") : tab.value.replace(/\r?\n/g, "\r\n");
+        return value === tab.value ? tab : { ...tab, value };
+      }),
+    );
+  }, []);
+
   const setValueAt = useCallback((path: string, value: string) => {
     setTabs((current) =>
       current.map((tab) => (tab.path === path ? { ...tab, value } : tab)),
@@ -747,6 +761,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       closeTab,
       moveTab,
       setValue,
+      setEol,
       setValueAt,
       applyDiskValue,
       setCursor,
@@ -782,6 +797,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       closeTab,
       moveTab,
       setValue,
+      setEol,
       setValueAt,
       applyDiskValue,
       setCursor,

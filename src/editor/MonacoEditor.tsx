@@ -83,6 +83,12 @@ export function MonacoEditor({ path, primary = true }: Props) {
   }, [theme]);
 
   useEffect(() => {
+    editorRef.current?.updateOptions({
+      minimap: { enabled: settings.editor.minimap, scale: 1 },
+    });
+  }, [settings.editor.minimap]);
+
+  useEffect(() => {
     if (!primary) return;
     registerFindHandler(() => {
       const ed = editorRef.current;

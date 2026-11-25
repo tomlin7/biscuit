@@ -13,7 +13,7 @@ import { AiProvider } from "../ai/AiContext";
 import { AiPanel } from "../ai/AiPanel";
 import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsContext";
 import { DebugProvider } from "../debug/DebugContext";
-import { SettingsProvider } from "../settings/SettingsContext";
+import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
 import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { CommandPalette } from "../commands/CommandPalette";
@@ -51,6 +51,7 @@ function ShellChrome() {
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme } = useTheme();
+  const { settings, updateEditor } = useSettings();
   const { findInFile, runEditorCommand } = useEditorActions();
   const { extensions } = useExtensions();
   const {
@@ -216,6 +217,7 @@ function ShellChrome() {
       },
       closeAll,
       toggleTheme,
+      toggleMinimap: () => updateEditor({ minimap: !settings.editor.minimap }),
       openPalette,
       openSymbols,
       closePalette,
@@ -243,6 +245,8 @@ function ShellChrome() {
       activePath,
       closeTab,
       toggleTheme,
+      settings.editor.minimap,
+      updateEditor,
       openPalette,
       openSymbols,
       closePalette,

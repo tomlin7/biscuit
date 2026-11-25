@@ -31,7 +31,8 @@ export function StatusBar({
   onOpenDebug,
   gitBranch = null,
 }: StatusBarProps) {
-  const { dirty, busy, rootName } = useWorkspace();
+  const { dirty, busy, rootName, document, setEol } = useWorkspace();
+  const eol = document ? (document.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, clear } = useNotifications();
   const [open, setOpen] = useState(false);
@@ -92,6 +93,21 @@ export function StatusBar({
       </div>
 
       <div className="status-bar__group status-bar__group--end">
+        {eol ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Switch end of line"
+            onClick={() => setEol(eol === "LF" ? "crlf" : "lf")}
+          >
+            {eol}
+          </button>
+        ) : null}
+        {document ? (
+          <span className="status-bar__item" title="Encoding">
+            UTF-8
+          </span>
+        ) : null}
         <IconButton
           icon={List}
           label="Problems"
