@@ -455,6 +455,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.447.0** | UI-kind extensions and Vim mode extension | shipped |
 | **0.448.0** | Remote extension registry and marketplace | shipped |
 | **0.449.0** | First-party extension packaging and distribution | shipped |
+| **0.450.0** | Sidebar view contribution point for extensions | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

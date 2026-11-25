@@ -6,6 +6,7 @@ import {
   Folder,
   FolderTree,
   GitBranch,
+  Layers,
   ListTree,
   Minus,
   Play,
@@ -23,10 +24,12 @@ import { useLayout } from "./LayoutContext";
 import { useDebug } from "../debug/DebugContext";
 import { IconButton } from "../ui/IconButton";
 import type { SidebarMode } from "./Sidebar";
+import type { ExtraSidebarView } from "../extensions/contributions";
 
 type TitleBarProps = {
   sidebarOpen?: boolean;
   sidebarMode?: SidebarMode;
+  sidebarViews?: ExtraSidebarView[];
   onOpenPalette?: () => void;
   onOpenSettings?: () => void;
   onToggleSidebarMode?: (mode: SidebarMode) => void;
@@ -107,6 +110,7 @@ function WindowControls() {
 export function TitleBar({
   sidebarOpen = true,
   sidebarMode = "explorer",
+  sidebarViews = [],
   onOpenSettings,
   onToggleSidebarMode,
   onShowExplorer,
@@ -179,6 +183,20 @@ export function TitleBar({
           onClick={() => handleModeClick("extensions", onShowExtensions)}
           {...noDrag}
         />
+        {sidebarViews.map((view) => {
+          const modeKey = `extview:${view.extensionId}/${view.id}`;
+          return (
+            <IconButton
+              key={modeKey}
+              icon={Layers}
+              label={view.name}
+              size={15}
+              active={sidebarOpen && (sidebarMode === modeKey || sidebarMode === view.id)}
+              onClick={() => handleModeClick(modeKey)}
+              {...noDrag}
+            />
+          );
+        })}
       </div>
 
       <button

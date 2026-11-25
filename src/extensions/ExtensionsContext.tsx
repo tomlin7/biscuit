@@ -28,6 +28,7 @@ export type ExtensionManifest = {
     }>;
     languages?: Array<{ id: string; aliases: string[]; extensions: string[] }>;
     webviews?: Array<{ id: string; title: string; entry: string }>;
+    views?: Array<{ id: string; name: string; icon?: string; entry?: string }>;
   };
   /** Entry module run in the extension host; absent for declarative-only extensions. */
   main?: string | null;

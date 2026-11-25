@@ -20,6 +20,14 @@ export type ExtraWebview = {
   entry: string;
 };
 
+export type ExtraSidebarView = {
+  extensionId: string;
+  id: string;
+  name: string;
+  icon?: string;
+  entry?: string;
+};
+
 let languages: ExtraLanguage[] = [];
 
 const registeredLanguages = new Set<string>();
@@ -59,10 +67,12 @@ export function collectContributions(extensions: ExtensionManifest[]): {
   themes: ExtraTheme[];
   languages: ExtraLanguage[];
   webviews: ExtraWebview[];
+  sidebarViews: ExtraSidebarView[];
 } {
   const themes: ExtraTheme[] = [];
   const nextLanguages: ExtraLanguage[] = [];
   const webviews: ExtraWebview[] = [];
+  const sidebarViews: ExtraSidebarView[] = [];
   for (const ext of extensions) {
     if (!ext.enabled) continue;
     for (const theme of ext.contributes?.themes ?? []) {
@@ -95,6 +105,16 @@ export function collectContributions(extensions: ExtensionManifest[]): {
         entry: webview.entry,
       });
     }
+    for (const view of ext.contributes?.views ?? []) {
+      if (!view.id) continue;
+      sidebarViews.push({
+        extensionId: ext.id,
+        id: view.id,
+        name: view.name || view.id,
+        icon: view.icon,
+        entry: view.entry,
+      });
+    }
   }
-  return { themes, languages: nextLanguages, webviews };
+  return { themes, languages: nextLanguages, webviews, sidebarViews };
 }

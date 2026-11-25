@@ -1814,4 +1814,10 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.changeEncoding(),
   },
+  {
+    id: "workbench.view.extension",
+    title: "View: Show Extension Sidebar View",
+    category: "View",
+    run: (ctx) => ctx.showSidebarView(""),
+  },
 ];

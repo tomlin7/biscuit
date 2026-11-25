@@ -197,6 +197,10 @@ function ShellChrome() {
       });
     });
   }, [extensions, setExtras]);
+
+  const sidebarViews = useMemo(() => {
+    return collectContributions(extensions).sidebarViews;
+  }, [extensions]);
   const {
     sidebarWidth,
     aiWidth,
@@ -577,9 +581,20 @@ function ShellChrome() {
           },
         });
       }
+      for (const view of ext.contributes?.views ?? []) {
+        cmds.push({
+          id: `t3d.extsidebar.${ext.id}.${view.id}`,
+          title: `View: Show ${view.name}`,
+          category: ext.name,
+          run: () => {
+            setSidebarMode(`extview:${ext.id}/${view.id}`);
+            setSidebarOpen(true);
+          },
+        });
+      }
     }
     return cmds;
-  }, [extensions, notify, openWebviewTab]);
+  }, [extensions, notify, openWebviewTab, setSidebarMode, setSidebarOpen]);
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -2109,6 +2124,17 @@ function ShellChrome() {
         void navigator.clipboard.writeText(basename(activePath));
         notify("Copied", basename(activePath));
       },
+      showSidebarView: (viewId?: string) => {
+        if (viewId) {
+          setSidebarMode(viewId);
+          setSidebarOpen(true);
+        } else if (sidebarViews.length > 0) {
+          setSidebarMode(`extview:${sidebarViews[0].extensionId}/${sidebarViews[0].id}`);
+          setSidebarOpen(true);
+        } else {
+          notify("Sidebar Views", "No contributed sidebar views available.");
+        }
+      },
       openNextGitChangedFile: () => {
         void (async () => {
           if (!rootPath) {
@@ -2144,6 +2170,7 @@ function ShellChrome() {
       },
     }),
     [
+      sidebarViews,
       openFolder,
       addFolderRoot,
       addFolderRootPath,
@@ -2664,6 +2691,7 @@ function ShellChrome() {
       <TitleBar
         sidebarOpen={sidebarOpen}
         sidebarMode={sidebarMode}
+        sidebarViews={sidebarViews}
         onOpenSettings={openSettings}
         onToggleSidebarMode={(mode) => {
           if (sidebarOpen && sidebarMode === mode) {
@@ -2681,6 +2709,7 @@ function ShellChrome() {
         >
           <Sidebar
             mode={sidebarMode}
+            sidebarViews={sidebarViews}
             onModeChange={setSidebarMode}
             onBranch={applyGitInfo}
             treeFilter={treeFilter}

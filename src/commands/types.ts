@@ -299,6 +299,7 @@ export type CommandContext = {
   copyActiveFileName: () => void;
   openNextGitChangedFile: () => void;
   openWebview: (extId: string, viewId: string, title?: string) => void;
+  showSidebarView: (viewId: string) => void;
 };
 
 export type Command = {

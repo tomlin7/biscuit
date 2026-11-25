@@ -40,6 +40,19 @@ pub struct ExtensionContributes {
     pub languages: Vec<ExtensionLanguage>,
     #[serde(default)]
     pub webviews: Vec<ExtensionWebview>,
+    #[serde(default)]
+    pub views: Vec<ExtensionView>,
+}
+
+/// A sidebar view contributed by an extension.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExtensionView {
+    pub id: String,
+    pub name: String,
+    #[serde(default)]
+    pub icon: Option<String>,
+    #[serde(default)]
+    pub entry: Option<String>,
 }
 
 /// An HTML page, relative to the extension folder, shown in a sandboxed editor tab.
@@ -76,6 +89,8 @@ pub struct ExtensionManifest {
     pub activation_events: Vec<String>,
     #[serde(default, rename = "extensionKind")]
     pub extension_kind: Option<String>,
+    #[serde(default)]
+    pub permissions: Vec<String>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -212,6 +227,25 @@ fn parse_contributes(value: &serde_json::Value) -> ExtensionContributes {
             });
         }
     }
+    if let Some(views) = obj.get("views").and_then(|item| item.as_array()) {
+        for item in views {
+            let text = |key: &str| {
+                item.get(key)
+                    .and_then(|part| part.as_str())
+                    .map(|value| value.trim())
+                    .filter(|value| !value.is_empty())
+            };
+            let Some(id) = text("id") else {
+                continue;
+            };
+            out.views.push(ExtensionView {
+                id: id.to_string(),
+                name: text("name").unwrap_or(id).to_string(),
+                icon: text("icon").map(|s| s.to_string()),
+                entry: text("entry").map(|s| s.to_string()),
+            });
+        }
+    }
     out
 }
 
@@ -249,6 +283,7 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         && parsed.themes.is_empty()
         && parsed.languages.is_empty()
         && parsed.webviews.is_empty()
+        && parsed.views.is_empty()
     {
         None
     } else {
@@ -260,6 +295,7 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty());
     let activation_events = string_list(value.get("activationEvents"));
+    let permissions = string_list(value.get("permissions"));
     let extension_kind = value
         .get("extensionKind")
         .and_then(|v| v.as_str())
@@ -277,6 +313,7 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         main,
         activation_events,
         extension_kind,
+        permissions,
     })
 }
 
@@ -962,6 +999,34 @@ mod tests {
 
         assert!(!dest.exists());
         assert_eq!(super::load_enabled(&root).enabled.get("my.ext"), None);
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn reads_views_and_permissions() {
+        let root = scratch("views-perms-ext");
+        fs::write(
+            root.join("extension.json"),
+            r#"{
+                "id": "test.custom",
+                "name": "Custom",
+                "version": "1.0.0",
+                "permissions": ["fs", "network"],
+                "contributes": {
+                    "views": [
+                        { "id": "myview", "name": "My View", "entry": "view.html" }
+                    ]
+                }
+            }"#,
+        )
+        .unwrap();
+        let manifest = super::read_manifest(&root, &super::EnabledMap::default()).unwrap();
+        assert_eq!(manifest.permissions, vec!["fs", "network"]);
+        let contributes = manifest.contributes.expect("expected contributes");
+        assert_eq!(contributes.views.len(), 1);
+        assert_eq!(contributes.views[0].id, "myview");
+        assert_eq!(contributes.views[0].name, "My View");
+        assert_eq!(contributes.views[0].entry.as_deref(), Some("view.html"));
         let _ = fs::remove_dir_all(&root);
     }
 }
