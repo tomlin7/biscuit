@@ -485,8 +485,14 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     }
     disposeVim();
     void import("monaco-vim")
-      .then(({ initVimMode }) => {
+      .then((mod) => {
         if (cancelled || editorRef.current !== ed || !settings.vimMode) return;
+        const initVimMode =
+          typeof mod.initVimMode === "function"
+            ? mod.initVimMode
+            : (mod as { default?: { initVimMode?: typeof mod.initVimMode } }).default
+                ?.initVimMode;
+        if (typeof initVimMode !== "function") return;
         try {
           const adapter = initVimMode(ed, vimStatusRef.current);
           vimDisposeRef.current = () => adapter.dispose();
