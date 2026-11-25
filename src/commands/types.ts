@@ -181,6 +181,7 @@ export type CommandContext = {
   gitClearCommitMessage: () => void;
   copyLastAiResponse: () => void;
   cycleAiSeed: () => void;
+  focusAiSettings: () => void;
 };
 
 export type Command = {

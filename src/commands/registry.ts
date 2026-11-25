@@ -1088,4 +1088,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiSeed(),
   },
+  {
+    id: "workbench.action.focusAiSettings",
+    title: "Focus AI Settings",
+    category: "AI",
+    run: (ctx) => ctx.focusAiSettings(),
+  },
 ];

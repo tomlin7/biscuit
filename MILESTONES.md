@@ -322,6 +322,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.314.0** | Git clear commit message from palette | shipped |
 | **0.315.0** | Copy last AI response from palette | shipped |
 | **0.316.0** | Cycle AI seed from palette | shipped |
+| **0.317.0** | Focus AI settings from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

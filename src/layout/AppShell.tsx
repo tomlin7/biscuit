@@ -1069,6 +1069,18 @@ function ShellChrome() {
         setSettings({ seed: next });
         setAiOpen(true);
       },
+      focusAiSettings: () => {
+        openSettings();
+        window.setTimeout(() => {
+          const section = window.document.getElementById("settings-ai-section");
+          section?.scrollIntoView({ block: "start", behavior: "smooth" });
+          (
+            window.document.getElementById(
+              "settings-ai-system-prompt",
+            ) as HTMLTextAreaElement | null
+          )?.focus();
+        }, 0);
+      },
     }),
     [
       openFolder,
