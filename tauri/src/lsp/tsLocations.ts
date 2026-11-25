@@ -60,9 +60,15 @@ export async function tsClient(
 ): Promise<{ client: TsClient; offset: number } | null> {
   const language = model.getLanguageId();
   if (language !== "typescript" && language !== "javascript") return null;
-  const worker = await typescript.getTypeScriptWorker();
-  const client = (await worker(model.uri)) as TsClient;
-  return { client, offset: 0 };
+  if (!typescript?.getTypeScriptWorker) return null;
+  try {
+    const worker = await typescript.getTypeScriptWorker();
+    const client = (await worker(model.uri)) as TsClient;
+    return { client, offset: 0 };
+  } catch (err) {
+    console.warn("Failed to get TypeScript worker client:", err);
+    return null;
+  }
 }
 
 export async function renamePlan(

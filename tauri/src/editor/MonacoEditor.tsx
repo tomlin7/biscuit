@@ -150,14 +150,22 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
 
   useEffect(() => {
     if (monacoRef.current) {
-      defineExtraThemes(monacoRef.current, extras);
-      monacoRef.current.editor.setTheme(monacoThemeId(theme, extras));
+      try {
+        defineExtraThemes(monacoRef.current, extras);
+        monacoRef.current?.editor?.setTheme?.(monacoThemeId(theme, extras));
+      } catch (err) {
+        console.warn("Failed to apply theme in useEffect:", err);
+      }
     }
   }, [theme, extras]);
 
   useEffect(() => {
     if (monacoRef.current) {
-      configureJsonSchemas(monacoRef.current, settings.jsonSchemas);
+      try {
+        configureJsonSchemas(monacoRef.current, settings.jsonSchemas);
+      } catch (err) {
+        console.warn("Failed to configure JSON schemas in useEffect:", err);
+      }
     }
   }, [settings.jsonSchemas]);
 
@@ -330,6 +338,16 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
             showPeekRef.current({
               title: "No language service",
               preview: "Peek definition is available for JavaScript and TypeScript.",
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          if (!typescript?.getTypeScriptWorker) {
+            showPeekRef.current({
+              title: "No language service",
+              preview: "TypeScript language service is not available in this environment.",
               path: "",
               line: 1,
               column: 1,
@@ -557,6 +575,11 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       console.warn("Failed to register TS hover providers in beforeMount:", err);
     }
     try {
+      registerCodeLensProvider(monaco as any);
+    } catch (err) {
+      console.warn("Failed to register code lens provider in beforeMount:", err);
+    }
+    try {
       configureJsonSchemas(monaco, settings.jsonSchemas);
     } catch (err) {
       console.warn("Failed to configure JSON schemas in beforeMount:", err);
@@ -568,10 +591,21 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     editorRef.current = ed;
     monacoRef.current = monaco;
     try {
+      defineT3dThemes(monaco);
       defineExtraThemes(monaco, extras);
       monaco?.editor?.setTheme?.(monacoThemeId(theme, extras));
     } catch (err) {
       console.warn("Failed to apply themes in onMount:", err);
+    }
+    try {
+      registerTsHoverProviders(monaco);
+    } catch (err) {
+      console.warn("Failed to register TS hover providers in onMount:", err);
+    }
+    try {
+      registerCodeLensProvider(monaco as any);
+    } catch (err) {
+      console.warn("Failed to register code lens provider in onMount:", err);
     }
     try {
       configureJsonSchemas(monaco, settings.jsonSchemas);

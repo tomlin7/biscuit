@@ -36,4 +36,12 @@ describe("codeLens", () => {
     expect(findSymbolColumn("function foo()", "")).toBe(1);
     expect(findSymbolColumn("function foo()", "nonexistent")).toBe(1);
   });
+
+  it("handles null, undefined, or incomplete monaco instances safely in registerCodeLensProvider", async () => {
+    const { registerCodeLensProvider } = await import("./codeLens");
+    expect(registerCodeLensProvider(null)).toBeNull();
+    expect(registerCodeLensProvider(undefined)).toBeNull();
+    expect(registerCodeLensProvider({} as any)).toBeNull();
+    expect(registerCodeLensProvider({ languages: {} } as any)).toBeNull();
+  });
 });

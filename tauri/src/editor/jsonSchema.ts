@@ -365,19 +365,25 @@ export function configureJsonSchemas(
   monaco?: Monaco | null,
   userSchemas: JsonSchemaAssociation[] = [],
 ): void {
-  const jsonDefaults = (monaco as any)?.languages?.json?.jsonDefaults;
+  const jsonDefaults =
+    (monaco as any)?.languages?.json?.jsonDefaults ??
+    (monaco as any)?.json?.jsonDefaults;
   if (!jsonDefaults || typeof jsonDefaults.setDiagnosticsOptions !== "function") {
     return;
   }
-  const allSchemas = getEffectiveJsonSchemas(userSchemas);
-  jsonDefaults.setDiagnosticsOptions({
-    validate: true,
-    allowComments: true,
-    enableSchemaRequest: true,
-    schemas: allSchemas.map((s) => ({
-      uri: s.uri,
-      fileMatch: s.fileMatch,
-      schema: s.schema,
-    })),
-  });
+  try {
+    const allSchemas = getEffectiveJsonSchemas(userSchemas);
+    jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      allowComments: true,
+      enableSchemaRequest: true,
+      schemas: allSchemas.map((s) => ({
+        uri: s.uri,
+        fileMatch: s.fileMatch,
+        schema: s.schema,
+      })),
+    });
+  } catch (err) {
+    console.warn("Failed to set JSON diagnostics options:", err);
+  }
 }

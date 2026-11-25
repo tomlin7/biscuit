@@ -1,4 +1,5 @@
 import type * as MonacoType from "monaco-editor";
+import type { Monaco } from "@monaco-editor/react";
 import { scanOutline } from "./outlineScan";
 
 let registered = false;
@@ -12,88 +13,94 @@ export function findSymbolColumn(lineContent: string, symName: string): number {
 }
 
 export function registerCodeLensProvider(
-  monacoInstance?: typeof MonacoType,
+  monacoInstance?: typeof MonacoType | Monaco | null,
 ): MonacoType.IDisposable | null {
   if (registered) return null;
   const monaco =
-    monacoInstance ??
+    (monacoInstance as unknown as typeof MonacoType) ??
     (typeof window !== "undefined"
       ? (window as unknown as { monaco?: typeof MonacoType }).monaco
       : undefined);
   if (!monaco?.languages?.registerCodeLensProvider) return null;
-  registered = true;
 
-  const languages = ["typescript", "javascript"];
-  const disposables: MonacoType.IDisposable[] = [];
+  try {
+    const languages = ["typescript", "javascript"];
+    const disposables: MonacoType.IDisposable[] = [];
 
-  for (const lang of languages) {
-    const disp = monaco.languages.registerCodeLensProvider(lang, {
-      provideCodeLenses(model) {
-        if (model.isDisposed()) return { lenses: [], dispose: () => {} };
-        const text = model.getValue();
-        const symbols = scanOutline(text, model.getLanguageId());
+    for (const lang of languages) {
+      const disp = monaco.languages.registerCodeLensProvider(lang, {
+        provideCodeLenses(model) {
+          if (model.isDisposed()) return { lenses: [], dispose: () => {} };
+          const text = model.getValue();
+          const symbols = scanOutline(text, model.getLanguageId());
 
-        const lenses: MonacoType.languages.CodeLens[] = [];
-        for (const sym of symbols) {
-          // Provide code lenses above functions, classes, interfaces, and methods
-          if (
-            sym.kind === "function" ||
-            sym.kind === "class" ||
-            sym.kind === "interface" ||
-            sym.kind === "method" ||
-            sym.kind === "type"
-          ) {
-            lenses.push({
-              range: {
-                startLineNumber: sym.line,
-                startColumn: 1,
-                endLineNumber: sym.line,
-                endColumn: 1,
-              },
-              id: `${model.uri.toString()}#${sym.line}#${sym.name}`,
-            });
+          const lenses: MonacoType.languages.CodeLens[] = [];
+          for (const sym of symbols) {
+            // Provide code lenses above functions, classes, interfaces, and methods
+            if (
+              sym.kind === "function" ||
+              sym.kind === "class" ||
+              sym.kind === "interface" ||
+              sym.kind === "method" ||
+              sym.kind === "type"
+            ) {
+              lenses.push({
+                range: {
+                  startLineNumber: sym.line,
+                  startColumn: 1,
+                  endLineNumber: sym.line,
+                  endColumn: 1,
+                },
+                id: `${model.uri.toString()}#${sym.line}#${sym.name}`,
+              });
+            }
           }
-        }
 
-        return { lenses, dispose: () => {} };
+          return { lenses, dispose: () => {} };
+        },
+
+        async resolveCodeLens(model, codeLens) {
+          if (model.isDisposed()) return codeLens;
+          const line = codeLens.range.startLineNumber;
+          const lineContent = model.getLineContent(line) ?? "";
+          const idParts = (codeLens.id ?? "").split("#");
+          const symName = idParts.length >= 3 ? idParts.slice(2).join("#") : "";
+          const col = findSymbolColumn(lineContent, symName);
+          const offset = model.getOffsetAt({ lineNumber: line, column: col });
+
+          let count = 0;
+          try {
+            const { referencesAt } = await import("./tsLocations");
+            const refs = await referencesAt(model, offset);
+            count = refs.length;
+          } catch {
+            count = 0;
+          }
+
+          const title = `${count} ${count === 1 ? "reference" : "references"}`;
+          codeLens.command = {
+            id: "editor.action.referenceSearch.trigger",
+            title,
+            arguments: [model.uri, { lineNumber: line, column: col }],
+          };
+
+          return codeLens;
+        },
+      });
+
+      if (disp) disposables.push(disp);
+    }
+
+    registered = true;
+
+    return {
+      dispose: () => {
+        disposables.forEach((d) => d.dispose());
+        registered = false;
       },
-
-      async resolveCodeLens(model, codeLens) {
-        if (model.isDisposed()) return codeLens;
-        const line = codeLens.range.startLineNumber;
-        const lineContent = model.getLineContent(line) ?? "";
-        const idParts = (codeLens.id ?? "").split("#");
-        const symName = idParts.length >= 3 ? idParts.slice(2).join("#") : "";
-        const col = findSymbolColumn(lineContent, symName);
-        const offset = model.getOffsetAt({ lineNumber: line, column: col });
-
-        let count = 0;
-        try {
-          const { referencesAt } = await import("./tsLocations");
-          const refs = await referencesAt(model, offset);
-          count = refs.length;
-        } catch {
-          count = 0;
-        }
-
-        const title = `${count} ${count === 1 ? "reference" : "references"}`;
-        codeLens.command = {
-          id: "editor.action.referenceSearch.trigger",
-          title,
-          arguments: [model.uri, { lineNumber: line, column: col }],
-        };
-
-        return codeLens;
-      },
-    });
-
-    disposables.push(disp);
+    };
+  } catch (err) {
+    console.warn("Failed to register code lens provider:", err);
+    return null;
   }
-
-  return {
-    dispose: () => {
-      disposables.forEach((d) => d.dispose());
-      registered = false;
-    },
-  };
 }

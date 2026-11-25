@@ -46,12 +46,17 @@ async function languageServiceOutline(path: string): Promise<Symbol[] | null> {
   if (!model) return null;
   const language = model.getLanguageId();
   if (language !== "typescript" && language !== "javascript") return null;
-  const worker = await typescript.getTypeScriptWorker();
-  const client = await worker(model.uri);
-  const tree = (await client.getNavigationTree(model.uri.toString())) as NavNode;
-  const symbols: Symbol[] = [];
-  flattenNav(tree.childItems, model, 0, symbols);
-  return symbols;
+  if (!typescript?.getTypeScriptWorker) return null;
+  try {
+    const worker = await typescript.getTypeScriptWorker();
+    const client = await worker(model.uri);
+    const tree = (await client.getNavigationTree(model.uri.toString())) as NavNode;
+    const symbols: Symbol[] = [];
+    flattenNav(tree.childItems, model, 0, symbols);
+    return symbols;
+  } catch {
+    return null;
+  }
 }
 
 export async function symbolsForFile(

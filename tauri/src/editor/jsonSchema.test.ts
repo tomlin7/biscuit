@@ -141,5 +141,33 @@ describe("JSON schema definitions and patterns", () => {
     ).not.toThrow();
     // Calling with no arguments
     expect(() => configureJsonSchemas()).not.toThrow();
+    // Fallback to monaco.json.jsonDefaults when languages.json is absent
+    let fallbackCaptured: any = null;
+    const fallbackMonaco = {
+      json: {
+        jsonDefaults: {
+          setDiagnosticsOptions: (opts: any) => {
+            fallbackCaptured = opts;
+          },
+        },
+      },
+    };
+    expect(() => configureJsonSchemas(fallbackMonaco as any)).not.toThrow();
+    expect(fallbackCaptured).not.toBeNull();
+    expect(fallbackCaptured.validate).toBe(true);
+
+    // Handles setDiagnosticsOptions throwing an exception
+    const throwingMonaco = {
+      languages: {
+        json: {
+          jsonDefaults: {
+            setDiagnosticsOptions: () => {
+              throw new Error("Simulated monaco failure");
+            },
+          },
+        },
+      },
+    };
+    expect(() => configureJsonSchemas(throwingMonaco as any)).not.toThrow();
   });
 });
