@@ -1546,7 +1546,12 @@ export const COMMANDS: Command[] = [
     category: "Debug",
     run: (ctx) => ctx.enableAllBreakpoints(),
   },
-
+  {
+    id: "workbench.action.editor.showEncoding",
+    title: "Show File Encoding",
+    category: "File",
+    run: (ctx) => ctx.showFileEncoding(),
+  },
 
 
 ];

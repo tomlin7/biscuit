@@ -256,6 +256,7 @@ export type CommandContext = {
   clearAllBreakpoints: () => void;
   disableAllBreakpoints: () => void;
   enableAllBreakpoints: () => void;
+  showFileEncoding: () => void;
 };
 
 export type Command = {

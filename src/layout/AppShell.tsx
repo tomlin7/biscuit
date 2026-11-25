@@ -6,6 +6,7 @@ import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import { applyChromeAcrylic } from "./chromeAcrylic";
+import { editorConfigFor } from "../editor/editorconfig";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import {
@@ -1547,6 +1548,16 @@ function ShellChrome() {
         setAllBreakpointsEnabled(true);
         setSidebarMode("debug");
         setSidebarOpen(true);
+      },
+      showFileEncoding: () => {
+        if (!document || isUntitledPath(document.path)) {
+          notify("Encoding", "UTF-8");
+          return;
+        }
+        void editorConfigFor(document.path, rootPath).then((config) => {
+          const charset = config.charset?.trim();
+          notify("Encoding", charset ? charset.toUpperCase() : "UTF-8");
+        });
       },
     }),
     [
