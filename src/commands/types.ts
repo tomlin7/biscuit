@@ -293,6 +293,7 @@ export type CommandContext = {
   goToPreviousProblem: () => void;
   revertActiveFile: () => void;
   copyActiveFileName: () => void;
+  openNextGitChangedFile: () => void;
 };
 
 export type Command = {

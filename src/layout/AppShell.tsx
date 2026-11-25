@@ -40,7 +40,7 @@ import {
   githubWebUrlFromRemote,
 } from "../scm/githubRemote";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
-import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
+import { basename, isUntitledPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
@@ -2011,6 +2011,39 @@ function ShellChrome() {
         if (!activePath) return;
         void navigator.clipboard.writeText(basename(activePath));
         notify("Copied", basename(activePath));
+      },
+      openNextGitChangedFile: () => {
+        void (async () => {
+          if (!rootPath) {
+            notify("Git", "Open a folder first.");
+            return;
+          }
+          try {
+            const summary = await invoke<GitSummary>("git_summary", {
+              cwd: rootPath,
+            });
+            const paths = (summary.entries ?? []).map((entry) =>
+              joinPath(rootPath, entry.path),
+            );
+            if (paths.length === 0) {
+              notify("Git", "No changed files.");
+              return;
+            }
+            const key = (activePath ?? "").replace(/\\/g, "/").toLowerCase();
+            const idx = paths.findIndex(
+              (path) => path.replace(/\\/g, "/").toLowerCase() === key,
+            );
+            const next = paths[(idx + 1) % paths.length];
+            await openFile(next);
+            setSidebarMode("scm");
+            setSidebarOpen(true);
+          } catch (err) {
+            notify(
+              "Git",
+              err instanceof Error ? err.message : String(err),
+            );
+          }
+        })();
       },
     }),
     [

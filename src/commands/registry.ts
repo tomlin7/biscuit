@@ -698,6 +698,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.goToPreviousProblem(),
   },
   {
+    id: "git.openNextChangedFile",
+    title: "Git: Open Next Changed File",
+    category: "Git",
+    run: (ctx) => void ctx.openNextGitChangedFile(),
+  },
+  {
     id: "workbench.action.output.toggleOutput",
     title: "Show Logs",
     category: "View",
