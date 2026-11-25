@@ -261,6 +261,7 @@ export type CommandContext = {
   openRecentFile: () => void;
   copyFileEncoding: () => void;
   openExtensionsMarketplace: () => void;
+  toggleZenMode: () => void;
 };
 
 export type Command = {

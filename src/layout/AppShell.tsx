@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -203,6 +203,11 @@ function ShellChrome() {
   const [gitDirtyCount, setGitDirtyCount] = useState(0);
   const [treeFilter, setTreeFilter] = useState("");
   const [hideDotfiles, setHideDotfiles] = useState(false);
+  const zenRestoreRef = useRef<{
+    sidebarOpen: boolean;
+    aiOpen: boolean;
+    bottomOpen: boolean;
+  } | null>(null);
 
   const applyGitInfo = useCallback((info: GitBranchInfo | null) => {
     if (!info) {
@@ -1594,6 +1599,20 @@ function ShellChrome() {
           /* ignore */
         });
       },
+      toggleZenMode: () => {
+        if (zenRestoreRef.current) {
+          const restore = zenRestoreRef.current;
+          zenRestoreRef.current = null;
+          setSidebarOpen(restore.sidebarOpen);
+          setAiOpen(restore.aiOpen);
+          setBottomOpen(restore.bottomOpen);
+          return;
+        }
+        zenRestoreRef.current = { sidebarOpen, aiOpen, bottomOpen };
+        setSidebarOpen(false);
+        setAiOpen(false);
+        setBottomOpen(false);
+      },
     }),
     [
       openFolder,
@@ -1739,6 +1758,8 @@ function ShellChrome() {
       installSample,
       clearBreakpoints,
       setAllBreakpointsEnabled,
+      sidebarOpen,
+      aiOpen,
     ],
   );
 

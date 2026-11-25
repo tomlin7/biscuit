@@ -401,6 +401,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.393.0** | Open recent file from palette | shipped |
 | **0.394.0** | Copy file encoding from palette | shipped |
 | **0.395.0** | Open extensions marketplace from palette | shipped |
+| **0.396.0** | Toggle zen mode from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

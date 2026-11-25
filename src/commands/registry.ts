@@ -1578,6 +1578,12 @@ export const COMMANDS: Command[] = [
     category: "Extensions",
     run: (ctx) => ctx.openExtensionsMarketplace(),
   },
-
+  {
+    id: "workbench.action.toggleZenMode",
+    title: "Toggle Zen Mode",
+    category: "View",
+    keybinding: "Ctrl+K Z",
+    run: (ctx) => ctx.toggleZenMode(),
+  },
 
 ];
