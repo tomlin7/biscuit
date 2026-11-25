@@ -20,6 +20,7 @@ import { StickyOutline } from "./StickyOutline";
 import { symbolsForFile } from "../lsp/OutlinePanel";
 import type { OutlineSymbol } from "../lsp/outlineScan";
 import { registerCodeLensProvider } from "../lsp/codeLens";
+import { configureJsonSchemas } from "./jsonSchema";
 import "./MonacoEditor.css";
 
 type Props = {
@@ -153,6 +154,12 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       monacoRef.current.editor.setTheme(monacoThemeId(theme, extras));
     }
   }, [theme, extras]);
+
+  useEffect(() => {
+    if (monacoRef.current) {
+      configureJsonSchemas(monacoRef.current, settings.jsonSchemas);
+    }
+  }, [settings.jsonSchemas]);
 
   useEffect(() => {
     if (settings.editor.inlayHints) {
@@ -540,6 +547,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   const handleBeforeMount = (monaco: Monaco) => {
     defineT3dThemes(monaco);
     registerTsHoverProviders(monaco);
+    configureJsonSchemas(monaco, settings.jsonSchemas);
     monacoRef.current = monaco;
   };
 

@@ -43,6 +43,12 @@ export type EditorSettings = {
   terminalFontSize: number;
 };
 
+export type JsonSchemaAssociation = {
+  fileMatch: string[];
+  uri: string;
+  schema?: Record<string, unknown>;
+};
+
 export type AppSettings = {
   editor: EditorSettings;
   /** Win11 acrylic on shell crease and the dedicated settings window. Islands stay opaque. */
@@ -55,6 +61,8 @@ export type AppSettings = {
   desktopNotifications: boolean;
   /** Independent terminal color palette theme ('auto', 'dracula', 'one-dark', etc.) */
   terminalTheme: string;
+  /** Configurable JSON Schema associations (path pattern -> schema map). */
+  jsonSchemas: JsonSchemaAssociation[];
 };
 
 type SettingsState = {
@@ -65,10 +73,11 @@ type SettingsState = {
     patch: Partial<
       Pick<
         AppSettings,
-        "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme"
+        "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme" | "jsonSchemas"
       >
     >,
   ) => void;
+  updateJsonSchemas: (schemas: JsonSchemaAssociation[]) => void;
   reset: () => void;
 };
 
@@ -102,6 +111,7 @@ const DEFAULTS: AppSettings = {
     "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/index.json",
   desktopNotifications: true,
   terminalTheme: "auto",
+  jsonSchemas: [],
 };
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -135,6 +145,7 @@ function load(): AppSettings {
         typeof parsed.terminalTheme === "string" && parsed.terminalTheme.trim()
           ? parsed.terminalTheme.trim()
           : DEFAULTS.terminalTheme,
+      jsonSchemas: Array.isArray(parsed.jsonSchemas) ? parsed.jsonSchemas : DEFAULTS.jsonSchemas,
     };
   } catch {
     return DEFAULTS;
@@ -190,7 +201,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       patch: Partial<
         Pick<
           AppSettings,
-          "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme"
+          "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme" | "jsonSchemas"
         >
       >,
     ) => {
@@ -199,11 +210,22 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const updateJsonSchemas = useCallback((schemas: JsonSchemaAssociation[]) => {
+    setSettings((s) => ({ ...s, jsonSchemas: schemas }));
+  }, []);
+
   const reset = useCallback(() => setSettings(DEFAULTS), []);
 
   const value = useMemo(
-    () => ({ settings, updateEditor, updateChromeAcrylic, updateApp, reset }),
-    [settings, updateEditor, updateChromeAcrylic, updateApp, reset],
+    () => ({
+      settings,
+      updateEditor,
+      updateChromeAcrylic,
+      updateApp,
+      updateJsonSchemas,
+      reset,
+    }),
+    [settings, updateEditor, updateChromeAcrylic, updateApp, updateJsonSchemas, reset],
   );
 
   return (

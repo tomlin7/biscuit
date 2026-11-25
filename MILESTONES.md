@@ -478,6 +478,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **1.214.0** | PDF viewer tab with page navigation and zoom controls | shipped |
 | **1.215.0** | Hex Editor view for binary files | shipped |
 | **1.216.0** | CSV/TSV spreadsheet viewer mode | shipped |
+| **1.217.0** | JSON Schema association for config file validation | shipped |
 | **2.0.0** | Stable product | owner decision only |
 
 ## Current target
