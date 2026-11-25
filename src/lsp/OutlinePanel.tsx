@@ -70,7 +70,7 @@ export async function symbolsForFile(
   return scanned;
 }
 
-function kindShort(kind: string): string {
+export function kindShort(kind: string): string {
   switch (kind.toLowerCase()) {
     case "function":
       return "fn";

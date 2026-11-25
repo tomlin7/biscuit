@@ -467,6 +467,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.459.0** | Clickable file:line:column link detection in terminal | shipped |
 | **0.460.0** | Create Pull Request action from the current branch | shipped |
 | **0.461.0** | Compare Branches/commits diff view | shipped |
+| **0.462.0** | In-file symbol breadcrumb segment | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

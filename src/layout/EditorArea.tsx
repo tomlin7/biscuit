@@ -36,13 +36,18 @@ import { IconButton } from "../ui/IconButton";
 import { EmptyState } from "../ui/EmptyState";
 import { ResizeHandle } from "./ResizeHandle";
 import { setSplitEditorListener } from "./splitBus";
+import { symbolsForFile, kindShort } from "../lsp/OutlinePanel";
+import { getActiveSymbolPath, getSiblingSymbols } from "../lsp/symbolBreadcrumb";
+import type { OutlineSymbol } from "../lsp/outlineScan";
 
 type CrumbMenuState = {
   x: number;
   y: number;
-  kind: "file" | "directory";
+  kind: "file" | "directory" | "symbol";
   path: string;
   siblings?: { name: string; path: string; kind: "file" | "directory" }[];
+  symbol?: OutlineSymbol;
+  symbolSiblings?: OutlineSymbol[];
 };
 
 export function EditorArea() {
@@ -73,6 +78,30 @@ export function EditorArea() {
   const [previewScroll, setPreviewScroll] = useState(0);
   const crumbMenuRef = useRef<HTMLDivElement>(null);
   const hasFile = document !== null;
+
+  const [fileSymbols, setFileSymbols] = useState<OutlineSymbol[]>([]);
+
+  useEffect(() => {
+    if (!document) {
+      setFileSymbols([]);
+      return;
+    }
+    let cancelled = false;
+    void symbolsForFile(document.path, document.value, document.language)
+      .then((symbols) => {
+        if (!cancelled) setFileSymbols(symbols);
+      })
+      .catch(() => {
+        if (!cancelled) setFileSymbols([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [document?.path, document?.value, document?.language]);
+
+  const activeSymbols = useMemo(() => {
+    return getActiveSymbolPath(fileSymbols, document?.cursorLine ?? 1);
+  }, [fileSymbols, document?.cursorLine]);
 
   useEffect(() => {
     if (!crumbMenu) return;
@@ -250,6 +279,33 @@ export function EditorArea() {
           ) : (
             <span className="editor-area__crumb-muted">No file</span>
           )}
+          {hasFile &&
+            activeSymbols.map((sym, idx) => (
+              <span key={`sym-${sym.line}-${sym.name}-${idx}`} className="editor-area__crumb">
+                <span className="editor-area__crumb-sep">&gt;</span>
+                <button
+                  type="button"
+                  className="editor-area__crumb-btn editor-area__crumb-btn--symbol"
+                  title={`${sym.kind}: ${sym.name} (line ${sym.line})`}
+                  onClick={(e) => {
+                    const siblings = getSiblingSymbols(fileSymbols, sym);
+                    setCrumbMenu({
+                      x: e.clientX,
+                      y: e.clientY + 4,
+                      kind: "symbol",
+                      path: document!.path,
+                      symbol: sym,
+                      symbolSiblings: siblings,
+                    });
+                  }}
+                >
+                  <span className={`outline-panel__kind outline-panel__kind--${sym.kind.toLowerCase()}`}>
+                    {kindShort(sym.kind)}
+                  </span>
+                  <span>{sym.name}</span>
+                </button>
+              </span>
+            ))}
         </div>
         {crumbMenu ? (
           <div
@@ -258,7 +314,42 @@ export function EditorArea() {
             style={{ left: crumbMenu.x, top: crumbMenu.y }}
             role="menu"
           >
-            {crumbMenu.kind === "file" && document ? (
+            {crumbMenu.kind === "symbol" && crumbMenu.symbol ? (
+              <>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void openFileAt(crumbMenu.path, crumbMenu.symbol!.line, 1);
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Go to {crumbMenu.symbol.name} (Line {crumbMenu.symbol.line})
+                </button>
+                {(crumbMenu.symbolSiblings ?? [])
+                  .filter((s) => s.name !== crumbMenu.symbol!.name || s.line !== crumbMenu.symbol!.line)
+                  .slice(0, 24)
+                  .map((sibling) => (
+                    <button
+                      key={`${sibling.name}-${sibling.line}`}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setCrumbMenu(null);
+                        void openFileAt(crumbMenu.path, sibling.line, 1);
+                      }}
+                    >
+                      <span
+                        className={`outline-panel__kind outline-panel__kind--${sibling.kind.toLowerCase()}`}
+                        style={{ marginRight: 6 }}
+                      >
+                        {kindShort(sibling.kind)}
+                      </span>
+                      {sibling.name}
+                    </button>
+                  ))}
+              </>
+            ) : crumbMenu.kind === "file" && document ? (
               <>
                 <button
                   type="button"
