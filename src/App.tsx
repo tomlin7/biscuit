@@ -12,11 +12,11 @@ function isSettingsWindow() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
+    <ThemeProvider>
+      <ErrorBoundary>
         {isSettingsWindow() ? <SettingsWindowApp /> : <AppShell />}
-      </ThemeProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 

@@ -207,3 +207,10 @@
   max-height: 220px;
   overflow: auto;
 }
+
+.error-boundary__stack-empty {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--fg-dim, #5c5c5c);
+  font-style: italic;
+  padding: 4px 0;
+}

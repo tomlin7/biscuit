@@ -9,6 +9,7 @@ export type ErrorBoundaryProps = {
   fallback?: ReactNode | ((error: Error, reset: () => void) => ReactNode);
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
   onReset?: () => void;
+  resetKeys?: unknown[];
 };
 
 export type ErrorBoundaryState = {
@@ -18,6 +19,21 @@ export type ErrorBoundaryState = {
   copied: boolean;
   showDetails: boolean;
 };
+
+export function normalizeError(error: unknown): Error {
+  if (error instanceof Error) return error;
+  if (typeof error === "string") return new Error(error);
+  if (typeof error === "object" && error !== null) {
+    const msg = (error as { message?: unknown }).message;
+    if (typeof msg === "string") return new Error(msg);
+    try {
+      return new Error(JSON.stringify(error));
+    } catch {
+      /* ignore */
+    }
+  }
+  return new Error("An unexpected error occurred.");
+}
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   private copyTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -33,14 +49,27 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error };
+  static getDerivedStateFromError(error: unknown): Partial<ErrorBoundaryState> {
+    return { hasError: true, error: normalizeError(error) };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  componentDidCatch(error: unknown, errorInfo: ErrorInfo): void {
+    const err = normalizeError(error);
     this.setState({ errorInfo });
-    this.props.onError?.(error, errorInfo);
-    console.error("[ErrorBoundary caught an unhandled error]:", error, errorInfo);
+    this.props.onError?.(err, errorInfo);
+    console.error("[ErrorBoundary caught an unhandled error]:", err, errorInfo);
+  }
+
+  componentDidUpdate(prevProps: ErrorBoundaryProps): void {
+    if (!this.state.hasError) return;
+    if (this.props.resetKeys && prevProps.resetKeys) {
+      const hasChanged =
+        this.props.resetKeys.length !== prevProps.resetKeys.length ||
+        this.props.resetKeys.some((val, idx) => !Object.is(val, prevProps.resetKeys![idx]));
+      if (hasChanged) {
+        this.handleReset();
+      }
+    }
   }
 
   componentWillUnmount(): void {
@@ -84,24 +113,40 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       `URL: ${typeof window !== "undefined" ? window.location.href : "N/A"}`,
     ].join("\n");
 
-    try {
-      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    let copiedSuccess = false;
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
         await navigator.clipboard.writeText(diagnostics);
-      } else if (typeof document !== "undefined") {
+        copiedSuccess = true;
+      } catch {
+        /* Fall back to document.execCommand below */
+      }
+    }
+
+    if (!copiedSuccess && typeof document !== "undefined") {
+      try {
         const textarea = document.createElement("textarea");
         textarea.value = diagnostics;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        textarea.style.top = "0";
+        textarea.setAttribute("readonly", "");
         document.body.appendChild(textarea);
+        textarea.focus();
         textarea.select();
-        document.execCommand("copy");
+        copiedSuccess = document.execCommand("copy");
         document.body.removeChild(textarea);
+      } catch {
+        /* copy failed */
       }
+    }
+
+    if (copiedSuccess) {
       this.setState({ copied: true });
       if (this.copyTimeout) clearTimeout(this.copyTimeout);
       this.copyTimeout = setTimeout(() => {
         this.setState({ copied: false });
       }, 2000);
-    } catch {
-      /* clipboard write failed */
     }
   };
 
@@ -128,6 +173,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       fallbackTitle ??
       (variant === "inline" ? "Component encountered an error" : "Something went wrong");
     const isInline = variant === "inline";
+    const hasStack = Boolean(error?.stack);
+    const hasComponentStack = Boolean(errorInfo?.componentStack);
 
     return (
       <div
@@ -187,16 +234,21 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             {showDetails && (
               <div className="error-boundary__details-content">
-                {error?.stack && (
+                {hasStack && (
                   <div className="error-boundary__stack-section">
                     <div className="error-boundary__stack-label">Stack Trace</div>
-                    <pre className="error-boundary__stack-trace">{error.stack}</pre>
+                    <pre className="error-boundary__stack-trace">{error!.stack}</pre>
                   </div>
                 )}
-                {errorInfo?.componentStack && (
+                {hasComponentStack && (
                   <div className="error-boundary__stack-section">
                     <div className="error-boundary__stack-label">Component Stack</div>
-                    <pre className="error-boundary__stack-trace">{errorInfo.componentStack}</pre>
+                    <pre className="error-boundary__stack-trace">{errorInfo!.componentStack}</pre>
+                  </div>
+                )}
+                {!hasStack && !hasComponentStack && (
+                  <div className="error-boundary__stack-empty">
+                    No additional technical stack trace available.
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import React from "react";
 import { renderToString } from "react-dom/server";
-import { ErrorBoundary } from "./ErrorBoundary";
+import { ErrorBoundary, normalizeError } from "./ErrorBoundary";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { ExtensionsProvider } from "../extensions/ExtensionsContext";
 
@@ -13,6 +13,37 @@ function SettingsConsumer() {
   const { settings } = useSettings();
   return React.createElement("div", { id: "font-size" }, String(settings.editor.fontSize));
 }
+
+describe("normalizeError helper", () => {
+  it("preserves native Error instances", () => {
+    const err = new Error("Native error");
+    expect(normalizeError(err)).toBe(err);
+  });
+
+  it("converts raw string to Error with the string as message", () => {
+    const err = normalizeError("Network timeout");
+    expect(err).toBeInstanceOf(Error);
+    expect(err.message).toBe("Network timeout");
+  });
+
+  it("extracts message from error-like objects", () => {
+    const err = normalizeError({ message: "API failure", code: 500 });
+    expect(err).toBeInstanceOf(Error);
+    expect(err.message).toBe("API failure");
+  });
+
+  it("serializes arbitrary objects without message", () => {
+    const err = normalizeError({ status: "fatal" });
+    expect(err).toBeInstanceOf(Error);
+    expect(err.message).toBe('{"status":"fatal"}');
+  });
+
+  it("handles null or undefined gracefully", () => {
+    const err = normalizeError(null);
+    expect(err).toBeInstanceOf(Error);
+    expect(err.message).toBe("An unexpected error occurred.");
+  });
+});
 
 describe("ErrorBoundary", () => {
   it("renders children when no error occurs", () => {
@@ -27,11 +58,18 @@ describe("ErrorBoundary", () => {
     expect(html).toContain('id="safe"');
   });
 
-  it("updates state via getDerivedStateFromError", () => {
+  it("updates state via getDerivedStateFromError with Error instances", () => {
     const err = new Error("Test explosion");
     const nextState = ErrorBoundary.getDerivedStateFromError(err);
     expect(nextState.hasError).toBe(true);
     expect(nextState.error).toBe(err);
+  });
+
+  it("normalizes non-Error values in getDerivedStateFromError", () => {
+    const nextState = ErrorBoundary.getDerivedStateFromError("Raw string error");
+    expect(nextState.hasError).toBe(true);
+    expect(nextState.error).toBeInstanceOf(Error);
+    expect(nextState.error?.message).toBe("Raw string error");
   });
 
   it("renders custom fallback node when error is present", () => {
@@ -124,6 +162,28 @@ describe("ErrorBoundary", () => {
     expect(html).toContain("Pane syntax parser failure");
   });
 
+  it("renders stack-empty note when technical details are toggled with no stack", () => {
+    const boundary = new ErrorBoundary({
+      children: React.createElement(SafeComponent),
+    });
+
+    const errWithoutStack = new Error("Bare error");
+    delete (errWithoutStack as any).stack;
+
+    boundary.state = {
+      hasError: true,
+      error: errWithoutStack,
+      errorInfo: null,
+      copied: false,
+      showDetails: true,
+    };
+
+    const rendered = boundary.render();
+    const html = renderToString(rendered as React.ReactElement);
+    expect(html).toContain("error-boundary__stack-empty");
+    expect(html).toContain("No additional technical stack trace available");
+  });
+
   it("resets state on handleReset and invokes onReset callback", () => {
     let onResetFired = false;
     const boundary = new ErrorBoundary({
@@ -157,6 +217,49 @@ describe("ErrorBoundary", () => {
     expect(onResetFired).toBe(true);
   });
 
+  it("automatically resets via componentDidUpdate when resetKeys change", () => {
+    let resetCount = 0;
+    const boundary = new ErrorBoundary({
+      children: React.createElement(SafeComponent),
+      resetKeys: ["/path/to/file-a.ts"],
+      onReset: () => {
+        resetCount++;
+      },
+    });
+
+    boundary.setState = function (updater: any) {
+      if (typeof updater === "function") {
+        this.state = { ...this.state, ...updater(this.state) };
+      } else {
+        this.state = { ...this.state, ...updater };
+      }
+    };
+
+    boundary.state = {
+      hasError: true,
+      error: new Error("File A broke"),
+      errorInfo: null,
+      copied: false,
+      showDetails: false,
+    };
+
+    // When resetKeys do not change, do not reset
+    boundary.componentDidUpdate({
+      children: React.createElement(SafeComponent),
+      resetKeys: ["/path/to/file-a.ts"],
+    });
+    expect(boundary.state.hasError).toBe(true);
+    expect(resetCount).toBe(0);
+
+    // When resetKeys change (user switches tab), reset error state!
+    boundary.componentDidUpdate({
+      children: React.createElement(SafeComponent),
+      resetKeys: ["/path/to/file-b.ts"],
+    });
+    expect(boundary.state.hasError).toBe(false);
+    expect(resetCount).toBe(1);
+  });
+
   it("captures component stack and invokes onError callback in componentDidCatch", () => {
     let capturedError: Error | null = null;
     let capturedInfo: React.ErrorInfo | null = null;
@@ -177,13 +280,88 @@ describe("ErrorBoundary", () => {
       }
     };
 
-    const err = new Error("Catch test");
-    const info = { componentStack: "\n    at SafeComponent\n    at ErrorBoundary" };
-    boundary.componentDidCatch(err, info);
+    const origConsoleError = console.error;
+    console.error = () => {};
+    try {
+      const err = new Error("Catch test");
+      const info = { componentStack: "\n    at SafeComponent\n    at ErrorBoundary" };
+      boundary.componentDidCatch(err, info);
 
-    expect(capturedError).toBe(err);
-    expect(capturedInfo).toBe(info);
-    expect(boundary.state.errorInfo).toBe(info);
+      expect(capturedError).toBe(err);
+      expect(capturedInfo).toBe(info);
+      expect(boundary.state.errorInfo).toBe(info);
+    } finally {
+      console.error = origConsoleError;
+    }
+  });
+
+  it("falls back to document.execCommand when navigator.clipboard.writeText rejects", async () => {
+    let execCommandCalled = false;
+    let appendedTextarea: any = null;
+
+    const origNavigator = globalThis.navigator;
+    const origDocument = globalThis.document;
+
+    (globalThis as any).navigator = {
+      userAgent: "TestAgent",
+      clipboard: {
+        writeText: () => Promise.reject(new Error("Permission denied")),
+      },
+    };
+
+    (globalThis as any).document = {
+      createElement: (tag: string) => {
+        const el = {
+          tag,
+          value: "",
+          style: {},
+          setAttribute: () => {},
+          focus: () => {},
+          select: () => {},
+        };
+        appendedTextarea = el;
+        return el;
+      },
+      body: {
+        appendChild: () => {},
+        removeChild: () => {},
+      },
+      execCommand: (cmd: string) => {
+        if (cmd === "copy") {
+          execCommandCalled = true;
+          return true;
+        }
+        return false;
+      },
+    };
+
+    try {
+      const boundary = new ErrorBoundary({
+        children: React.createElement(SafeComponent),
+      });
+      boundary.setState = function (updater: any) {
+        if (typeof updater === "function") {
+          this.state = { ...this.state, ...updater(this.state) };
+        } else {
+          this.state = { ...this.state, ...updater };
+        }
+      };
+      boundary.state = {
+        hasError: true,
+        error: new Error("Clipboard fallback test"),
+        errorInfo: null,
+        copied: false,
+        showDetails: false,
+      };
+
+      await boundary.handleCopyDiagnostics();
+      expect(execCommandCalled).toBe(true);
+      expect(boundary.state.copied).toBe(true);
+      expect(appendedTextarea?.value).toContain("Clipboard fallback test");
+    } finally {
+      (globalThis as any).navigator = origNavigator;
+      (globalThis as any).document = origDocument;
+    }
   });
 });
 

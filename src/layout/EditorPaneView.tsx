@@ -209,7 +209,12 @@ export function EditorPaneView({
       )}
 
       <div className="editor-pane__content">
-        <ErrorBoundary variant="inline" fallbackTitle="Editor encountered an error">
+        <ErrorBoundary
+          key={`${pane.id}:${pane.path ?? "__empty__"}`}
+          resetKeys={[pane.id, pane.path]}
+          variant="inline"
+          fallbackTitle="Editor encountered an error"
+        >
           {renderContent()}
         </ErrorBoundary>
       </div>
