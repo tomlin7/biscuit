@@ -51,7 +51,10 @@ export type EditorCommand =
   | "hover"
   | "addNextMatch"
   | "foldAll"
-  | "unfoldAll";
+  | "unfoldAll"
+  | "uppercase"
+  | "lowercase"
+  | "blockComment";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -141,6 +144,15 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "unfoldAll":
         handle.trigger("editor.unfoldAll");
+        break;
+      case "uppercase":
+        handle.trigger("editor.action.transformToUppercase");
+        break;
+      case "lowercase":
+        handle.trigger("editor.action.transformToLowercase");
+        break;
+      case "blockComment":
+        handle.trigger("editor.action.blockComment");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

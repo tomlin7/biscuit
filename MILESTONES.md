@@ -135,6 +135,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.127.0** | Recent commands in palette | shipped |
 | **0.128.0** | Image zoom controls | shipped |
 | **0.129.0** | Agent attach selection | shipped |
+| **0.130.0** | Transform to upper/lowercase | shipped |
+| **0.131.0** | Toggle block comment | shipped |
+| **0.132.0** | SCM stage selected paths | shipped |
+| **0.133.0** | Trim trailing whitespace on save | shipped |
+| **0.134.0** | Agent @folder mentions | shipped |
+| **0.135.0** | Welcome recent keyboard navigation | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

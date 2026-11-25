@@ -152,6 +152,25 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("unfoldAll"),
   },
   {
+    id: "editor.action.transformToUppercase",
+    title: "Transform to Uppercase",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("uppercase"),
+  },
+  {
+    id: "editor.action.transformToLowercase",
+    title: "Transform to Lowercase",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("lowercase"),
+  },
+  {
+    id: "editor.action.blockComment",
+    title: "Toggle Block Comment",
+    category: "Edit",
+    keybinding: "Shift+Alt+A",
+    run: (ctx) => ctx.runEditorCommand("blockComment"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

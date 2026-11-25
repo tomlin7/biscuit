@@ -38,7 +38,10 @@ export type CommandContext = {
       | "hover"
       | "addNextMatch"
       | "foldAll"
-      | "unfoldAll",
+      | "unfoldAll"
+      | "uppercase"
+      | "lowercase"
+      | "blockComment",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;
