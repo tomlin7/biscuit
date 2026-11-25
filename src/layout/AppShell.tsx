@@ -118,6 +118,7 @@ function ShellChrome() {
     markRead: markNotificationsReadList,
     dismiss: dismissNotification,
     items: notificationItems,
+    unread: notificationUnread,
   } = useNotifications();
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
@@ -1232,6 +1233,15 @@ function ShellChrome() {
         const latest = notificationItems[0];
         if (latest) dismissNotification(latest.id);
       },
+      notifyUnreadCount: () => {
+        const count = notificationUnread;
+        notify(
+          "Notifications",
+          count === 0
+            ? "No unread notifications."
+            : `${count} unread notification${count === 1 ? "" : "s"}.`,
+        );
+      },
     }),
     [
       openFolder,
@@ -1324,6 +1334,7 @@ function ShellChrome() {
       markNotificationsReadList,
       dismissNotification,
       notificationItems,
+      notificationUnread,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,

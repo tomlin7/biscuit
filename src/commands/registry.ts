@@ -1268,5 +1268,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.dismissLatestNotification(),
   },
-
+  {
+    id: "notifications.showUnreadCount",
+    title: "Show Notification Unread Count",
+    category: "View",
+    run: (ctx) => ctx.notifyUnreadCount(),
+  },
 ];
