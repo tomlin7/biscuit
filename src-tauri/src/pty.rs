@@ -11,14 +11,23 @@ pub struct PtySession {
     killer: Mutex<Box<dyn ChildKiller + Send + Sync>>,
 }
 
+#[derive(Clone, serde::Serialize, serde::Deserialize, Debug, PartialEq)]
+pub struct PtyProcessInfo {
+    pub id: String,
+    pub pid: Option<u32>,
+    pub command: String,
+}
+
 pub struct PtyState {
     sessions: Mutex<HashMap<String, Arc<PtySession>>>,
+    pub processes: Arc<Mutex<HashMap<String, PtyProcessInfo>>>,
 }
 
 impl Default for PtyState {
     fn default() -> Self {
         Self {
             sessions: Mutex::new(HashMap::new()),
+            processes: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 }
@@ -96,9 +105,9 @@ fn exec_launch(command: &str) -> Result<ShellLaunch, String> {
     }
 }
 
-fn command_from(launch: ShellLaunch) -> CommandBuilder {
-    let mut cmd = CommandBuilder::new(launch.program);
-    for arg in launch.args {
+fn command_from(launch: &ShellLaunch) -> CommandBuilder {
+    let mut cmd = CommandBuilder::new(&launch.program);
+    for arg in &launch.args {
         cmd.arg(arg);
     }
     cmd
@@ -114,11 +123,12 @@ pub fn pty_spawn(
     shell: Option<String>,
 ) -> Result<String, String> {
     let launch = resolve_shell(shell.as_deref())?;
-    let mut cmd = command_from(launch);
+    let mut cmd = command_from(&launch);
     if let Some(dir) = cwd {
         cmd.cwd(dir);
     }
-    spawn_in_pty(app, state, cmd, cols, rows)
+    let command_str = launch.program.clone();
+    spawn_in_pty(app, state, cmd, command_str, cols, rows)
 }
 
 #[tauri::command]
@@ -130,12 +140,13 @@ pub fn pty_run_file(
     rows: u16,
 ) -> Result<String, String> {
     let spec = crate::debug::launch_spec(&path)?;
-    let mut cmd = CommandBuilder::new(spec.program);
-    for arg in spec.args {
+    let mut cmd = CommandBuilder::new(&spec.program);
+    for arg in &spec.args {
         cmd.arg(arg);
     }
     cmd.cwd(spec.cwd);
-    spawn_in_pty(app, state, cmd, cols, rows)
+    let command_str = format!("{} {}", spec.program, path);
+    spawn_in_pty(app, state, cmd, command_str, cols, rows)
 }
 
 #[tauri::command]
@@ -148,17 +159,18 @@ pub fn pty_exec(
     rows: u16,
 ) -> Result<String, String> {
     let launch = exec_launch(&command)?;
-    let mut cmd = command_from(launch);
+    let mut cmd = command_from(&launch);
     if let Some(dir) = cwd {
         cmd.cwd(dir);
     }
-    spawn_in_pty(app, state, cmd, cols, rows)
+    spawn_in_pty(app, state, cmd, command, cols, rows)
 }
 
 fn spawn_in_pty(
     app: AppHandle,
     state: State<'_, PtyState>,
     cmd: CommandBuilder,
+    command_str: String,
     cols: u16,
     rows: u16,
 ) -> Result<String, String> {
@@ -177,6 +189,7 @@ fn spawn_in_pty(
         .spawn_command(cmd)
         .map_err(|e| e.to_string())?;
     let killer = child.clone_killer();
+    let pid = child.process_id();
 
     let mut reader = pair
         .master
@@ -199,6 +212,17 @@ fn spawn_in_pty(
         .lock()
         .map_err(|e| e.to_string())?
         .insert(id.clone(), Arc::clone(&session));
+
+    let proc_info = PtyProcessInfo {
+        id: id.clone(),
+        pid,
+        command: command_str,
+    };
+    state
+        .processes
+        .lock()
+        .map_err(|e| e.to_string())?
+        .insert(id.clone(), proc_info);
 
     let app_data = app.clone();
     let id_data = id.clone();
@@ -223,8 +247,13 @@ fn spawn_in_pty(
         let _ = app_data.emit("pty-exit", PtyExitPayload { id: id_data });
     });
 
+    let processes_exit = Arc::clone(&state.processes);
+    let id_exit = id.clone();
     std::thread::spawn(move || {
         let _ = child.wait();
+        if let Ok(mut procs) = processes_exit.lock() {
+            procs.remove(&id_exit);
+        }
     });
 
     Ok(id)
@@ -270,7 +299,69 @@ pub fn pty_kill(state: State<'_, PtyState>, id: String) -> Result<(), String> {
         let mut killer = session.killer.lock().map_err(|e| e.to_string())?;
         let _ = killer.kill();
     }
+    if let Ok(mut procs) = state.processes.lock() {
+        procs.remove(&id);
+    }
     Ok(())
+}
+
+#[tauri::command]
+pub fn list_pty_processes(state: State<'_, PtyState>) -> Result<Vec<PtyProcessInfo>, String> {
+    let procs = state.processes.lock().map_err(|e| e.to_string())?;
+    Ok(procs.values().cloned().collect())
+}
+
+#[tauri::command]
+pub fn kill_pty_process(state: State<'_, PtyState>, id_or_pid: String) -> Result<(), String> {
+    let trimmed = id_or_pid.trim();
+    if let Ok(mut sessions) = state.sessions.lock() {
+        if let Some(session) = sessions.remove(trimmed) {
+            if let Ok(mut killer) = session.killer.lock() {
+                let _ = killer.kill();
+            }
+            if let Ok(mut procs) = state.processes.lock() {
+                procs.remove(trimmed);
+            }
+            return Ok(());
+        }
+    }
+    if let Ok(pid) = trimmed.parse::<u32>() {
+        let mut target_id = None;
+        if let Ok(procs) = state.processes.lock() {
+            for (id, p) in procs.iter() {
+                if p.pid == Some(pid) {
+                    target_id = Some(id.clone());
+                    break;
+                }
+            }
+        }
+        if let Some(id) = target_id {
+            if let Ok(mut sessions) = state.sessions.lock() {
+                if let Some(session) = sessions.remove(&id) {
+                    if let Ok(mut killer) = session.killer.lock() {
+                        let _ = killer.kill();
+                    }
+                }
+            }
+            if let Ok(mut procs) = state.processes.lock() {
+                procs.remove(&id);
+            }
+        }
+        #[cfg(target_os = "windows")]
+        {
+            let _ = std::process::Command::new("taskkill")
+                .args(["/F", "/PID", &pid.to_string()])
+                .output();
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            let _ = std::process::Command::new("kill")
+                .args(["-9", &pid.to_string()])
+                .output();
+        }
+        return Ok(());
+    }
+    Err(format!("no active process found with identifier '{id_or_pid}'"))
 }
 
 #[cfg(test)]
@@ -309,5 +400,21 @@ mod tests {
     fn exec_launch_uses_the_login_shell() {
         let launch = super::exec_launch("echo t3d-ok").unwrap();
         assert_eq!(launch.args, vec!["-lc", "echo t3d-ok"]);
+    }
+
+    #[test]
+    fn process_info_tracking() {
+        let state = super::PtyState::default();
+        let info = super::PtyProcessInfo {
+            id: "proc-1".into(),
+            pid: Some(4242),
+            command: "test-proc".into(),
+        };
+        state.processes.lock().unwrap().insert("proc-1".into(), info.clone());
+        let list = state.processes.lock().unwrap().values().cloned().collect::<Vec<_>>();
+        assert_eq!(list.len(), 1);
+        assert_eq!(list[0], info);
+        state.processes.lock().unwrap().remove("proc-1");
+        assert_eq!(state.processes.lock().unwrap().len(), 0);
     }
 }

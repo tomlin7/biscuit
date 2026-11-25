@@ -3,11 +3,12 @@ import { Maximize2, Minimize2, X } from "lucide-react";
 import { TerminalPanel } from "../terminal/TerminalPanel";
 import { ProblemsPanel } from "../lsp/ProblemsPanel";
 import { LogsPanel } from "../logs/LogsPanel";
+import { ProcessExplorer } from "../terminal/ProcessExplorer";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { IconButton } from "../ui/IconButton";
 import "./BottomPanel.css";
 
-export type BottomTab = "terminal" | "problems" | "logs";
+export type BottomTab = "terminal" | "problems" | "logs" | "processes";
 
 type Props = {
   open: boolean;
@@ -87,6 +88,19 @@ export function BottomPanel({
           >
             Logs
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "processes"}
+            className={
+              tab === "processes"
+                ? "bottom-panel__tab bottom-panel__tab--active"
+                : "bottom-panel__tab"
+            }
+            onClick={() => onTabChange("processes")}
+          >
+            Processes
+          </button>
         </div>
 
         <div className="bottom-panel__actions">
@@ -126,6 +140,11 @@ export function BottomPanel({
         {tab === "logs" ? (
           <div className="bottom-panel__pane">
             <LogsPanel />
+          </div>
+        ) : null}
+        {tab === "processes" ? (
+          <div className="bottom-panel__pane">
+            <ProcessExplorer />
           </div>
         ) : null}
       </div>

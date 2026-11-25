@@ -2124,23 +2124,6 @@ function ShellChrome() {
         void navigator.clipboard.writeText(basename(activePath));
         notify("Copied", basename(activePath));
       },
-      showSidebarView: (viewId?: string) => {
-        if (viewId) {
-          setSidebarMode(viewId);
-          setSidebarOpen(true);
-        } else if (sidebarViews.length > 0) {
-          setSidebarMode(`extview:${sidebarViews[0].extensionId}/${sidebarViews[0].id}`);
-          setSidebarOpen(true);
-        } else {
-          notify("Sidebar Views", "No contributed sidebar views available.");
-        }
-      },
-      exportLogs: () => {
-        void (async () => {
-          const res = await exportLogsToFile();
-          if (res) notify("Logs exported", `Saved to ${res}`);
-        })();
-      },
       openNextGitChangedFile: () => {
         void (async () => {
           if (!rootPath) {
@@ -2171,6 +2154,39 @@ function ShellChrome() {
               "Git",
               err instanceof Error ? err.message : String(err),
             );
+          }
+        })();
+      },
+      showSidebarView: (viewId?: string) => {
+        if (viewId) {
+          setSidebarMode(viewId);
+          setSidebarOpen(true);
+        } else if (sidebarViews.length > 0) {
+          setSidebarMode(`extview:${sidebarViews[0].extensionId}/${sidebarViews[0].id}`);
+          setSidebarOpen(true);
+        } else {
+          notify("Sidebar Views", "No contributed sidebar views available.");
+        }
+      },
+      exportLogs: () => {
+        void (async () => {
+          const res = await exportLogsToFile();
+          if (res) notify("Logs exported", `Saved to ${res}`);
+        })();
+      },
+      showProcessExplorer: () => {
+        setPanelTab("processes");
+        setBottomOpen(true);
+      },
+      killProcessByPid: () => {
+        void (async () => {
+          const pid = window.prompt("Enter process PID or Session ID to terminate:");
+          if (!pid?.trim()) return;
+          try {
+            await invoke("kill_pty_process", { idOrPid: pid.trim() });
+            notify("Process terminated", `Target: ${pid.trim()}`);
+          } catch (err) {
+            notify("Kill Process", err instanceof Error ? err.message : String(err));
           }
         })();
       },

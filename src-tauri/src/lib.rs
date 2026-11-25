@@ -18,7 +18,10 @@ use git::{
     git_summary, git_unstage,
 };
 use notifications::send_desktop_notification;
-use pty::{pty_exec, pty_kill, pty_resize, pty_run_file, pty_spawn, pty_write, PtyState};
+use pty::{
+    kill_pty_process, list_pty_processes, pty_exec, pty_kill, pty_resize, pty_run_file,
+    pty_spawn, pty_write, PtyState,
+};
 
 #[tauri::command]
 fn quit_app(app: tauri::AppHandle) {
@@ -41,6 +44,8 @@ pub fn run() {
             pty_write,
             pty_resize,
             pty_kill,
+            list_pty_processes,
+            kill_pty_process,
             send_desktop_notification,
             git_summary,
             git_stage,

@@ -1826,4 +1826,16 @@ export const COMMANDS: Command[] = [
     category: "Logs",
     run: (ctx) => ctx.exportLogs(),
   },
+  {
+    id: "workbench.action.showProcessExplorer",
+    title: "Process Explorer: Open Process Explorer",
+    category: "Terminal",
+    run: (ctx) => ctx.showProcessExplorer(),
+  },
+  {
+    id: "workbench.action.killProcess",
+    title: "Terminal: Kill Process by PID",
+    category: "Terminal",
+    run: (ctx) => ctx.killProcessByPid(),
+  },
 ];
