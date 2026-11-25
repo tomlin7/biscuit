@@ -1094,4 +1094,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.focusAiSettings(),
   },
+  {
+    id: "git.showSyncStatus",
+    title: "Git: Show Sync Status",
+    category: "Git",
+    run: (ctx) => ctx.showGitSyncStatus(),
+  },
 ];

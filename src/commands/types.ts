@@ -182,6 +182,7 @@ export type CommandContext = {
   copyLastAiResponse: () => void;
   cycleAiSeed: () => void;
   focusAiSettings: () => void;
+  showGitSyncStatus: () => void;
 };
 
 export type Command = {

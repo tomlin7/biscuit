@@ -1081,6 +1081,15 @@ function ShellChrome() {
           )?.focus();
         }, 0);
       },
+      showGitSyncStatus: () => {
+        const ahead = gitAhead ?? 0;
+        const behind = gitBehind ?? 0;
+        if (gitAhead === null && gitBehind === null) {
+          notify("Git sync", "No upstream tracking information.");
+          return;
+        }
+        notify("Git sync", `${ahead} ahead · ${behind} behind`);
+      },
     }),
     [
       openFolder,
@@ -1161,6 +1170,9 @@ function ShellChrome() {
       messages,
       aiSettings.model,
       aiSettings.seed,
+      gitAhead,
+      gitBehind,
+      notify,
       bottomOpen,
       panelTab,
       setPanelTab,
