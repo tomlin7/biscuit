@@ -41,6 +41,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeWorkspace(),
   },
   {
+    id: "workbench.action.restoreRecentSession",
+    title: "Restore Recent Session",
+    category: "File",
+    run: (ctx) => void ctx.restoreRecentSession(),
+  },
+  {
     id: "workbench.files.action.refreshFilesExplorer",
     title: "Refresh Explorer",
     category: "File",

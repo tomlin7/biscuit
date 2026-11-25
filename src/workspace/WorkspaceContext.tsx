@@ -24,7 +24,7 @@ import {
   directoryChain,
 } from "./path";
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor, pushRemovedRoot, popRemovedRoot } from "./history";
-import { readSession, writeSession } from "./session";
+import { readLastClosedSession, readSession, writeSession } from "./session";
 import { applyEditorConfigText, editorConfigFor, type ResolvedEditorConfig } from "../editor/editorconfig";
 import { readInsertFinalNewlineSetting, readTrimTrailingWhitespaceSetting } from "../settings/SettingsContext";
 import { appendLog } from "../logs/logBus";
@@ -88,6 +88,8 @@ export type WorkspaceState = {
   removeFolderRoot: (path: string) => Promise<void>;
   reopenRemovedRoot: () => Promise<void>;
   closeFolder: () => void;
+  /** Reopens the saved or last-closed session; resolves false when there is nothing to restore. */
+  restoreRecentSession: () => Promise<boolean>;
   reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
@@ -558,6 +560,33 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setBusy(false);
     }
   }, []);
+
+  const restoreRecentSession = useCallback(async () => {
+    const session = readSession() ?? readLastClosedSession();
+    if (!session) {
+      appendLog("No recent session to restore.");
+      return false;
+    }
+    if (!(await exists(session.root))) {
+      appendLog(`Session root missing: ${session.root}`);
+      return false;
+    }
+    const folderList =
+      session.roots && session.roots.length > 0 ? session.roots : [session.root];
+    await openFolderAt(folderList[0]);
+    for (const extra of folderList.slice(1)) {
+      if (!(await exists(extra))) continue;
+      await addFolderRootPath(extra);
+    }
+    for (const path of session.tabs) {
+      if (await exists(path)) await openFile(path);
+    }
+    if (session.active && (await exists(session.active))) {
+      setActivePath(session.active);
+    }
+    appendLog(`Restored session from ${session.root}`);
+    return true;
+  }, [openFolderAt, addFolderRootPath, openFile]);
 
   const openUntitled = useCallback(() => {
     untitledSeq.current += 1;
@@ -1282,6 +1311,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,
+      restoreRecentSession,
       reopenClosed,
       toggleDirectory,
       openFile,
@@ -1341,6 +1371,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,
+      restoreRecentSession,
       reopenClosed,
       toggleDirectory,
       openFile,

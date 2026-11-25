@@ -91,6 +91,7 @@ function ShellChrome() {
     removeFolderRoot,
     reopenRemovedRoot,
     closeFolder,
+    restoreRecentSession,
     openFile,
     openDroppedPaths,
     openUntitled,
@@ -557,6 +558,13 @@ function ShellChrome() {
         }
         closeFolder();
         notify("Workspace closed", `Closed ${count} folder${count === 1 ? "" : "s"}.`);
+      },
+      restoreRecentSession: async () => {
+        const restored = await restoreRecentSession();
+        notify(
+          "Restore Recent Session",
+          restored ? "Reopened folders and editors." : "There is no recent session to restore.",
+        );
       },
       openGoToFile,
       openKeybindings,
@@ -2244,6 +2252,7 @@ function ShellChrome() {
       openSettings,
       toggleSidebar,
       debugSessions,
+      restoreRecentSession,
       startDebugSession,
       stopDebugSession,
       stepDebugPython,

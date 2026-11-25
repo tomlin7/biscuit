@@ -439,6 +439,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.431.0** | Close Workspace from the command palette | shipped |
 | **0.432.0** | Show run configurations in the command palette | shipped |
 | **0.433.0** | Pause / Continue debugging toggle | shipped |
+| **0.434.0** | Restore recent session from the command palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

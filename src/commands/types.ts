@@ -6,6 +6,7 @@ export type CommandContext = {
   reopenRemovedRoot: () => Promise<void> | void;
   closeFolder: () => void;
   closeWorkspace: () => void;
+  restoreRecentSession: () => Promise<void> | void;
   cloneRepository: () => Promise<void> | void;
   openFolderAt: (path: string) => Promise<void> | void;
   openGoToFile: () => void;
