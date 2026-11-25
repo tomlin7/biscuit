@@ -1262,6 +1262,10 @@ function ShellChrome() {
         setSidebarWidth(sidebarWidth + 20);
         setSidebarOpen(true);
       },
+      decreaseSidebarWidth: () => {
+        setSidebarWidth(sidebarWidth - 20);
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
