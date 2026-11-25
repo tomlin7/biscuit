@@ -98,7 +98,8 @@ export type CommandContext = {
   clearAiAttachments: () => void;
   clearAiChat: () => void;
   exportAiSession: () => void;
- showExplorer: () => void;
+  importAiSession: () => void;
+  showExplorer: () => void;
  showScm: () => void;
   showOutline: () => void;
 };

@@ -86,7 +86,7 @@ function ShellChrome() {
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor } = useSettings();
-  const { clearAttachments, clearChat, exportSession } = useAi();
+  const { clearAttachments, clearChat, exportSession, importSession } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
   const { extensions } = useExtensions();
@@ -559,6 +559,10 @@ function ShellChrome() {
         setAiOpen(true);
         exportSession();
       },
+      importAiSession: () => {
+        setAiOpen(true);
+        void importSession();
+      },
       showExplorer: () => {
         setSidebarMode("explorer");
         setSidebarOpen(true);
@@ -606,6 +610,7 @@ function ShellChrome() {
       clearAttachments,
       clearChat,
       exportSession,
+      importSession,
       setAiOpen,
       setSidebarOpen,
       toggleBottom,
