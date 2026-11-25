@@ -158,6 +158,9 @@ export function ScmPanel({ onBranch }: Props) {
   const selectedUnstaged = selectedPaths.filter((path) =>
     unstaged.some((entry) => entry.path === path),
   );
+  const selectedStaged = selectedPaths.filter((path) =>
+    staged.some((entry) => entry.path === path),
+  );
 
   const toggleSelected = (path: string) => {
     setSelected((current) => {
@@ -272,6 +275,14 @@ export function ScmPanel({ onBranch }: Props) {
             onClick={() => void run("git_stage", { paths: selectedUnstaged })}
           >
             Stage selected
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || selectedStaged.length === 0}
+            onClick={() => void run("git_unstage", { paths: selectedStaged })}
+          >
+            Unstage selected
           </button>
           <button
             type="button"

@@ -143,6 +143,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.135.0** | Welcome recent keyboard navigation | shipped |
 | **0.136.0** | Join lines | shipped |
 | **0.137.0** | Sort lines ascending | shipped |
+| **0.138.0** | SCM unstage selected | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
