@@ -1034,4 +1034,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.attachActiveToAi(),
   },
+  {
+    id: "workbench.action.toggleLogs",
+    title: "Toggle Logs",
+    category: "View",
+    run: (ctx) => ctx.toggleLogs(),
+  },
 ];

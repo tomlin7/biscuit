@@ -995,6 +995,14 @@ function ShellChrome() {
         attachPath(tab.path, tab.title, tab.value.slice(0, 12000));
         setAiOpen(true);
       },
+      toggleLogs: () => {
+        if (bottomOpen && panelTab === "logs") {
+          setBottomOpen(false);
+          return;
+        }
+        setPanelTab("logs");
+        setBottomOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1069,6 +1077,9 @@ function ShellChrome() {
       stop,
       regenerate,
       attachPath,
+      bottomOpen,
+      panelTab,
+      setPanelTab,
       toggleBottom,
       toggleProblems,
       openFolderAt,
