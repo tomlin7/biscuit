@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
@@ -1241,6 +1242,12 @@ function ShellChrome() {
             ? "No unread notifications."
             : `${count} unread notification${count === 1 ? "" : "s"}.`,
         );
+      },
+      toggleMaximizeWindow: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          return;
+        }
+        void getCurrentWindow().toggleMaximize();
       },
     }),
     [

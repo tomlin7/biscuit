@@ -212,6 +212,7 @@ export type CommandContext = {
   minimizeBottomPanelHeight: () => void;
   dismissLatestNotification: () => void;
   notifyUnreadCount: () => void;
+  toggleMaximizeWindow: () => void;
 };
 
 export type Command = {

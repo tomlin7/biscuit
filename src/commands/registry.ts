@@ -1274,4 +1274,15 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.notifyUnreadCount(),
   },
+  {
+    id: "workbench.action.toggleMaximize",
+    title: "Toggle Maximize Window",
+    category: "View",
+    run: (ctx) => ctx.toggleMaximizeWindow(),
+  },
+
+
+
+
+
 ];
