@@ -746,4 +746,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.cycleProblemsFilter(),
   },
+  {
+    id: "workbench.action.terminal.focus",
+    title: "Focus Active Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.focusActiveTerminal(),
+  },
 ];

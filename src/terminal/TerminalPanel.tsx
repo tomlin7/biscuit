@@ -33,6 +33,7 @@ type TerminalControl = {
   kill: () => Promise<void>;
   restart: () => Promise<void>;
   clear: () => void;
+  focus: () => void;
 };
 
 type SessionProps = {
@@ -232,6 +233,9 @@ function TerminalSession({
       },
       clear: () => {
         term.clear();
+      },
+      focus: () => {
+        term.focus();
       },
     });
 
@@ -436,6 +440,10 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     setFocusTerminalListener((mode) => {
       const list = sessionsRef.current;
       if (list.length === 0) return;
+      if (mode === "active") {
+        window.setTimeout(() => controls.current.get(activeId)?.focus(), 40);
+        return;
+      }
       const idx = list.findIndex((item) => item.id === activeId);
       if (idx < 0) return;
       const nextIdx =

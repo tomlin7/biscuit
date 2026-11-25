@@ -1,4 +1,4 @@
-type FocusMode = "next" | "previous";
+type FocusMode = "next" | "previous" | "active";
 
 type Listener = (mode: FocusMode) => void;
 

@@ -681,6 +681,11 @@ function ShellChrome() {
         setBottomOpen(true);
         requestCycleProblemsFilter();
       },
+      focusActiveTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestFocusTerminal("active");
+      },
     }),
     [
       openFolder,
