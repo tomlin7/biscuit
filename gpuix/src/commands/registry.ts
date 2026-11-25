@@ -11,6 +11,7 @@ export interface CommandContext {
   toggleExplorer?: () => void
   openQuickOpen?: () => void
   openCommandPalette?: () => void
+  openSettings?: () => void
   toggleMaximize?: () => void
 }
 
@@ -120,6 +121,14 @@ export function createDefaultCommands(ctx: CommandContext): CommandItem[] {
       shortcut: 'Ctrl+W',
       description: 'Close the currently focused panel in the dock',
       run: () => ctx.closeActivePanel?.(),
+    },
+    {
+      id: 'workbench.action.openSettings',
+      title: 'Open Settings',
+      category: 'Preferences',
+      shortcut: 'Ctrl+,',
+      description: 'Open the preferences and settings dock panel',
+      run: () => ctx.openSettings?.(),
     },
     {
       id: 'workbench.action.toggleMaximize',

@@ -30,6 +30,7 @@ import {
   type PaletteMode,
 } from '../commands'
 import { StatusBar } from '../statusbar'
+import { ThemeProvider, SettingsDockPanel, useTheme } from '../theme'
 
 export interface T3DAppShellProps {
   initialLayout?: DockLayoutState
@@ -80,11 +81,13 @@ export function createT3DStarterLayout(): DockLayoutState {
 
 export function T3DAppShell({ initialLayout, initialRootPath, virtualFileMap }: T3DAppShellProps) {
   return (
-    <EditorProvider virtualFileMap={virtualFileMap}>
-      <WorkspaceProvider initialRootPath={initialRootPath}>
-        <T3DAppShellWorkspaceContent initialLayout={initialLayout} />
-      </WorkspaceProvider>
-    </EditorProvider>
+    <ThemeProvider>
+      <EditorProvider virtualFileMap={virtualFileMap}>
+        <WorkspaceProvider initialRootPath={initialRootPath}>
+          <T3DAppShellWorkspaceContent initialLayout={initialLayout} />
+        </WorkspaceProvider>
+      </EditorProvider>
+    </ThemeProvider>
   )
 }
 
@@ -96,6 +99,7 @@ function T3DAppShellWorkspaceContent({
   const { renderer } = useGpuix()
   const isDarwin = typeof process !== 'undefined' && process.platform === 'darwin'
   const [maximized, setMaximized] = useState(false)
+  const { tokens } = useTheme()
   const { openFile, buffers, activeBufferId, saveBuffer, createUntitledBuffer } = useEditor()
   const { entries, rootPath, rootName } = useWorkspace()
 
@@ -250,6 +254,24 @@ function T3DAppShellWorkspaceContent({
     })
   }, [])
 
+  const handleOpenSettings = useCallback(() => {
+    setShellLayout((prev) => {
+      const existing = findGroupContainingPanel(prev.root, 'panel-settings')
+      if (existing) {
+        return setActivePanel(prev, existing.id, 'panel-settings')
+      }
+      const all = getAllGroups(prev.root)
+      const target = all.find((g) => g.id === prev.activeGroupId) ?? all[0]
+      if (!target) return prev
+      const newPanel: DockPanel = {
+        id: 'panel-settings',
+        title: 'Settings',
+        closable: true,
+      }
+      return addPanelToGroup(prev, target.id, newPanel)
+    })
+  }, [])
+
   // Registered commands for Command Palette
   const commands = useMemo(() => {
     return createDefaultCommands({
@@ -267,6 +289,7 @@ function T3DAppShellWorkspaceContent({
       toggleExplorer: handleToggleExplorer,
       openQuickOpen: handleOpenQuickOpen,
       openCommandPalette: handleOpenCommandPalette,
+      openSettings: handleOpenSettings,
       toggleMaximize: () => {
         if (renderer) {
           toggleWindowZoom(renderer)
@@ -285,6 +308,7 @@ function T3DAppShellWorkspaceContent({
     handleToggleExplorer,
     handleOpenQuickOpen,
     handleOpenCommandPalette,
+    handleOpenSettings,
     renderer,
     shellLayout.activeGroupId,
   ])
@@ -319,6 +343,11 @@ function T3DAppShellWorkspaceContent({
       // 1. File Tree Explorer panel
       if (panel.id === 'panel-explorer' || panel.title.toLowerCase() === 'explorer') {
         return <FileTreeExplorer onOpenFile={handleOpenFile} />
+      }
+
+      // 2. Preferences & Settings panel
+      if (panel.id === 'panel-settings' || panel.title.toLowerCase() === 'settings') {
+        return <SettingsDockPanel />
       }
 
       // 2. Open file editor surface
@@ -574,6 +603,33 @@ function T3DAppShellWorkspaceContent({
           >
             <text style={{ fontSize: 11, color: '#a1a1aa' }}>
               Commands (Ctrl+Shift+P)
+            </text>
+          </Button>
+
+          <Button
+            testId="titlebar-settings-btn"
+            onClick={(e: any) => {
+              e?.stopPropagation?.()
+              handleOpenSettings()
+            }}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              height: 22,
+              paddingLeft: 8,
+              paddingRight: 8,
+              borderRadius: 4,
+              backgroundColor: '#1f1f23',
+              borderWidth: 1,
+              borderColor: '#2f2f35',
+              cursor: 'pointer',
+              hover: { backgroundColor: '#27272a' },
+            }}
+          >
+            <text style={{ fontSize: 11, color: '#a1a1aa' }}>
+              ⚙ Settings
             </text>
           </Button>
         </div>

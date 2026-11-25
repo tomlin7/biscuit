@@ -288,4 +288,25 @@ describeNative('T3D Clean Empty Dockable Layout', () => {
 
     await app.close()
   })
+
+  it('opens Settings dock panel from titlebar button and verifies preferences', async () => {
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(<T3DAppShell />)
+    const app = await connectTest(renderer)
+
+    const settingsBtn = app.getByTestId('titlebar-settings-btn')
+    await settingsBtn.waitFor({ timeoutMs: 5_000 })
+    await settingsBtn.click()
+
+    const settingsPanel = app.getByTestId('dock-panel-settings')
+    await settingsPanel.waitFor({ timeoutMs: 5_000 })
+    expect(await settingsPanel.bounds()).toBeDefined()
+
+    const painted = renderer.getPaintedText()
+    expect(painted).toContain('Preferences & Settings')
+    expect(painted).toContain('Color Theme')
+    expect(painted).toContain('Font Size')
+
+    await app.close()
+  })
 })
