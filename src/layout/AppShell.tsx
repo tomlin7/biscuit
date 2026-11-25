@@ -684,6 +684,10 @@ function ShellChrome() {
         setSidebarMode("callHierarchy");
         setSidebarOpen(true);
       },
+      showTypeHierarchy: () => {
+        setSidebarMode("typeHierarchy");
+        setSidebarOpen(true);
+      },
       toggleWordWrap: () =>
         updateEditor({ wordWrap: !settings.editor.wordWrap }),
       toggleRenderWhitespace: () =>

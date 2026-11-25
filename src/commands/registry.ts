@@ -267,6 +267,18 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.showCallHierarchy(),
   },
   {
+    id: "editor.action.showTypeHierarchy",
+    title: "Types: Show Type Hierarchy",
+    category: "Types",
+    run: (ctx) => ctx.showTypeHierarchy(),
+  },
+  {
+    id: "workbench.view.typeHierarchy",
+    title: "View: Show Type Hierarchy",
+    category: "View",
+    run: (ctx) => ctx.showTypeHierarchy(),
+  },
+  {
     id: "editor.action.formatDocument",
     title: "Format Document",
     category: "Edit",

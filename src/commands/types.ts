@@ -29,6 +29,7 @@ export type CommandContext = {
   toggleStickyScroll: () => void;
   toggleStickyOutline: () => void;
   showCallHierarchy: () => void;
+  showTypeHierarchy: () => void;
   toggleWordWrap: () => void;
   toggleRenderWhitespace: () => void;
   toggleRelativeLineNumbers: () => void;
