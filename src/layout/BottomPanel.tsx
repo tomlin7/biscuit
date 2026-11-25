@@ -10,9 +10,10 @@ type Props = {
   open: boolean;
   tab: BottomTab;
   onTabChange: (tab: BottomTab) => void;
+  height?: number;
 };
 
-export function BottomPanel({ open, tab, onTabChange }: Props) {
+export function BottomPanel({ open, tab, onTabChange, height = 220 }: Props) {
   const { problems } = useDiagnostics();
   const [mountedTerminal, setMountedTerminal] = useState(false);
 
@@ -23,7 +24,11 @@ export function BottomPanel({ open, tab, onTabChange }: Props) {
   if (!open) return null;
 
   return (
-    <section className="bottom-panel island" aria-label="Panel">
+    <section
+      className="bottom-panel island"
+      aria-label="Panel"
+      style={{ height }}
+    >
       <div className="bottom-panel__tabs" role="tablist">
         <button
           type="button"

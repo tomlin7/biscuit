@@ -3,7 +3,8 @@
   flex-direction: column;
   min-height: 0;
   height: 240px;
-  margin-top: var(--gap-shell);
+  margin-top: 0;
+  flex-shrink: 0;
 }
 
 .bottom-panel__tabs {

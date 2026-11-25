@@ -12,6 +12,8 @@ import { AiProvider } from "../ai/AiContext";
 import { AiPanel } from "../ai/AiPanel";
 import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsContext";
 import { DebugProvider } from "../debug/DebugContext";
+import { SettingsProvider } from "../settings/SettingsContext";
+import { SettingsPanel } from "../settings/SettingsPanel";
 import { CommandPalette } from "../commands/CommandPalette";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
@@ -20,18 +22,36 @@ import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
 import { StatusBar } from "./StatusBar";
 import { BottomPanel, type BottomTab } from "./BottomPanel";
+import { LayoutProvider, useLayout } from "./LayoutContext";
+import { ResizeHandle } from "./ResizeHandle";
 
 function ShellChrome() {
   const { save, closeTab, activePath, openFolder, rootPath } = useWorkspace();
   const { toggleTheme } = useTheme();
   const { findInFile } = useEditorActions();
   const { extensions } = useExtensions();
+  const {
+    sidebarWidth,
+    aiWidth,
+    bottomHeight,
+    sidebarOpen,
+    aiOpen,
+    bottomOpen,
+    setSidebarWidth,
+    setAiWidth,
+    setBottomHeight,
+    toggleSidebar,
+    toggleAi,
+    setBottomOpen,
+    setAiOpen,
+  } = useLayout();
+
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
-  const [panelOpen, setPanelOpen] = useState(false);
   const [panelTab, setPanelTab] = useState<BottomTab>("terminal");
-  const [aiOpen, setAiOpen] = useState(false);
   const [gitBranch, setGitBranch] = useState<string | null>(null);
+  const [treeFilter, setTreeFilter] = useState("");
 
   useEffect(() => {
     if (!rootPath) {
@@ -53,21 +73,25 @@ function ShellChrome() {
 
   const openPalette = useCallback(() => setPaletteOpen(true), []);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
+  const openSettings = useCallback(() => setSettingsOpen(true), []);
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const openSearch = useCallback(() => setSidebarMode("search"), []);
   const openExtensions = useCallback(() => setSidebarMode("extensions"), []);
   const openDebug = useCallback(() => setSidebarMode("debug"), []);
+
   const toggleTerminal = useCallback(() => {
-    setPanelOpen((open) => {
-      if (open && panelTab === "terminal") return false;
-      return true;
-    });
+    if (bottomOpen && panelTab === "terminal") {
+      setBottomOpen(false);
+      return;
+    }
     setPanelTab("terminal");
-  }, [panelTab]);
+    setBottomOpen(true);
+  }, [bottomOpen, panelTab, setBottomOpen]);
+
   const openProblems = useCallback(() => {
-    setPanelOpen(true);
     setPanelTab("problems");
-  }, []);
-  const toggleAi = useCallback(() => setAiOpen((v) => !v), []);
+    setBottomOpen(true);
+  }, [setBottomOpen]);
 
   const extensionCommands = useMemo<Command[]>(() => {
     const cmds: Command[] = [];
@@ -104,6 +128,8 @@ function ShellChrome() {
       toggleAi,
       openExtensions,
       openDebug,
+      openSettings,
+      toggleSidebar,
     }),
     [
       openFolder,
@@ -120,6 +146,8 @@ function ShellChrome() {
       toggleAi,
       openExtensions,
       openDebug,
+      openSettings,
+      toggleSidebar,
     ],
   );
 
@@ -137,10 +165,17 @@ function ShellChrome() {
       const mod = event.ctrlKey || event.metaKey;
       const key = event.key.toLowerCase();
 
-      if (event.key === "Escape" && paletteOpen) {
-        event.preventDefault();
-        closePalette();
-        return;
+      if (event.key === "Escape") {
+        if (settingsOpen) {
+          event.preventDefault();
+          closeSettings();
+          return;
+        }
+        if (paletteOpen) {
+          event.preventDefault();
+          closePalette();
+          return;
+        }
       }
 
       if (mod && event.shiftKey && key === "p") {
@@ -167,6 +202,20 @@ function ShellChrome() {
       if (mod && event.shiftKey && key === "m") {
         event.preventDefault();
         openProblems();
+        clearChord();
+        return;
+      }
+
+      if (mod && key === ",") {
+        event.preventDefault();
+        openSettings();
+        clearChord();
+        return;
+      }
+
+      if (mod && key === "b") {
+        event.preventDefault();
+        toggleSidebar();
         clearChord();
         return;
       }
@@ -231,8 +280,11 @@ function ShellChrome() {
     };
   }, [
     paletteOpen,
+    settingsOpen,
     closePalette,
+    closeSettings,
     openPalette,
+    openSettings,
     openSearch,
     findInFile,
     save,
@@ -243,39 +295,89 @@ function ShellChrome() {
     toggleTerminal,
     toggleAi,
     openProblems,
+    toggleSidebar,
   ]);
+
+  const workspaceStyle = {
+    gridTemplateColumns: [
+      sidebarOpen ? `${sidebarWidth}px` : "0px",
+      sidebarOpen ? "6px" : "0px",
+      "minmax(0, 1fr)",
+      aiOpen ? "6px" : "0px",
+      aiOpen ? `${aiWidth}px` : "0px",
+    ].join(" "),
+  } as const;
 
   return (
     <div className="app-shell">
-      <TitleBar onOpenPalette={openPalette} />
-      <div
-        className={
-          aiOpen
-            ? "app-shell__workspace app-shell__workspace--with-ai"
-            : "app-shell__workspace"
-        }
-      >
-        <Sidebar
-          mode={sidebarMode}
-          onModeChange={setSidebarMode}
-          onBranch={setGitBranch}
-        />
-        <div className="app-shell__main">
-          <EditorArea />
-          <BottomPanel
-            open={panelOpen}
-            tab={panelTab}
-            onTabChange={setPanelTab}
+      <TitleBar onOpenPalette={openPalette} onOpenSettings={openSettings} />
+      <div className="app-shell__workspace" style={workspaceStyle}>
+        <div
+          className="app-shell__sidebar-slot"
+          style={{ display: sidebarOpen ? "flex" : "none" }}
+        >
+          <Sidebar
+            mode={sidebarMode}
+            onModeChange={setSidebarMode}
+            onBranch={setGitBranch}
+            gitBranch={gitBranch}
+            onToggleTerminal={toggleTerminal}
+            onOpenProblems={openProblems}
+            treeFilter={treeFilter}
+            onTreeFilter={setTreeFilter}
           />
         </div>
-        {aiOpen ? <AiPanel /> : null}
+        {sidebarOpen ? (
+          <ResizeHandle
+            axis="x"
+            label="Resize sidebar"
+            onResize={(d) => setSidebarWidth(sidebarWidth + d)}
+            onDoubleClick={toggleSidebar}
+          />
+        ) : (
+          <div />
+        )}
+
+        <div className="app-shell__main">
+          <EditorArea />
+          {bottomOpen ? (
+            <ResizeHandle
+              axis="y"
+              invert
+              label="Resize panel"
+              onResize={(d) => setBottomHeight(bottomHeight + d)}
+              onDoubleClick={() => setBottomOpen(false)}
+            />
+          ) : null}
+          <BottomPanel
+            open={bottomOpen}
+            tab={panelTab}
+            onTabChange={setPanelTab}
+            height={bottomHeight}
+          />
+        </div>
+
+        {aiOpen ? (
+          <ResizeHandle
+            axis="x"
+            invert
+            label="Resize AI panel"
+            onResize={(d) => setAiWidth(aiWidth + d)}
+            onDoubleClick={() => setAiOpen(false)}
+          />
+        ) : (
+          <div />
+        )}
+        <div
+          className="app-shell__ai-slot"
+          style={{ display: aiOpen ? "flex" : "none" }}
+        >
+          <AiPanel onOpenSettings={openSettings} />
+        </div>
       </div>
       <StatusBar
-        terminalOpen={panelOpen && panelTab === "terminal"}
-        onToggleTerminal={toggleTerminal}
-        onToggleAi={toggleAi}
-        aiOpen={aiOpen}
         onOpenProblems={openProblems}
+        onOpenSettings={openSettings}
         gitBranch={gitBranch}
       />
       <CommandPalette
@@ -284,6 +386,7 @@ function ShellChrome() {
         context={commandContext}
         extraCommands={extensionCommands}
       />
+      <SettingsPanel open={settingsOpen} onClose={closeSettings} />
     </div>
   );
 }
@@ -296,7 +399,11 @@ export function AppShell() {
           <AiProvider>
             <ExtensionsProvider>
               <DebugProvider>
-                <ShellChrome />
+                <SettingsProvider>
+                  <LayoutProvider>
+                    <ShellChrome />
+                  </LayoutProvider>
+                </SettingsProvider>
               </DebugProvider>
             </ExtensionsProvider>
           </AiProvider>

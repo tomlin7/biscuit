@@ -1,70 +1,69 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  ArrowUp,
+  Command,
+  Copy,
+  Flame,
+  History,
+  Mic,
+  PanelRightClose,
+  Plus,
+  Search,
+  Settings2,
+  Sparkles,
+} from "lucide-react";
 import { useAi } from "./AiContext";
+import { useWorkspace } from "../workspace/WorkspaceContext";
+import { useLayout } from "../layout/LayoutContext";
+import { IconButton } from "../ui/IconButton";
+import { FileIcon } from "../ui/FileIcon";
 import "./AiPanel.css";
 
-export function AiPanel() {
-  const { messages, settings, busy, error, send, clear, setSettings } = useAi();
+type Props = {
+  onOpenSettings?: () => void;
+};
+
+export function AiPanel({ onOpenSettings }: Props) {
+  const { messages, settings, busy, error, send, clear } = useAi();
+  const { document } = useWorkspace();
+  const { toggleAi } = useLayout();
   const [draft, setDraft] = useState("");
-  const [showSettings, setShowSettings] = useState(false);
+
+  const title = useMemo(() => {
+    const lastUser = [...messages].reverse().find((m) => m.role === "user");
+    if (lastUser) {
+      const t = lastUser.content.trim().replace(/\s+/g, " ");
+      return t.length > 42 ? `${t.slice(0, 41)}…` : t;
+    }
+    return "Agent";
+  }, [messages]);
+
+  const submit = () => {
+    const text = draft;
+    setDraft("");
+    void send(text);
+  };
 
   return (
     <aside className="ai-panel island" aria-label="AI">
       <div className="ai-panel__header">
-        <h2 className="ai-panel__title">Agent</h2>
+        <h2 className="ai-panel__title" title={title}>
+          {title}
+        </h2>
         <div className="ai-panel__actions">
-          <button
-            type="button"
-            className="ai-panel__icon-btn"
-            title="Settings"
-            onClick={() => setShowSettings((v) => !v)}
-          >
-            ⚙
-          </button>
-          <button
-            type="button"
-            className="ai-panel__icon-btn"
-            title="Clear"
-            onClick={clear}
-          >
-            ⌫
-          </button>
+          <IconButton icon={Search} label="Search chat" size={14} disabled />
+          <IconButton icon={History} label="History" size={14} onClick={clear} />
+          <IconButton icon={Plus} label="New chat" size={14} onClick={clear} />
+          <IconButton icon={PanelRightClose} label="Hide AI" size={14} onClick={toggleAi} />
         </div>
       </div>
 
-      {showSettings ? (
-        <div className="ai-panel__settings">
-          <label>
-            Base URL
-            <input
-              value={settings.baseUrl}
-              onChange={(e) => setSettings({ baseUrl: e.target.value })}
-            />
-          </label>
-          <label>
-            API key
-            <input
-              type="password"
-              value={settings.apiKey}
-              onChange={(e) => setSettings({ apiKey: e.target.value })}
-              placeholder="sk-…"
-            />
-          </label>
-          <label>
-            Model
-            <input
-              value={settings.model}
-              onChange={(e) => setSettings({ model: e.target.value })}
-            />
-          </label>
-        </div>
-      ) : null}
-
       <div className="ai-panel__body">
         {messages.length === 0 ? (
-          <p className="ai-panel__hint">
-            Ask the coding agent anything. Configure an OpenAI-compatible endpoint
-            in settings to enable live replies.
-          </p>
+          <div className="ai-panel__empty">
+            <Sparkles size={18} strokeWidth={1.75} aria-hidden />
+            <p>Ask anything about the open workspace.</p>
+          </div>
         ) : (
           messages.map((msg) => (
             <div
@@ -75,7 +74,23 @@ export function AiPanel() {
                   : "ai-panel__bubble ai-panel__bubble--assistant"
               }
             >
-              {msg.content}
+              <div className="ai-panel__bubble-text">{msg.content}</div>
+              {msg.role === "user" ? (
+                <div className="ai-panel__bubble-meta">
+                  <span>
+                    {new Date().toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                  <IconButton
+                    icon={Copy}
+                    label="Copy"
+                    size={12}
+                    onClick={() => void navigator.clipboard.writeText(msg.content)}
+                  />
+                </div>
+              ) : null}
             </div>
           ))
         )}
@@ -86,34 +101,58 @@ export function AiPanel() {
         <textarea
           className="ai-panel__composer-input"
           rows={3}
-          placeholder="Ask anything…"
+          placeholder="Ask anything… (@ files, / commands)"
           value={draft}
           disabled={busy}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              const text = draft;
-              setDraft("");
-              void send(text);
+              submit();
             }
           }}
         />
-        <div className="ai-panel__composer-row">
-          <span className="ai-panel__chip">{settings.model}</span>
-          <button
-            type="button"
-            className="ai-panel__send"
+        <div className="ai-panel__composer-actions">
+          <IconButton icon={Plus} label="Attach" size={14} disabled />
+          <IconButton icon={Mic} label="Voice" size={14} disabled />
+          <IconButton
+            icon={ArrowUp}
+            label="Send"
+            size={14}
             disabled={busy || !draft.trim()}
-            onClick={() => {
-              const text = draft;
-              setDraft("");
-              void send(text);
-            }}
-          >
-            {busy ? "…" : "Send"}
-          </button>
+            onClick={submit}
+            className="ai-panel__send"
+          />
         </div>
+      </div>
+
+      <div className="ai-panel__chips">
+        {document ? (
+          <span className="ai-panel__chip">
+            <FileIcon name={document.title} kind="file" size={12} />
+            {document.title}
+          </span>
+        ) : null}
+        <span className="ai-panel__chip">
+          <Search size={12} strokeWidth={1.75} aria-hidden />
+          Search
+        </span>
+      </div>
+
+      <div className="ai-panel__footer">
+        <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
+          <Settings2 size={12} strokeWidth={1.75} aria-hidden />
+          Default
+        </button>
+        <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
+          <Sparkles size={12} strokeWidth={1.75} aria-hidden />
+          {settings.model}
+        </button>
+        <button type="button" className="ai-panel__pill" title="Effort">
+          <Flame size={12} strokeWidth={1.75} aria-hidden />
+          High
+        </button>
+        <IconButton icon={Command} label="Commands" size={13} disabled />
       </div>
     </aside>
   );

@@ -1,68 +1,64 @@
+import { Command, Folder, Play, Plus, Sparkles, UserRound } from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
-import { useTheme } from "../theme/ThemeContext";
+import { useLayout } from "./LayoutContext";
+import { useDebug } from "../debug/DebugContext";
+import { IconButton } from "../ui/IconButton";
 
 type TitleBarProps = {
   onOpenPalette?: () => void;
+  onOpenSettings?: () => void;
 };
 
-export function TitleBar({ onOpenPalette }: TitleBarProps) {
-  const { rootName, openFolder, save, document, dirty, busy } = useWorkspace();
-  const { theme, toggleTheme } = useTheme();
+export function TitleBar({ onOpenPalette, onOpenSettings }: TitleBarProps) {
+  const { rootName, openFolder, activePath, busy } = useWorkspace();
+  const { aiOpen, toggleAi } = useLayout();
+  const { startSession } = useDebug();
 
   return (
-    <header className="titlebar" role="banner">
-      <div className="titlebar__left">
-        <span className="titlebar__brand">T3D</span>
-        <button
-          type="button"
-          className="titlebar__text-btn"
-          onClick={() => void openFolder()}
-          disabled={busy}
-        >
-          Open Folder
-        </button>
-        <button
-          type="button"
-          className="titlebar__text-btn"
-          onClick={() => void save()}
-          disabled={busy || !document || !dirty}
-          title="Ctrl+S"
-        >
-          Save
-        </button>
-      </div>
+    <header className="titlebar" role="banner" data-tauri-drag-region>
+      <div className="titlebar__left" />
 
       <button
         type="button"
         className="titlebar__project"
         title="Open Folder"
         onClick={() => void openFolder()}
+        disabled={busy}
       >
+        <Folder size={14} strokeWidth={1.75} aria-hidden />
         <span className="titlebar__project-name">
-          {rootName ?? "no folder open"}
+          {rootName ?? "Open folder"}
         </span>
+        <Plus size={14} strokeWidth={1.75} aria-hidden />
       </button>
 
       <div className="titlebar__right">
+        <IconButton
+          icon={Play}
+          label="Run current file"
+          disabled={!activePath}
+          onClick={() => {
+            if (activePath) void startSession(activePath);
+          }}
+        />
+        <IconButton
+          icon={Sparkles}
+          label="Toggle AI"
+          active={aiOpen}
+          onClick={toggleAi}
+        />
+        <IconButton
+          icon={UserRound}
+          label="Settings"
+          onClick={onOpenSettings}
+        />
         {onOpenPalette ? (
-          <button
-            type="button"
-            className="titlebar__text-btn"
+          <IconButton
+            icon={Command}
+            label="Command palette"
             onClick={onOpenPalette}
-            title="Ctrl+Shift+P"
-          >
-            Commands
-          </button>
+          />
         ) : null}
-        <button
-          type="button"
-          className="titlebar__text-btn"
-          onClick={toggleTheme}
-          title="Toggle theme"
-          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-        >
-          {theme === "dark" ? "Light" : "Dark"}
-        </button>
       </div>
     </header>
   );

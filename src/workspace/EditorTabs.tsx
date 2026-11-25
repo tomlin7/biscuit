@@ -1,5 +1,7 @@
 import { useRef } from "react";
+import { X } from "lucide-react";
 import { useWorkspace } from "./WorkspaceContext";
+import { FileIcon } from "../ui/FileIcon";
 import "./EditorTabs.css";
 
 export function EditorTabs() {
@@ -7,11 +9,7 @@ export function EditorTabs() {
   const dragPath = useRef<string | null>(null);
 
   if (tabs.length === 0) {
-    return (
-      <div className="editor-tabs">
-        <div className="editor-tabs__empty">No file</div>
-      </div>
-    );
+    return <div className="editor-tabs" />;
   }
 
   return (
@@ -51,8 +49,10 @@ export function EditorTabs() {
             }}
             title={tab.path}
           >
+            <FileIcon name={tab.title} kind="file" size={13} />
             <span className="editor-tabs__label">
-              {dirty ? `${tab.title} •` : tab.title}
+              {tab.title}
+              {dirty ? <span className="editor-tabs__dirty" aria-label="Unsaved" /> : null}
             </span>
             <button
               type="button"
@@ -64,7 +64,7 @@ export function EditorTabs() {
                 closeTab(tab.path);
               }}
             >
-              ×
+              <X size={12} strokeWidth={2} aria-hidden />
             </button>
           </div>
         );

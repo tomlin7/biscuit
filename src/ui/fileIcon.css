@@ -1,0 +1,56 @@
+.file-icon {
+  flex-shrink: 0;
+  color: var(--fg-dim);
+}
+
+.file-icon--folder {
+  color: #60a5fa;
+}
+
+.file-icon--ts {
+  color: #38bdf8;
+}
+
+.file-icon--js {
+  color: #fbbf24;
+}
+
+.file-icon--json {
+  color: #facc15;
+}
+
+.file-icon--git {
+  color: #f97316;
+}
+
+.file-icon--config {
+  color: #a3a3a3;
+}
+
+.file-icon--text {
+  color: #94a3b8;
+}
+
+.file-icon--data {
+  color: #c084fc;
+}
+
+.file-icon--rust {
+  color: #fb923c;
+}
+
+.file-icon--css {
+  color: #22d3ee;
+}
+
+.file-icon--html {
+  color: #f87171;
+}
+
+.file-icon--image {
+  color: #34d399;
+}
+
+.file-icon--shell {
+  color: #4ade80;
+}

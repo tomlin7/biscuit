@@ -6,6 +6,7 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
 import { useDebug } from "../debug/DebugContext";
+import { useSettings } from "../settings/SettingsContext";
 import { defineT3dThemes, monacoThemeId } from "./theme";
 import "./MonacoEditor.css";
 
@@ -20,6 +21,7 @@ export function MonacoEditor() {
   const { theme } = useTheme();
   const { registerFindHandler } = useEditorActions();
   const { breakpoints, addBreakpoint, removeBreakpoint } = useDebug();
+  const { settings } = useSettings();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const decorationsRef = useRef<string[]>([]);
@@ -151,12 +153,14 @@ export function MonacoEditor() {
         loading={<div className="monaco-editor-host__loading">Loading editor…</div>}
         options={{
           fontFamily: "Cascadia Code, Consolas, Courier New, monospace",
-          fontSize: 13,
-          lineHeight: 20,
-          minimap: { enabled: true, scale: 1 },
+          fontSize: settings.editor.fontSize,
+          lineHeight: Math.round(settings.editor.fontSize * 1.55),
+          minimap: { enabled: settings.editor.minimap, scale: 1 },
+          wordWrap: settings.editor.wordWrap ? "on" : "off",
+          lineNumbers: settings.editor.lineNumbers ? "on" : "off",
           scrollBeyondLastLine: false,
           automaticLayout: true,
-          tabSize: 2,
+          tabSize: settings.editor.tabSize,
           renderLineHighlight: "line",
           glyphMargin: true,
           padding: { top: 8 },

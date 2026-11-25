@@ -16,6 +16,7 @@ body,
 body {
   font-family: var(--font-ui);
   font-size: 13px;
+  font-weight: 450;
   line-height: 1.4;
   color: var(--fg);
   background: var(--bg-root);
@@ -23,8 +24,14 @@ body {
   user-select: none;
 }
 
-button {
+button,
+input,
+textarea,
+select {
   font: inherit;
+}
+
+button {
   color: inherit;
   background: none;
   border: none;
@@ -32,7 +39,14 @@ button {
   cursor: pointer;
 }
 
-button:focus-visible {
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
   outline: 1px solid var(--accent);
   outline-offset: -1px;
+}
+
+::selection {
+  background: var(--accent-soft);
 }

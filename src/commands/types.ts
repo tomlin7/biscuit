@@ -12,6 +12,8 @@ export type CommandContext = {
   toggleAi: () => void;
   openExtensions: () => void;
   openDebug: () => void;
+  openSettings: () => void;
+  toggleSidebar: () => void;
 };
 
 export type Command = {

@@ -2,17 +2,17 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --font-ui: "Segoe UI", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-ui: "IBM Plex Sans Variable", "IBM Plex Sans", "Segoe UI", sans-serif;
   --font-mono: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
 
   --bg-root: #000000;
-  --bg-island: #121212;
+  --bg-island: #141414;
   --bg-island-elevated: #1a1a1a;
   --bg-hover: #1e1e1e;
   --bg-active: #252525;
   --bg-input: #1a1a1a;
   --bg-tab: #1a1a1a;
-  --bg-tab-active: #222222;
+  --bg-tab-active: #1c1c1c;
 
   --border: #2a2a2a;
   --border-subtle: #1f1f1f;
@@ -27,21 +27,23 @@
   --danger-bg: #3a1515;
   --danger-fg: #f0b4b4;
 
+  --shadow-island: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+
   --radius-island: 12px;
   --radius-control: 8px;
   --radius-pill: 999px;
-  --gap-shell: 8px;
+  --gap-shell: 6px;
 
   --titlebar-height: 44px;
   --statusbar-height: 28px;
   --sidebar-width: 280px;
-  --ai-width: 320px;
+  --ai-width: 360px;
 }
 
 [data-theme="light"] {
   color-scheme: light;
 
-  --bg-root: #e8e8e8;
+  --bg-root: #e4e4e4;
   --bg-island: #ffffff;
   --bg-island-elevated: #f5f5f5;
   --bg-hover: #f0f0f0;
@@ -62,4 +64,6 @@
 
   --danger-bg: #fde8e8;
   --danger-fg: #9b1c1c;
+
+  --shadow-island: 0 1px 2px rgba(0, 0, 0, 0.04);
 }

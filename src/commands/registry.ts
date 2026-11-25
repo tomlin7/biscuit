@@ -83,4 +83,18 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.openDebug(),
   },
+  {
+    id: "workbench.action.openSettings",
+    title: "Open Settings",
+    category: "Preferences",
+    keybinding: "Ctrl+,",
+    run: (ctx) => ctx.openSettings(),
+  },
+  {
+    id: "workbench.action.toggleSidebarVisibility",
+    title: "Toggle Primary Side Bar",
+    category: "View",
+    keybinding: "Ctrl+B",
+    run: (ctx) => ctx.toggleSidebar(),
+  },
 ];

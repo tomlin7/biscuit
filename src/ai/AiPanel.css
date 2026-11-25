@@ -3,7 +3,7 @@
   flex-direction: column;
   min-height: 0;
   height: 100%;
-  width: var(--ai-width);
+  width: 100%;
 }
 
 .ai-panel__header {
@@ -11,74 +11,43 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 12px 12px 8px;
+  padding: 10px 10px 8px 14px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .ai-panel__title {
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 500;
 }
 
 .ai-panel__actions {
   display: flex;
-  gap: 2px;
-}
-
-.ai-panel__icon-btn,
-.ai-panel__send {
-  padding: 4px 8px;
-  border-radius: var(--radius-control);
-  color: var(--fg-muted);
-  font-size: 12px;
-}
-
-.ai-panel__icon-btn:hover,
-.ai-panel__send:hover:not(:disabled) {
-  color: var(--fg);
-  background: var(--bg-hover);
-}
-
-.ai-panel__send:disabled {
-  opacity: 0.4;
-}
-
-.ai-panel__settings {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0 12px 10px;
-}
-
-.ai-panel__settings label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 11px;
-  color: var(--fg-muted);
-}
-
-.ai-panel__settings input {
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg-input);
-  color: var(--fg);
-  font: inherit;
-  font-size: 12px;
+  gap: 1px;
 }
 
 .ai-panel__body {
   flex: 1;
-  padding: 8px 12px;
+  padding: 12px 14px;
   overflow: auto;
 }
 
-.ai-panel__hint {
-  margin: 0;
+.ai-panel__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   color: var(--fg-muted);
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.45;
+}
+
+.ai-panel__empty p {
+  margin: 0;
 }
 
 .ai-panel__error {
@@ -91,32 +60,38 @@
 }
 
 .ai-panel__bubble {
-  max-width: 95%;
-  margin-bottom: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  line-height: 1.45;
+  max-width: 100%;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
   white-space: pre-wrap;
 }
 
 .ai-panel__bubble--user {
-  margin-left: auto;
+  padding: 10px 12px;
+  border-radius: 12px;
   background: var(--bg-active);
   color: var(--fg);
 }
 
 .ai-panel__bubble--assistant {
-  margin-right: auto;
-  background: var(--bg-input);
   color: var(--fg-muted);
-  border: 1px solid var(--border-subtle);
+}
+
+.ai-panel__bubble-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--fg-dim);
+  font-size: 11px;
 }
 
 .ai-panel__composer {
-  margin: 8px;
-  padding: 10px;
-  border-radius: var(--radius-control);
+  position: relative;
+  margin: 0 10px;
+  padding: 10px 10px 36px;
+  border-radius: 12px;
   background: var(--bg-input);
   border: 1px solid var(--border);
 }
@@ -127,22 +102,74 @@
   background: transparent;
   color: var(--fg);
   font: inherit;
-  font-size: 12px;
+  font-size: 12.5px;
   outline: none;
   resize: none;
 }
 
-.ai-panel__composer-row {
+.ai-panel__composer-actions {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
+  gap: 2px;
+}
+
+.ai-panel__send {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+.ai-panel__send:disabled {
+  opacity: 0.35;
+}
+
+.ai-panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px 0;
 }
 
 .ai-panel__chip {
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 140px;
+  padding: 4px 8px;
+  border-radius: 7px;
   background: var(--bg-active);
   color: var(--fg-muted);
   font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel__footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px 10px;
+}
+
+.ai-panel__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 110px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-panel__pill:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
 }

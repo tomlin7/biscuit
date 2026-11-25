@@ -1,22 +1,48 @@
+import { useMemo } from "react";
+import { ChevronRight } from "lucide-react";
 import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
+import { FileIcon } from "../ui/FileIcon";
 import "./FileTree.css";
+
+function filterTree(nodes: TreeNode[], query: string): TreeNode[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return nodes;
+  const out: TreeNode[] = [];
+  for (const node of nodes) {
+    if (node.kind === "directory") {
+      const children = filterTree(node.children ?? [], query);
+      if (children.length > 0 || node.name.toLowerCase().includes(q)) {
+        out.push({
+          ...node,
+          children,
+          loaded: true,
+        });
+      }
+    } else if (node.name.toLowerCase().includes(q)) {
+      out.push(node);
+    }
+  }
+  return out;
+}
 
 function TreeRows({
   nodes,
   depth,
+  forceExpand,
 }: {
   nodes: TreeNode[];
   depth: number;
+  forceExpand: boolean;
 }) {
   const { expanded, document, toggleDirectory, openFile } = useWorkspace();
 
   return (
     <>
       {nodes.map((node) => {
-        const isExpanded = expanded.has(node.path);
+        const isExpanded = forceExpand || expanded.has(node.path);
         const isActive = document?.path === node.path;
-        const paddingLeft = 8 + depth * 12;
+        const paddingLeft = 10 + depth * 14;
 
         if (node.kind === "directory") {
           return (
@@ -27,13 +53,25 @@ function TreeRows({
                 style={{ paddingLeft }}
                 onClick={() => void toggleDirectory(node.path)}
               >
-                <span className="file-tree__twist" aria-hidden="true">
-                  {isExpanded ? "▾" : "▸"}
-                </span>
+                <ChevronRight
+                  size={12}
+                  strokeWidth={2}
+                  className={
+                    isExpanded
+                      ? "file-tree__chevron file-tree__chevron--open"
+                      : "file-tree__chevron"
+                  }
+                  aria-hidden
+                />
+                <FileIcon name={node.name} kind="directory" open={isExpanded} />
                 <span className="file-tree__label">{node.name}</span>
               </button>
               {isExpanded && node.children ? (
-                <TreeRows nodes={node.children} depth={depth + 1} />
+                <TreeRows
+                  nodes={node.children}
+                  depth={depth + 1}
+                  forceExpand={forceExpand}
+                />
               ) : null}
             </div>
           );
@@ -49,7 +87,8 @@ function TreeRows({
             style={{ paddingLeft }}
             onClick={() => void openFile(node.path)}
           >
-            <span className="file-tree__twist file-tree__twist--file" aria-hidden="true" />
+            <span className="file-tree__chevron-spacer" aria-hidden />
+            <FileIcon name={node.name} kind="file" />
             <span className="file-tree__label">{node.name}</span>
           </button>
         );
@@ -58,8 +97,14 @@ function TreeRows({
   );
 }
 
-export function FileTree() {
+type Props = {
+  filter?: string;
+};
+
+export function FileTree({ filter = "" }: Props) {
   const { rootPath, tree, treeError, busy, openFolder } = useWorkspace();
+  const filtered = useMemo(() => filterTree(tree, filter), [tree, filter]);
+  const forceExpand = filter.trim().length > 0;
 
   if (!rootPath) {
     return (
@@ -76,10 +121,10 @@ export function FileTree() {
     <div className="file-tree">
       {treeError ? <p className="file-tree__error">{treeError}</p> : null}
       {busy ? <p className="file-tree__status">Working…</p> : null}
-      {tree.length === 0 && !busy ? (
-        <p className="file-tree__hint">Folder is empty.</p>
+      {filtered.length === 0 && !busy ? (
+        <p className="file-tree__hint">{filter ? "No matches." : "Folder is empty."}</p>
       ) : (
-        <TreeRows nodes={tree} depth={0} />
+        <TreeRows nodes={filtered} depth={0} forceExpand={forceExpand} />
       )}
     </div>
   );

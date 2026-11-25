@@ -1,0 +1,25 @@
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: var(--fg-muted);
+  flex-shrink: 0;
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
+.icon-btn--active {
+  color: var(--fg);
+  background: var(--bg-active);
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
