@@ -642,6 +642,45 @@
   color: var(--fg-dim);
 }
 
+.scm-panel__tag-filter-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 4px 6px;
+}
+
+.scm-panel__tag-filter-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 3px 22px 3px 6px;
+  font-size: var(--font-size-xs);
+  background: var(--bg-input);
+  color: var(--fg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  outline: none;
+}
+
+.scm-panel__tag-filter-input:focus {
+  border-color: var(--accent);
+}
+
+.scm-panel__tag-filter-clear {
+  position: absolute;
+  right: 4px;
+  background: transparent;
+  border: none;
+  color: var(--fg-subtle);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.scm-panel__tag-filter-clear:hover {
+  color: var(--fg);
+}
+
 .scm-panel__tag-create-form {
   margin: 6px;
   padding: 8px;

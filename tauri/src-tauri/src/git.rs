@@ -857,23 +857,26 @@ pub struct GitTagInfo {
 pub fn valid_tag_name(name: &str) -> Result<&str, String> {
     let name = name.trim();
     if name.is_empty()
+        || name == "@"
         || name.starts_with('-')
-        || name.starts_with('.')
+        || name.starts_with('/')
+        || name.ends_with('/')
         || name.ends_with('.')
-        || name.ends_with(".lock")
-        || name.contains(char::is_whitespace)
-        || name.contains('\0')
-        || name.contains('~')
-        || name.contains('^')
-        || name.contains(':')
-        || name.contains('?')
-        || name.contains('*')
-        || name.contains('[')
-        || name.contains('\\')
+        || name.contains("//")
         || name.contains("..")
         || name.contains("@{")
+        || name.chars().any(|c| {
+            c.is_control()
+                || c.is_whitespace()
+                || matches!(c, '~' | '^' | ':' | '?' | '*' | '[' | '\\')
+        })
     {
         return Err("invalid tag name".into());
+    }
+    for part in name.split('/') {
+        if part.is_empty() || part.starts_with('.') || part.ends_with(".lock") {
+            return Err("invalid tag name".into());
+        }
     }
     Ok(name)
 }
@@ -1012,13 +1015,14 @@ pub fn git_delete_remote_tag(
     if remote.starts_with('-') || remote.contains(char::is_whitespace) || remote.contains('\0') {
         return Err("invalid remote name".into());
     }
+    let refspec = format!("refs/tags/{tag_name}");
     run_git(
         &root,
         &[
             "push".into(),
             remote.into(),
             "--delete".into(),
-            tag_name.to_string(),
+            refspec,
         ],
     )?;
     Ok(())
@@ -1295,6 +1299,7 @@ mod tests {
         assert!(super::valid_tag_name("release-2026.11").is_ok());
         assert!(super::valid_tag_name("feature/tags").is_ok());
         assert!(super::valid_tag_name("").is_err());
+        assert!(super::valid_tag_name("@").is_err());
         assert!(super::valid_tag_name("-bad").is_err());
         assert!(super::valid_tag_name("has space").is_err());
         assert!(super::valid_tag_name("bad~char").is_err());
@@ -1302,6 +1307,12 @@ mod tests {
         assert!(super::valid_tag_name("bad:char").is_err());
         assert!(super::valid_tag_name("bad..name").is_err());
         assert!(super::valid_tag_name("bad.lock").is_err());
+        assert!(super::valid_tag_name("/v1.0.0").is_err());
+        assert!(super::valid_tag_name("v1.0.0/").is_err());
+        assert!(super::valid_tag_name("v1//v2").is_err());
+        assert!(super::valid_tag_name("foo/.bar").is_err());
+        assert!(super::valid_tag_name("foo/bar.lock").is_err());
+        assert!(super::valid_tag_name("tag\x07bell").is_err());
     }
 
     #[test]
@@ -1365,6 +1376,38 @@ mod tests {
         assert_eq!(tags_after_delete.len(), 1);
         assert_eq!(tags_after_delete[0].name, "v0.2.0");
 
+        // Set up bare remote repository to test git_push_tags and git_delete_remote_tag
+        let remote_dir = std::env::temp_dir().join(format!("t3d-tags-remote-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&remote_dir);
+        std::fs::create_dir_all(&remote_dir).unwrap();
+        run_in(&remote_dir, &["init", "--bare"]);
+        let remote_str = remote_dir.display().to_string();
+
+        run_in(&base_dir, &["remote", "add", "origin", &remote_str]);
+
+        // Push tags to remote
+        super::git_push_tags(root_str.clone(), Some("origin".into())).expect("git_push_tags");
+
+        // Verify remote received the tag
+        let ls_out = std::process::Command::new("git")
+            .args(["ls-remote", "--tags", "origin"])
+            .current_dir(&base_dir)
+            .output()
+            .expect("ls-remote");
+        assert!(String::from_utf8_lossy(&ls_out.stdout).contains("refs/tags/v0.2.0"));
+
+        // Delete remote tag
+        super::git_delete_remote_tag(root_str.clone(), "v0.2.0".into(), Some("origin".into()))
+            .expect("delete remote tag");
+
+        let ls_after = std::process::Command::new("git")
+            .args(["ls-remote", "--tags", "origin"])
+            .current_dir(&base_dir)
+            .output()
+            .expect("ls-remote after delete");
+        assert!(!String::from_utf8_lossy(&ls_after.stdout).contains("refs/tags/v0.2.0"));
+
+        let _ = std::fs::remove_dir_all(&remote_dir);
         let _ = std::fs::remove_dir_all(&base_dir);
     }
 }

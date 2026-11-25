@@ -64,23 +64,50 @@ export function validateTagName(name: string): { valid: boolean; error?: string 
   if (!trimmed) {
     return { valid: false, error: "Tag name cannot be empty" };
   }
+  if (trimmed === "@") {
+    return { valid: false, error: "Tag name cannot be '@'" };
+  }
   if (trimmed.startsWith("-")) {
     return { valid: false, error: "Tag name cannot start with a dash" };
   }
-  if (trimmed.startsWith(".") || trimmed.endsWith(".")) {
-    return { valid: false, error: "Tag name cannot start or end with a dot" };
+  if (trimmed.startsWith("/") || trimmed.endsWith("/")) {
+    return { valid: false, error: "Tag name cannot start or end with a slash" };
   }
-  if (trimmed.endsWith(".lock")) {
-    return { valid: false, error: "Tag name cannot end with .lock" };
+  if (trimmed.endsWith(".")) {
+    return { valid: false, error: "Tag name cannot end with a dot" };
+  }
+  if (trimmed.includes("//")) {
+    return { valid: false, error: "Tag name cannot contain consecutive slashes" };
+  }
+  if (trimmed.includes("..")) {
+    return { valid: false, error: "Tag name cannot contain '..'" };
+  }
+  if (trimmed.includes("@{")) {
+    return { valid: false, error: "Tag name cannot contain '@{'" };
   }
   if (/\s/.test(trimmed)) {
     return { valid: false, error: "Tag name cannot contain whitespace" };
   }
-  if (/[~^:?*\[\\]/.test(trimmed) || trimmed.includes("..") || trimmed.includes("@{")) {
+  if (/[\x00-\x1f\x7f]/.test(trimmed)) {
+    return { valid: false, error: "Tag name cannot contain control characters" };
+  }
+  if (/[~^:?*\[\\]/.test(trimmed)) {
     return {
       valid: false,
-      error: "Tag name contains illegal characters (~, ^, :, ?, *, [, \\, .., @{)",
+      error: "Tag name contains illegal characters (~, ^, :, ?, *, [, \\)",
     };
+  }
+  const parts = trimmed.split("/");
+  for (const part of parts) {
+    if (!part) {
+      return { valid: false, error: "Tag name contains empty path component" };
+    }
+    if (part.startsWith(".")) {
+      return { valid: false, error: "Tag path component cannot start with a dot" };
+    }
+    if (part.endsWith(".lock")) {
+      return { valid: false, error: "Tag path component cannot end with .lock" };
+    }
   }
   return { valid: true };
 }
@@ -95,4 +122,34 @@ export function filterTags(tags: GitTagInfo[], query: string): GitTagInfo[] {
       (t.message ? t.message.toLowerCase().includes(q) : false)
     );
   });
+}
+
+export async function copyTagNameToClipboard(name: string): Promise<boolean> {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(name);
+      return true;
+    } catch {
+      // Fall through to execCommand
+    }
+  }
+  if (typeof document !== "undefined") {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = name;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      textarea.style.top = "0";
+      textarea.setAttribute("readonly", "");
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(textarea);
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+  return false;
 }

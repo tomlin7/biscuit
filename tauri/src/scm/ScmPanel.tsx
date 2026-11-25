@@ -50,6 +50,8 @@ import {
   formatTagCommit,
   formatTagDate,
   validateTagName,
+  filterTags,
+  copyTagNameToClipboard,
   type GitTagInfo,
 } from "./tags";
 import { IconButton } from "../ui/IconButton";
@@ -96,6 +98,7 @@ export function ScmPanel({ onBranch }: Props) {
   const [submodulesCollapsed, setSubmodulesCollapsed] = useState(false);
   const [tags, setTags] = useState<GitTagInfo[]>([]);
   const [tagsCollapsed, setTagsCollapsed] = useState(false);
+  const [tagQuery, setTagQuery] = useState("");
   const [showCreateTagDialog, setShowCreateTagDialog] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagTarget, setNewTagTarget] = useState("");
@@ -639,7 +642,7 @@ export function ScmPanel({ onBranch }: Props) {
     setActing(true);
     setError(null);
     try {
-      await invoke("git_checkout", { cwd: rootPath, branch: tag.name });
+      await invoke("git_checkout", { cwd: rootPath, branch: `tags/${tag.name}` });
       appendLog(`Checked out tag ${tag.name}`);
       await refresh();
     } catch (err) {
@@ -671,11 +674,11 @@ export function ScmPanel({ onBranch }: Props) {
   };
 
   const handleCopyTagName = async (tag: GitTagInfo) => {
-    try {
-      await navigator.clipboard.writeText(tag.name);
+    const ok = await copyTagNameToClipboard(tag.name);
+    if (ok) {
       appendLog(`Copied tag "${tag.name}" to clipboard`);
-    } catch (err) {
-      appendLog(`Failed to copy tag name: ${err}`);
+    } else {
+      appendLog(`Failed to copy tag "${tag.name}" to clipboard`);
     }
   };
 
@@ -718,6 +721,14 @@ export function ScmPanel({ onBranch }: Props) {
     }
   };
 
+  const resetCreateTagForm = () => {
+    setShowCreateTagDialog(false);
+    setNewTagName("");
+    setNewTagTarget("");
+    setNewTagMessage("");
+    setTagError(null);
+  };
+
   const handleCreateTagSubmit = async () => {
     if (!rootPath) return;
     const name = newTagName.trim();
@@ -736,10 +747,7 @@ export function ScmPanel({ onBranch }: Props) {
         newTagMessage.trim() || null,
       );
       appendLog(`Created tag ${name}`);
-      setShowCreateTagDialog(false);
-      setNewTagName("");
-      setNewTagTarget("");
-      setNewTagMessage("");
+      resetCreateTagForm();
       await refresh();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -1286,7 +1294,7 @@ export function ScmPanel({ onBranch }: Props) {
                       }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") void handleCreateTagSubmit();
-                        if (e.key === "Escape") setShowCreateTagDialog(false);
+                        if (e.key === "Escape") resetCreateTagForm();
                       }}
                     />
                     <input
@@ -1297,7 +1305,7 @@ export function ScmPanel({ onBranch }: Props) {
                       onChange={(e) => setNewTagTarget(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") void handleCreateTagSubmit();
-                        if (e.key === "Escape") setShowCreateTagDialog(false);
+                        if (e.key === "Escape") resetCreateTagForm();
                       }}
                     />
                     <input
@@ -1308,7 +1316,7 @@ export function ScmPanel({ onBranch }: Props) {
                       onChange={(e) => setNewTagMessage(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") void handleCreateTagSubmit();
-                        if (e.key === "Escape") setShowCreateTagDialog(false);
+                        if (e.key === "Escape") resetCreateTagForm();
                       }}
                     />
                     {tagError ? (
@@ -1326,10 +1334,7 @@ export function ScmPanel({ onBranch }: Props) {
                       <button
                         type="button"
                         className="scm-panel__batch-btn"
-                        onClick={() => {
-                          setShowCreateTagDialog(false);
-                          setTagError(null);
-                        }}
+                        onClick={resetCreateTagForm}
                       >
                         Cancel
                       </button>
@@ -1337,11 +1342,35 @@ export function ScmPanel({ onBranch }: Props) {
                   </div>
                 ) : null}
 
+                {tags.length > 3 || tagQuery ? (
+                  <div className="scm-panel__tag-filter-row">
+                    <input
+                      type="text"
+                      className="scm-panel__tag-filter-input"
+                      placeholder="Filter tags..."
+                      value={tagQuery}
+                      onChange={(e) => setTagQuery(e.target.value)}
+                    />
+                    {tagQuery ? (
+                      <button
+                        type="button"
+                        className="scm-panel__tag-filter-clear"
+                        onClick={() => setTagQuery("")}
+                        title="Clear filter"
+                      >
+                        ×
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
+
                 {tags.length === 0 && !showCreateTagDialog ? (
                   <div className="scm-panel__tags-empty">No tags found. Click + to create one.</div>
+                ) : filterTags(tags, tagQuery).length === 0 && tagQuery ? (
+                  <div className="scm-panel__tags-empty">No tags matching "{tagQuery}".</div>
                 ) : (
                   <ul className="scm-panel__list scm-panel__list--tags">
-                    {tags.map((tag) => renderTagRow(tag))}
+                    {filterTags(tags, tagQuery).map((tag) => renderTagRow(tag))}
                   </ul>
                 )}
               </div>

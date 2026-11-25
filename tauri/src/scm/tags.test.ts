@@ -4,6 +4,7 @@ import {
   formatTagCommit,
   formatTagDate,
   filterTags,
+  copyTagNameToClipboard,
   fetchGitTags,
   createGitTag,
   deleteGitTag,
@@ -20,9 +21,10 @@ describe("Git Tags Frontend helpers", () => {
     expect(validateTagName("feature/v1").valid).toBe(true);
     expect(validateTagName("v2.1-rc1").valid).toBe(true);
 
-    // Empty
+    // Empty or @
     expect(validateTagName("").valid).toBe(false);
     expect(validateTagName("   ").valid).toBe(false);
+    expect(validateTagName("@").valid).toBe(false);
 
     // Dashes or dots at boundaries
     expect(validateTagName("-v1").valid).toBe(false);
@@ -30,9 +32,17 @@ describe("Git Tags Frontend helpers", () => {
     expect(validateTagName("v1.").valid).toBe(false);
     expect(validateTagName("v1.lock").valid).toBe(false);
 
-    // Whitespace
+    // Slashes
+    expect(validateTagName("/v1").valid).toBe(false);
+    expect(validateTagName("v1/").valid).toBe(false);
+    expect(validateTagName("v1//v2").valid).toBe(false);
+    expect(validateTagName("foo/.bar").valid).toBe(false);
+    expect(validateTagName("foo/bar.lock").valid).toBe(false);
+
+    // Whitespace and control chars
     expect(validateTagName("v1 0").valid).toBe(false);
     expect(validateTagName("v1\t0").valid).toBe(false);
+    expect(validateTagName("v1\x070").valid).toBe(false);
 
     // Illegal Git ref characters
     expect(validateTagName("v1~1").valid).toBe(false);
@@ -225,5 +235,66 @@ describe("Git Tags Frontend helpers", () => {
 
     pushCmd?.run(mockCtx);
     expect(pushCalled).toBe(true);
+  });
+
+  test("copies tag name to clipboard with fallback", async () => {
+    const originalNavigator = globalThis.navigator;
+    const originalDocument = globalThis.document;
+
+    try {
+      // 1. Success via navigator.clipboard.writeText
+      let written = "";
+      (globalThis as any).navigator = {
+        clipboard: {
+          writeText: async (text: string) => {
+            written = text;
+          },
+        },
+      };
+
+      const res1 = await copyTagNameToClipboard("v1.0.0");
+      expect(res1).toBe(true);
+      expect(written).toBe("v1.0.0");
+
+      // 2. Fallback via document.execCommand when writeText throws
+      (globalThis as any).navigator = {
+        clipboard: {
+          writeText: async () => {
+            throw new Error("clipboard denied");
+          },
+        },
+      };
+
+      let execCmdCalled = "";
+      let appendedNode: any = null;
+      (globalThis as any).document = {
+        createElement: (tag: string) => ({
+          tagName: tag,
+          value: "",
+          style: {},
+          setAttribute: () => {},
+          focus: () => {},
+          select: () => {},
+        }),
+        body: {
+          appendChild: (node: any) => {
+            appendedNode = node;
+          },
+          removeChild: () => {},
+        },
+        execCommand: (cmd: string) => {
+          execCmdCalled = cmd;
+          return true;
+        },
+      };
+
+      const res2 = await copyTagNameToClipboard("v2.0.0");
+      expect(res2).toBe(true);
+      expect(execCmdCalled).toBe("copy");
+      expect(appendedNode?.value).toBe("v2.0.0");
+    } finally {
+      (globalThis as any).navigator = originalNavigator;
+      (globalThis as any).document = originalDocument;
+    }
   });
 });
