@@ -104,6 +104,16 @@ export function SettingsPanel({ open, onClose }: Props) {
               />
             </label>
             <label className="settings-row settings-row--check">
+              <span>Trim trailing whitespace on save</span>
+              <input
+                type="checkbox"
+                checked={settings.editor.trimTrailingWhitespace}
+                onChange={(e) =>
+                  updateEditor({ trimTrailingWhitespace: e.target.checked })
+                }
+              />
+            </label>
+            <label className="settings-row settings-row--check">
               <span>Minimap</span>
               <input
                 type="checkbox"

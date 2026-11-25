@@ -16,6 +16,8 @@ export type EditorSettings = {
   wordWrapColumn: number;
   /** Comma-separated ruler columns; empty disables. */
   rulers: string;
+  /** Trim trailing whitespace on save even without EditorConfig. */
+  trimTrailingWhitespace: boolean;
   minimap: boolean;
   lineNumbers: boolean;
   stickyScroll: boolean;
@@ -42,6 +44,7 @@ const DEFAULTS: AppSettings = {
     wordWrap: false,
     wordWrapColumn: 80,
     rulers: "",
+    trimTrailingWhitespace: false,
     minimap: true,
     lineNumbers: true,
     stickyScroll: true,
@@ -62,6 +65,11 @@ function load(): AppSettings {
   } catch {
     return DEFAULTS;
   }
+}
+
+/** Non-hook read for save paths outside SettingsProvider. */
+export function readTrimTrailingWhitespaceSetting(): boolean {
+  return load().editor.trimTrailingWhitespace === true;
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {

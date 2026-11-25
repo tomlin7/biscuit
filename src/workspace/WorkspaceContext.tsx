@@ -24,8 +24,22 @@ import {
 } from "./path";
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
 import { readSession, writeSession } from "./session";
-import { applyEditorConfigText, editorConfigFor } from "../editor/editorconfig";
+import { applyEditorConfigText, editorConfigFor, type ResolvedEditorConfig } from "../editor/editorconfig";
+import { readTrimTrailingWhitespaceSetting } from "../settings/SettingsContext";
 import { appendLog } from "../logs/logBus";
+
+async function textForSave(
+  path: string,
+  value: string,
+  rootPath: string | null,
+): Promise<string> {
+  const config = await editorConfigFor(path, rootPath);
+  const next: ResolvedEditorConfig = { ...config };
+  if (readTrimTrailingWhitespaceSetting() && next.trimTrailingWhitespace == null) {
+    next.trimTrailingWhitespace = true;
+  }
+  return applyEditorConfigText(value, next);
+}
 
 export type EditorTab = {
   path: string;
@@ -802,8 +816,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
           // External change — skip to avoid clobbering.
           continue;
         }
-        const config = await editorConfigFor(tab.path, rootPath);
-        const text = applyEditorConfigText(tab.value, config);
+        const text = await textForSave(tab.path, tab.value, rootPath);
         await writeTextFile(tab.path, text);
         saved.set(tab.path, text);
       } catch {
@@ -952,8 +965,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     try {
       const saved = new Map<string, string>();
       for (const tab of dirty) {
-        const config = await editorConfigFor(tab.path, rootPath);
-        const text = applyEditorConfigText(tab.value, config);
+        const text = await textForSave(tab.path, tab.value, rootPath);
         await writeTextFile(tab.path, text);
         saved.set(tab.path, text);
       }
@@ -997,8 +1009,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     setTreeError(null);
     try {
-      const config = await editorConfigFor(tab.path, rootPath);
-      const text = applyEditorConfigText(tab.value, config);
+      const text = await textForSave(tab.path, tab.value, rootPath);
       await writeTextFile(tab.path, text);
       setTabs((current) =>
         current.map((t) =>
@@ -1023,8 +1034,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     setTreeError(null);
     try {
-      const config = await editorConfigFor(dest, rootPath);
-      const text = applyEditorConfigText(tab.value, config);
+      const text = await textForSave(dest, tab.value, rootPath);
       await writeTextFile(dest, text);
       setTabs((current) => {
         const next = {
