@@ -35,6 +35,7 @@
   --titlebar-height: 44px;
   --statusbar-height: 28px;
   --sidebar-width: 280px;
+  --ai-width: 320px;
 }
 
 [data-theme="light"] {

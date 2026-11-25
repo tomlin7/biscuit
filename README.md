@@ -6,11 +6,11 @@ Successor architecture to Biscuit — same product spirit, cleaner structure, be
 
 ## Status
 
-Current version: **0.9.0** (pre-1.0).
+Current version: **0.10.0** (pre-1.0).
 
 See [VERSIONING.md](VERSIONING.md) and [MILESTONES.md](MILESTONES.md).
 
-`1.0.0` is intentionally later.
+`1.0.0` is the next gate after 0.10.0 foundations land.
 
 ## Develop
 

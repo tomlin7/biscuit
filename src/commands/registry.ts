@@ -57,4 +57,30 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+`",
     run: (ctx) => ctx.toggleTerminal(),
   },
+  {
+    id: "workbench.actions.view.problems",
+    title: "Show Problems",
+    category: "View",
+    keybinding: "Ctrl+Shift+M",
+    run: (ctx) => ctx.openProblems(),
+  },
+  {
+    id: "workbench.action.toggleAi",
+    title: "Toggle AI Agent",
+    category: "View",
+    keybinding: "Ctrl+Shift+A",
+    run: (ctx) => ctx.toggleAi(),
+  },
+  {
+    id: "workbench.view.extensions",
+    title: "Show Extensions",
+    category: "View",
+    run: (ctx) => ctx.openExtensions(),
+  },
+  {
+    id: "workbench.view.debug",
+    title: "Show Run and Debug",
+    category: "View",
+    run: (ctx) => ctx.openDebug(),
+  },
 ];

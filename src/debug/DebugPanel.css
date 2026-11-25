@@ -1,0 +1,84 @@
+.debug-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.debug-panel__toolbar button,
+.debug-panel__section button {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+.debug-panel__toolbar button:hover:not(:disabled),
+.debug-panel__section button:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
+.debug-panel__toolbar button:disabled {
+  opacity: 0.4;
+}
+
+.debug-panel__section h3 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-dim);
+}
+
+.debug-panel__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.debug-panel__section ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.debug-panel__section li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.debug-panel__section label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.debug-panel__link {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  background: none;
+  text-align: left;
+}
+
+.debug-panel__link:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}

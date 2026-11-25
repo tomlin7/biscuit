@@ -1,0 +1,148 @@
+.ai-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  width: var(--ai-width);
+}
+
+.ai-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 12px 8px;
+}
+
+.ai-panel__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ai-panel__actions {
+  display: flex;
+  gap: 2px;
+}
+
+.ai-panel__icon-btn,
+.ai-panel__send {
+  padding: 4px 8px;
+  border-radius: var(--radius-control);
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+.ai-panel__icon-btn:hover,
+.ai-panel__send:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
+.ai-panel__send:disabled {
+  opacity: 0.4;
+}
+
+.ai-panel__settings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 12px 10px;
+}
+
+.ai-panel__settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+
+.ai-panel__settings input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--fg);
+  font: inherit;
+  font-size: 12px;
+}
+
+.ai-panel__body {
+  flex: 1;
+  padding: 8px 12px;
+  overflow: auto;
+}
+
+.ai-panel__hint {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ai-panel__error {
+  margin: 8px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--danger-bg);
+  color: var(--danger-fg);
+  font-size: 12px;
+}
+
+.ai-panel__bubble {
+  max-width: 95%;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.ai-panel__bubble--user {
+  margin-left: auto;
+  background: var(--bg-active);
+  color: var(--fg);
+}
+
+.ai-panel__bubble--assistant {
+  margin-right: auto;
+  background: var(--bg-input);
+  color: var(--fg-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.ai-panel__composer {
+  margin: 8px;
+  padding: 10px;
+  border-radius: var(--radius-control);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+}
+
+.ai-panel__composer-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+  resize: none;
+}
+
+.ai-panel__composer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.ai-panel__chip {
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-active);
+  color: var(--fg-muted);
+  font-size: 11px;
+}

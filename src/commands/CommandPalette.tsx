@@ -1,25 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { COMMANDS } from "./registry";
-import { matchCommandQuery, type CommandContext } from "./types";
+import { matchCommandQuery, type Command, type CommandContext } from "./types";
 import "./CommandPalette.css";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   context: CommandContext;
+  extraCommands?: Command[];
 };
 
-export function CommandPalette({ open, onClose, context }: Props) {
+export function CommandPalette({
+  open,
+  onClose,
+  context,
+  extraCommands = [],
+}: Props) {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const items = useMemo(
     () =>
-      COMMANDS.filter((cmd) => matchCommandQuery(cmd.title, query)).filter(
-        (cmd) => (cmd.when ? cmd.when(context) : true),
-      ),
-    [query, context],
+      [...COMMANDS, ...extraCommands]
+        .filter((cmd) => matchCommandQuery(cmd.title, query))
+        .filter((cmd) => (cmd.when ? cmd.when(context) : true)),
+    [query, context, extraCommands],
   );
 
   useEffect(() => {

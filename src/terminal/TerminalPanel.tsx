@@ -10,9 +10,10 @@ import "./TerminalPanel.css";
 
 type Props = {
   open: boolean;
+  embedded?: boolean;
 };
 
-export function TerminalPanel({ open }: Props) {
+export function TerminalPanel({ open, embedded = false }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
@@ -124,6 +125,14 @@ export function TerminalPanel({ open }: Props) {
   }, [open]);
 
   if (!open) return null;
+
+  if (embedded) {
+    return (
+      <div className="terminal-panel terminal-panel--embedded" aria-label="Terminal">
+        <div className="terminal-panel__body" ref={hostRef} />
+      </div>
+    );
+  }
 
   return (
     <section className="terminal-panel island" aria-label="Terminal">

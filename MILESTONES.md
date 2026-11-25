@@ -14,10 +14,10 @@ Each row is a shippable `0.x` release until **1.0.0**.
 | **0.6.0** | Command palette + keybindings | shipped |
 | **0.7.0** | Find in file / workspace search | shipped |
 | **0.8.0** | Integrated terminal (PTY) | shipped |
-| **0.9.0** | Git SCM view | shipping |
-| **0.10.0+** | LSP, AI agents, extensions, debugger | planned |
-| **1.0.0** | Stable product | later |
+| **0.9.0** | Git SCM view | shipped |
+| **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipping |
+| **1.0.0** | Stable product | next |
 
 ## Current target
 
-Ship **0.9.0**: Git status sidebar and branch in the status bar.
+Ship **0.10.0**: Problems panel (Monaco diagnostics), AI agent island, extensions host, and run/debug foundations — then gate **1.0.0**.

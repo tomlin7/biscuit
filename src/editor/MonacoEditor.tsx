@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditorNS } from "monaco-editor";
+import * as monacoApi from "monaco-editor";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
+import { useDebug } from "../debug/DebugContext";
 import { defineT3dThemes, monacoThemeId } from "./theme";
 import "./MonacoEditor.css";
 
@@ -17,8 +19,14 @@ export function MonacoEditor() {
   } = useWorkspace();
   const { theme } = useTheme();
   const { registerFindHandler } = useEditorActions();
+  const { breakpoints, addBreakpoint, removeBreakpoint } = useDebug();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
+  const decorationsRef = useRef<string[]>([]);
+  const breakpointsRef = useRef(breakpoints);
+  breakpointsRef.current = breakpoints;
+  const pathRef = useRef(document?.path ?? null);
+  pathRef.current = document?.path ?? null;
 
   useEffect(() => {
     if (monacoRef.current) {
@@ -53,6 +61,25 @@ export function MonacoEditor() {
     clearRevealTarget();
   }, [revealTarget, document, clearRevealTarget]);
 
+  useEffect(() => {
+    const ed = editorRef.current;
+    if (!ed || !document) return;
+    const forFile = breakpoints.filter(
+      (bp) => bp.path === document.path && bp.enabled,
+    );
+    decorationsRef.current = ed.deltaDecorations(
+      decorationsRef.current,
+      forFile.map((bp) => ({
+        range: new monacoApi.Range(bp.line, 1, bp.line, 1),
+        options: {
+          isWholeLine: true,
+          glyphMarginClassName: "monaco-breakpoint-glyph",
+          className: "monaco-breakpoint-line",
+        },
+      })),
+    );
+  }, [breakpoints, document]);
+
   if (!document) return null;
 
   const handleBeforeMount = (monaco: Monaco) => {
@@ -75,6 +102,26 @@ export function MonacoEditor() {
 
     syncCursor();
     ed.onDidChangeCursorPosition(syncCursor);
+
+    ed.onMouseDown((e) => {
+      if (
+        e.target.type !== monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN &&
+        e.target.type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS
+      ) {
+        return;
+      }
+      const line = e.target.position?.lineNumber;
+      const path = pathRef.current;
+      if (!line || !path) return;
+      const existing = breakpointsRef.current.find(
+        (bp) => bp.path === path && bp.line === line,
+      );
+      if (existing) {
+        removeBreakpoint(existing.id);
+      } else {
+        addBreakpoint(path, line);
+      }
+    });
 
     if (revealTarget && revealTarget.path === document.path) {
       ed.revealPositionInCenter({
@@ -111,6 +158,7 @@ export function MonacoEditor() {
           automaticLayout: true,
           tabSize: 2,
           renderLineHighlight: "line",
+          glyphMargin: true,
           padding: { top: 8 },
           scrollbar: {
             verticalScrollbarSize: 10,

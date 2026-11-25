@@ -1,16 +1,31 @@
 import { FileTree } from "../workspace/FileTree";
 import { SearchPanel } from "../search/SearchPanel";
 import { ScmPanel } from "../scm/ScmPanel";
+import { ExtensionsPanel } from "../extensions/ExtensionsPanel";
+import { DebugPanel } from "../debug/DebugPanel";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import type { SearchHit } from "../search/workspaceSearch";
 
-export type SidebarMode = "explorer" | "search" | "scm";
+export type SidebarMode =
+  | "explorer"
+  | "search"
+  | "scm"
+  | "extensions"
+  | "debug";
 
 type SidebarProps = {
   mode: SidebarMode;
   onModeChange: (mode: SidebarMode) => void;
   onBranch: (branch: string | null) => void;
 };
+
+const MODES: Array<[SidebarMode, string]> = [
+  ["explorer", "Explorer"],
+  ["search", "Search"],
+  ["scm", "Git"],
+  ["extensions", "Ext"],
+  ["debug", "Debug"],
+];
 
 export function Sidebar({ mode, onModeChange, onBranch }: SidebarProps) {
   const { rootName, openFileAt } = useWorkspace();
@@ -22,13 +37,7 @@ export function Sidebar({ mode, onModeChange, onBranch }: SidebarProps) {
   return (
     <aside className="sidebar island" aria-label="Sidebar">
       <div className="sidebar__modes" role="tablist" aria-label="Sidebar views">
-        {(
-          [
-            ["explorer", "Explorer"],
-            ["search", "Search"],
-            ["scm", "Git"],
-          ] as const
-        ).map(([id, label]) => (
+        {MODES.map(([id, label]) => (
           <button
             key={id}
             type="button"
@@ -55,6 +64,22 @@ export function Sidebar({ mode, onModeChange, onBranch }: SidebarProps) {
       ) : null}
       {mode === "search" ? <SearchPanel onOpenHit={onOpenHit} /> : null}
       {mode === "scm" ? <ScmPanel onBranch={onBranch} /> : null}
+      {mode === "extensions" ? (
+        <>
+          <div className="sidebar__header">
+            <span className="sidebar__title">Extensions</span>
+          </div>
+          <ExtensionsPanel />
+        </>
+      ) : null}
+      {mode === "debug" ? (
+        <>
+          <div className="sidebar__header">
+            <span className="sidebar__title">Run and Debug</span>
+          </div>
+          <DebugPanel />
+        </>
+      ) : null}
     </aside>
   );
 }

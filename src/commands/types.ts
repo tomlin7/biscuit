@@ -8,6 +8,10 @@ export type CommandContext = {
   findInFile: () => void;
   openSearch: () => void;
   toggleTerminal: () => void;
+  openProblems: () => void;
+  toggleAi: () => void;
+  openExtensions: () => void;
+  openDebug: () => void;
 };
 
 export type Command = {

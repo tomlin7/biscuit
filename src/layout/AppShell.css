@@ -15,6 +15,10 @@
   padding: 0 var(--gap-shell) var(--gap-shell);
 }
 
+.app-shell__workspace--with-ai {
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--ai-width);
+}
+
 .app-shell__main {
   display: flex;
   flex-direction: column;
@@ -113,12 +117,12 @@
 
 .sidebar__mode {
   flex: 1;
-  padding: 6px 8px;
+  padding: 6px 4px;
   border-radius: 6px;
   color: var(--fg-muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
