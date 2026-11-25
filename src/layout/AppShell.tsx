@@ -260,6 +260,13 @@ function ShellChrome() {
       const mod = event.ctrlKey || event.metaKey;
       const key = event.key.toLowerCase();
 
+      if (event.key === "F2") {
+        event.preventDefault();
+        runEditorCommand("rename");
+        clearChord();
+        return;
+      }
+
       if (event.key === "F12") {
         event.preventDefault();
         runEditorCommand(event.shiftKey ? "references" : "definition");

@@ -6,8 +6,8 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
 import { typescript } from "monaco-editor";
-import { readTextFile } from "@tauri-apps/plugin-fs";
-import { referencesAt } from "../lsp/tsLocations";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { referencesAt, renamePlan } from "../lsp/tsLocations";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { defineT3dThemes, monacoThemeId } from "./theme";
@@ -52,6 +52,10 @@ export function MonacoEditor({ path, primary = true }: Props) {
   breakpointsRef.current = breakpoints;
   const pathRef = useRef(doc?.path ?? null);
   pathRef.current = doc?.path ?? null;
+  const tabsRef = useRef(tabs);
+  tabsRef.current = tabs;
+  const setValueAtRef = useRef(setValueAt);
+  setValueAtRef.current = setValueAt;
 
   useEffect(() => {
     if (monacoRef.current) {
@@ -174,6 +178,74 @@ export function MonacoEditor({ path, primary = true }: Props) {
         })().catch((err) => {
           showPeekRef.current({
             title: "References failed",
+            preview: err instanceof Error ? err.message : String(err),
+            path: "",
+            line: 1,
+            column: 1,
+          });
+        });
+      },
+      renameSymbol: () => {
+        void (async () => {
+          const model = editorRef.current?.getModel();
+          const position = editorRef.current?.getPosition();
+          if (!model || !position) return;
+          const offset = model.getOffsetAt(position);
+          const probe = await renamePlan(model, offset, "");
+          if (!probe.ok && probe.message) {
+            showPeekRef.current({
+              title: "Cannot rename",
+              preview: probe.message,
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          const current = probe.ok ? "" : (probe.current ?? "");
+          const next = window.prompt("Rename symbol", current);
+          if (next == null) return;
+          const name = next.trim();
+          if (!name || name === current) return;
+          if (!/^[$A-Za-z_][\w$]*$/.test(name)) {
+            showPeekRef.current({
+              title: "Cannot rename",
+              preview: "Use a single identifier with no spaces.",
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          const plan = await renamePlan(model, offset, name);
+          if (!plan.ok) {
+            showPeekRef.current({
+              title: "Cannot rename",
+              preview: plan.message,
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          for (const file of plan.files) {
+            const key = file.path.replace(/\\/g, "/").toLowerCase();
+            const open = tabsRef.current.find(
+              (tab) => tab.path.replace(/\\/g, "/").toLowerCase() === key,
+            );
+            if (open) setValueAtRef.current(open.path, file.text);
+            else await writeTextFile(file.path, file.text);
+          }
+          showPeekRef.current({
+            title: "Renamed",
+            preview: `Updated ${plan.files.length} file${plan.files.length === 1 ? "" : "s"}. Open files are unsaved until you save them.`,
+            path: "",
+            line: 1,
+            column: 1,
+          });
+        })().catch((err) => {
+          showPeekRef.current({
+            title: "Rename failed",
             preview: err instanceof Error ? err.message : String(err),
             path: "",
             line: 1,

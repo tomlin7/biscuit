@@ -30,6 +30,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.22.0** | Clone a repository into a folder and open it | shipped |
 | **0.23.0** | Peek and go to definition for JavaScript and TypeScript | shipped |
 | **0.24.0** | Find all references for JavaScript and TypeScript | shipped |
+| **0.25.0** | Rename a JavaScript or TypeScript symbol | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -25,7 +25,8 @@ export type CommandContext = {
       | "replace"
       | "peek"
       | "definition"
-      | "references",
+      | "references"
+      | "rename",
   ) => void;
   openSearch: () => void;
   toggleTerminal: () => void;

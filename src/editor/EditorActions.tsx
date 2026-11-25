@@ -31,6 +31,7 @@ type EditorHandle = {
   }) => void;
   lookupDefinition?: (jump: boolean) => void;
   findReferences?: () => void;
+  renameSymbol?: () => void;
 };
 
 export type EditorCommand =
@@ -44,7 +45,8 @@ export type EditorCommand =
   | "replace"
   | "peek"
   | "definition"
-  | "references";
+  | "references"
+  | "rename";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -113,6 +115,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "references":
         handle.findReferences?.();
+        break;
+      case "rename":
+        handle.renameSymbol?.();
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

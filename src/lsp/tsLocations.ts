@@ -65,6 +65,56 @@ export async function tsClient(
   return { client, offset: 0 };
 }
 
+export async function renamePlan(
+  model: monaco.editor.ITextModel,
+  offset: number,
+  nextName: string,
+): Promise<{ ok: true; files: Array<{ path: string; text: string }> } | { ok: false; message: string; current?: string }> {
+  const session = await tsClient(model);
+  if (!session) {
+    return { ok: false, message: "Rename is available for JavaScript and TypeScript." };
+  }
+  const info = await session.client.getRenameInfo(model.uri.toString(), offset, {});
+  if (!info.canRename) {
+    return {
+      ok: false,
+      message: info.localizedErrorMessage || "Cannot rename this symbol.",
+    };
+  }
+  if (!nextName) {
+    return { ok: false, message: "", current: info.displayName ?? "" };
+  }
+  const locations = await session.client.findRenameLocations(
+    model.uri.toString(),
+    offset,
+    false,
+    false,
+    false,
+  );
+  const byFile = new Map<string, Array<{ start: number; length: number }>>();
+  for (const location of locations ?? []) {
+    const start = location.textSpan?.start;
+    const length = location.textSpan?.length;
+    if (!location.fileName || start == null || length == null) continue;
+    const path = fsPathFromTs(location.fileName);
+    const spans = byFile.get(path) ?? [];
+    spans.push({ start, length });
+    byFile.set(path, spans);
+  }
+  if (byFile.size === 0) {
+    return { ok: false, message: "The language service found no rename locations." };
+  }
+  const files: Array<{ path: string; text: string }> = [];
+  for (const [path, spans] of byFile) {
+    let text = await readTextFile(path);
+    for (const span of spans.sort((a, b) => b.start - a.start)) {
+      text = text.slice(0, span.start) + nextName + text.slice(span.start + span.length);
+    }
+    files.push({ path, text });
+  }
+  return { ok: true, files };
+}
+
 export async function referencesAt(
   model: monaco.editor.ITextModel,
   offset: number,

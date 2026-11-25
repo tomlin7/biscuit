@@ -89,6 +89,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("peek"),
   },
   {
+    id: "editor.action.rename",
+    title: "Rename Symbol",
+    category: "Edit",
+    keybinding: "F2",
+    run: (ctx) => ctx.runEditorCommand("rename"),
+  },
+  {
     id: "editor.action.findReferences",
     title: "Find All References",
     category: "Edit",
