@@ -776,4 +776,10 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.cycleRulers(),
   },
+  {
+    id: "editor.action.cycleWordWrapColumn",
+    title: "Cycle Word Wrap Column",
+    category: "Preferences",
+    run: (ctx) => ctx.cycleWordWrapColumn(),
+  },
 ];

@@ -707,6 +707,12 @@ function ShellChrome() {
         const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? "";
         updateEditor({ rulers: next });
       },
+      cycleWordWrapColumn: () => {
+        const order = [80, 100, 120];
+        const idx = order.indexOf(settings.editor.wordWrapColumn);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 80;
+        updateEditor({ wordWrapColumn: next });
+      },
     }),
     [
       openFolder,
@@ -754,6 +760,7 @@ function ShellChrome() {
       settings.editor.terminalFontSize,
       settings.editor.lineNumbers,
       settings.editor.rulers,
+      settings.editor.wordWrapColumn,
       updateEditor,
       clearAttachments,
       clearChat,

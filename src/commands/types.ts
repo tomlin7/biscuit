@@ -129,8 +129,8 @@ export type CommandContext = {
   gitCreateBranch: () => void;
   gitCheckout: () => void;
   cycleRulers: () => void;
- clearLogs: () => void;
-  revealActiveFileInOs: () => void;
+  cycleWordWrapColumn: () => void;
+ revealActiveFileInOs: () => void;
 };
 
 export type Command = {
