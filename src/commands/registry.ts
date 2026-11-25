@@ -998,4 +998,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.focusOutline(),
   },
+  {
+    id: "editor.action.cycleFontFamily",
+    title: "Cycle Editor Font Family",
+    category: "Preferences",
+    run: (ctx) => ctx.cycleFontFamily(),
+  },
 ];

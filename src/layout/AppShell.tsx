@@ -954,6 +954,19 @@ function ShellChrome() {
         setSidebarMode("outline");
         setSidebarOpen(true);
       },
+      cycleFontFamily: () => {
+        const order = [
+          "Cascadia Code, Consolas, Courier New, monospace",
+          "JetBrains Mono, Consolas, monospace",
+          "Fira Code, Consolas, monospace",
+          "Consolas, Courier New, monospace",
+          "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+        ];
+        const current = settings.editor.fontFamily;
+        const idx = order.indexOf(current);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? order[0];
+        updateEditor({ fontFamily: next });
+      },
     }),
     [
       openFolder,
@@ -1002,6 +1015,7 @@ function ShellChrome() {
       settings.editor.lineNumbers,
       settings.editor.rulers,
       settings.editor.wordWrapColumn,
+      settings.editor.fontFamily,
       updateEditor,
       clearAttachments,
       clearChat,

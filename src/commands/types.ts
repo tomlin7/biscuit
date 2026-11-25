@@ -166,6 +166,7 @@ export type CommandContext = {
   focusExtensions: () => void;
   focusDebug: () => void;
   focusOutline: () => void;
+  cycleFontFamily: () => void;
 };
 
 export type Command = {
