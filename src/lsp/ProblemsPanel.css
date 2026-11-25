@@ -5,6 +5,31 @@
   padding: 6px;
 }
 
+.problems-panel__filters {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+.problems-panel__filter {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: var(--font-size-sm);
+  color: var(--fg-muted);
+}
+
+.problems-panel__filter:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
+.problems-panel__filter--active {
+  background: var(--bg-active, var(--bg-hover));
+  color: var(--fg);
+  font-weight: 560;
+}
+
 .problems-panel__empty {
   margin: 10px;
   color: var(--fg-muted);

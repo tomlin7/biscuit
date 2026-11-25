@@ -5,20 +5,28 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { basename } from "../workspace/path";
 import "./ProblemsPanel.css";
 
+type SeverityFilter = "all" | "error" | "warning";
+
 export function ProblemsPanel() {
   const { problems } = useDiagnostics();
   const { openFileAt } = useWorkspace();
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+
+  const filtered = useMemo(() => {
+    if (severityFilter === "all") return problems;
+    return problems.filter((problem) => problem.severity === severityFilter);
+  }, [problems, severityFilter]);
 
   const groups = useMemo(() => {
-    const map = new Map<string, typeof problems>();
-    for (const problem of problems) {
+    const map = new Map<string, typeof filtered>();
+    for (const problem of filtered) {
       const list = map.get(problem.path) ?? [];
       list.push(problem);
       map.set(problem.path, list);
     }
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [problems]);
+  }, [filtered]);
 
   const toggle = (path: string) => {
     setCollapsed((current) => {
@@ -31,8 +39,33 @@ export function ProblemsPanel() {
 
   return (
     <div className="problems-panel">
-      {problems.length === 0 ? (
-        <p className="problems-panel__empty">No problems detected.</p>
+      <div className="problems-panel__filters" role="toolbar" aria-label="Filter by severity">
+        {(
+          [
+            ["all", "All"],
+            ["error", "Errors"],
+            ["warning", "Warnings"],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={
+              severityFilter === value
+                ? "problems-panel__filter problems-panel__filter--active"
+                : "problems-panel__filter"
+            }
+            aria-pressed={severityFilter === value}
+            onClick={() => setSeverityFilter(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {filtered.length === 0 ? (
+        <p className="problems-panel__empty">
+          {problems.length === 0 ? "No problems detected." : "No matching problems."}
+        </p>
       ) : (
         <ul className="problems-panel__list">
           {groups.map(([path, items]) => {
