@@ -62,7 +62,7 @@ export type RegistryExtension = {
   sha256?: string;
 };
 
-type ExtensionsState = {
+export type ExtensionsState = {
   extensions: ExtensionManifest[];
   loading: boolean;
   error: string | null;
@@ -93,7 +93,7 @@ function loadWorkspaceDisabled(): Set<string> {
   }
 }
 
-const ExtensionsContext = createContext<ExtensionsState | null>(null);
+export const ExtensionsContext = createContext<ExtensionsState | null>(null);
 
 export function ExtensionsProvider({ children }: { children: ReactNode }) {
   const { settings } = useSettings();

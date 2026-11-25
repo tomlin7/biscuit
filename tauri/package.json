@@ -8,6 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "extensions:build": "bun scripts/build-extensions.ts"
   },
   "dependencies": {
