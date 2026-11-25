@@ -525,3 +525,177 @@
   gap: 2px;
   flex-shrink: 0;
 }
+
+/* Tags */
+.scm-panel__section--tags {
+  margin-top: 4px;
+}
+
+.scm-panel__tag-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  gap: 6px;
+  border-radius: var(--radius-control);
+  cursor: default;
+}
+
+.scm-panel__tag-row:hover {
+  background: var(--bg-hover);
+}
+
+.scm-panel__tag-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.scm-panel__tag-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.scm-panel__tag-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
+}
+
+.scm-panel__tag-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.scm-panel__tag-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scm-panel__tag-commit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--bg-control);
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+
+.scm-panel__tag-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  flex-shrink: 0;
+}
+
+.scm-panel__tag-details {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--fg-dim);
+}
+
+.scm-panel__tag-message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.scm-panel__tag-date {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.scm-panel__tag-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.scm-panel__tags-empty {
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  color: var(--fg-dim);
+}
+
+.scm-panel__tag-create-form {
+  margin: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-island-elevated);
+}
+
+.scm-panel__tag-create-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--fg);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.scm-panel__tag-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  font-size: var(--font-size-xs);
+  background: var(--bg-input);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  outline: none;
+}
+
+.scm-panel__tag-input:focus {
+  border-color: var(--accent);
+}
+
+.scm-panel__tag-error {
+  margin-top: 2px;
+}
+
+.scm-panel__tag-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.scm-panel__tag-submit-btn {
+  background: var(--accent);
+  color: var(--accent-fg, #fff);
+  border-color: var(--accent);
+}
+
+.scm-panel__tag-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

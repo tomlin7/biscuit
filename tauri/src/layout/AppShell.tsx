@@ -2446,6 +2446,21 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("submoduleSyncAll");
       },
+      gitTagCreate: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("tagCreate");
+      },
+      gitTagDelete: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("tagDelete");
+      },
+      gitTagPush: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("tagPush");
+      },
     }),
     [
       openThemeEditor,

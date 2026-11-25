@@ -1,7 +1,7 @@
 {
   "name": "morsel",
   "private": true,
-  "version": "1.222.0",
+  "version": "1.223.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

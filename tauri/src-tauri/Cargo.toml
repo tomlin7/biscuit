@@ -1,6 +1,6 @@
 [package]
 name = "morsel"
-version = "1.222.0"
+version = "1.223.0"
 description = "Morsel - a code editor that respects your palate (AKA Biscuit-v2)"
 authors = ["Tomlin7 <billydevbusiness@gmail.com>"]
 edition = "2021"

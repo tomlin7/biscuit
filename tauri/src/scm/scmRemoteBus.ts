@@ -27,7 +27,10 @@ export type ScmRemoteAction =
   | "clearCommitMessage"
   | "submoduleUpdateAll"
   | "submoduleInitAll"
-  | "submoduleSyncAll";
+  | "submoduleSyncAll"
+  | "tagCreate"
+  | "tagDelete"
+  | "tagPush";
 
 type Listener = (action: ScmRemoteAction) => void;
 

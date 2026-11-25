@@ -2066,4 +2066,22 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitSubmoduleSyncAll(),
   },
+  {
+    id: "git.tag.create",
+    title: "Git: Create Tag",
+    category: "Git",
+    run: (ctx) => ctx.gitTagCreate(),
+  },
+  {
+    id: "git.tag.delete",
+    title: "Git: Delete Tag",
+    category: "Git",
+    run: (ctx) => ctx.gitTagDelete(),
+  },
+  {
+    id: "git.tag.push",
+    title: "Git: Push Tags",
+    category: "Git",
+    run: (ctx) => ctx.gitTagPush(),
+  },
 ];

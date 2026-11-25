@@ -844,6 +844,186 @@ pub fn git_submodule_sync(root: String, recursive: bool) -> Result<String, Strin
         out
     })
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GitTagInfo {
+    pub name: String,
+    pub commit: String,
+    pub message: Option<String>,
+    pub annotated: bool,
+    pub date: Option<String>,
+}
+
+pub fn valid_tag_name(name: &str) -> Result<&str, String> {
+    let name = name.trim();
+    if name.is_empty()
+        || name.starts_with('-')
+        || name.starts_with('.')
+        || name.ends_with('.')
+        || name.ends_with(".lock")
+        || name.contains(char::is_whitespace)
+        || name.contains('\0')
+        || name.contains('~')
+        || name.contains('^')
+        || name.contains(':')
+        || name.contains('?')
+        || name.contains('*')
+        || name.contains('[')
+        || name.contains('\\')
+        || name.contains("..")
+        || name.contains("@{")
+    {
+        return Err("invalid tag name".into());
+    }
+    Ok(name)
+}
+
+pub fn parse_git_tags_output(output: &str) -> Vec<GitTagInfo> {
+    let mut tags = Vec::new();
+    for line in output.lines() {
+        let trimmed = line.trim_end_matches(['\r', '\n']);
+        if trimmed.trim().is_empty() {
+            continue;
+        }
+        let parts: Vec<&str> = trimmed.split('\0').collect();
+        if parts.is_empty() {
+            continue;
+        }
+        let name = parts[0].trim();
+        if name.is_empty() {
+            continue;
+        }
+        let objecttype = parts.get(1).map(|s| s.trim()).unwrap_or("");
+        let peeled = parts.get(2).map(|s| s.trim()).unwrap_or("");
+        let obj = parts.get(3).map(|s| s.trim()).unwrap_or("");
+        let date_raw = parts.get(4).map(|s| s.trim()).unwrap_or("");
+        let subject_raw = parts.get(5).map(|s| s.trim()).unwrap_or("");
+
+        let annotated = objecttype == "tag";
+        let commit = if !peeled.is_empty() {
+            peeled.to_string()
+        } else {
+            obj.to_string()
+        };
+        let date = if !date_raw.is_empty() {
+            Some(date_raw.to_string())
+        } else {
+            None
+        };
+        let message = if annotated && !subject_raw.is_empty() {
+            Some(subject_raw.to_string())
+        } else {
+            None
+        };
+
+        tags.push(GitTagInfo {
+            name: name.to_string(),
+            commit,
+            message,
+            annotated,
+            date,
+        });
+    }
+    tags
+}
+
+#[tauri::command]
+pub fn git_tags(root: String) -> Result<Vec<GitTagInfo>, String> {
+    let format_arg = "--format=%(refname:strip=2)%00%(objecttype)%00%(*objectname:short)%00%(objectname:short)%00%(creatordate:short)%00%(contents:subject)".to_string();
+    let output = run_git(
+        &root,
+        &[
+            "tag".into(),
+            "-l".into(),
+            "--sort=-creatordate".into(),
+            format_arg,
+        ],
+    )?;
+    Ok(parse_git_tags_output(&output))
+}
+
+#[tauri::command]
+pub fn git_create_tag(
+    root: String,
+    name: String,
+    target: Option<String>,
+    message: Option<String>,
+) -> Result<(), String> {
+    let tag_name = valid_tag_name(&name)?;
+    let mut args = vec!["tag".to_string()];
+    let has_message = message
+        .as_ref()
+        .map(|m| !m.trim().is_empty())
+        .unwrap_or(false);
+
+    if has_message {
+        args.push("-a".into());
+        args.push(tag_name.into());
+        args.push("-m".into());
+        args.push(message.unwrap().trim().to_string());
+    } else {
+        args.push(tag_name.into());
+    }
+
+    if let Some(t) = target {
+        let t_trimmed = t.trim();
+        if !t_trimmed.is_empty() {
+            if t_trimmed.starts_with('-')
+                || t_trimmed.contains(char::is_whitespace)
+                || t_trimmed.contains('\0')
+            {
+                return Err("invalid target commit or ref".into());
+            }
+            args.push(t_trimmed.to_string());
+        }
+    }
+
+    run_git(&root, &args)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_delete_tag(root: String, name: String) -> Result<(), String> {
+    let tag_name = valid_tag_name(&name)?;
+    run_git(&root, &["tag".into(), "-d".into(), tag_name.to_string()])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_push_tags(root: String, remote: Option<String>) -> Result<(), String> {
+    let remote = remote.as_deref().unwrap_or("origin").trim();
+    let remote = if remote.is_empty() { "origin" } else { remote };
+    if remote.starts_with('-') || remote.contains(char::is_whitespace) || remote.contains('\0') {
+        return Err("invalid remote name".into());
+    }
+    run_git(&root, &["push".into(), remote.into(), "--tags".into()])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_delete_remote_tag(
+    root: String,
+    name: String,
+    remote: Option<String>,
+) -> Result<(), String> {
+    let tag_name = valid_tag_name(&name)?;
+    let remote = remote.as_deref().unwrap_or("origin").trim();
+    let remote = if remote.is_empty() { "origin" } else { remote };
+    if remote.starts_with('-') || remote.contains(char::is_whitespace) || remote.contains('\0') {
+        return Err("invalid remote name".into());
+    }
+    run_git(
+        &root,
+        &[
+            "push".into(),
+            remote.into(),
+            "--delete".into(),
+            tag_name.to_string(),
+        ],
+    )?;
+    Ok(())
+}
+
 mod tests {
     use super::normalize_ignore_path;
 
@@ -1087,6 +1267,103 @@ mod tests {
 
         let subs_after = super::git_submodules(parent_str.clone()).expect("git_submodules after update");
         assert_eq!(subs_after[0].status, "up-to-date");
+
+        let _ = std::fs::remove_dir_all(&base_dir);
+    }
+
+    #[test]
+    fn parse_git_tags_format() {
+        let sample = "v2.0.0\0tag\03e28592\0ffc39d0\02026-11-10\0annotated release 2\nv1.0.0\0commit\0\03e28592\02026-11-09\0initial commit\n";
+        let tags = super::parse_git_tags_output(sample);
+        assert_eq!(tags.len(), 2);
+        assert_eq!(tags[0].name, "v2.0.0");
+        assert_eq!(tags[0].commit, "3e28592");
+        assert_eq!(tags[0].annotated, true);
+        assert_eq!(tags[0].message, Some("annotated release 2".into()));
+        assert_eq!(tags[0].date, Some("2026-11-10".into()));
+
+        assert_eq!(tags[1].name, "v1.0.0");
+        assert_eq!(tags[1].commit, "3e28592");
+        assert_eq!(tags[1].annotated, false);
+        assert_eq!(tags[1].message, None);
+        assert_eq!(tags[1].date, Some("2026-11-09".into()));
+    }
+
+    #[test]
+    fn valid_tag_names() {
+        assert!(super::valid_tag_name("v1.0.0").is_ok());
+        assert!(super::valid_tag_name("release-2026.11").is_ok());
+        assert!(super::valid_tag_name("feature/tags").is_ok());
+        assert!(super::valid_tag_name("").is_err());
+        assert!(super::valid_tag_name("-bad").is_err());
+        assert!(super::valid_tag_name("has space").is_err());
+        assert!(super::valid_tag_name("bad~char").is_err());
+        assert!(super::valid_tag_name("bad^char").is_err());
+        assert!(super::valid_tag_name("bad:char").is_err());
+        assert!(super::valid_tag_name("bad..name").is_err());
+        assert!(super::valid_tag_name("bad.lock").is_err());
+    }
+
+    #[test]
+    fn tag_operations_integration() {
+        let base_dir = std::env::temp_dir().join(format!("t3d-tags-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base_dir);
+        std::fs::create_dir_all(&base_dir).unwrap();
+
+        let run_in = |dir: &std::path::Path, args: &[&str]| {
+            let res = std::process::Command::new("git")
+                .args(args)
+                .current_dir(dir)
+                .status()
+                .expect("git execution");
+            assert!(res.success());
+        };
+
+        run_in(&base_dir, &["init"]);
+        run_in(&base_dir, &["config", "user.name", "Tomlin7"]);
+        run_in(&base_dir, &["config", "user.email", "billydevbusiness@gmail.com"]);
+        run_in(&base_dir, &["config", "commit.gpgsign", "false"]);
+        std::fs::write(base_dir.join("file.txt"), "hello world\n").unwrap();
+        run_in(&base_dir, &["add", "file.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "first commit"]);
+        run_in(&base_dir, &["branch", "-M", "main"]);
+
+        let root_str = base_dir.display().to_string();
+
+        // Initially no tags
+        let tags = super::git_tags(root_str.clone()).expect("git_tags empty");
+        assert_eq!(tags.len(), 0);
+
+        // Create lightweight tag
+        super::git_create_tag(root_str.clone(), "v0.1.0".into(), None, None).expect("create lightweight tag");
+
+        // Create annotated tag
+        super::git_create_tag(
+            root_str.clone(),
+            "v0.2.0".into(),
+            Some("HEAD".into()),
+            Some("version 0.2.0 annotation".into()),
+        ).expect("create annotated tag");
+
+        let tags = super::git_tags(root_str.clone()).expect("git_tags with 2 tags");
+        assert_eq!(tags.len(), 2);
+        let t_annotated = tags.iter().find(|t| t.name == "v0.2.0").expect("find v0.2.0");
+        assert!(t_annotated.annotated);
+        assert_eq!(t_annotated.message, Some("version 0.2.0 annotation".into()));
+        assert!(!t_annotated.commit.is_empty());
+        assert!(t_annotated.date.is_some());
+
+        let t_lightweight = tags.iter().find(|t| t.name == "v0.1.0").expect("find v0.1.0");
+        assert!(!t_lightweight.annotated);
+        assert_eq!(t_lightweight.message, None);
+        assert!(!t_lightweight.commit.is_empty());
+        assert!(t_lightweight.date.is_some());
+
+        // Delete tag
+        super::git_delete_tag(root_str.clone(), "v0.1.0".into()).expect("delete tag");
+        let tags_after_delete = super::git_tags(root_str.clone()).expect("git_tags after delete");
+        assert_eq!(tags_after_delete.len(), 1);
+        assert_eq!(tags_after_delete[0].name, "v0.2.0");
 
         let _ = std::fs::remove_dir_all(&base_dir);
     }

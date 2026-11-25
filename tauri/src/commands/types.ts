@@ -334,6 +334,9 @@ export type CommandContext = {
   gitSubmoduleUpdateAll: () => Promise<void> | void;
   gitSubmoduleInitAll: () => Promise<void> | void;
   gitSubmoduleSyncAll: () => Promise<void> | void;
+  gitTagCreate: () => Promise<void> | void;
+  gitTagDelete: () => Promise<void> | void;
+  gitTagPush: () => Promise<void> | void;
 };
 
 export type Command = {

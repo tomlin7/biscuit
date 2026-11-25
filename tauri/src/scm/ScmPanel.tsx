@@ -19,7 +19,10 @@ import {
   Minus,
   Plus,
   RefreshCw,
+  Tag,
+  Trash2,
   Undo2,
+  Copy,
 } from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
@@ -39,6 +42,16 @@ import {
   formatSubmoduleRef,
   type GitSubmoduleInfo,
 } from "./submodules";
+import {
+  fetchGitTags,
+  createGitTag,
+  deleteGitTag,
+  pushGitTags,
+  formatTagCommit,
+  formatTagDate,
+  validateTagName,
+  type GitTagInfo,
+} from "./tags";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
 import { EmptyState } from "../ui/EmptyState";
@@ -81,6 +94,13 @@ export function ScmPanel({ onBranch }: Props) {
   const [summary, setSummary] = useState<GitSummary | null>(null);
   const [submodules, setSubmodules] = useState<GitSubmoduleInfo[]>([]);
   const [submodulesCollapsed, setSubmodulesCollapsed] = useState(false);
+  const [tags, setTags] = useState<GitTagInfo[]>([]);
+  const [tagsCollapsed, setTagsCollapsed] = useState(false);
+  const [showCreateTagDialog, setShowCreateTagDialog] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagTarget, setNewTagTarget] = useState("");
+  const [newTagMessage, setNewTagMessage] = useState("");
+  const [tagError, setTagError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -99,6 +119,7 @@ export function ScmPanel({ onBranch }: Props) {
       setSummary(null);
       setBranches([]);
       setSubmodules([]);
+      setTags([]);
       onBranch(null);
       return;
     }
@@ -130,10 +151,17 @@ export function ScmPanel({ onBranch }: Props) {
       } catch {
         setSubmodules([]);
       }
+      try {
+        const tagList = await fetchGitTags(rootPath);
+        setTags(tagList);
+      } catch {
+        setTags([]);
+      }
     } catch (err) {
       setSummary(null);
       setBranches([]);
       setSubmodules([]);
+      setTags([]);
       setCanAmend(false);
       onBranch(null);
       setError(err instanceof Error ? err.message : String(err));
@@ -314,6 +342,14 @@ export function ScmPanel({ onBranch }: Props) {
         void handleSubmoduleInitAll();
       } else if (action === "submoduleSyncAll") {
         void handleSubmoduleSyncAll();
+      } else if (action === "tagCreate") {
+        setTagsCollapsed(false);
+        setShowCreateTagDialog(true);
+        setTagError(null);
+      } else if (action === "tagDelete") {
+        void handlePromptDeleteTag();
+      } else if (action === "tagPush") {
+        void handlePushTags();
       } else void push();
     });
     return () => setScmRemoteListener(null);
@@ -592,6 +628,186 @@ export function ScmPanel({ onBranch }: Props) {
             size={13}
             disabled={acting}
             onClick={() => handleOpenSubmoduleFolder(sub)}
+          />
+        </div>
+      </li>
+    );
+  };
+
+  const handleCheckoutTag = async (tag: GitTagInfo) => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      await invoke("git_checkout", { cwd: rootPath, branch: tag.name });
+      appendLog(`Checked out tag ${tag.name}`);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Checkout tag failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleDeleteTag = async (tag: GitTagInfo) => {
+    if (!rootPath) return;
+    const ok = window.confirm(`Delete tag "${tag.name}"?`);
+    if (!ok) return;
+    setActing(true);
+    setError(null);
+    try {
+      await deleteGitTag(rootPath, tag.name);
+      appendLog(`Deleted tag ${tag.name}`);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Delete tag failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleCopyTagName = async (tag: GitTagInfo) => {
+    try {
+      await navigator.clipboard.writeText(tag.name);
+      appendLog(`Copied tag "${tag.name}" to clipboard`);
+    } catch (err) {
+      appendLog(`Failed to copy tag name: ${err}`);
+    }
+  };
+
+  const handlePushTags = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      await pushGitTags(rootPath);
+      appendLog("Pushed tags to remote");
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Push tags failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handlePromptDeleteTag = async () => {
+    if (!rootPath) return;
+    const name = window.prompt("Enter tag name to delete:");
+    if (!name || !name.trim()) return;
+    const trimmed = name.trim();
+    const ok = window.confirm(`Delete tag "${trimmed}"?`);
+    if (!ok) return;
+    setActing(true);
+    setError(null);
+    try {
+      await deleteGitTag(rootPath, trimmed);
+      appendLog(`Deleted tag ${trimmed}`);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Delete tag failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleCreateTagSubmit = async () => {
+    if (!rootPath) return;
+    const name = newTagName.trim();
+    const validation = validateTagName(name);
+    if (!validation.valid) {
+      setTagError(validation.error ?? "Invalid tag name");
+      return;
+    }
+    setActing(true);
+    setTagError(null);
+    try {
+      await createGitTag(
+        rootPath,
+        name,
+        newTagTarget.trim() || null,
+        newTagMessage.trim() || null,
+      );
+      appendLog(`Created tag ${name}`);
+      setShowCreateTagDialog(false);
+      setNewTagName("");
+      setNewTagTarget("");
+      setNewTagMessage("");
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setTagError(msg);
+      appendLog(`Create tag failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const renderTagRow = (tag: GitTagInfo) => {
+    const shortCommit = formatTagCommit(tag.commit);
+    const dateFormatted = formatTagDate(tag.date);
+
+    return (
+      <li key={tag.name} className="scm-panel__row scm-panel__tag-row">
+        <div className="scm-panel__tag-main">
+          <Tag size={14} className="scm-panel__tag-icon" />
+          <div className="scm-panel__tag-meta">
+            <div className="scm-panel__tag-title-row">
+              <span className="scm-panel__tag-name" title={tag.name}>
+                {tag.name}
+              </span>
+              <span
+                className="scm-panel__tag-commit"
+                title={`Target commit: ${tag.commit}`}
+              >
+                {shortCommit}
+              </span>
+              {tag.annotated ? (
+                <span className="scm-panel__tag-badge" title="Annotated tag">
+                  annotated
+                </span>
+              ) : null}
+            </div>
+            <div className="scm-panel__tag-details">
+              {tag.message ? (
+                <span className="scm-panel__tag-message" title={tag.message}>
+                  {tag.message}
+                </span>
+              ) : null}
+              {dateFormatted !== "—" ? (
+                <span className="scm-panel__tag-date">{dateFormatted}</span>
+              ) : null}
+            </div>
+          </div>
+        </div>
+        <div className="scm-panel__row-actions scm-panel__tag-actions">
+          <IconButton
+            icon={GitBranch}
+            label={`Checkout tag ${tag.name}`}
+            size={13}
+            disabled={acting}
+            onClick={() => void handleCheckoutTag(tag)}
+          />
+          <IconButton
+            icon={Copy}
+            label="Copy tag name"
+            size={13}
+            disabled={acting}
+            onClick={() => void handleCopyTagName(tag)}
+          />
+          <IconButton
+            icon={Trash2}
+            label={`Delete tag ${tag.name}`}
+            size={13}
+            disabled={acting}
+            onClick={() => void handleDeleteTag(tag)}
           />
         </div>
       </li>
@@ -1014,6 +1230,121 @@ export function ScmPanel({ onBranch }: Props) {
               <ul className="scm-panel__list scm-panel__list--submodules">
                 {submodules.map((sub) => renderSubmoduleRow(sub))}
               </ul>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* Tags Section */}
+        {summary ? (
+          <div className="scm-panel__section scm-panel__section--tags">
+            <div className="scm-panel__section-header">
+              <button
+                type="button"
+                className="scm-panel__section-toggle"
+                onClick={() => setTagsCollapsed((v) => !v)}
+              >
+                {tagsCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                <span>Tags</span>
+                <span className="scm-panel__badge">{tags.length}</span>
+              </button>
+              <div className="scm-panel__section-actions">
+                <IconButton
+                  icon={Plus}
+                  label="Create Tag"
+                  size={13}
+                  disabled={acting}
+                  onClick={() => {
+                    setTagsCollapsed(false);
+                    setShowCreateTagDialog((v) => !v);
+                    setTagError(null);
+                  }}
+                />
+                <IconButton
+                  icon={ArrowUp}
+                  label="Push Tags"
+                  size={13}
+                  disabled={acting}
+                  onClick={() => void handlePushTags()}
+                />
+              </div>
+            </div>
+
+            {!tagsCollapsed ? (
+              <div className="scm-panel__tags-content">
+                {showCreateTagDialog ? (
+                  <div className="scm-panel__tag-create-form island">
+                    <div className="scm-panel__tag-create-title">Create New Tag</div>
+                    <input
+                      type="text"
+                      className="scm-panel__tag-input"
+                      placeholder="Tag name (e.g. v1.0.0)"
+                      value={newTagName}
+                      autoFocus
+                      onChange={(e) => {
+                        setNewTagName(e.target.value);
+                        if (tagError) setTagError(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") void handleCreateTagSubmit();
+                        if (e.key === "Escape") setShowCreateTagDialog(false);
+                      }}
+                    />
+                    <input
+                      type="text"
+                      className="scm-panel__tag-input"
+                      placeholder="Target commit (optional, defaults to HEAD)"
+                      value={newTagTarget}
+                      onChange={(e) => setNewTagTarget(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") void handleCreateTagSubmit();
+                        if (e.key === "Escape") setShowCreateTagDialog(false);
+                      }}
+                    />
+                    <input
+                      type="text"
+                      className="scm-panel__tag-input"
+                      placeholder="Annotation message (optional)"
+                      value={newTagMessage}
+                      onChange={(e) => setNewTagMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") void handleCreateTagSubmit();
+                        if (e.key === "Escape") setShowCreateTagDialog(false);
+                      }}
+                    />
+                    {tagError ? (
+                      <div className="scm-panel__error scm-panel__tag-error">{tagError}</div>
+                    ) : null}
+                    <div className="scm-panel__tag-form-actions">
+                      <button
+                        type="button"
+                        className="scm-panel__batch-btn scm-panel__tag-submit-btn"
+                        disabled={acting || !newTagName.trim()}
+                        onClick={() => void handleCreateTagSubmit()}
+                      >
+                        Create
+                      </button>
+                      <button
+                        type="button"
+                        className="scm-panel__batch-btn"
+                        onClick={() => {
+                          setShowCreateTagDialog(false);
+                          setTagError(null);
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+
+                {tags.length === 0 && !showCreateTagDialog ? (
+                  <div className="scm-panel__tags-empty">No tags found. Click + to create one.</div>
+                ) : (
+                  <ul className="scm-panel__list scm-panel__list--tags">
+                    {tags.map((tag) => renderTagRow(tag))}
+                  </ul>
+                )}
+              </div>
             ) : null}
           </div>
         ) : null}
