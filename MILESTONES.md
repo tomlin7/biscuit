@@ -410,6 +410,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.402.0** | Open next editor from palette | shipped |
 | **0.403.0** | Open previous editor from palette | shipped |
 | **0.404.0** | Toggle auto save from palette | shipped |
+| **0.405.0** | Search Google from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

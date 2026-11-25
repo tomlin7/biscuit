@@ -101,6 +101,7 @@ function ShellChrome() {
     deleteEntry,
     setLanguageAt,
     activateTab,
+    selectionText,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1649,6 +1650,19 @@ function ShellChrome() {
         updateEditor({ autoSaveMs: next });
         notify("Auto Save", next > 0 ? `On (${next} ms)` : "Off");
       },
+      searchGoogle: () => {
+        const selected = selectionText.trim();
+        const query =
+          selected ||
+          window.prompt("Search Google for:")?.trim() ||
+          "";
+        if (!query) return;
+        void openUrl(
+          `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+        ).catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,
@@ -1800,6 +1814,7 @@ function ShellChrome() {
       sidebarOpen,
       aiOpen,
       activateTab,
+      selectionText,
     ],
   );
 

@@ -173,7 +173,12 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.toggleAutoSave(),
   },
-
+  {
+    id: "workbench.action.searchGoogle",
+    title: "Search Google",
+    category: "Help",
+    run: (ctx) => ctx.searchGoogle(),
+  },
   {
     id: "workbench.action.pinEditor",
     title: "Pin Active Editor",

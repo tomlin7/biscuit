@@ -270,6 +270,7 @@ export type CommandContext = {
   openNextEditor: () => void;
   openPreviousEditor: () => void;
   toggleAutoSave: () => void;
+  searchGoogle: () => void;
 };
 
 export type Command = {
