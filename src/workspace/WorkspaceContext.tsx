@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -9,7 +10,7 @@ import {
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { exists, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { listDirectory, type TreeNode } from "./fsTree";
 import {
   basename,
@@ -20,6 +21,7 @@ import {
   parentPath,
 } from "./path";
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
+import { readSession, writeSession } from "./session";
 
 export type EditorTab = {
   path: string;
@@ -151,6 +153,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const sessionReady = useRef(false);
+
   const openFolder = useCallback(async () => {
     const selected = await open({
       directory: true,
@@ -252,6 +256,45 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setBusy(false);
     }
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const session = readSession();
+      try {
+        if (session && (await exists(session.root))) {
+          await openFolderAt(session.root);
+          if (cancelled) return;
+          for (const path of session.tabs) {
+            if (await exists(path)) await openFile(path);
+          }
+          if (!cancelled && session.active && (await exists(session.active))) {
+            setActivePath(session.active);
+          }
+        }
+      } catch {
+        /* keep the empty window if the last folder is gone */
+      } finally {
+        if (!cancelled) sessionReady.current = true;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [openFolderAt, openFile]);
+
+  useEffect(() => {
+    if (!sessionReady.current) return;
+    if (!rootPath) {
+      writeSession(null);
+      return;
+    }
+    writeSession({
+      root: rootPath,
+      tabs: tabs.map((tab) => tab.path),
+      active: activePath,
+    });
+  }, [rootPath, tabs, activePath]);
 
   const openFileAt = useCallback(
     async (path: string, line: number, column: number) => {
