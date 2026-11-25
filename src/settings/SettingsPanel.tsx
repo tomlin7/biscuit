@@ -114,6 +114,16 @@ export function SettingsPanel({ open, onClose }: Props) {
               />
             </label>
             <label className="settings-row settings-row--check">
+              <span>Insert final newline on save</span>
+              <input
+                type="checkbox"
+                checked={settings.editor.insertFinalNewline}
+                onChange={(e) =>
+                  updateEditor({ insertFinalNewline: e.target.checked })
+                }
+              />
+            </label>
+            <label className="settings-row settings-row--check">
               <span>Minimap</span>
               <input
                 type="checkbox"

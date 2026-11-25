@@ -25,7 +25,7 @@ import {
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
 import { readSession, writeSession } from "./session";
 import { applyEditorConfigText, editorConfigFor, type ResolvedEditorConfig } from "../editor/editorconfig";
-import { readTrimTrailingWhitespaceSetting } from "../settings/SettingsContext";
+import { readInsertFinalNewlineSetting, readTrimTrailingWhitespaceSetting } from "../settings/SettingsContext";
 import { appendLog } from "../logs/logBus";
 
 async function textForSave(
@@ -37,6 +37,9 @@ async function textForSave(
   const next: ResolvedEditorConfig = { ...config };
   if (readTrimTrailingWhitespaceSetting() && next.trimTrailingWhitespace == null) {
     next.trimTrailingWhitespace = true;
+  }
+  if (readInsertFinalNewlineSetting() && next.insertFinalNewline == null) {
+    next.insertFinalNewline = true;
   }
   return applyEditorConfigText(value, next);
 }

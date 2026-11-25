@@ -18,6 +18,8 @@ export type EditorSettings = {
   rulers: string;
   /** Trim trailing whitespace on save even without EditorConfig. */
   trimTrailingWhitespace: boolean;
+  /** Insert a final newline on save when EditorConfig is silent. */
+  insertFinalNewline: boolean;
   minimap: boolean;
   lineNumbers: boolean;
   stickyScroll: boolean;
@@ -45,6 +47,7 @@ const DEFAULTS: AppSettings = {
     wordWrapColumn: 80,
     rulers: "",
     trimTrailingWhitespace: false,
+    insertFinalNewline: false,
     minimap: true,
     lineNumbers: true,
     stickyScroll: true,
@@ -70,6 +73,10 @@ function load(): AppSettings {
 /** Non-hook read for save paths outside SettingsProvider. */
 export function readTrimTrailingWhitespaceSetting(): boolean {
   return load().editor.trimTrailingWhitespace === true;
+}
+
+export function readInsertFinalNewlineSetting(): boolean {
+  return load().editor.insertFinalNewline === true;
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
