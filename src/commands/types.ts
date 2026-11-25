@@ -230,6 +230,7 @@ export type CommandContext = {
   stopDebugging: () => void;
   restartDebugging: () => void;
   stepOverDebugging: () => void;
+  stepIntoDebugging: () => void;
 };
 
 export type Command = {

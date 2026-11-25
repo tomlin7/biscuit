@@ -1386,4 +1386,11 @@ export const COMMANDS: Command[] = [
     keybinding: "F10",
     run: (ctx) => ctx.stepOverDebugging(),
   },
+  {
+    id: "workbench.action.debug.stepInto",
+    title: "Step Into in Debugger",
+    category: "Debug",
+    keybinding: "F11",
+    run: (ctx) => ctx.stepIntoDebugging(),
+  },
 ];
