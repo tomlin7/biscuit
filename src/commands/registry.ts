@@ -770,4 +770,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCheckout(),
   },
+  {
+    id: "editor.action.cycleRulers",
+    title: "Cycle Editor Rulers",
+    category: "Preferences",
+    run: (ctx) => ctx.cycleRulers(),
+  },
 ];

@@ -700,6 +700,13 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("checkout");
       },
+      cycleRulers: () => {
+        const order = ["", "80", "100", "120"];
+        const current = settings.editor.rulers.trim();
+        const idx = order.indexOf(current);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? "";
+        updateEditor({ rulers: next });
+      },
     }),
     [
       openFolder,
@@ -746,6 +753,7 @@ function ShellChrome() {
       settings.editor.tabSize,
       settings.editor.terminalFontSize,
       settings.editor.lineNumbers,
+      settings.editor.rulers,
       updateEditor,
       clearAttachments,
       clearChat,

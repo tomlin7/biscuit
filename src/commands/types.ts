@@ -128,8 +128,9 @@ export type CommandContext = {
   duplicateEditorToSide: () => void;
   gitCreateBranch: () => void;
   gitCheckout: () => void;
- cycleWordWrapColumn: () => void;
- revealActiveFileInOs: () => void;
+  cycleRulers: () => void;
+ clearLogs: () => void;
+  revealActiveFileInOs: () => void;
 };
 
 export type Command = {
