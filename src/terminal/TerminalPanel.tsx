@@ -143,6 +143,11 @@ function TerminalSession({
           return false;
         }
       }
+      if (event.key.toLowerCase() === "a") {
+        term.selectAll();
+        event.preventDefault();
+        return false;
+      }
       if (event.key.toLowerCase() === "v") {
         void navigator.clipboard.readText().then((text) => {
           if (!text) return;
