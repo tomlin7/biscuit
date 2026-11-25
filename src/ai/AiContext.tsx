@@ -47,6 +47,8 @@ type AiSettings = {
   temperature: number | null;
   /** Optional custom system prompt prepended to each request. */
   systemPrompt: string;
+  /** Null uses the provider default. */
+  maxTokens: number | null;
 };
 
 type AiState = {
@@ -89,6 +91,7 @@ function defaultSettings(): AiSettings {
     effort: "high",
     temperature: null,
     systemPrompt: "",
+    maxTokens: null,
   };
 }
 
@@ -405,6 +408,9 @@ export function AiProvider({ children }: { children: ReactNode }) {
                   tools: agentToolSchema,
                   ...(typeof settings.temperature === "number"
                     ? { temperature: settings.temperature }
+                    : {}),
+                  ...(typeof settings.maxTokens === "number"
+                    ? { max_tokens: settings.maxTokens }
                     : {}),
                 }),
                 signal: controller.signal,

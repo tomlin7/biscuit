@@ -244,6 +244,27 @@ export function SettingsPanel({ open, onClose }: Props) {
                 placeholder="Optional instructions for every chat…"
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Max tokens</span>
+              <input
+                type="number"
+                min={1}
+                step={1}
+                placeholder="default"
+                value={ai.maxTokens ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  if (!raw) {
+                    setAi({ maxTokens: null });
+                    return;
+                  }
+                  const next = Number(raw);
+                  if (Number.isFinite(next) && next > 0) {
+                    setAi({ maxTokens: Math.floor(next) });
+                  }
+                }}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",
