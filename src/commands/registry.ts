@@ -296,7 +296,13 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+L",
     run: (ctx) => ctx.runEditorCommand("selectLine"),
   },
-
+  {
+    id: "editor.action.deleteLines",
+    title: "Delete Line",
+    category: "Edit",
+    keybinding: "Ctrl+Shift+K",
+    run: (ctx) => ctx.runEditorCommand("deleteLine"),
+  },
   {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
