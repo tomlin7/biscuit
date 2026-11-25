@@ -36,4 +36,18 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+K Ctrl+T",
     run: (ctx) => ctx.toggleTheme(),
   },
+  {
+    id: "actions.find",
+    title: "Find in File",
+    category: "Edit",
+    keybinding: "Ctrl+F",
+    run: (ctx) => ctx.findInFile(),
+  },
+  {
+    id: "workbench.action.findInFiles",
+    title: "Search in Workspace",
+    category: "Edit",
+    keybinding: "Ctrl+Shift+F",
+    run: (ctx) => ctx.openSearch(),
+  },
 ];

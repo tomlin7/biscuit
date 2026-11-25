@@ -3,12 +3,20 @@ import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditorNS } from "monaco-editor";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
+import { useEditorActions } from "./EditorActions";
 import { defineT3dThemes, monacoThemeId } from "./theme";
 import "./MonacoEditor.css";
 
 export function MonacoEditor() {
-  const { document, setValue, setCursor } = useWorkspace();
+  const {
+    document,
+    setValue,
+    setCursor,
+    revealTarget,
+    clearRevealTarget,
+  } = useWorkspace();
   const { theme } = useTheme();
+  const { registerFindHandler } = useEditorActions();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
 
@@ -17,6 +25,33 @@ export function MonacoEditor() {
       monacoRef.current.editor.setTheme(monacoThemeId(theme));
     }
   }, [theme]);
+
+  useEffect(() => {
+    registerFindHandler(() => {
+      const ed = editorRef.current;
+      if (!ed) return;
+      void ed.getAction("actions.find")?.run();
+    });
+    return () => registerFindHandler(null);
+  }, [registerFindHandler]);
+
+  useEffect(() => {
+    if (!revealTarget || !document || revealTarget.path !== document.path) {
+      return;
+    }
+    const ed = editorRef.current;
+    if (!ed) return;
+    ed.revealPositionInCenter({
+      lineNumber: revealTarget.line,
+      column: revealTarget.column,
+    });
+    ed.setPosition({
+      lineNumber: revealTarget.line,
+      column: revealTarget.column,
+    });
+    ed.focus();
+    clearRevealTarget();
+  }, [revealTarget, document, clearRevealTarget]);
 
   if (!document) return null;
 
@@ -40,6 +75,18 @@ export function MonacoEditor() {
 
     syncCursor();
     ed.onDidChangeCursorPosition(syncCursor);
+
+    if (revealTarget && revealTarget.path === document.path) {
+      ed.revealPositionInCenter({
+        lineNumber: revealTarget.line,
+        column: revealTarget.column,
+      });
+      ed.setPosition({
+        lineNumber: revealTarget.line,
+        column: revealTarget.column,
+      });
+      clearRevealTarget();
+    }
   };
 
   return (

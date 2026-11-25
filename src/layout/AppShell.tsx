@@ -2,25 +2,27 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import "./AppShell.css";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
+import {
+  EditorActionsProvider,
+  useEditorActions,
+} from "../editor/EditorActions";
 import { CommandPalette } from "../commands/CommandPalette";
 import type { CommandContext } from "../commands/types";
 import { TitleBar } from "./TitleBar";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
 import { StatusBar } from "./StatusBar";
 
 function ShellChrome() {
-  const {
-    save,
-    closeTab,
-    activePath,
-    openFolder,
-  } = useWorkspace();
+  const { save, closeTab, activePath, openFolder } = useWorkspace();
   const { toggleTheme } = useTheme();
+  const { findInFile } = useEditorActions();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
 
   const openPalette = useCallback(() => setPaletteOpen(true), []);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
+  const openSearch = useCallback(() => setSidebarMode("search"), []);
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -32,6 +34,8 @@ function ShellChrome() {
       toggleTheme,
       openPalette,
       closePalette,
+      findInFile,
+      openSearch,
     }),
     [
       openFolder,
@@ -41,6 +45,8 @@ function ShellChrome() {
       toggleTheme,
       openPalette,
       closePalette,
+      findInFile,
+      openSearch,
     ],
   );
 
@@ -67,6 +73,20 @@ function ShellChrome() {
       if (mod && event.shiftKey && key === "p") {
         event.preventDefault();
         openPalette();
+        clearChord();
+        return;
+      }
+
+      if (mod && event.shiftKey && key === "f") {
+        event.preventDefault();
+        openSearch();
+        clearChord();
+        return;
+      }
+
+      if (mod && key === "f" && !event.shiftKey) {
+        event.preventDefault();
+        findInFile();
         clearChord();
         return;
       }
@@ -119,6 +139,8 @@ function ShellChrome() {
     paletteOpen,
     closePalette,
     openPalette,
+    openSearch,
+    findInFile,
     save,
     activePath,
     closeTab,
@@ -130,7 +152,7 @@ function ShellChrome() {
     <div className="app-shell">
       <TitleBar onOpenPalette={openPalette} />
       <div className="app-shell__workspace">
-        <Sidebar />
+        <Sidebar mode={sidebarMode} onModeChange={setSidebarMode} />
         <EditorArea />
       </div>
       <StatusBar />
@@ -146,7 +168,9 @@ function ShellChrome() {
 export function AppShell() {
   return (
     <WorkspaceProvider>
-      <ShellChrome />
+      <EditorActionsProvider>
+        <ShellChrome />
+      </EditorActionsProvider>
     </WorkspaceProvider>
   );
 }

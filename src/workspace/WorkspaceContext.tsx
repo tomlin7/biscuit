@@ -22,6 +22,13 @@ export type EditorTab = {
   cursorColumn: number;
 };
 
+export type RevealTarget = {
+  path: string;
+  line: number;
+  column: number;
+  token: number;
+};
+
 export type WorkspaceState = {
   rootPath: string | null;
   rootName: string | null;
@@ -35,14 +42,17 @@ export type WorkspaceState = {
   dirty: boolean;
   cursorLine: number;
   cursorColumn: number;
+  revealTarget: RevealTarget | null;
   openFolder: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
+  openFileAt: (path: string, line: number, column: number) => Promise<void>;
   activateTab: (path: string) => void;
   closeTab: (path: string) => void;
   moveTab: (fromPath: string, toPath: string) => void;
   setValue: (value: string) => void;
   setCursor: (line: number, column: number) => void;
+  clearRevealTarget: () => void;
   save: () => Promise<void>;
 };
 
@@ -77,6 +87,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [tabs, setTabs] = useState<EditorTab[]>([]);
   const [activePath, setActivePath] = useState<string | null>(null);
+  const [revealTarget, setRevealTarget] = useState<RevealTarget | null>(null);
+  const revealToken = useRef(0);
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
   const activePathRef = useRef(activePath);
@@ -201,6 +213,24 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const openFileAt = useCallback(
+    async (path: string, line: number, column: number) => {
+      await openFile(path);
+      revealToken.current += 1;
+      setRevealTarget({
+        path,
+        line,
+        column,
+        token: revealToken.current,
+      });
+    },
+    [openFile],
+  );
+
+  const clearRevealTarget = useCallback(() => {
+    setRevealTarget(null);
+  }, []);
+
   const activateTab = useCallback((path: string) => {
     setActivePath(path);
   }, []);
@@ -297,14 +327,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       dirty: document ? isDirty(document) : false,
       cursorLine: document?.cursorLine ?? 1,
       cursorColumn: document?.cursorColumn ?? 1,
+      revealTarget,
       openFolder,
       toggleDirectory,
       openFile,
+      openFileAt,
       activateTab,
       closeTab,
       moveTab,
       setValue,
       setCursor,
+      clearRevealTarget,
       save,
     }),
     [
@@ -316,14 +349,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       tabs,
       activePath,
       document,
+      revealTarget,
       openFolder,
       toggleDirectory,
       openFile,
+      openFileAt,
       activateTab,
       closeTab,
       moveTab,
       setValue,
       setCursor,
+      clearRevealTarget,
       save,
     ],
   );

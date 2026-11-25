@@ -5,13 +5,14 @@ export type CommandContext = {
   toggleTheme: () => void;
   openPalette: () => void;
   closePalette: () => void;
+  findInFile: () => void;
+  openSearch: () => void;
 };
 
 export type Command = {
   id: string;
   title: string;
   category?: string;
-  /** Display chord, e.g. "Ctrl+S" */
   keybinding?: string;
   when?: (ctx: CommandContext) => boolean;
   run: (ctx: CommandContext) => void | Promise<void>;
