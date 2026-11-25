@@ -54,7 +54,7 @@ function TreeRows({
   onMenu: (event: MouseEvent, node: TreeNode) => void;
   workspaceRoots: string[];
 }) {
-  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry, collapseExplorerUnder, reloadDirectory } = useWorkspace();
+  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry, collapseExplorerUnder, reloadDirectory, addFolderRootPath } = useWorkspace();
 
   const copyAbsolute = (path: string) => {
     void navigator.clipboard.writeText(path);
@@ -94,6 +94,15 @@ function TreeRows({
                   if (event.key === "F5") {
                     event.preventDefault();
                     void reloadDirectory(node.path);
+                    return;
+                  }
+                  if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.shiftKey &&
+                    event.key.toLowerCase() === "a"
+                  ) {
+                    event.preventDefault();
+                    void addFolderRootPath(node.path);
                     return;
                   }
                   if (event.key === "Delete" || event.key === "Backspace") {
@@ -352,6 +361,19 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
             >
               Rename
             </button>
+            {menu.kind === "directory" ? (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  const path = menu.path;
+                  setMenu(null);
+                  void addFolderRootPath(path);
+                }}
+              >
+                Add Folder to Workspace
+              </button>
+            ) : null}
             <button
               type="button"
               role="menuitem"

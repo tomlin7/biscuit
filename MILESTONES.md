@@ -224,6 +224,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.216.0** | SCM force-delete unmerged branch | shipped |
 | **0.217.0** | Focus next or previous terminal | shipped |
 | **0.218.0** | Clear AI attachments from palette | shipped |
+| **0.219.0** | Add explorer folder as workspace root | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
