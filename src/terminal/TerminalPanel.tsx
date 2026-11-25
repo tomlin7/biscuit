@@ -15,18 +15,27 @@ type Props = {
 
 type ShellChoice = "" | "powershell" | "cmd" | "bash";
 
+type TerminalControl = {
+  kill: () => Promise<void>;
+  restart: () => Promise<void>;
+  clear: () => void;
+};
+
 type SessionProps = {
   active: boolean;
   cwd: string | null;
   theme: "light" | "dark";
   shell: ShellChoice;
+  onControl: (control: TerminalControl | null) => void;
 };
 
-function TerminalSession({ active, cwd, theme, shell }: SessionProps) {
+function TerminalSession({ active, cwd, theme, shell, onControl }: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
   const ptyIdRef = useRef<string | null>(null);
+  const onControlRef = useRef(onControl);
+  onControlRef.current = onControl;
 
   useEffect(() => {
     if (!hostRef.current || termRef.current) return;
@@ -59,44 +68,68 @@ function TerminalSession({ active, cwd, theme, shell }: SessionProps) {
     let unlistenExit: (() => void) | undefined;
     let disposed = false;
 
-    const start = async () => {
-      const id = await invoke<string>("pty_spawn", {
-        cwd,
-        cols: term.cols,
-        rows: term.rows,
-        shell: shell || null,
-      });
-      if (disposed) {
-        await invoke("pty_kill", { id });
-        return;
-      }
-      ptyIdRef.current = id;
-
-      unlistenData = await listen<{ id: string; data: string }>("pty-data", (event) => {
-        if (event.payload.id === id) term.write(event.payload.data);
-      });
-      unlistenExit = await listen<{ id: string }>("pty-exit", (event) => {
-        if (event.payload.id === id) {
-          term.writeln("\r\n[process exited]");
-          ptyIdRef.current = null;
+    const spawn = async () => {
+      try {
+        const id = await invoke<string>("pty_spawn", {
+          cwd,
+          cols: term.cols,
+          rows: term.rows,
+          shell: shell || null,
+        });
+        if (disposed) {
+          await invoke("pty_kill", { id });
+          return;
         }
-      });
-
-      term.onData((data) => {
-        const current = ptyIdRef.current;
-        if (!current) return;
-        void invoke("pty_write", { id: current, data });
-      });
-      term.onResize(({ cols, rows }) => {
-        const current = ptyIdRef.current;
-        if (!current) return;
-        void invoke("pty_resize", { id: current, cols, rows });
-      });
+        ptyIdRef.current = id;
+      } catch (err) {
+        term.writeln(`Failed to start terminal: ${String(err)}`);
+      }
     };
 
-    void start().catch((err) => {
-      term.writeln(`Failed to start terminal: ${String(err)}`);
+    term.onData((data) => {
+      const current = ptyIdRef.current;
+      if (!current) return;
+      void invoke("pty_write", { id: current, data });
     });
+    term.onResize(({ cols, rows }) => {
+      const current = ptyIdRef.current;
+      if (!current) return;
+      void invoke("pty_resize", { id: current, cols, rows });
+    });
+
+    void listen<{ id: string; data: string }>("pty-data", (event) => {
+      if (event.payload.id === ptyIdRef.current) term.write(event.payload.data);
+    }).then((stop) => {
+      if (disposed) stop();
+      else unlistenData = stop;
+    });
+    void listen<{ id: string }>("pty-exit", (event) => {
+      if (event.payload.id !== ptyIdRef.current) return;
+      term.writeln("\r\n[process exited]");
+      ptyIdRef.current = null;
+    }).then((stop) => {
+      if (disposed) stop();
+      else unlistenExit = stop;
+    });
+
+    onControlRef.current({
+      kill: async () => {
+        const id = ptyIdRef.current;
+        if (!id) return;
+        await invoke("pty_kill", { id });
+      },
+      restart: async () => {
+        const old = ptyIdRef.current;
+        ptyIdRef.current = null;
+        if (old) await invoke("pty_kill", { id: old });
+        await spawn();
+      },
+      clear: () => {
+        term.clear();
+      },
+    });
+
+    void spawn();
 
     const observer = new ResizeObserver(() => {
       fit.fit();
@@ -116,6 +149,7 @@ function TerminalSession({ active, cwd, theme, shell }: SessionProps) {
       term.dispose();
       termRef.current = null;
       fitRef.current = null;
+      onControlRef.current(null);
     };
     // One shell per session. A new tab creates a new session.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,6 +192,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   ]);
   const [activeId, setActiveId] = useState(sessions[0].id);
   const [nextShell, setNextShell] = useState<ShellChoice>("");
+  const controls = useRef(new Map<number, TerminalControl>());
 
   const addSession = () => {
     nextSession += 1;
@@ -209,6 +244,27 @@ export function TerminalPanel({ open, embedded = false }: Props) {
             </button>
           </span>
         ))}
+        <button
+          type="button"
+          className="terminal-panel__session-add"
+          onClick={() => void controls.current.get(activeId)?.kill()}
+        >
+          Kill
+        </button>
+        <button
+          type="button"
+          className="terminal-panel__session-add"
+          onClick={() => void controls.current.get(activeId)?.restart()}
+        >
+          Restart
+        </button>
+        <button
+          type="button"
+          className="terminal-panel__session-add"
+          onClick={() => controls.current.get(activeId)?.clear()}
+        >
+          Clear
+        </button>
         <label className="terminal-panel__shell">
           <span className="terminal-panel__shell-label">New shell</span>
           <select
@@ -242,6 +298,10 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               cwd={rootPath}
               theme={theme}
               shell={session.shell}
+              onControl={(control) => {
+                if (control) controls.current.set(session.id, control);
+                else controls.current.delete(session.id);
+              }}
             />
           </div>
         ))}
