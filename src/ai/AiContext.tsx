@@ -55,6 +55,7 @@ type AiState = {
   setSettings: (next: Partial<AiSettings>) => void;
   send: (prompt: string) => Promise<string | null>;
   stop: () => void;
+  regenerate: () => Promise<string | null>;
   newChat: () => void;
   selectSession: (id: string) => void;
   deleteSession: (id: string) => void;
@@ -145,6 +146,8 @@ export function AiProvider({ children }: { children: ReactNode }) {
   const active =
     sessions.find((s) => s.id === activeSessionId) ?? sessions[0] ?? emptySession();
   const messages = active.messages;
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
 
   useEffect(() => {
     try {
@@ -311,7 +314,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
           return assistant.content;
         }
 
-        const history = [...messages, userMsg].map((m) => ({
+        const history = [...messagesRef.current, userMsg].map((m) => ({
           role: m.role,
           content: m.content,
         }));
@@ -442,7 +445,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
         setBusy(false);
       }
     },
-    [attachments, busy, messages, patchActive, settings],
+    [attachments, busy, patchActive, settings],
   );
 
   const stop = useCallback(() => {
@@ -450,6 +453,28 @@ export function AiProvider({ children }: { children: ReactNode }) {
     abortRef.current = null;
     setBusy(false);
   }, []);
+
+  const regenerate = useCallback(async () => {
+    if (busy) return null;
+    const msgs = messagesRef.current;
+    let lastUser = -1;
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (msgs[i].role === "user") {
+        lastUser = i;
+        break;
+      }
+    }
+    if (lastUser < 0) return null;
+    const prompt = msgs[lastUser].content;
+    const prior = msgs.slice(0, lastUser);
+    messagesRef.current = prior;
+    patchActive((session) => ({
+      ...session,
+      messages: prior,
+      updatedAt: Date.now(),
+    }));
+    return send(prompt);
+  }, [busy, patchActive, send]);
 
   const exportSession = useCallback(() => {
     const payload = {
@@ -524,6 +549,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       setSettings,
       send,
       stop,
+      regenerate,
       newChat,
       selectSession,
       deleteSession,
@@ -546,6 +572,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       setSettings,
       send,
       stop,
+      regenerate,
       newChat,
       selectSession,
       deleteSession,

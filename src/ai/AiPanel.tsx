@@ -9,6 +9,7 @@ import {
   Flame,
   Mic,
   Plus,
+  RefreshCw,
   Search,
   Settings2,
   Sparkles,
@@ -44,6 +45,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     setShowHistory,
     send,
     stop,
+    regenerate,
     newChat,
     selectSession,
     deleteSession,
@@ -121,6 +123,10 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     };
     rec.start();
   };
+
+  const canRegenerate = useMemo(() => {
+    return messages.some((m) => m.role === "user") && !busy;
+  }, [messages, busy]);
 
   const filteredHistory = useMemo(() => {
     return [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
@@ -383,6 +389,13 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
                   if (!document) return;
                   attachPath(document.path, document.title, document.value.slice(0, 12000));
                 }}
+              />
+              <IconButton
+                icon={RefreshCw}
+                label="Regenerate"
+                size={14}
+                disabled={!canRegenerate}
+                onClick={() => void regenerate()}
               />
               <IconButton
                 icon={Mic}
