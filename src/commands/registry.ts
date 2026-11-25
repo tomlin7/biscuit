@@ -1809,12 +1809,6 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.showRunConfigurations(),
   },
   {
-    id: "editor.action.toggleVimMode",
-    title: "Toggle Vim Mode",
-    category: "View",
-    run: (ctx) => ctx.toggleVimMode(),
-  },
-  {
     id: "workbench.action.editor.changeEncoding",
     title: "Change File Encoding",
     category: "File",

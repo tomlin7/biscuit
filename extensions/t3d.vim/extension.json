@@ -1,0 +1,21 @@
+{
+  "id": "t3d.vim",
+  "name": "Vim Mode",
+  "version": "1.0.0",
+  "description": "Vim emulation for the T3D editor via monaco-vim.",
+  "extensionKind": "ui",
+  "main": "main.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:editor.action.toggleVimMode"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "editor.action.toggleVimMode",
+        "title": "Toggle Vim Mode",
+        "category": "Preferences"
+      }
+    ]
+  }
+}

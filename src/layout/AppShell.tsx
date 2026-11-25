@@ -1989,17 +1989,6 @@ function ShellChrome() {
         setPaletteSeed("Run Configuration");
         setPaletteOpen(true);
       },
-      toggleVimMode: () => {
-        const next = !settings.vimMode;
-        updateApp({ vimMode: next });
-        if (next) updateEditor({ cursorStyle: "block" });
-        notify(
-          "Vim Mode",
-          next
-            ? "monaco-vim bindings on (status line under the editor)."
-            : "Off",
-        );
-      },
       changeEncoding: () => {
         const encodings = [
           "UTF-8",
@@ -2311,7 +2300,6 @@ function ShellChrome() {
       selectionText,
       toggleAi,
       updateApp,
-      settings.vimMode,
       applyDiskValue,
       problems,
       refreshDiagnosticsMarkers,

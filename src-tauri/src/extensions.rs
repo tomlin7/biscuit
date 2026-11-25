@@ -74,6 +74,8 @@ pub struct ExtensionManifest {
     pub main: Option<String>,
     #[serde(default, rename = "activationEvents")]
     pub activation_events: Vec<String>,
+    #[serde(default, rename = "extensionKind")]
+    pub extension_kind: Option<String>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -258,6 +260,11 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty());
     let activation_events = string_list(value.get("activationEvents"));
+    let extension_kind = value
+        .get("extensionKind")
+        .and_then(|v| v.as_str())
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty());
     let enabled = enabled_map.enabled.get(&id).copied().unwrap_or(true);
     Some(ExtensionManifest {
         id,
@@ -269,6 +276,7 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         contributes,
         main,
         activation_events,
+        extension_kind,
     })
 }
 
@@ -431,6 +439,15 @@ fn ensure_builtin_extensions(root: &Path) {
         let main = include_str!("../../extensions/t3d.web-search/main.js");
         let _ = fs::write(web_search_dir.join("extension.json"), manifest);
         let _ = fs::write(web_search_dir.join("main.js"), main);
+    }
+
+    let vim_dir = root.join("t3d.vim");
+    if !vim_dir.exists() {
+        let _ = fs::create_dir_all(&vim_dir);
+        let manifest = include_str!("../../extensions/t3d.vim/extension.json");
+        let main = include_str!("../../extensions/t3d.vim/main.js");
+        let _ = fs::write(vim_dir.join("extension.json"), manifest);
+        let _ = fs::write(vim_dir.join("main.js"), main);
     }
 }
 
@@ -790,6 +807,19 @@ mod tests {
         assert!(super::extension_file_path(&root, "local.files", "../secret.txt").is_err());
         assert!(super::extension_file_path(&root, "local.files", "dist").is_err());
         assert!(super::extension_file_path(&root, "../local.files", "dist/main.js").is_err());
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn reads_ui_extension_kind() {
+        let root = scratch("ui-ext");
+        fs::write(
+            root.join("extension.json"),
+            r#"{"id":"test.ui","name":"Test UI","extensionKind":"ui","main":"main.js"}"#,
+        )
+        .unwrap();
+        let manifest = super::read_manifest(&root, &super::EnabledMap::default()).unwrap();
+        assert_eq!(manifest.extension_kind.as_deref(), Some("ui"));
         let _ = fs::remove_dir_all(&root);
     }
 }

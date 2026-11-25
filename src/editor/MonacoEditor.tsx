@@ -11,6 +11,7 @@ import { referencesAt, renamePlan } from "../lsp/tsLocations";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { editorConfigFor } from "./editorconfig";
+import { editorRegistry } from "./editorRegistry";
 import { detectIndentFromText } from "./detectIndent";
 import { parseRulers } from "./rulers";
 import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
@@ -56,7 +57,6 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const decorationsRef = useRef<string[]>([]);
-  const vimDisposeRef = useRef<(() => void) | null>(null);
   const vimStatusRef = useRef<HTMLDivElement | null>(null);
   const breakpointsRef = useRef(breakpoints);
   breakpointsRef.current = breakpoints;
@@ -473,41 +473,13 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   }, [breakpoints, doc]);
 
   useEffect(() => {
-    let cancelled = false;
-    const disposeVim = () => {
-      vimDisposeRef.current?.();
-      vimDisposeRef.current = null;
-    };
     const ed = editorRef.current;
-    if (!ed || !settings.vimMode) {
-      disposeVim();
-      return disposeVim;
-    }
-    disposeVim();
-    void import("monaco-vim")
-      .then((mod) => {
-        if (cancelled || editorRef.current !== ed || !settings.vimMode) return;
-        const initVimMode =
-          typeof mod.initVimMode === "function"
-            ? mod.initVimMode
-            : (mod as { default?: { initVimMode?: typeof mod.initVimMode } }).default
-                ?.initVimMode;
-        if (typeof initVimMode !== "function") return;
-        try {
-          const adapter = initVimMode(ed, vimStatusRef.current);
-          vimDisposeRef.current = () => adapter.dispose();
-        } catch {
-          /* monaco-vim may fail if the editor model is mid-swap */
-        }
-      })
-      .catch(() => {
-        /* bundler / monaco-vim interop failed — keep scaffold caret only */
-      });
+    if (!ed) return;
+    const unregister = editorRegistry.registerEditor(ed, vimStatusRef.current);
     return () => {
-      cancelled = true;
-      disposeVim();
+      unregister();
     };
-  }, [settings.vimMode, doc?.path]);
+  }, [doc?.path]);
 
   if (!doc) return null;
 
@@ -633,13 +605,11 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
           },
         }}
       />
-      {settings.vimMode ? (
-        <div
-          ref={vimStatusRef}
-          className="monaco-editor-host__vim-status"
-          aria-live="polite"
-        />
-      ) : null}
+      <div
+        ref={vimStatusRef}
+        className="monaco-editor-host__vim-status"
+        aria-live="polite"
+      />
     </div>
   );
 }

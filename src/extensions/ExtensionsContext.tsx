@@ -31,6 +31,7 @@ export type ExtensionManifest = {
   /** Entry module run in the extension host; absent for declarative-only extensions. */
   main?: string | null;
   activationEvents?: string[];
+  extensionKind?: "worker" | "ui";
 };
 
 type ExtensionsState = {

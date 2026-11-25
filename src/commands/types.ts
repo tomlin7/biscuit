@@ -290,7 +290,6 @@ export type CommandContext = {
   toggleSecondarySidebar: () => void;
   configureRunCommand: () => void;
   showRunConfigurations: () => void;
-  toggleVimMode: () => void;
   changeEncoding: () => void;
   saveWorkspaceAs: () => void;
   openWorkspaceFile: () => void;

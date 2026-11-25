@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { appendLog } from "../../logs/logBus";
+import { editorRegistry } from "../../editor/editorRegistry";
 import type { ExtensionManifest } from "../ExtensionsContext";
 import type {
   HostRequestMethod,
@@ -123,11 +124,16 @@ class ExtensionHost {
     }
   }
 
+  private localCommands = new Map<string, (...args: unknown[]) => unknown>();
+
   async executeCommand(command: string, args: unknown[] = []): Promise<unknown> {
     const owner = this.manifests.find((manifest) =>
       activationEventsFor(manifest).includes(`onCommand:${command}`),
     );
     if (owner) await this.activate(owner.id, `onCommand:${command}`);
+    if (this.localCommands.has(command)) {
+      return this.localCommands.get(command)!(...args);
+    }
     if (!this.registeredCommands.has(command)) {
       throw new Error(
         owner
@@ -157,6 +163,7 @@ class ExtensionHost {
     this.activationWaiters.clear();
     this.commandCalls.clear();
     this.registeredCommands.clear();
+    this.localCommands.clear();
     this.records.clear();
     this.statusBarItems.clear();
     this.emit();
@@ -170,6 +177,154 @@ class ExtensionHost {
     for (const listener of this.statusBarListeners) listener();
   }
 
+  private async activateUi(manifest: ExtensionManifest, reason: string): Promise<void> {
+    const start = performance.now();
+    try {
+      const code = await invoke<string>("read_extension_file", {
+        id: manifest.id,
+        path: manifest.main,
+      });
+      const blob = new Blob([code], { type: "application/javascript" });
+      const blobUrl = URL.createObjectURL(blob);
+      let mod: { activate?: (api: unknown, ctx: unknown) => unknown; deactivate?: () => void };
+      try {
+        mod = (await import(/* @vite-ignore */ blobUrl)) as {
+          activate?: (api: unknown, ctx: unknown) => unknown;
+          deactivate?: () => void;
+        };
+      } finally {
+        URL.revokeObjectURL(blobUrl);
+      }
+      const subscriptions: Array<{ dispose: () => void } | (() => void)> = [];
+      const context = { subscriptions };
+      const api = this.createUiApi(manifest, subscriptions);
+      if (typeof mod.activate === "function") {
+        await mod.activate(api, context);
+      }
+      const ms = Math.round(performance.now() - start);
+      this.setRecord(manifest.id, { status: "active", ms, reason });
+      appendLog(`[${manifest.id}] activated (UI kind) in ${ms}ms`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.activations.delete(manifest.id);
+      this.setRecord(manifest.id, { status: "failed", error: message, reason });
+      appendLog(`[${manifest.id}] UI activation failed: ${message}`);
+      throw error;
+    }
+  }
+
+  private createUiApi(
+    manifest: ExtensionManifest,
+    subscriptions: Array<{ dispose: () => void } | (() => void)>,
+  ) {
+    const self = this;
+    return {
+      commands: {
+        registerCommand: (id: string, handler: (...args: unknown[]) => unknown) => {
+          self.registeredCommands.set(id, manifest.id);
+          self.localCommands.set(id, handler);
+          const disposable = {
+            dispose: () => {
+              self.registeredCommands.delete(id);
+              self.localCommands.delete(id);
+            },
+          };
+          subscriptions.push(disposable);
+          return disposable;
+        },
+        executeCommand: (id: string, ...args: unknown[]) => self.executeCommand(id, args),
+      },
+      window: {
+        showInformationMessage: (message: string) => {
+          self.services?.showMessage("info", message, manifest.name);
+        },
+        showWarningMessage: (message: string) => {
+          self.services?.showMessage("warning", message, manifest.name);
+        },
+        showErrorMessage: (message: string) => {
+          self.services?.showMessage("error", message, manifest.name);
+        },
+        createStatusBarItem: (alignment: "left" | "right" = "right", priority = 0) => {
+          const id = `ui_${manifest.id}_${self.nextCallId++}`;
+          let text = "";
+          let tooltip: string | undefined;
+          let command: string | undefined;
+          const itemDto: StatusBarItemDto = {
+            id,
+            extensionId: manifest.id,
+            alignment,
+            priority,
+            text,
+          };
+          const item = {
+            get text() {
+              return text;
+            },
+            set text(val: string) {
+              text = val;
+              itemDto.text = val;
+              if (self.statusBarItems.has(id)) {
+                self.statusBarItems.set(id, { ...itemDto });
+                self.emitStatusBar();
+              }
+            },
+            get tooltip() {
+              return tooltip;
+            },
+            set tooltip(val: string | undefined) {
+              tooltip = val;
+              itemDto.tooltip = val;
+              if (self.statusBarItems.has(id)) {
+                self.statusBarItems.set(id, { ...itemDto });
+                self.emitStatusBar();
+              }
+            },
+            get command() {
+              return command;
+            },
+            set command(val: string | undefined) {
+              command = val;
+              itemDto.command = val;
+              if (self.statusBarItems.has(id)) {
+                self.statusBarItems.set(id, { ...itemDto });
+                self.emitStatusBar();
+              }
+            },
+            show: () => {
+              self.statusBarItems.set(id, { ...itemDto });
+              self.emitStatusBar();
+            },
+            hide: () => {
+              self.statusBarItems.delete(id);
+              self.emitStatusBar();
+            },
+            dispose: () => {
+              self.statusBarItems.delete(id);
+              self.emitStatusBar();
+            },
+          };
+          return item;
+        },
+      },
+      StatusBarAlignment: {
+        Left: "left" as const,
+        Right: "right" as const,
+      },
+      editor: {
+        onDidCreateEditor: (
+          listener: (instance: { editor: unknown; statusElement: HTMLElement | null }) => (() => void) | void,
+        ) => {
+          return editorRegistry.onDidCreateEditor(listener);
+        },
+        getEditors: () => editorRegistry.getEditors(),
+        monaco: (window as unknown as { monaco?: unknown }).monaco,
+      },
+      workspace: {
+        getState: () => self.services?.getWorkspaceState(),
+      },
+    };
+  }
+
   activate(extensionId: string, reason: string): Promise<void> {
     const existing = this.activations.get(extensionId);
     if (existing) return existing;
@@ -177,6 +332,11 @@ class ExtensionHost {
     if (!manifest?.main) return Promise.reject(new Error(`${extensionId} has no code to run`));
     const main = manifest.main;
     this.setRecord(extensionId, { status: "activating", reason });
+    if (manifest.extensionKind === "ui") {
+      const promise = this.activateUi(manifest, reason);
+      this.activations.set(extensionId, promise);
+      return promise;
+    }
     const promise = (async () => {
       const code = await invoke<string>("read_extension_file", { id: extensionId, path: main });
       const worker = this.ensureWorker();

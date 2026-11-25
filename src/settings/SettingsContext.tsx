@@ -41,8 +41,6 @@ export type AppSettings = {
   editor: EditorSettings;
   /** Win11 acrylic on shell crease and the dedicated settings window. Islands stay opaque. */
   chromeAcrylic: boolean;
-  /** Experimental vim-mode scaffold (status badge + block caret). */
-  vimMode: boolean;
   /** Preferred charset label shown in the status bar / encoding picker. */
   preferredEncoding: string;
 };
@@ -52,7 +50,7 @@ type SettingsState = {
   updateEditor: (patch: Partial<EditorSettings>) => void;
   updateChromeAcrylic: (on: boolean) => void;
   updateApp: (
-    patch: Partial<Pick<AppSettings, "vimMode" | "preferredEncoding">>,
+    patch: Partial<Pick<AppSettings, "preferredEncoding">>,
   ) => void;
   reset: () => void;
 };
@@ -79,7 +77,6 @@ const DEFAULTS: AppSettings = {
     terminalFontSize: 13,
   },
   chromeAcrylic: true,
-  vimMode: false,
   preferredEncoding: "UTF-8",
 };
 
@@ -98,7 +95,6 @@ function load(): AppSettings {
         typeof parsed.chromeAcrylic === "boolean"
           ? parsed.chromeAcrylic
           : DEFAULTS.chromeAcrylic,
-      vimMode: parsed.vimMode === true,
       preferredEncoding:
         typeof parsed.preferredEncoding === "string" && parsed.preferredEncoding.trim()
           ? parsed.preferredEncoding.trim().toUpperCase()
@@ -152,7 +148,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const updateApp = useCallback(
     (
       patch: Partial<
-        Pick<AppSettings, "vimMode" | "preferredEncoding">
+        Pick<AppSettings, "preferredEncoding">
       >,
     ) => {
       setSettings((s) => ({ ...s, ...patch }));

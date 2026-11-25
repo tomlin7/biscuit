@@ -263,11 +263,6 @@ export function StatusBar({
           </button>
         ) : null}
 
-        {settings.vimMode ? (
-          <span className="status-bar__item" title="Vim mode scaffold (experimental)">
-            VIM
-          </span>
-        ) : null}
 
         {textDocument ? (
           <span className="status-bar__item" title="File Encoding">

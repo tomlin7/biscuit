@@ -1,7 +1,7 @@
 {
   "name": "t3d",
   "private": true,
-  "version": "0.446.0",
+  "version": "0.447.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,7 +20,6 @@
     "@xterm/xterm": "^6.0.0",
     "lucide-react": "^1.47.0",
     "monaco-editor": "^0.56.0",
-    "monaco-vim": "^0.4.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
