@@ -202,6 +202,11 @@ function createApi(extensionId: string) {
         return request(extensionId, "workspace.getState", null);
       },
     }),
+    scm: Object.freeze({
+      getRemoteUrl(): Promise<string | null> {
+        return request(extensionId, "scm.getRemoteUrl", null);
+      },
+    }),
     log: Object.freeze({
       info: (message: string) => log("info", String(message)),
       warn: (message: string) => log("warning", String(message)),

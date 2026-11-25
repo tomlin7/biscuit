@@ -22,6 +22,7 @@ export type HostServices = {
   openExternal: (url: string) => Promise<void>;
   writeClipboard: (text: string) => Promise<void>;
   getWorkspaceState: () => WorkspaceSnapshot;
+  getRemoteUrl: () => Promise<string | null>;
 };
 
 export type ActivationRecord = {
@@ -317,6 +318,8 @@ class ExtensionHost {
         return services.writeClipboard(String(p.text ?? ""));
       case "workspace.getState":
         return services.getWorkspaceState();
+      case "scm.getRemoteUrl":
+        return services.getRemoteUrl();
       default:
         throw new Error(`Unknown extension API method ${String(method)}`);
     }

@@ -37,11 +37,7 @@ import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
-import {
-  githubIssuesSearchUrl,
-  githubPullsSearchUrl,
-  githubWebUrlFromRemote,
-} from "../scm/githubRemote";
+import { githubWebUrlFromRemote } from "../scm/githubRemote";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isVirtualPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
@@ -1872,19 +1868,6 @@ function ShellChrome() {
         updateEditor({ autoSaveMs: next });
         notify("Auto Save", next > 0 ? `On (${next} ms)` : "Off");
       },
-      searchGoogle: () => {
-        const selected = selectionText.trim();
-        const query =
-          selected ||
-          window.prompt("Search Google for:")?.trim() ||
-          "";
-        if (!query) return;
-        void openUrl(
-          `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-        ).catch(() => {
-          /* ignore */
-        });
-      },
       toggleBlockCursor: () => {
         const next =
           settings.editor.cursorStyle === "block" ? "line" : "block";
@@ -2039,32 +2022,6 @@ function ShellChrome() {
         );
         setPaletteSeed("Encoding");
         setPaletteOpen(true);
-      },
-      searchGitHubIssues: () => {
-        void resolveGithubRepoUrl().then((web) => {
-          if (!web) return;
-          const q = selectionText.trim() || window.prompt("Search issues for:")?.trim() || "";
-          void openUrl(githubIssuesSearchUrl(web, q)).catch(() => {
-            /* ignore */
-          });
-        });
-      },
-      searchGitHubPullRequests: () => {
-        void resolveGithubRepoUrl().then((web) => {
-          if (!web) return;
-          const q = selectionText.trim() || window.prompt("Search pull requests for:")?.trim() || "";
-          void openUrl(githubPullsSearchUrl(web, q)).catch(() => {
-            /* ignore */
-          });
-        });
-      },
-      openRepositoryOnGitHub: () => {
-        void resolveGithubRepoUrl().then((web) => {
-          if (!web) return;
-          void openUrl(web).catch(() => {
-            /* ignore */
-          });
-        });
       },
       goToNextProblem: () => {
         refreshDiagnosticsMarkers();
@@ -2355,7 +2312,6 @@ function ShellChrome() {
       toggleAi,
       updateApp,
       settings.vimMode,
-      resolveGithubRepoUrl,
       applyDiskValue,
       problems,
       refreshDiagnosticsMarkers,
@@ -2414,8 +2370,9 @@ function ShellChrome() {
       openExternal: (url) => openUrl(url),
       writeClipboard: (text) => navigator.clipboard.writeText(text),
       getWorkspaceState: () => workspaceSnapshotRef.current,
+      getRemoteUrl: () => resolveGithubRepoUrl(),
     });
-  }, [notify]);
+  }, [notify, resolveGithubRepoUrl]);
 
   useEffect(() => {
     let chord: string | null = null;

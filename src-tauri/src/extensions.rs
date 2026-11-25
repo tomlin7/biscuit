@@ -423,6 +423,15 @@ fn ensure_builtin_extensions(root: &Path) {
         let _ = fs::write(keypress_dir.join("extension.json"), manifest);
         let _ = fs::write(keypress_dir.join("main.js"), main);
     }
+
+    let web_search_dir = root.join("t3d.web-search");
+    if !web_search_dir.exists() {
+        let _ = fs::create_dir_all(&web_search_dir);
+        let manifest = include_str!("../../extensions/t3d.web-search/extension.json");
+        let main = include_str!("../../extensions/t3d.web-search/main.js");
+        let _ = fs::write(web_search_dir.join("extension.json"), manifest);
+        let _ = fs::write(web_search_dir.join("main.js"), main);
+    }
 }
 
 #[tauri::command]

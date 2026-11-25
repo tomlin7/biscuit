@@ -210,12 +210,6 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleAutoSave(),
   },
   {
-    id: "workbench.action.searchGoogle",
-    title: "Search Google",
-    category: "Help",
-    run: (ctx) => ctx.searchGoogle(),
-  },
-  {
     id: "workbench.action.pinEditor",
     title: "Pin Active Editor",
     category: "View",
@@ -1825,23 +1819,5 @@ export const COMMANDS: Command[] = [
     title: "Change File Encoding",
     category: "File",
     run: (ctx) => ctx.changeEncoding(),
-  },
-  {
-    id: "workbench.action.searchGitHubIssues",
-    title: "Search GitHub Issues",
-    category: "GitHub",
-    run: (ctx) => ctx.searchGitHubIssues(),
-  },
-  {
-    id: "workbench.action.searchGitHubPullRequests",
-    title: "Search GitHub Pull Requests",
-    category: "GitHub",
-    run: (ctx) => ctx.searchGitHubPullRequests(),
-  },
-  {
-    id: "workbench.action.openRepositoryOnGitHub",
-    title: "Open Repository on GitHub",
-    category: "GitHub",
-    run: (ctx) => ctx.openRepositoryOnGitHub(),
   },
 ];

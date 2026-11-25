@@ -1,0 +1,37 @@
+{
+  "id": "t3d.web-search",
+  "name": "Web Search",
+  "version": "1.0.0",
+  "description": "Search Google and GitHub issues/pull requests directly from the editor.",
+  "main": "main.js",
+  "activationEvents": [
+    "onCommand:workbench.action.searchGoogle",
+    "onCommand:workbench.action.searchGitHubIssues",
+    "onCommand:workbench.action.searchGitHubPullRequests",
+    "onCommand:workbench.action.openRepositoryOnGitHub"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "workbench.action.searchGoogle",
+        "title": "Search Google",
+        "category": "Help"
+      },
+      {
+        "id": "workbench.action.searchGitHubIssues",
+        "title": "Search GitHub Issues",
+        "category": "GitHub"
+      },
+      {
+        "id": "workbench.action.searchGitHubPullRequests",
+        "title": "Search GitHub Pull Requests",
+        "category": "GitHub"
+      },
+      {
+        "id": "workbench.action.openRepositoryOnGitHub",
+        "title": "Open Repository on GitHub",
+        "category": "GitHub"
+      }
+    ]
+  }
+}

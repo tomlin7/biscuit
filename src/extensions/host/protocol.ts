@@ -7,7 +7,8 @@ export type HostRequestMethod =
   | "commands.executeCommand"
   | "env.openExternal"
   | "env.writeClipboard"
-  | "workspace.getState";
+  | "workspace.getState"
+  | "scm.getRemoteUrl";
 
 export type MessageLevel = "info" | "warning" | "error";
 
