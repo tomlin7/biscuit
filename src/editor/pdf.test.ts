@@ -19,6 +19,8 @@ describe("pdf viewer file detection and metadata", () => {
   });
 
   test("returns correct language label for pdf", () => {
+    expect(languageFromPath("document.pdf")).toBe("pdf");
+    expect(languageFromPath("/path/to/manual.PDF")).toBe("pdf");
     expect(languageLabel("pdf")).toBe("PDF");
   });
 });

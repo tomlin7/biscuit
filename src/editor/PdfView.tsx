@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { readFile } from "@tauri-apps/plugin-fs";
 import {
   ChevronLeft,
   ChevronRight,
@@ -36,7 +37,7 @@ export function PdfView({ path }: Props) {
   const pdfDocRef = useRef<pdfjsLib.PDFDocumentProxy | null>(null);
   const loadingTaskRef = useRef<pdfjsLib.PDFDocumentLoadingTask | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const renderTaskRef = useRef<any>(null);
+  const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
 
   // Load PDF Document when path changes
   useEffect(() => {
@@ -53,7 +54,6 @@ export function PdfView({ path }: Props) {
         let data: Uint8Array;
         // In Tauri environment, load via plugin-fs readFile
         if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
-          const { readFile } = await import("@tauri-apps/plugin-fs");
           data = await readFile(path);
         } else {
           // Browser fallback
@@ -132,6 +132,7 @@ export function PdfView({ path }: Props) {
         if (renderTaskRef.current) {
           try {
             renderTaskRef.current.cancel();
+            await renderTaskRef.current.promise.catch(() => {});
           } catch {
             // ignore
           }
@@ -253,7 +254,7 @@ export function PdfView({ path }: Props) {
             icon={Minus}
             label="Zoom out"
             size={14}
-            disabled={loading || Boolean(error)}
+            disabled={loading || Boolean(error) || scale <= 0.25}
             onClick={() => setScale((s) => Math.max(0.25, Math.round((s - 0.25) * 100) / 100))}
           />
           <button
@@ -269,7 +270,7 @@ export function PdfView({ path }: Props) {
             icon={Plus}
             label="Zoom in"
             size={14}
-            disabled={loading || Boolean(error)}
+            disabled={loading || Boolean(error) || scale >= 4.0}
             onClick={() => setScale((s) => Math.min(4.0, Math.round((s + 0.25) * 100) / 100))}
           />
           <IconButton
@@ -284,6 +285,13 @@ export function PdfView({ path }: Props) {
         <div className="pdf-view__separator" />
 
         <div className="pdf-view__toolbar-section">
+          <IconButton
+            icon={RotateCcw}
+            label="Rotate counter-clockwise"
+            size={14}
+            disabled={loading || Boolean(error)}
+            onClick={() => setRotation((r) => (r + 270) % 360)}
+          />
           <IconButton
             icon={RotateCw}
             label="Rotate clockwise"

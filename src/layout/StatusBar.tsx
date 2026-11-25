@@ -65,7 +65,12 @@ export function StatusBar({
   } = useWorkspace();
   const { settings, updateEditor } = useSettings();
   const textDocument =
-    document && document.language !== "image" && document.language !== "webview" ? document : null;
+    document &&
+    document.language !== "image" &&
+    document.language !== "pdf" &&
+    document.language !== "webview"
+      ? document
+      : null;
   const eol = textDocument ? (textDocument.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, dismiss, clear } = useNotifications();

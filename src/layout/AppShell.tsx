@@ -2124,7 +2124,7 @@ function ShellChrome() {
             return;
           }
           const tab = tabs.find((item) => item.path === activePath);
-          if (!tab || tab.language === "image") {
+          if (!tab || tab.language === "image" || tab.language === "pdf") {
             notify("Revert File", "Nothing to revert.");
             return;
           }

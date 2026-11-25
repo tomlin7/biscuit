@@ -131,6 +131,8 @@ export function languageFromPath(path: string): string {
     case "h":
     case "hpp":
       return "cpp";
+    case "pdf":
+      return "pdf";
     default:
       return "plaintext";
   }
