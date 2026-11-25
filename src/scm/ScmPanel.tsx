@@ -275,11 +275,22 @@ export function ScmPanel({ onBranch }: Props) {
                   title={`Delete branch ${branch}`}
                   disabled={acting}
                   onClick={() => {
-                    const ok = window.confirm(
-                      `Delete local branch "${branch}"?`,
-                    );
-                    if (!ok) return;
-                    void run("git_delete_branch", { branch });
+                    void (async () => {
+                      const ok = window.confirm(
+                        `Delete local branch "${branch}"?`,
+                      );
+                      if (!ok) return;
+                      const soft = await run("git_delete_branch", {
+                        branch,
+                        force: false,
+                      });
+                      if (soft) return;
+                      const force = window.confirm(
+                        `Branch "${branch}" is not fully merged. Force delete with git branch -D?`,
+                      );
+                      if (!force) return;
+                      await run("git_delete_branch", { branch, force: true });
+                    })();
                   }}
                 >
                   ×

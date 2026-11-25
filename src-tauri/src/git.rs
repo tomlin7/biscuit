@@ -170,9 +170,10 @@ pub fn git_create_branch(cwd: String, branch: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn git_delete_branch(cwd: String, branch: String) -> Result<(), String> {
+pub fn git_delete_branch(cwd: String, branch: String, force: Option<bool>) -> Result<(), String> {
     let branch = valid_branch(&branch)?;
-    run_git(&cwd, &["branch".into(), "-d".into(), branch.to_string()])?;
+    let flag = if force.unwrap_or(false) { "-D" } else { "-d" };
+    run_git(&cwd, &["branch".into(), flag.into(), branch.to_string()])?;
     Ok(())
 }
 
