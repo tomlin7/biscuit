@@ -1653,7 +1653,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.showActiveEditors(),
   },
-
+  {
+    id: "editor.action.changeIndentation",
+    title: "Change Indentation Level",
+    category: "View",
+    run: (ctx) => ctx.changeIndentationLevel(),
+  },
 
 
 

@@ -273,6 +273,7 @@ export type CommandContext = {
   searchGoogle: () => void;
   toggleBlockCursor: () => void;
   showActiveEditors: () => void;
+  changeIndentationLevel: () => void;
 };
 
 export type Command = {

@@ -1686,6 +1686,22 @@ function ShellChrome() {
         setPaletteSeed("Open Editors");
         setPaletteOpen(true);
       },
+      changeIndentationLevel: () => {
+        setRecentCommands([]);
+        setSymbolCommands(
+          [2, 4, 8].map((size) => ({
+            id: `indent:${size}`,
+            title: `Indent Using Spaces: ${size}`,
+            category: "Indentation",
+            run: () => {
+              updateEditor({ tabSize: size });
+              notify("Indentation", `${size} spaces`);
+            },
+          })),
+        );
+        setPaletteSeed("Indent");
+        setPaletteOpen(true);
+      },
     }),
     [
       openFolder,
