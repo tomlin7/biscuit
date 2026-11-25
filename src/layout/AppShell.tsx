@@ -1363,6 +1363,12 @@ function ShellChrome() {
           if (frame) void openFileAt(frame.file, frame.line, 1);
         });
       },
+      stepOutDebugging: () => {
+        void stepDebugPython("return").then((next) => {
+          const frame = next?.frames[0];
+          if (frame) void openFileAt(frame.file, frame.line, 1);
+        });
+      },
     }),
     [
       openFolder,
