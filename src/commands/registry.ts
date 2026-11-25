@@ -1310,4 +1310,22 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.copyLatestNotification(),
   },
+  {
+    id: "workbench.action.increaseViewSize",
+    title: "Increase Bottom Panel Height",
+    category: "View",
+    run: (ctx) => ctx.increaseBottomPanelHeight(),
+  },
+  {
+    id: "workbench.action.decreaseViewSize",
+    title: "Decrease Bottom Panel Height",
+    category: "View",
+    run: (ctx) => ctx.decreaseBottomPanelHeight(),
+  },
+
+
+
+
+
+
 ];

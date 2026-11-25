@@ -218,6 +218,8 @@ export type CommandContext = {
   increaseSidebarWidth: () => void;
   decreaseSidebarWidth: () => void;
   copyLatestNotification: () => void;
+  increaseBottomPanelHeight: () => void;
+  decreaseBottomPanelHeight: () => void;
 };
 
 export type Command = {

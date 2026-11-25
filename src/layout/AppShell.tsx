@@ -1295,6 +1295,14 @@ function ShellChrome() {
           : latest.title;
         void navigator.clipboard.writeText(text);
       },
+      increaseBottomPanelHeight: () => {
+        setBottomHeight(bottomHeight + 20);
+        setBottomOpen(true);
+      },
+      decreaseBottomPanelHeight: () => {
+        setBottomHeight(bottomHeight - 20);
+        setBottomOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1390,6 +1398,8 @@ function ShellChrome() {
       notificationUnread,
       resetEditorSettings,
       sidebarWidth,
+      aiWidth,
+      bottomHeight,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,
