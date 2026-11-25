@@ -35,11 +35,24 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeFolder(),
   },
   {
+    id: "workbench.files.action.refreshFilesExplorer",
+    title: "Refresh Explorer",
+    category: "File",
+    run: (ctx) => void ctx.refreshExplorer(),
+  },
+  {
     id: "workbench.action.quickOpen",
     title: "Go to File…",
     category: "Go",
     keybinding: "Ctrl+T",
     run: (ctx) => ctx.openGoToFile(),
+  },
+  {
+    id: "workbench.action.openGlobalKeybindings",
+    title: "Keyboard Shortcuts",
+    category: "Preferences",
+    keybinding: "Ctrl+K Ctrl+S",
+    run: (ctx) => ctx.openKeybindings(),
   },
   {
     id: "workbench.action.addRootFolder",

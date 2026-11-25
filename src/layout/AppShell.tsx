@@ -19,6 +19,7 @@ import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
 import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { CommandPalette } from "../commands/CommandPalette";
+import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
 import { appendLog } from "../logs/logBus";
@@ -57,6 +58,7 @@ function ShellChrome() {
     document,
     rootPath,
     roots,
+    refreshExplorer,
     explorerNonce,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
@@ -189,6 +191,19 @@ function ShellChrome() {
     });
   }, [roots, rootPath, openFile]);
 
+  const openKeybindings = useCallback(() => {
+    setSymbolCommands(
+      COMMANDS.filter((cmd) => cmd.keybinding).map((cmd) => ({
+        id: `kb:${cmd.id}`,
+        title: `${cmd.keybinding} — ${cmd.title}`,
+        category: "Keybinding",
+        run: () => undefined,
+      })),
+    );
+    setPaletteSeed("");
+    setPaletteOpen(true);
+  }, []);
+
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
@@ -275,6 +290,8 @@ function ShellChrome() {
       removeFolderRoot,
       closeFolder,
       openGoToFile,
+      openKeybindings,
+      refreshExplorer,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -314,6 +331,8 @@ function ShellChrome() {
       removeFolderRoot,
       closeFolder,
       openGoToFile,
+      openKeybindings,
+      refreshExplorer,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -471,7 +490,8 @@ function ShellChrome() {
 
       if (chord === "ctrl+k" && key === "s") {
         event.preventDefault();
-        void saveAll();
+        if (mod) openKeybindings();
+        else void saveAll();
         clearChord();
         return;
       }
@@ -535,6 +555,7 @@ function ShellChrome() {
     openPalette,
     openSymbols,
     openGoToFile,
+    openKeybindings,
     reopenClosed,
     openSettings,
     openSearch,

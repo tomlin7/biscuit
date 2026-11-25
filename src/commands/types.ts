@@ -43,6 +43,8 @@ export type CommandContext = {
   openDebug: () => void;
   openSettings: () => void;
   toggleSidebar: () => void;
+  refreshExplorer: () => Promise<void> | void;
+  openKeybindings: () => void;
 };
 
 export type Command = {
