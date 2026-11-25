@@ -17,8 +17,9 @@ import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
 import { languageLabel } from "../editor/languages";
 import { useWorkspace } from "../workspace/WorkspaceContext";
-import { relativeToRoot, workspaceCrumbs } from "../workspace/path";
+import { relativeToRoot, workspaceCrumbs, parentPath } from "../workspace/path";
 import { rootForPath } from "../ai/roots";
+import { listDirectory } from "../workspace/fsTree";
 import { patchSession, readSession } from "../workspace/session";
 import { useEditorActions } from "../editor/EditorActions";
 import { useLayout } from "./LayoutContext";
@@ -26,8 +27,16 @@ import { FileIcon } from "../ui/FileIcon";
 import { IconButton } from "../ui/IconButton";
 import { ResizeHandle } from "./ResizeHandle";
 
+type CrumbMenuState = {
+  x: number;
+  y: number;
+  kind: "file" | "directory";
+  path: string;
+  siblings?: { name: string; path: string; kind: "file" | "directory" }[];
+};
+
 export function EditorArea() {
-  const { document, rootPath, roots, tabs, activePath, openFileAt, revealInExplorer } =
+  const { document, rootPath, roots, tabs, activePath, openFile, openFileAt, revealInExplorer } =
     useWorkspace();
   const { findInFile, peek, clearPeek, references, clearReferences, findMatchLabel } =
     useEditorActions();
@@ -38,7 +47,7 @@ export function EditorArea() {
   const [splitRatio, setSplitRatio] = useState(0.5);
   const [secondaryPath, setSecondaryPath] = useState<string | null>(null);
   const [layoutReady, setLayoutReady] = useState(false);
-  const [crumbMenu, setCrumbMenu] = useState<{ x: number; y: number } | null>(null);
+  const [crumbMenu, setCrumbMenu] = useState<CrumbMenuState | null>(null);
   const crumbMenuRef = useRef<HTMLDivElement>(null);
   const hasFile = document !== null;
 
@@ -110,6 +119,29 @@ export function EditorArea() {
     [document, crumbRoot],
   );
 
+  const openDirectoryCrumb = async (event: React.MouseEvent, path: string) => {
+    event.preventDefault();
+    const parent = parentPath(path) ?? path;
+    let siblings: CrumbMenuState["siblings"] = [];
+    try {
+      const nodes = await listDirectory(parent);
+      siblings = nodes.map((node) => ({
+        name: node.name,
+        path: node.path,
+        kind: node.kind,
+      }));
+    } catch {
+      siblings = [];
+    }
+    setCrumbMenu({
+      x: event.clientX,
+      y: event.clientY + 4,
+      kind: "directory",
+      path,
+      siblings,
+    });
+  };
+
   return (
     <section className="editor-area island" aria-label="Editors">
       <EditorTabs />
@@ -122,7 +154,7 @@ export function EditorArea() {
                   <button
                     type="button"
                     className="editor-area__crumb-btn"
-                    onClick={() => void revealInExplorer(crumb.path)}
+                    onClick={(event) => void openDirectoryCrumb(event, crumb.path)}
                   >
                     <FileIcon name={crumb.name} kind="directory" size={14} />
                     <span>{crumb.name}</span>
@@ -132,7 +164,12 @@ export function EditorArea() {
                     type="button"
                     className="editor-area__crumb-btn"
                     onClick={(event) =>
-                      setCrumbMenu({ x: event.clientX, y: event.clientY + 4 })
+                      setCrumbMenu({
+                        x: event.clientX,
+                        y: event.clientY + 4,
+                        kind: "file",
+                        path: document!.path,
+                      })
                     }
                   >
                     <FileIcon name={crumb.name} kind="file" size={14} />
@@ -148,45 +185,76 @@ export function EditorArea() {
             <span className="editor-area__crumb-muted">No file</span>
           )}
         </div>
-        {crumbMenu && document ? (
+        {crumbMenu ? (
           <div
             ref={crumbMenuRef}
             className="editor-area__crumb-menu"
             style={{ left: crumbMenu.x, top: crumbMenu.y }}
             role="menu"
           >
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                void revealInExplorer(document.path);
-                setCrumbMenu(null);
-              }}
-            >
-              Reveal in Explorer
-            </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                void navigator.clipboard.writeText(document.path);
-                setCrumbMenu(null);
-              }}
-            >
-              Copy Path
-            </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                void navigator.clipboard.writeText(
-                  relativeToRoot(crumbRoot, document.path),
-                );
-                setCrumbMenu(null);
-              }}
-            >
-              Copy Relative Path
-            </button>
+            {crumbMenu.kind === "file" && document ? (
+              <>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void revealInExplorer(document.path);
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Reveal in Explorer
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(document.path);
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Copy Path
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(
+                      relativeToRoot(crumbRoot, document.path),
+                    );
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Copy Relative Path
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void revealInExplorer(crumbMenu.path);
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Reveal in Explorer
+                </button>
+                {(crumbMenu.siblings ?? []).slice(0, 24).map((sibling) => (
+                  <button
+                    key={sibling.path}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setCrumbMenu(null);
+                      if (sibling.kind === "file") void openFile(sibling.path);
+                      else void revealInExplorer(sibling.path);
+                    }}
+                  >
+                    {sibling.name}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         ) : null}
         <div className="editor-area__tools">
@@ -301,7 +369,12 @@ export function EditorArea() {
       >
         {hasFile && activePath ? (
           diffTab ? (
-            <DiffView path={diffTab.path} text={diffTab.text} />
+            <DiffView
+              path={diffTab.path}
+              text={diffTab.text}
+              head={diffTab.head}
+              working={diffTab.working}
+            />
           ) : (
           <>
             <div className="editor-area__pane">
