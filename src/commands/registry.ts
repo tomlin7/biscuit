@@ -339,6 +339,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.cycleAutoSave(),
   },
   {
+    id: "editor.action.cycleFontSize",
+    title: "Cycle Editor Font Size",
+    category: "Preferences",
+    run: (ctx) => ctx.cycleFontSize(),
+  },
+  {
     id: "editor.action.toggleMinimap",
     title: "Toggle Minimap",
     category: "View",

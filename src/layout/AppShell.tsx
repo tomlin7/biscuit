@@ -487,6 +487,12 @@ function ShellChrome() {
         const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 0;
         updateEditor({ autoSaveMs: next });
       },
+      cycleFontSize: () => {
+        const order = [12, 13, 14, 16, 18];
+        const idx = order.indexOf(settings.editor.fontSize);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 14;
+        updateEditor({ fontSize: next });
+      },
       openPalette,
       openSymbols,
       openWorkspaceSymbols,
@@ -626,6 +632,7 @@ function ShellChrome() {
       settings.editor.insertFinalNewline,
       settings.editor.trimTrailingWhitespace,
       settings.editor.autoSaveMs,
+      settings.editor.fontSize,
       updateEditor,
       clearAttachments,
       clearChat,
