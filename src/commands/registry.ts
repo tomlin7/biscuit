@@ -1052,4 +1052,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.deleteAiSession(),
   },
+  {
+    id: "workbench.action.cycleAiModel",
+    title: "Cycle AI Model Preset",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiModel(),
+  },
 ];

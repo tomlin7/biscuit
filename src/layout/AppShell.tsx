@@ -1014,6 +1014,19 @@ function ShellChrome() {
         deleteSession(activeSessionId);
         setAiOpen(true);
       },
+      cycleAiModel: () => {
+        const order = [
+          "gpt-4o-mini",
+          "gpt-4o",
+          "gpt-4.1-mini",
+          "o4-mini",
+          "claude-sonnet-4-20250514",
+        ];
+        const idx = order.indexOf(aiSettings.model);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? order[0];
+        setSettings({ model: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1091,6 +1104,7 @@ function ShellChrome() {
       attachFiles,
       deleteSession,
       activeSessionId,
+      aiSettings.model,
       bottomOpen,
       panelTab,
       setPanelTab,
