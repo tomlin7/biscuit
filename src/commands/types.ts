@@ -236,6 +236,7 @@ export type CommandContext = {
   newExplorerFolder: () => void;
   toggleLineEnding: () => void;
   continueDebugging: () => void;
+  toggleBreakpointCurrentLine: () => void;
 };
 
 export type Command = {

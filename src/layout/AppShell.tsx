@@ -142,9 +142,12 @@ function ShellChrome() {
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const {
     sessions: debugSessions,
+    breakpoints: debugBreakpoints,
     startSession: startDebugSession,
     stopSession: stopDebugSession,
     stepPython: stepDebugPython,
+    addBreakpoint,
+    removeBreakpoint,
   } = useDebug();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -1404,6 +1407,20 @@ function ShellChrome() {
           if (frame) void openFileAt(frame.file, frame.line, 1);
         });
       },
+      toggleBreakpointCurrentLine: () => {
+        if (!activePath || isUntitledPath(activePath)) return;
+        const line = document?.cursorLine ?? 1;
+        const existing = debugBreakpoints.find(
+          (bp) => bp.path === activePath && bp.line === line,
+        );
+        if (existing) {
+          removeBreakpoint(existing.id);
+        } else {
+          addBreakpoint(activePath, line);
+        }
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1535,6 +1552,9 @@ function ShellChrome() {
       createEntry,
       setEol,
       document,
+      debugBreakpoints,
+      addBreakpoint,
+      removeBreakpoint,
       openFileAt,
       rootPath,
     ],

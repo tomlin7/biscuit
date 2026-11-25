@@ -1425,6 +1425,12 @@ export const COMMANDS: Command[] = [
     keybinding: "F5",
     run: (ctx) => ctx.continueDebugging(),
   },
-
+  {
+    id: "editor.debug.action.toggleBreakpoint",
+    title: "Toggle Breakpoint",
+    category: "Debug",
+    keybinding: "F9",
+    run: (ctx) => ctx.toggleBreakpointCurrentLine(),
+  },
 
 ];
