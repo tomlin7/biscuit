@@ -662,6 +662,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.newAiChat(),
   },
   {
+    id: "workbench.view.explorer",
+    title: "Show Explorer",
+    category: "View",
+    run: (ctx) => ctx.showExplorer(),
+  },
+  {
     id: "workbench.view.search",
     title: "Show Search",
     category: "View",
@@ -961,5 +967,11 @@ export const COMMANDS: Command[] = [
     title: "Toggle Diff Ignore Whitespace",
     category: "Diff",
     run: (ctx) => ctx.toggleDiffIgnoreWhitespace(),
+  },
+  {
+    id: "workbench.view.explorer",
+    title: "Focus on Explorer View",
+    category: "View",
+    run: (ctx) => ctx.focusExplorer(),
   },
 ];

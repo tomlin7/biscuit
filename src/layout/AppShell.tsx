@@ -934,6 +934,10 @@ function ShellChrome() {
       toggleDiffIgnoreWhitespace: () => {
         writeIgnoreSpacePref(!readIgnoreSpacePref());
       },
+      focusExplorer: () => {
+        setSidebarMode("explorer");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,

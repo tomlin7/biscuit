@@ -161,6 +161,7 @@ export type CommandContext = {
   gitRevealSelected: () => void;
   gitRefresh: () => void;
   toggleDiffIgnoreWhitespace: () => void;
+  focusExplorer: () => void;
 };
 
 export type Command = {
