@@ -142,6 +142,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeSavedEditors(),
   },
   {
+    id: "workbench.action.pinEditor",
+    title: "Pin Active Editor",
+    category: "View",
+    run: (ctx) => ctx.togglePinActiveEditor(),
+  },
+  {
     id: "workbench.action.toggleTheme",
     title: "Toggle Light/Dark Theme",
     category: "Preferences",

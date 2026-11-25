@@ -73,6 +73,7 @@ function ShellChrome() {
     expandExplorer,
     explorerNonce,
     revealInExplorer,
+    togglePinTab,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -420,6 +421,9 @@ function ShellChrome() {
       closeAll,
       closeOtherEditors,
       closeSavedEditors,
+      togglePinActiveEditor: () => {
+        if (activePath) togglePinTab(activePath);
+      },
       toggleTheme,
       toggleMinimap: () => updateEditor({ minimap: !settings.editor.minimap }),
       openPalette,
@@ -483,6 +487,7 @@ function ShellChrome() {
       closeAll,
       closeOtherEditors,
       closeSavedEditors,
+      togglePinTab,
       activePath,
       closeTab,
       toggleTheme,

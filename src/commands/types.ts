@@ -17,6 +17,7 @@ export type CommandContext = {
   closeAll: () => void;
   closeOtherEditors: () => void;
   closeSavedEditors: () => void;
+  togglePinActiveEditor: () => void;
   toggleTheme: () => void;
   toggleMinimap: () => void;
   openPalette: () => void;
