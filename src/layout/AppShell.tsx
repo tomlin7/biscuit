@@ -1266,6 +1266,17 @@ function ShellChrome() {
         setSidebarWidth(sidebarWidth - 20);
         setSidebarOpen(true);
       },
+      copyLatestNotification: () => {
+        const latest = notificationItems[0];
+        if (!latest) {
+          void navigator.clipboard.writeText("");
+          return;
+        }
+        const text = latest.detail
+          ? `${latest.title}\n${latest.detail}`
+          : latest.title;
+        void navigator.clipboard.writeText(text);
+      },
     }),
     [
       openFolder,

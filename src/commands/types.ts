@@ -217,6 +217,7 @@ export type CommandContext = {
   resetEditorSettings: () => void;
   increaseSidebarWidth: () => void;
   decreaseSidebarWidth: () => void;
+  copyLatestNotification: () => void;
 };
 
 export type Command = {

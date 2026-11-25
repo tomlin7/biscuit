@@ -1304,5 +1304,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.decreaseSidebarWidth(),
   },
-
+  {
+    id: "notifications.copyLatest",
+    title: "Copy Latest Notification",
+    category: "View",
+    run: (ctx) => ctx.copyLatestNotification(),
+  },
 ];

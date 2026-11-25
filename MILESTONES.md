@@ -356,6 +356,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.348.0** | Reset editor settings from palette | shipped |
 | **0.349.0** | Increase primary side bar width from palette | shipped |
 | **0.350.0** | Decrease primary side bar width from palette | shipped |
+| **0.351.0** | Copy latest notification from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
