@@ -366,6 +366,26 @@ export function SettingsPanel({ open, onClose }: Props) {
                 }}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Seed</span>
+              <input
+                type="number"
+                step={1}
+                placeholder="default"
+                value={ai.seed ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  if (!raw) {
+                    setAi({ seed: null });
+                    return;
+                  }
+                  const next = Number(raw);
+                  if (Number.isFinite(next)) {
+                    setAi({ seed: Math.floor(next) });
+                  }
+                }}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",

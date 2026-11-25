@@ -55,6 +55,8 @@ type AiSettings = {
   presencePenalty: number | null;
   /** Null uses the provider default. */
   frequencyPenalty: number | null;
+  /** Null uses the provider default. */
+  seed: number | null;
 };
 
 type AiState = {
@@ -101,6 +103,7 @@ function defaultSettings(): AiSettings {
     topP: null,
     presencePenalty: null,
     frequencyPenalty: null,
+    seed: null,
   };
 }
 
@@ -429,6 +432,9 @@ export function AiProvider({ children }: { children: ReactNode }) {
                     : {}),
                   ...(typeof settings.frequencyPenalty === "number"
                     ? { frequency_penalty: settings.frequencyPenalty }
+                    : {}),
+                  ...(typeof settings.seed === "number"
+                    ? { seed: settings.seed }
                     : {}),
                 }),
                 signal: controller.signal,
