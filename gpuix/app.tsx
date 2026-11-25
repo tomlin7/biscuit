@@ -13,6 +13,7 @@
 
 import { FilesSurface, ReviewSurface, BrowserSurface, WorkspaceCommitModal } from './src/components/WorkspaceSurfaces'
 import { EditorWorkspace } from './src/components/EditorWorkspace'
+import { DockWorkspace } from './src/components/DockWorkspace'
 import { ProviderSettings } from './src/components/ProviderSettings'
 import { ProjectMenu, ProjectSwitcher } from './src/components/ProjectSwitcher'
 import { CatalogPicker } from './src/components/CatalogPicker'
@@ -2775,10 +2776,11 @@ function Header({
   )
 }
 
-type SurfaceKind = 'none' | 'browser' | 'terminal' | 'files' | 'review' | 'editor'
+type SurfaceKind = 'none' | 'browser' | 'terminal' | 'files' | 'review' | 'editor' | 'dock'
 
 const SURFACES: { id: SurfaceKind; label: string; icon: IconName; desc: string }[] = [
   { id: 'editor', label: 'Editor', icon: 'compose', desc: 'Code editor buffers & tabs' },
+  { id: 'dock', label: 'Dock', icon: 'blocks', desc: 'Dockable layout engine' },
   { id: 'browser', label: 'Browser', icon: 'globe', desc: 'Open a local app or URL' },
   { id: 'terminal', label: 'Terminal', icon: 'terminal', desc: 'Start a shell in this workspace' },
   { id: 'files', label: 'Files', icon: 'folder', desc: 'Browse and read workspace files' },
@@ -3796,6 +3798,7 @@ function SurfacePanel({
       <FilesSurface engine={engine} active={open && activeSurface === 'files'} initialFile={initialFile} initialLine={initialLine} onOpenEditor={() => onChangeSurface('editor')} />
       <ReviewSurface engine={engine} active={open && activeSurface === 'review'} />
       {open && activeSurface === 'editor' && <EditorWorkspace engine={engine} initialFile={initialFile} />}
+      {open && activeSurface === 'dock' && <DockWorkspace engine={engine} />}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -3,7 +3,7 @@ import { currentEngineHome } from '../../engine/src/home'
 export interface Bounds { x: number; y: number; width: number; height: number }
 export interface WindowState {
   width: number; height: number; x?: number; y?: number; display?: string; maximized?: boolean
-  sessionID?: string; surface: 'none' | 'terminal' | 'browser' | 'review' | 'files' | 'editor'; panelOpen: boolean
+  sessionID?: string; surface: 'none' | 'terminal' | 'browser' | 'review' | 'files' | 'editor' | 'dock'; panelOpen: boolean
   sidebarWidth: number; panelWidth: number; sidebarCollapsed: boolean
 }
 const defaults: WindowState = { width: 1180, height: 820, surface: 'none', panelOpen: false, sidebarWidth: 260, panelWidth: 480, sidebarCollapsed: false }
@@ -23,7 +23,7 @@ function valid(value: unknown): WindowState {
   for (const key of ['panelOpen', 'sidebarCollapsed', 'maximized'] as const) if (typeof input[key] === 'boolean') state[key] = input[key]
   if (typeof input.display === 'string') state.display = input.display
   if (typeof input.sessionID === 'string' && /^ses_[\w-]+$/.test(input.sessionID)) state.sessionID = input.sessionID
-  if (['none', 'terminal', 'browser', 'review', 'files', 'editor'].includes(String(input.surface))) state.surface = input.surface as WindowState['surface']
+  if (['none', 'terminal', 'browser', 'review', 'files', 'editor', 'dock'].includes(String(input.surface))) state.surface = input.surface as WindowState['surface']
   return state
 }
 function location(home: string) { return require('node:path').join(home, 'shell.json') as string }
