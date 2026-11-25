@@ -48,6 +48,7 @@ export function EditorArea() {
   const [secondaryPath, setSecondaryPath] = useState<string | null>(null);
   const [layoutReady, setLayoutReady] = useState(false);
   const [crumbMenu, setCrumbMenu] = useState<CrumbMenuState | null>(null);
+  const [previewScroll, setPreviewScroll] = useState(0);
   const crumbMenuRef = useRef<HTMLDivElement>(null);
   const hasFile = document !== null;
 
@@ -389,7 +390,11 @@ export function EditorArea() {
               {document?.language === "image" ? (
                 <ImageView path={activePath} />
               ) : (
-                <MonacoEditor path={activePath} primary />
+                <MonacoEditor
+                  path={activePath}
+                  primary
+                  onScrollRatio={showPreview && previewKind === "markdown" ? setPreviewScroll : undefined}
+                />
               )}
             </div>
             {showPreview ? (
@@ -408,6 +413,7 @@ export function EditorArea() {
                     <MarkdownPreview
                       source={document?.value ?? ""}
                       filePath={activePath}
+                      scrollRatio={previewScroll}
                     />
                   )}
                 </div>
