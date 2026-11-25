@@ -41,7 +41,8 @@ import {
   githubWebUrlFromRemote,
 } from "../scm/githubRemote";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
-import { basename, isUntitledPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
+import { basename, isVirtualPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
+import { findGame } from "../games/registry";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
@@ -95,6 +96,7 @@ function ShellChrome() {
     openFile,
     openDroppedPaths,
     openUntitled,
+    openGame: openGameTab,
     openFileAt,
     reopenClosed,
     document,
@@ -938,7 +940,7 @@ function ShellChrome() {
         clearLogBuffer();
       },
       revealActiveFileInOs: () => {
-        if (!activePath || isUntitledPath(activePath)) return;
+        if (!activePath || isVirtualPath(activePath)) return;
         void revealItemInDir(activePath).catch(() => {
           /* ignore opener failures */
         });
@@ -966,7 +968,7 @@ function ShellChrome() {
         setAiOpen(true);
       },
       revealActiveParentInExplorer: () => {
-        if (!activePath || isUntitledPath(activePath)) return;
+        if (!activePath || isVirtualPath(activePath)) return;
         const parent = parentPath(activePath);
         if (!parent) return;
         setSidebarMode("explorer");
@@ -1508,6 +1510,9 @@ function ShellChrome() {
         }
         void invoke("quit_app");
       },
+      openGame: (id) => {
+        openGameTab(id, findGame(id)?.title ?? id);
+      },
       copyUnreadNotificationCount: () => {
         void navigator.clipboard.writeText(String(notificationUnread));
       },
@@ -1551,7 +1556,7 @@ function ShellChrome() {
       newExplorerFile: () => {
         if (!rootPath) return;
         const parent =
-          activePath && !isUntitledPath(activePath)
+          activePath && !isVirtualPath(activePath)
             ? parentPath(activePath) ?? rootPath
             : rootPath;
         setSidebarMode("explorer");
@@ -1561,7 +1566,7 @@ function ShellChrome() {
       newExplorerFolder: () => {
         if (!rootPath) return;
         const parent =
-          activePath && !isUntitledPath(activePath)
+          activePath && !isVirtualPath(activePath)
             ? parentPath(activePath) ?? rootPath
             : rootPath;
         setSidebarMode("explorer");
@@ -1599,7 +1604,7 @@ function ShellChrome() {
         );
       },
       toggleBreakpointCurrentLine: () => {
-        if (!activePath || isUntitledPath(activePath)) return;
+        if (!activePath || isVirtualPath(activePath)) return;
         const line = document?.cursorLine ?? 1;
         const existing = debugBreakpoints.find(
           (bp) => bp.path === activePath && bp.line === line,
@@ -1667,13 +1672,13 @@ function ShellChrome() {
         });
       },
       renameExplorerEntry: () => {
-        if (!activePath || isUntitledPath(activePath)) return;
+        if (!activePath || isVirtualPath(activePath)) return;
         setSidebarMode("explorer");
         setSidebarOpen(true);
         void renameEntry(activePath);
       },
       deleteExplorerEntry: () => {
-        if (!activePath || isUntitledPath(activePath)) return;
+        if (!activePath || isVirtualPath(activePath)) return;
         setSidebarMode("explorer");
         setSidebarOpen(true);
         void deleteEntry(activePath);
@@ -1739,7 +1744,7 @@ function ShellChrome() {
         setSidebarOpen(true);
       },
       showFileEncoding: () => {
-        if (!document || isUntitledPath(document.path)) {
+        if (!document || isVirtualPath(document.path)) {
           notify("Encoding", "UTF-8");
           return;
         }
@@ -1765,7 +1770,7 @@ function ShellChrome() {
         void openFile(files[0]);
       },
       copyFileEncoding: () => {
-        if (!document || isUntitledPath(document.path)) {
+        if (!document || isVirtualPath(document.path)) {
           void navigator.clipboard.writeText("UTF-8");
           notify("Encoding", "Copied UTF-8");
           return;
@@ -2090,7 +2095,7 @@ function ShellChrome() {
       },
       revertActiveFile: () => {
         void (async () => {
-          if (!activePath || isUntitledPath(activePath)) {
+          if (!activePath || isVirtualPath(activePath)) {
             notify("Revert File", "Open a saved file first.");
             return;
           }
@@ -2283,6 +2288,7 @@ function ShellChrome() {
       toggleSidebar,
       debugSessions,
       restoreRecentSession,
+      openGameTab,
       startDebugSession,
       stopDebugSession,
       stepDebugPython,

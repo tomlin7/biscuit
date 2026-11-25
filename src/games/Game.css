@@ -1,0 +1,121 @@
+.game-view {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 24px;
+  overflow: auto;
+  user-select: none;
+}
+
+.game__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.game__title {
+  margin: 0;
+  font-size: var(--font-size-ui);
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.game__status {
+  margin: 0;
+  min-height: 1.5em;
+  font-size: var(--font-size-sm);
+  color: var(--fg-muted);
+}
+
+.game__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  color: var(--fg-muted);
+}
+
+.game__button {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background 0.12s ease;
+}
+
+.game__button:hover {
+  background: color-mix(in srgb, var(--fg) 11%, transparent);
+}
+
+.game__button--active {
+  background: var(--fg);
+  border-color: transparent;
+  color: var(--bg-island);
+}
+
+.game__button--active:hover {
+  background: color-mix(in srgb, var(--fg) 85%, var(--bg-island));
+}
+
+.game__score {
+  display: flex;
+  gap: 16px;
+  font-size: var(--font-size-sm);
+  color: var(--fg-muted);
+}
+
+.game__score strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.ttt__board {
+  display: grid;
+  grid-template-columns: repeat(3, 88px);
+  grid-template-rows: repeat(3, 88px);
+  gap: 6px;
+  padding: 6px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+.ttt__cell {
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bg-island);
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+  color: var(--fg);
+  transition: background 0.12s ease;
+}
+
+.ttt__cell:not(:disabled):hover {
+  background: color-mix(in srgb, var(--fg) 6%, var(--bg-island));
+}
+
+.ttt__cell:disabled {
+  cursor: default;
+}
+
+.ttt__cell--o {
+  color: var(--fg-muted);
+}
+
+.ttt__cell--win {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-island));
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}

@@ -54,7 +54,9 @@ export function StatusBar({
     setLanguageAt,
   } = useWorkspace();
   const { settings, updateEditor } = useSettings();
-  const eol = document ? (document.value.includes("\r\n") ? "CRLF" : "LF") : null;
+  const textDocument =
+    document && document.language !== "image" && document.language !== "game" ? document : null;
+  const eol = textDocument ? (textDocument.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, dismiss, clear } = useNotifications();
   const [notifyOpen, setNotifyOpen] = useState(false);
@@ -206,7 +208,7 @@ export function StatusBar({
 
       {/* Right group: Cursor pos, Indent, Encoding, EOL, Language, Quick Config, Settings, Notifications */}
       <div className="status-bar__group status-bar__group--end">
-        {document && document.language !== "image" ? (
+        {textDocument ? (
           <span className="status-bar__item" title="Line and Column">
             Ln {cursorLine}, Col {cursorColumn}
             {selectionChars > 0 ? (
@@ -219,7 +221,7 @@ export function StatusBar({
           </span>
         ) : null}
 
-        {document && document.language !== "image" ? (
+        {textDocument ? (
           <button
             type="button"
             className="status-bar__chip"
@@ -246,7 +248,7 @@ export function StatusBar({
           </span>
         ) : null}
 
-        {document ? (
+        {textDocument ? (
           <span className="status-bar__item" title="File Encoding">
             {encoding}
           </span>
@@ -263,19 +265,19 @@ export function StatusBar({
           </button>
         ) : null}
 
-        {document && document.language !== "image" ? (
+        {textDocument ? (
           <label className="status-bar__chip status-bar__lang" title="Select Language Mode">
             <select
               aria-label="Language mode"
               value={
-                (PICKABLE_LANGUAGES as readonly string[]).includes(document.language)
-                  ? document.language
+                (PICKABLE_LANGUAGES as readonly string[]).includes(textDocument.language)
+                  ? textDocument.language
                   : "plaintext"
               }
-              onChange={(event) => setLanguageAt(document.path, event.target.value)}
+              onChange={(event) => setLanguageAt(textDocument.path, event.target.value)}
             >
-              {!(PICKABLE_LANGUAGES as readonly string[]).includes(document.language) ? (
-                <option value={document.language}>{languageLabel(document.language)}</option>
+              {!(PICKABLE_LANGUAGES as readonly string[]).includes(textDocument.language) ? (
+                <option value={textDocument.language}>{languageLabel(textDocument.language)}</option>
               ) : null}
               {PICKABLE_LANGUAGES.map((id) => (
                 <option key={id} value={id}>

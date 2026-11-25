@@ -238,6 +238,7 @@ export type CommandContext = {
   resetEditorFontSize: () => void;
   closeWindow: () => void;
   quit: () => void;
+  openGame: (id: string) => void;
   copyUnreadNotificationCount: () => void;
   startDebugging: () => void;
   stopDebugging: () => void;

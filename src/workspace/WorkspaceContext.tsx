@@ -17,7 +17,8 @@ import {
   isImageFile,
   isProbablyTextFile,
   isSafeEntryName,
-  isUntitledPath,
+  isGamePath,
+  isVirtualPath,
   joinPath,
   languageFromPath,
   parentPath,
@@ -95,6 +96,7 @@ export type WorkspaceState = {
   openFile: (path: string) => Promise<void>;
   openDroppedPaths: (paths: string[]) => Promise<void>;
   openUntitled: () => void;
+  openGame: (id: string, title: string) => void;
   openFileAt: (path: string, line: number, column: number) => Promise<void>;
   activateTab: (path: string) => void;
   closeTab: (path: string) => void;
@@ -606,6 +608,27 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setActivePath(path);
   }, []);
 
+  const openGame = useCallback((id: string, title: string) => {
+    const path = `game:${id}`;
+    setTabs((current) =>
+      current.some((tab) => tab.path === path)
+        ? current
+        : [
+            ...current,
+            {
+              path,
+              title,
+              language: "game",
+              value: "",
+              baseline: "",
+              cursorLine: 1,
+              cursorColumn: 1,
+            },
+          ],
+    );
+    setActivePath(path);
+  }, []);
+
   const openDroppedPaths = useCallback(
     async (paths: string[]) => {
       const files: string[] = [];
@@ -714,17 +737,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
     const session = readSession();
     const secondary =
-      session?.secondary && !isUntitledPath(session.secondary)
+      session?.secondary && !isVirtualPath(session.secondary)
         ? session.secondary
         : null;
     writeSession({
       root: rootPath,
       roots: roots.length > 0 ? roots : [rootPath],
-      tabs: tabs.map((tab) => tab.path).filter((path) => !isUntitledPath(path)),
+      tabs: tabs.map((tab) => tab.path).filter((path) => !isVirtualPath(path)),
       active:
-        activePath && !isUntitledPath(activePath)
+        activePath && !isVirtualPath(activePath)
           ? activePath
-          : tabs.find((tab) => !isUntitledPath(tab.path))?.path ?? null,
+          : tabs.find((tab) => !isVirtualPath(tab.path))?.path ?? null,
       preview: session?.preview ?? false,
       split: session?.split ?? false,
       secondary,
@@ -768,7 +791,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       if (!ok) return;
     }
 
-    if (!isUntitledPath(path)) pushClosedEditor(path);
+    if (!isVirtualPath(path)) pushClosedEditor(path);
     setTabs((current) => {
       const index = current.findIndex((t) => t.path === path);
       if (index < 0) return current;
@@ -937,7 +960,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const saveDirtyAuto = useCallback(async () => {
     const dirty = tabsRef.current.filter(
-      (tab) => isDirty(tab) && !isUntitledPath(tab.path) && tab.language !== "image",
+      (tab) => isDirty(tab) && !isVirtualPath(tab.path) && tab.language !== "image",
     );
     if (dirty.length === 0) return;
     const saved = new Map<string, string>();
@@ -1091,7 +1114,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const saveAll = useCallback(async () => {
     const dirty = tabsRef.current.filter(
-      (tab) => isDirty(tab) && !isUntitledPath(tab.path) && tab.language !== "image",
+      (tab) => isDirty(tab) && !isVirtualPath(tab.path) && tab.language !== "image",
     );
     if (dirty.length === 0) return;
     setBusy(true);
@@ -1213,9 +1236,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
-    if (!tab || tab.language === "image") return;
+    if (!tab || tab.language === "image" || isGamePath(tab.path)) return;
     const dest = await saveDialog({
-      defaultPath: isUntitledPath(tab.path) ? `${tab.title}.txt` : tab.path,
+      defaultPath: isVirtualPath(tab.path) ? `${tab.title}.txt` : tab.path,
       title: "Save As",
     });
     if (!dest) return;
@@ -1260,8 +1283,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
-    if (!tab || tab.language === "image") return;
-    if (isUntitledPath(tab.path)) {
+    if (!tab || tab.language === "image" || isGamePath(tab.path)) return;
+    if (isVirtualPath(tab.path)) {
       await saveAs();
       return;
     }
@@ -1317,6 +1340,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFile,
       openDroppedPaths,
       openUntitled,
+      openGame,
       openFileAt,
       activateTab,
       closeTab,
@@ -1377,6 +1401,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFile,
       openDroppedPaths,
       openUntitled,
+      openGame,
       openFileAt,
       activateTab,
       closeTab,

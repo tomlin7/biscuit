@@ -16,7 +16,14 @@ import { DiffView, useDiffTab } from "../scm/DiffView";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
 import { useWorkspace } from "../workspace/WorkspaceContext";
-import { relativeToRoot, workspaceCrumbs, parentPath } from "../workspace/path";
+import {
+  isGamePath,
+  isVirtualPath,
+  relativeToRoot,
+  workspaceCrumbs,
+  parentPath,
+} from "../workspace/path";
+import { GameView } from "../games/GameView";
 import { rootForPath } from "../ai/roots";
 import { listDirectory } from "../workspace/fsTree";
 import { patchSession, readSession } from "../workspace/session";
@@ -165,7 +172,12 @@ export function EditorArea() {
   }, [document, rootPath, roots]);
 
   const crumbs = useMemo(
-    () => (document ? workspaceCrumbs(crumbRoot, document.path) : []),
+    () =>
+      !document
+        ? []
+        : isVirtualPath(document.path)
+          ? [{ name: document.title, path: document.path, kind: "file" as const }]
+          : workspaceCrumbs(crumbRoot, document.path),
     [document, crumbRoot],
   );
 
@@ -466,7 +478,9 @@ export function EditorArea() {
           ) : (
           <>
             <div className="editor-area__pane">
-              {document?.language === "image" ? (
+              {isGamePath(activePath) ? (
+                <GameView path={activePath} />
+              ) : document?.language === "image" ? (
                 <ImageView path={activePath} />
               ) : (
                 <MonacoEditor
@@ -547,7 +561,9 @@ export function EditorArea() {
                       }}
                     />
                   </div>
-                  {tabs.find((tab) => tab.path === secondaryPath)?.language === "image" ? (
+                  {isGamePath(secondaryPath) ? (
+                    <GameView path={secondaryPath} />
+                  ) : tabs.find((tab) => tab.path === secondaryPath)?.language === "image" ? (
                     <ImageView path={secondaryPath} />
                   ) : (
                     <MonacoEditor path={secondaryPath} primary={false} />

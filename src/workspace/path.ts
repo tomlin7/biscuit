@@ -25,9 +25,13 @@ export function basename(path: string): string {
   return parts[parts.length - 1] ?? path;
 }
 
-/** Synthetic buffer that has never been saved to disk. */
-export function isUntitledPath(path: string): boolean {
-  return path.startsWith("untitled:");
+/** Synthetic tab with no file on disk: untitled buffers and game tabs. */
+export function isVirtualPath(path: string): boolean {
+  return path.startsWith("untitled:") || isGamePath(path);
+}
+
+export function isGamePath(path: string): boolean {
+  return path.startsWith("game:");
 }
 
 export function parentPath(path: string): string | null {

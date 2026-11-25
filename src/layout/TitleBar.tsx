@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { isVirtualPath } from "../workspace/path";
 import { useLayout } from "./LayoutContext";
 import { useDebug } from "../debug/DebugContext";
 import { IconButton } from "../ui/IconButton";
@@ -200,9 +201,9 @@ export function TitleBar({
           icon={Play}
           label="Run current file"
           size={15}
-          disabled={!activePath}
+          disabled={!activePath || isVirtualPath(activePath)}
           onClick={() => {
-            if (activePath) void startSession(activePath);
+            if (activePath && !isVirtualPath(activePath)) void startSession(activePath);
           }}
           {...noDrag}
         />

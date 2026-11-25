@@ -19,7 +19,7 @@ import {
 import { useAi } from "./AiContext";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { listDirectory } from "../workspace/fsTree";
-import { basename } from "../workspace/path";
+import { basename, isGamePath } from "../workspace/path";
 import { useLayout } from "../layout/LayoutContext";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
@@ -61,7 +61,8 @@ export function AiPanel({ onOpenSettings }: Props) {
     exportSession,
     importSession,
   } = useAi();
-  const { document, tabs, roots, tree, selectionText } = useWorkspace();
+  const { document: activeDocument, tabs, roots, tree, selectionText } = useWorkspace();
+  const document = activeDocument && !isGamePath(activeDocument.path) ? activeDocument : null;
   const { toggleAi } = useLayout();
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
