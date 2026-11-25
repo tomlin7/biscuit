@@ -23,9 +23,10 @@ import "./AiPanel.css";
 
 type Props = {
   onOpenSettings?: () => void;
+  onOpenSearch?: () => void;
 };
 
-export function AiPanel({ onOpenSettings }: Props) {
+export function AiPanel({ onOpenSettings, onOpenSearch }: Props) {
   const {
     messages,
     sessions,

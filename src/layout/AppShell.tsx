@@ -77,7 +77,10 @@ function ShellChrome() {
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
-  const openSearch = useCallback(() => setSidebarMode("search"), []);
+  const openSearch = useCallback(() => {
+    setSidebarMode("search");
+    setSidebarOpen(true);
+  }, [setSidebarOpen]);
   const openExtensions = useCallback(() => setSidebarMode("extensions"), []);
   const openDebug = useCallback(() => setSidebarMode("debug"), []);
 
@@ -376,7 +379,7 @@ function ShellChrome() {
           className="app-shell__ai-slot"
           style={{ display: aiOpen ? "flex" : "none" }}
         >
-          <AiPanel onOpenSettings={openSettings} />
+          <AiPanel onOpenSettings={openSettings} onOpenSearch={openSearch} />
         </div>
       </div>
       <StatusBar
