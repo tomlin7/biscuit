@@ -1,4 +1,10 @@
-export type ScmRemoteAction = "pull" | "push" | "fetch" | "stash" | "stashPop";
+export type ScmRemoteAction =
+  | "pull"
+  | "push"
+  | "fetch"
+  | "stash"
+  | "stashPop"
+  | "createBranch";
 
 type Listener = (action: ScmRemoteAction) => void;
 

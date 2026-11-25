@@ -126,6 +126,10 @@ export type CommandContext = {
   cycleProblemsFilter: () => void;
   focusActiveTerminal: () => void;
   duplicateEditorToSide: () => void;
+  gitCreateBranch: () => void;
+ cycleRulers: () => void;
+ clearLogs: () => void;
+  revealActiveFileInOs: () => void;
 };
 
 export type Command = {
