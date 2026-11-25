@@ -20,10 +20,12 @@ import {
   type DockSplitNode,
 } from '../dock'
 import { WorkspaceProvider, FileTreeExplorer } from '../workspace'
+import { EditorProvider, EditorBufferView, useEditor } from '../editor'
 
 export interface T3DAppShellProps {
   initialLayout?: DockLayoutState
   initialRootPath?: string
+  virtualFileMap?: Record<string, string>
 }
 
 /**
@@ -67,10 +69,25 @@ export function createT3DStarterLayout(): DockLayoutState {
   }
 }
 
-export function T3DAppShell({ initialLayout, initialRootPath }: T3DAppShellProps) {
+export function T3DAppShell({ initialLayout, initialRootPath, virtualFileMap }: T3DAppShellProps) {
+  return (
+    <EditorProvider virtualFileMap={virtualFileMap}>
+      <T3DAppShellInner initialLayout={initialLayout} initialRootPath={initialRootPath} />
+    </EditorProvider>
+  )
+}
+
+function T3DAppShellInner({
+  initialLayout,
+  initialRootPath,
+}: {
+  initialLayout?: DockLayoutState
+  initialRootPath?: string
+}) {
   const { renderer } = useGpuix()
   const isDarwin = typeof process !== 'undefined' && process.platform === 'darwin'
   const [maximized, setMaximized] = useState(false)
+  const { openFile } = useEditor()
 
   // Default to clean empty layout if no initialLayout is passed
   const [shellLayout, setShellLayout] = useState<DockLayoutState>(() => {
@@ -80,6 +97,7 @@ export function T3DAppShell({ initialLayout, initialRootPath }: T3DAppShellProps
   // Open a file from the explorer into a dock editor tab
   const handleOpenFile = useCallback((path: string, name: string) => {
     const panelId = `file-${path}`
+    void openFile(path)
 
     setShellLayout((prev) => {
       // If already open in any group, just focus it
@@ -105,7 +123,7 @@ export function T3DAppShell({ initialLayout, initialRootPath }: T3DAppShellProps
 
       return addPanelToGroup(prev, target.id, newPanel)
     })
-  }, [])
+  }, [openFile])
 
   // Add an Explorer panel to a group
   const handleAddExplorerTab = useCallback((groupId: string) => {
@@ -149,43 +167,7 @@ export function T3DAppShell({ initialLayout, initialRootPath }: T3DAppShellProps
               overflow: 'hidden',
             }}
           >
-            {/* Editor File Header */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                height: 28,
-                paddingLeft: 12,
-                paddingRight: 12,
-                backgroundColor: '#141416',
-                borderBottomWidth: 1,
-                borderColor: '#27272a',
-              }}
-            >
-              <text style={{ fontSize: 11, color: '#a1a1aa' }}>{filePath}</text>
-            </div>
-
-            {/* Editor Buffer Area */}
-            <div
-              testId={`editor-buffer-${panel.id}`}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                flexGrow: 1,
-                padding: 16,
-                backgroundColor: '#121214',
-                gap: 8,
-              }}
-            >
-              <text style={{ fontSize: 13, color: '#f4f4f5', fontWeight: 'bold' }}>
-                {panel.title}
-              </text>
-              <text style={{ fontSize: 11, color: '#71717a' }}>
-                {`File: ${filePath}`}
-              </text>
-            </div>
+            <EditorBufferView bufferId={panel.id} path={filePath} />
           </div>
         )
       }

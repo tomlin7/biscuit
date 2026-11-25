@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { connectTest } from '@gpuix/react/automation'
 import { createTestRoot, hasNativeTestRenderer } from '@gpuix/react/testing'
 import { T3DAppShell, createT3DStarterLayout } from './src/layout/T3DAppShell'
+import type { DockLayoutState } from './src/dock'
 
 const describeNative = hasNativeTestRenderer ? describe : describe.skip
 
@@ -172,6 +173,45 @@ describeNative('T3D Clean Empty Dockable Layout', () => {
       await fileTree.waitFor({ timeoutMs: 5_000 })
       expect(await fileTree.bounds()).toBeDefined()
     }
+
+    await app.close()
+  })
+
+  it('renders editor buffer with line numbers and syntax view for docked file', async () => {
+    const fileLayout: DockLayoutState = {
+      root: {
+        id: 'group-editor',
+        type: 'group',
+        panels: [
+          { id: 'file-E:/biscuit/T3D/main.ts', title: 'main.ts', closable: true },
+        ],
+        activePanelId: 'file-E:/biscuit/T3D/main.ts',
+      },
+      activeGroupId: 'group-editor',
+    }
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(
+      <T3DAppShell
+        initialLayout={fileLayout}
+        virtualFileMap={{
+          'E:/biscuit/T3D/main.ts': 'const greet = "hello world"\nconsole.log(greet)',
+        }}
+      />
+    )
+    const app = await connectTest(renderer)
+
+    const breadcrumb = app.getByTestId('editor-breadcrumb-path')
+    await breadcrumb.waitFor({ timeoutMs: 5_000 })
+    expect(await breadcrumb.bounds()).toBeDefined()
+
+    const line1 = app.getByTestId('editor-line-1')
+    await line1.waitFor({ timeoutMs: 5_000 })
+    expect(await line1.bounds()).toBeDefined()
+
+    const painted = renderer.getPaintedText()
+    expect(painted).toContain('main.ts')
+    expect(painted).toContain('greet')
+    expect(painted).toContain('Save')
 
     await app.close()
   })
