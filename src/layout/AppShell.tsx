@@ -1,38 +1,144 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./AppShell.css";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
+import { useTheme } from "../theme/ThemeContext";
+import { CommandPalette } from "../commands/CommandPalette";
+import type { CommandContext } from "../commands/types";
 import { TitleBar } from "./TitleBar";
 import { Sidebar } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
 import { StatusBar } from "./StatusBar";
 
 function ShellChrome() {
-  const { save, closeTab, activePath } = useWorkspace();
+  const {
+    save,
+    closeTab,
+    activePath,
+    openFolder,
+  } = useWorkspace();
+  const { toggleTheme } = useTheme();
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  const openPalette = useCallback(() => setPaletteOpen(true), []);
+  const closePalette = useCallback(() => setPaletteOpen(false), []);
+
+  const commandContext = useMemo<CommandContext>(
+    () => ({
+      openFolder,
+      save,
+      closeActive: () => {
+        if (activePath) closeTab(activePath);
+      },
+      toggleTheme,
+      openPalette,
+      closePalette,
+    }),
+    [
+      openFolder,
+      save,
+      activePath,
+      closeTab,
+      toggleTheme,
+      openPalette,
+      closePalette,
+    ],
+  );
 
   useEffect(() => {
+    let chord: string | null = null;
+    let chordTimer: number | undefined;
+
+    const clearChord = () => {
+      chord = null;
+      if (chordTimer !== undefined) window.clearTimeout(chordTimer);
+      chordTimer = undefined;
+    };
+
     const onKeyDown = (event: KeyboardEvent) => {
       const mod = event.ctrlKey || event.metaKey;
-      if (mod && event.key.toLowerCase() === "s") {
+      const key = event.key.toLowerCase();
+
+      if (event.key === "Escape" && paletteOpen) {
+        event.preventDefault();
+        closePalette();
+        return;
+      }
+
+      if (mod && event.shiftKey && key === "p") {
+        event.preventDefault();
+        openPalette();
+        clearChord();
+        return;
+      }
+
+      if (mod && key === "s") {
         event.preventDefault();
         void save();
+        clearChord();
+        return;
       }
-      if (mod && event.key.toLowerCase() === "w" && activePath) {
+
+      if (mod && key === "w" && activePath) {
         event.preventDefault();
         closeTab(activePath);
+        clearChord();
+        return;
+      }
+
+      if (mod && key === "k") {
+        event.preventDefault();
+        chord = "ctrl+k";
+        if (chordTimer !== undefined) window.clearTimeout(chordTimer);
+        chordTimer = window.setTimeout(clearChord, 1500);
+        return;
+      }
+
+      if (chord === "ctrl+k") {
+        if (key === "o") {
+          event.preventDefault();
+          void openFolder();
+          clearChord();
+          return;
+        }
+        if (key === "t") {
+          event.preventDefault();
+          toggleTheme();
+          clearChord();
+          return;
+        }
+        clearChord();
       }
     };
+
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [save, closeTab, activePath]);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      clearChord();
+    };
+  }, [
+    paletteOpen,
+    closePalette,
+    openPalette,
+    save,
+    activePath,
+    closeTab,
+    openFolder,
+    toggleTheme,
+  ]);
 
   return (
     <div className="app-shell">
-      <TitleBar />
+      <TitleBar onOpenPalette={openPalette} />
       <div className="app-shell__workspace">
         <Sidebar />
         <EditorArea />
       </div>
       <StatusBar />
+      <CommandPalette
+        open={paletteOpen}
+        onClose={closePalette}
+        context={commandContext}
+      />
     </div>
   );
 }

@@ -1,7 +1,11 @@
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 
-export function TitleBar() {
+type TitleBarProps = {
+  onOpenPalette?: () => void;
+};
+
+export function TitleBar({ onOpenPalette }: TitleBarProps) {
   const { rootName, openFolder, save, document, dirty, busy } = useWorkspace();
   const { theme, toggleTheme } = useTheme();
 
@@ -40,6 +44,16 @@ export function TitleBar() {
       </button>
 
       <div className="titlebar__right">
+        {onOpenPalette ? (
+          <button
+            type="button"
+            className="titlebar__text-btn"
+            onClick={onOpenPalette}
+            title="Ctrl+Shift+P"
+          >
+            Commands
+          </button>
+        ) : null}
         <button
           type="button"
           className="titlebar__text-btn"

@@ -10,8 +10,8 @@ Each row is a shippable `0.x` release until **1.0.0**.
 | **0.2.1** | Island chrome (Biscuit-like floating panels) | shipped |
 | **0.3.0** | Workspace FS — open folder, explorer tree, open/save files | shipped |
 | **0.4.0** | Editor tabs — multi-file buffers, dirty state, close/reorder | shipped |
-| **0.5.0** | Theming polish — light/dark tokens + Monaco themes | shipping |
-| **0.6.0** | Command palette + keybindings foundation | planned |
+| **0.5.0** | Theming polish — light/dark tokens + Monaco themes | shipped |
+| **0.6.0** | Command palette + keybindings foundation | shipping |
 | **0.7.0** | Find in file / workspace search | planned |
 | **0.8.0** | Integrated terminal (PTY) | planned |
 | **0.9.0** | Git SCM view (status, diff entry points) | planned |
@@ -32,4 +32,4 @@ explorer + editor. Out-of-scope chrome stays out until its milestone.
 
 ## Current target
 
-Ship **0.5.0**: light/dark theme with persisted preference and Monaco sync.
+Ship **0.6.0**: command palette (Ctrl+Shift+P) and core keybindings.
