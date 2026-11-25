@@ -32,6 +32,7 @@ export type CommandContext = {
   ) => void;
   openSearch: () => void;
   toggleTerminal: () => void;
+  runFile: () => void;
   openProblems: () => void;
   toggleAi: () => void;
   openExtensions: () => void;

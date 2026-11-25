@@ -4,6 +4,8 @@ import { FitAddon } from "@xterm/addon-fit";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { basename } from "../workspace/path";
+import { setRunListener } from "./runFile";
 import { useTheme } from "../theme/ThemeContext";
 import "@xterm/xterm/css/xterm.css";
 import "./TerminalPanel.css";
@@ -26,10 +28,11 @@ type SessionProps = {
   cwd: string | null;
   theme: "light" | "dark";
   shell: ShellChoice;
+  runPath: string | null;
   onControl: (control: TerminalControl | null) => void;
 };
 
-function TerminalSession({ active, cwd, theme, shell, onControl }: SessionProps) {
+function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
@@ -70,12 +73,12 @@ function TerminalSession({ active, cwd, theme, shell, onControl }: SessionProps)
 
     const spawn = async () => {
       try {
-        const id = await invoke<string>("pty_spawn", {
-          cwd,
-          cols: term.cols,
-          rows: term.rows,
-          shell: shell || null,
-        });
+        const id = await invoke<string>(
+          runPath ? "pty_run_file" : "pty_spawn",
+          runPath
+            ? { path: runPath, cols: term.cols, rows: term.rows }
+            : { cwd, cols: term.cols, rows: term.rows, shell: shell || null },
+        );
         if (disposed) {
           await invoke("pty_kill", { id });
           return;
@@ -169,6 +172,7 @@ let nextSession = 1;
 type TermSession = {
   id: number;
   shell: ShellChoice;
+  runPath: string | null;
 };
 
 const SHELLS: { value: ShellChoice; label: string }[] = [
@@ -178,9 +182,10 @@ const SHELLS: { value: ShellChoice; label: string }[] = [
   { value: "bash", label: "bash" },
 ];
 
-function shellLabel(shell: ShellChoice, index: number): string {
-  if (!shell) return `Terminal ${index + 1}`;
-  const named = SHELLS.find((item) => item.value === shell);
+function shellLabel(session: TermSession, index: number): string {
+  if (session.runPath) return basename(session.runPath);
+  if (!session.shell) return `Terminal ${index + 1}`;
+  const named = SHELLS.find((item) => item.value === session.shell);
   return named ? named.label : `Terminal ${index + 1}`;
 }
 
@@ -188,8 +193,10 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   const { rootPath } = useWorkspace();
   const { theme } = useTheme();
   const [sessions, setSessions] = useState<TermSession[]>(() => [
-    { id: nextSession, shell: "" },
+    { id: nextSession, shell: "", runPath: null },
   ]);
+  const sessionsRef = useRef(sessions);
+  sessionsRef.current = sessions;
   const [activeId, setActiveId] = useState(sessions[0].id);
   const [nextShell, setNextShell] = useState<ShellChoice>("");
   const controls = useRef(new Map<number, TerminalControl>());
@@ -197,7 +204,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   const addSession = () => {
     nextSession += 1;
     const id = nextSession;
-    setSessions((current) => [...current, { id, shell: nextShell }]);
+    setSessions((current) => [...current, { id, shell: nextShell, runPath: null }]);
     setActiveId(id);
   };
 
@@ -207,12 +214,28 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       if (next.length === 0) {
         nextSession += 1;
         setActiveId(nextSession);
-        return [{ id: nextSession, shell: nextShell }];
+        return [{ id: nextSession, shell: nextShell, runPath: null }];
       }
       setActiveId((active) => (active === id ? next[next.length - 1].id : active));
       return next;
     });
   };
+
+  useEffect(() => {
+    setRunListener((path) => {
+      const existing = sessionsRef.current.find((item) => item.runPath === path);
+      if (existing) {
+        setActiveId(existing.id);
+        void controls.current.get(existing.id)?.restart();
+        return;
+      }
+      nextSession += 1;
+      const id = nextSession;
+      setSessions((current) => [...current, { id, shell: "", runPath: path }]);
+      setActiveId(id);
+    });
+    return () => setRunListener(null);
+  }, []);
 
   if (!open) return null;
 
@@ -232,7 +255,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               }
               onClick={() => setActiveId(session.id)}
             >
-              {shellLabel(session.shell, index)}
+              {shellLabel(session, index)}
             </button>
             <button
               type="button"
@@ -298,6 +321,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               cwd={rootPath}
               theme={theme}
               shell={session.shell}
+              runPath={session.runPath}
               onControl={(control) => {
                 if (control) controls.current.set(session.id, control);
                 else controls.current.delete(session.id);

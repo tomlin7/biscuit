@@ -42,6 +42,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.34.0** | Minimap toggle, UTF-8 label, and end-of-line switch | shipped |
 | **0.35.0** | Choose PowerShell, Command Prompt, or bash for a new terminal | shipped |
 | **0.36.0** | Kill, restart, and clear the active terminal | shipped |
+| **0.37.0** | Run the active file in a terminal tab | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

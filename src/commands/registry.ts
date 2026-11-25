@@ -183,6 +183,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleTerminal(),
   },
   {
+    id: "workbench.action.runFile",
+    title: "Run File",
+    category: "Run",
+    keybinding: "Ctrl+F5",
+    run: (ctx) => ctx.runFile(),
+  },
+  {
     id: "workbench.actions.view.problems",
     title: "Show Problems",
     category: "View",

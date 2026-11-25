@@ -93,6 +93,37 @@ pub fn pty_spawn(
     shell: Option<String>,
 ) -> Result<String, String> {
     let launch = resolve_shell(shell.as_deref())?;
+    let mut cmd = command_from(launch);
+    if let Some(dir) = cwd {
+        cmd.cwd(dir);
+    }
+    spawn_in_pty(app, state, cmd, cols, rows)
+}
+
+#[tauri::command]
+pub fn pty_run_file(
+    app: AppHandle,
+    state: State<'_, PtyState>,
+    path: String,
+    cols: u16,
+    rows: u16,
+) -> Result<String, String> {
+    let spec = crate::debug::launch_spec(&path)?;
+    let mut cmd = CommandBuilder::new(spec.program);
+    for arg in spec.args {
+        cmd.arg(arg);
+    }
+    cmd.cwd(spec.cwd);
+    spawn_in_pty(app, state, cmd, cols, rows)
+}
+
+fn spawn_in_pty(
+    app: AppHandle,
+    state: State<'_, PtyState>,
+    cmd: CommandBuilder,
+    cols: u16,
+    rows: u16,
+) -> Result<String, String> {
     let pty_system = native_pty_system();
     let pair = pty_system
         .openpty(PtySize {
@@ -102,11 +133,6 @@ pub fn pty_spawn(
             pixel_height: 0,
         })
         .map_err(|e| e.to_string())?;
-
-    let mut cmd = command_from(launch);
-    if let Some(dir) = cwd {
-        cmd.cwd(dir);
-    }
 
     let mut child = pair
         .slave

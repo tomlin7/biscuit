@@ -14,7 +14,7 @@ use git::{
     git_stage,
     git_summary, git_unstage,
 };
-use pty::{pty_kill, pty_resize, pty_spawn, pty_write, PtyState};
+use pty::{pty_kill, pty_resize, pty_run_file, pty_spawn, pty_write, PtyState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -26,6 +26,7 @@ pub fn run() {
         .manage(DebugState::default())
         .invoke_handler(tauri::generate_handler![
             pty_spawn,
+            pty_run_file,
             pty_write,
             pty_resize,
             pty_kill,

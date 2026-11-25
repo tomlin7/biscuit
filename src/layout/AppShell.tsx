@@ -20,6 +20,7 @@ import { CommandPalette } from "../commands/CommandPalette";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
 import { basename } from "../workspace/path";
+import { requestRunFile } from "../terminal/runFile";
 import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { symbolsForFile } from "../lsp/OutlinePanel";
@@ -225,6 +226,12 @@ function ShellChrome() {
       runEditorCommand,
       openSearch,
       toggleTerminal,
+      runFile: () => {
+        if (!activePath) return;
+        requestRunFile(activePath);
+        setPanelTab("terminal");
+        setBottomOpen(true);
+      },
       openProblems,
       toggleAi,
       openExtensions,
@@ -254,6 +261,7 @@ function ShellChrome() {
       runEditorCommand,
       openSearch,
       toggleTerminal,
+      setBottomOpen,
       openProblems,
       toggleAi,
       openExtensions,

@@ -16,61 +16,70 @@ impl Default for DebugState {
     }
 }
 
-fn launch_command(path: &str) -> Result<Command, String> {
-    let p = Path::new(path);
-    let ext = p
+#[derive(Debug)]
+pub struct LaunchSpec {
+    pub program: String,
+    pub args: Vec<String>,
+    pub cwd: std::path::PathBuf,
+}
+
+pub fn launch_spec(path: &str) -> Result<LaunchSpec, String> {
+    let file = Path::new(path);
+    let ext = file
         .extension()
-        .and_then(|e| e.to_str())
+        .and_then(|value| value.to_str())
         .unwrap_or("")
         .to_lowercase();
-    let parent = p
+    let cwd = file
         .parent()
-        .map(|d| d.to_path_buf())
+        .map(|dir| dir.to_path_buf())
+        .filter(|dir| !dir.as_os_str().is_empty())
         .unwrap_or_else(|| Path::new(".").to_path_buf());
 
-    let mut cmd = match ext.as_str() {
-        "js" | "mjs" | "cjs" | "ts" => {
-            let mut c = Command::new("node");
-            if ext == "ts" {
-                // Foundation: attempt node; users can point at ts-node later.
-                c.arg("--experimental-strip-types");
-            }
-            c.arg(path);
-            c
-        }
-        "py" => {
-            let mut c = Command::new(if cfg!(windows) { "python" } else { "python3" });
-            c.arg(path);
-            c
-        }
+    let (program, args): (&str, Vec<String>) = match ext.as_str() {
+        "js" | "mjs" | "cjs" => ("node", vec![path.to_string()]),
+        "ts" => (
+            "node",
+            vec!["--experimental-strip-types".into(), path.to_string()],
+        ),
+        "py" => (
+            if cfg!(windows) { "python" } else { "python3" },
+            vec![path.to_string()],
+        ),
         "rs" => {
-            return Err("Rust files need a cargo project — open a built binary or use the terminal.".into());
+            return Err(
+                "Rust files need a cargo project — open a built binary or use the terminal.".into(),
+            );
         }
-        "ps1" => {
-            let mut c = Command::new("powershell.exe");
-            c.args(["-NoLogo", "-File", path]);
-            c
-        }
-        "sh" | "bash" => {
-            let mut c = Command::new("bash");
-            c.arg(path);
-            c
-        }
+        "ps1" => (
+            "powershell.exe",
+            vec!["-NoLogo".into(), "-File".into(), path.to_string()],
+        ),
+        "sh" | "bash" => ("bash", vec![path.to_string()]),
         _ => {
             #[cfg(windows)]
             {
-                let mut c = Command::new("cmd");
-                c.args(["/C", path]);
-                c
+                ("cmd", vec!["/C".into(), path.to_string()])
             }
             #[cfg(not(windows))]
             {
-                let mut c = Command::new(path);
-                c
+                (path, Vec::new())
             }
         }
     };
-    cmd.current_dir(parent);
+
+    Ok(LaunchSpec {
+        program: program.to_string(),
+        args,
+        cwd,
+    })
+}
+
+fn launch_command(path: &str) -> Result<Command, String> {
+    let spec = launch_spec(path)?;
+    let mut cmd = Command::new(spec.program);
+    cmd.args(spec.args);
+    cmd.current_dir(spec.cwd);
     cmd.stdin(Stdio::null());
     cmd.stdout(Stdio::null());
     cmd.stderr(Stdio::null());
@@ -98,4 +107,20 @@ pub fn debug_stop(state: tauri::State<'_, DebugState>, id: String) -> Result<(),
         let _ = child.wait();
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::launch_spec;
+
+    #[test]
+    fn routes_python_and_rejects_rust() {
+        let python = launch_spec("notes.py").unwrap();
+        assert!(python.program == "python" || python.program == "python3");
+        assert_eq!(python.args, vec!["notes.py".to_string()]);
+        assert!(launch_spec("main.rs").unwrap_err().contains("cargo"));
+        let script = launch_spec("app.ts").unwrap();
+        assert_eq!(script.program, "node");
+        assert_eq!(script.args[0], "--experimental-strip-types");
+    }
 }
