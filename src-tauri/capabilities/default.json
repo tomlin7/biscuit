@@ -14,7 +14,6 @@
     "core:window:allow-start-dragging",
     "core:window:allow-is-maximized",
     "core:window:allow-set-effects",
-    "core:window:allow-clear-effects",
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-fullscreen",
     "core:window:allow-is-fullscreen",

@@ -28,7 +28,8 @@ export async function applyChromeAcrylic(enabled: boolean): Promise<void> {
       await win.setEffects({ effects: [Effect.Acrylic] });
       setAcrylicAttr(true);
     } else {
-      await win.clearEffects();
+      // clearEffects has no matching capability id on current Tauri; empty set clears.
+      await win.setEffects({ effects: [] });
       setAcrylicAttr(false);
     }
   } catch {
