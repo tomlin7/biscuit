@@ -141,8 +141,8 @@ export type CommandContext = {
   gitCopyAbsolutePaths: () => void;
   gitOpenSelected: () => void;
   cycleAiRequestTimeout: () => void;
- gitSelectAll: () => void;
-  gitDeselectAll: () => void;
+  toggleAiStopOnToolError: () => void;
+ gitDeselectAll: () => void;
 };
 
 export type Command = {

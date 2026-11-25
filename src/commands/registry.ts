@@ -848,4 +848,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiRequestTimeout(),
   },
+  {
+    id: "workbench.action.toggleAiStopOnToolError",
+    title: "Toggle AI Stop on Tool Error",
+    category: "AI",
+    run: (ctx) => ctx.toggleAiStopOnToolError(),
+  },
 ];

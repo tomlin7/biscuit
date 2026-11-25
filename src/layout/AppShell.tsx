@@ -777,6 +777,10 @@ function ShellChrome() {
         setSettings({ requestTimeoutSec: next });
         setAiOpen(true);
       },
+      toggleAiStopOnToolError: () => {
+        setSettings({ stopOnToolError: !aiSettings.stopOnToolError });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -834,6 +838,7 @@ function ShellChrome() {
       setSettings,
       aiSettings.maxToolRounds,
       aiSettings.requestTimeoutSec,
+      aiSettings.stopOnToolError,
       setAiOpen,
       setSidebarOpen,
       toggleBottom,
