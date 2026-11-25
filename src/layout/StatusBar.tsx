@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertCircle,
   Bell,
@@ -12,6 +12,8 @@ import {
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { useNotifications } from "../notifications/NotificationsContext";
+import { useSettings } from "../settings/SettingsContext";
+import { editorConfigFor } from "../editor/editorconfig";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { IconButton } from "../ui/IconButton";
 
@@ -36,14 +38,38 @@ export function StatusBar({
   gitAhead = null,
   gitBehind = null,
 }: StatusBarProps) {
-  const { dirty, busy, rootName, document, selectionChars, selectionLines, setEol, setLanguageAt } =
+  const { dirty, busy, rootName, rootPath, document, selectionChars, selectionLines, setEol, setLanguageAt } =
     useWorkspace();
+  const { settings, updateEditor } = useSettings();
   const eol = document ? (document.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, dismiss, clear } = useNotifications();
   const [open, setOpen] = useState(false);
+  const [encoding, setEncoding] = useState("UTF-8");
   const errorCount = problems.filter((p) => p.severity === "error").length;
   const warnCount = problems.filter((p) => p.severity === "warning").length;
+
+  useEffect(() => {
+    if (!document) {
+      setEncoding("UTF-8");
+      return;
+    }
+    let cancelled = false;
+    void editorConfigFor(document.path, rootPath).then((config) => {
+      if (cancelled) return;
+      const charset = config.charset?.trim();
+      setEncoding(charset ? charset.toUpperCase() : "UTF-8");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [document?.path, rootPath]);
+
+  const cycleTabSize = () => {
+    const current = settings.editor.tabSize;
+    const next = current === 2 ? 4 : current === 4 ? 8 : 2;
+    updateEditor({ tabSize: next });
+  };
 
   return (
     <footer className="status-bar" role="contentinfo">
@@ -134,6 +160,16 @@ export function StatusBar({
             </select>
           </label>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Indentation — click to cycle tab size"
+            onClick={cycleTabSize}
+          >
+            Spaces: {settings.editor.tabSize}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
@@ -146,7 +182,7 @@ export function StatusBar({
         ) : null}
         {document ? (
           <span className="status-bar__item" title="Encoding">
-            UTF-8
+            {encoding}
           </span>
         ) : null}
         <IconButton

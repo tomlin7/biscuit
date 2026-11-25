@@ -5,6 +5,7 @@ export type ResolvedEditorConfig = {
   indentStyle: "space" | "tab" | null;
   indentSize: number | null;
   endOfLine: "lf" | "crlf" | null;
+  charset: string | null;
   insertFinalNewline: boolean | null;
   trimTrailingWhitespace: boolean | null;
 };
@@ -13,6 +14,7 @@ const EMPTY: ResolvedEditorConfig = {
   indentStyle: null,
   indentSize: null,
   endOfLine: null,
+  charset: null,
   insertFinalNewline: null,
   trimTrailingWhitespace: null,
 };
@@ -35,6 +37,9 @@ function applyPair(config: ResolvedEditorConfig, key: string, value: string) {
     if (Number.isFinite(size) && size > 0 && size <= 16) config.indentSize = size;
   } else if (key === "end_of_line" && (normalized === "lf" || normalized === "crlf")) {
     config.endOfLine = normalized;
+  } else if (key === "charset") {
+    const raw = value.trim();
+    if (raw) config.charset = raw;
   } else if (key === "insert_final_newline") {
     if (normalized === "true" || normalized === "false") config.insertFinalNewline = normalized === "true";
   } else if (key === "trim_trailing_whitespace") {
