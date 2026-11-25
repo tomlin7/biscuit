@@ -15,6 +15,7 @@ export type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
   createdAt: number;
+  toolCalls?: Array<{ id: string; name: string; detail: string }>;
 };
 
 export type ChatSession = {
@@ -333,6 +334,15 @@ export function AiProvider({ children }: { children: ReactNode }) {
           data.choices?.[0]?.message?.content?.trim() ||
           "(empty response from model)";
 
+        const toolCalls =
+          attachments.length > 0
+            ? attachments.map((a, i) => ({
+                id: `read-${i}`,
+                name: "read_file",
+                detail: a.path,
+              }))
+            : undefined;
+
         patchActive((session) => ({
           ...session,
           messages: [
@@ -342,6 +352,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
               role: "assistant",
               content,
               createdAt: Date.now(),
+              toolCalls,
             },
           ],
           updatedAt: Date.now(),

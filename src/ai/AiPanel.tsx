@@ -184,6 +184,19 @@ export function AiPanel({ onOpenSettings }: Props) {
                   : "ai-panel__bubble ai-panel__bubble--assistant"
               }
             >
+              {msg.toolCalls && msg.toolCalls.length > 0 ? (
+                <details className="ai-panel__tools">
+                  <summary>{msg.toolCalls.length} tool calls</summary>
+                  <ul>
+                    {msg.toolCalls.map((t) => (
+                      <li key={t.id}>
+                        <code>{t.name}</code>
+                        <span>{t.detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : null}
               <div className="ai-panel__bubble-text">{msg.content}</div>
               <div className="ai-panel__bubble-meta">
                 <span>
