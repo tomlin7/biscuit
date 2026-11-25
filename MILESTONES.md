@@ -220,6 +220,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.212.0** | Agent request timeout setting | shipped |
 | **0.213.0** | Explorer refresh folder with F5 | shipped |
 | **0.214.0** | Toggle word wrap from palette | shipped |
+| **0.215.0** | Status bar font size cycle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -181,6 +181,21 @@ export function StatusBar({
           <button
             type="button"
             className="status-bar__chip"
+            title="Cycle editor font size"
+            onClick={() => {
+              const order = [12, 13, 14, 16, 18];
+              const idx = order.indexOf(settings.editor.fontSize);
+              const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 14;
+              updateEditor({ fontSize: next });
+            }}
+          >
+            {settings.editor.fontSize}px
+          </button>
+        ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
             title="Toggle word wrap"
             onClick={() => updateEditor({ wordWrap: !settings.editor.wordWrap })}
           >
