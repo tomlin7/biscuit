@@ -1185,6 +1185,9 @@ function ShellChrome() {
       closeBottomPanel: () => {
         setBottomOpen(false);
       },
+      closeSidebar: () => {
+        setSidebarOpen(false);
+      },
     }),
     [
       openFolder,

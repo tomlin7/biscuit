@@ -200,6 +200,7 @@ export type CommandContext = {
   decreaseFontSize: () => void;
   notifyGitDirtyCount: () => void;
   closeBottomPanel: () => void;
+  closeSidebar: () => void;
 };
 
 export type Command = {

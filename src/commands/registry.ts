@@ -1202,4 +1202,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.closeBottomPanel(),
   },
+  {
+    id: "workbench.action.closeSidebar",
+    title: "Close Primary Side Bar",
+    category: "View",
+    run: (ctx) => ctx.closeSidebar(),
+  },
 ];
