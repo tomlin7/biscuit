@@ -255,6 +255,7 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
     explorerNonce,
     openFolder,
     addFolderRoot,
+    addFolderRootPath,
     removeFolderRoot,
     createEntry,
     renameEntry,
