@@ -162,6 +162,7 @@ export type CommandContext = {
   gitRefresh: () => void;
   toggleDiffIgnoreWhitespace: () => void;
   focusExplorer: () => void;
+  focusSearch: () => void;
 };
 
 export type Command = {

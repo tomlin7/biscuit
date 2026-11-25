@@ -938,6 +938,10 @@ function ShellChrome() {
         setSidebarMode("explorer");
         setSidebarOpen(true);
       },
+      focusSearch: () => {
+        setSidebarMode("search");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,

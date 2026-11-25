@@ -974,4 +974,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.focusExplorer(),
   },
+  {
+    id: "workbench.action.focusSearch",
+    title: "Focus on Search View",
+    category: "View",
+    run: (ctx) => ctx.focusSearch(),
+  },
 ];
