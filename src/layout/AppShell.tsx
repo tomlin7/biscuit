@@ -646,6 +646,7 @@ function ShellChrome() {
         if (last) void openFolderAt(last);
       },
       showWelcome: () => closeFolder(),
+      openAi: () => setAiOpen(true),
     }),
     [
       openFolder,

@@ -696,4 +696,10 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.showWelcome(),
   },
+  {
+    id: "workbench.action.openAi",
+    title: "Show AI Agent",
+    category: "View",
+    run: (ctx) => ctx.openAi(),
+  },
 ];
