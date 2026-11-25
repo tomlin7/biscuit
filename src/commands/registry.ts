@@ -363,6 +363,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.cycleTerminalFontSize(),
   },
   {
+    id: "editor.action.toggleLineNumbers",
+    title: "Toggle Line Numbers",
+    category: "View",
+    run: (ctx) => ctx.toggleLineNumbers(),
+  },
+  {
     id: "editor.action.toggleMinimap",
     title: "Toggle Minimap",
     category: "View",
