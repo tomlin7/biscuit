@@ -44,12 +44,18 @@ describe("JSON schema definitions and patterns", () => {
 
   test("matches file paths using glob patterns", () => {
     expect(matchesPattern("package.json", "*package.json")).toBe(true);
+    expect(matchesPattern("package.json", "package.json")).toBe(true);
     expect(matchesPattern("E:/projects/app/package.json", "*package.json")).toBe(true);
+    expect(matchesPattern("E:/projects/app/package.json", "package.json")).toBe(true);
     expect(matchesPattern("C:\\Users\\dev\\package.json", "*package.json")).toBe(true);
     expect(matchesPattern("tsconfig.json", "*tsconfig.json")).toBe(true);
     expect(matchesPattern("tsconfig.build.json", "*tsconfig.*.json")).toBe(true);
     expect(matchesPattern("tauri.conf.json", "*tauri.conf.json")).toBe(true);
     expect(matchesPattern("random.json", "*package.json")).toBe(false);
+    expect(matchesPattern("not-package.json", "*package.json")).toBe(false);
+    expect(matchesPattern("not-package.json", "package.json")).toBe(false);
+    expect(matchesPattern("E:/app/not-package.json", "package.json")).toBe(false);
+    expect(matchesPattern("fake-tsconfig.json", "*tsconfig.json")).toBe(false);
   });
 
   test("finds matching schema for a given file path", () => {

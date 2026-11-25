@@ -151,7 +151,10 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
       });
 
       setPresets((prev) => {
-        const existingIndex = prev.findIndex((p) => p.id === preset.id);
+        // Only overwrite an existing custom preset, never a builtin preset
+        const existingIndex = prev.findIndex(
+          (p) => !p.isBuiltin && (p.id === preset.id || p.name.toLowerCase() === preset.name.toLowerCase()),
+        );
         let next: LayoutPreset[];
         if (existingIndex >= 0) {
           next = [...prev];

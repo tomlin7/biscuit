@@ -66,6 +66,24 @@ describe("layoutPresets", () => {
     expect(slugify("Coding Mode")).toBe("coding-mode");
     expect(slugify("  My Custom Preset!  ")).toBe("my-custom-preset");
     expect(slugify("C++ & Rust Layout")).toBe("c-rust-layout");
+    expect(slugify("テスト")).toBe("テスト");
+    expect(slugify("Café")).toBe("café");
+    expect(slugify("My Screen 💻")).toBe("my-screen");
+  });
+
+  test("generates safe non-colliding ID when custom preset uses a built-in name", () => {
+    const preset = createPreset("Coding", {
+      sidebarOpen: false,
+      sidebarWidth: 200,
+      bottomOpen: false,
+      bottomHeight: 150,
+      aiOpen: false,
+      aiWidth: 300,
+    });
+    expect(preset.id).not.toBe("coding");
+    expect(preset.id.startsWith("custom-coding-")).toBe(true);
+    expect(preset.name).toBe("Coding");
+    expect(preset.isBuiltin).toBe(false);
   });
 
   test("creates a custom preset with sanitized values", () => {

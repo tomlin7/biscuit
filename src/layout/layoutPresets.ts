@@ -110,13 +110,19 @@ export function slugify(name: string): string {
   return name
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-+|-+$/g, "");
 }
 
 export function createPreset(name: string, values: LayoutPresetValues): LayoutPreset {
   const trimmed = name.trim();
-  const id = slugify(trimmed) || `preset-${Date.now()}`;
+  const slug = slugify(trimmed);
+  const isBuiltin = BUILTIN_LAYOUT_PRESETS.some(
+    (b) => b.id.toLowerCase() === slug.toLowerCase() || b.name.toLowerCase() === trimmed.toLowerCase(),
+  );
+  const id = isBuiltin
+    ? `custom-${slug || "preset"}-${Date.now().toString(36)}`
+    : slug || `preset-${Date.now().toString(36)}`;
   return {
     id,
     name: trimmed,

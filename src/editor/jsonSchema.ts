@@ -308,19 +308,39 @@ export const BUILTIN_JSON_SCHEMAS: JsonSchemaAssociation[] = [
   },
 ];
 
+export function normalizeGlob(pattern: string): string {
+  let p = pattern.replace(/\\/g, "/");
+  if (p.startsWith("*") && !p.startsWith("*.") && !p.startsWith("**") && !p.startsWith("*/")) {
+    p = p.slice(1);
+  }
+  return p;
+}
+
 export function globToRegex(glob: string): RegExp {
-  const escaped = glob
+  const norm = normalizeGlob(glob);
+  if (!norm.includes("/")) {
+    const escaped = norm
+      .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+      .replace(/\*/g, "[^/]*")
+      .replace(/\?/g, ".");
+    return new RegExp(`^${escaped}$`, "i");
+  }
+  const escaped = norm
     .replace(/[.+^${}()|[\]\\]/g, "\\$&")
     .replace(/\*\*/g, ".*")
-    .replace(/\*/g, "[^/\\\\]*")
+    .replace(/\*/g, "[^/]*")
     .replace(/\?/g, ".");
-  return new RegExp(`${escaped}$`, "i");
+  return new RegExp(`(?:^|/)${escaped}$`, "i");
 }
 
 export function matchesPattern(path: string, pattern: string): boolean {
   const norm = path.replace(/\\/g, "/");
-  const regex = globToRegex(pattern.replace(/\\/g, "/"));
-  return regex.test(norm);
+  const normPattern = normalizeGlob(pattern);
+  if (!normPattern.includes("/")) {
+    const filename = norm.split("/").pop() ?? norm;
+    return globToRegex(normPattern).test(filename);
+  }
+  return globToRegex(normPattern).test(norm);
 }
 
 export function findMatchingSchema(
