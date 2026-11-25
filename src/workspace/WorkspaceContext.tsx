@@ -83,9 +83,11 @@ export type WorkspaceState = {
   setSelection: (chars: number, lines: number) => void;
   clearRevealTarget: () => void;
   refreshExplorer: () => Promise<void>;
+  collapseExplorer: () => void;
   save: () => Promise<void>;
   saveAs: () => Promise<void>;
   saveAll: () => Promise<void>;
+  saveDirtyAuto: () => Promise<void>;
   closeAll: () => void;
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
   renameEntry: (path: string) => Promise<void>;
@@ -782,6 +784,38 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, [rootPath]);
 
+  const collapseExplorer = useCallback(() => {
+    setExpanded(new Set());
+  }, []);
+
+  const saveDirtyAuto = useCallback(async () => {
+    const dirty = tabsRef.current.filter(isDirty);
+    if (dirty.length === 0) return;
+    const saved = new Map<string, string>();
+    for (const tab of dirty) {
+      try {
+        const onDisk = await readTextFile(tab.path);
+        if (onDisk !== tab.baseline) {
+          // External change — skip to avoid clobbering.
+          continue;
+        }
+        const config = await editorConfigFor(tab.path, rootPath);
+        const text = applyEditorConfigText(tab.value, config);
+        await writeTextFile(tab.path, text);
+        saved.set(tab.path, text);
+      } catch {
+        /* skip unreadable / unwritable */
+      }
+    }
+    if (saved.size === 0) return;
+    setTabs((current) =>
+      current.map((tab) => {
+        const value = saved.get(tab.path);
+        return value === undefined ? tab : { ...tab, value, baseline: value };
+      }),
+    );
+  }, [rootPath]);
+
   const reloadDirectory = useCallback(
     async (dir: string) => {
       const children = await listDirectory(dir);
@@ -1062,9 +1096,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setSelection,
       clearRevealTarget,
       refreshExplorer,
+      collapseExplorer,
       save,
       saveAs,
       saveAll,
+      saveDirtyAuto,
       closeAll,
       createEntry,
       renameEntry,
@@ -1107,9 +1143,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setSelection,
       clearRevealTarget,
       refreshExplorer,
+      collapseExplorer,
       save,
       saveAs,
       saveAll,
+      saveDirtyAuto,
       closeAll,
       createEntry,
       renameEntry,

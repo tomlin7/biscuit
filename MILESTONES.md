@@ -100,6 +100,11 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.92.0** | Markdown preview scroll sync | shipped |
 | **0.93.0** | Copy button on agent code blocks | shipped |
 | **0.94.0** | Keyboard shortcuts cheatsheet | shipped |
+| **0.95.0** | Auto-save after idle delay | shipped |
+| **0.96.0** | Collapse all explorer folders | shipped |
+| **0.97.0** | Git fetch from SCM toolbar | shipped |
+| **0.98.0** | HTML preview scroll sync | shipped |
+| **0.99.0** | Regenerate last agent reply | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

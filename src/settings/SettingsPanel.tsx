@@ -101,6 +101,20 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => updateEditor({ stickyScroll: e.target.checked })}
               />
             </label>
+            <label className="settings-row">
+              <span>Auto save</span>
+              <select
+                value={String(settings.editor.autoSaveMs)}
+                onChange={(e) =>
+                  updateEditor({ autoSaveMs: Number(e.target.value) || 0 })
+                }
+              >
+                <option value="0">Off</option>
+                <option value="1000">After 1s</option>
+                <option value="2000">After 2s</option>
+                <option value="5000">After 5s</option>
+              </select>
+            </label>
           </section>
 
           <section>

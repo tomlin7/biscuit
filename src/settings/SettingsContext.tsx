@@ -15,6 +15,8 @@ export type EditorSettings = {
   minimap: boolean;
   lineNumbers: boolean;
   stickyScroll: boolean;
+  /** 0 = off; otherwise idle milliseconds before auto-save. */
+  autoSaveMs: number;
 };
 
 export type AppSettings = {
@@ -37,6 +39,7 @@ const DEFAULTS: AppSettings = {
     minimap: true,
     lineNumbers: true,
     stickyScroll: true,
+    autoSaveMs: 0,
   },
 };
 

@@ -18,6 +18,7 @@ import { DebugProvider } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
 import { NotificationsProvider } from "../notifications/NotificationsContext";
+import { AutoSave } from "../workspace/AutoSave";
 import { CommandPalette } from "../commands/CommandPalette";
 import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
@@ -59,6 +60,7 @@ function ShellChrome() {
     rootPath,
     roots,
     refreshExplorer,
+    collapseExplorer,
     explorerNonce,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
@@ -292,6 +294,7 @@ function ShellChrome() {
       openGoToFile,
       openKeybindings,
       refreshExplorer,
+      collapseExplorer,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -333,6 +336,7 @@ function ShellChrome() {
       openGoToFile,
       openKeybindings,
       refreshExplorer,
+      collapseExplorer,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -710,6 +714,7 @@ export function AppShell() {
               <DebugProvider>
                 <SettingsProvider>
                   <NotificationsProvider>
+                    <AutoSave />
                     <LayoutProvider>
                       <ShellChrome />
                     </LayoutProvider>
