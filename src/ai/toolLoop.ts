@@ -41,11 +41,15 @@ export async function runToolLoop(input: {
   complete: (messages: ModelMessage[]) => Promise<{ content: string | null; toolCalls: ModelToolCall[] }>;
   callTool: (name: string, args: Record<string, string>) => Promise<string>;
   maxRounds?: number;
+  signal?: AbortSignal;
 }): Promise<{ content: string; toolCalls: ShownToolCall[] }> {
   const messages = [...input.messages];
   const shown: ShownToolCall[] = [];
   const maxRounds = input.maxRounds ?? 8;
   for (let round = 0; round < maxRounds; round++) {
+    if (input.signal?.aborted) {
+      throw new DOMException("Aborted", "AbortError");
+    }
     const next = await input.complete(messages);
     if (next.toolCalls.length === 0) {
       return {
@@ -63,6 +67,9 @@ export async function runToolLoop(input: {
       })),
     });
     for (const call of next.toolCalls) {
+      if (input.signal?.aborted) {
+        throw new DOMException("Aborted", "AbortError");
+      }
       const text = await input.callTool(call.name, stringArgs(call.arguments));
       shown.push({ id: call.id, name: call.name, detail: text.slice(0, 240) });
       messages.push({ role: "tool", tool_call_id: call.id, content: text });

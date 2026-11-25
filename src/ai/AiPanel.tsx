@@ -11,6 +11,7 @@ import {
   Search,
   Settings2,
   Sparkles,
+  Square,
   Trash2,
   X,
 } from "lucide-react";
@@ -40,6 +41,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     showHistory,
     setShowHistory,
     send,
+    stop,
     newChat,
     selectSession,
     deleteSession,
@@ -373,11 +375,11 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
               />
             </div>
             <IconButton
-              icon={ArrowUp}
-              label="Send"
+              icon={busy ? Square : ArrowUp}
+              label={busy ? "Stop" : "Send"}
               size={14}
-              disabled={busy || !draft.trim()}
-              onClick={submit}
+              disabled={busy ? false : !draft.trim()}
+              onClick={busy ? stop : submit}
               className="ai-panel__send"
             />
           </div>

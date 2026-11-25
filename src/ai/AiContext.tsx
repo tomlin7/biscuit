@@ -54,6 +54,7 @@ type AiState = {
   setShowHistory: (open: boolean) => void;
   setSettings: (next: Partial<AiSettings>) => void;
   send: (prompt: string) => Promise<string | null>;
+  stop: () => void;
   newChat: () => void;
   selectSession: (id: string) => void;
   deleteSession: (id: string) => void;
@@ -129,6 +130,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   const active =
     sessions.find((s) => s.id === activeSessionId) ?? sessions[0] ?? emptySession();
@@ -276,6 +278,8 @@ export function AiProvider({ children }: { children: ReactNode }) {
       }));
       setBusy(true);
       setError(null);
+      const controller = new AbortController();
+      abortRef.current = controller;
 
       try {
         if (!settings.apiKey) {
@@ -316,6 +320,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
 
         const result = await runToolLoop({
           messages: history,
+          signal: controller.signal,
           complete: async (nextMessages) => {
             const res = await fetch(
               `${settings.baseUrl.replace(/\/$/, "")}/chat/completions`,
@@ -330,6 +335,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
                   messages: nextMessages,
                   tools: agentToolSchema,
                 }),
+                signal: controller.signal,
               },
             );
             if (!res.ok) {
@@ -381,6 +387,8 @@ export function AiProvider({ children }: { children: ReactNode }) {
           },
         });
 
+        if (controller.signal.aborted) return null;
+
         patchActive((session) => ({
           ...session,
           messages: [
@@ -397,15 +405,38 @@ export function AiProvider({ children }: { children: ReactNode }) {
         }));
         return result.content;
       } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          patchActive((session) => ({
+            ...session,
+            messages: [
+              ...session.messages,
+              {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: "(stopped)",
+                createdAt: Date.now(),
+              },
+            ],
+            updatedAt: Date.now(),
+          }));
+          return null;
+        }
         const message = err instanceof Error ? err.message : String(err);
         setError(message);
         return message;
       } finally {
+        if (abortRef.current === controller) abortRef.current = null;
         setBusy(false);
       }
     },
     [attachments, busy, messages, patchActive, settings],
   );
+
+  const stop = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setBusy(false);
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -420,6 +451,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       setShowHistory,
       setSettings,
       send,
+      stop,
       newChat,
       selectSession,
       deleteSession,
@@ -439,6 +471,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       showHistory,
       setSettings,
       send,
+      stop,
       newChat,
       selectSession,
       deleteSession,
