@@ -200,6 +200,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.192.0** | SCM open selected | shipped |
 | **0.193.0** | Status bar trim trailing whitespace toggle | shipped |
 | **0.194.0** | Agent seed setting | shipped |
+| **0.195.0** | Explorer copy path from keyboard | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

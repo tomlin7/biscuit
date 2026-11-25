@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { ChevronRight } from "lucide-react";
 import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
-import { parentPath } from "./path";
+import { parentPath, relativeToRoot } from "./path";
+import { rootForPath } from "../ai/roots";
 import { FileIcon } from "../ui/FileIcon";
 import "./FileTree.css";
 
@@ -44,13 +45,23 @@ function TreeRows({
   depth,
   forceExpand,
   onMenu,
+  workspaceRoots,
 }: {
   nodes: TreeNode[];
   depth: number;
   forceExpand: boolean;
   onMenu: (event: MouseEvent, node: TreeNode) => void;
+  workspaceRoots: string[];
 }) {
   const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry } = useWorkspace();
+
+  const copyAbsolute = (path: string) => {
+    void navigator.clipboard.writeText(path);
+  };
+  const copyRelative = (path: string) => {
+    const root = rootForPath(workspaceRoots, path);
+    void navigator.clipboard.writeText(relativeToRoot(root, path));
+  };
 
   return (
     <>
@@ -77,6 +88,12 @@ function TreeRows({
                   if (event.key === "Delete" || event.key === "Backspace") {
                     event.preventDefault();
                     void deleteEntry(node.path);
+                    return;
+                  }
+                  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "c") {
+                    event.preventDefault();
+                    if (event.shiftKey) copyRelative(node.path);
+                    else copyAbsolute(node.path);
                     return;
                   }
                   if (event.key === "Enter" || event.key === "ArrowRight") {
@@ -124,6 +141,7 @@ function TreeRows({
                   depth={depth + 1}
                   forceExpand={forceExpand}
                   onMenu={onMenu}
+                  workspaceRoots={workspaceRoots}
                 />
               ) : null}
             </div>
@@ -149,6 +167,12 @@ function TreeRows({
               if (event.key === "Delete" || event.key === "Backspace") {
                 event.preventDefault();
                 void deleteEntry(node.path);
+                return;
+              }
+              if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "c") {
+                event.preventDefault();
+                if (event.shiftKey) copyRelative(node.path);
+                else copyAbsolute(node.path);
                 return;
               }
               if (event.key === "Enter" || event.key === "ArrowRight") {
@@ -234,6 +258,7 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
           nodes={filtered}
           depth={0}
           forceExpand={forceExpand}
+          workspaceRoots={roots.length > 0 ? roots : rootPath ? [rootPath] : []}
           onMenu={(event, node) => {
             event.preventDefault();
             event.stopPropagation();
@@ -299,6 +324,30 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
               }}
             >
               Delete
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const path = menu.path;
+                setMenu(null);
+                void navigator.clipboard.writeText(path);
+              }}
+            >
+              Copy Path
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const path = menu.path;
+                setMenu(null);
+                const list = roots.length > 0 ? roots : rootPath ? [rootPath] : [];
+                const root = rootForPath(list, path) ?? rootPath;
+                void navigator.clipboard.writeText(relativeToRoot(root, path));
+              }}
+            >
+              Copy Relative Path
             </button>
             {menu.kind === "directory" &&
             roots.length > 1 &&
