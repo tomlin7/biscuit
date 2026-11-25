@@ -1869,6 +1869,41 @@ function ShellChrome() {
             : `Cleared for ${languageLabel(language)}`,
         );
       },
+      showRunConfigurations: () => {
+        const saved = Object.entries(readRunCommands()).sort(([a], [b]) => a.localeCompare(b));
+        setRecentCommands([]);
+        setSymbolCommands([
+          ...saved.map(([language, template]) => ({
+            id: `runConfig:${language}`,
+            title: `Run Configuration: ${languageLabel(language)} — ${template}`,
+            category: "Run Configuration",
+            run: () => {
+              const next = window.prompt(
+                `Run command for ${language} (use {file} for the path; empty clears):`,
+                template,
+              );
+              if (next == null) return;
+              setRunCommand(language, next);
+              notify(
+                "Run Command",
+                next.trim()
+                  ? `Saved for ${languageLabel(language)}`
+                  : `Cleared for ${languageLabel(language)}`,
+              );
+            },
+          })),
+          {
+            id: "runConfig:add",
+            title: saved.length
+              ? "Run Configuration: Add Run Command…"
+              : "Run Configuration: None saved yet — Add Run Command…",
+            category: "Run Configuration",
+            run: (ctx) => ctx.configureRunCommand(),
+          },
+        ]);
+        setPaletteSeed("Run Configuration");
+        setPaletteOpen(true);
+      },
       toggleVimMode: () => {
         const next = !settings.vimMode;
         updateApp({ vimMode: next });

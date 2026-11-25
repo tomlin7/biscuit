@@ -1784,6 +1784,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.configureRunCommand(),
   },
   {
+    id: "workbench.action.showRunConfigurations",
+    title: "Show Run Configurations",
+    category: "Run",
+    run: (ctx) => ctx.showRunConfigurations(),
+  },
+  {
     id: "editor.action.toggleVimMode",
     title: "Toggle Vim Mode",
     category: "View",

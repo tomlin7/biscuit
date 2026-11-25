@@ -286,6 +286,7 @@ export type CommandContext = {
   openNewWindow: () => void;
   toggleSecondarySidebar: () => void;
   configureRunCommand: () => void;
+  showRunConfigurations: () => void;
   toggleVimMode: () => void;
   toggleKeypressDisplay: () => void;
   changeEncoding: () => void;
