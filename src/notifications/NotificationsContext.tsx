@@ -19,6 +19,7 @@ type NotificationsState = {
   unread: number;
   push: (title: string, detail?: string) => void;
   markRead: () => void;
+  dismiss: (id: string) => void;
   clear: () => void;
 };
 
@@ -42,14 +43,17 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const markRead = useCallback(() => setUnread(0), []);
+  const dismiss = useCallback((id: string) => {
+    setItems((current) => current.filter((item) => item.id !== id));
+  }, []);
   const clear = useCallback(() => {
     setItems([]);
     setUnread(0);
   }, []);
 
   const value = useMemo(
-    () => ({ items, unread, push, markRead, clear }),
-    [items, unread, push, markRead, clear],
+    () => ({ items, unread, push, markRead, dismiss, clear }),
+    [items, unread, push, markRead, dismiss, clear],
   );
 
   return (

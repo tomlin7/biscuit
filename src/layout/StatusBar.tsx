@@ -34,7 +34,7 @@ export function StatusBar({
   const { dirty, busy, rootName, document, setEol } = useWorkspace();
   const eol = document ? (document.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
-  const { items, unread, markRead, clear } = useNotifications();
+  const { items, unread, markRead, dismiss, clear } = useNotifications();
   const [open, setOpen] = useState(false);
   const errorCount = problems.filter((p) => p.severity === "error").length;
   const warnCount = problems.filter((p) => p.severity === "warning").length;
@@ -146,7 +146,16 @@ export function StatusBar({
                 <ul>
                   {items.map((n) => (
                     <li key={n.id}>
-                      <strong>{n.title}</strong>
+                      <div className="status-bar__notify-row">
+                        <strong>{n.title}</strong>
+                        <button
+                          type="button"
+                          aria-label={`Dismiss ${n.title}`}
+                          onClick={() => dismiss(n.id)}
+                        >
+                          ×
+                        </button>
+                      </div>
                       {n.detail ? <span>{n.detail}</span> : null}
                     </li>
                   ))}

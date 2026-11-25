@@ -60,6 +60,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.52.0** | Image files open in a viewer | shipped |
 | **0.53.0** | HTML preview loads assets next to the file | shipped |
 | **0.54.0** | Split editor shows a second open file | shipped |
+| **0.55.0** | Dismiss one notification from the bell list | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

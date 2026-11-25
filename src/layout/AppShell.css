@@ -545,3 +545,21 @@
   color: var(--fg);
   font-weight: 500;
 }
+
+.status-bar__notify-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.status-bar__notify-row button {
+  flex-shrink: 0;
+  color: var(--fg-dim);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.status-bar__notify-row button:hover {
+  color: var(--fg);
+}
