@@ -18,29 +18,57 @@ export type TypeHierarchyResult = {
 };
 
 /**
+ * Strips balanced generic type arguments (<...>) from a type signature.
+ */
+export function stripGenerics(str: string): string {
+  let result = "";
+  let depth = 0;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === "<") {
+      depth++;
+    } else if (ch === ">") {
+      if (depth > 0) depth--;
+    } else if (depth === 0) {
+      result += ch;
+    }
+  }
+  return result;
+}
+
+/**
  * Parses supertypes (extends and implements clauses) from a class or interface declaration line.
  */
 export function parseSupertypes(line: string): { extendsList: string[]; implementsList: string[] } {
   const trimmed = line.trim();
-  const extendsMatch = /\bextends\s+([^\\{]+)/.exec(trimmed);
-  const implementsMatch = /\bimplements\s+([^\\{]+)/.exec(trimmed);
+  const braceIdx = trimmed.indexOf("{");
+  const decl = braceIdx >= 0 ? trimmed.slice(0, braceIdx) : trimmed;
+
+  const extendsMatch = /\bextends\s+([^\\{]+)/.exec(decl);
+  const implementsMatch = /\bimplements\s+([^\\{]+)/.exec(decl);
 
   const extendsList: string[] = [];
   if (extendsMatch?.[1]) {
     // If implements follows extends, cut at 'implements'
     const extRaw = extendsMatch[1].split(/\bimplements\b/)[0];
-    for (const part of extRaw.split(",")) {
-      const name = part.trim().split(/\s+/)[0].replace(/<.*>$/, "");
-      if (name) extendsList.push(name);
+    const stripped = stripGenerics(extRaw);
+    for (const part of stripped.split(",")) {
+      const name = part.trim().split(/\s+/)[0];
+      if (name && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(name)) {
+        extendsList.push(name);
+      }
     }
   }
 
   const implementsList: string[] = [];
   if (implementsMatch?.[1]) {
-    const impRaw = implementsMatch[1].split("{")[0];
-    for (const part of impRaw.split(",")) {
-      const name = part.trim().split(/\s+/)[0].replace(/<.*>$/, "");
-      if (name) implementsList.push(name);
+    const impRaw = implementsMatch[1];
+    const stripped = stripGenerics(impRaw);
+    for (const part of stripped.split(",")) {
+      const name = part.trim().split(/\s+/)[0];
+      if (name && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(name)) {
+        implementsList.push(name);
+      }
     }
   }
 
@@ -57,34 +85,33 @@ export function findSubtypesInText(
 ): TypeHierarchyItem[] {
   const lines = text.split(/\r?\n/);
   const subtypes: TypeHierarchyItem[] = [];
-  const escaped = typeName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-  const classRegex = new RegExp(
-    `^(?:export\\s+)?(?:default\\s+)?(?:abstract\\s+)?class\\s+(\\w+)(?:<[^>]+>)?\\s+(?:extends\\s+[^{]*?\\b${escaped}\\b|implements\\s+[^{]*?\\b${escaped}\\b)`,
-  );
-  const interfaceRegex = new RegExp(
-    `^(?:export\\s+)?(?:default\\s+)?interface\\s+(\\w+)(?:<[^>]+>)?\\s+extends\\s+[^{]*?\\b${escaped}\\b`,
-  );
+  const typeDeclRegex =
+    /^(?:export\s+)?(?:default\s+)?(?:abstract\s+)?(class|interface)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/;
 
   lines.forEach((line, index) => {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("/*")) return;
 
-    let match = classRegex.exec(trimmed);
-    let kind: "class" | "interface" = "class";
-    if (!match) {
-      match = interfaceRegex.exec(trimmed);
-      kind = "interface";
-    }
+    const match = typeDeclRegex.exec(trimmed);
+    if (!match) return;
 
-    if (match?.[1] && match[1] !== typeName) {
+    const kind = match[1] as "class" | "interface";
+    const subName = match[2];
+    if (subName === typeName) return;
+
+    const { extendsList, implementsList } = parseSupertypes(trimmed);
+    const isExtends = extendsList.includes(typeName);
+    const isImplements = implementsList.includes(typeName);
+
+    if (isExtends || isImplements) {
       subtypes.push({
-        name: match[1],
+        name: subName,
         kind,
         path: filePath,
         line: index + 1,
         column: 1,
         preview: trimmed.slice(0, 160),
+        detail: isExtends ? "extends" : "implements",
       });
     }
   });

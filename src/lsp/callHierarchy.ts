@@ -33,6 +33,7 @@ export function extractOutgoingCalls(
   bodyText: string,
   startLine: number,
   filePath: string,
+  selfName?: string,
 ): CallHierarchyItem[] {
   const lines = bodyText.split(/\r?\n/);
   const calls: CallHierarchyItem[] = [];
@@ -52,6 +53,11 @@ export function extractOutgoingCalls(
     while ((match = regex.exec(line)) !== null) {
       const callName = match[1];
       if (reserved.has(callName)) continue;
+      // Skip the function's own declaration name on start line
+      if (index === 0 && selfName && callName === selfName) continue;
+      // Skip if preceded by function or class keywords on the same line
+      const prefix = line.slice(0, match.index).trimEnd();
+      if (/\b(?:function\*?|class)\s*$/.test(prefix)) continue;
       const key = `${callName}:${index + 1}`;
       if (seen.has(key)) continue;
       seen.add(key);
@@ -178,7 +184,7 @@ export async function getCallHierarchy(
   for (let l = rootLine; l <= Math.min(rootLine + 200, endLine); l++) {
     lines.push(model.getLineContent(l) ?? "");
   }
-  const outgoing = extractOutgoingCalls(lines.join("\n"), rootLine, rootPath);
+  const outgoing = extractOutgoingCalls(lines.join("\n"), rootLine, rootPath, name);
 
   return {
     root,

@@ -53,4 +53,25 @@ describe("symbolBreadcrumb", () => {
     const siblings = getSiblingSymbols(testSymbols, renderSym);
     expect(siblings.map((s) => s.name)).toEqual(["constructor", "render", "cleanup"]);
   });
+
+  it("isolates sibling symbols to their enclosing parent class or scope", () => {
+    const multiClassSymbols: OutlineSymbol[] = [
+      { name: "ClassA", kind: "class", line: 10, depth: 0 },
+      { name: "methodA1", kind: "method", line: 12, depth: 1 },
+      { name: "methodA2", kind: "method", line: 15, depth: 1 },
+      { name: "ClassB", kind: "class", line: 20, depth: 0 },
+      { name: "methodB1", kind: "method", line: 22, depth: 1 },
+      { name: "methodB2", kind: "method", line: 25, depth: 1 },
+    ];
+
+    const methodA1 = multiClassSymbols[1];
+    const siblingsA = getSiblingSymbols(multiClassSymbols, methodA1);
+    expect(siblingsA.map((s) => s.name)).toEqual(["methodA1", "methodA2"]);
+    expect(siblingsA.map((s) => s.name)).not.toContain("methodB1");
+
+    const methodB1 = multiClassSymbols[4];
+    const siblingsB = getSiblingSymbols(multiClassSymbols, methodB1);
+    expect(siblingsB.map((s) => s.name)).toEqual(["methodB1", "methodB2"]);
+    expect(siblingsB.map((s) => s.name)).not.toContain("methodA1");
+  });
 });

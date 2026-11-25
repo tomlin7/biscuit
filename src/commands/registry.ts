@@ -285,6 +285,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleInlayHints(),
   },
   {
+    id: "editor.action.toggleCodeLens",
+    title: "Toggle CodeLens",
+    category: "View",
+    run: (ctx) => ctx.toggleCodeLens(),
+  },
+  {
     id: "editor.action.formatDocument",
     title: "Format Document",
     category: "Edit",

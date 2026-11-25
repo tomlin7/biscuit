@@ -344,6 +344,14 @@ export function SettingsPanel({
                       onChange={(e) => updateEditor({ inlayHints: e.target.checked })}
                     />
                   </label>
+                  <label className="settings-row settings-row--check">
+                    <span>CodeLens reference counts</span>
+                    <input
+                      type="checkbox"
+                      checked={settings.editor.codeLens}
+                      onChange={(e) => updateEditor({ codeLens: e.target.checked })}
+                    />
+                  </label>
                 </section>
               )}
 

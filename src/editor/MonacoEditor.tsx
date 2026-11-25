@@ -19,7 +19,7 @@ import { registerTsHoverProviders } from "../lsp/tsHover";
 import { StickyOutline } from "./StickyOutline";
 import { symbolsForFile } from "../lsp/OutlinePanel";
 import type { OutlineSymbol } from "../lsp/outlineScan";
-import { // registerCodeLensProvider } from "../lsp/codeLens";
+import { registerCodeLensProvider } from "../lsp/codeLens";
 import "./MonacoEditor.css";
 
 type Props = {
@@ -74,7 +74,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   const [symbols, setSymbols] = useState<OutlineSymbol[]>([]);
 
   useEffect(() => {
-    const disp = // registerCodeLensProvider();
+    const disp = registerCodeLensProvider(monacoApi);
     return () => disp?.dispose();
   }, []);
 
@@ -180,6 +180,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       minimap: { enabled: settings.editor.minimap, scale: 1 },
       stickyScroll: { enabled: settings.editor.stickyScroll },
       inlayHints: { enabled: settings.editor.inlayHints ? "on" : "off" },
+      codeLens: settings.editor.codeLens,
       tabSize: settings.editor.tabSize,
       fontSize: settings.editor.fontSize,
       fontFamily: settings.editor.fontFamily,
@@ -200,6 +201,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     settings.editor.minimap,
     settings.editor.stickyScroll,
     settings.editor.inlayHints,
+    settings.editor.codeLens,
     settings.editor.tabSize,
     settings.editor.fontSize,
     settings.editor.fontFamily,
@@ -636,6 +638,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
             minimap: { enabled: settings.editor.minimap, scale: 1 },
             stickyScroll: { enabled: settings.editor.stickyScroll },
             inlayHints: { enabled: settings.editor.inlayHints ? "on" : "off" },
+            codeLens: settings.editor.codeLens,
             wordWrap: settings.editor.wordWrap ? "bounded" : "off",
             wordWrapColumn: settings.editor.wordWrapColumn,
             wrappingStrategy: "advanced",

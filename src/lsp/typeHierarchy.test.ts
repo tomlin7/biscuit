@@ -37,4 +37,35 @@ describe("typeHierarchy", () => {
     const dogSubtypes = findSubtypesInText(source, "Dog", "test.ts");
     expect(dogSubtypes.map((s) => s.name)).toEqual(["GoldenRetriever"]);
   });
+
+  it("parses extends clauses with generic type arguments without breaking on commas", () => {
+    const line = "export interface Foo<T> extends Bar<T, U>, Baz<Record<string, number>> {";
+    const { extendsList, implementsList } = parseSupertypes(line);
+    expect(extendsList).toEqual(["Bar", "Baz"]);
+    expect(implementsList).toEqual([]);
+  });
+
+  it("parses class with generic extends and generic implements clauses", () => {
+    const line = "export class CustomMap<K, V> extends BaseMap<K, V> implements IMap<K, V>, Serializable {";
+    const { extendsList, implementsList } = parseSupertypes(line);
+    expect(extendsList).toEqual(["BaseMap"]);
+    expect(implementsList).toEqual(["IMap", "Serializable"]);
+  });
+
+  it("finds subtypes that use generic type arguments", () => {
+    const source = `
+      export class BaseRepo<T> {}
+      export class UserRepo extends BaseRepo<User> {}
+      export class OrderRepo<T> extends BaseRepo<T> {}
+      export interface IHandler<Req, Res> {}
+      export class ApiHandler implements IHandler<Request, Response> {}
+    `;
+    const baseSubtypes = findSubtypesInText(source, "BaseRepo", "test.ts");
+    expect(baseSubtypes.map((s) => s.name)).toEqual(["UserRepo", "OrderRepo"]);
+    expect(baseSubtypes.map((s) => s.detail)).toEqual(["extends", "extends"]);
+
+    const handlerSubtypes = findSubtypesInText(source, "IHandler", "test.ts");
+    expect(handlerSubtypes.map((s) => s.name)).toEqual(["ApiHandler"]);
+    expect(handlerSubtypes[0].detail).toBe("implements");
+  });
 });

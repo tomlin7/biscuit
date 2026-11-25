@@ -25,6 +25,21 @@ describe("callHierarchy", () => {
     expect(names).not.toContain("for");
     expect(names).not.toContain("function");
     expect(names).not.toContain("return");
+    expect(names).not.toContain("test");
+  });
+
+  it("distinguishes function declaration header from recursive calls", () => {
+    const body = `
+      function factorial(n) {
+        if (n <= 1) return 1;
+        return n * factorial(n - 1);
+      }
+    `;
+    const calls = extractOutgoingCalls(body, 1, "math.ts", "factorial");
+    const names = calls.map((c) => c.name);
+    expect(names).toEqual(["factorial"]);
+    // Must be on line 4 (body call), not line 2 (declaration)
+    expect(calls[0].line).toBe(4);
   });
 
   it("maps incoming reference hits to caller functions", () => {

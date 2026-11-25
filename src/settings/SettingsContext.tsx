@@ -35,6 +35,8 @@ export type EditorSettings = {
   stickyOutline: boolean;
   /** Inlay hints for JS/TS parameter names and inferred types. */
   inlayHints: boolean;
+  /** CodeLens reference counters above symbol declarations. */
+  codeLens: boolean;
   /** 0 = off; otherwise idle milliseconds before auto-save. */
   autoSaveMs: number;
   /** Integrated terminal font size. */
@@ -90,6 +92,7 @@ const DEFAULTS: AppSettings = {
     stickyScroll: true,
     stickyOutline: false,
     inlayHints: false,
+    codeLens: true,
     autoSaveMs: 0,
     terminalFontSize: 13,
   },

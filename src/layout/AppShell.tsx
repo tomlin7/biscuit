@@ -693,6 +693,11 @@ function ShellChrome() {
         updateEditor({ inlayHints: next });
         notify("settings", `Inlay hints ${next ? "enabled" : "disabled"}`);
       },
+      toggleCodeLens: () => {
+        const next = !settings.editor.codeLens;
+        updateEditor({ codeLens: next });
+        notify("settings", `CodeLens ${next ? "enabled" : "disabled"}`);
+      },
       toggleWordWrap: () =>
         updateEditor({ wordWrap: !settings.editor.wordWrap }),
       toggleRenderWhitespace: () =>
@@ -2327,6 +2332,7 @@ function ShellChrome() {
       settings.editor.stickyScroll,
       settings.editor.stickyOutline,
       settings.editor.inlayHints,
+      settings.editor.codeLens,
       settings.editor.wordWrap,
       settings.editor.renderWhitespace,
       settings.editor.lineNumbers,

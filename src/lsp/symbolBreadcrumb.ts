@@ -33,5 +33,37 @@ export function getSiblingSymbols(
   target: OutlineSymbol,
 ): OutlineSymbol[] {
   if (!symbols || symbols.length === 0) return [];
-  return symbols.filter((s) => s.depth === target.depth);
+
+  const targetIndex = symbols.findIndex(
+    (s) => s.line === target.line && s.name === target.name && s.depth === target.depth,
+  );
+  if (targetIndex === -1) {
+    return symbols.filter((s) => s.depth === target.depth);
+  }
+
+  if (target.depth === 0) {
+    return symbols.filter((s) => s.depth === 0);
+  }
+
+  // Find parent symbol: the nearest preceding symbol with depth < target.depth
+  let parentIndex = -1;
+  for (let i = targetIndex - 1; i >= 0; i--) {
+    if (symbols[i].depth < target.depth) {
+      parentIndex = i;
+      break;
+    }
+  }
+
+  const parentDepth = parentIndex >= 0 ? symbols[parentIndex].depth : target.depth - 1;
+  const startIndex = parentIndex >= 0 ? parentIndex + 1 : 0;
+  let endIndex = symbols.length;
+
+  for (let i = targetIndex + 1; i < symbols.length; i++) {
+    if (symbols[i].depth <= parentDepth) {
+      endIndex = i;
+      break;
+    }
+  }
+
+  return symbols.slice(startIndex, endIndex).filter((s) => s.depth === target.depth);
 }
