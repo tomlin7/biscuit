@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 import "./AppShell.css";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
@@ -17,14 +18,14 @@ import * as monaco from "monaco-editor";
 import { DebugProvider } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
-import { NotificationsProvider } from "../notifications/NotificationsContext";
+import { NotificationsProvider, useNotifications } from "../notifications/NotificationsContext";
 import { AutoSave } from "../workspace/AutoSave";
 import { CommandPalette } from "../commands/CommandPalette";
 import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog } from "../logs/logBus";
-import { basename } from "../workspace/path";
+import { basename, languageFromPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals } from "../terminal/clearAll";
@@ -32,6 +33,7 @@ import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
 import { symbolsForFile } from "../lsp/OutlinePanel";
+import { scanOutline } from "../lsp/outlineScan";
 import { TitleBar } from "./TitleBar";
 import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
@@ -58,6 +60,7 @@ function ShellChrome() {
     openFileAt,
     reopenClosed,
     document,
+    tabs,
     rootPath,
     roots,
     refreshExplorer,
@@ -69,6 +72,7 @@ function ShellChrome() {
   const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor } = useSettings();
   const { findInFile, runEditorCommand } = useEditorActions();
+  const { push: notify } = useNotifications();
   const { extensions } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
@@ -193,6 +197,58 @@ function ShellChrome() {
     setPaletteOpen(true);
   }, [document, openFileAt]);
 
+  const openWorkspaceSymbols = useCallback(() => {
+    setPaletteSeed("Go to Symbol in Workspace");
+    setPaletteOpen(true);
+    void (async () => {
+      const cmds: Command[] = [];
+      const seen = new Set<string>();
+      const add = (
+        path: string,
+        symbol: { name: string; kind: string; line: number },
+      ) => {
+        const id = `wsym:${path}:${symbol.line}:${symbol.name}`;
+        if (seen.has(id) || cmds.length >= 200) return;
+        seen.add(id);
+        cmds.push({
+          id,
+          title: `${symbol.name} — ${basename(path)}`,
+          category: `Workspace · ${symbol.kind}`,
+          run: () => void openFileAt(path, symbol.line, 1),
+        });
+      };
+
+      for (const tab of tabs) {
+        const symbols = await symbolsForFile(tab.path, tab.value, tab.language);
+        for (const symbol of symbols.slice(0, 40)) add(tab.path, symbol);
+      }
+
+      const folderList = roots.length > 0 ? roots : rootPath ? [rootPath] : [];
+      if (folderList.length > 0 && cmds.length < 200) {
+        const openKeys = new Set(
+          tabs.map((tab) => tab.path.replace(/\\/g, "/").toLowerCase()),
+        );
+        const files = await listWorkspaceFiles(folderList);
+        for (const path of files.slice(0, 160)) {
+          if (cmds.length >= 200) break;
+          const key = path.replace(/\\/g, "/").toLowerCase();
+          if (openKeys.has(key)) continue;
+          if (!/\.(ts|tsx|js|jsx|mjs|cjs|rs|py|go|java|md)$/i.test(path)) continue;
+          try {
+            const text = await readTextFile(path);
+            const language = languageFromPath(path);
+            for (const symbol of scanOutline(text, language).slice(0, 16)) {
+              add(path, symbol);
+            }
+          } catch {
+            /* skip unreadable */
+          }
+        }
+      }
+      setSymbolCommands(cmds);
+    })();
+  }, [tabs, roots, rootPath, openFileAt]);
+
   const openGoToFile = useCallback(() => {
     const folderList = roots.length > 0 ? roots : rootPath ? [rootPath] : [];
     if (folderList.length === 0) {
@@ -251,7 +307,17 @@ function ShellChrome() {
     const dest = await invoke<string>("git_clone", { url: url.trim(), parent });
     appendLog(`Cloned repository into ${dest}`);
     await openFolderAt(dest);
-  }, [openFolderAt]);
+    notify("Repository cloned", {
+      detail: dest,
+      action: {
+        label: "Reveal Explorer",
+        run: () => {
+          setSidebarMode("explorer");
+          setSidebarOpen(true);
+        },
+      },
+    });
+  }, [openFolderAt, notify, setSidebarOpen]);
 
   const openSearch = useCallback(() => {
     setSidebarMode("search");
@@ -338,6 +404,7 @@ function ShellChrome() {
       toggleMinimap: () => updateEditor({ minimap: !settings.editor.minimap }),
       openPalette,
       openSymbols,
+      openWorkspaceSymbols,
       closePalette,
       findInFile,
       runEditorCommand,
@@ -388,6 +455,7 @@ function ShellChrome() {
       updateEditor,
       openPalette,
       openSymbols,
+      openWorkspaceSymbols,
       closePalette,
       findInFile,
       runEditorCommand,
@@ -467,6 +535,13 @@ function ShellChrome() {
       }
 
       if (mod && !event.shiftKey && key === "t") {
+        event.preventDefault();
+        openWorkspaceSymbols();
+        clearChord();
+        return;
+      }
+
+      if (mod && !event.shiftKey && key === "p") {
         event.preventDefault();
         openGoToFile();
         clearChord();
@@ -615,6 +690,7 @@ function ShellChrome() {
     closeSettings,
     openPalette,
     openSymbols,
+    openWorkspaceSymbols,
     openGoToFile,
     openKeybindings,
     reopenClosed,

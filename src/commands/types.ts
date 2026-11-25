@@ -17,6 +17,7 @@ export type CommandContext = {
   toggleMinimap: () => void;
   openPalette: () => void;
   openSymbols: () => void;
+  openWorkspaceSymbols: () => void;
   closePalette: () => void;
   findInFile: () => void;
   runEditorCommand: (

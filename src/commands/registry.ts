@@ -50,7 +50,7 @@ export const COMMANDS: Command[] = [
     id: "workbench.action.quickOpen",
     title: "Go to File…",
     category: "Go",
-    keybinding: "Ctrl+T",
+    keybinding: "Ctrl+P",
     run: (ctx) => ctx.openGoToFile(),
   },
   {
@@ -196,6 +196,13 @@ export const COMMANDS: Command[] = [
     category: "Edit",
     keybinding: "Ctrl+Shift+O",
     run: (ctx) => ctx.openSymbols(),
+  },
+  {
+    id: "workbench.action.showAllSymbols",
+    title: "Go to Symbol in Workspace",
+    category: "Go",
+    keybinding: "Ctrl+T",
+    run: (ctx) => ctx.openWorkspaceSymbols(),
   },
   {
     id: "editor.action.gotoLine",
