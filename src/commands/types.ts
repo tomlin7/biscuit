@@ -2,6 +2,7 @@ export type CommandContext = {
   openFolder: () => Promise<void> | void;
   addFolderRoot: () => Promise<void> | void;
   removeFolderRoot: (path: string) => Promise<void> | void;
+  reopenRemovedRoot: () => Promise<void> | void;
   closeFolder: () => void;
   cloneRepository: () => Promise<void> | void;
   openFolderAt: (path: string) => Promise<void> | void;

@@ -83,6 +83,12 @@ export const COMMANDS: Command[] = [
     },
   },
   {
+    id: "workbench.action.reopenRemovedRootFolder",
+    title: "Reopen Closed Folder Root",
+    category: "File",
+    run: (ctx) => void ctx.reopenRemovedRoot(),
+  },
+  {
     id: "workbench.action.files.save",
     title: "Save",
     category: "File",
