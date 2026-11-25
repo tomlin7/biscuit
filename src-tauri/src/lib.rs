@@ -3,6 +3,7 @@ mod git;
 mod extensions;
 mod debug;
 mod fsops;
+mod notifications;
 
 use debug::{debug_launch, debug_py_command, debug_py_start, debug_stop, DebugState};
 use extensions::{
@@ -16,6 +17,7 @@ use git::{
     git_remote_origin, git_show_head, git_stage, git_stash_pop, git_stash_push,
     git_summary, git_unstage,
 };
+use notifications::send_desktop_notification;
 use pty::{pty_exec, pty_kill, pty_resize, pty_run_file, pty_spawn, pty_write, PtyState};
 
 #[tauri::command]
@@ -39,6 +41,7 @@ pub fn run() {
             pty_write,
             pty_resize,
             pty_kill,
+            send_desktop_notification,
             git_summary,
             git_stage,
             git_unstage,

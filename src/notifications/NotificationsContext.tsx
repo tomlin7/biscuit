@@ -7,6 +7,9 @@ import {
   type ReactNode,
 } from "react";
 
+import { invoke } from "@tauri-apps/api/core";
+import { readDesktopNotificationsSetting } from "../settings/SettingsContext";
+
 export type NotificationAction = {
   label: string;
   run: () => void;
@@ -58,6 +61,23 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
       ].slice(0, 50),
     );
     setUnread((n) => n + 1);
+
+    const isBackground =
+      typeof document !== "undefined" && (!document.hasFocus() || document.hidden);
+
+    if (isBackground && readDesktopNotificationsSetting()) {
+      const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+      const body = options.detail || title;
+      if (isTauri) {
+        void invoke("send_desktop_notification", { title, body }).catch(() => {});
+      } else if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+        try {
+          new Notification(title, { body });
+        } catch {
+          /* ignore */
+        }
+      }
+    }
   }, []);
 
   const markRead = useCallback(() => setUnread(0), []);

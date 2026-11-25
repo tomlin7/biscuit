@@ -45,6 +45,8 @@ export type AppSettings = {
   preferredEncoding: string;
   /** Remote extensions registry index.json URL. */
   extensionRegistryUrl: string;
+  /** Native OS desktop notifications for background task completion. */
+  desktopNotifications: boolean;
 };
 
 type SettingsState = {
@@ -52,7 +54,7 @@ type SettingsState = {
   updateEditor: (patch: Partial<EditorSettings>) => void;
   updateChromeAcrylic: (on: boolean) => void;
   updateApp: (
-    patch: Partial<Pick<AppSettings, "preferredEncoding" | "extensionRegistryUrl">>,
+    patch: Partial<Pick<AppSettings, "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications">>,
   ) => void;
   reset: () => void;
 };
@@ -82,6 +84,7 @@ const DEFAULTS: AppSettings = {
   preferredEncoding: "UTF-8",
   extensionRegistryUrl:
     "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/index.json",
+  desktopNotifications: true,
 };
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -107,6 +110,10 @@ function load(): AppSettings {
         typeof parsed.extensionRegistryUrl === "string" && parsed.extensionRegistryUrl.trim()
           ? parsed.extensionRegistryUrl.trim()
           : DEFAULTS.extensionRegistryUrl,
+      desktopNotifications:
+        typeof parsed.desktopNotifications === "boolean"
+          ? parsed.desktopNotifications
+          : DEFAULTS.desktopNotifications,
     };
   } catch {
     return DEFAULTS;
@@ -120,6 +127,10 @@ export function readTrimTrailingWhitespaceSetting(): boolean {
 
 export function readInsertFinalNewlineSetting(): boolean {
   return load().editor.insertFinalNewline === true;
+}
+
+export function readDesktopNotificationsSetting(): boolean {
+  return load().desktopNotifications !== false;
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
