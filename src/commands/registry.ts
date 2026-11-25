@@ -153,7 +153,13 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.closeSavedEditors(),
   },
-
+  {
+    id: "workbench.action.nextEditor",
+    title: "Open Next Editor",
+    category: "View",
+    keybinding: "Ctrl+PageDown",
+    run: (ctx) => ctx.openNextEditor(),
+  },
 
 
 

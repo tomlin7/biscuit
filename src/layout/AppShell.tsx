@@ -100,6 +100,7 @@ function ShellChrome() {
     renameEntry,
     deleteEntry,
     setLanguageAt,
+    activateTab,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1627,6 +1628,14 @@ function ShellChrome() {
         setLanguageAt(document.path, next);
         notify("Language Mode", languageLabel(next));
       },
+      openNextEditor: () => {
+        if (tabs.length < 2) return;
+        const idx = activePath
+          ? tabs.findIndex((tab) => tab.path === activePath)
+          : -1;
+        const next = tabs[((idx >= 0 ? idx : 0) + 1) % tabs.length];
+        if (next) activateTab(next.path);
+      },
     }),
     [
       openFolder,
@@ -1777,6 +1786,7 @@ function ShellChrome() {
       setLanguageAt,
       sidebarOpen,
       aiOpen,
+      activateTab,
     ],
   );
 
