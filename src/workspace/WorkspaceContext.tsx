@@ -19,6 +19,7 @@ import {
   languageFromPath,
   parentPath,
 } from "./path";
+import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
 
 export type EditorTab = {
   path: string;
@@ -52,6 +53,8 @@ export type WorkspaceState = {
   cursorColumn: number;
   revealTarget: RevealTarget | null;
   openFolder: () => Promise<void>;
+  openFolderAt: (path: string) => Promise<void>;
+  reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
   openFileAt: (path: string, line: number, column: number) => Promise<void>;
@@ -127,6 +130,24 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     [tabs, activePath],
   );
 
+  const openFolderAt = useCallback(async (path: string) => {
+    setBusy(true);
+    setTreeError(null);
+    try {
+      const children = await listDirectory(path);
+      setRootPath(path);
+      setTree(children);
+      setExpanded(new Set());
+      setTabs([]);
+      setActivePath(null);
+      rememberFolder(path);
+    } catch (err) {
+      setTreeError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
   const openFolder = useCallback(async () => {
     const selected = await open({
       directory: true,
@@ -137,22 +158,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
     const path = Array.isArray(selected) ? selected[0] : selected;
     if (!path) return;
-
-    setBusy(true);
-    setTreeError(null);
-    try {
-      const children = await listDirectory(path);
-      setRootPath(path);
-      setTree(children);
-      setExpanded(new Set());
-      setTabs([]);
-      setActivePath(null);
-    } catch (err) {
-      setTreeError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusy(false);
-    }
-  }, []);
+    await openFolderAt(path);
+  }, [openFolderAt]);
 
   const toggleDirectory = useCallback(
     async (path: string) => {
@@ -213,6 +220,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
     if (tabsRef.current.some((tab) => tab.path === path)) {
       setActivePath(path);
+      rememberFile(path);
       return;
     }
 
@@ -234,6 +242,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         return [...current, next];
       });
       setActivePath(path);
+      rememberFile(path);
     } catch (err) {
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -259,6 +268,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setRevealTarget(null);
   }, []);
 
+  const reopenClosed = useCallback(async () => {
+    const path = popClosedEditor();
+    if (!path) return;
+    await openFile(path);
+  }, [openFile]);
+
   const activateTab = useCallback((path: string) => {
     setActivePath(path);
   }, []);
@@ -272,6 +287,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       if (!ok) return;
     }
 
+    pushClosedEditor(path);
     setTabs((current) => {
       const index = current.findIndex((t) => t.path === path);
       if (index < 0) return current;
@@ -488,6 +504,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       cursorColumn: document?.cursorColumn ?? 1,
       revealTarget,
       openFolder,
+      openFolderAt,
+      reopenClosed,
       toggleDirectory,
       openFile,
       openFileAt,
@@ -514,6 +532,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       document,
       revealTarget,
       openFolder,
+      openFolderAt,
+      reopenClosed,
       toggleDirectory,
       openFile,
       openFileAt,

@@ -9,6 +9,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.openPalette(),
   },
   {
+    id: "workbench.action.reopenClosedEditor",
+    title: "Reopen Closed Editor",
+    category: "View",
+    keybinding: "Ctrl+Shift+T",
+    run: (ctx) => void ctx.reopenClosed(),
+  },
+  {
     id: "workbench.action.files.openFolder",
     title: "Open Folder…",
     category: "File",

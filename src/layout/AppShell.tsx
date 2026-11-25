@@ -18,6 +18,8 @@ import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { CommandPalette } from "../commands/CommandPalette";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
+import { basename } from "../workspace/path";
+import { recentFiles, recentFolders } from "../workspace/history";
 import { TitleBar } from "./TitleBar";
 import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
@@ -27,7 +29,8 @@ import { LayoutProvider, useLayout } from "./LayoutContext";
 import { ResizeHandle } from "./ResizeHandle";
 
 function ShellChrome() {
-  const { save, closeTab, activePath, openFolder, rootPath } = useWorkspace();
+  const { save, closeTab, activePath, openFolder, openFolderAt, openFile, reopenClosed, rootPath } =
+    useWorkspace();
   const { toggleTheme } = useTheme();
   const { findInFile } = useEditorActions();
   const { extensions } = useExtensions();
@@ -49,6 +52,7 @@ function ShellChrome() {
   } = useLayout();
 
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [recentCommands, setRecentCommands] = useState<Command[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
   const [panelTab, setPanelTab] = useState<BottomTab>("terminal");
@@ -74,7 +78,22 @@ function ShellChrome() {
     };
   }, [rootPath]);
 
-  const openPalette = useCallback(() => setPaletteOpen(true), []);
+  const openPalette = useCallback(() => {
+    const files = recentFiles().slice(0, 8).map((path) => ({
+      id: `recent.file:${path}`,
+      title: `Open Recent — ${basename(path)}`,
+      category: "File",
+      run: () => void openFile(path),
+    }));
+    const folders = recentFolders().slice(0, 8).map((path) => ({
+      id: `recent.folder:${path}`,
+      title: `Open Recent Folder — ${basename(path)}`,
+      category: "File",
+      run: () => void openFolderAt(path),
+    }));
+    setRecentCommands([...files, ...folders]);
+    setPaletteOpen(true);
+  }, [openFile, openFolderAt]);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
@@ -120,6 +139,9 @@ function ShellChrome() {
   const commandContext = useMemo<CommandContext>(
     () => ({
       openFolder,
+      openFolderAt,
+      openFile,
+      reopenClosed,
       save,
       closeActive: () => {
         if (activePath) closeTab(activePath);
@@ -139,6 +161,9 @@ function ShellChrome() {
     }),
     [
       openFolder,
+      openFolderAt,
+      openFile,
+      reopenClosed,
       save,
       activePath,
       closeTab,
@@ -182,6 +207,13 @@ function ShellChrome() {
           closePalette();
           return;
         }
+      }
+
+      if (mod && event.shiftKey && key === "t") {
+        event.preventDefault();
+        void reopenClosed();
+        clearChord();
+        return;
       }
 
       if (mod && event.shiftKey && key === "p") {
@@ -290,6 +322,7 @@ function ShellChrome() {
     closePalette,
     closeSettings,
     openPalette,
+    reopenClosed,
     openSettings,
     openSearch,
     findInFile,
@@ -421,7 +454,7 @@ function ShellChrome() {
         open={paletteOpen}
         onClose={closePalette}
         context={commandContext}
-        extraCommands={extensionCommands}
+        extraCommands={[...recentCommands, ...extensionCommands]}
       />
       <SettingsPanel open={settingsOpen} onClose={closeSettings} />
     </div>

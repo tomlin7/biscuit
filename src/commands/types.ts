@@ -1,5 +1,8 @@
 export type CommandContext = {
   openFolder: () => Promise<void> | void;
+  openFolderAt: (path: string) => Promise<void> | void;
+  openFile: (path: string) => Promise<void> | void;
+  reopenClosed: () => Promise<void> | void;
   save: () => Promise<void> | void;
   closeActive: () => void;
   toggleTheme: () => void;
