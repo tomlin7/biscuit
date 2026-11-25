@@ -1480,6 +1480,11 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.openCodeOfConduct(),
   },
-
+  {
+    id: "explorer.rename",
+    title: "Rename File",
+    category: "File",
+    run: (ctx) => ctx.renameExplorerEntry(),
+  },
 
 ];

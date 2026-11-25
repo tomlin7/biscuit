@@ -93,6 +93,7 @@ function ShellChrome() {
     togglePinTab,
     createEntry,
     setEol,
+    renameEntry,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1481,6 +1482,12 @@ function ShellChrome() {
           /* ignore */
         });
       },
+      renameExplorerEntry: () => {
+        if (!activePath || isUntitledPath(activePath)) return;
+        setSidebarMode("explorer");
+        setSidebarOpen(true);
+        void renameEntry(activePath);
+      },
     }),
     [
       openFolder,
@@ -1619,6 +1626,7 @@ function ShellChrome() {
       rootPath,
       updateChromeAcrylic,
       settings.chromeAcrylic,
+      renameEntry,
     ],
   );
 
