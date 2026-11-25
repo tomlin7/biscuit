@@ -527,6 +527,55 @@ export function ScmPanel({ onBranch }: Props) {
                 className="scm-panel__action"
                 disabled={acting}
                 onClick={() => {
+                  const relative = entry.path.replace(
+                    /\//g,
+                    rootPath.includes("\\") ? "\\" : "/",
+                  );
+                  const absolute = joinPath(rootPath, relative);
+                  void (async () => {
+                    try {
+                      const ignoreSpace = readIgnoreSpacePref();
+                      const text = await invoke<string>("git_diff", {
+                        cwd: rootPath,
+                        path: entry.path,
+                        staged: false,
+                        ignoreSpace,
+                      });
+                      let head: string | null = null;
+                      try {
+                        head = await invoke<string>("git_show_head", {
+                          cwd: rootPath,
+                          path: entry.path,
+                        });
+                      } catch {
+                        head = null;
+                      }
+                      let working: string | null = null;
+                      try {
+                        working = await readTextFile(absolute);
+                      } catch {
+                        working = null;
+                      }
+                      openDiffTab(entry.path, text, {
+                        head,
+                        working,
+                        cwd: rootPath,
+                        staged: false,
+                        ignoreSpace,
+                      });
+                    } catch (err) {
+                      setError(err instanceof Error ? err.message : String(err));
+                    }
+                  })();
+                }}
+              >
+                Compare HEAD
+              </button>
+              <button
+                type="button"
+                className="scm-panel__action"
+                disabled={acting}
+                onClick={() => {
                   const stagedOnly =
                     entry.index !== " " && entry.index !== "?" && entry.worktree === " ";
                   const relative = entry.path.replace(
