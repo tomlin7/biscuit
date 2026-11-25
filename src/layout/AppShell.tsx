@@ -1764,6 +1764,11 @@ function ShellChrome() {
             : "Off",
         );
       },
+      toggleKeypressDisplay: () => {
+        const next = !settings.keypressDisplay;
+        updateApp({ keypressDisplay: next });
+        notify("Keypress Display", next ? "On" : "Off");
+      },
     }),
     [
       openFolder,

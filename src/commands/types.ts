@@ -278,6 +278,7 @@ export type CommandContext = {
   toggleSecondarySidebar: () => void;
   configureRunCommand: () => void;
   toggleVimMode: () => void;
+  toggleKeypressDisplay: () => void;
 };
 
 export type Command = {
