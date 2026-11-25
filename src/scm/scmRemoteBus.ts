@@ -15,6 +15,7 @@ export type ScmRemoteAction =
   | "selectAll"
   | "deselectAll"
   | "stageSelected"
+  | "unstageSelected"
 ;
 
 type Listener = (action: ScmRemoteAction) => void;

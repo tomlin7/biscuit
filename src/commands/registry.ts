@@ -872,4 +872,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitStageSelected(),
   },
+  {
+    id: "git.unstageSelected",
+    title: "Git: Unstage Selected",
+    category: "Git",
+    run: (ctx) => ctx.gitUnstageSelected(),
+  },
 ];

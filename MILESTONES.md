@@ -286,6 +286,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.278.0** | Git select all changes from palette | shipped |
 | **0.279.0** | Git deselect all changes from palette | shipped |
 | **0.280.0** | Git stage selected from palette | shipped |
+| **0.281.0** | Git unstage selected from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

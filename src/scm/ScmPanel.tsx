@@ -271,6 +271,9 @@ export function ScmPanel({ onBranch }: Props) {
       } else if (action === "stageSelected") {
         if (selectedUnstaged.length === 0) return;
         void run("git_stage", { paths: selectedUnstaged });
+      } else if (action === "unstageSelected") {
+        if (selectedStaged.length === 0) return;
+        void run("git_unstage", { paths: selectedStaged });
       } else void push();
     });
     return () => setScmRemoteListener(null);
