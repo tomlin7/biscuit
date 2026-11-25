@@ -211,7 +211,7 @@ export function EditorArea() {
                 />
                 <div className="editor-area__pane">
                   {previewKind === "html" ? (
-                    <HtmlPreview source={document?.value ?? ""} />
+                    <HtmlPreview source={document?.value ?? ""} filePath={activePath} />
                   ) : (
                     <MarkdownPreview source={document?.value ?? ""} />
                   )}
