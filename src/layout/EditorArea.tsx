@@ -12,6 +12,7 @@ import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { EditorTabs } from "../workspace/EditorTabs";
+import { Welcome } from "../workspace/Welcome";
 import { languageLabel } from "../editor/languages";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { workspaceCrumbs } from "../workspace/path";
@@ -239,14 +240,12 @@ export function EditorArea() {
               </>
             ) : null}
           </>
+        ) : !rootPath ? (
+          <Welcome />
         ) : (
           <div className="editor-area__empty">
             <p className="editor-area__empty-title">T3D</p>
-            <p className="editor-area__empty-hint">
-              {rootPath
-                ? "Select a file in the explorer to edit."
-                : "Open a folder to start editing."}
-            </p>
+            <p className="editor-area__empty-hint">Select a file in the explorer to edit.</p>
           </div>
         )}
       </div>

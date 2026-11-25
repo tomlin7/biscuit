@@ -1,0 +1,63 @@
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  height: 100%;
+  padding: 28px 32px;
+  overflow: auto;
+}
+
+.welcome h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.welcome__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.welcome__actions button,
+.welcome__list button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.welcome__actions button:hover,
+.welcome__list button:hover {
+  background: var(--bg-hover);
+}
+
+.welcome__label {
+  margin: 0 0 6px;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.welcome__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.welcome__list button {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 520px;
+}
+
+.welcome__list span {
+  color: var(--fg-dim);
+  font-size: var(--font-size-xs);
+}
