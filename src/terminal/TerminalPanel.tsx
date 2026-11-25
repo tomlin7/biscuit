@@ -10,6 +10,7 @@ import { basename } from "../workspace/path";
 import { setRunListener } from "./runFile";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
 import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./clearAll";
+import { setNewTerminalListener } from "./newTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -390,6 +391,19 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     setClearActiveTerminalListener(clearActive);
     return () => setClearActiveTerminalListener(null);
   }, [activeId]);
+
+  useEffect(() => {
+    setNewTerminalListener(() => {
+      nextSession += 1;
+      const id = nextSession;
+      setSessions((current) => [
+        ...current,
+        { id, shell: nextShell, runPath: null, command: null, cwd: null },
+      ]);
+      setActiveId(id);
+    });
+    return () => setNewTerminalListener(null);
+  }, [nextShell]);
 
   useEffect(() => {
     setRunListener((path) => {
