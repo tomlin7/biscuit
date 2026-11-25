@@ -67,6 +67,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.59.0** | Session restores preview and split | shipped |
 | **0.60.0** | Successful git clone writes a logs line | shipped |
 | **0.61.0** | Workspace replace shows a match count first | shipped |
+| **0.62.0** | Markdown preview loads sibling images | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

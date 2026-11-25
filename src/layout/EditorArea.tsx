@@ -246,7 +246,10 @@ export function EditorArea() {
                   {previewKind === "html" ? (
                     <HtmlPreview source={document?.value ?? ""} filePath={activePath} />
                   ) : (
-                    <MarkdownPreview source={document?.value ?? ""} />
+                    <MarkdownPreview
+                      source={document?.value ?? ""}
+                      filePath={activePath}
+                    />
                   )}
                 </div>
               </>
