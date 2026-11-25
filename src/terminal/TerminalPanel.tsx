@@ -9,6 +9,7 @@ import { reduceTerminalInput } from "./terminalInput";
 import { basename } from "../workspace/path";
 import { setRunListener } from "./runFile";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
+import { setClearAllTerminalsListener } from "./clearAll";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import "@xterm/xterm/css/xterm.css";
@@ -342,6 +343,34 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     });
   };
 
+  const clearAllSessions = () => {
+    for (const control of controls.current.values()) {
+      void control.kill();
+    }
+    controls.current.clear();
+    commandDone.current.clear();
+    nextSession += 1;
+    const id = nextSession;
+    setSessions([{ id, shell: nextShell, runPath: null, command: null, cwd: null }]);
+    setActiveId(id);
+  };
+
+  useEffect(() => {
+    const clearAll = () => {
+      for (const control of controls.current.values()) {
+        void control.kill();
+      }
+      controls.current.clear();
+      commandDone.current.clear();
+      nextSession += 1;
+      const id = nextSession;
+      setSessions([{ id, shell: nextShell, runPath: null, command: null, cwd: null }]);
+      setActiveId(id);
+    };
+    setClearAllTerminalsListener(clearAll);
+    return () => setClearAllTerminalsListener(null);
+  }, [nextShell]);
+
   useEffect(() => {
     setRunListener((path) => {
       const existing = sessionsRef.current.find((item) => item.runPath === path);
@@ -449,6 +478,14 @@ export function TerminalPanel({ open, embedded = false }: Props) {
           onClick={() => controls.current.get(activeId)?.clear()}
         >
           Clear
+        </button>
+        <button
+          type="button"
+          className="terminal-panel__session-add"
+          onClick={clearAllSessions}
+          title="Close every terminal and open a fresh one"
+        >
+          Clear all
         </button>
         <label className="terminal-panel__shell">
           <span className="terminal-panel__shell-label">New shell</span>
