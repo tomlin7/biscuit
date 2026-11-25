@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "T3D — High-Performance Desktop Code Editor",
-    short_name: "T3D",
+    name: "Biscuit — High-Performance Desktop Code Editor",
+    short_name: "Biscuit",
     description: "High-performance desktop code editor built on Tauri 2, Rust, and Monaco.",
     start_url: "/",
     display: "standalone",

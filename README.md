@@ -1,8 +1,8 @@
-# T3D
+# Biscuit
 
 A focused desktop code editor built on Tauri&nbsp;2, React&nbsp;19, and Monaco.
 
-T3D pairs a native Rust application core with a modern web frontend. It provides sub-second startup, an integrated terminal with real PTY support, split-pane editing, source control, an extensible theme and plugin system, and optional local or cloud AI assistance.
+Biscuit pairs a native Rust application core with a modern web frontend. It provides sub-second startup, an integrated terminal with real PTY support, split-pane editing, source control, an extensible theme and plugin system, and optional local or cloud AI assistance.
 
 [Releases](https://github.com/tomlin7/t3d/releases) · [Milestones](MILESTONES.md) · [Versioning](VERSIONING.md) · [Website](https://t3d.sh)
 

@@ -871,7 +871,7 @@ function ShellChrome() {
             title: "Save Workspace As",
             defaultPath: `${basename(folderList[0])}.t3d-workspace.json`,
             filters: [
-              { name: "T3D Workspace", extensions: ["t3d-workspace.json", "json"] },
+              { name: "Biscuit Workspace", extensions: ["biscuit-workspace.json", "t3d-workspace.json", "json"] },
             ],
           });
           if (!dest) return;
@@ -897,7 +897,7 @@ function ShellChrome() {
             multiple: false,
             title: "Open Workspace",
             filters: [
-              { name: "T3D Workspace", extensions: ["t3d-workspace.json", "json"] },
+              { name: "Biscuit Workspace", extensions: ["biscuit-workspace.json", "t3d-workspace.json", "json"] },
             ],
           });
           if (selected === null) return;
@@ -1616,7 +1616,7 @@ function ShellChrome() {
         if (
           unsaved > 0 &&
           !window.confirm(
-            `Quit T3D? ${unsaved} editor${unsaved === 1 ? " has" : "s have"} unsaved changes that will be lost.`,
+            `Quit Biscuit? ${unsaved} editor${unsaved === 1 ? " has" : "s have"} unsaved changes that will be lost.`,
           )
         ) {
           return;
@@ -1747,14 +1747,14 @@ function ShellChrome() {
         void getVersion()
           .then((version) => {
             notify(
-              "About T3D",
-              `T3D ${version} — Tauri 2 + React + Monaco. Successor architecture to Biscuit.`,
+              "About Biscuit",
+              `Biscuit ${version} — Tauri 2 + React + Monaco.`,
             );
           })
           .catch(() => {
             notify(
-              "About T3D",
-              "T3D — Tauri 2 + React + Monaco. Successor architecture to Biscuit.",
+              "About Biscuit",
+              "Biscuit — Tauri 2 + React + Monaco.",
             );
           });
       },
@@ -1989,10 +1989,10 @@ function ShellChrome() {
           notify("New Window", "Available only in the desktop app.");
           return;
         }
-        const label = `t3d-${Date.now()}`;
+        const label = `biscuit-${Date.now()}`;
         const created = new WebviewWindow(label, {
           url: "index.html",
-          title: "T3D",
+          title: "Biscuit",
           width: 1280,
           height: 800,
           minWidth: 800,

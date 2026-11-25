@@ -128,11 +128,11 @@ export default function Page() {
   const faqs = [
     {
       q: "Is this another Electron app?",
-      a: "No. T3D uses Tauri 2 and compiled Rust on top of your operating system native webview runtime. It uses a fraction of the RAM of typical Electron editors and launches in under 100 milliseconds.",
+      a: "No. Biscuit uses Tauri 2 and compiled Rust on top of your operating system native webview runtime. It uses a fraction of the RAM of typical Electron editors and launches in under 100 milliseconds.",
     },
     {
       q: "How does the terminal differ from other editors?",
-      a: "T3D spawns pseudoterminals directly through native Rust using portable-pty. Keystrokes, terminal resize events, and ANSI sequences bypass Node.js serialization completely, rendering directly into xterm with full OSC 7 and OSC 133 shell integration.",
+      a: "Biscuit spawns pseudoterminals directly through native Rust using portable-pty. Keystrokes, terminal resize events, and ANSI sequences bypass Node.js serialization completely, rendering directly into xterm with full OSC 7 and OSC 133 shell integration.",
     },
     {
       q: "Do extensions run in the main thread?",
@@ -144,7 +144,7 @@ export default function Page() {
     },
     {
       q: "What is the release roadmap?",
-      a: "T3D follows continuous progressive shipping. Version 1.219.0 is the active stable release, with subsequent core code editor feature slices rolling out regularly.",
+      a: "Biscuit follows continuous progressive shipping. Version 1.219.0 is the active stable release, with subsequent core code editor feature slices rolling out regularly.",
     },
   ];
 
@@ -156,9 +156,9 @@ export default function Page() {
         <header className="flex h-16 items-center justify-between px-5 md:px-10">
           <a href="/" className="flex items-center gap-2.5">
             <span className="flex size-7 items-center justify-center rounded-md bg-foreground text-background font-bold text-xs tracking-tight">
-              T3
+              B
             </span>
-            <span className="text-[15px] font-semibold tracking-tight text-foreground">T3D</span>
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">Biscuit</span>
           </a>
 
           <div className="flex items-center gap-4">
@@ -195,7 +195,7 @@ export default function Page() {
             </h1>
 
             <p className="mt-5 max-w-[36rem] text-[17px] leading-relaxed text-pretty text-muted-foreground">
-              T3D drives your workspace with compiled Rust, Monaco, and Tauri 2. Sessions, terminals, git diffs, multi-pane splitting, and extensions in one fast graphite window, entirely on your machine.
+              Biscuit drives your workspace with compiled Rust, Monaco, and Tauri 2. Sessions, terminals, git diffs, multi-pane splitting, and extensions in one fast graphite window, entirely on your machine.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -354,7 +354,7 @@ export default function Page() {
           {/* ── Section 3: Download Section (Waku layout) ────────────────── */}
           <section id="download" className="border-t border-border/70 px-5 py-16 md:px-10 md:py-20" data-ui="waku-section">
             <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-              Get T3D
+              Get Biscuit
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Fast, signed installers built for every major desktop operating system.
@@ -446,9 +446,9 @@ export default function Page() {
         <footer className="flex items-center justify-between border-t border-border/70 px-5 py-10 text-xs text-muted-foreground md:px-10" data-ui="waku-footer">
           <div className="flex items-center gap-2">
             <span className="flex size-4 items-center justify-center rounded-[3px] bg-foreground text-background font-bold text-[9px]">
-              T3
+              B
             </span>
-            <span>© 2026 T3D</span>
+            <span>© 2026 Biscuit</span>
           </div>
 
           <div className="flex items-center gap-5">

@@ -100,7 +100,7 @@ export function Welcome() {
           </div>
           <div>
             <div className="welcome__title-row">
-              <h1 className="welcome__title">T3D Editor</h1>
+              <h1 className="welcome__title">Biscuit Editor</h1>
               <span className="welcome__version">v0.351</span>
             </div>
             <p className="welcome__subtitle">

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "T3D",
+  "productName": "Biscuit",
   "version": "1.220.0",
-  "identifier": "com.t3d.sh",
+  "identifier": "com.biscuit.app",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "T3D",
+        "title": "Biscuit",
         "width": 1280,
         "height": 800,
         "minWidth": 800,

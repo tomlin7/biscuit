@@ -143,7 +143,7 @@ export function AppShell() {
   "TitleBar.tsx": `import { Folder, Plus, Play, Sparkles, Settings } from "lucide-react";
 import { IconButton } from "../ui/IconButton";
 
-export function TitleBar({ rootName = "biscuit/T3D" }) {
+export function TitleBar({ rootName = "biscuit" }) {
   return (
     <header className="titlebar">
       <div className="titlebar__left">
@@ -170,9 +170,9 @@ export function TerminalPanel() {
   return <div className="terminal-panel terminal-panel--embedded" />;
 }`,
   "Cargo.toml": `[package]
-name = "t3d"
-version = "0.467.0"
-description = "T3D - modern code editor (Tauri 2)"
+name = "biscuit"
+version = "1.220.0"
+description = "Biscuit - modern code editor (Tauri 2)"
 edition = "2021"
 
 [dependencies]
@@ -180,10 +180,9 @@ tauri = { version = "2", features = [] }
 portable-pty = "0.9.0"
 serde = { version = "1", features = ["derive"] }
 `,
-  "README.md": `# T3D
+  "README.md": `# Biscuit
 
 Modern code editor built with Tauri 2, React 19, and Monaco.
-Successor architecture to Biscuit — same spirit, cleaner structure.
 `,
 };
 
@@ -366,9 +365,9 @@ export default function TedDemo() {
         </div>
 
         {/* Center: Project Root Capsule */}
-        <button type="button" className="t3d-titlebar__project" title="biscuit/T3D">
+        <button type="button" className="t3d-titlebar__project" title="biscuit">
           <Folder size={14} strokeWidth={1.75} className="text-[#3b82f6] shrink-0" />
-          <span className="truncate">biscuit/T3D</span>
+          <span className="truncate">biscuit</span>
           <Plus size={14} strokeWidth={1.75} className="text-[#8a8a8a] shrink-0" />
         </button>
 
@@ -549,7 +548,7 @@ export default function TedDemo() {
                     $ tauri dev
                   </div>
                   <div className="text-[#73c991] mt-0.5">
-                    &bull; Watching E:\biscuit\T3D\src-tauri for Rust changes...
+                    &bull; Watching E:\biscuit\src-tauri for Rust changes...
                   </div>
                 </div>
               )}
@@ -562,7 +561,7 @@ export default function TedDemo() {
 
               {bottomTab === "logs" && (
                 <div className="flex-1 p-3 font-mono text-xs text-[#8a8a8a]">
-                  [info] t3d v0.467.0 initialized
+                  [info] biscuit v1.220.0 initialized
                 </div>
               )}
             </div>
@@ -593,7 +592,7 @@ export default function TedDemo() {
             title="Workspace folder"
           >
             <Folder size={13} className="text-[#60a5fa]" />
-            <span>biscuit/T3D</span>
+            <span>biscuit</span>
           </button>
 
           <button

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "T3D . High-Performance Desktop Code Editor";
+export const alt = "Biscuit · High-Performance Desktop Code Editor";
 export const size = {
   width: 1200,
   height: 630,
@@ -40,10 +40,10 @@ export default function Image() {
               letterSpacing: "-0.05em",
             }}
           >
-            T3
+            B
           </div>
           <span style={{ fontSize: "28px", fontWeight: 700, letterSpacing: "-0.03em" }}>
-            T3D
+            Biscuit
           </span>
           <div
             style={{

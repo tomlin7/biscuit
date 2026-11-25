@@ -13,7 +13,7 @@ $textNodes = $template.GetElementsByTagName('text');
 $textNodes.Item(0).AppendChild($template.CreateTextNode('{}')) | Out-Null;
 $textNodes.Item(1).AppendChild($template.CreateTextNode('{}')) | Out-Null;
 $toast = [Windows.UI.Notifications.ToastNotification]::new($template);
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('T3D').Show($toast);
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Biscuit').Show($toast);
 "#,
             safe_title, safe_body
         );

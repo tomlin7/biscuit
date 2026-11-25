@@ -1784,7 +1784,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "t3d.showAbout",
-    title: "About T3D",
+    title: "About Biscuit",
     category: "Help",
     run: (ctx) => ctx.showAbout(),
   },

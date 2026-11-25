@@ -1,12 +1,12 @@
 [package]
-name = "t3d"
+name = "biscuit"
 version = "1.220.0"
-description = "T3D - modern code editor (Tauri)"
+description = "Biscuit - modern code editor (Tauri)"
 authors = ["Tomlin7 <billydevbusiness@gmail.com>"]
 edition = "2021"
 
 [lib]
-name = "t3d_lib"
+name = "biscuit_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -18,16 +18,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://t3d.sh"),
   title: {
-    default: "T3D · High-Performance Desktop Code Editor",
-    template: "%s | T3D",
+    default: "Biscuit · High-Performance Desktop Code Editor",
+    template: "%s | Biscuit",
   },
   description:
     "Fast, focused desktop code editor built with Tauri 2, compiled Rust PTY engine, Monaco, and React 19. Sub-second startup, native terminal, split panes, and sandboxed extensions.",
-  applicationName: "T3D",
+  applicationName: "Biscuit",
   authors: [{ name: "Tomlin7", url: "https://github.com/tomlin7" }],
   generator: "Next.js",
   keywords: [
-    "T3D",
+    "Biscuit",
     "code editor",
     "desktop code editor",
     "Tauri 2",
@@ -38,11 +38,10 @@ export const metadata: Metadata = {
     "lightweight IDE",
     "fast code editor",
     "portable-pty",
-    "biscuit successor",
     "open source code editor",
   ],
   creator: "Tomlin7",
-  publisher: "T3D",
+  publisher: "Biscuit",
   alternates: {
     canonical: "/",
   },
@@ -50,8 +49,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://t3d.sh",
-    siteName: "T3D",
-    title: "T3D · High-Performance Desktop Code Editor",
+    siteName: "Biscuit",
+    title: "Biscuit · High-Performance Desktop Code Editor",
     description:
       "Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19. Sub-100ms startup, native terminal, and sandboxed extensions.",
     images: [
@@ -59,13 +58,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "T3D · High-Performance Desktop Code Editor",
+        alt: "Biscuit · High-Performance Desktop Code Editor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "T3D · High-Performance Desktop Code Editor",
+    title: "Biscuit · High-Performance Desktop Code Editor",
     description:
       "Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
     creator: "@Tomlin7",
@@ -94,7 +93,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "T3D",
+      "name": "Biscuit",
       "operatingSystem": "Windows, macOS, Linux",
       "applicationCategory": "DeveloperApplication",
       "offers": {
@@ -115,7 +114,7 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "name": "T3D",
+      "name": "Biscuit",
       "url": "https://t3d.sh",
       "description": "The high-density desktop code editor.",
     },
