@@ -1286,7 +1286,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.minimizeWindow(),
   },
-
+  {
+    id: "workbench.action.resetEditorSettings",
+    title: "Reset Editor Settings",
+    category: "Preferences",
+    run: (ctx) => ctx.resetEditorSettings(),
+  },
 
 
 

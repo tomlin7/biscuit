@@ -92,7 +92,7 @@ function ShellChrome() {
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
-  const { settings, updateEditor } = useSettings();
+  const { settings, updateEditor, reset: resetEditorSettings } = useSettings();
   const {
     clearAttachments,
     clearChat,
@@ -1255,6 +1255,9 @@ function ShellChrome() {
         }
         void getCurrentWindow().minimize();
       },
+      resetEditorSettings: () => {
+        resetEditorSettings();
+      },
     }),
     [
       openFolder,
@@ -1348,6 +1351,7 @@ function ShellChrome() {
       dismissNotification,
       notificationItems,
       notificationUnread,
+      resetEditorSettings,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,

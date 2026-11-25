@@ -214,6 +214,7 @@ export type CommandContext = {
   notifyUnreadCount: () => void;
   toggleMaximizeWindow: () => void;
   minimizeWindow: () => void;
+  resetEditorSettings: () => void;
 };
 
 export type Command = {
