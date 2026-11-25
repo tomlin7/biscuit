@@ -1543,6 +1543,11 @@ function ShellChrome() {
         setSidebarMode("debug");
         setSidebarOpen(true);
       },
+      enableAllBreakpoints: () => {
+        setAllBreakpointsEnabled(true);
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
