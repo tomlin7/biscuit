@@ -147,7 +147,7 @@ export type CommandContext = {
   gitStageSelected: () => void;
   gitUnstageSelected: () => void;
   gitDiscardSelected: () => void;
-
+  gitCopyBranch: () => void;
 
 
 };

@@ -806,6 +806,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("discardSelected");
       },
+      gitCopyBranch: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("copyBranch");
+      },
     }),
     [
       openFolder,

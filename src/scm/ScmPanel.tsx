@@ -313,6 +313,9 @@ export function ScmPanel({ onBranch }: Props) {
             }
           }
         })();
+      } else if (action === "copyBranch") {
+        if (!summary?.branch) return;
+        void navigator.clipboard.writeText(summary.branch);
       } else void push();
     });
     return () => setScmRemoteListener(null);

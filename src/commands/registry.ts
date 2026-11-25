@@ -884,4 +884,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitDiscardSelected(),
   },
+  {
+    id: "git.copyBranch",
+    title: "Git: Copy Current Branch Name",
+    category: "Git",
+    run: (ctx) => ctx.gitCopyBranch(),
+  },
 ];
