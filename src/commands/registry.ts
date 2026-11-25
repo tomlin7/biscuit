@@ -938,4 +938,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiFrequencyPenalty(),
   },
+  {
+    id: "workbench.action.focusAiSystemPrompt",
+    title: "Focus AI System Prompt",
+    category: "AI",
+    run: (ctx) => ctx.focusAiSystemPrompt(),
+  },
 ];

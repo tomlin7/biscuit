@@ -157,6 +157,7 @@ export type CommandContext = {
   cycleAiPresencePenalty: () => void;
   focusScm: () => void;
   cycleAiFrequencyPenalty: () => void;
+  focusAiSystemPrompt: () => void;
 };
 
 export type Command = {

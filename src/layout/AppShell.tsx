@@ -914,6 +914,12 @@ function ShellChrome() {
         setSettings({ frequencyPenalty: next });
         setAiOpen(true);
       },
+      focusAiSystemPrompt: () => {
+        openSettings();
+        window.setTimeout(() => {
+          window.document.getElementById("settings-ai-system-prompt")?.focus();
+        }, 0);
+      },
     }),
     [
       openFolder,

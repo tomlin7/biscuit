@@ -234,7 +234,7 @@ export function SettingsPanel({ open, onClose }: Props) {
                 type="password"
                 value={ai.apiKey}
                 onChange={(e) => setAi({ apiKey: e.target.value })}
-                placeholder="sk-ΓÇª"
+                placeholder="sk-…"
               />
             </label>
             <label className="settings-row settings-row--stack">
@@ -269,10 +269,11 @@ export function SettingsPanel({ open, onClose }: Props) {
             <label className="settings-row settings-row--stack">
               <span>System prompt</span>
               <textarea
+                id="settings-ai-system-prompt"
                 rows={3}
                 value={ai.systemPrompt}
                 onChange={(e) => setAi({ systemPrompt: e.target.value })}
-                placeholder="Optional instructions for every chatΓÇª"
+                placeholder="Optional instructions for every chat…"
               />
             </label>
             <label className="settings-row settings-row--stack">
