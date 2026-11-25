@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronRight, Palette, RotateCcw, Search, Sliders, Sparkles, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Paintbrush, Palette, RotateCcw, Search, Sliders, Sparkles, X } from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
 import { useIconTheme } from "../theme/iconTheme/IconThemeContext";
 import { BUILTIN_THEMES } from "../editor/theme";
@@ -7,9 +7,10 @@ import { useAi } from "../ai/AiContext";
 import { IconButton } from "../ui/IconButton";
 import { useSettings } from "./SettingsContext";
 import { TERMINAL_THEMES } from "../terminal/terminalThemes";
+import { ThemeEditor } from "../theme/ThemeEditor";
 import "./SettingsPanel.css";
 
-export type SettingsCategory = "appearance" | "editor" | "ai";
+export type SettingsCategory = "appearance" | "themeEditor" | "editor" | "ai";
 
 type Props = {
   open: boolean;
@@ -25,7 +26,7 @@ export function SettingsPanel({
   initialTab = "editor",
   variant = "modal",
 }: Props) {
-  const { theme, extras, setTheme } = useTheme();
+  const { theme, extras, customThemes, setTheme } = useTheme();
   const { iconTheme, setIconTheme, availableThemes: availableIconThemes } = useIconTheme();
   const { settings, updateEditor, updateChromeAcrylic, updateApp, reset } = useSettings();
   const { settings: ai, setSettings: setAi } = useAi();
@@ -45,6 +46,7 @@ export function SettingsPanel({
   const q = searchQuery.trim().toLowerCase();
 
   const matchesAppearance = !q || "theme color icon file dark light appearance acrylic mica chrome glass translucen".includes(q);
+  const matchesThemeEditor = !q || "theme editor custom color palette preview token slots".includes(q);
   const matchesEditorTypography = !q || "font size font family terminal font typography cascadia monospace".includes(q);
   const matchesEditorDisplay = !q || "word wrap column rulers cursor minimap line numbers sticky scroll display layout".includes(q);
   const matchesEditorFormatting = !q || "tab size whitespace trim trailing newline insert auto save formatting".includes(q);
@@ -53,10 +55,11 @@ export function SettingsPanel({
   const matchesAiAdvanced = !q || "temperature max tokens top p presence frequency penalty seed error timeout tool rounds hyperparameters".includes(q);
 
   const showAppearance = q ? matchesAppearance : activeTab === "appearance";
+  const showThemeEditor = q ? (matchesThemeEditor && (q.includes("theme") || q.includes("custom") || q.includes("color") || q.includes("edit"))) : activeTab === "themeEditor";
   const showEditor = q ? (matchesEditorTypography || matchesEditorDisplay || matchesEditorFormatting) : activeTab === "editor";
   const showAi = q ? (matchesAiConnection || matchesAiPrompt || matchesAiAdvanced) : activeTab === "ai";
 
-  const totalMatches = (matchesAppearance ? 1 : 0) + (matchesEditorTypography || matchesEditorDisplay || matchesEditorFormatting ? 1 : 0) + (matchesAiConnection || matchesAiPrompt || matchesAiAdvanced ? 1 : 0);
+  const totalMatches = (matchesAppearance ? 1 : 0) + (showThemeEditor ? 1 : 0) + (matchesEditorTypography || matchesEditorDisplay || matchesEditorFormatting ? 1 : 0) + (matchesAiConnection || matchesAiPrompt || matchesAiAdvanced ? 1 : 0);
 
   return (
     <div
@@ -87,6 +90,19 @@ export function SettingsPanel({
             >
               <Palette size={14} />
               <span>Appearance</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={!q && activeTab === "themeEditor"}
+              className={`settings-panel__tab ${!q && activeTab === "themeEditor" ? "settings-panel__tab--active" : ""}`}
+              onClick={() => {
+                setSearchQuery("");
+                setActiveTab("themeEditor");
+              }}
+            >
+              <Paintbrush size={14} />
+              <span>Theme Editor</span>
             </button>
             <button
               type="button"
@@ -165,13 +181,40 @@ export function SettingsPanel({
                       {item.label}
                     </option>
                   ))}
-                  {extras.map((extra) => (
-                    <option key={extra.id} value={`ext:${extra.id}`}>
-                      {extra.label}
-                    </option>
-                  ))}
+                  {customThemes.length > 0 && (
+                    <optgroup label="Custom Themes">
+                      {customThemes.map((ct) => (
+                        <option key={ct.id} value={`custom:${ct.id}`}>
+                          {ct.label} (custom)
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {extras.length > 0 && (
+                    <optgroup label="Extension Themes">
+                      {extras.map((extra) => (
+                        <option key={extra.id} value={`ext:${extra.id}`}>
+                          {extra.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
                 </select>
               </label>
+              <div className="settings-row">
+                <span>Theme Editor</span>
+                <button
+                  type="button"
+                  className="settings-reset"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveTab("themeEditor");
+                  }}
+                >
+                  <Paintbrush size={13} />
+                  <span>Open Theme Editor</span>
+                </button>
+              </div>
               <label className="settings-row">
                 <span>File Icon Theme</span>
                 <select
@@ -199,6 +242,12 @@ export function SettingsPanel({
               <p className="settings-hint">
                 Windows 11 acrylic on the title bar, status bar, gutters, and the settings window. Editor and side panels stay solid.
               </p>
+            </section>
+          )}
+
+          {showThemeEditor && (
+            <section className="settings-section settings-section--theme-editor">
+              <ThemeEditor />
             </section>
           )}
 

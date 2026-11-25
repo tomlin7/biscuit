@@ -14,7 +14,7 @@ import { editorConfigFor } from "./editorconfig";
 import { editorRegistry } from "./editorRegistry";
 import { detectIndentFromText } from "./detectIndent";
 import { parseRulers } from "./rulers";
-import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
+import { defineCustomThemes, defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
 import { registerTsHoverProviders } from "../lsp/tsHover";
 import { StickyOutline } from "./StickyOutline";
 import { symbolsForFile } from "../lsp/OutlinePanel";
@@ -48,7 +48,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   const doc = path
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
-  const { theme, extras } = useTheme();
+  const { theme, extras, customThemes } = useTheme();
   const { registerFindHandler, registerFindInSelectionHandler, registerReplaceInSelectionHandler, registerEditor, showPeek, showReferences, setFindMatchLabel } =
     useEditorActions();
   const showPeekRef = useRef(showPeek);
@@ -152,12 +152,13 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     if (monacoRef.current) {
       try {
         defineExtraThemes(monacoRef.current, extras);
-        monacoRef.current?.editor?.setTheme?.(monacoThemeId(theme, extras));
+        defineCustomThemes(monacoRef.current, customThemes);
+        monacoRef.current?.editor?.setTheme?.(monacoThemeId(theme, extras, customThemes));
       } catch (err) {
         console.warn("Failed to apply theme in useEffect:", err);
       }
     }
-  }, [theme, extras]);
+  }, [theme, extras, customThemes]);
 
   useEffect(() => {
     if (monacoRef.current) {
@@ -593,7 +594,8 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     try {
       defineT3dThemes(monaco);
       defineExtraThemes(monaco, extras);
-      monaco?.editor?.setTheme?.(monacoThemeId(theme, extras));
+      defineCustomThemes(monaco, customThemes);
+      monaco?.editor?.setTheme?.(monacoThemeId(theme, extras, customThemes));
     } catch (err) {
       console.warn("Failed to apply themes in onMount:", err);
     }

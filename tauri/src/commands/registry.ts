@@ -2042,4 +2042,10 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.selectIconTheme(),
   },
+  {
+    id: "workbench.action.openThemeEditor",
+    title: "Preferences: Open Theme Editor",
+    category: "Preferences",
+    run: (ctx) => ctx.openThemeEditor(),
+  },
 ];

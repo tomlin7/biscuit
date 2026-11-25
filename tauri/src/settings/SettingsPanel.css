@@ -335,3 +335,11 @@
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
 }
+
+.settings-section--theme-editor {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  min-height: 480px;
+}

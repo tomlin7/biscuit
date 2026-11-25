@@ -2098,7 +2098,7 @@ dependencies = [
 
 [[package]]
 name = "morsel"
-version = "1.220.0"
+version = "1.221.0"
 dependencies = [
  "portable-pty",
  "serde",

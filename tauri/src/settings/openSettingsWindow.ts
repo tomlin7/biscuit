@@ -4,7 +4,7 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 export const SETTINGS_WINDOW_LABEL = "settings";
 export const SETTINGS_TAB_EVENT = "t3d://settings-tab";
 
-export type SettingsTab = "appearance" | "editor" | "ai";
+export type SettingsTab = "appearance" | "themeEditor" | "editor" | "ai";
 
 function inTauri() {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;

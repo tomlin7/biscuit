@@ -15,7 +15,7 @@ import "./SettingsWindow.css";
 
 function readInitialTab(): SettingsCategory {
   const tab = new URLSearchParams(window.location.search).get("tab");
-  if (tab === "appearance" || tab === "editor" || tab === "ai") return tab;
+  if (tab === "appearance" || tab === "themeEditor" || tab === "editor" || tab === "ai") return tab;
   return "editor";
 }
 
@@ -35,7 +35,7 @@ function SettingsWindowChrome() {
     let unlisten: (() => void) | undefined;
     void listen<SettingsTab>(SETTINGS_TAB_EVENT, (event) => {
       const next = event.payload;
-      if (next === "appearance" || next === "editor" || next === "ai") {
+      if (next === "appearance" || next === "themeEditor" || next === "editor" || next === "ai") {
         setTab(next);
       }
     }).then((stop) => {

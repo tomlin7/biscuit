@@ -27,7 +27,7 @@ import * as monaco from "monaco-editor";
 import { DebugProvider, useDebug } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { IconThemeProvider, useIconTheme } from "../theme/iconTheme/IconThemeContext";
-import { SettingsPanel } from "../settings/SettingsPanel";
+import { SettingsPanel, type SettingsCategory } from "../settings/SettingsPanel";
 import { NotificationsProvider, useNotifications } from "../notifications/NotificationsContext";
 import { X } from "lucide-react";
 import { AutoSave } from "../workspace/AutoSave";
@@ -461,14 +461,17 @@ function ShellChrome() {
     }
   }, [rootPath, notify]);
 
-  const [settingsCategory, setSettingsCategory] = useState<"appearance" | "editor" | "ai">("editor");
-  const openSettings = useCallback((tab?: "appearance" | "editor" | "ai") => {
+  const [settingsCategory, setSettingsCategory] = useState<SettingsCategory>("editor");
+  const openSettings = useCallback((tab?: SettingsCategory) => {
     const next = tab ?? "editor";
     setSettingsCategory(next);
     void openSettingsWindow(next).then((opened) => {
       if (!opened) setSettingsOpen(true);
     });
   }, []);
+  const openThemeEditor = useCallback(() => {
+    openSettings("themeEditor");
+  }, [openSettings]);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const cloneRepository = useCallback(async () => {
     const url = window.prompt("Repository URL");
@@ -2427,8 +2430,10 @@ function ShellChrome() {
           setPaletteOpen(true);
         }
       },
+      openThemeEditor: () => openThemeEditor(),
     }),
     [
+      openThemeEditor,
       availableIconThemes,
       setIconTheme,
       updateApp,
