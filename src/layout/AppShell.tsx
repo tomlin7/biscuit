@@ -142,6 +142,7 @@ function ShellChrome() {
     sessions: debugSessions,
     startSession: startDebugSession,
     stopSession: stopDebugSession,
+    stepPython: stepDebugPython,
   } = useDebug();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -1350,6 +1351,12 @@ function ShellChrome() {
           void startDebugSession(activePath);
         }
       },
+      stepOverDebugging: () => {
+        void stepDebugPython("next").then((next) => {
+          const frame = next?.frames[0];
+          if (frame) void openFileAt(frame.file, frame.line, 1);
+        });
+      },
     }),
     [
       openFolder,
@@ -1477,6 +1484,7 @@ function ShellChrome() {
       debugSessions,
       startDebugSession,
       stopDebugSession,
+      stepDebugPython,
     ],
   );
 

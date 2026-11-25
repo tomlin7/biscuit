@@ -1379,4 +1379,11 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+Shift+F5",
     run: (ctx) => ctx.restartDebugging(),
   },
+  {
+    id: "workbench.action.debug.stepOver",
+    title: "Step Over in Debugger",
+    category: "Debug",
+    keybinding: "F10",
+    run: (ctx) => ctx.stepOverDebugging(),
+  },
 ];
