@@ -564,4 +564,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.clearAiChat(),
   },
+  {
+    id: "workbench.action.exportAiSession",
+    title: "Export AI Session",
+    category: "AI",
+    run: (ctx) => ctx.exportAiSession(),
+  },
 ];

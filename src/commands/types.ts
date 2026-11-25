@@ -94,6 +94,7 @@ export type CommandContext = {
   openKeybindings: () => void;
   clearAiAttachments: () => void;
   clearAiChat: () => void;
+  exportAiSession: () => void;
 };
 
 export type Command = {
