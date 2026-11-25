@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useCallback, useMemo, memo } from "react";
+import React, { useState, useCallback, useMemo, useEffect, memo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { tags as t } from "@lezer/highlight";
 import {
   FolderTree,
   Search,
@@ -34,10 +35,16 @@ import {
   Info,
   TerminalSquare,
   Command,
+  FileText,
+  ZoomIn,
+  ZoomOut,
+  ChevronDown,
+  Layers,
+  ArrowUpDown,
 } from "lucide-react";
 import "./t3d-demo.css";
 
-/* ─── File tree definition exactly mirroring Morsel / T3D ───────────────── */
+/* ─── File tree definition mirroring Morsel / T3D ────────────────────────── */
 interface TreeNode {
   name: string;
   isDir: boolean;
@@ -73,6 +80,11 @@ const T3D_EXPLORER_TREE: TreeNode[] = [
         ],
       },
     ],
+  },
+  {
+    name: "docs",
+    isDir: true,
+    children: [{ name: "architecture.pdf", isDir: false }],
   },
   {
     name: "src-tauri",
@@ -215,6 +227,12 @@ serde_json = "1.0"`,
 
 Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a desktop code editor crafted with Tauri 2, compiled Rust, and Monaco.
 `,
+  "architecture.pdf": `PDF-1.7
+Morsel Architecture Specification v2
+1. Native ConPTY / POSIX slave stream
+2. Monaco code editor pipeline with 0 latency
+3. Web Worker sandboxed background extensions
+4. Native data viewers (Hex, CSV, PDF)`,
 };
 
 /* ─── File badges matching T3D FileIcon ──────────────────────────────────── */
@@ -226,6 +244,7 @@ function FileBadge({ name }: { name: string }) {
   if (name === "README.md") return <span className="t3d-file-badge t3d-file-badge--md">MD</span>;
   if (ext === "csv") return <span className="t3d-file-badge t3d-file-badge--csv">CSV</span>;
   if (ext === "hex") return <span className="t3d-file-badge t3d-file-badge--hex">HEX</span>;
+  if (ext === "pdf") return <span className="t3d-file-badge t3d-file-badge--pdf">PDF</span>;
   if (ext === "rs") return <span className="t3d-file-badge t3d-file-badge--rust">RS</span>;
   if (ext === "tsx" || ext === "ts") return <span className="t3d-file-badge t3d-file-badge--ts">TS</span>;
   return <span className="t3d-file-badge t3d-file-badge--ts">&bull;</span>;
@@ -239,11 +258,23 @@ const EDITOR_SETUP = {
   autocompletion: false,
 };
 
+const morselHighlightStyle = HighlightStyle.define([
+  { tag: [t.keyword, t.operatorKeyword, t.modifier], color: "#569cd6" },
+  { tag: [t.string, t.special(t.string)], color: "#9ece6a" },
+  { tag: [t.number, t.bool, t.null], color: "#b5cea8" },
+  { tag: [t.comment, t.lineComment, t.blockComment], color: "#6a9955" },
+  { tag: [t.function(t.variableName), t.function(t.propertyName)], color: "#dcdcaa" },
+  { tag: [t.typeName, t.className, t.namespace], color: "#4ec9b0" },
+  { tag: [t.variableName, t.propertyName], color: "#9cdcfe" },
+  { tag: [t.operator, t.punctuation], color: "#d4d4d4" },
+]);
+
 const EDITOR_THEME = [
-  vscodeDark,
+  syntaxHighlighting(morselHighlightStyle),
   EditorView.theme({
     "&": {
       backgroundColor: "#141414 !important",
+      color: "#d4d4d4",
       height: "100%",
       fontSize: "13px",
       padding: "0",
@@ -275,21 +306,32 @@ export default function TedDemo() {
   const [openTabs, setOpenTabs] = useState<string[]>([
     "AppShell.tsx",
     "pty.rs",
+    "architecture.pdf",
     "morsel.config.json",
   ]);
   const [activeTab, setActiveTab] = useState<string>("AppShell.tsx");
-  const [secondaryTab, setSecondaryTab] = useState<string>("morsel.config.json");
+  const [secondaryTab, setSecondaryTab] = useState<string>("benchmarks.csv");
   const [isSplit, setIsSplit] = useState(false);
   const [csvMode, setCsvMode] = useState<"table" | "raw">("table");
+  const [csvSortCol, setCsvSortCol] = useState<number | null>(null);
+  const [csvSortAsc, setCsvSortAsc] = useState(true);
 
   const [sidebarMode, setSidebarMode] = useState<
     "explorer" | "search" | "outline" | "scm" | "debug" | "extensions"
   >("explorer");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [fileFilter, setFileFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("portable_pty");
+  const [commitMessage, setCommitMessage] = useState("");
+  const [gitDirtyCount, setGitDirtyCount] = useState(2);
+
   const [bottomOpen, setBottomOpen] = useState(true);
   const [bottomTab, setBottomTab] = useState<"terminal" | "problems" | "logs">("terminal");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState("");
+
+  const [pdfZoom, setPdfZoom] = useState(100);
+  const [pdfPage, setPdfPage] = useState(1);
 
   const [terminalInput, setTerminalInput] = useState("");
   const [terminalHistory, setTerminalHistory] = useState<TerminalEntry[]>([
@@ -302,6 +344,20 @@ export default function TedDemo() {
   const [fileContents, setFileContents] = useState<Record<string, string>>(
     Object.fromEntries(Object.entries(T3D_SOURCE_CODE))
   );
+
+  // Global keyboard shortcut listener for Ctrl+Shift+P / Cmd+Shift+P
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "P" || e.key === "p")) {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+      } else if (e.key === "Escape") {
+        setPaletteOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleFileClick = useCallback((name: string) => {
     if (!T3D_SOURCE_CODE[name]) return;
@@ -346,15 +402,23 @@ export default function TedDemo() {
       });
       next.push({
         type: "success",
-        text: "Finished test [unoptimized + debuginfo] target(s) in 0.07s",
+        text: "Finished dev/test [unoptimized + debuginfo] target(s) in 0.07s",
       });
     } else if (trimmed === "git status") {
       next.push({ type: "info", text: "On branch main, up to date with origin/main" });
-      next.push({ type: "info", text: "Changes not staged for commit: modified src/layout/AppShell.tsx" });
+      next.push({ type: "info", text: `Changes not staged: ${gitDirtyCount} file(s) modified` });
+    } else if (trimmed === "git diff") {
+      next.push({ type: "info", text: "diff --git a/src/layout/AppShell.tsx b/src/layout/AppShell.tsx" });
+      next.push({ type: "success", text: "+ const { isSplitView, activeTab } = useWorkspace();" });
     } else if (trimmed === "morsel --info" || trimmed === "morsel --version") {
       next.push({
         type: "info",
         text: "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ v1.220.0 | Tauri 2 | portable-pty | Monaco Core | Sub-100ms PTY",
+      });
+    } else if (trimmed === "help") {
+      next.push({
+        type: "info",
+        text: "Commands: cargo check, cargo test, git status, git diff, morsel --info, clear",
       });
     } else {
       next.push({ type: "info", text: `Command completed: ${trimmed}` });
@@ -364,21 +428,96 @@ export default function TedDemo() {
     setTerminalInput("");
   };
 
-  const executePaletteCommand = (action: string) => {
+  const paletteCommands = [
+    {
+      id: "split",
+      title: "View: Toggle Multi-Pane Split View",
+      shortcut: "Ctrl+\\",
+      icon: Columns2,
+      color: "text-blue-400",
+      action: () => setIsSplit((v) => !v),
+    },
+    {
+      id: "term-cargo",
+      title: "Terminal: Run cargo check",
+      shortcut: "F5",
+      icon: Play,
+      color: "text-emerald-400",
+      action: () => {
+        setBottomTab("terminal");
+        setBottomOpen(true);
+        runTerminalCommand("cargo check");
+      },
+    },
+    {
+      id: "term-git",
+      title: "Terminal: Run git status",
+      shortcut: "",
+      icon: GitBranch,
+      color: "text-sky-400",
+      action: () => {
+        setBottomTab("terminal");
+        setBottomOpen(true);
+        runTerminalCommand("git status");
+      },
+    },
+    {
+      id: "open-pdf",
+      title: "Viewers: Open Architecture Specification PDF",
+      shortcut: "docs",
+      icon: FileText,
+      color: "text-rose-400",
+      action: () => handleFileClick("architecture.pdf"),
+    },
+    {
+      id: "open-csv",
+      title: "Viewers: Open Tabular CSV Data Viewer",
+      shortcut: "benchmarks.csv",
+      icon: Table,
+      color: "text-sky-400",
+      action: () => handleFileClick("benchmarks.csv"),
+    },
+    {
+      id: "open-hex",
+      title: "Viewers: Inspect Binary Hex Dump",
+      shortcut: "firmware.hex",
+      icon: Binary,
+      color: "text-amber-400",
+      action: () => handleFileClick("firmware.hex"),
+    },
+    {
+      id: "open-pty",
+      title: "Source: Open Native Rust PTY Engine (pty.rs)",
+      shortcut: "portable-pty",
+      icon: TerminalSquare,
+      color: "text-amber-300",
+      action: () => handleFileClick("pty.rs"),
+    },
+    {
+      id: "toggle-sidebar",
+      title: "View: Toggle Sidebar Panel",
+      shortcut: "Ctrl+B",
+      icon: FolderTree,
+      color: "text-neutral-400",
+      action: () => setSidebarOpen((v) => !v),
+    },
+  ];
+
+  const filteredPaletteCommands = useMemo(() => {
+    if (!paletteQuery.trim()) return paletteCommands;
+    const q = paletteQuery.toLowerCase();
+    return paletteCommands.filter(
+      (c) =>
+        c.title.toLowerCase().includes(q) ||
+        c.shortcut.toLowerCase().includes(q) ||
+        c.id.toLowerCase().includes(q)
+    );
+  }, [paletteQuery]);
+
+  const executePaletteCommand = (actionFn: () => void) => {
     setPaletteOpen(false);
     setPaletteQuery("");
-    if (action === "split") setIsSplit((v) => !v);
-    else if (action === "term-cargo") {
-      setBottomTab("terminal");
-      setBottomOpen(true);
-      runTerminalCommand("cargo check");
-    } else if (action === "open-hex") {
-      handleFileClick("firmware.hex");
-    } else if (action === "open-csv") {
-      handleFileClick("benchmarks.csv");
-    } else if (action === "open-pty") {
-      handleFileClick("pty.rs");
-    }
+    actionFn();
   };
 
   const parsedCsv = useMemo(() => {
@@ -386,13 +525,46 @@ export default function TedDemo() {
     const lines = raw.trim().split("\n");
     if (!lines.length) return { headers: [], rows: [] };
     const headers = lines[0].split(",");
-    const rows = lines.slice(1).map((l) => l.split(","));
+    let rows = lines.slice(1).map((l) => l.split(","));
+    if (csvSortCol !== null) {
+      rows = [...rows].sort((a, b) => {
+        const valA = a[csvSortCol] || "";
+        const valB = b[csvSortCol] || "";
+        const numA = parseFloat(valA);
+        const numB = parseFloat(valB);
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return csvSortAsc ? numA - numB : numB - numA;
+        }
+        return csvSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      });
+    }
     return { headers, rows };
-  }, [fileContents]);
+  }, [fileContents, csvSortCol, csvSortAsc]);
+
+  const toggleSort = (colIdx: number) => {
+    if (csvSortCol === colIdx) {
+      setCsvSortAsc((prev) => !prev);
+    } else {
+      setCsvSortCol(colIdx);
+      setCsvSortAsc(true);
+    }
+  };
+
+  const handleCommit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commitMessage.trim()) return;
+    setGitDirtyCount(0);
+    setTerminalHistory((prev) => [
+      ...prev,
+      { type: "cmd", text: `git commit -m "${commitMessage.trim()}"` },
+      { type: "success", text: "[main 7af5c43] " + commitMessage.trim() },
+    ]);
+    setCommitMessage("");
+  };
 
   return (
     <div
-      className="relative w-full h-[600px] md:h-[640px] overflow-hidden t3d-app-shell rounded-xl border border-neutral-800"
+      className="relative w-full h-[540px] sm:h-[600px] md:h-[640px] overflow-hidden t3d-app-shell rounded-xl border border-neutral-800"
       data-ui="demo-surface"
     >
       {/* ── 1. TitleBar ────────────────────────────────────────────────────── */}
@@ -408,7 +580,7 @@ export default function TedDemo() {
                 setSidebarOpen(true);
               }
             }}
-            title="Explorer"
+            title="Explorer (Workspace)"
             className={`t3d-icon-btn ${sidebarOpen && sidebarMode === "explorer" ? "t3d-icon-btn--active" : ""}`}
           >
             <FolderTree size={15} strokeWidth={1.75} />
@@ -422,7 +594,7 @@ export default function TedDemo() {
                 setSidebarOpen(true);
               }
             }}
-            title="Search files"
+            title="Search Workspace"
             className={`t3d-icon-btn ${sidebarOpen && sidebarMode === "search" ? "t3d-icon-btn--active" : ""}`}
           >
             <Search size={15} strokeWidth={1.75} />
@@ -436,7 +608,7 @@ export default function TedDemo() {
                 setSidebarOpen(true);
               }
             }}
-            title="Outline"
+            title="Symbol Outline"
             className={`t3d-icon-btn ${sidebarOpen && sidebarMode === "outline" ? "t3d-icon-btn--active" : ""}`}
           >
             <ListTree size={15} strokeWidth={1.75} />
@@ -478,7 +650,7 @@ export default function TedDemo() {
                 setSidebarOpen(true);
               }
             }}
-            title="Extensions"
+            title="Extensions Manager"
             className={`t3d-icon-btn ${sidebarOpen && sidebarMode === "extensions" ? "t3d-icon-btn--active" : ""}`}
           >
             <Blocks size={15} strokeWidth={1.75} />
@@ -497,10 +669,10 @@ export default function TedDemo() {
             type="button"
             onClick={() => setPaletteOpen(true)}
             className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-700/80 text-[11px] text-neutral-400 hover:text-neutral-200 transition-colors"
-            title="Open Command Palette"
+            title="Open Command Palette (Ctrl+Shift+P)"
           >
             <Command size={11} />
-            <code>Ctrl+Shift+P</code>
+            <kbd className="font-sans">Ctrl+Shift+P</kbd>
           </button>
         </div>
 
@@ -522,7 +694,7 @@ export default function TedDemo() {
           >
             <Play size={14} strokeWidth={1.75} />
           </button>
-          <button type="button" className="t3d-icon-btn" title="Toggle AI">
+          <button type="button" className="t3d-icon-btn" title="Toggle AI Assistant">
             <Sparkles size={14} strokeWidth={1.75} className="text-amber-400" />
           </button>
           <button type="button" className="t3d-icon-btn" title="Settings">
@@ -555,11 +727,11 @@ export default function TedDemo() {
             <Search size={14} className="text-neutral-400" />
             <input
               type="text"
-              placeholder="Type a command or file name..."
+              placeholder="Type a command or filter actions..."
               value={paletteQuery}
               onChange={(e) => setPaletteQuery(e.target.value)}
               autoFocus
-              className="w-full bg-transparent text-xs text-neutral-200 outline-none placeholder:text-neutral-500"
+              className="w-full bg-transparent text-xs text-neutral-200 outline-none placeholder:text-neutral-500 font-sans"
             />
             <button
               type="button"
@@ -570,66 +742,34 @@ export default function TedDemo() {
             </button>
           </div>
 
-          <div className="max-h-56 overflow-y-auto p-1.5 text-xs text-neutral-300">
-            <button
-              type="button"
-              onClick={() => executePaletteCommand("split")}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-neutral-800 text-left transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Columns2 size={13} className="text-blue-400" />
-                <span>View: Toggle Multi-Pane Split Grid</span>
+          <div className="max-h-60 overflow-y-auto p-1.5 text-xs text-neutral-300">
+            {filteredPaletteCommands.length === 0 ? (
+              <div className="p-3 text-center text-xs text-neutral-500">
+                No commands matching &quot;{paletteQuery}&quot;
               </div>
-              <span className="text-[11px] text-neutral-500"><code>Ctrl+\</code></span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => executePaletteCommand("term-cargo")}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-neutral-800 text-left transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Play size={13} className="text-emerald-400" />
-                <span>Terminal: Run cargo check</span>
-              </div>
-              <span className="text-[11px] text-neutral-500"><code>F5</code></span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => executePaletteCommand("open-csv")}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-neutral-800 text-left transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Table size={13} className="text-sky-400" />
-                <span>Viewers: Open Tabular CSV Data Viewer</span>
-              </div>
-              <span className="text-[11px] text-neutral-500">benchmarks.csv</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => executePaletteCommand("open-hex")}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-neutral-800 text-left transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <Binary size={13} className="text-amber-400" />
-                <span>Viewers: Inspect Binary Hex Dump</span>
-              </div>
-              <span className="text-[11px] text-neutral-500">firmware.hex</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => executePaletteCommand("open-pty")}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-neutral-800 text-left transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <TerminalSquare size={13} className="text-amber-300" />
-                <span>Source: Open Native Rust PTY Engine (pty.rs)</span>
-              </div>
-              <span className="text-[11px] text-neutral-500">portable-pty</span>
-            </button>
+            ) : (
+              filteredPaletteCommands.map((cmd) => {
+                const IconComponent = cmd.icon;
+                return (
+                  <button
+                    key={cmd.id}
+                    type="button"
+                    onClick={() => executePaletteCommand(cmd.action)}
+                    className="w-full flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-neutral-800 text-left transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <IconComponent size={13} className={cmd.color} />
+                      <span className="font-sans">{cmd.title}</span>
+                    </div>
+                    {cmd.shortcut && (
+                      <span className="text-[11px] text-neutral-500 font-sans">
+                        <kbd className="font-sans">{cmd.shortcut}</kbd>
+                      </span>
+                    )}
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
       )}
@@ -639,31 +779,221 @@ export default function TedDemo() {
         {/* Island: Sidebar */}
         {sidebarOpen && (
           <aside className="t3d-island t3d-sidebar" data-ui="sidebar">
-            {/* Filter input */}
-            <div className="t3d-sidebar__search">
-              <Search size={14} className="text-[#5c5c5c] shrink-0" />
-              <input type="text" placeholder="Filter files" readOnly />
-            </div>
+            {sidebarMode === "explorer" && (
+              <>
+                {/* Filter input */}
+                <div className="t3d-sidebar__search">
+                  <Search size={14} className="text-[#5c5c5c] shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Filter workspace files..."
+                    value={fileFilter}
+                    onChange={(e) => setFileFilter(e.target.value)}
+                    className="font-sans"
+                  />
+                  {fileFilter && (
+                    <button
+                      type="button"
+                      onClick={() => setFileFilter("")}
+                      className="text-neutral-500 hover:text-neutral-300"
+                    >
+                      <X size={11} />
+                    </button>
+                  )}
+                </div>
 
-            {/* Explorer Toolbar */}
-            <div className="t3d-file-tree__toolbar">
-              <span className="t3d-file-tree__title">WORKSPACE</span>
-              <div className="flex items-center gap-1.5 text-[#5c5c5c]">
-                <FilePlus size={13} className="hover:text-white cursor-pointer" />
-                <FolderPlus size={13} className="hover:text-white cursor-pointer" />
-                <RefreshCw size={12} className="hover:text-white cursor-pointer" />
+                {/* Explorer Toolbar */}
+                <div className="t3d-file-tree__toolbar">
+                  <span className="t3d-file-tree__title font-sans">WORKSPACE</span>
+                  <div className="flex items-center gap-1.5 text-[#5c5c5c]">
+                    <FilePlus size={13} className="hover:text-white cursor-pointer" />
+                    <FolderPlus size={13} className="hover:text-white cursor-pointer" />
+                    <RefreshCw size={12} className="hover:text-white cursor-pointer" />
+                  </div>
+                </div>
+
+                {/* Tree */}
+                <div className="flex-1 overflow-y-auto p-1.5">
+                  <TreeBranch
+                    nodes={T3D_EXPLORER_TREE}
+                    depth={0}
+                    activeTab={activeTab}
+                    onFileClick={handleFileClick}
+                    filter={fileFilter.toLowerCase()}
+                  />
+                </div>
+              </>
+            )}
+
+            {sidebarMode === "search" && (
+              <div className="flex-1 flex flex-col p-2 space-y-2 text-xs">
+                <span className="text-[11px] font-semibold text-neutral-400 font-sans uppercase">
+                  SEARCH IN WORKSPACE
+                </span>
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded" data-ui="search-box">
+                  <Search size={12} className="text-neutral-500 shrink-0" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search query..."
+                    className="w-full bg-transparent text-neutral-200 outline-none text-xs font-sans"
+                  />
+                </div>
+                <div className="flex-1 overflow-y-auto space-y-1.5 pt-1 text-neutral-400">
+                  <div
+                    onClick={() => handleFileClick("pty.rs")}
+                    className="p-1.5 rounded hover:bg-neutral-800 cursor-pointer"
+                  >
+                    <div className="font-semibold text-neutral-200">pty.rs</div>
+                    <div className="text-[11px] text-neutral-400 pl-2">Line 1: use portable_pty...</div>
+                    <div className="text-[11px] text-neutral-400 pl-2">Line 9: spawn_pty(cols, rows)</div>
+                  </div>
+                  <div
+                    onClick={() => handleFileClick("morsel.config.json")}
+                    className="p-1.5 rounded hover:bg-neutral-800 cursor-pointer"
+                  >
+                    <div className="font-semibold text-neutral-200">morsel.config.json</div>
+                    <div className="text-[11px] text-neutral-400 pl-2">Line 10: &quot;ptyStartup&quot;: &quot;native&quot;</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Tree */}
-            <div className="flex-1 overflow-y-auto p-1.5">
-              <TreeBranch
-                nodes={T3D_EXPLORER_TREE}
-                depth={0}
-                activeTab={activeTab}
-                onFileClick={handleFileClick}
-              />
-            </div>
+            {sidebarMode === "scm" && (
+              <div className="flex-1 flex flex-col p-2.5 space-y-3 text-xs">
+                <div className="flex items-center justify-between text-neutral-400">
+                  <span className="font-semibold text-[11px] uppercase font-sans">SOURCE CONTROL</span>
+                  <span className="text-[11px] text-blue-400 font-sans">main</span>
+                </div>
+                <form onSubmit={handleCommit} className="space-y-2">
+                  <textarea
+                    rows={2}
+                    value={commitMessage}
+                    onChange={(e) => setCommitMessage(e.target.value)}
+                    placeholder="Commit message (Enter to commit)..."
+                    data-ui="commit-textarea" className="w-full p-2 bg-neutral-900 border border-neutral-800 rounded text-neutral-200 outline-none text-xs resize-none font-sans"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-[11px] transition-colors"
+                  >
+                    Commit to main
+                  </button>
+                </form>
+                <div className="space-y-1 pt-1">
+                  <div className="text-[10px] text-neutral-500 font-semibold uppercase">
+                    CHANGES ({gitDirtyCount})
+                  </div>
+                  {gitDirtyCount > 0 ? (
+                    <>
+                      <div
+                        onClick={() => handleFileClick("AppShell.tsx")}
+                        className="flex items-center justify-between p-1 rounded hover:bg-neutral-800 cursor-pointer"
+                      >
+                        <span className="text-neutral-300">src/layout/AppShell.tsx</span>
+                        <span className="text-amber-400 font-bold text-[10px]">M</span>
+                      </div>
+                      <div
+                        onClick={() => handleFileClick("README.md")}
+                        className="flex items-center justify-between p-1 rounded hover:bg-neutral-800 cursor-pointer"
+                      >
+                        <span className="text-neutral-300">README.md</span>
+                        <span className="text-emerald-400 font-bold text-[10px]">U</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-neutral-500 text-[11px] italic py-2">
+                      Working tree clean. Zero uncommitted changes.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {sidebarMode === "outline" && (
+              <div className="flex-1 flex flex-col p-2 space-y-2 text-xs">
+                <span className="text-[11px] font-semibold text-neutral-400 font-sans uppercase">
+                  OUTLINE: {activeTab}
+                </span>
+                <div className="space-y-1 text-neutral-300">
+                  <div className="flex items-center gap-1.5 p-1 rounded hover:bg-neutral-800 cursor-pointer">
+                    <span className="text-sky-400 text-[10px] font-sans">fn</span>
+                    <span className="font-sans">AppShell()</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-1 pl-4 rounded hover:bg-neutral-800 cursor-pointer">
+                    <span className="text-blue-400 text-[10px] font-sans">prop</span>
+                    <span className="font-sans">isSplitView</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-1 pl-4 rounded hover:bg-neutral-800 cursor-pointer">
+                    <span className="text-blue-400 text-[10px] font-sans">prop</span>
+                    <span className="font-sans">bottomTab</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-1 pl-4 rounded hover:bg-neutral-800 cursor-pointer">
+                    <span className="text-emerald-400 text-[10px] font-sans">cmp</span>
+                    <span className="font-sans">TitleBar</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-1 pl-4 rounded hover:bg-neutral-800 cursor-pointer">
+                    <span className="text-emerald-400 text-[10px] font-sans">cmp</span>
+                    <span className="font-sans">EditorGrid</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {sidebarMode === "extensions" && (
+              <div className="flex-1 flex flex-col p-2 space-y-2 text-xs">
+                <span className="text-[11px] font-semibold text-neutral-400 font-sans uppercase">
+                  INSTALLED EXTENSIONS
+                </span>
+                <div className="space-y-2 overflow-y-auto">
+                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-neutral-200">Rust Analyzer</span>
+                      <span className="text-[9px] px-1 rounded bg-emerald-950 text-emerald-400">ACTIVE</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">LSP diagnostics for Cargo projects</div>
+                  </div>
+                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-neutral-200">Tokyo Night</span>
+                      <span className="text-[9px] px-1 rounded bg-emerald-950 text-emerald-400">ACTIVE</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">Dark VS Code theme port for Monaco</div>
+                  </div>
+                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-neutral-200">Tabular CSV</span>
+                      <span className="text-[9px] px-1 rounded bg-emerald-950 text-emerald-400">ACTIVE</span>
+                    </div>
+                    <div className="text-[10px] text-neutral-400">High-performance column data viewer</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {sidebarMode === "debug" && (
+              <div className="flex-1 flex flex-col p-2 space-y-2 text-xs">
+                <span className="text-[11px] font-semibold text-neutral-400 font-sans uppercase">
+                  RUN &amp; DEBUG
+                </span>
+                <div className="p-2 rounded bg-neutral-900 border border-neutral-800 space-y-2">
+                  <div className="text-neutral-300 font-medium">Launch Morsel Desktop</div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBottomTab("terminal");
+                      setBottomOpen(true);
+                      runTerminalCommand("cargo run --bin t3d");
+                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-medium"
+                  >
+                    <Play size={11} />
+                    <span>Start Debugging</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </aside>
         )}
 
@@ -683,7 +1013,7 @@ export default function TedDemo() {
                     className={`t3d-editor-tab ${isActive ? "t3d-editor-tab--active" : ""}`}
                   >
                     <FileBadge name={tab} />
-                    <span className="truncate">{tab}</span>
+                    <span className="truncate font-sans">{tab}</span>
                     <span
                       onClick={(e) => closeTab(e, tab)}
                       className="size-4 rounded flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-white/10 ml-1"
@@ -702,7 +1032,7 @@ export default function TedDemo() {
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-neutral-800 text-[11px] text-neutral-300 hover:text-white transition-colors"
                   >
                     <Table size={11} />
-                    <span>{csvMode === "table" ? "Raw Text" : "Table View"}</span>
+                    <span className="font-sans">{csvMode === "table" ? "Raw Text" : "Table View"}</span>
                   </button>
                 )}
 
@@ -715,20 +1045,22 @@ export default function TedDemo() {
                   title="Toggle Split Pane"
                 >
                   <Columns2 size={11} />
-                  <span>{isSplit ? "Single Pane" : "Split"}</span>
+                  <span className="font-sans">{isSplit ? "Single Pane" : "Split"}</span>
                 </button>
               </div>
             </div>
 
             {/* Breadcrumb row */}
             <div className="t3d-editor-area__crumbs">
-              <span>morsel</span>
+              <span className="font-sans">morsel</span>
               <span className="text-[#5c5c5c]">/</span>
-              <span>{activeTab.endsWith(".rs") ? "src-tauri" : "src"}</span>
+              <span className="font-sans">
+                {activeTab.endsWith(".rs") ? "src-tauri" : activeTab.endsWith(".pdf") ? "docs" : "src"}
+              </span>
               <span className="text-[#5c5c5c]">/</span>
-              <span className="text-[#e8e8e8]">{activeTab}</span>
+              <span className="text-[#e8e8e8] font-sans">{activeTab}</span>
               {activeTab === "morsel.config.json" && (
-                <span className="ml-auto flex items-center gap-1 text-[11px] text-emerald-400">
+                <span className="ml-auto flex items-center gap-1 text-[11px] text-emerald-400 font-sans">
                   <CheckCircle2 size={11} />
                   <span>Schema Valid</span>
                 </span>
@@ -738,14 +1070,26 @@ export default function TedDemo() {
             {/* Code / Viewer Surface */}
             <div className="flex-1 relative overflow-hidden bg-[#141414] flex">
               {/* Primary Pane */}
-              <div className={`h-full overflow-hidden flex flex-col ${isSplit ? "w-1/2 border-r border-neutral-800" : "w-full"}`} data-ui="primary-pane">
+              <div
+                data-ui="primary-pane"
+                className={`h-full overflow-hidden flex flex-col ${isSplit ? "w-1/2 border-r border-neutral-800" : "w-full"}`}
+              >
                 {activeTab === "benchmarks.csv" && csvMode === "table" ? (
                   <div className="t3d-table-view">
                     <table>
                       <thead>
                         <tr>
-                          {parsedCsv.headers.map((h) => (
-                            <th key={h}>{h}</th>
+                          {parsedCsv.headers.map((h, i) => (
+                            <th
+                              key={h}
+                              onClick={() => toggleSort(i)}
+                              className="cursor-pointer hover:bg-neutral-800 select-none font-sans"
+                            >
+                              <div className="flex items-center justify-between gap-1">
+                                <span>{h}</span>
+                                <ArrowUpDown size={11} className="opacity-50" />
+                              </div>
+                            </th>
                           ))}
                         </tr>
                       </thead>
@@ -764,12 +1108,74 @@ export default function TedDemo() {
                   </div>
                 ) : activeTab === "firmware.hex" ? (
                   <div className="h-full p-3 overflow-auto text-xs leading-relaxed text-neutral-300 bg-[#121212]">
-                    <pre className="m-0 p-0">
+                    <pre className="m-0 p-0 font-normal">
                       <code>{fileContents["firmware.hex"]}</code>
                     </pre>
                   </div>
+                ) : activeTab === "architecture.pdf" ? (
+                  <div className="t3d-pdf-viewer" data-ui="pdf-viewer">
+                    <div className="t3d-pdf-toolbar">
+                      <div className="flex items-center gap-2">
+                        <FileText size={13} className="text-rose-400" />
+                        <span className="font-sans font-medium text-neutral-200">
+                          architecture-spec.pdf
+                        </span>
+                        <span className="text-[10px] text-neutral-500 font-sans">
+                          Page {pdfPage} of 4
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setPdfZoom((z) => Math.max(50, z - 10))}
+                          className="p-1 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white"
+                          title="Zoom out"
+                        >
+                          <ZoomOut size={12} />
+                        </button>
+                        <span className="text-[10px] font-sans px-1">{pdfZoom}%</span>
+                        <button
+                          type="button"
+                          onClick={() => setPdfZoom((z) => Math.min(150, z + 10))}
+                          className="p-1 rounded hover:bg-neutral-800 text-neutral-400 hover:text-white"
+                          title="Zoom in"
+                        >
+                          <ZoomIn size={12} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="t3d-pdf-doc">
+                      <div className="t3d-pdf-page space-y-3 font-sans text-xs">
+                        <div className="text-base font-semibold text-neutral-100 border-b border-neutral-700/60 pb-2" data-ui="pdf-heading">
+                          Morsel Subsystem Architecture Specification
+                        </div>
+                        <p className="text-neutral-300 leading-relaxed">
+                          Morsel decouples editor input dispatch from pseudoterminal process execution. The frontend layer runs inside a native operating system webview driven by compiled Rust bindings.
+                        </p>
+                        <div className="p-3 bg-neutral-900 rounded border border-neutral-800 space-y-2">
+                          <div className="font-medium text-neutral-200 flex items-center gap-1.5">
+                            <Layers size={13} className="text-blue-400" />
+                            <span>Execution Topology</span>
+                          </div>
+                          <div className="text-[11px] text-neutral-400 leading-normal">
+                            [Tauri 2 IPC Core] &harr; [portable-pty slave ConPTY] &harr; [xterm Canvas Viewport]
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                          <div className="p-2 bg-neutral-900/60 rounded border border-neutral-800/80">
+                            <div className="font-medium text-neutral-200">Cold Startup:</div>
+                            <div className="text-emerald-400 font-semibold">&lt; 100 milliseconds</div>
+                          </div>
+                          <div className="p-2 bg-neutral-900/60 rounded border border-neutral-800/80">
+                            <div className="font-medium text-neutral-200">Idle Memory:</div>
+                            <div className="text-emerald-400 font-semibold">~68 MB RAM</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : activeTab ? (
-                  <div className="h-full relative isolate overflow-hidden">
+                  <pre className="h-full w-full m-0 p-0 font-normal relative isolate overflow-hidden">
                     <CodeMirror
                       value={fileContents[activeTab] || ""}
                       height="100%"
@@ -778,9 +1184,9 @@ export default function TedDemo() {
                       onChange={onCodeChange}
                       basicSetup={EDITOR_SETUP}
                     />
-                  </div>
+                  </pre>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-xs text-[#8a8a8a]">
+                  <div className="h-full flex items-center justify-center text-xs text-[#8a8a8a] font-sans">
                     No editor open
                   </div>
                 )}
@@ -789,30 +1195,61 @@ export default function TedDemo() {
               {/* Secondary Pane (when Split is active) */}
               {isSplit && (
                 <div className="h-full w-1/2 overflow-hidden flex flex-col bg-[#131313]">
-                  <div className="flex items-center justify-between px-3 py-1.5 bg-neutral-900 border-b border-neutral-800 text-xs text-neutral-300" data-ui="secondary-header">
+                  <div data-ui="secondary-header" className="flex items-center justify-between px-3 py-1.5 bg-neutral-900 border-b border-neutral-800 text-xs text-neutral-300">
                     <div className="flex items-center gap-2">
                       <FileBadge name={secondaryTab} />
-                      <span>{secondaryTab}</span>
+                      <span className="font-sans">{secondaryTab}</span>
                     </div>
                     <button
                       type="button"
                       onClick={() =>
-                        setSecondaryTab((t) => (t === "morsel.config.json" ? "benchmarks.csv" : "morsel.config.json"))
+                        setSecondaryTab((t) =>
+                          t === "benchmarks.csv" ? "morsel.config.json" : "benchmarks.csv"
+                        )
                       }
-                      className="text-[10px] text-neutral-400 hover:text-white"
+                      className="text-[10px] text-neutral-400 hover:text-white font-sans"
                     >
                       Switch Tab
                     </button>
                   </div>
 
                   <div className="flex-1 overflow-hidden">
-                    <CodeMirror
-                      value={fileContents[secondaryTab] || ""}
-                      height="100%"
-                      theme={EDITOR_THEME}
-                      extensions={docExtensions}
-                      basicSetup={EDITOR_SETUP}
-                    />
+                    {secondaryTab === "benchmarks.csv" ? (
+                      <div className="t3d-table-view">
+                        <table>
+                          <thead>
+                            <tr>
+                              {parsedCsv.headers.map((h) => (
+                                <th key={h} className="font-sans">
+                                  {h}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {parsedCsv.rows.map((row, i) => (
+                              <tr key={i}>
+                                {row.map((cell, c) => (
+                                  <td key={c}>
+                                    <code>{cell}</code>
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <pre className="h-full w-full m-0 p-0 font-normal">
+                        <CodeMirror
+                          value={fileContents[secondaryTab] || ""}
+                          height="100%"
+                          theme={EDITOR_THEME}
+                          extensions={docExtensions}
+                          basicSetup={EDITOR_SETUP}
+                        />
+                      </pre>
+                    )}
                   </div>
                 </div>
               )}
@@ -828,7 +1265,7 @@ export default function TedDemo() {
                   <button
                     type="button"
                     onClick={() => setBottomTab("terminal")}
-                    className={`t3d-bottom-panel__tab ${
+                    className={`t3d-bottom-panel__tab font-sans ${
                       bottomTab === "terminal" ? "t3d-bottom-panel__tab--active" : ""
                     }`}
                   >
@@ -837,17 +1274,17 @@ export default function TedDemo() {
                   <button
                     type="button"
                     onClick={() => setBottomTab("problems")}
-                    className={`t3d-bottom-panel__tab ${
+                    className={`t3d-bottom-panel__tab font-sans ${
                       bottomTab === "problems" ? "t3d-bottom-panel__tab--active" : ""
                     }`}
                   >
                     Problems
-                    <span className="text-[10px] px-1 rounded bg-neutral-800 text-neutral-300">1</span>
+                    <span className="text-[10px] px-1 rounded bg-neutral-800 text-neutral-300 font-sans">1</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setBottomTab("logs")}
-                    className={`t3d-bottom-panel__tab ${
+                    className={`t3d-bottom-panel__tab font-sans ${
                       bottomTab === "logs" ? "t3d-bottom-panel__tab--active" : ""
                     }`}
                   >
@@ -861,21 +1298,21 @@ export default function TedDemo() {
                       <button
                         type="button"
                         onClick={() => runTerminalCommand("cargo check")}
-                        className="px-2 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-300 hover:text-white transition-colors"
+                        className="px-2 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-300 hover:text-white transition-colors font-sans"
                       >
                         cargo check
                       </button>
                       <button
                         type="button"
                         onClick={() => runTerminalCommand("git status")}
-                        className="px-2 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-300 hover:text-white transition-colors"
+                        className="px-2 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-300 hover:text-white transition-colors font-sans"
                       >
                         git status
                       </button>
                       <button
                         type="button"
                         onClick={() => runTerminalCommand("morsel --info")}
-                        className="px-2 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-300 hover:text-white transition-colors"
+                        className="px-2 py-0.5 rounded bg-neutral-800 text-[10px] text-neutral-300 hover:text-white transition-colors font-sans"
                       >
                         info
                       </button>
@@ -922,7 +1359,7 @@ export default function TedDemo() {
                       e.preventDefault();
                       runTerminalCommand(terminalInput);
                     }}
-                    className="mt-2 flex items-center gap-1.5 text-neutral-400 border-t border-neutral-800/80 pt-1.5" data-ui="prompt-form"
+                    data-ui="prompt-form" className="mt-2 flex items-center gap-1.5 text-neutral-400 border-t border-neutral-800/80 pt-1.5"
                   >
                     <span className="text-blue-400 font-medium">
                       <code>PS&gt;</code>
@@ -931,8 +1368,8 @@ export default function TedDemo() {
                       type="text"
                       value={terminalInput}
                       onChange={(e) => setTerminalInput(e.target.value)}
-                      placeholder="Type cargo check, git status, clear..."
-                      className="flex-1 bg-transparent text-neutral-200 outline-none text-xs placeholder:text-neutral-600"
+                      placeholder="Type cargo check, git status, help, clear..."
+                      className="flex-1 bg-transparent text-neutral-200 outline-none text-xs placeholder:text-neutral-600 font-sans"
                     />
                   </form>
                 </div>
@@ -943,15 +1380,15 @@ export default function TedDemo() {
                 <div className="flex-1 p-3 overflow-y-auto bg-[#121212] text-xs text-neutral-300 space-y-2">
                   <div className="flex items-center gap-2">
                     <Info size={13} className="text-blue-400 shrink-0" />
-                    <span className="font-medium text-neutral-200">morsel.config.json</span>
-                    <span className="text-neutral-500">[1, 1]</span>
-                    <span className="text-neutral-400">Schema validated against config.v1.json</span>
+                    <span className="font-medium text-neutral-200 font-sans">morsel.config.json</span>
+                    <span className="text-neutral-500 font-sans">[1, 1]</span>
+                    <span className="text-neutral-400 font-sans">Schema validated against config.v1.json</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                    <span className="font-medium text-neutral-200">src-tauri/src/pty.rs</span>
-                    <span className="text-neutral-500">[24, 5]</span>
-                    <span className="text-neutral-400">portable-pty native process binding ready</span>
+                    <span className="font-medium text-neutral-200 font-sans">src-tauri/src/pty.rs</span>
+                    <span className="text-neutral-500 font-sans">[24, 5]</span>
+                    <span className="text-neutral-400 font-sans">portable-pty native process binding ready</span>
                   </div>
                 </div>
               )}
@@ -959,12 +1396,12 @@ export default function TedDemo() {
               {/* View: Logs */}
               {bottomTab === "logs" && (
                 <div className="flex-1 p-2.5 overflow-y-auto bg-[#121212] text-[11px] leading-relaxed text-neutral-400">
-                  <pre className="m-0 p-0">
+                  <pre className="m-0 p-0 font-normal">
                     <code>
 {`[00:00.018] [tauri::runtime] initialization complete (x86_64-pc-windows-msvc)
 [00:00.042] [pty::portable] ConPTY session bound to slave channel fd:3
 [00:00.065] [editor::monaco] language service registered (typescript, rust, toml, json)
-[00:00.088] [viewers::catalog] hex-viewer and tabular-csv listeners attached
+[00:00.088] [viewers::catalog] hex-viewer, tabular-csv, and pdfjs listeners attached
 [00:00.104] [workspace::grid] 2D pane split engine ready`}
                     </code>
                   </pre>
@@ -980,7 +1417,7 @@ export default function TedDemo() {
         <div className="t3d-status-bar__group">
           <button
             type="button"
-            className="t3d-status-bar__chip"
+            className="t3d-status-bar__chip font-sans"
             title="Source Control"
             onClick={() => {
               setSidebarMode("scm");
@@ -988,17 +1425,17 @@ export default function TedDemo() {
             }}
           >
             <GitBranch size={13} className="text-[#3b82f6]" />
-            <span>main</span>
-            <span className="t3d-status-bar__sync">●1</span>
+            <span className="font-sans">main</span>
+            <span className="t3d-status-bar__sync font-sans">●{gitDirtyCount}</span>
           </button>
 
           <button
             type="button"
-            className="t3d-status-bar__chip"
+            className="t3d-status-bar__chip font-sans"
             title="Workspace folder"
           >
             <Folder size={13} className="text-[#60a5fa]" />
-            <span>morsel</span>
+            <span className="font-sans">morsel</span>
           </button>
 
           <button
@@ -1012,7 +1449,7 @@ export default function TedDemo() {
 
           <button
             type="button"
-            className="t3d-status-bar__chip"
+            className="t3d-status-bar__chip font-sans"
             title="Problems"
             onClick={() => {
               setBottomTab("problems");
@@ -1020,15 +1457,15 @@ export default function TedDemo() {
             }}
           >
             <AlertCircle size={13} className="text-[#73c991]" />
-            <span>1</span>
+            <span className="font-sans">1</span>
           </button>
         </div>
 
-        <div className="t3d-status-bar__group">
-          <span className="t3d-status-bar__item">Ln 14, Col 28</span>
-          <span className="t3d-status-bar__item">Spaces: 2</span>
-          <span className="t3d-status-bar__item">UTF-8</span>
-          <span className="t3d-status-bar__item text-[#e8e8e8]">
+        <div className="t3d-status-bar__group font-sans">
+          <span className="t3d-status-bar__item font-sans">Ln 14, Col 28</span>
+          <span className="t3d-status-bar__item font-sans">Spaces: 2</span>
+          <span className="t3d-status-bar__item font-sans">UTF-8</span>
+          <span className="t3d-status-bar__item text-[#e8e8e8] font-sans">
             {activeTab.endsWith(".rs")
               ? "Rust"
               : activeTab.endsWith(".json")
@@ -1037,6 +1474,8 @@ export default function TedDemo() {
               ? "CSV Table"
               : activeTab.endsWith(".hex")
               ? "Hex Dump"
+              : activeTab.endsWith(".pdf")
+              ? "PDF Document"
               : "TypeScript JSX"}
           </span>
           <button type="button" className="t3d-icon-btn" title="Notifications">
@@ -1048,18 +1487,20 @@ export default function TedDemo() {
   );
 }
 
-/* ─── Tree branch renderer with indent levels ────────────────────────────── */
+/* ─── Tree branch renderer with indent levels and filtering ──────────────── */
 const TreeBranch = memo(
   ({
     nodes,
     depth,
     activeTab,
     onFileClick,
+    filter,
   }: {
     nodes: TreeNode[];
     depth: number;
     activeTab: string;
     onFileClick: (n: string) => void;
+    filter: string;
   }) => {
     return (
       <>
@@ -1070,6 +1511,7 @@ const TreeBranch = memo(
             depth={depth}
             activeTab={activeTab}
             onFileClick={onFileClick}
+            filter={filter}
           />
         ))}
       </>
@@ -1084,15 +1526,29 @@ const TreeRow = memo(
     depth,
     activeTab,
     onFileClick,
+    filter,
   }: {
     node: TreeNode;
     depth: number;
     activeTab: string;
     onFileClick: (n: string) => void;
+    filter: string;
   }) => {
     const [open, setOpen] = useState(true);
     const isActive = activeTab === node.name;
     const paddingLeft = 4 + depth * 12;
+
+    if (filter) {
+      const matchSelf = node.name.toLowerCase().includes(filter);
+      const matchChild =
+        node.isDir &&
+        node.children?.some(
+          (c) =>
+            c.name.toLowerCase().includes(filter) ||
+            (c.isDir && c.children?.some((cc) => cc.name.toLowerCase().includes(filter)))
+        );
+      if (!matchSelf && !matchChild) return null;
+    }
 
     return (
       <>
@@ -1115,13 +1571,13 @@ const TreeRow = memo(
             </div>
           )}
 
-          <span className="truncate flex-1">{node.name}</span>
+          <span className="truncate flex-1 font-sans">{node.name}</span>
 
           {node.status === "modified" && (
-            <span className="text-[10px] text-amber-400 font-bold shrink-0">M</span>
+            <span className="text-[10px] text-amber-400 font-bold shrink-0 font-sans">M</span>
           )}
           {node.status === "new" && (
-            <span className="text-[10px] text-emerald-400 font-bold shrink-0">U</span>
+            <span className="text-[10px] text-emerald-400 font-bold shrink-0 font-sans">U</span>
           )}
         </button>
 
@@ -1131,6 +1587,7 @@ const TreeRow = memo(
             depth={depth + 1}
             activeTab={activeTab}
             onFileClick={onFileClick}
+            filter={filter}
           />
         )}
       </>

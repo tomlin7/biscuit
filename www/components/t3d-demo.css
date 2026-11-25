@@ -98,55 +98,62 @@
   align-items: center;
   height: 100%;
   gap: 12px;
-  padding: 0 4px 0 var(--gap-shell);
+  padding: 0 10px;
   background: transparent;
 }
 
-[data-ui] .t3d-titlebar__left,
-[data-ui] .t3d-titlebar__actions {
+[data-ui] .t3d-titlebar__left {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
-  height: 100%;
 }
 
 [data-ui] .t3d-titlebar__actions {
+  display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 3px;
+  min-width: 0;
 }
 
 [data-ui] .t3d-titlebar__project {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  max-width: 260px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
+  gap: 6px;
+  max-width: 280px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: var(--radius-control);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
   background: var(--bg-island);
   border: 1px solid var(--border-subtle); /* taste-skill-ignore */
-  color: var(--fg);
-  font-size: var(--font-size-ui);
-  font-weight: 500;
   cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
 }
 
 [data-ui] .t3d-titlebar__project:hover {
-  background: var(--bg-island-elevated);
+  background: var(--bg-hover);
+  border-color: var(--border);
 }
 
 [data-ui] .t3d-titlebar__window-controls {
   display: flex;
   align-items: center;
-  margin-left: 8px;
+  gap: 1px;
+  margin-left: 6px;
+  border-left: 1px solid var(--border-subtle); /* taste-skill-ignore */
+  padding-left: 6px;
 }
 
 [data-ui] .t3d-titlebar__window-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
+  width: 26px;
   height: 26px;
-  border-radius: 6px;
+  border-radius: 5px;
   color: var(--fg-muted);
   background: transparent;
   border: none;
@@ -173,8 +180,17 @@
 }
 
 [data-ui] .t3d-sidebar {
-  width: 230px;
+  width: 220px;
   flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  [data-ui] .t3d-sidebar {
+    width: 170px;
+  }
+  [data-ui] .t3d-titlebar__window-controls {
+    display: none;
+  }
 }
 
 [data-ui] .t3d-sidebar__search {
@@ -266,12 +282,12 @@
 }
 
 [data-ui] .t3d-file-badge--rust {
-  background: #dea584;
+  background: #f59e0b;
   color: #171717;
 }
 
 [data-ui] .t3d-file-badge--json {
-  background: #cbcb41;
+  background: #eab308;
   color: #1a1a1a;
   font-size: 9px;
 }
@@ -292,35 +308,42 @@
 }
 
 [data-ui] .t3d-file-badge--hex {
-  background: #fb923c;
+  background: #f97316;
   color: #431407;
+}
+
+[data-ui] .t3d-file-badge--pdf {
+  background: #ef4444;
+  color: #fff;
 }
 
 /* Editor tabs */
 [data-ui] .t3d-editor-tabs {
   display: flex;
   align-items: center;
-  gap: 4px;
-  min-height: 36px;
-  padding: 4px 8px;
+  min-height: 34px;
+  gap: 2px;
+  padding: 4px 4px 0 6px;
+  background: var(--bg-tab);
   border-bottom: 1px solid var(--border-subtle); /* taste-skill-ignore */
   overflow-x: auto;
 }
 
 [data-ui] .t3d-editor-tab {
-  position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  max-width: 220px;
-  padding: 4px 8px;
-  border-radius: 7px;
+  height: 28px;
+  max-width: 180px;
+  padding: 0 10px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
   background: transparent;
-  cursor: pointer;
-  user-select: none;
   border: none;
+  cursor: pointer;
+  flex-shrink: 0;
   transition: background 100ms ease, color 100ms ease;
 }
 
@@ -330,28 +353,26 @@
 }
 
 [data-ui] .t3d-editor-tab--active {
-  background: var(--bg-active) !important;
   color: var(--fg) !important;
-  font-weight: 500;
+  background: #141414 !important;
 }
 
+/* Breadcrumbs */
 [data-ui] .t3d-editor-area__crumbs {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  font-size: var(--font-size-sm);
+  min-height: 24px;
+  padding: 0 12px;
+  font-size: var(--font-size-xs);
   color: var(--fg-muted);
+  background: #141414;
   border-bottom: 1px solid var(--border-subtle); /* taste-skill-ignore */
-  background: transparent;
 }
 
-/* Bottom panel */
+/* Bottom Panel */
 [data-ui] .t3d-bottom-panel {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  height: 145px;
+  height: 175px;
   flex-shrink: 0;
 }
 
@@ -359,7 +380,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 8px;
+  min-height: 30px;
+  padding: 0 8px;
+  background: var(--bg-island-elevated);
   border-bottom: 1px solid var(--border-subtle); /* taste-skill-ignore */
 }
 
@@ -373,10 +396,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px;
-  border-radius: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 5px;
   color: var(--fg-muted);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: 500;
   background: transparent;
   border: none;
@@ -392,16 +416,6 @@
 [data-ui] .t3d-bottom-panel__tab--active {
   color: var(--fg) !important;
   background: var(--bg-active) !important;
-}
-
-[data-ui] .t3d-bottom-panel__badge {
-  min-width: 16px;
-  padding: 0 5px;
-  border-radius: var(--radius-pill);
-  background: var(--danger-bg);
-  color: var(--danger-fg);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
 }
 
 /* Status Bar */
@@ -504,4 +518,44 @@
 
 [data-ui] .t3d-table-view tr:hover td {
   background: #1a1a1a;
+}
+
+/* PDF Document Viewer Styles */
+[data-ui] .t3d-pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #181818;
+  overflow: hidden;
+}
+
+[data-ui] .t3d-pdf-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: #1e1e1e;
+  border-bottom: 1px solid var(--border-subtle); /* taste-skill-ignore */
+  font-size: 11px;
+  color: #a3a3a3;
+}
+
+[data-ui] .t3d-pdf-doc {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  background: #121212;
+}
+
+[data-ui] .t3d-pdf-page {
+  width: 100%;
+  max-width: 580px;
+  background: #1c1c1c;
+  border-radius: 6px;
+  padding: 24px;
+  color: #e5e5e5;
+  border: 1px solid var(--border-subtle); /* taste-skill-ignore */
 }

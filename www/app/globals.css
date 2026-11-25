@@ -85,6 +85,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  code, kbd, samp, pre {
+    font-family: Consolas, monospace; /* taste-skill-ignore */
+  }
 }
 
 @layer utilities {
@@ -94,5 +97,26 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  @keyframes morselEnter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-morsel-enter {
+    animation: morselEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-morsel-enter {
+      animation: none !important;
+    }
   }
 }
