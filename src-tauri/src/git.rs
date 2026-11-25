@@ -174,6 +174,15 @@ pub fn git_diff(cwd: String, path: String, staged: bool) -> Result<String, Strin
 }
 
 #[tauri::command]
+pub fn git_show_head(cwd: String, path: String) -> Result<String, String> {
+    let rel = path.replace('\\', "/");
+    if rel.trim().is_empty() || rel.contains('\0') {
+        return Err("invalid path".into());
+    }
+    run_git(&cwd, &["show".into(), format!("HEAD:{rel}")])
+}
+
+#[tauri::command]
 pub fn git_clone(url: String, parent: String) -> Result<String, String> {
     let url = url.trim();
     if url.is_empty()

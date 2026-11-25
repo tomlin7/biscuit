@@ -12,7 +12,7 @@ use extensions::{
 use fsops::{fs_create_file, fs_mkdir, fs_remove, fs_rename};
 use git::{
     git_branches, git_checkout, git_clone, git_commit, git_diff, git_discard, git_ignore, git_pull, git_push,
-    git_stage,
+    git_show_head, git_stage,
     git_summary, git_unstage,
 };
 use pty::{pty_exec, pty_kill, pty_resize, pty_run_file, pty_spawn, pty_write, PtyState};
@@ -43,6 +43,7 @@ pub fn run() {
             git_pull,
             git_discard,
             git_diff,
+            git_show_head,
             git_ignore,
             list_extensions,
             set_extension_enabled,

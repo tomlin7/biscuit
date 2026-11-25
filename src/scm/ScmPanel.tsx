@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
@@ -255,18 +256,40 @@ export function ScmPanel({ onBranch }: Props) {
                 className="scm-panel__action"
                 disabled={acting}
                 onClick={() => {
-                  const staged = entry.index !== " " && entry.index !== "?" && entry.worktree === " ";
-                  void invoke<string>("git_diff", {
-                    cwd: rootPath,
-                    path: entry.path,
-                    staged,
-                  })
-                    .then((text) => {
-                      openDiffTab(entry.path, text);
-                    })
-                    .catch((err) => {
+                  const stagedOnly =
+                    entry.index !== " " && entry.index !== "?" && entry.worktree === " ";
+                  const relative = entry.path.replace(
+                    /\//g,
+                    rootPath.includes("\\") ? "\\" : "/",
+                  );
+                  const absolute = joinPath(rootPath, relative);
+                  void (async () => {
+                    try {
+                      const text = await invoke<string>("git_diff", {
+                        cwd: rootPath,
+                        path: entry.path,
+                        staged: stagedOnly,
+                      });
+                      let head: string | null = null;
+                      try {
+                        head = await invoke<string>("git_show_head", {
+                          cwd: rootPath,
+                          path: entry.path,
+                        });
+                      } catch {
+                        head = null;
+                      }
+                      let working: string | null = null;
+                      try {
+                        working = await readTextFile(absolute);
+                      } catch {
+                        working = null;
+                      }
+                      openDiffTab(entry.path, text, { head, working });
+                    } catch (err) {
                       setError(err instanceof Error ? err.message : String(err));
-                    });
+                    }
+                  })();
                 }}
               >
                 Diff

@@ -17,6 +17,39 @@
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.diff-view__bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.diff-view__split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.diff-view__pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.diff-view__pane:last-child {
+  border-right: none;
+}
+
+.diff-view__pane-label {
+  padding: 4px 10px;
+  color: var(--fg-dim);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
 .diff-view__body {
   margin: 0;
   padding: 12px 14px;
