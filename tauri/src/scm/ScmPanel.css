@@ -407,3 +407,121 @@
   color: var(--danger-fg);
   font-size: var(--font-size-xs);
 }
+
+/* Submodules */
+.scm-panel__submodule-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  gap: 6px;
+  border-radius: var(--radius-control);
+  cursor: default;
+}
+
+.scm-panel__submodule-row:hover {
+  background: var(--bg-hover);
+}
+
+.scm-panel__submodule-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.scm-panel__submodule-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.scm-panel__submodule-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 1px;
+}
+
+.scm-panel__submodule-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.scm-panel__submodule-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scm-panel__submodule-details {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--fg-dim);
+}
+
+.scm-panel__submodule-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scm-panel__submodule-commit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--bg-control);
+  color: var(--fg-subtle);
+  flex-shrink: 0;
+}
+
+.scm-panel__submodule-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.scm-panel__submodule-badge--uninitialized {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.scm-panel__submodule-badge--up-to-date {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.scm-panel__submodule-badge--modified {
+  background: rgba(234, 179, 8, 0.12);
+  color: #eab308;
+  border-color: rgba(234, 179, 8, 0.25);
+}
+
+.scm-panel__submodule-badge--conflict {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.scm-panel__submodule-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}

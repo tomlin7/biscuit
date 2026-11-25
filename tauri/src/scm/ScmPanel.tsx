@@ -10,6 +10,9 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronRight,
+  Download,
+  FolderGit2,
+  FolderOpen,
   GitBranch,
   GitCompare,
   GitPullRequest,
@@ -27,6 +30,15 @@ import { githubPullRequestUrl, githubWebUrlFromRemote } from "./githubRemote";
 import { readIgnoreSpacePref } from "./diffPrefs";
 import { setToggleAmendListener } from "./amendBus";
 import { setScmRemoteListener, type ScmRemoteAction } from "./scmRemoteBus";
+import {
+  fetchGitSubmodules,
+  initGitSubmodule,
+  updateGitSubmodule,
+  syncGitSubmodules,
+  formatSubmoduleStatus,
+  formatSubmoduleCommit,
+  type GitSubmoduleInfo,
+} from "./submodules";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
 import { EmptyState } from "../ui/EmptyState";
@@ -65,8 +77,10 @@ type ScmContextMenuState = {
 };
 
 export function ScmPanel({ onBranch }: Props) {
-  const { rootPath, openFile, busy, tabs, applyDiskValue, closeTab } = useWorkspace();
+  const { rootPath, openFile, openFolderAt, busy, tabs, applyDiskValue, closeTab } = useWorkspace();
   const [summary, setSummary] = useState<GitSummary | null>(null);
+  const [submodules, setSubmodules] = useState<GitSubmoduleInfo[]>([]);
+  const [submodulesCollapsed, setSubmodulesCollapsed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -84,6 +98,7 @@ export function ScmPanel({ onBranch }: Props) {
     if (!rootPath) {
       setSummary(null);
       setBranches([]);
+      setSubmodules([]);
       onBranch(null);
       return;
     }
@@ -109,9 +124,16 @@ export function ScmPanel({ onBranch }: Props) {
       } catch {
         setCanAmend(false);
       }
+      try {
+        const subs = await fetchGitSubmodules(rootPath);
+        setSubmodules(subs);
+      } catch {
+        setSubmodules([]);
+      }
     } catch (err) {
       setSummary(null);
       setBranches([]);
+      setSubmodules([]);
       setCanAmend(false);
       onBranch(null);
       setError(err instanceof Error ? err.message : String(err));
@@ -286,6 +308,12 @@ export function ScmPanel({ onBranch }: Props) {
         });
       } else if (action === "clearCommitMessage") {
         setMessage("");
+      } else if (action === "submoduleUpdateAll") {
+        void handleSubmoduleUpdateAll();
+      } else if (action === "submoduleInitAll") {
+        void handleSubmoduleInitAll();
+      } else if (action === "submoduleSyncAll") {
+        void handleSubmoduleSyncAll();
       } else void push();
     });
     return () => setScmRemoteListener(null);
@@ -410,6 +438,161 @@ export function ScmPanel({ onBranch }: Props) {
       </div>
     );
   }
+
+  const handleInitSubmodule = async (sub: GitSubmoduleInfo) => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const out = await initGitSubmodule(rootPath, sub.path);
+      if (out?.trim()) appendLog(out.trim());
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Submodule init failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleUpdateSubmodule = async (sub: GitSubmoduleInfo, recursive: boolean = true) => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const out = await updateGitSubmodule(rootPath, sub.path, recursive);
+      if (out?.trim()) appendLog(out.trim());
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Submodule update failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleOpenSubmoduleFolder = (sub: GitSubmoduleInfo) => {
+    if (!rootPath) return;
+    const rel = sub.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+    const abs = joinPath(rootPath, rel);
+    void openFolderAt(abs);
+  };
+
+  const handleSubmoduleUpdateAll = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const out = await updateGitSubmodule(rootPath, null, true);
+      if (out?.trim()) appendLog(out.trim());
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Submodule update all failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleSubmoduleSyncAll = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const out = await syncGitSubmodules(rootPath, true);
+      if (out?.trim()) appendLog(out.trim());
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Submodule sync all failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleSubmoduleInitAll = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const out = await initGitSubmodule(rootPath, null);
+      if (out?.trim()) appendLog(out.trim());
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Submodule init all failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const renderSubmoduleRow = (sub: GitSubmoduleInfo) => {
+    const statusInfo = formatSubmoduleStatus(sub.status);
+    const commitShort = formatSubmoduleCommit(sub.head_commit);
+    const isUninit = sub.status.toLowerCase() === "uninitialized";
+
+    return (
+      <li key={sub.path} className="scm-panel__row scm-panel__submodule-row">
+        <div className="scm-panel__submodule-main">
+          <FolderGit2 size={14} className="scm-panel__submodule-icon" />
+          <div className="scm-panel__submodule-meta">
+            <div className="scm-panel__submodule-title-row">
+              <span className="scm-panel__submodule-name" title={sub.name || sub.path}>
+                {sub.name || sub.path}
+              </span>
+              <span
+                className={`scm-panel__submodule-badge ${statusInfo.badgeClass}`}
+                title={`Status: ${sub.status}`}
+              >
+                {statusInfo.label}
+              </span>
+            </div>
+            <div className="scm-panel__submodule-details">
+              <span className="scm-panel__submodule-path" title={sub.path}>
+                {sub.path}
+              </span>
+              <span
+                className="scm-panel__submodule-commit"
+                title={`Commit: ${sub.head_commit ?? "none"}`}
+              >
+                {commitShort}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="scm-panel__row-actions scm-panel__submodule-actions">
+          {isUninit ? (
+            <IconButton
+              icon={Download}
+              label="Initialize submodule"
+              size={13}
+              disabled={acting}
+              onClick={() => void handleInitSubmodule(sub)}
+            />
+          ) : null}
+          <IconButton
+            icon={RefreshCw}
+            label="Update submodule"
+            size={13}
+            disabled={acting}
+            onClick={() => void handleUpdateSubmodule(sub)}
+          />
+          <IconButton
+            icon={FolderOpen}
+            label="Open submodule folder"
+            size={13}
+            disabled={acting}
+            onClick={() => handleOpenSubmoduleFolder(sub)}
+          />
+        </div>
+      </li>
+    );
+  };
 
   const renderFileRow = (entry: GitStatusEntry, isStaged: boolean) => {
     const isSelected = selected.has(entry.path);
@@ -709,7 +892,7 @@ export function ScmPanel({ onBranch }: Props) {
       {/* Changes list area */}
       <div className="scm-panel__lists">
         {loading && !summary ? <p className="scm-panel__hint">Loading git status…</p> : null}
-        {summary && summary.entries.length === 0 ? (
+        {summary && summary.entries.length === 0 && submodules.length === 0 ? (
           <EmptyState
             compact
             icon={CheckCircle2}
@@ -788,6 +971,44 @@ export function ScmPanel({ onBranch }: Props) {
             {!changesCollapsed ? (
               <ul className="scm-panel__list">
                 {unstaged.map((entry) => renderFileRow(entry, false))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* Submodules Section */}
+        {submodules.length > 0 ? (
+          <div className="scm-panel__section">
+            <div className="scm-panel__section-header">
+              <button
+                type="button"
+                className="scm-panel__section-toggle"
+                onClick={() => setSubmodulesCollapsed((v) => !v)}
+              >
+                {submodulesCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                <span>Submodules</span>
+                <span className="scm-panel__badge">{submodules.length}</span>
+              </button>
+              <div className="scm-panel__section-actions">
+                <IconButton
+                  icon={RefreshCw}
+                  label="Update All (Recursive)"
+                  size={13}
+                  disabled={acting}
+                  onClick={() => void handleSubmoduleUpdateAll()}
+                />
+                <IconButton
+                  icon={GitCompare}
+                  label="Sync All"
+                  size={13}
+                  disabled={acting}
+                  onClick={() => void handleSubmoduleSyncAll()}
+                />
+              </div>
+            </div>
+            {!submodulesCollapsed ? (
+              <ul className="scm-panel__list scm-panel__list--submodules">
+                {submodules.map((sub) => renderSubmoduleRow(sub))}
               </ul>
             ) : null}
           </div>

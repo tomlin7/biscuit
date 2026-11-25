@@ -24,7 +24,10 @@ export type ScmRemoteAction =
   | "refresh"
   | "focusCommitMessage"
   | "pasteCommitMessage"
-  | "clearCommitMessage";
+  | "clearCommitMessage"
+  | "submoduleUpdateAll"
+  | "submoduleInitAll"
+  | "submoduleSyncAll";
 
 type Listener = (action: ScmRemoteAction) => void;
 

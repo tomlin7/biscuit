@@ -17,7 +17,8 @@ use git::{
     git_branches, git_can_amend, git_checkout, git_clone, git_commit, git_compare_refs,
     git_create_branch, git_delete_branch, git_diff, git_diff_refs, git_discard, git_fetch,
     git_ignore, git_pull, git_push, git_remote_origin, git_show_head, git_show_ref, git_stage,
-    git_stash_pop, git_stash_push, git_summary, git_unstage,
+    git_stash_pop, git_stash_push, git_submodule_init, git_submodule_sync, git_submodule_update,
+    git_submodules, git_summary, git_unstage,
 };
 use notifications::send_desktop_notification;
 use pty::{
@@ -73,6 +74,10 @@ pub fn run() {
             git_show_ref,
             git_ignore,
             git_remote_origin,
+            git_submodules,
+            git_submodule_init,
+            git_submodule_update,
+            git_submodule_sync,
             list_extensions,
             set_extension_enabled,
             install_sample_extension,

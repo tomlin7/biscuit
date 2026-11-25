@@ -331,6 +331,9 @@ export type CommandContext = {
   resetLayoutPresets: () => void;
   selectIconTheme: (themeId?: string) => Promise<void> | void;
   openThemeEditor: () => Promise<void> | void;
+  gitSubmoduleUpdateAll: () => Promise<void> | void;
+  gitSubmoduleInitAll: () => Promise<void> | void;
+  gitSubmoduleSyncAll: () => Promise<void> | void;
 };
 
 export type Command = {

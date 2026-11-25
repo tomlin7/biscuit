@@ -2431,6 +2431,21 @@ function ShellChrome() {
         }
       },
       openThemeEditor: () => openThemeEditor(),
+      gitSubmoduleUpdateAll: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("submoduleUpdateAll");
+      },
+      gitSubmoduleInitAll: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("submoduleInitAll");
+      },
+      gitSubmoduleSyncAll: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("submoduleSyncAll");
+      },
     }),
     [
       openThemeEditor,

@@ -2048,4 +2048,22 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.openThemeEditor(),
   },
+  {
+    id: "git.submodule.updateAll",
+    title: "Git: Submodule Update (Recursive)",
+    category: "Git",
+    run: (ctx) => ctx.gitSubmoduleUpdateAll(),
+  },
+  {
+    id: "git.submodule.initAll",
+    title: "Git: Submodule Init",
+    category: "Git",
+    run: (ctx) => ctx.gitSubmoduleInitAll(),
+  },
+  {
+    id: "git.submodule.syncAll",
+    title: "Git: Submodule Sync",
+    category: "Git",
+    run: (ctx) => ctx.gitSubmoduleSyncAll(),
+  },
 ];

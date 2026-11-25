@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::process::Command;
 
 #[derive(Debug, Clone, Serialize)]
@@ -554,8 +554,253 @@ pub fn git_show_ref(cwd: String, r#ref: String, path: String) -> Result<String, 
     run_git(&cwd, &["show".into(), format!("{ref}:{rel}")])
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GitSubmoduleInfo {
+    pub name: String,
+    pub path: String,
+    pub url: String,
+    pub head_commit: Option<String>,
+    pub status: String,
+}
 
-#[cfg(test)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct RawSubmoduleConfig {
+    pub name: String,
+    pub path: String,
+    pub url: String,
+}
+
+pub fn parse_gitmodules(content: &str) -> Vec<RawSubmoduleConfig> {
+    let mut configs = Vec::new();
+    let mut current: Option<RawSubmoduleConfig> = None;
+
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() || trimmed.starts_with('#') || trimmed.starts_with(';') {
+            continue;
+        }
+
+        if trimmed.starts_with('[') && trimmed.ends_with(']') {
+            if let Some(cfg) = current.take() {
+                if !cfg.path.is_empty() || !cfg.name.is_empty() {
+                    configs.push(cfg);
+                }
+            }
+
+            let section = trimmed[1..trimmed.len() - 1].trim();
+            if section.starts_with("submodule") {
+                let name = section
+                    .strip_prefix("submodule")
+                    .unwrap_or("")
+                    .trim()
+                    .trim_matches('"')
+                    .trim()
+                    .to_string();
+                current = Some(RawSubmoduleConfig {
+                    name,
+                    path: String::new(),
+                    url: String::new(),
+                });
+            }
+        } else if let Some(ref mut cfg) = current {
+            if let Some((key, val)) = trimmed.split_once('=') {
+                let key = key.trim().to_lowercase();
+                let val = val.trim().trim_matches('"').to_string();
+                if key == "path" {
+                    cfg.path = val.replace('\\', "/");
+                    if cfg.name.is_empty() {
+                        cfg.name = cfg.path.clone();
+                    }
+                } else if key == "url" {
+                    cfg.url = val;
+                }
+            }
+        }
+    }
+
+    if let Some(cfg) = current {
+        if !cfg.path.is_empty() || !cfg.name.is_empty() {
+            configs.push(cfg);
+        }
+    }
+
+    configs
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RawSubmoduleStatus {
+    pub prefix: char,
+    pub commit: String,
+    pub path: String,
+    pub describe: Option<String>,
+}
+
+pub fn parse_submodule_status_line(line: &str) -> Option<RawSubmoduleStatus> {
+    if line.trim().is_empty() {
+        return None;
+    }
+
+    let first_char = line.chars().next()?;
+    let prefix = match first_char {
+        '-' | '+' | 'U' => first_char,
+        _ => ' ',
+    };
+
+    let rest = if line.starts_with(['-', '+', 'U']) {
+        &line[1..]
+    } else {
+        line.trim_start()
+    };
+
+    let mut parts = rest.split_whitespace();
+    let commit = parts.next()?.to_string();
+    let path = parts.next()?.replace('\\', "/");
+    let describe = parts.next().map(|first_word| {
+        let mut d = first_word.to_string();
+        for word in parts {
+            d.push(' ');
+            d.push_str(word);
+        }
+        d.trim_matches(|c| c == '(' || c == ')').to_string()
+    });
+
+    Some(RawSubmoduleStatus {
+        prefix,
+        commit,
+        path,
+        describe,
+    })
+}
+
+pub fn submodule_status_label(prefix: char) -> &'static str {
+    match prefix {
+        '-' => "uninitialized",
+        '+' => "modified",
+        'U' => "conflict",
+        ' ' => "up-to-date",
+        _ => "up-to-date",
+    }
+}
+
+#[tauri::command]
+pub fn git_submodules(root: String) -> Result<Vec<GitSubmoduleInfo>, String> {
+    let gitmodules_path = std::path::Path::new(&root).join(".gitmodules");
+    let mut configs = Vec::new();
+
+    if gitmodules_path.exists() {
+        if let Ok(content) = std::fs::read_to_string(&gitmodules_path) {
+            configs = parse_gitmodules(&content);
+        }
+    }
+
+    // Also run `git submodule status`
+    let status_output = run_git(&root, &["submodule".into(), "status".into()]).unwrap_or_default();
+    let statuses: Vec<RawSubmoduleStatus> = status_output
+        .lines()
+        .filter_map(parse_submodule_status_line)
+        .collect();
+
+    let mut result = Vec::new();
+    let mut matched_statuses = std::collections::HashSet::new();
+
+    for cfg in configs {
+        let status_match = statuses.iter().enumerate().find(|(idx, s)| {
+            !matched_statuses.contains(idx) && (s.path == cfg.path || s.path == cfg.name)
+        });
+
+        if let Some((idx, s)) = status_match {
+            matched_statuses.insert(idx);
+            result.push(GitSubmoduleInfo {
+                name: if cfg.name.is_empty() { cfg.path.clone() } else { cfg.name },
+                path: cfg.path,
+                url: cfg.url,
+                head_commit: if s.commit.is_empty() { None } else { Some(s.commit.clone()) },
+                status: submodule_status_label(s.prefix).to_string(),
+            });
+        } else {
+            result.push(GitSubmoduleInfo {
+                name: if cfg.name.is_empty() { cfg.path.clone() } else { cfg.name },
+                path: cfg.path,
+                url: cfg.url,
+                head_commit: None,
+                status: "uninitialized".to_string(),
+            });
+        }
+    }
+
+    // Add any submodules reported by `git submodule status` that were not in `.gitmodules`
+    for (idx, s) in statuses.into_iter().enumerate() {
+        if !matched_statuses.contains(&idx) {
+            let name = s.path.split('/').last().unwrap_or(&s.path).to_string();
+            result.push(GitSubmoduleInfo {
+                name,
+                path: s.path,
+                url: String::new(),
+                head_commit: if s.commit.is_empty() { None } else { Some(s.commit) },
+                status: submodule_status_label(s.prefix).to_string(),
+            });
+        }
+    }
+
+    Ok(result)
+}
+
+#[tauri::command]
+pub fn git_submodule_init(root: String, path: Option<String>) -> Result<String, String> {
+    let mut args = vec!["submodule".into(), "init".into()];
+    if let Some(p) = path {
+        let p = p.trim().replace('\\', "/");
+        if !p.is_empty() {
+            args.push("--".into());
+            args.push(p);
+        }
+    }
+    let out = run_git(&root, &args)?;
+    Ok(if out.trim().is_empty() {
+        "Submodule initialized.".into()
+    } else {
+        out
+    })
+}
+
+#[tauri::command]
+pub fn git_submodule_update(
+    root: String,
+    path: Option<String>,
+    recursive: bool,
+) -> Result<String, String> {
+    let mut args = vec!["submodule".into(), "update".into(), "--init".into()];
+    if recursive {
+        args.push("--recursive".into());
+    }
+    if let Some(p) = path {
+        let p = p.trim().replace('\\', "/");
+        if !p.is_empty() {
+            args.push("--".into());
+            args.push(p);
+        }
+    }
+    let out = run_git(&root, &args)?;
+    Ok(if out.trim().is_empty() {
+        "Submodules up to date.".into()
+    } else {
+        out
+    })
+}
+
+#[tauri::command]
+pub fn git_submodule_sync(root: String, recursive: bool) -> Result<String, String> {
+    let mut args = vec!["submodule".into(), "sync".into()];
+    if recursive {
+        args.push("--recursive".into());
+    }
+    let out = run_git(&root, &args)?;
+    Ok(if out.trim().is_empty() {
+        "Submodules synchronized.".into()
+    } else {
+        out
+    })
+}
 mod tests {
     use super::normalize_ignore_path;
 
@@ -651,6 +896,128 @@ mod tests {
         assert!(bad_compare.is_err());
 
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn parse_gitmodules_content() {
+        let sample = r#"
+# Sample gitmodules
+[submodule "libs/engine"]
+	path = libs/engine
+	url = https://github.com/example/engine.git
+	branch = develop
+
+; Another submodule with custom name
+[submodule "custom-tools"]
+	path = tools/helpers
+	url = https://github.com/example/helpers.git
+"#;
+        let configs = super::parse_gitmodules(sample);
+        assert_eq!(configs.len(), 2);
+        assert_eq!(configs[0].name, "libs/engine");
+        assert_eq!(configs[0].path, "libs/engine");
+        assert_eq!(configs[0].url, "https://github.com/example/engine.git");
+
+        assert_eq!(configs[1].name, "custom-tools");
+        assert_eq!(configs[1].path, "tools/helpers");
+        assert_eq!(configs[1].url, "https://github.com/example/helpers.git");
+    }
+
+    #[test]
+    fn parse_submodule_status() {
+        let line_clean = " 4b825dc642cb6eb9a060e54bf8d69288fbee4904 libs/engine (v1.0-alpha)";
+        let s1 = super::parse_submodule_status_line(line_clean).unwrap();
+        assert_eq!(s1.prefix, ' ');
+        assert_eq!(s1.commit, "4b825dc642cb6eb9a060e54bf8d69288fbee4904");
+        assert_eq!(s1.path, "libs/engine");
+        assert_eq!(s1.describe, Some("v1.0-alpha".into()));
+        assert_eq!(super::submodule_status_label(s1.prefix), "up-to-date");
+
+        let line_uninit = "-d01b8dd82798e3b3e23dd25619574d39e3ecbb7d tools/helpers";
+        let s2 = super::parse_submodule_status_line(line_uninit).unwrap();
+        assert_eq!(s2.prefix, '-');
+        assert_eq!(s2.commit, "d01b8dd82798e3b3e23dd25619574d39e3ecbb7d");
+        assert_eq!(s2.path, "tools/helpers");
+        assert_eq!(s2.describe, None);
+        assert_eq!(super::submodule_status_label(s2.prefix), "uninitialized");
+
+        let line_mod = "+3c2f6d482798e3b3e23dd25619574d39e3ecbb7d tools/helpers (heads/patch-1)";
+        let s3 = super::parse_submodule_status_line(line_mod).unwrap();
+        assert_eq!(s3.prefix, '+');
+        assert_eq!(super::submodule_status_label(s3.prefix), "modified");
+
+        let line_conflict = "U4b825dc642cb6eb9a060e54bf8d69288fbee4904 tools/helpers";
+        let s4 = super::parse_submodule_status_line(line_conflict).unwrap();
+        assert_eq!(s4.prefix, 'U');
+        assert_eq!(super::submodule_status_label(s4.prefix), "conflict");
+    }
+
+    #[test]
+    fn submodule_operations_integration() {
+        let base_dir = std::env::temp_dir().join(format!("t3d-submod-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base_dir);
+        let sub_repo = base_dir.join("child-repo");
+        let parent_repo = base_dir.join("parent-repo");
+        std::fs::create_dir_all(&sub_repo).unwrap();
+        std::fs::create_dir_all(&parent_repo).unwrap();
+
+        let run_in = |dir: &std::path::Path, args: &[&str]| {
+            let res = std::process::Command::new("git")
+                .args(args)
+                .current_dir(dir)
+                .status()
+                .expect("git execution");
+            assert!(res.success());
+        };
+
+        // Init child repo
+        run_in(&sub_repo, &["init"]);
+        run_in(&sub_repo, &["config", "user.name", "Tomlin7"]);
+        run_in(&sub_repo, &["config", "user.email", "billydevbusiness@gmail.com"]);
+        run_in(&sub_repo, &["config", "commit.gpgsign", "false"]);
+        std::fs::write(sub_repo.join("lib.txt"), "submodule library code\n").unwrap();
+        run_in(&sub_repo, &["add", "lib.txt"]);
+        run_in(&sub_repo, &["commit", "--no-gpg-sign", "-m", "child initial commit"]);
+        run_in(&sub_repo, &["branch", "-M", "main"]);
+
+        // Init parent repo
+        run_in(&parent_repo, &["init"]);
+        run_in(&parent_repo, &["config", "user.name", "Tomlin7"]);
+        run_in(&parent_repo, &["config", "user.email", "billydevbusiness@gmail.com"]);
+        run_in(&parent_repo, &["config", "commit.gpgsign", "false"]);
+        run_in(&parent_repo, &["config", "protocol.file.allow", "always"]);
+        std::fs::write(parent_repo.join("main.txt"), "main project\n").unwrap();
+        run_in(&parent_repo, &["add", "main.txt"]);
+        run_in(&parent_repo, &["commit", "--no-gpg-sign", "-m", "parent initial commit"]);
+        run_in(&parent_repo, &["branch", "-M", "main"]);
+
+        let sub_url = sub_repo.to_str().unwrap().replace('\\', "/");
+        // Add submodule with file protocol allowed
+        let add_res = std::process::Command::new("git")
+            .args(["-c", "protocol.file.allow=always", "submodule", "add", &sub_url, "modules/child"])
+            .current_dir(&parent_repo)
+            .status()
+            .expect("git submodule add");
+        assert!(add_res.success());
+        run_in(&parent_repo, &["commit", "--no-gpg-sign", "-m", "add child submodule"]);
+
+        let parent_str = parent_repo.display().to_string();
+        // Query submodules
+        let subs = super::git_submodules(parent_str.clone()).expect("git_submodules");
+        assert_eq!(subs.len(), 1);
+        assert_eq!(subs[0].path, "modules/child");
+        assert!(subs[0].url.contains("child-repo"));
+        assert!(subs[0].head_commit.is_some());
+
+        // Test sync
+        let sync_res = super::git_submodule_sync(parent_str.clone(), true).expect("git_submodule_sync");
+        assert!(!sync_res.is_empty());
+
+        // Test update
+        let update_res = super::git_submodule_update(parent_str.clone(), Some("modules/child".into()), false).expect("git_submodule_update");
+        assert!(!update_res.is_empty());
+
+        let _ = std::fs::remove_dir_all(&base_dir);
     }
 }
 
