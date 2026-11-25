@@ -234,7 +234,7 @@ export function SettingsPanel({ open, onClose }: Props) {
                 type="password"
                 value={ai.apiKey}
                 onChange={(e) => setAi({ apiKey: e.target.value })}
-                placeholder="sk-â€¦"
+                placeholder="sk-…"
               />
             </label>
             <label className="settings-row settings-row--stack">
@@ -272,7 +272,7 @@ export function SettingsPanel({ open, onClose }: Props) {
                 rows={3}
                 value={ai.systemPrompt}
                 onChange={(e) => setAi({ systemPrompt: e.target.value })}
-                placeholder="Optional instructions for every chatâ€¦"
+                placeholder="Optional instructions for every chat…"
               />
             </label>
             <label className="settings-row settings-row--stack">
@@ -314,6 +314,54 @@ export function SettingsPanel({ open, onClose }: Props) {
                   const next = Number(raw);
                   if (Number.isFinite(next)) {
                     setAi({ topP: Math.min(1, Math.max(0, next)) });
+                  }
+                }}
+              />
+            </label>
+            <label className="settings-row settings-row--stack">
+              <span>Presence penalty</span>
+              <input
+                type="number"
+                min={-2}
+                max={2}
+                step={0.1}
+                placeholder="default"
+                value={ai.presencePenalty ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  if (!raw) {
+                    setAi({ presencePenalty: null });
+                    return;
+                  }
+                  const next = Number(raw);
+                  if (Number.isFinite(next)) {
+                    setAi({
+                      presencePenalty: Math.min(2, Math.max(-2, next)),
+                    });
+                  }
+                }}
+              />
+            </label>
+            <label className="settings-row settings-row--stack">
+              <span>Frequency penalty</span>
+              <input
+                type="number"
+                min={-2}
+                max={2}
+                step={0.1}
+                placeholder="default"
+                value={ai.frequencyPenalty ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  if (!raw) {
+                    setAi({ frequencyPenalty: null });
+                    return;
+                  }
+                  const next = Number(raw);
+                  if (Number.isFinite(next)) {
+                    setAi({
+                      frequencyPenalty: Math.min(2, Math.max(-2, next)),
+                    });
                   }
                 }}
               />

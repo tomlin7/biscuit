@@ -51,6 +51,10 @@ type AiSettings = {
   maxTokens: number | null;
   /** Null uses the provider default. */
   topP: number | null;
+  /** Null uses the provider default. */
+  presencePenalty: number | null;
+  /** Null uses the provider default. */
+  frequencyPenalty: number | null;
 };
 
 type AiState = {
@@ -95,6 +99,8 @@ function defaultSettings(): AiSettings {
     systemPrompt: "",
     maxTokens: null,
     topP: null,
+    presencePenalty: null,
+    frequencyPenalty: null,
   };
 }
 
@@ -417,6 +423,12 @@ export function AiProvider({ children }: { children: ReactNode }) {
                     : {}),
                   ...(typeof settings.topP === "number"
                     ? { top_p: settings.topP }
+                    : {}),
+                  ...(typeof settings.presencePenalty === "number"
+                    ? { presence_penalty: settings.presencePenalty }
+                    : {}),
+                  ...(typeof settings.frequencyPenalty === "number"
+                    ? { frequency_penalty: settings.frequencyPenalty }
                     : {}),
                 }),
                 signal: controller.signal,

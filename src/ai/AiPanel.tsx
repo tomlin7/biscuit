@@ -466,7 +466,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             onPaste={(e) => {
               const items = e.clipboardData?.items;
               if (!items) return;
-              for (const item of items) {
+              for (const item of Array.from(items)) {
                 if (!item.type.startsWith("image/")) continue;
                 e.preventDefault();
                 const file = item.getAsFile();
