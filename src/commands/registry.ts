@@ -1862,4 +1862,10 @@ export const COMMANDS: Command[] = [
     category: "Terminal",
     run: (ctx) => ctx.terminalFind(),
   },
+  {
+    id: "git.createPullRequest",
+    title: "Git: Create Pull Request",
+    category: "Git",
+    run: (ctx) => ctx.gitCreatePullRequest(),
+  },
 ];

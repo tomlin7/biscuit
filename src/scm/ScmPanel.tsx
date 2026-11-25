@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 import {
   Archive,
   ArchiveRestore,
@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   GitBranch,
+  GitPullRequest,
   Minus,
   Plus,
   RefreshCw,
@@ -20,6 +21,7 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
 import { openDiffTab } from "./diffBus";
+import { githubPullRequestUrl, githubWebUrlFromRemote } from "./githubRemote";
 import { readIgnoreSpacePref } from "./diffPrefs";
 import { setToggleAmendListener } from "./amendBus";
 import { setScmRemoteListener, type ScmRemoteAction } from "./scmRemoteBus";
@@ -480,6 +482,24 @@ export function ScmPanel({ onBranch }: Props) {
     );
   };
 
+  const handleCreatePullRequest = async () => {
+    if (!rootPath) return;
+    try {
+      const remote = await invoke<string>("git_remote_origin", { cwd: rootPath });
+      const web = githubWebUrlFromRemote(remote);
+      if (!web) {
+        setError("Origin remote is not a GitHub URL.");
+        return;
+      }
+      const branch = summary?.branch || "main";
+      const url = githubPullRequestUrl(web, branch);
+      appendLog(`Opening pull request for ${branch} on GitHub`);
+      void openUrl(url);
+    } catch {
+      setError("Could not read git remote origin.");
+    }
+  };
+
   return (
     <div className="scm-panel">
       {/* Top Header with Branch Picker & Actions */}
@@ -544,6 +564,13 @@ export function ScmPanel({ onBranch }: Props) {
             size={13}
             disabled={acting || busy}
             onClick={() => void run("git_stash_pop", {})}
+          />
+          <IconButton
+            icon={GitPullRequest}
+            label="Create pull request on GitHub"
+            size={13}
+            disabled={acting || busy}
+            onClick={() => void handleCreatePullRequest()}
           />
           <IconButton
             icon={RefreshCw}

@@ -37,7 +37,7 @@ import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog, clearLogs as clearLogBuffer, exportLogsToFile } from "../logs/logBus";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
-import { githubWebUrlFromRemote } from "../scm/githubRemote";
+import { githubPullRequestUrl, githubWebUrlFromRemote } from "../scm/githubRemote";
 import { requestScrollCommand } from "../terminal/scrollCommand";
 import { requestFindTerminal } from "../terminal/findTerminal";
 import { TERMINAL_THEMES } from "../terminal/terminalThemes";
@@ -2223,6 +2223,25 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestFindTerminal();
+      },
+      gitCreatePullRequest: () => {
+        void (async () => {
+          const web = await resolveGithubRepoUrl();
+          if (!web) return;
+          let branch = "main";
+          if (rootPath) {
+            try {
+              const summary = await invoke<GitSummary>("git_summary", { cwd: rootPath });
+              branch = summary.branch;
+            } catch {
+              /* keep main */
+            }
+          }
+          const url = githubPullRequestUrl(web, branch);
+          appendLog(`Opening pull request for ${branch} on GitHub`);
+          notify("GitHub", `Opening pull request page for branch "${branch}"`);
+          void openUrl(url);
+        })();
       },
     }),
     [

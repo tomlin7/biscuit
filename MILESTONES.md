@@ -465,6 +465,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.457.0** | Independent terminal color theme setting | shipped |
 | **0.458.0** | In-terminal scrollback search widget | shipped |
 | **0.459.0** | Clickable file:line:column link detection in terminal | shipped |
+| **0.460.0** | Create Pull Request action from the current branch | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

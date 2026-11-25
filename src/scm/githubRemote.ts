@@ -28,3 +28,12 @@ export function githubPullsSearchUrl(repoWebUrl: string, query = ""): string {
   if (!query.trim()) return base;
   return `${base}?q=${encodeURIComponent(query.trim())}`;
 }
+
+export function githubPullRequestUrl(repoWebUrl: string, branch?: string, base = "main"): string {
+  const clean = repoWebUrl.replace(/\/+$/, "");
+  if (!branch || branch === base || branch === "master") {
+    return `${clean}/pulls`;
+  }
+  return `${clean}/compare/${encodeURIComponent(base)}...${encodeURIComponent(branch)}?expand=1`;
+}
+
