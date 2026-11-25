@@ -150,6 +150,7 @@ export type CommandContext = {
   gitCopyBranch: () => void;
   cycleAiTemperature: () => void;
   toggleAiShowHistory: () => void;
+  gitIgnoreSelected: () => void;
 };
 
 export type Command = {

@@ -17,7 +17,8 @@ export type ScmRemoteAction =
   | "stageSelected"
   | "unstageSelected"
   | "discardSelected"
-  | "copyBranch";
+  | "copyBranch"
+  | "ignoreSelected";
 
 type Listener = (action: ScmRemoteAction) => void;
 

@@ -840,6 +840,11 @@ function ShellChrome() {
         setShowHistory(!showHistory);
         setAiOpen(true);
       },
+      gitIgnoreSelected: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("ignoreSelected");
+      },
     }),
     [
       openFolder,
@@ -902,6 +907,7 @@ function ShellChrome() {
       showHistory,
       setShowHistory,
       setAiOpen,
+      setSidebarMode,
       setSidebarOpen,
       toggleBottom,
       toggleProblems,

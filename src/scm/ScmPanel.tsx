@@ -316,6 +316,13 @@ export function ScmPanel({ onBranch }: Props) {
       } else if (action === "copyBranch") {
         if (!summary?.branch) return;
         void navigator.clipboard.writeText(summary.branch);
+      } else if (action === "ignoreSelected") {
+        if (selectedPaths.length === 0) return;
+        void (async () => {
+          for (const path of selectedPaths) {
+            await run("git_ignore", { path });
+          }
+        })();
       } else void push();
     });
     return () => setScmRemoteListener(null);

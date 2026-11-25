@@ -674,12 +674,6 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.showSearch(),
   },
   {
-    id: "workbench.view.scm",
-    title: "Show Source Control",
-    category: "View",
-    run: (ctx) => ctx.showScm(),
-  },
-  {
     id: "workbench.view.outline",
     title: "Show Outline",
     category: "View",
@@ -901,5 +895,11 @@ export const COMMANDS: Command[] = [
     title: "Toggle AI Session History",
     category: "AI",
     run: (ctx) => ctx.toggleAiShowHistory(),
+  },
+  {
+    id: "git.ignoreSelected",
+    title: "Git: Ignore Selected",
+    category: "Git",
+    run: (ctx) => ctx.gitIgnoreSelected(),
   },
 ];
