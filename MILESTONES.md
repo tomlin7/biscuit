@@ -304,6 +304,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.296.0** | Toggle diff ignore whitespace from palette | shipped |
 | **0.297.0** | Focus Explorer view from palette | shipped |
 | **0.298.0** | Focus Search view from palette | shipped |
+| **0.299.0** | Focus Extensions view from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

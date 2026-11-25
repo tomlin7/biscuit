@@ -163,6 +163,7 @@ export type CommandContext = {
   toggleDiffIgnoreWhitespace: () => void;
   focusExplorer: () => void;
   focusSearch: () => void;
+  focusExtensions: () => void;
 };
 
 export type Command = {
