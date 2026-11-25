@@ -154,6 +154,7 @@ export type CommandContext = {
   gitCompareSelected: () => void;
   cycleAiTopP: () => void;
   cycleAiMaxTokens: () => void;
+  cycleAiPresencePenalty: () => void;
 };
 
 export type Command = {

@@ -920,4 +920,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiMaxTokens(),
   },
+  {
+    id: "workbench.action.cycleAiPresencePenalty",
+    title: "Cycle AI Presence Penalty",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiPresencePenalty(),
+  },
 ];
