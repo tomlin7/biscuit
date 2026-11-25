@@ -203,6 +203,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.195.0** | Explorer copy path from keyboard | shipped |
 | **0.196.0** | Distinct pin and unpin editor commands | shipped |
 | **0.197.0** | Status bar auto-save cycle | shipped |
+| **0.198.0** | SCM select all and deselect all | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

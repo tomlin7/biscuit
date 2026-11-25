@@ -272,6 +272,25 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={acting || !summary || summary.entries.length === 0}
+            onClick={() => {
+              if (!summary) return;
+              setSelected(new Set(summary.entries.map((entry) => entry.path)));
+            }}
+          >
+            Select all
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || selectedPaths.length === 0}
+            onClick={() => setSelected(new Set())}
+          >
+            Deselect all
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             disabled={acting || selectedUnstaged.length === 0}
             onClick={() => void run("git_stage", { paths: selectedUnstaged })}
           >
