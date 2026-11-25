@@ -144,7 +144,7 @@ export default function Page() {
     },
     {
       q: "What is the release roadmap?",
-      a: "Morsel follows continuous progressive shipping. Version 1.219.0 is the active stable release, with subsequent core code editor feature slices rolling out regularly.",
+      a: "Morsel follows continuous progressive shipping. Version 1.220.0 is the active stable release, with subsequent core code editor feature slices rolling out regularly.",
     },
   ];
 
@@ -211,7 +211,7 @@ export default function Page() {
                 className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 gap-2 h-10 px-4 text-sm font-medium transition-colors"
               >
                 <DownloadIcon className="size-4" />
-                <span>Download v1.219.0</span>
+                <span>Download v1.220.0</span>
               </a>
 
               <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground" data-ui="quickstart">
@@ -411,7 +411,7 @@ export default function Page() {
               >
                 GitHub Releases
               </a>
-              <span>. Current version: v1.219.0.</span>
+              <span>. Current version: v1.220.0.</span>
             </div>
           </section>
 

@@ -73,6 +73,14 @@ describe("JSON schema definitions and patterns", () => {
     expect(tsMatch).not.toBeNull();
     expect(tsMatch?.uri).toBe("vscode://schemas/tsconfig.json");
 
+    const morselExtMatch = findMatchingSchema("extensions/custom/morsel.manifest.json", BUILTIN_JSON_SCHEMAS);
+    expect(morselExtMatch).not.toBeNull();
+    expect((morselExtMatch?.schema as any)?.title).toBe("Morsel Extension Manifest");
+
+    const morselSettingsMatch = findMatchingSchema(".morsel/settings.json", BUILTIN_JSON_SCHEMAS);
+    expect(morselSettingsMatch).not.toBeNull();
+    expect((morselSettingsMatch?.schema as any)?.title).toBe("Morsel Settings Schema");
+
     const unknownMatch = findMatchingSchema("data/report.json", BUILTIN_JSON_SCHEMAS);
     expect(unknownMatch).toBeNull();
   });

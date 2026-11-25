@@ -57,7 +57,7 @@ export default function Image() {
               fontWeight: 600,
             }}
           >
-            v1.212.0
+            v1.220.0
           </div>
         </div>
 

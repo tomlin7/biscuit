@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/plugin-dialog";
 import { recentFiles, recentFolders } from "./history";
 import { basename } from "./path";
@@ -29,7 +30,16 @@ export function Welcome() {
   const folders = recentFolders();
   const files = recentFiles();
   const [focusIndex, setFocusIndex] = useState(0);
+  const [appVersion, setAppVersion] = useState("v1.220.0");
   const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
+      void getVersion()
+        .then((v) => setAppVersion(`v${v}`))
+        .catch(() => {});
+    }
+  }, []);
 
   const clone = async () => {
     const url = window.prompt("Repository URL");
@@ -101,7 +111,7 @@ export function Welcome() {
           <div>
             <div className="welcome__title-row">
               <h1 className="welcome__title">Morsel Editor</h1>
-              <span className="welcome__version">v0.351</span>
+              <span className="welcome__version">{appVersion}</span>
             </div>
             <p className="welcome__subtitle">
               Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2)
