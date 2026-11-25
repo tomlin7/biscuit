@@ -18,7 +18,7 @@ export function Panel() {
         </button>
       </div>
       <div className="panel__body">
-        Terminal host reserved for 0.8.0 (PTY).
+        Monaco is live in the editor. Terminal host reserved for 0.8.0 (PTY).
       </div>
     </section>
   );

@@ -1,0 +1,18 @@
+.monaco-editor-host {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.monaco-editor-host__loading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+.monaco-editor-host .monaco-editor,
+.monaco-editor-host .overflow-guard {
+  border-radius: 0;
+}

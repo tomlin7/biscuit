@@ -5,8 +5,8 @@ Each row is a shippable `0.x` release. **1.0.0 is future-only.**
 
 | Version | Focus | Status |
 |---------|--------|--------|
-| **0.1.0** | Application shell — menubar, activity bar, sidebar, editor area, panel, status bar | shipping |
-| **0.2.0** | Monaco editor engine — open buffer, basic editing, language modes | planned |
+| **0.1.0** | Application shell — menubar, activity bar, sidebar, editor area, panel, status bar | shipped |
+| **0.2.0** | Monaco editor engine — open buffer, basic editing, language modes | shipping |
 | **0.3.0** | Workspace FS — open folder, explorer tree, open/save files via Tauri | planned |
 | **0.4.0** | Editor tabs — multi-file buffers, dirty state, close/reorder | planned |
 | **0.5.0** | Theming — design tokens, dark/light, biscuit-adjacent look | planned |
@@ -27,4 +27,4 @@ Each row is a shippable `0.x` release. **1.0.0 is future-only.**
 
 ## Current target
 
-Ship **0.1.0**: a recognizable editor chrome with empty/placeholder regions and no Monaco yet.
+Ship **0.2.0**: Monaco as the editor engine with an editable in-memory buffer.

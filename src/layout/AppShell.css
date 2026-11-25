@@ -137,26 +137,9 @@
 
 .editor-area__surface {
   flex: 1;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  text-align: center;
-}
-
-.editor-area__welcome {
-  max-width: 360px;
-}
-
-.editor-area__welcome h1 {
-  margin: 0 0 8px;
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--fg);
-}
-
-.editor-area__welcome p {
-  margin: 0;
-  color: var(--fg-muted);
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .panel {

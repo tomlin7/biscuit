@@ -4,7 +4,7 @@ export function Sidebar() {
       <div className="sidebar__title">Explorer</div>
       <div className="sidebar__body">
         <p className="sidebar__hint">
-          No folder open yet. Workspace FS lands in 0.3.0.
+          Editing an in-memory buffer. Open folder lands in 0.3.0.
         </p>
       </div>
     </aside>

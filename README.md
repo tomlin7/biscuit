@@ -6,7 +6,7 @@ Successor architecture to Biscuit — same product spirit, cleaner structure, be
 
 ## Status
 
-Current version: **0.1.0** (pre-1.0).
+Current version: **0.2.0** (pre-1.0).
 
 See [VERSIONING.md](VERSIONING.md) and [MILESTONES.md](MILESTONES.md).
 
@@ -25,7 +25,7 @@ bun run tauri dev
 |-------|--------|
 | Shell | Tauri 2 |
 | UI | React 19 + TypeScript |
-| Editor engine | Monaco (from 0.2.0) |
+| Editor engine | Monaco |
 | Native | Rust |
 
 ## License
