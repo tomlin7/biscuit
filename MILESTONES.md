@@ -397,6 +397,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.389.0** | Disable all breakpoints from palette | shipped |
 | **0.390.0** | Enable all breakpoints from palette | shipped |
 | **0.391.0** | Show file encoding from palette | shipped |
+| **0.392.0** | Open recent folder from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -1552,6 +1552,11 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.showFileEncoding(),
   },
-
+  {
+    id: "workbench.action.openRecentFolder",
+    title: "Open Recent Folder",
+    category: "File",
+    run: (ctx) => ctx.openRecentFolder(),
+  },
 
 ];

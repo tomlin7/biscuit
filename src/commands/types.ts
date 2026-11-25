@@ -257,6 +257,7 @@ export type CommandContext = {
   disableAllBreakpoints: () => void;
   enableAllBreakpoints: () => void;
   showFileEncoding: () => void;
+  openRecentFolder: () => void;
 };
 
 export type Command = {

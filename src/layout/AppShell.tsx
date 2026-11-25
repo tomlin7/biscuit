@@ -1559,6 +1559,14 @@ function ShellChrome() {
           notify("Encoding", charset ? charset.toUpperCase() : "UTF-8");
         });
       },
+      openRecentFolder: () => {
+        const folders = recentFolders();
+        if (folders.length === 0) {
+          notify("Recent folders", "No recent folders yet.");
+          return;
+        }
+        void openFolderAt(folders[0]);
+      },
     }),
     [
       openFolder,
