@@ -380,7 +380,11 @@ function ShellChrome() {
           className="app-shell__ai-slot"
           style={{ display: aiOpen ? "flex" : "none" }}
         >
-          <AiPanel onOpenSettings={openSettings} onOpenSearch={openSearch} />
+          <AiPanel
+            onOpenSettings={openSettings}
+            onOpenSearch={openSearch}
+            onOpenPalette={openPalette}
+          />
         </div>
       </div>
       <StatusBar

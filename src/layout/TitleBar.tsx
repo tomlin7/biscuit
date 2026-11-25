@@ -1,4 +1,4 @@
-import { Command, Folder, Play, Plus, Sparkles, UserRound } from "lucide-react";
+import { Folder, Play, Plus, Sparkles, UserRound } from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useLayout } from "./LayoutContext";
 import { useDebug } from "../debug/DebugContext";
@@ -50,15 +50,8 @@ export function TitleBar({ onOpenPalette, onOpenSettings }: TitleBarProps) {
         <IconButton
           icon={UserRound}
           label="Settings"
-          onClick={onOpenSettings}
+          onClick={onOpenSettings ?? onOpenPalette}
         />
-        {onOpenPalette ? (
-          <IconButton
-            icon={Command}
-            label="Command palette"
-            onClick={onOpenPalette}
-          />
-        ) : null}
       </div>
     </header>
   );

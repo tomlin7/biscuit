@@ -5,14 +5,16 @@
   min-height: 36px;
   padding: 8px 8px 0;
   overflow-x: auto;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .editor-tabs__tab {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
   max-width: 200px;
-  padding: 6px 4px 6px 10px;
+  padding: 6px 4px 8px 10px;
   border-radius: 8px 8px 0 0;
   color: var(--fg-muted);
   font-size: 12px;
@@ -27,8 +29,19 @@
 }
 
 .editor-tabs__tab--active {
-  background: var(--bg-tab-active);
+  background: transparent;
   color: var(--fg);
+}
+
+.editor-tabs__tab--active::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--accent);
 }
 
 .editor-tabs__label {

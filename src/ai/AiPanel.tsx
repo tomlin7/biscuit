@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUp,
+  BookOpen,
   Command,
   Copy,
   Flame,
@@ -19,14 +20,16 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useLayout } from "../layout/LayoutContext";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
+import { RichMessage } from "./RichMessage";
 import "./AiPanel.css";
 
 type Props = {
   onOpenSettings?: () => void;
   onOpenSearch?: () => void;
+  onOpenPalette?: () => void;
 };
 
-export function AiPanel({ onOpenSettings, onOpenSearch }: Props) {
+export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) {
   const {
     messages,
     sessions,
@@ -198,7 +201,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch }: Props) {
                   </ul>
                 </details>
               ) : null}
-              <div className="ai-panel__bubble-text">{msg.content}</div>
+              <RichMessage text={msg.content} />
               <div className="ai-panel__bubble-meta">
                 <span>
                   {new Date(msg.createdAt).toLocaleTimeString([], {
@@ -315,9 +318,24 @@ export function AiPanel({ onOpenSettings, onOpenSearch }: Props) {
           <Flame size={12} strokeWidth={1.75} aria-hidden />
           {effortLabel}
         </button>
+        {onOpenPalette ? (
+          <IconButton
+            icon={Command}
+            label="Command palette"
+            size={13}
+            onClick={onOpenPalette}
+          />
+        ) : (
+          <IconButton
+            icon={Command}
+            label="Open settings"
+            size={13}
+            onClick={onOpenSettings}
+          />
+        )}
         <IconButton
-          icon={Command}
-          label="Open settings"
+          icon={BookOpen}
+          label="Docs / settings"
           size={13}
           onClick={onOpenSettings}
         />

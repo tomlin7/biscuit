@@ -32,9 +32,9 @@
   --radius-island: 12px;
   --radius-control: 8px;
   --radius-pill: 999px;
-  --gap-shell: 6px;
+  --gap-shell: 5px;
 
-  --titlebar-height: 44px;
+  --titlebar-height: 48px;
   --statusbar-height: 28px;
   --sidebar-width: 280px;
   --ai-width: 360px;

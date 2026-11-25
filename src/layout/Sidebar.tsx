@@ -3,7 +3,9 @@ import {
   AlertCircle,
   Bug,
   Filter,
+  FolderTree,
   GitBranch,
+  LayoutGrid,
   Search,
   Tag,
   Terminal,
@@ -15,6 +17,7 @@ import { ExtensionsPanel } from "../extensions/ExtensionsPanel";
 import { DebugPanel } from "../debug/DebugPanel";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useLayout } from "./LayoutContext";
+import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { IconButton } from "../ui/IconButton";
 import type { SearchHit } from "../search/workspaceSearch";
 
@@ -52,6 +55,7 @@ export function Sidebar({
 }: SidebarProps) {
   const { rootName, openFileAt } = useWorkspace();
   const { setBottomOpen } = useLayout();
+  const { problems } = useDiagnostics();
 
   const onOpenHit = (hit: SearchHit) => {
     void openFileAt(hit.path, hit.line, hit.column);
@@ -62,55 +66,76 @@ export function Sidebar({
     return gitBranch.length > 12 ? `${gitBranch.slice(0, 11)}…` : gitBranch;
   }, [gitBranch]);
 
+  const errorCount = problems.filter((p) => p.severity === "error").length;
+  const warnCount = problems.filter((p) => p.severity === "warning").length;
+
   return (
     <aside className="sidebar island" aria-label="Sidebar">
-      {mode === "explorer" ? (
+      <div className="sidebar__top">
         <div className="sidebar__search">
-          <Search size={14} strokeWidth={1.75} className="sidebar__search-icon" aria-hidden />
+          <Search
+            size={14}
+            strokeWidth={1.75}
+            className="sidebar__search-icon"
+            aria-hidden
+          />
           <input
             value={treeFilter}
-            onChange={(e) => onTreeFilter(e.target.value)}
+            onChange={(e) => {
+              onTreeFilter(e.target.value);
+              if (mode !== "explorer" && mode !== "search") {
+                onModeChange("explorer");
+              }
+            }}
             placeholder="Search"
             aria-label="Filter files"
+            onFocus={() => {
+              if (mode !== "search" && treeFilter.trim()) onModeChange("search");
+            }}
+          />
+        </div>
+        <div className="sidebar__view-icons">
+          <IconButton
+            icon={FolderTree}
+            label="Explorer"
+            size={14}
+            active={mode === "explorer"}
+            onClick={() => onModeChange("explorer")}
+          />
+          <IconButton
+            icon={Search}
+            label="Search"
+            size={14}
+            active={mode === "search"}
+            onClick={() => onModeChange("search")}
+          />
+          <IconButton
+            icon={GitBranch}
+            label="Source Control"
+            size={14}
+            active={mode === "scm"}
+            onClick={() => onModeChange("scm")}
+          />
+          <IconButton
+            icon={LayoutGrid}
+            label="Extensions"
+            size={14}
+            active={mode === "extensions"}
+            onClick={() => onModeChange("extensions")}
           />
           <IconButton
             icon={Filter}
-            label={hideDotfiles ? "Showing non-dotfiles (click to show all)" : "Hide dotfiles"}
+            label={
+              hideDotfiles
+                ? "Showing non-dotfiles (click to show all)"
+                : "Hide dotfiles"
+            }
             size={14}
             active={hideDotfiles}
             onClick={onToggleHideDotfiles}
           />
         </div>
-      ) : null}
-
-      {mode !== "explorer" ? (
-        <div className="sidebar__modes" role="tablist" aria-label="Sidebar views">
-          {(
-            [
-              ["explorer", "Files"],
-              ["search", "Search"],
-              ["scm", "Git"],
-              ["extensions", "Ext"],
-              ["debug", "Debug"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              aria-selected={mode === id}
-              className={
-                mode === id
-                  ? "sidebar__mode sidebar__mode--active"
-                  : "sidebar__mode"
-              }
-              onClick={() => onModeChange(id)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      </div>
 
       <div className="sidebar__content">
         {mode === "explorer" ? (
@@ -139,7 +164,13 @@ export function Sidebar({
           onClick={() => onModeChange("explorer")}
         >
           <Tag size={13} strokeWidth={1.75} aria-hidden />
-          <span>{rootName ? (rootName.length > 10 ? `${rootName.slice(0, 9)}…` : rootName) : "—"}</span>
+          <span>
+            {rootName
+              ? rootName.length > 10
+                ? `${rootName.slice(0, 9)}…`
+                : rootName
+              : "—"}
+          </span>
         </button>
         <IconButton
           icon={Terminal}
@@ -150,12 +181,16 @@ export function Sidebar({
             onToggleTerminal();
           }}
         />
-        <IconButton
-          icon={AlertCircle}
-          label="Problems"
-          size={14}
+        <button
+          type="button"
+          className="sidebar__dock-count"
+          title="Problems"
           onClick={onOpenProblems}
-        />
+        >
+          <AlertCircle size={13} strokeWidth={1.75} aria-hidden />
+          <span className="sidebar__dock-count-err">{errorCount}</span>
+          <span className="sidebar__dock-count-warn">{warnCount}</span>
+        </button>
         <IconButton
           icon={Bug}
           label="Debug"
