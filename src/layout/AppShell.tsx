@@ -38,6 +38,7 @@ import { appendLog, clearLogs as clearLogBuffer, exportLogsToFile } from "../log
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
 import { githubPullRequestUrl, githubWebUrlFromRemote } from "../scm/githubRemote";
+import { openCompareTab } from "../scm/compareBus";
 import { requestScrollCommand } from "../terminal/scrollCommand";
 import { requestFindTerminal } from "../terminal/findTerminal";
 import { TERMINAL_THEMES } from "../terminal/terminalThemes";
@@ -2243,6 +2244,32 @@ function ShellChrome() {
           void openUrl(url);
         })();
       },
+      gitCompareBranches: () => {
+        if (!rootPath) {
+          notify("Git", "Open a git repository first.");
+          return;
+        }
+        void (async () => {
+          try {
+            const branches = await invoke<string[]>("git_branches", { cwd: rootPath });
+            const summary = await invoke<GitSummary>("git_summary", { cwd: rootPath });
+            const currentBranch = summary.branch || "HEAD";
+            setRecentCommands([]);
+            setSymbolCommands(
+              branches.map((b) => ({
+                id: `compare-branch:${b}`,
+                title: `Compare: ${b} ... ${currentBranch}`,
+                category: "Git",
+                run: () => openCompareTab(b, currentBranch),
+              })),
+            );
+            setPaletteSeed("Compare:");
+            setPaletteOpen(true);
+          } catch {
+            openCompareTab("main", "HEAD");
+          }
+        })();
+      },
     }),
     [
       sidebarViews,
@@ -2407,6 +2434,7 @@ function ShellChrome() {
       refreshDiagnosticsMarkers,
       openProblems,
       document,
+      resolveGithubRepoUrl,
     ],
   );
   const commandContextRef = useRef(commandContext);

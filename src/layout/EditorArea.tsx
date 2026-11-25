@@ -13,6 +13,8 @@ import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { ImageView } from "../editor/ImageView";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { DiffView, useDiffTab } from "../scm/DiffView";
+import { CompareView } from "../scm/CompareView";
+import { closeCompareTab, subscribeCompare, type CompareState } from "../scm/compareBus";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
 import { useWorkspace } from "../workspace/WorkspaceContext";
@@ -59,6 +61,8 @@ export function EditorArea() {
     useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
   const diffTab = useDiffTab();
+  const [compareState, setCompareState] = useState<CompareState | null>(null);
+  useEffect(() => subscribeCompare(setCompareState), []);
   const [split, setSplit] = useState(false);
   const [splitOrientation, setSplitOrientation] = useState<"right" | "down">("right");
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -464,18 +468,24 @@ export function EditorArea() {
             : undefined
         }
       >
-        {hasFile && activePath ? (
-          diffTab ? (
-            <DiffView
-              path={diffTab.path}
-              text={diffTab.text}
-              head={diffTab.head}
-              working={diffTab.working}
-              cwd={diffTab.cwd}
-              staged={diffTab.staged}
-              ignoreSpace={diffTab.ignoreSpace}
-            />
-          ) : (
+        {compareState ? (
+          <CompareView
+            base={compareState.base}
+            head={compareState.head}
+            cwd={rootPath ?? ""}
+            onClose={closeCompareTab}
+          />
+        ) : diffTab ? (
+          <DiffView
+            path={diffTab.path}
+            text={diffTab.text}
+            head={diffTab.head}
+            working={diffTab.working}
+            cwd={diffTab.cwd}
+            staged={diffTab.staged}
+            ignoreSpace={diffTab.ignoreSpace}
+          />
+        ) : hasFile && activePath ? (
           <>
             <div className="editor-area__pane">
               {isWebviewPath(activePath) ? (
@@ -599,7 +609,6 @@ export function EditorArea() {
               </>
             ) : null}
           </>
-          )
         ) : !rootPath ? (
           <Welcome />
         ) : (

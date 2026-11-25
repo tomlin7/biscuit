@@ -423,6 +423,138 @@ pub fn git_remote_origin(cwd: String) -> Result<String, String> {
     Ok(trimmed.to_string())
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct GitCommitEntry {
+    pub hash: String,
+    pub author: String,
+    pub relative_date: String,
+    pub subject: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct GitCompareFile {
+    pub path: String,
+    pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct GitCompareSummary {
+    pub base: String,
+    pub head: String,
+    pub stat: String,
+    pub commits: Vec<GitCommitEntry>,
+    pub files: Vec<GitCompareFile>,
+}
+
+#[tauri::command]
+pub fn git_compare_refs(
+    cwd: String,
+    base: String,
+    head: String,
+) -> Result<GitCompareSummary, String> {
+    let base = valid_branch(&base)?;
+    let head = valid_branch(&head)?;
+    let range = format!("{base}..{head}");
+
+    let log_out = run_git(
+        &cwd,
+        &[
+            "log".into(),
+            "--format=%h%x09%an%x09%ar%x09%s".into(),
+            range.clone(),
+        ],
+    )?;
+
+    let mut commits = Vec::new();
+    for line in log_out.lines() {
+        let parts: Vec<&str> = line.split('\t').collect();
+        if parts.len() >= 4 {
+            commits.push(GitCommitEntry {
+                hash: parts[0].to_string(),
+                author: parts[1].to_string(),
+                relative_date: parts[2].to_string(),
+                subject: parts[3].to_string(),
+            });
+        }
+    }
+
+    let diff_files = run_git(
+        &cwd,
+        &["diff".into(), "--name-status".into(), range.clone()],
+    )?;
+
+    let mut files = Vec::new();
+    for line in diff_files.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let parts: Vec<&str> = trimmed.split_whitespace().collect();
+        if parts.len() >= 2 {
+            files.push(GitCompareFile {
+                status: parts[0].to_string(),
+                path: parts[1..].join(" "),
+            });
+        }
+    }
+
+    let stat = run_git(
+        &cwd,
+        &["diff".into(), "--shortstat".into(), range],
+    )?
+    .trim()
+    .to_string();
+
+    Ok(GitCompareSummary {
+        base: base.to_string(),
+        head: head.to_string(),
+        stat: if stat.is_empty() {
+            "No changes".into()
+        } else {
+            stat
+        },
+        commits,
+        files,
+    })
+}
+
+#[tauri::command]
+pub fn git_diff_refs(
+    cwd: String,
+    base: String,
+    head: String,
+    path: Option<String>,
+) -> Result<String, String> {
+    let base = valid_branch(&base)?;
+    let head = valid_branch(&head)?;
+    let range = format!("{base}..{head}");
+    let mut args = vec!["diff".into(), range];
+    if let Some(p) = path {
+        let p = p.trim().replace('\\', "/");
+        if !p.is_empty() {
+            args.push("--".into());
+            args.push(p);
+        }
+    }
+    let out = run_git(&cwd, &args)?;
+    Ok(if out.trim().is_empty() {
+        "No diff.".into()
+    } else {
+        out
+    })
+}
+
+#[tauri::command]
+pub fn git_show_ref(cwd: String, r#ref: String, path: String) -> Result<String, String> {
+    let r#ref = valid_branch(&r#ref)?;
+    let rel = path.trim().replace('\\', "/");
+    if rel.is_empty() || rel.contains('\0') {
+        return Err("invalid path".into());
+    }
+    run_git(&cwd, &["show".into(), format!("{ref}:{rel}")])
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::normalize_ignore_path;
@@ -462,4 +594,63 @@ mod tests {
         assert!(!status.contains("notes.tmp"), "{status}");
         let _ = std::fs::remove_dir_all(&dir);
     }
+
+    #[test]
+    fn compare_refs_between_branches() {
+        let dir = std::env::temp_dir().join(format!("t3d-cmp-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let run = |args: &[&str]| {
+            let res = std::process::Command::new("git")
+                .args(args)
+                .current_dir(&dir)
+                .status()
+                .expect("git");
+            assert!(res.success());
+        };
+        run(&["init"]);
+        run(&["config", "user.name", "Tomlin7"]);
+        run(&["config", "user.email", "billydevbusiness@gmail.com"]);
+        run(&["config", "commit.gpgsign", "false"]);
+        std::fs::write(dir.join("a.txt"), "hello\n").unwrap();
+        run(&["add", "a.txt"]);
+        run(&["commit", "--no-gpg-sign", "-m", "init commit"]);
+        run(&["branch", "-M", "main"]);
+
+        run(&["checkout", "-b", "feature"]);
+        std::fs::create_dir_all(dir.join("sub")).unwrap();
+        std::fs::write(dir.join("sub").join("b.txt"), "world\n").unwrap();
+        run(&["add", "sub/b.txt"]);
+        run(&["commit", "--no-gpg-sign", "-m", "feature commit"]);
+
+        let cwd = dir.display().to_string();
+        let res = super::git_compare_refs(cwd.clone(), "main".into(), "feature".into()).unwrap();
+        assert_eq!(res.base, "main");
+        assert_eq!(res.head, "feature");
+        assert_eq!(res.commits.len(), 1);
+        assert_eq!(res.commits[0].subject, "feature commit");
+        assert_eq!(res.files.len(), 1);
+        assert_eq!(res.files[0].path, "sub/b.txt");
+
+        // Diff with forward slash
+        let diff = super::git_diff_refs(cwd.clone(), "main".into(), "feature".into(), Some("sub/b.txt".into())).unwrap();
+        assert!(diff.contains("+world"));
+
+        // Diff with Windows backslash path
+        let diff_win = super::git_diff_refs(cwd.clone(), "main".into(), "feature".into(), Some("sub\\b.txt".into())).unwrap();
+        assert!(diff_win.contains("+world"));
+
+        // git_show_ref
+        let head_content = super::git_show_ref(cwd.clone(), "feature".into(), "sub/b.txt".into()).unwrap();
+        assert_eq!(head_content, "world\n");
+        let base_content = super::git_show_ref(cwd.clone(), "main".into(), "sub/b.txt".into());
+        assert!(base_content.is_err());
+
+        // invalid ref returns error
+        let bad_compare = super::git_compare_refs(cwd.clone(), "main".into(), "nonexistent".into());
+        assert!(bad_compare.is_err());
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }
+

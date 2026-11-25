@@ -1868,4 +1868,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCreatePullRequest(),
   },
+  {
+    id: "git.compareBranches",
+    title: "Git: Compare Branches / Commits...",
+    category: "Git",
+    run: (ctx) => ctx.gitCompareBranches(),
+  },
 ];

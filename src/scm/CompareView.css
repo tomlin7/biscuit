@@ -1,0 +1,302 @@
+.compare-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-surface, #141414);
+  color: var(--text-primary, #e8e8e8);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.compare-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-subtle, #262626);
+  background: var(--bg-subtle, #1a1a1a);
+  gap: 12px;
+}
+
+.compare-view__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-primary, #e8e8e8);
+}
+
+.compare-view__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-view__ref-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.compare-view__label {
+  font-size: 11px;
+  color: var(--text-muted, #888888);
+  font-weight: 500;
+}
+
+.compare-view__input {
+  background: var(--bg-surface, #141414);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-subtle, #333333);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  width: 140px;
+}
+
+.compare-view__input:focus {
+  outline: none;
+  border-color: var(--accent, #3b82f6);
+}
+
+.compare-view__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.compare-view__sidebar {
+  width: 300px;
+  min-width: 240px;
+  border-right: 1px solid var(--border-subtle, #262626);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-subtle, #181818);
+}
+
+.compare-view__tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-subtle, #262626);
+}
+
+.compare-view__tab-btn {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted, #888888);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+}
+
+.compare-view__tab-btn:hover {
+  color: var(--text-primary, #ffffff);
+}
+
+.compare-view__tab-btn--active {
+  color: var(--accent, #60a5fa);
+  border-bottom-color: var(--accent, #3b82f6);
+  background: var(--bg-surface, #141414);
+}
+
+.compare-view__stat {
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text-muted, #888888);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-subtle, #262626);
+}
+
+.compare-view__list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.compare-view__empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-muted, #888888);
+  font-size: 12px;
+}
+
+.compare-view__file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--text-primary, #e8e8e8);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+}
+
+.compare-view__file-item:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+.compare-view__file-item--active {
+  background: var(--accent-subtle, rgba(59, 130, 246, 0.15));
+  border-left: 2px solid var(--accent, #3b82f6);
+}
+
+.compare-view__file-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.compare-view__file-status--m {
+  background: rgba(234, 179, 8, 0.2);
+  color: #facc15;
+}
+
+.compare-view__file-status--a {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.compare-view__file-status--d {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.compare-view__file-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+
+.compare-view__commit-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle, #262626);
+}
+
+.compare-view__commit-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.compare-view__commit-hash {
+  font-family: var(--font-mono, monospace);
+  color: var(--accent, #60a5fa);
+  font-weight: 600;
+}
+
+.compare-view__commit-date {
+  color: var(--text-muted, #888888);
+  font-size: 10px;
+  margin-left: auto;
+}
+
+.compare-view__commit-subject {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.compare-view__commit-author {
+  font-size: 11px;
+  color: var(--text-muted, #888888);
+  margin-top: 2px;
+}
+
+.compare-view__diff-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg-surface, #141414);
+}
+
+.compare-view__diff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-subtle, #262626);
+  background: var(--bg-subtle, #1a1a1a);
+}
+
+.compare-view__diff-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+
+.compare-view__diff-subtitle {
+  color: var(--text-muted, #888888);
+  font-size: 11px;
+}
+
+.compare-view__diff-content {
+  flex: 1;
+  overflow: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.compare-view__unified-line {
+  display: flex;
+  white-space: pre;
+}
+
+.compare-view__unified-line--hunk {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+}
+
+.compare-view__unified-line--add {
+  background: rgba(34, 197, 94, 0.12);
+  color: #86efac;
+}
+
+.compare-view__unified-line--del {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.compare-view__gutter {
+  width: 44px;
+  padding: 0 6px;
+  text-align: right;
+  color: var(--text-muted, #666666);
+  user-select: none;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.compare-view__code {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.compare-view__error,
+.compare-view__loading {
+  padding: 32px;
+  text-align: center;
+  color: var(--text-muted, #888888);
+}

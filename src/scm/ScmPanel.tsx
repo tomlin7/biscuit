@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   GitBranch,
+  GitCompare,
   GitPullRequest,
   Minus,
   Plus,
@@ -21,6 +22,7 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
 import { openDiffTab } from "./diffBus";
+import { openCompareTab } from "./compareBus";
 import { githubPullRequestUrl, githubWebUrlFromRemote } from "./githubRemote";
 import { readIgnoreSpacePref } from "./diffPrefs";
 import { setToggleAmendListener } from "./amendBus";
@@ -564,6 +566,13 @@ export function ScmPanel({ onBranch }: Props) {
             size={13}
             disabled={acting || busy}
             onClick={() => void run("git_stash_pop", {})}
+          />
+          <IconButton
+            icon={GitCompare}
+            label="Compare branches / commits"
+            size={13}
+            disabled={acting || busy}
+            onClick={() => openCompareTab("main", summary?.branch || "HEAD")}
           />
           <IconButton
             icon={GitPullRequest}

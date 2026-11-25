@@ -308,6 +308,7 @@ export type CommandContext = {
   selectTerminalColorTheme: () => Promise<void> | void;
   terminalFind: () => void;
   gitCreatePullRequest: () => Promise<void> | void;
+  gitCompareBranches: () => Promise<void> | void;
 };
 
 export type Command = {

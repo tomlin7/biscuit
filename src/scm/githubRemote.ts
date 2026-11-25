@@ -29,6 +29,11 @@ export function githubPullsSearchUrl(repoWebUrl: string, query = ""): string {
   return `${base}?q=${encodeURIComponent(query.trim())}`;
 }
 
+export function githubCompareUrl(repoWebUrl: string, base: string, head: string): string {
+  const clean = repoWebUrl.replace(/\/+$/, "");
+  return `${clean}/compare/${encodeURIComponent(base)}...${encodeURIComponent(head)}?expand=1`;
+}
+
 export function githubPullRequestUrl(repoWebUrl: string, branch?: string, base = "main"): string {
   const clean = repoWebUrl.replace(/\/+$/, "");
   if (!branch || branch === base || branch === "master") {
