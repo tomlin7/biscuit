@@ -88,6 +88,27 @@
   width: 100%;
 }
 
+.settings-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.settings-preset {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.settings-preset:hover,
+.settings-preset--active {
+  color: var(--fg);
+  background: var(--bg-active);
+}
+
 .settings-reset {
   align-self: flex-start;
   padding: 6px 10px;
