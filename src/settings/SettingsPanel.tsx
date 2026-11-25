@@ -412,6 +412,27 @@ export function SettingsPanel({ open, onClose }: Props) {
                 }}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Request timeout (seconds)</span>
+              <input
+                type="number"
+                min={0}
+                max={600}
+                step={1}
+                value={ai.requestTimeoutSec}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  if (Number.isFinite(next)) {
+                    setAi({
+                      requestTimeoutSec: Math.min(
+                        600,
+                        Math.max(0, Math.floor(next)),
+                      ),
+                    });
+                  }
+                }}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",

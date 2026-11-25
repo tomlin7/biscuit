@@ -61,6 +61,8 @@ type AiSettings = {
   stopOnToolError: boolean;
   /** Max tool-loop rounds per request (clamped 1–32). */
   maxToolRounds: number;
+  /** 0 = off; otherwise abort the request after this many seconds. */
+  requestTimeoutSec: number;
 };
 
 type AiState = {
@@ -110,6 +112,7 @@ function defaultSettings(): AiSettings {
     seed: null,
     stopOnToolError: false,
     maxToolRounds: 8,
+    requestTimeoutSec: 0,
   };
 }
 
@@ -347,6 +350,12 @@ export function AiProvider({ children }: { children: ReactNode }) {
       setError(null);
       const controller = new AbortController();
       abortRef.current = controller;
+      let timeoutId: number | null = null;
+      if (settings.requestTimeoutSec > 0) {
+        timeoutId = window.setTimeout(() => {
+          controller.abort();
+        }, settings.requestTimeoutSec * 1000);
+      }
 
       try {
         if (!settings.apiKey) {
@@ -554,6 +563,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
         setError(message);
         return message;
       } finally {
+        if (timeoutId != null) window.clearTimeout(timeoutId);
         if (abortRef.current === controller) abortRef.current = null;
         setBusy(false);
       }
