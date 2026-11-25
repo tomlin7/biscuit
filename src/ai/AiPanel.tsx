@@ -4,6 +4,7 @@ import {
   BookOpen,
   Command,
   Copy,
+  FilePlus,
   Flame,
   Mic,
   Plus,
@@ -234,6 +235,16 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             label="Attach files"
             size={14}
             onClick={() => void attachFiles()}
+          />
+          <IconButton
+            icon={FilePlus}
+            label="Attach active file"
+            size={14}
+            disabled={!document}
+            onClick={() => {
+              if (!document) return;
+              attachPath(document.path, document.title, document.value.slice(0, 12000));
+            }}
           />
           <IconButton
             icon={Mic}

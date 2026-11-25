@@ -54,6 +54,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.46.0** | Install or scaffold a local extension folder | shipped |
 | **0.47.0** | Agent tool that runs a command in a terminal tab | shipped |
 | **0.48.0** | A terminal line starting with # goes to the agent | shipped |
+| **0.49.0** | Attach the active editor buffer to the chat | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
