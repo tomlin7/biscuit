@@ -169,6 +169,7 @@ export type CommandContext = {
   cycleFontFamily: () => void;
   gitFocusCommitMessage: () => void;
   cycleAiEffort: () => void;
+  stopAi: () => void;
 };
 
 export type Command = {

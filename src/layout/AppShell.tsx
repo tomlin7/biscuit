@@ -103,6 +103,7 @@ function ShellChrome() {
     showHistory,
     setShowHistory,
     cycleEffort,
+    stop,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
@@ -977,6 +978,10 @@ function ShellChrome() {
         cycleEffort();
         setAiOpen(true);
       },
+      stopAi: () => {
+        stop();
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1048,6 +1053,7 @@ function ShellChrome() {
       openSettings,
       setSidebarOpen,
       cycleEffort,
+      stop,
       toggleBottom,
       toggleProblems,
       openFolderAt,

@@ -1016,4 +1016,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiEffort(),
   },
+  {
+    id: "workbench.action.stopAi",
+    title: "Stop AI Generation",
+    category: "AI",
+    run: (ctx) => ctx.stopAi(),
+  },
 ];
