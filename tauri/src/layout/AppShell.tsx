@@ -2461,6 +2461,36 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("tagPush");
       },
+      gitRebaseInteractive: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("rebaseInteractive");
+      },
+      gitRebaseContinue: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("rebaseContinue");
+      },
+      gitRebaseAbort: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("rebaseAbort");
+      },
+      gitCherryPick: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("cherryPick");
+      },
+      gitCherryPickContinue: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("cherryPickContinue");
+      },
+      gitCherryPickAbort: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("cherryPickAbort");
+      },
     }),
     [
       openThemeEditor,

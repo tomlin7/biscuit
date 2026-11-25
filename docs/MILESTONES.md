@@ -485,6 +485,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **1.221.0** | Visual Theme Editor with live preview, custom theme persistence, and JSON export | shipped |
 | **1.222.0** | Git submodule detection, status display, and init/update in SCM | shipped |
 | **1.223.0** | Git tag management (list, create, delete, push) in SCM | shipped |
+| **1.224.0** | Interactive rebase and cherry-pick in SCM | shipped |
 | **2.0.0** | Stable product | owner decision only |
 
 ## GPUIX Milestones (Independent track starting from 0.1.0)

@@ -19,7 +19,9 @@ use git::{
     git_ignore, git_pull, git_push, git_remote_origin, git_show_head, git_show_ref, git_stage,
     git_stash_pop, git_stash_push, git_submodule_init, git_submodule_sync, git_submodule_update,
     git_submodules, git_summary, git_tags, git_unstage, git_create_tag, git_delete_tag,
-    git_push_tags, git_delete_remote_tag,
+    git_push_tags, git_delete_remote_tag, git_log, git_rebase_status, git_rebase_todo,
+    git_rebase_start, git_rebase_continue, git_rebase_abort, git_rebase_skip,
+    git_cherry_pick, git_cherry_pick_continue, git_cherry_pick_abort,
 };
 use notifications::send_desktop_notification;
 use pty::{
@@ -84,6 +86,16 @@ pub fn run() {
             git_delete_tag,
             git_push_tags,
             git_delete_remote_tag,
+            git_log,
+            git_rebase_status,
+            git_rebase_todo,
+            git_rebase_start,
+            git_rebase_continue,
+            git_rebase_abort,
+            git_rebase_skip,
+            git_cherry_pick,
+            git_cherry_pick_continue,
+            git_cherry_pick_abort,
             list_extensions,
             set_extension_enabled,
             install_sample_extension,

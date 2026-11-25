@@ -30,7 +30,13 @@ export type ScmRemoteAction =
   | "submoduleSyncAll"
   | "tagCreate"
   | "tagDelete"
-  | "tagPush";
+  | "tagPush"
+  | "rebaseInteractive"
+  | "rebaseContinue"
+  | "rebaseAbort"
+  | "cherryPick"
+  | "cherryPickContinue"
+  | "cherryPickAbort";
 
 type Listener = (action: ScmRemoteAction) => void;
 

@@ -337,6 +337,12 @@ export type CommandContext = {
   gitTagCreate: () => Promise<void> | void;
   gitTagDelete: () => Promise<void> | void;
   gitTagPush: () => Promise<void> | void;
+  gitRebaseInteractive: () => Promise<void> | void;
+  gitRebaseContinue: () => Promise<void> | void;
+  gitRebaseAbort: () => Promise<void> | void;
+  gitCherryPick: () => Promise<void> | void;
+  gitCherryPickContinue: () => Promise<void> | void;
+  gitCherryPickAbort: () => Promise<void> | void;
 };
 
 export type Command = {

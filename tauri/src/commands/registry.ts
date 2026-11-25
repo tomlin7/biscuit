@@ -2084,4 +2084,40 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitTagPush(),
   },
+  {
+    id: "git.rebase.interactive",
+    title: "Git: Interactive Rebase...",
+    category: "Git",
+    run: (ctx) => ctx.gitRebaseInteractive(),
+  },
+  {
+    id: "git.rebase.continue",
+    title: "Git: Continue Rebase",
+    category: "Git",
+    run: (ctx) => ctx.gitRebaseContinue(),
+  },
+  {
+    id: "git.rebase.abort",
+    title: "Git: Abort Rebase",
+    category: "Git",
+    run: (ctx) => ctx.gitRebaseAbort(),
+  },
+  {
+    id: "git.cherryPick",
+    title: "Git: Cherry-pick Commit...",
+    category: "Git",
+    run: (ctx) => ctx.gitCherryPick(),
+  },
+  {
+    id: "git.cherryPick.continue",
+    title: "Git: Continue Cherry-pick",
+    category: "Git",
+    run: (ctx) => ctx.gitCherryPickContinue(),
+  },
+  {
+    id: "git.cherryPick.abort",
+    title: "Git: Abort Cherry-pick",
+    category: "Git",
+    run: (ctx) => ctx.gitCherryPickAbort(),
+  },
 ];

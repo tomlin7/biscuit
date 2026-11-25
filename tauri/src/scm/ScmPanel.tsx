@@ -23,6 +23,8 @@ import {
   Trash2,
   Undo2,
   Copy,
+  GitCommit,
+  GitFork,
 } from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
@@ -54,6 +56,27 @@ import {
   copyTagNameToClipboard,
   type GitTagInfo,
 } from "./tags";
+import {
+  fetchGitLog,
+  fetchRebaseStatus,
+  fetchRebaseTodo,
+  startRebase,
+  continueRebase,
+  abortRebase,
+  skipRebase,
+  cherryPick,
+  continueCherryPick,
+  abortCherryPick,
+  moveTodoItem,
+  updateTodoAction,
+  updateTodoMessage,
+  validateRebaseTodo,
+  formatRebaseStatusBanner,
+  type GitRebaseStatus,
+  type RebaseTodoItem,
+  type RebaseAction,
+  type GitCommitInfo,
+} from "./rebase";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
 import { EmptyState } from "../ui/EmptyState";
@@ -117,12 +140,28 @@ export function ScmPanel({ onBranch }: Props) {
   const [contextMenu, setContextMenu] = useState<ScmContextMenuState | null>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
+  const [rebaseStatus, setRebaseStatus] = useState<GitRebaseStatus | null>(null);
+  const [showRebaseDialog, setShowRebaseDialog] = useState(false);
+  const [rebaseUpstream, setRebaseUpstream] = useState("main");
+  const [rebaseItems, setRebaseItems] = useState<RebaseTodoItem[]>([]);
+  const [rebaseLoading, setRebaseLoading] = useState(false);
+  const [rebaseError, setRebaseError] = useState<string | null>(null);
+
+  const [showCherryPickDialog, setShowCherryPickDialog] = useState(false);
+  const [cherryPickBranch, setCherryPickBranch] = useState("");
+  const [cherryPickCommitSha, setCherryPickCommitSha] = useState("");
+  const [cherryPickNoCommit, setCherryPickNoCommit] = useState(false);
+  const [cherryPickCommits, setCherryPickCommits] = useState<GitCommitInfo[]>([]);
+  const [cherryPickLoading, setCherryPickLoading] = useState(false);
+  const [cherryPickError, setCherryPickError] = useState<string | null>(null);
+
   const refresh = useCallback(async () => {
     if (!rootPath) {
       setSummary(null);
       setBranches([]);
       setSubmodules([]);
       setTags([]);
+      setRebaseStatus(null);
       onBranch(null);
       return;
     }
@@ -160,11 +199,18 @@ export function ScmPanel({ onBranch }: Props) {
       } catch {
         setTags([]);
       }
+      try {
+        const reb = await fetchRebaseStatus(rootPath);
+        setRebaseStatus(reb);
+      } catch {
+        setRebaseStatus(null);
+      }
     } catch (err) {
       setSummary(null);
       setBranches([]);
       setSubmodules([]);
       setTags([]);
+      setRebaseStatus(null);
       setCanAmend(false);
       onBranch(null);
       setError(err instanceof Error ? err.message : String(err));
@@ -353,6 +399,18 @@ export function ScmPanel({ onBranch }: Props) {
         void handlePromptDeleteTag();
       } else if (action === "tagPush") {
         void handlePushTags();
+      } else if (action === "rebaseInteractive") {
+        openInteractiveRebase();
+      } else if (action === "rebaseContinue") {
+        void handleRebaseContinue();
+      } else if (action === "rebaseAbort") {
+        void handleRebaseAbort();
+      } else if (action === "cherryPick") {
+        openCherryPickModal();
+      } else if (action === "cherryPickContinue") {
+        void handleCherryPickContinue();
+      } else if (action === "cherryPickAbort") {
+        void handleCherryPickAbort();
       } else void push();
     });
     return () => setScmRemoteListener(null);
@@ -758,6 +816,191 @@ export function ScmPanel({ onBranch }: Props) {
     }
   };
 
+  const openInteractiveRebase = () => {
+    const defaultBase = branches.find((b) => b !== summary?.branch) ?? "main";
+    setRebaseUpstream(defaultBase);
+    setRebaseError(null);
+    setShowRebaseDialog(true);
+    if (rootPath) {
+      void loadRebaseTodos(defaultBase);
+    }
+  };
+
+  const loadRebaseTodos = async (upstream: string) => {
+    if (!rootPath || !upstream.trim()) return;
+    setRebaseLoading(true);
+    setRebaseError(null);
+    try {
+      const todos = await fetchRebaseTodo(rootPath, upstream);
+      setRebaseItems(todos);
+      if (todos.length === 0) {
+        setRebaseError(`Branch is up to date with "${upstream.trim()}" (no commits to rebase).`);
+      }
+    } catch (err) {
+      setRebaseItems([]);
+      setRebaseError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRebaseLoading(false);
+    }
+  };
+
+  const handleStartRebase = async () => {
+    if (!rootPath) return;
+    const validation = validateRebaseTodo(rebaseItems);
+    if (!validation.valid) {
+      setRebaseError(validation.error ?? "Invalid rebase plan");
+      return;
+    }
+    setActing(true);
+    setRebaseError(null);
+    try {
+      const res = await startRebase(rootPath, rebaseUpstream, rebaseItems);
+      appendLog(`Rebase: ${res.message}`);
+      setShowRebaseDialog(false);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setRebaseError(msg);
+      appendLog(`Rebase start failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleRebaseContinue = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const res = await continueRebase(rootPath);
+      appendLog(`Rebase: ${res.message}`);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Rebase continue failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleRebaseSkip = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const res = await skipRebase(rootPath);
+      appendLog(`Rebase: ${res.message}`);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Rebase skip failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleRebaseAbort = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      await abortRebase(rootPath);
+      appendLog("Rebase aborted.");
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Rebase abort failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const openCherryPickModal = () => {
+    const otherBranch = branches.find((b) => b !== summary?.branch) ?? "";
+    setCherryPickBranch(otherBranch);
+    setCherryPickCommitSha("");
+    setCherryPickNoCommit(false);
+    setCherryPickError(null);
+    setShowCherryPickDialog(true);
+    if (otherBranch && rootPath) {
+      void loadCherryPickCommits(otherBranch);
+    }
+  };
+
+  const loadCherryPickCommits = async (branch: string) => {
+    if (!rootPath || !branch.trim()) {
+      setCherryPickCommits([]);
+      return;
+    }
+    setCherryPickLoading(true);
+    setCherryPickError(null);
+    try {
+      const list = await fetchGitLog(rootPath, 30, branch);
+      setCherryPickCommits(list);
+    } catch (err) {
+      setCherryPickCommits([]);
+      setCherryPickError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setCherryPickLoading(false);
+    }
+  };
+
+  const handleCherryPickSubmit = async () => {
+    if (!rootPath || !cherryPickCommitSha.trim()) return;
+    setActing(true);
+    setCherryPickError(null);
+    try {
+      const res = await cherryPick(rootPath, cherryPickCommitSha.trim(), cherryPickNoCommit);
+      appendLog(`Cherry-pick: ${res.message}`);
+      setShowCherryPickDialog(false);
+      setCherryPickCommitSha("");
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setCherryPickError(msg);
+      appendLog(`Cherry-pick failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleCherryPickContinue = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const res = await continueCherryPick(rootPath);
+      appendLog(`Cherry-pick: ${res.message}`);
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Cherry-pick continue failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const handleCherryPickAbort = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      await abortCherryPick(rootPath);
+      appendLog("Cherry-pick aborted.");
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Cherry-pick abort failed: ${msg}`);
+    } finally {
+      setActing(false);
+    }
+  };
+
   const renderTagRow = (tag: GitTagInfo) => {
     const shortCommit = formatTagCommit(tag.commit);
     const dateFormatted = formatTagDate(tag.date);
@@ -993,6 +1236,20 @@ export function ScmPanel({ onBranch }: Props) {
             onClick={() => void handleCreatePullRequest()}
           />
           <IconButton
+            icon={GitCommit}
+            label="Interactive Rebase"
+            size={13}
+            disabled={acting || busy}
+            onClick={openInteractiveRebase}
+          />
+          <IconButton
+            icon={GitFork}
+            label="Cherry-pick Commit"
+            size={13}
+            disabled={acting || busy}
+            onClick={openCherryPickModal}
+          />
+          <IconButton
             icon={RefreshCw}
             label="Refresh"
             size={13}
@@ -1003,6 +1260,68 @@ export function ScmPanel({ onBranch }: Props) {
       </div>
 
       {error ? <p className="scm-panel__error">{error}</p> : null}
+
+      {/* Rebase / Cherry-pick In-Progress Banner */}
+      {(() => {
+        const banner = formatRebaseStatusBanner(rebaseStatus);
+        if (!banner) return null;
+        return (
+          <div
+            className={`scm-panel__in-progress-banner ${banner.isCherryPick ? "scm-panel__in-progress-banner--cherry" : ""}`}
+            role="alert"
+          >
+            <div className="scm-panel__in-progress-info">
+              <span className="scm-panel__in-progress-dot" />
+              <div className="scm-panel__in-progress-text">
+                <div className="scm-panel__in-progress-title">{banner.title}</div>
+                {banner.subtitle ? (
+                  <div className="scm-panel__in-progress-sub">{banner.subtitle}</div>
+                ) : null}
+              </div>
+            </div>
+            <div className="scm-panel__in-progress-actions">
+              {banner.canContinue ? (
+                <button
+                  type="button"
+                  className="scm-panel__banner-btn scm-panel__banner-btn--primary"
+                  disabled={acting}
+                  onClick={() =>
+                    void (banner.isCherryPick
+                      ? handleCherryPickContinue()
+                      : handleRebaseContinue())
+                  }
+                >
+                  Continue
+                </button>
+              ) : null}
+              {banner.canSkip ? (
+                <button
+                  type="button"
+                  className="scm-panel__banner-btn"
+                  disabled={acting}
+                  onClick={() => void handleRebaseSkip()}
+                >
+                  Skip
+                </button>
+              ) : null}
+              {banner.canAbort ? (
+                <button
+                  type="button"
+                  className="scm-panel__banner-btn scm-panel__banner-btn--danger"
+                  disabled={acting}
+                  onClick={() =>
+                    void (banner.isCherryPick
+                      ? handleCherryPickAbort()
+                      : handleRebaseAbort())
+                  }
+                >
+                  Abort
+                </button>
+              ) : null}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Commit Box */}
       <div className="scm-panel__commit">
@@ -1378,6 +1697,319 @@ export function ScmPanel({ onBranch }: Props) {
           </div>
         ) : null}
       </div>
+
+      {/* Interactive Rebase Modal */}
+      {showRebaseDialog ? (
+        <div
+          className="scm-panel__modal-overlay"
+          onClick={() => setShowRebaseDialog(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="scm-rebase-title"
+        >
+          <div
+            className="scm-panel__modal island"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="scm-panel__modal-header">
+              <div className="scm-panel__modal-title" id="scm-rebase-title">
+                <GitCommit size={14} className="scm-panel__modal-icon" />
+                <span>Interactive Git Rebase</span>
+              </div>
+              <button
+                type="button"
+                className="scm-panel__modal-close"
+                onClick={() => setShowRebaseDialog(false)}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="scm-panel__modal-body">
+              <div className="scm-panel__modal-field">
+                <label className="scm-panel__modal-label" htmlFor="scm-rebase-upstream">
+                  Rebase onto upstream base:
+                </label>
+                <div className="scm-panel__rebase-base-row">
+                  <input
+                    id="scm-rebase-upstream"
+                    type="text"
+                    className="scm-panel__modal-input"
+                    placeholder="Branch or commit (e.g. main, HEAD~3)"
+                    value={rebaseUpstream}
+                    onChange={(e) => setRebaseUpstream(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="scm-panel__batch-btn"
+                    disabled={rebaseLoading || !rebaseUpstream.trim()}
+                    onClick={() => void loadRebaseTodos(rebaseUpstream)}
+                  >
+                    {rebaseLoading ? "Loading..." : "Load Commits"}
+                  </button>
+                </div>
+              </div>
+
+              {rebaseError ? (
+                <div className="scm-panel__error scm-panel__modal-error">{rebaseError}</div>
+              ) : null}
+
+              {rebaseItems.length > 0 ? (
+                <div className="scm-panel__rebase-list-wrap">
+                  <div className="scm-panel__rebase-list-header">
+                    <span>Order & Action</span>
+                    <span>Commit Details</span>
+                  </div>
+                  <div className="scm-panel__rebase-items">
+                    {rebaseItems.map((item, idx) => (
+                      <div
+                        key={`${item.sha}-${idx}`}
+                        className={`scm-panel__rebase-row ${item.action === "drop" ? "scm-panel__rebase-row--drop" : ""}`}
+                      >
+                        <div className="scm-panel__rebase-row-controls">
+                          <button
+                            type="button"
+                            className="scm-panel__rebase-reorder-btn"
+                            disabled={idx === 0}
+                            onClick={() =>
+                              setRebaseItems((items) => moveTodoItem(items, idx, idx - 1))
+                            }
+                            title="Move commit up"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            className="scm-panel__rebase-reorder-btn"
+                            disabled={idx === rebaseItems.length - 1}
+                            onClick={() =>
+                              setRebaseItems((items) => moveTodoItem(items, idx, idx + 1))
+                            }
+                            title="Move commit down"
+                          >
+                            ▼
+                          </button>
+                          <select
+                            className="scm-panel__rebase-action-select"
+                            value={item.action}
+                            aria-label={`Action for commit ${item.short_sha}`}
+                            onChange={(e) =>
+                              setRebaseItems((items) =>
+                                updateTodoAction(
+                                  items,
+                                  idx,
+                                  e.target.value as RebaseAction,
+                                )
+                              )
+                            }
+                          >
+                            <option value="pick">pick</option>
+                            <option value="reword">reword</option>
+                            <option value="edit">edit</option>
+                            <option value="squash">squash</option>
+                            <option value="fixup">fixup</option>
+                            <option value="drop">drop</option>
+                          </select>
+                        </div>
+
+                        <div className="scm-panel__rebase-row-details">
+                          <div className="scm-panel__rebase-row-meta">
+                            <span className="scm-panel__rebase-sha">{item.short_sha}</span>
+                            {item.author ? (
+                              <span className="scm-panel__rebase-author">{item.author}</span>
+                            ) : null}
+                            {item.date ? (
+                              <span className="scm-panel__rebase-date">{item.date}</span>
+                            ) : null}
+                          </div>
+                          {item.action === "reword" ? (
+                            <input
+                              type="text"
+                              className="scm-panel__rebase-message-input"
+                              value={item.message}
+                              onChange={(e) =>
+                                setRebaseItems((items) =>
+                                  updateTodoMessage(items, idx, e.target.value)
+                                )
+                              }
+                              placeholder="Edit commit message inline"
+                            />
+                          ) : (
+                            <div className="scm-panel__rebase-message" title={item.message}>
+                              {item.message}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : !rebaseLoading ? (
+                <div className="scm-panel__rebase-empty">
+                  Enter an upstream branch/base (e.g. <code>main</code> or <code>HEAD~3</code>) and click "Load Commits".
+                </div>
+              ) : null}
+            </div>
+
+            <div className="scm-panel__modal-footer">
+              <button
+                type="button"
+                className="scm-panel__batch-btn"
+                onClick={() => setShowRebaseDialog(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="scm-panel__batch-btn scm-panel__tag-submit-btn"
+                disabled={
+                  acting ||
+                  rebaseLoading ||
+                  rebaseItems.length === 0 ||
+                  !validateRebaseTodo(rebaseItems).valid
+                }
+                onClick={() => void handleStartRebase()}
+              >
+                Start Rebase
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Cherry-pick Dialog */}
+      {showCherryPickDialog ? (
+        <div
+          className="scm-panel__modal-overlay"
+          onClick={() => setShowCherryPickDialog(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="scm-cherry-pick-title"
+        >
+          <div
+            className="scm-panel__modal island"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="scm-panel__modal-header">
+              <div className="scm-panel__modal-title" id="scm-cherry-pick-title">
+                <GitFork size={14} className="scm-panel__modal-icon" />
+                <span>Cherry-pick Commit</span>
+              </div>
+              <button
+                type="button"
+                className="scm-panel__modal-close"
+                onClick={() => setShowCherryPickDialog(false)}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="scm-panel__modal-body">
+              <div className="scm-panel__modal-field">
+                <label className="scm-panel__modal-label" htmlFor="scm-cp-branch">
+                  Browse commits from branch:
+                </label>
+                <select
+                  id="scm-cp-branch"
+                  className="scm-panel__modal-select"
+                  value={cherryPickBranch}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setCherryPickBranch(next);
+                    if (next) void loadCherryPickCommits(next);
+                  }}
+                >
+                  <option value="">(Select a branch to browse commits)</option>
+                  {branches.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {cherryPickLoading ? (
+                <div className="scm-panel__rebase-empty">
+                  Loading commits from {cherryPickBranch}...
+                </div>
+              ) : cherryPickCommits.length > 0 ? (
+                <div className="scm-panel__cp-commits-wrap">
+                  <label className="scm-panel__modal-label">
+                    Select a commit from {cherryPickBranch}:
+                  </label>
+                  <div className="scm-panel__cp-commits-list">
+                    {cherryPickCommits.map((c) => (
+                      <button
+                        key={c.sha}
+                        type="button"
+                        className={`scm-panel__cp-commit-btn ${cherryPickCommitSha === c.sha ? "scm-panel__cp-commit-btn--selected" : ""}`}
+                        onClick={() => setCherryPickCommitSha(c.sha)}
+                      >
+                        <span className="scm-panel__rebase-sha">{c.short_sha}</span>
+                        <span className="scm-panel__cp-commit-msg" title={c.message}>
+                          {c.message}
+                        </span>
+                        <span className="scm-panel__rebase-date">{c.date}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="scm-panel__modal-field">
+                <label className="scm-panel__modal-label" htmlFor="scm-cp-commit-sha">
+                  Commit SHA to cherry-pick:
+                </label>
+                <input
+                  id="scm-cp-commit-sha"
+                  type="text"
+                  className="scm-panel__modal-input"
+                  placeholder="e.g. 7a4266f or full commit SHA"
+                  value={cherryPickCommitSha}
+                  onChange={(e) => setCherryPickCommitSha(e.target.value)}
+                />
+              </div>
+
+              <label className="scm-panel__cp-checkbox-row">
+                <input
+                  type="checkbox"
+                  checked={cherryPickNoCommit}
+                  onChange={(e) => setCherryPickNoCommit(e.target.checked)}
+                />
+                <span>
+                  Stage changes without committing (<code>--no-commit</code> / <code>-n</code>)
+                </span>
+              </label>
+
+              {cherryPickError ? (
+                <div className="scm-panel__error scm-panel__modal-error">
+                  {cherryPickError}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="scm-panel__modal-footer">
+              <button
+                type="button"
+                className="scm-panel__batch-btn"
+                onClick={() => setShowCherryPickDialog(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="scm-panel__batch-btn scm-panel__tag-submit-btn"
+                disabled={acting || !cherryPickCommitSha.trim()}
+                onClick={() => void handleCherryPickSubmit()}
+              >
+                Cherry-pick
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* SCM Row Context Menu */}
       {contextMenu ? (

@@ -1028,6 +1028,705 @@ pub fn git_delete_remote_tag(
     Ok(())
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GitCommitInfo {
+    pub sha: String,
+    pub short_sha: String,
+    pub author: String,
+    pub date: String,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GitRebaseStatus {
+    pub in_progress: bool,
+    pub current_step: Option<usize>,
+    pub total_steps: Option<usize>,
+    pub head_name: Option<String>,
+    pub onto: Option<String>,
+    pub current_commit: Option<String>,
+    pub has_conflicts: bool,
+    pub conflicts: Vec<String>,
+    pub rebase_type: Option<String>,
+    pub cherry_pick_in_progress: bool,
+    pub cherry_pick_head: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct RebaseTodoItem {
+    pub action: String,
+    pub sha: String,
+    pub short_sha: String,
+    pub message: String,
+    #[serde(default)]
+    pub author: Option<String>,
+    #[serde(default)]
+    pub date: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GitRebaseResult {
+    pub success: bool,
+    pub status: String,
+    pub message: String,
+    pub current_commit: Option<String>,
+    pub conflicts: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct GitCherryPickResult {
+    pub success: bool,
+    pub status: String,
+    pub message: String,
+    pub conflicts: Vec<String>,
+}
+
+pub struct GitExecOutput {
+    pub success: bool,
+    pub stdout: String,
+    pub stderr: String,
+    #[allow(dead_code)]
+    pub exit_code: Option<i32>,
+}
+
+fn exec_git(cwd: &str, args: &[String], envs: &[(&str, &str)]) -> Result<GitExecOutput, String> {
+    let mut cmd = Command::new("git");
+    cmd.args(args).current_dir(cwd);
+    for (k, v) in envs {
+        cmd.env(k, v);
+    }
+    let output = cmd
+        .output()
+        .map_err(|e| format!("failed to run git: {e}"))?;
+    Ok(GitExecOutput {
+        success: output.status.success(),
+        stdout: String::from_utf8_lossy(&output.stdout).to_string(),
+        stderr: String::from_utf8_lossy(&output.stderr).to_string(),
+        exit_code: output.status.code(),
+    })
+}
+
+fn resolve_git_dir(cwd: &str) -> Result<std::path::PathBuf, String> {
+    let out = run_git(cwd, &["rev-parse".into(), "--git-dir".into()])?;
+    let path = std::path::Path::new(out.trim());
+    if path.is_absolute() {
+        Ok(path.to_path_buf())
+    } else {
+        Ok(std::path::Path::new(cwd).join(path))
+    }
+}
+
+pub fn get_conflicted_files(cwd: &str) -> Vec<String> {
+    let porcelain = match run_git(cwd, &["status".into(), "--porcelain=v1".into(), "-u".into()]) {
+        Ok(out) => out,
+        Err(_) => return Vec::new(),
+    };
+    let mut conflicts = Vec::new();
+    for line in porcelain.lines() {
+        if line.len() < 4 {
+            continue;
+        }
+        let index = line.chars().next().unwrap_or(' ');
+        let worktree = line.chars().nth(1).unwrap_or(' ');
+        let is_conflict = match (index, worktree) {
+            ('U', _) | (_, 'U') | ('A', 'A') | ('D', 'D') => true,
+            _ => false,
+        };
+        if is_conflict {
+            let path_part = line[3..].trim();
+            let path = if let Some((_, rhs)) = path_part.split_once(" -> ") {
+                rhs.to_string()
+            } else {
+                path_part.to_string()
+            };
+            conflicts.push(path);
+        }
+    }
+    conflicts
+}
+
+struct RebaseScriptContext {
+    temp_dir: std::path::PathBuf,
+    seq_editor_path: std::path::PathBuf,
+    msg_editor_path: std::path::PathBuf,
+}
+
+impl RebaseScriptContext {
+    fn new(prefix: &str) -> Result<Self, String> {
+        let unique = format!("t3d-rebase-{}-{}", prefix, uuid::Uuid::new_v4());
+        let temp_dir = std::env::temp_dir().join(unique);
+        std::fs::create_dir_all(&temp_dir)
+            .map_err(|e| format!("Failed to create temp dir for rebase: {e}"))?;
+
+        let seq_editor_path = temp_dir.join("seq_editor.sh");
+        let msg_editor_path = temp_dir.join("msg_editor.sh");
+
+        Ok(Self {
+            temp_dir,
+            seq_editor_path,
+            msg_editor_path,
+        })
+    }
+
+    fn write_scripts(
+        &self,
+        todo_file: &std::path::Path,
+        messages_dir: &std::path::Path,
+    ) -> Result<(), String> {
+        let todo_str = todo_file.to_string_lossy().replace('\\', "/");
+        let msgs_str = messages_dir.to_string_lossy().replace('\\', "/");
+
+        let seq_content = format!(
+            "#!/bin/sh\ncp \"{}\" \"$1\"\n",
+            todo_str
+        );
+        std::fs::write(&self.seq_editor_path, seq_content)
+            .map_err(|e| format!("failed to write seq_editor: {e}"))?;
+
+        let msg_content = format!(
+            "#!/bin/sh\n\
+             DIR=$(dirname \"$1\")\n\
+             LAST_SHA=\"\"\n\
+             if [ -f \"$DIR/rebase-merge/done\" ]; then\n\
+               LAST_SHA=$(awk 'END {{print $2}}' \"$DIR/rebase-merge/done\")\n\
+             elif [ -f \"$DIR/rebase-apply/original-commit\" ]; then\n\
+               LAST_SHA=$(cat \"$DIR/rebase-apply/original-commit\")\n\
+             fi\n\
+             if [ -n \"$LAST_SHA\" ] && [ -f \"{}/$LAST_SHA.txt\" ]; then\n\
+               cp \"{}/$LAST_SHA.txt\" \"$1\"\n\
+             fi\n",
+            msgs_str, msgs_str
+        );
+        std::fs::write(&self.msg_editor_path, msg_content)
+            .map_err(|e| format!("failed to write msg_editor: {e}"))?;
+
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let perms = std::fs::Permissions::from_mode(0o755);
+            let _ = std::fs::set_permissions(&self.seq_editor_path, perms.clone());
+            let _ = std::fs::set_permissions(&self.msg_editor_path, perms);
+        }
+
+        Ok(())
+    }
+
+    fn seq_editor_cmd(&self) -> String {
+        let p = self.seq_editor_path.to_string_lossy().replace('\\', "/");
+        format!("sh \"{}\"", p)
+    }
+
+    fn msg_editor_cmd(&self) -> String {
+        let p = self.msg_editor_path.to_string_lossy().replace('\\', "/");
+        format!("sh \"{}\"", p)
+    }
+}
+
+impl Drop for RebaseScriptContext {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.temp_dir);
+    }
+}
+
+#[tauri::command]
+pub fn git_log(
+    root: String,
+    max_count: Option<usize>,
+    branch: Option<String>,
+) -> Result<Vec<GitCommitInfo>, String> {
+    let mut args = vec![
+        "log".to_string(),
+        "--date=short".to_string(),
+        "--format=%H%x1f%h%x1f%an%x1f%ad%x1f%s".to_string(),
+    ];
+    let limit = max_count.unwrap_or(50);
+    if limit > 0 {
+        args.push(format!("-n{limit}"));
+    }
+    if let Some(ref b) = branch {
+        let trimmed = b.trim();
+        if !trimmed.is_empty() {
+            args.push(trimmed.to_string());
+        }
+    }
+    let res = exec_git(&root, &args, &[])?;
+    if !res.success {
+        if res.stderr.contains("does not have any commits yet")
+            || res.stderr.contains("fatal: your current branch")
+            || res.stderr.contains("fatal: ambiguous argument 'HEAD'")
+        {
+            return Ok(Vec::new());
+        }
+        return Err(if res.stderr.trim().is_empty() {
+            "git log failed".into()
+        } else {
+            res.stderr.trim().to_string()
+        });
+    }
+
+    let mut commits = Vec::new();
+    for line in res.stdout.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let parts: Vec<&str> = trimmed.split('\x1f').collect();
+        if parts.len() >= 5 {
+            commits.push(GitCommitInfo {
+                sha: parts[0].to_string(),
+                short_sha: parts[1].to_string(),
+                author: parts[2].to_string(),
+                date: parts[3].to_string(),
+                message: parts[4].to_string(),
+            });
+        }
+    }
+    Ok(commits)
+}
+
+#[tauri::command]
+pub fn git_rebase_status(root: String) -> Result<GitRebaseStatus, String> {
+    let git_dir = resolve_git_dir(&root)?;
+    let conflicts = get_conflicted_files(&root);
+    let has_conflicts = !conflicts.is_empty();
+
+    let rebase_merge_dir = git_dir.join("rebase-merge");
+    let rebase_apply_dir = git_dir.join("rebase-apply");
+    let cp_head_file = git_dir.join("CHERRY_PICK_HEAD");
+
+    let cherry_pick_in_progress = cp_head_file.exists();
+    let cherry_pick_head = if cherry_pick_in_progress {
+        std::fs::read_to_string(&cp_head_file).ok().map(|s| s.trim().to_string())
+    } else {
+        None
+    };
+
+    if rebase_merge_dir.exists() {
+        let current_step = std::fs::read_to_string(rebase_merge_dir.join("msgnum"))
+            .ok()
+            .and_then(|s| s.trim().parse::<usize>().ok());
+        let total_steps = std::fs::read_to_string(rebase_merge_dir.join("end"))
+            .ok()
+            .and_then(|s| s.trim().parse::<usize>().ok());
+        let head_name = std::fs::read_to_string(rebase_merge_dir.join("head-name"))
+            .ok()
+            .map(|s| s.trim().trim_start_matches("refs/heads/").to_string());
+        let onto = std::fs::read_to_string(rebase_merge_dir.join("onto"))
+            .ok()
+            .map(|s| s.trim().to_string());
+        let current_commit = std::fs::read_to_string(rebase_merge_dir.join("stopped-sha"))
+            .ok()
+            .map(|s| s.trim().to_string());
+
+        return Ok(GitRebaseStatus {
+            in_progress: true,
+            current_step,
+            total_steps,
+            head_name,
+            onto,
+            current_commit,
+            has_conflicts,
+            conflicts,
+            rebase_type: Some("merge".to_string()),
+            cherry_pick_in_progress,
+            cherry_pick_head,
+        });
+    }
+
+    if rebase_apply_dir.exists() {
+        let current_step = std::fs::read_to_string(rebase_apply_dir.join("next"))
+            .ok()
+            .and_then(|s| s.trim().parse::<usize>().ok());
+        let total_steps = std::fs::read_to_string(rebase_apply_dir.join("last"))
+            .ok()
+            .and_then(|s| s.trim().parse::<usize>().ok());
+        let head_name = std::fs::read_to_string(rebase_apply_dir.join("head-name"))
+            .ok()
+            .map(|s| s.trim().trim_start_matches("refs/heads/").to_string());
+        let onto = std::fs::read_to_string(rebase_apply_dir.join("onto"))
+            .ok()
+            .map(|s| s.trim().to_string());
+        let current_commit = std::fs::read_to_string(rebase_apply_dir.join("original-commit"))
+            .ok()
+            .map(|s| s.trim().to_string());
+
+        return Ok(GitRebaseStatus {
+            in_progress: true,
+            current_step,
+            total_steps,
+            head_name,
+            onto,
+            current_commit,
+            has_conflicts,
+            conflicts,
+            rebase_type: Some("apply".to_string()),
+            cherry_pick_in_progress,
+            cherry_pick_head,
+        });
+    }
+
+    Ok(GitRebaseStatus {
+        in_progress: false,
+        current_step: None,
+        total_steps: None,
+        head_name: None,
+        onto: None,
+        current_commit: None,
+        has_conflicts,
+        conflicts,
+        rebase_type: None,
+        cherry_pick_in_progress,
+        cherry_pick_head,
+    })
+}
+
+#[tauri::command]
+pub fn git_rebase_todo(root: String, upstream: String) -> Result<Vec<RebaseTodoItem>, String> {
+    let target = if upstream.trim().is_empty() {
+        "HEAD~1".to_string()
+    } else {
+        upstream.trim().to_string()
+    };
+    let range = format!("{target}..HEAD");
+    let output = run_git(
+        &root,
+        &[
+            "log".into(),
+            "--reverse".into(),
+            "--date=short".into(),
+            "--format=%H%x1f%h%x1f%an%x1f%ad%x1f%s".into(),
+            range,
+        ],
+    )?;
+
+    let mut items = Vec::new();
+    for line in output.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let parts: Vec<&str> = trimmed.split('\x1f').collect();
+        if parts.len() >= 5 {
+            items.push(RebaseTodoItem {
+                action: "pick".to_string(),
+                sha: parts[0].to_string(),
+                short_sha: parts[1].to_string(),
+                author: Some(parts[2].to_string()),
+                date: Some(parts[3].to_string()),
+                message: parts[4].to_string(),
+            });
+        }
+    }
+    Ok(items)
+}
+
+#[tauri::command]
+pub fn git_rebase_start(
+    root: String,
+    upstream: String,
+    items: Vec<RebaseTodoItem>,
+) -> Result<GitRebaseResult, String> {
+    if items.is_empty() {
+        return Err("No commits selected for rebase".to_string());
+    }
+
+    let status = git_rebase_status(root.clone())?;
+    if status.in_progress || status.cherry_pick_in_progress {
+        return Err("Another rebase or cherry-pick is already in progress".to_string());
+    }
+
+    let ctx = RebaseScriptContext::new("start")?;
+    let todo_file = ctx.temp_dir.join("todo.txt");
+    let msgs_dir = ctx.temp_dir.join("msgs");
+    std::fs::create_dir_all(&msgs_dir).map_err(|e| e.to_string())?;
+
+    let mut todo_content = String::new();
+    for item in &items {
+        let action = match item.action.trim().to_lowercase().as_str() {
+            "pick" | "p" => "pick",
+            "reword" | "r" => "reword",
+            "edit" | "e" => "edit",
+            "squash" | "s" => "squash",
+            "fixup" | "f" => "fixup",
+            "drop" | "d" => "drop",
+            other => return Err(format!("Invalid rebase action '{other}'")),
+        };
+        todo_content.push_str(&format!("{} {} {}\n", action, item.sha, item.message));
+        if action == "reword" {
+            let _ = std::fs::write(msgs_dir.join(format!("{}.txt", item.sha)), &item.message);
+            let _ = std::fs::write(msgs_dir.join(format!("{}.txt", item.short_sha)), &item.message);
+        }
+    }
+    std::fs::write(&todo_file, todo_content).map_err(|e| e.to_string())?;
+    ctx.write_scripts(&todo_file, &msgs_dir)?;
+
+    let target = if upstream.trim().is_empty() {
+        "HEAD~1".to_string()
+    } else {
+        upstream.trim().to_string()
+    };
+
+    let seq_editor_str = ctx.seq_editor_cmd();
+    let msg_editor_str = ctx.msg_editor_cmd();
+
+    let res = exec_git(
+        &root,
+        &["rebase".into(), "-i".into(), target],
+        &[
+            ("GIT_SEQUENCE_EDITOR", &seq_editor_str),
+            ("GIT_EDITOR", &msg_editor_str),
+        ],
+    )?;
+
+    if res.success {
+        return Ok(GitRebaseResult {
+            success: true,
+            status: "complete".to_string(),
+            message: "Rebase completed successfully".to_string(),
+            current_commit: None,
+            conflicts: Vec::new(),
+        });
+    }
+
+    let new_status = git_rebase_status(root.clone())?;
+    if new_status.in_progress {
+        if new_status.has_conflicts {
+            return Ok(GitRebaseResult {
+                success: false,
+                status: "conflict".to_string(),
+                message: "Rebase stopped due to conflicts. Resolve conflicts and continue.".to_string(),
+                current_commit: new_status.current_commit,
+                conflicts: new_status.conflicts,
+            });
+        } else {
+            return Ok(GitRebaseResult {
+                success: true,
+                status: "stopped".to_string(),
+                message: format!(
+                    "Rebase stopped at commit {}. Amend changes and continue.",
+                    new_status.current_commit.as_deref().unwrap_or("")
+                ),
+                current_commit: new_status.current_commit,
+                conflicts: Vec::new(),
+            });
+        }
+    }
+
+    let err = if res.stderr.trim().is_empty() {
+        res.stdout.trim().to_string()
+    } else {
+        res.stderr.trim().to_string()
+    };
+    Err(if err.is_empty() {
+        "Rebase failed".to_string()
+    } else {
+        err
+    })
+}
+
+#[tauri::command]
+pub fn git_rebase_continue(root: String) -> Result<GitRebaseResult, String> {
+    let res = exec_git(
+        &root,
+        &["rebase".into(), "--continue".into()],
+        &[("GIT_EDITOR", "true")],
+    )?;
+
+    if res.success {
+        return Ok(GitRebaseResult {
+            success: true,
+            status: "complete".to_string(),
+            message: "Rebase completed successfully".to_string(),
+            current_commit: None,
+            conflicts: Vec::new(),
+        });
+    }
+
+    let new_status = git_rebase_status(root.clone())?;
+    if new_status.in_progress {
+        if new_status.has_conflicts {
+            return Ok(GitRebaseResult {
+                success: false,
+                status: "conflict".to_string(),
+                message: "Rebase stopped due to conflicts. Resolve conflicts and continue.".to_string(),
+                current_commit: new_status.current_commit,
+                conflicts: new_status.conflicts,
+            });
+        } else {
+            return Ok(GitRebaseResult {
+                success: true,
+                status: "stopped".to_string(),
+                message: format!(
+                    "Rebase stopped at commit {}. Amend changes and continue.",
+                    new_status.current_commit.as_deref().unwrap_or("")
+                ),
+                current_commit: new_status.current_commit,
+                conflicts: Vec::new(),
+            });
+        }
+    }
+
+    let err = if res.stderr.trim().is_empty() {
+        res.stdout.trim().to_string()
+    } else {
+        res.stderr.trim().to_string()
+    };
+    Err(if err.is_empty() {
+        "Rebase continue failed".to_string()
+    } else {
+        err
+    })
+}
+
+#[tauri::command]
+pub fn git_rebase_abort(root: String) -> Result<(), String> {
+    run_git(&root, &["rebase".into(), "--abort".into()]).map(|_| ())
+}
+
+#[tauri::command]
+pub fn git_rebase_skip(root: String) -> Result<GitRebaseResult, String> {
+    let res = exec_git(
+        &root,
+        &["rebase".into(), "--skip".into()],
+        &[("GIT_EDITOR", "true")],
+    )?;
+
+    if res.success {
+        return Ok(GitRebaseResult {
+            success: true,
+            status: "complete".to_string(),
+            message: "Rebase completed successfully".to_string(),
+            current_commit: None,
+            conflicts: Vec::new(),
+        });
+    }
+
+    let new_status = git_rebase_status(root.clone())?;
+    if new_status.in_progress {
+        if new_status.has_conflicts {
+            return Ok(GitRebaseResult {
+                success: false,
+                status: "conflict".to_string(),
+                message: "Rebase stopped due to conflicts. Resolve conflicts and continue.".to_string(),
+                current_commit: new_status.current_commit,
+                conflicts: new_status.conflicts,
+            });
+        } else {
+            return Ok(GitRebaseResult {
+                success: true,
+                status: "stopped".to_string(),
+                message: format!(
+                    "Rebase stopped at commit {}. Amend changes and continue.",
+                    new_status.current_commit.as_deref().unwrap_or("")
+                ),
+                current_commit: new_status.current_commit,
+                conflicts: Vec::new(),
+            });
+        }
+    }
+
+    let err = if res.stderr.trim().is_empty() {
+        res.stdout.trim().to_string()
+    } else {
+        res.stderr.trim().to_string()
+    };
+    Err(if err.is_empty() {
+        "Rebase skip failed".to_string()
+    } else {
+        err
+    })
+}
+
+#[tauri::command]
+pub fn git_cherry_pick(
+    root: String,
+    commit: String,
+    no_commit: bool,
+) -> Result<GitCherryPickResult, String> {
+    let mut args = vec!["cherry-pick".to_string()];
+    if no_commit {
+        args.push("-n".to_string());
+    }
+    args.push(commit.trim().to_string());
+
+    let res = exec_git(&root, &args, &[("GIT_EDITOR", "true")])?;
+
+    if res.success {
+        return Ok(GitCherryPickResult {
+            success: true,
+            status: "complete".to_string(),
+            message: format!("Successfully cherry-picked {}", commit.trim()),
+            conflicts: Vec::new(),
+        });
+    }
+
+    let conflicts = get_conflicted_files(&root);
+    if !conflicts.is_empty() {
+        return Ok(GitCherryPickResult {
+            success: false,
+            status: "conflict".to_string(),
+            message: format!("Cherry-pick conflict in {} file(s)", conflicts.len()),
+            conflicts,
+        });
+    }
+
+    let err = if res.stderr.trim().is_empty() {
+        res.stdout.trim().to_string()
+    } else {
+        res.stderr.trim().to_string()
+    };
+    Err(if err.is_empty() {
+        "Cherry-pick failed".to_string()
+    } else {
+        err
+    })
+}
+
+#[tauri::command]
+pub fn git_cherry_pick_continue(root: String) -> Result<GitCherryPickResult, String> {
+    let res = exec_git(
+        &root,
+        &["cherry-pick".into(), "--continue".into()],
+        &[("GIT_EDITOR", "true")],
+    )?;
+
+    if res.success {
+        return Ok(GitCherryPickResult {
+            success: true,
+            status: "complete".to_string(),
+            message: "Cherry-pick completed successfully".to_string(),
+            conflicts: Vec::new(),
+        });
+    }
+
+    let conflicts = get_conflicted_files(&root);
+    if !conflicts.is_empty() {
+        return Ok(GitCherryPickResult {
+            success: false,
+            status: "conflict".to_string(),
+            message: format!("Cherry-pick has conflicts in {} file(s)", conflicts.len()),
+            conflicts,
+        });
+    }
+
+    let err = if res.stderr.trim().is_empty() {
+        res.stdout.trim().to_string()
+    } else {
+        res.stderr.trim().to_string()
+    };
+    Err(if err.is_empty() {
+        "Cherry-pick continue failed".to_string()
+    } else {
+        err
+    })
+}
+
+#[tauri::command]
+pub fn git_cherry_pick_abort(root: String) -> Result<(), String> {
+    run_git(&root, &["cherry-pick".into(), "--abort".into()]).map(|_| ())
+}
+
+#[cfg(test)]
 mod tests {
     use super::normalize_ignore_path;
 
@@ -1408,6 +2107,267 @@ mod tests {
         assert!(!String::from_utf8_lossy(&ls_after.stdout).contains("refs/tags/v0.2.0"));
 
         let _ = std::fs::remove_dir_all(&remote_dir);
+        let _ = std::fs::remove_dir_all(&base_dir);
+    }
+
+    #[test]
+    fn git_log_and_rebase_integration() {
+        let base_dir = std::env::temp_dir().join(format!("t3d-rebase-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base_dir);
+        std::fs::create_dir_all(&base_dir).unwrap();
+
+        let run_in = |dir: &std::path::Path, args: &[&str]| {
+            let res = std::process::Command::new("git")
+                .args(args)
+                .current_dir(dir)
+                .status()
+                .expect("git execution");
+            assert!(res.success());
+        };
+
+        run_in(&base_dir, &["init"]);
+        run_in(&base_dir, &["config", "user.name", "Tomlin7"]);
+        run_in(&base_dir, &["config", "user.email", "billydevbusiness@gmail.com"]);
+        run_in(&base_dir, &["config", "commit.gpgsign", "false"]);
+
+        std::fs::write(base_dir.join("file1.txt"), "content 1\n").unwrap();
+        run_in(&base_dir, &["add", "file1.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "commit 1"]);
+        run_in(&base_dir, &["branch", "-M", "main"]);
+
+        std::fs::write(base_dir.join("file2.txt"), "content 2\n").unwrap();
+        run_in(&base_dir, &["add", "file2.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "commit 2"]);
+
+        std::fs::write(base_dir.join("file3.txt"), "content 3\n").unwrap();
+        run_in(&base_dir, &["add", "file3.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "commit 3"]);
+
+        let root_str = base_dir.display().to_string();
+
+        // 1. Test git_log
+        let logs = super::git_log(root_str.clone(), Some(10), None).expect("git_log");
+        assert_eq!(logs.len(), 3);
+        assert_eq!(logs[0].message, "commit 3");
+        assert_eq!(logs[1].message, "commit 2");
+        assert_eq!(logs[2].message, "commit 1");
+        assert_eq!(logs[0].author, "Tomlin7");
+        assert!(!logs[0].date.is_empty());
+        assert_eq!(logs[0].short_sha, &logs[0].sha[..7]);
+
+        // 2. Test git_rebase_status initially
+        let init_status = super::git_rebase_status(root_str.clone()).expect("git_rebase_status");
+        assert!(!init_status.in_progress);
+        assert!(!init_status.cherry_pick_in_progress);
+        assert!(!init_status.has_conflicts);
+
+        // 3. Test git_rebase_todo
+        let todos = super::git_rebase_todo(root_str.clone(), "HEAD~2".into()).expect("git_rebase_todo");
+        assert_eq!(todos.len(), 2);
+        // oldest commit first in todo list
+        assert_eq!(todos[0].message, "commit 2");
+        assert_eq!(todos[1].message, "commit 3");
+
+        // 4. Test git_rebase_start: reorder commits and reword commit 2
+        let reordered_items = vec![
+            super::RebaseTodoItem {
+                action: "pick".to_string(),
+                sha: todos[1].sha.clone(),
+                short_sha: todos[1].short_sha.clone(),
+                message: todos[1].message.clone(),
+                author: todos[1].author.clone(),
+                date: todos[1].date.clone(),
+            },
+            super::RebaseTodoItem {
+                action: "reword".to_string(),
+                sha: todos[0].sha.clone(),
+                short_sha: todos[0].short_sha.clone(),
+                message: "commit 2 reworded".to_string(),
+                author: todos[0].author.clone(),
+                date: todos[0].date.clone(),
+            },
+        ];
+
+        let start_res = super::git_rebase_start(
+            root_str.clone(),
+            "HEAD~2".into(),
+            reordered_items.clone(),
+        ).expect("git_rebase_start");
+        assert!(start_res.success);
+        assert_eq!(start_res.status, "complete");
+
+        // Verify with git_log that commit 2 reworded is now HEAD and commit 3 is HEAD~1
+        let after_rebase_logs = super::git_log(root_str.clone(), Some(3), None).expect("git_log after rebase");
+        assert_eq!(after_rebase_logs[0].message, "commit 2 reworded");
+        assert_eq!(after_rebase_logs[1].message, "commit 3");
+        assert_eq!(after_rebase_logs[2].message, "commit 1");
+
+        // 5. Test rebase conflict and abort
+        std::fs::write(base_dir.join("conflict.txt"), "line original\n").unwrap();
+        run_in(&base_dir, &["add", "conflict.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "base conflict commit"]);
+
+        std::fs::write(base_dir.join("conflict.txt"), "line branch A\n").unwrap();
+        run_in(&base_dir, &["commit", "-am", "change A"]);
+
+        std::fs::write(base_dir.join("conflict.txt"), "line branch B\n").unwrap();
+        run_in(&base_dir, &["commit", "-am", "change B"]);
+
+        let conflict_todos = super::git_rebase_todo(root_str.clone(), "HEAD~2".into()).expect("git_rebase_todo 2");
+        assert_eq!(conflict_todos.len(), 2);
+
+        // Dropping change A and picking change B directly onto base will cause conflict in conflict.txt
+        let conflict_plan = vec![
+            super::RebaseTodoItem {
+                action: "drop".to_string(),
+                sha: conflict_todos[0].sha.clone(),
+                short_sha: conflict_todos[0].short_sha.clone(),
+                message: conflict_todos[0].message.clone(),
+                author: conflict_todos[0].author.clone(),
+                date: conflict_todos[0].date.clone(),
+            },
+            super::RebaseTodoItem {
+                action: "pick".to_string(),
+                sha: conflict_todos[1].sha.clone(),
+                short_sha: conflict_todos[1].short_sha.clone(),
+                message: conflict_todos[1].message.clone(),
+                author: conflict_todos[1].author.clone(),
+                date: conflict_todos[1].date.clone(),
+            },
+        ];
+
+        let conf_res = super::git_rebase_start(root_str.clone(), "HEAD~2".into(), conflict_plan).expect("rebase conflict");
+        assert!(!conf_res.success);
+        assert_eq!(conf_res.status, "conflict");
+        assert!(conf_res.conflicts.contains(&"conflict.txt".to_string()));
+
+        let mid_status = super::git_rebase_status(root_str.clone()).expect("mid status");
+        assert!(mid_status.in_progress);
+        assert!(mid_status.has_conflicts);
+        assert!(mid_status.conflicts.contains(&"conflict.txt".to_string()));
+
+        // Abort rebase
+        super::git_rebase_abort(root_str.clone()).expect("git_rebase_abort");
+        let post_abort = super::git_rebase_status(root_str.clone()).expect("post abort");
+        assert!(!post_abort.in_progress);
+        assert!(!post_abort.has_conflicts);
+
+        let _ = std::fs::remove_dir_all(&base_dir);
+    }
+
+    #[test]
+    fn git_cherry_pick_integration() {
+        let base_dir = std::env::temp_dir().join(format!("t3d-cp-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base_dir);
+        std::fs::create_dir_all(&base_dir).unwrap();
+
+        let run_in = |dir: &std::path::Path, args: &[&str]| {
+            let res = std::process::Command::new("git")
+                .args(args)
+                .current_dir(dir)
+                .status()
+                .expect("git execution");
+            assert!(res.success());
+        };
+
+        run_in(&base_dir, &["init"]);
+        run_in(&base_dir, &["config", "user.name", "Tomlin7"]);
+        run_in(&base_dir, &["config", "user.email", "billydevbusiness@gmail.com"]);
+        run_in(&base_dir, &["config", "commit.gpgsign", "false"]);
+
+        std::fs::write(base_dir.join("main.txt"), "main branch\n").unwrap();
+        run_in(&base_dir, &["add", "main.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "main initial"]);
+        run_in(&base_dir, &["branch", "-M", "main"]);
+
+        // Create feature branch with a commit
+        run_in(&base_dir, &["checkout", "-b", "feature-cp"]);
+        std::fs::write(base_dir.join("feat.txt"), "feature data\n").unwrap();
+        run_in(&base_dir, &["add", "feat.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "feature commit"]);
+
+        let feat_sha = {
+            let out = std::process::Command::new("git")
+                .args(["rev-parse", "HEAD"])
+                .current_dir(&base_dir)
+                .output()
+                .unwrap();
+            String::from_utf8_lossy(&out.stdout).trim().to_string()
+        };
+
+        // Switch back to main
+        run_in(&base_dir, &["checkout", "main"]);
+        let root_str = base_dir.display().to_string();
+
+        // 1. Cherry-pick the feature commit
+        let cp_res = super::git_cherry_pick(root_str.clone(), feat_sha.clone(), false).expect("git_cherry_pick");
+        assert!(cp_res.success);
+        assert_eq!(cp_res.status, "complete");
+        assert!(base_dir.join("feat.txt").exists());
+
+        let logs = super::git_log(root_str.clone(), Some(2), None).expect("git_log");
+        assert_eq!(logs[0].message, "feature commit");
+
+        // 2. Cherry-pick with no-commit
+        run_in(&base_dir, &["checkout", "feature-cp"]);
+        std::fs::write(base_dir.join("nocommit.txt"), "nocommit data\n").unwrap();
+        run_in(&base_dir, &["add", "nocommit.txt"]);
+        run_in(&base_dir, &["commit", "--no-gpg-sign", "-m", "no commit test"]);
+
+        let nocommit_sha = {
+            let out = std::process::Command::new("git")
+                .args(["rev-parse", "HEAD"])
+                .current_dir(&base_dir)
+                .output()
+                .unwrap();
+            String::from_utf8_lossy(&out.stdout).trim().to_string()
+        };
+
+        run_in(&base_dir, &["checkout", "main"]);
+        let cp_nc_res = super::git_cherry_pick(root_str.clone(), nocommit_sha, true).expect("cherry-pick no-commit");
+        assert!(cp_nc_res.success);
+        assert_eq!(cp_nc_res.status, "complete");
+        assert!(base_dir.join("nocommit.txt").exists());
+
+        // Working tree should have staged change but HEAD message is still "feature commit"
+        let logs_nc = super::git_log(root_str.clone(), Some(1), None).expect("git_log after nc");
+        assert_eq!(logs_nc[0].message, "feature commit");
+
+        // Reset changes
+        run_in(&base_dir, &["reset", "--hard", "HEAD"]);
+
+        // 3. Cherry-pick conflict and abort
+        // Create conflicting commit on feature branch
+        run_in(&base_dir, &["checkout", "-b", "conflict-cp"]);
+        std::fs::write(base_dir.join("feat.txt"), "conflicting feature data\n").unwrap();
+        run_in(&base_dir, &["commit", "-am", "conflict commit"]);
+        let conflict_sha = {
+            let out = std::process::Command::new("git")
+                .args(["rev-parse", "HEAD"])
+                .current_dir(&base_dir)
+                .output()
+                .unwrap();
+            String::from_utf8_lossy(&out.stdout).trim().to_string()
+        };
+
+        run_in(&base_dir, &["checkout", "main"]);
+        std::fs::write(base_dir.join("feat.txt"), "main conflicting data\n").unwrap();
+        run_in(&base_dir, &["commit", "-am", "main conflicting change"]);
+        let cp_conf_res = super::git_cherry_pick(root_str.clone(), conflict_sha, false).expect("cherry-pick conflict");
+        assert!(!cp_conf_res.success);
+        assert_eq!(cp_conf_res.status, "conflict");
+        assert!(cp_conf_res.conflicts.contains(&"feat.txt".to_string()));
+
+        let cp_status = super::git_rebase_status(root_str.clone()).expect("cp status");
+        assert!(cp_status.cherry_pick_in_progress);
+        assert!(cp_status.has_conflicts);
+
+        // Abort cherry-pick
+        super::git_cherry_pick_abort(root_str.clone()).expect("cherry-pick abort");
+        let cp_after_abort = super::git_rebase_status(root_str.clone()).expect("cp after abort");
+        assert!(!cp_after_abort.cherry_pick_in_progress);
+        assert!(!cp_after_abort.has_conflicts);
+
         let _ = std::fs::remove_dir_all(&base_dir);
     }
 }
