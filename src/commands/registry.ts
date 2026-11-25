@@ -1510,7 +1510,12 @@ export const COMMANDS: Command[] = [
     category: "Developer",
     run: (ctx) => ctx.reloadWindow(),
   },
-
+  {
+    id: "t3d.scaffoldExtension",
+    title: "Scaffold Extension",
+    category: "Extensions",
+    run: (ctx) => ctx.scaffoldExtension(),
+  },
 
 
 ];

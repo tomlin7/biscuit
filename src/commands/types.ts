@@ -250,6 +250,7 @@ export type CommandContext = {
   toggleAlwaysOnTop: () => void;
   toggleFullScreen: () => void;
   reloadWindow: () => void;
+  scaffoldExtension: () => void;
 };
 
 export type Command = {

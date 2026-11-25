@@ -157,7 +157,7 @@ function ShellChrome() {
     addBreakpoint,
     removeBreakpoint,
   } = useDebug();
-  const { extensions } = useExtensions();
+  const { extensions, scaffoldInFolder } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
     setExtras(collected.themes);
@@ -1516,6 +1516,11 @@ function ShellChrome() {
       reloadWindow: () => {
         window.location.reload();
       },
+      scaffoldExtension: () => {
+        setSidebarMode("extensions");
+        setSidebarOpen(true);
+        void scaffoldInFolder();
+      },
     }),
     [
       openFolder,
@@ -1656,6 +1661,7 @@ function ShellChrome() {
       settings.chromeAcrylic,
       renameEntry,
       deleteEntry,
+      scaffoldInFolder,
     ],
   );
 
