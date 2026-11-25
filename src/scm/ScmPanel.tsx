@@ -422,6 +422,20 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={acting || selectedPaths.length === 0}
+            onClick={() => {
+              void (async () => {
+                for (const path of selectedPaths) {
+                  await run("git_ignore", { path });
+                }
+              })();
+            }}
+          >
+            Ignore selected
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             disabled={acting || selectedPaths.length === 0 || !rootPath}
             onClick={() => {
               if (!rootPath) return;
