@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Columns2, Rows2, X } from "lucide-react";
-import { closeDiffTab, subscribeDiff } from "./diffBus";
+import { invoke } from "@tauri-apps/api/core";
+import { Columns2, Rows2, Space, X } from "lucide-react";
+import { closeDiffTab, patchDiffTab, subscribeDiff } from "./diffBus";
 import { IconButton } from "../ui/IconButton";
 import "./DiffView.css";
 
@@ -9,6 +10,9 @@ type DiffState = {
   text: string;
   head?: string | null;
   working?: string | null;
+  cwd?: string | null;
+  staged?: boolean;
+  ignoreSpace?: boolean;
 };
 
 export function useDiffTab() {
@@ -17,18 +21,56 @@ export function useDiffTab() {
   return diff;
 }
 
-export function DiffView({ path, text, head, working }: DiffState) {
+export function DiffView({
+  path,
+  text,
+  head,
+  working,
+  cwd,
+  staged,
+  ignoreSpace,
+}: DiffState) {
   const [mode, setMode] = useState<"unified" | "split">("unified");
+  const [loading, setLoading] = useState(false);
   const canSplit = head != null || working != null;
   const left = head ?? "(not in HEAD)";
   const right = working ?? "(no working tree copy)";
   const lines = (text || "(no changes)").split("\n");
+
+  const toggleIgnoreSpace = () => {
+    if (!cwd) return;
+    const next = !ignoreSpace;
+    setLoading(true);
+    void invoke<string>("git_diff", {
+      cwd,
+      path,
+      staged: staged ?? false,
+      ignoreSpace: next,
+    })
+      .then((nextText) => {
+        patchDiffTab({ text: nextText, ignoreSpace: next });
+      })
+      .catch(() => {
+        /* keep current text */
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
     <div className="diff-view">
       <div className="diff-view__bar">
         <span>Diff — {path}</span>
         <span className="diff-view__bar-actions">
+          {cwd ? (
+            <IconButton
+              icon={Space}
+              label={ignoreSpace ? "Show whitespace changes" : "Ignore whitespace"}
+              size={14}
+              active={!!ignoreSpace}
+              disabled={loading}
+              onClick={toggleIgnoreSpace}
+            />
+          ) : null}
           {canSplit ? (
             <>
               <IconButton

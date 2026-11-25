@@ -285,7 +285,13 @@ export function ScmPanel({ onBranch }: Props) {
                       } catch {
                         working = null;
                       }
-                      openDiffTab(entry.path, text, { head, working });
+                      openDiffTab(entry.path, text, {
+                        head,
+                        working,
+                        cwd: rootPath,
+                        staged: stagedOnly,
+                        ignoreSpace: false,
+                      });
                     } catch (err) {
                       setError(err instanceof Error ? err.message : String(err));
                     }

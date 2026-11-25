@@ -159,10 +159,18 @@ pub fn git_discard(cwd: String, path: String, untracked: bool) -> Result<(), Str
 }
 
 #[tauri::command]
-pub fn git_diff(cwd: String, path: String, staged: bool) -> Result<String, String> {
+pub fn git_diff(
+    cwd: String,
+    path: String,
+    staged: bool,
+    ignore_space: Option<bool>,
+) -> Result<String, String> {
     let mut args = vec!["diff".into()];
     if staged {
         args.push("--cached".into());
+    }
+    if ignore_space.unwrap_or(false) {
+        args.push("--ignore-all-space".into());
     }
     args.push("--".into());
     args.push(path);
