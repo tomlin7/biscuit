@@ -1,8 +1,17 @@
 import { readDir, readTextFile } from "@tauri-apps/plugin-fs";
+import { searchWorkspace, type SearchHit } from "../search/workspaceSearch";
 import { pathInsideRoot } from "./workspacePath";
 
 const MAX_FILE_CHARS = 20_000;
 const MAX_LIST = 200;
+const MAX_SEARCH = 40;
+
+export function formatSearchHits(hits: SearchHit[]): string {
+  if (hits.length === 0) return "No results";
+  const shown = hits.slice(0, MAX_SEARCH);
+  const extra = hits.length > shown.length ? `\n…[${hits.length - shown.length} more]` : "";
+  return `${shown.map((hit) => `${hit.path}:${hit.line}:${hit.column} ${hit.preview}`).join("\n")}${extra}`;
+}
 
 export type ToolOutcome = {
   ok: boolean;
@@ -42,6 +51,17 @@ export async function listWorkspaceDirectory(root: string, input: string): Promi
   }
 }
 
+export async function searchWorkspaceText(root: string, query: string): Promise<ToolOutcome> {
+  const needle = query.trim();
+  if (!needle) return { ok: false, text: "query is empty" };
+  try {
+    const hits = await searchWorkspace(root, needle, { matchCase: false, useRegex: false });
+    return { ok: true, text: formatSearchHits(hits) };
+  } catch (err) {
+    return { ok: false, text: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 export async function runAgentTool(
   name: string,
   args: Record<string, string>,
@@ -50,5 +70,6 @@ export async function runAgentTool(
   if (!root) return { ok: false, text: "Open a folder first." };
   if (name === "read_file") return readWorkspaceFile(root, args.path ?? "");
   if (name === "list_directory") return listWorkspaceDirectory(root, args.path ?? ".");
+  if (name === "search_text") return searchWorkspaceText(root, args.query ?? "");
   return { ok: false, text: `unknown tool ${name}` };
 }

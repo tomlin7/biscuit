@@ -47,6 +47,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.39.0** | Python call stack and locals when debugpy is installed | shipped |
 | **0.40.0** | Continue, step, and restart a paused Python debug session | shipped |
 | **0.41.0** | Agent tools to read a file and list a directory inside the folder | shipped |
+| **0.42.0** | Agent tool to search text in the workspace | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
