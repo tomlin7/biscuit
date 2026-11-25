@@ -306,6 +306,7 @@ export type CommandContext = {
   revertActiveFile: () => void;
   copyActiveFileName: () => void;
   openNextGitChangedFile: () => void;
+  openWebview: (extId: string, viewId: string, title?: string) => void;
 };
 
 export type Command = {

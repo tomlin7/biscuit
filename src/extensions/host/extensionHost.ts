@@ -36,6 +36,10 @@ function activationEventsFor(manifest: ExtensionManifest): string[] {
   for (const command of manifest.contributes?.commands ?? []) {
     if (!command.runs) events.add(`onCommand:${command.id}`);
   }
+  for (const webview of manifest.contributes?.webviews ?? []) {
+    events.add(`onView:${webview.id}`);
+    events.add(`onView:${manifest.id}/${webview.id}`);
+  }
   return [...events];
 }
 

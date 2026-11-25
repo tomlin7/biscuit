@@ -38,6 +38,16 @@ pub struct ExtensionContributes {
     pub themes: Vec<ExtensionTheme>,
     #[serde(default)]
     pub languages: Vec<ExtensionLanguage>,
+    #[serde(default)]
+    pub webviews: Vec<ExtensionWebview>,
+}
+
+/// An HTML page, relative to the extension folder, shown in a sandboxed editor tab.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExtensionWebview {
+    pub id: String,
+    pub title: String,
+    pub entry: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -182,6 +192,24 @@ fn parse_contributes(value: &serde_json::Value) -> ExtensionContributes {
             });
         }
     }
+    if let Some(webviews) = obj.get("webviews").and_then(|item| item.as_array()) {
+        for item in webviews {
+            let text = |key: &str| {
+                item.get(key)
+                    .and_then(|part| part.as_str())
+                    .map(|value| value.trim())
+                    .filter(|value| !value.is_empty())
+            };
+            let (Some(id), Some(entry)) = (text("id"), text("entry")) else {
+                continue;
+            };
+            out.webviews.push(ExtensionWebview {
+                id: id.to_string(),
+                title: text("title").unwrap_or(id).to_string(),
+                entry: entry.to_string(),
+            });
+        }
+    }
     out
 }
 
@@ -218,6 +246,7 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
     let contributes = if parsed.commands.is_empty()
         && parsed.themes.is_empty()
         && parsed.languages.is_empty()
+        && parsed.webviews.is_empty()
     {
         None
     } else {
@@ -268,6 +297,90 @@ pub fn extension_file_path(root: &Path, id: &str, relative: &str) -> Result<Path
         return Err(format!("{relative} is larger than 16 MB"));
     }
     Ok(file)
+}
+
+fn guess_mime(path: &Path) -> &'static str {
+    match path
+        .extension()
+        .and_then(|s| s.to_str())
+        .unwrap_or("")
+        .to_lowercase()
+        .as_str()
+    {
+        "html" | "htm" => "text/html; charset=utf-8",
+        "js" | "mjs" => "application/javascript; charset=utf-8",
+        "css" => "text/css; charset=utf-8",
+        "json" => "application/json",
+        "svg" => "image/svg+xml",
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "wasm" => "application/wasm",
+        "woff" => "font/woff",
+        "woff2" => "font/woff2",
+        "ttf" => "font/ttf",
+        _ => "application/octet-stream",
+    }
+}
+
+pub fn handle_t3dext(
+    app: &tauri::AppHandle,
+    req: tauri::http::Request<Vec<u8>>,
+) -> tauri::http::Response<Vec<u8>> {
+    let uri = req.uri();
+    let (ext_id, rel_path) = match uri.host() {
+        Some(host) if host != "localhost" && !host.is_empty() => {
+            (host, uri.path().trim_start_matches('/'))
+        }
+        _ => {
+            let trimmed = uri.path().trim_start_matches('/');
+            let mut parts = trimmed.splitn(2, '/');
+            let ext = parts.next().unwrap_or("");
+            let path = parts.next().unwrap_or("");
+            (ext, path)
+        }
+    };
+
+    let root = match extensions_root(app) {
+        Ok(r) => r,
+        Err(e) => {
+            return tauri::http::Response::builder()
+                .status(500)
+                .header("Content-Type", "text/plain")
+                .body(e.into_bytes())
+                .unwrap();
+        }
+    };
+
+    let file = match extension_file_path(&root, ext_id, rel_path) {
+        Ok(f) => f,
+        Err(e) => {
+            return tauri::http::Response::builder()
+                .status(404)
+                .header("Content-Type", "text/plain")
+                .body(e.into_bytes())
+                .unwrap();
+        }
+    };
+
+    let bytes = match fs::read(&file) {
+        Ok(b) => b,
+        Err(e) => {
+            return tauri::http::Response::builder()
+                .status(500)
+                .header("Content-Type", "text/plain")
+                .body(e.to_string().into_bytes())
+                .unwrap();
+        }
+    };
+
+    let mime = guess_mime(&file);
+    tauri::http::Response::builder()
+        .header("Content-Type", mime)
+        .header("Access-Control-Allow-Origin", "*")
+        .body(bytes)
+        .unwrap()
 }
 
 #[tauri::command]
@@ -593,6 +706,31 @@ mod tests {
         let parsed = super::parse_contributes(&value);
         assert_eq!(parsed.commands[0].runs.as_deref(), Some("open-folder"));
         assert_eq!(parsed.commands[1].runs, None);
+    }
+
+    #[test]
+    fn reads_webview_contributions() {
+        let value = serde_json::json!({
+            "contributes": {
+                "webviews": [
+                    { "id": "board", "title": "Board", "entry": "views/board.html" },
+                    { "id": "untitled", "entry": "views/u.html" },
+                    { "id": "broken", "title": "No entry" }
+                ]
+            }
+        });
+        let parsed = super::parse_contributes(&value);
+        assert_eq!(parsed.webviews.len(), 2);
+        assert_eq!(parsed.webviews[0].entry, "views/board.html");
+        assert_eq!(parsed.webviews[1].title, "untitled");
+    }
+
+    #[test]
+    fn test_guess_mime() {
+        use std::path::Path;
+        assert_eq!(super::guess_mime(Path::new("index.html")), "text/html; charset=utf-8");
+        assert_eq!(super::guess_mime(Path::new("app.js")), "application/javascript; charset=utf-8");
+        assert_eq!(super::guess_mime(Path::new("style.css")), "text/css; charset=utf-8");
     }
 
     #[test]

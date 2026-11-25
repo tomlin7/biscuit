@@ -6,8 +6,8 @@ mod fsops;
 
 use debug::{debug_launch, debug_py_command, debug_py_start, debug_stop, DebugState};
 use extensions::{
-    install_local_extension, install_sample_extension, list_extensions, read_extension_file,
-    scaffold_extension, set_extension_enabled,
+    handle_t3dext, install_local_extension, install_sample_extension, list_extensions,
+    read_extension_file, scaffold_extension, set_extension_enabled,
 };
 use fsops::{fs_create_file, fs_mkdir, fs_remove, fs_rename};
 use git::{
@@ -25,6 +25,7 @@ fn quit_app(app: tauri::AppHandle) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .register_uri_scheme_protocol("t3dext", |ctx, req| handle_t3dext(ctx.app_handle(), req))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())

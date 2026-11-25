@@ -25,13 +25,28 @@ export function basename(path: string): string {
   return parts[parts.length - 1] ?? path;
 }
 
-/** Synthetic tab with no file on disk: untitled buffers and game tabs. */
+/** Synthetic tab with no file on disk: untitled buffers, game tabs, and webviews. */
 export function isVirtualPath(path: string): boolean {
-  return path.startsWith("untitled:") || isGamePath(path);
+  return path.startsWith("untitled:") || isGamePath(path) || isWebviewPath(path);
 }
 
 export function isGamePath(path: string): boolean {
   return path.startsWith("game:");
+}
+
+export function isWebviewPath(path: string): boolean {
+  return path.startsWith("extview:");
+}
+
+export function parseWebviewPath(path: string): { extensionId: string; viewId: string } | null {
+  if (!isWebviewPath(path)) return null;
+  const rest = path.slice("extview:".length);
+  const slash = rest.indexOf("/");
+  if (slash < 0) return null;
+  return {
+    extensionId: rest.slice(0, slash),
+    viewId: rest.slice(slash + 1),
+  };
 }
 
 export function parentPath(path: string): string | null {

@@ -13,6 +13,13 @@ export type ExtraLanguage = {
   extensions: string[];
 };
 
+export type ExtraWebview = {
+  extensionId: string;
+  id: string;
+  title: string;
+  entry: string;
+};
+
 let languages: ExtraLanguage[] = [];
 
 const registeredLanguages = new Set<string>();
@@ -51,9 +58,11 @@ export function extraLanguageFor(path: string): string | null {
 export function collectContributions(extensions: ExtensionManifest[]): {
   themes: ExtraTheme[];
   languages: ExtraLanguage[];
+  webviews: ExtraWebview[];
 } {
   const themes: ExtraTheme[] = [];
   const nextLanguages: ExtraLanguage[] = [];
+  const webviews: ExtraWebview[] = [];
   for (const ext of extensions) {
     if (!ext.enabled) continue;
     for (const theme of ext.contributes?.themes ?? []) {
@@ -77,6 +86,15 @@ export function collectContributions(extensions: ExtensionManifest[]): {
         extensions: language.extensions ?? [],
       });
     }
+    for (const webview of ext.contributes?.webviews ?? []) {
+      if (!webview.id) continue;
+      webviews.push({
+        extensionId: ext.id,
+        id: webview.id,
+        title: webview.title || webview.id,
+        entry: webview.entry,
+      });
+    }
   }
-  return { themes, languages: nextLanguages };
+  return { themes, languages: nextLanguages, webviews };
 }

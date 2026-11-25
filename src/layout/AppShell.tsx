@@ -99,6 +99,7 @@ function ShellChrome() {
     openDroppedPaths,
     openUntitled,
     openGame: openGameTab,
+    openWebview: openWebviewTab,
     openFileAt,
     reopenClosed,
     document,
@@ -572,9 +573,19 @@ function ShellChrome() {
           },
         });
       }
+      for (const webview of ext.contributes?.webviews ?? []) {
+        cmds.push({
+          id: `t3d.extview.${ext.id}.${webview.id}`,
+          title: webview.title,
+          category: ext.name,
+          run: () => {
+            openWebviewTab(ext.id, webview.id, webview.title);
+          },
+        });
+      }
     }
     return cmds;
-  }, [extensions, notify]);
+  }, [extensions, notify, openWebviewTab]);
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -1544,6 +1555,9 @@ function ShellChrome() {
       openGame: (id) => {
         openGameTab(id, findGame(id)?.title ?? id);
       },
+      openWebview: (extId, viewId, title) => {
+        openWebviewTab(extId, viewId, title);
+      },
       pickGame: () => {
         setRecentCommands([]);
         setSymbolCommands(
@@ -2334,6 +2348,7 @@ function ShellChrome() {
       debugSessions,
       restoreRecentSession,
       openGameTab,
+      openWebviewTab,
       startDebugSession,
       stopDebugSession,
       stepDebugPython,
