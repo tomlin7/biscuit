@@ -42,7 +42,7 @@ import {
 } from "../scm/githubRemote";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isVirtualPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
-import { findGame } from "../games/registry";
+import { findGame, GAMES } from "../games/registry";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
@@ -1512,6 +1512,19 @@ function ShellChrome() {
       },
       openGame: (id) => {
         openGameTab(id, findGame(id)?.title ?? id);
+      },
+      pickGame: () => {
+        setRecentCommands([]);
+        setSymbolCommands(
+          GAMES.map((game) => ({
+            id: `gamePick:${game.id}`,
+            title: `Game: ${game.title}`,
+            category: "Games",
+            run: () => openGameTab(game.id, game.title),
+          })),
+        );
+        setPaletteSeed("Game:");
+        setPaletteOpen(true);
       },
       copyUnreadNotificationCount: () => {
         void navigator.clipboard.writeText(String(notificationUnread));

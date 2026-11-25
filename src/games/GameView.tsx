@@ -1,6 +1,5 @@
-import { Gamepad2 } from "lucide-react";
-import { EmptyState } from "../ui/EmptyState";
 import { findGame } from "./registry";
+import { Whoops } from "./Whoops";
 import "./Game.css";
 
 type Props = {
@@ -8,14 +7,10 @@ type Props = {
 };
 
 export function GameView({ path }: Props) {
-  const game = findGame(path.slice("game:".length));
-  if (!game) {
-    return <EmptyState icon={Gamepad2} title="Unknown game" />;
-  }
-  const Game = game.component;
+  const id = path.slice("game:".length);
+  const game = findGame(id);
+  const Game = game?.component;
   return (
-    <div className="game-view">
-      <Game />
-    </div>
+    <div className="game-view">{Game ? <Game /> : <Whoops requested={id} />}</div>
   );
 }

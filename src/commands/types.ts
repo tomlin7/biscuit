@@ -239,6 +239,7 @@ export type CommandContext = {
   closeWindow: () => void;
   quit: () => void;
   openGame: (id: string) => void;
+  pickGame: () => void;
   copyUnreadNotificationCount: () => void;
   startDebugging: () => void;
   stopDebugging: () => void;

@@ -1851,6 +1851,12 @@ export const COMMANDS: Command[] = [
     category: "GitHub",
     run: (ctx) => ctx.openRepositoryOnGitHub(),
   },
+  {
+    id: "t3d.games.pick",
+    title: "Play Game…",
+    category: "Games",
+    run: (ctx) => ctx.pickGame(),
+  },
   ...GAMES.map(
     (game): Command => ({
       id: `t3d.games.play.${game.id}`,
