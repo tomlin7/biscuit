@@ -18,9 +18,9 @@ Official multi-platform binaries are built on every release tag using GitHub Act
 | **macOS** | `.dmg` | Universal binary (Apple Silicon and Intel) |
 | **Linux** | `.AppImage` / `.deb` | Standalone AppImage and Debian package |
 
-Download the latest version (`v0.467.0`) from the [GitHub Releases](https://github.com/tomlin7/t3d/releases) page.
+Download the latest version (`v1.212.0`) from the [GitHub Releases](https://github.com/tomlin7/t3d/releases) page.
 
-> Pre-1.0 release policy: Version `1.0.0` will be published when the feature milestone roadmap is declared complete. Current builds track stable pre-1.0 releases.
+> Release versioning: Following the 0.255 milestone, versions transitioned to 1.x (`1.212.0` = milestone 467) to comply with Windows MSI installer minor version limits (minor &le; 255). Stable 2.0 will ship when the full roadmap is complete.
 
 ---
 

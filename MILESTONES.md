@@ -473,8 +473,9 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.465.0** | Type Hierarchy view for JS/TS | shipped |
 | **0.466.0** | Inlay hints for JS/TS parameter names and inferred types | shipped |
 | **0.467.0** | Code Lens reference counts above JS/TS symbols | shipped |
-| **1.0.0** | Stable product | owner decision only |
+| **1.212.0** | Version rollover for Windows MSI limit (minor <= 255); CI/CD release pipeline | shipped |
+| **2.0.0** | Stable product | owner decision only |
 
 ## Current target
 
-Ship the next workspace milestone on `0.x`. **1.0.0** stays an owner decision.
+Ship the next workspace milestone on `1.x`. **2.0.0** stays an owner decision.
