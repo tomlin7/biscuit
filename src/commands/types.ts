@@ -192,6 +192,7 @@ export type CommandContext = {
   notifyProblemsCount: () => void;
   refreshDiagnostics: () => void;
   copyGitBranchSync: () => void;
+  resetAllLayoutSizes: () => void;
 };
 
 export type Command = {

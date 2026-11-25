@@ -1154,4 +1154,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.copyGitBranchSync(),
   },
+  {
+    id: "workbench.action.resetAllLayoutSizes",
+    title: "Reset All Layout Sizes",
+    category: "View",
+    run: (ctx) => ctx.resetAllLayoutSizes(),
+  },
 ];

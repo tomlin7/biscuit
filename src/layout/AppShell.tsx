@@ -1144,6 +1144,11 @@ function ShellChrome() {
             : `${gitBranch} +${ahead}/-${behind}`;
         void navigator.clipboard.writeText(sync);
       },
+      resetAllLayoutSizes: () => {
+        setSidebarWidth(280);
+        setAiWidth(340);
+        setBottomHeight(220);
+      },
     }),
     [
       openFolder,
