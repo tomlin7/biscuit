@@ -369,7 +369,7 @@ pub fn git_can_amend(cwd: String) -> Result<bool, String> {
         return Ok(true);
     };
     if !out.status.success() {
-        // No upstream configured — safe to offer amend.
+        // No upstream configured ΓÇö safe to offer amend.
         return Ok(true);
     }
     let status = Command::new("git")
@@ -387,7 +387,7 @@ pub fn git_can_amend(cwd: String) -> Result<bool, String> {
         return Ok(true);
     }
     if first.contains("...") && !first.contains("[") {
-        // In sync with upstream — amending would rewrite published tip.
+        // In sync with upstream ΓÇö amending would rewrite published tip.
         return Ok(false);
     }
     Ok(true)

@@ -41,12 +41,21 @@ export type AppSettings = {
   editor: EditorSettings;
   /** Win11 acrylic on shell crease (title/status/gutters). Islands stay opaque. */
   chromeAcrylic: boolean;
+  /** Experimental vim-mode scaffold (status badge + block caret). */
+  vimMode: boolean;
+  /** Streamer-style keypress HUD in the status bar. */
+  keypressDisplay: boolean;
+  /** Preferred charset label shown in the status bar / encoding picker. */
+  preferredEncoding: string;
 };
 
 type SettingsState = {
   settings: AppSettings;
   updateEditor: (patch: Partial<EditorSettings>) => void;
   updateChromeAcrylic: (on: boolean) => void;
+  updateApp: (
+    patch: Partial<Pick<AppSettings, "vimMode" | "keypressDisplay" | "preferredEncoding">>,
+  ) => void;
   reset: () => void;
 };
 
@@ -72,6 +81,9 @@ const DEFAULTS: AppSettings = {
     terminalFontSize: 13,
   },
   chromeAcrylic: true,
+  vimMode: false,
+  keypressDisplay: false,
+  preferredEncoding: "UTF-8",
 };
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -89,6 +101,12 @@ function load(): AppSettings {
         typeof parsed.chromeAcrylic === "boolean"
           ? parsed.chromeAcrylic
           : DEFAULTS.chromeAcrylic,
+      vimMode: parsed.vimMode === true,
+      keypressDisplay: parsed.keypressDisplay === true,
+      preferredEncoding:
+        typeof parsed.preferredEncoding === "string" && parsed.preferredEncoding.trim()
+          ? parsed.preferredEncoding.trim().toUpperCase()
+          : DEFAULTS.preferredEncoding,
     };
   } catch {
     return DEFAULTS;
@@ -126,11 +144,22 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setSettings((s) => ({ ...s, chromeAcrylic: on }));
   }, []);
 
+  const updateApp = useCallback(
+    (
+      patch: Partial<
+        Pick<AppSettings, "vimMode" | "keypressDisplay" | "preferredEncoding">
+      >,
+    ) => {
+      setSettings((s) => ({ ...s, ...patch }));
+    },
+    [],
+  );
+
   const reset = useCallback(() => setSettings(DEFAULTS), []);
 
   const value = useMemo(
-    () => ({ settings, updateEditor, updateChromeAcrylic, reset }),
-    [settings, updateEditor, updateChromeAcrylic, reset],
+    () => ({ settings, updateEditor, updateChromeAcrylic, updateApp, reset }),
+    [settings, updateEditor, updateChromeAcrylic, updateApp, reset],
   );
 
   return (

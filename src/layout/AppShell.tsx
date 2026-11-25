@@ -33,6 +33,7 @@ import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
+
 import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -107,7 +108,7 @@ function ShellChrome() {
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
-  const { settings, updateEditor, updateChromeAcrylic, reset: resetEditorSettings } =
+  const { settings, updateEditor, updateChromeAcrylic, updateApp, reset: resetEditorSettings } =
     useSettings();
 
   useEffect(() => {
@@ -396,6 +397,7 @@ function ShellChrome() {
   }, [openKeybindings]);
 
   const closePalette = useCallback(() => setPaletteOpen(false), []);
+
   const [settingsCategory, setSettingsCategory] = useState<"appearance" | "editor" | "ai">("editor");
   const openSettings = useCallback((tab?: "appearance" | "editor" | "ai") => {
     if (tab) setSettingsCategory(tab);
@@ -1751,6 +1753,17 @@ function ShellChrome() {
             : `Cleared for ${languageLabel(language)}`,
         );
       },
+      toggleVimMode: () => {
+        const next = !settings.vimMode;
+        updateApp({ vimMode: next });
+        if (next) updateEditor({ cursorStyle: "block" });
+        notify(
+          "Vim Mode",
+          next
+            ? "Experimental scaffold on (block caret + status badge)."
+            : "Off",
+        );
+      },
     }),
     [
       openFolder,
@@ -1904,6 +1917,9 @@ function ShellChrome() {
       activateTab,
       selectionText,
       toggleAi,
+      updateApp,
+      settings.vimMode,
+      settings.keypressDisplay,
     ],
   );
 

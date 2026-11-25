@@ -60,6 +60,7 @@ export function StatusBar({
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [encoding, setEncoding] = useState("UTF-8");
+  const [lastKeyChord, setLastKeyChord] = useState("");
   const configMenuRef = useRef<HTMLDivElement>(null);
   const notifyMenuRef = useRef<HTMLDivElement>(null);
 
@@ -68,19 +69,45 @@ export function StatusBar({
 
   useEffect(() => {
     if (!document) {
-      setEncoding("UTF-8");
+      setEncoding(settings.preferredEncoding || "UTF-8");
       return;
     }
     let cancelled = false;
     void editorConfigFor(document.path, rootPath).then((config) => {
       if (cancelled) return;
       const charset = config.charset?.trim();
-      setEncoding(charset ? charset.toUpperCase() : "UTF-8");
+      setEncoding(
+        charset
+          ? charset.toUpperCase()
+          : settings.preferredEncoding || "UTF-8",
+      );
     });
     return () => {
       cancelled = true;
     };
-  }, [document?.path, rootPath]);
+  }, [document?.path, rootPath, settings.preferredEncoding]);
+
+  useEffect(() => {
+    if (!settings.keypressDisplay) {
+      setLastKeyChord("");
+      return;
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      const parts: string[] = [];
+      if (event.ctrlKey) parts.push("Ctrl");
+      if (event.altKey) parts.push("Alt");
+      if (event.shiftKey && event.key.length > 1) parts.push("Shift");
+      if (event.metaKey) parts.push("Meta");
+      const key =
+        event.key === " " ? "Space" : event.key.length === 1 ? event.key.toUpperCase() : event.key;
+      if (!["Control", "Alt", "Shift", "Meta"].includes(event.key)) parts.push(key);
+      if (parts.length === 0) return;
+      setLastKeyChord(parts.join("+"));
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [settings.keypressDisplay]);
 
   // Click outside listener for popovers
   useEffect(() => {
@@ -201,6 +228,22 @@ export function StatusBar({
           >
             Spaces: {settings.editor.tabSize}
           </button>
+        ) : null}
+
+        {settings.vimMode ? (
+          <span className="status-bar__item" title="Vim mode scaffold (experimental)">
+            VIM
+          </span>
+        ) : null}
+
+        {settings.keypressDisplay ? (
+          <span
+            className="status-bar__item"
+            title="Keypress display"
+            aria-live="polite"
+          >
+            {lastKeyChord || "…"}
+          </span>
         ) : null}
 
         {document ? (

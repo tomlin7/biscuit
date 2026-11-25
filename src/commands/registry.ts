@@ -1678,4 +1678,15 @@ export const COMMANDS: Command[] = [
     category: "Run",
     run: (ctx) => ctx.configureRunCommand(),
   },
+  {
+    id: "editor.action.toggleVimMode",
+    title: "Toggle Vim Mode",
+    category: "View",
+    run: (ctx) => ctx.toggleVimMode(),
+  },
+
+
+
+
+
 ];
