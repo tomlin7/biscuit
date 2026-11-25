@@ -95,6 +95,13 @@
   font-size: 11px;
 }
 
+.ai-panel__bubble {
+  max-width: 100%;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
 .ai-panel__bubble-text {
   white-space: pre-wrap;
 }
