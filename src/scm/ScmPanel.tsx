@@ -338,6 +338,14 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={acting || !message.trim()}
+            onClick={() => setMessage("")}
+          >
+            Clear message
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             disabled={acting || !summary || summary.entries.length === 0}
             onClick={() => {
               if (!summary) return;
