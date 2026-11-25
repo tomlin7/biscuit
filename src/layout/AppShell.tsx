@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import "./AppShell.css";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
@@ -135,6 +136,21 @@ function ShellChrome() {
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
+  const cloneRepository = useCallback(async () => {
+    const url = window.prompt("Repository URL");
+    if (!url?.trim()) return;
+    const selected = await openDialog({
+      directory: true,
+      multiple: false,
+      title: "Clone into folder",
+    });
+    if (selected === null) return;
+    const parent = Array.isArray(selected) ? selected[0] : selected;
+    if (!parent) return;
+    const dest = await invoke<string>("git_clone", { url: url.trim(), parent });
+    await openFolderAt(dest);
+  }, [openFolderAt]);
+
   const openSearch = useCallback(() => {
     setSidebarMode("search");
     setSidebarOpen(true);
@@ -177,6 +193,7 @@ function ShellChrome() {
   const commandContext = useMemo<CommandContext>(
     () => ({
       openFolder,
+      cloneRepository,
       openFolderAt,
       openFile,
       reopenClosed,
@@ -203,6 +220,7 @@ function ShellChrome() {
     }),
     [
       openFolder,
+      cloneRepository,
       openFolderAt,
       openFile,
       reopenClosed,

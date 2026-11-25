@@ -174,6 +174,42 @@ pub fn git_diff(cwd: String, path: String, staged: bool) -> Result<String, Strin
 }
 
 #[tauri::command]
+pub fn git_clone(url: String, parent: String) -> Result<String, String> {
+    let url = url.trim();
+    if url.is_empty()
+        || url.starts_with('-')
+        || url.contains('\n')
+        || url.contains('\0')
+        || url.contains(' ')
+    {
+        return Err("invalid repository URL".into());
+    }
+    let leaf = url
+        .trim_end_matches('/')
+        .rsplit(['/', ':'])
+        .next()
+        .unwrap_or("repo");
+    let name = leaf.strip_suffix(".git").unwrap_or(leaf);
+    if name.is_empty() || name.contains("..") || name.contains('\\') || name.contains('/') {
+        return Err("cannot derive a folder name from that URL".into());
+    }
+    let dest = std::path::Path::new(&parent).join(name);
+    if dest.exists() {
+        return Err("destination already exists".into());
+    }
+    run_git(
+        &parent,
+        &[
+            "clone".into(),
+            "--".into(),
+            url.to_string(),
+            dest.display().to_string(),
+        ],
+    )?;
+    Ok(dest.display().to_string())
+}
+
+#[tauri::command]
 pub fn git_commit(cwd: String, message: String) -> Result<(), String> {
     let message = message.trim();
     if message.is_empty() {

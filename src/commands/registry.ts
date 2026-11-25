@@ -16,6 +16,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.reopenClosed(),
   },
   {
+    id: "git.clone",
+    title: "Clone Repository…",
+    category: "Git",
+    run: (ctx) => void ctx.cloneRepository(),
+  },
+  {
     id: "workbench.action.files.openFolder",
     title: "Open Folder…",
     category: "File",
