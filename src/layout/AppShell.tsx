@@ -21,6 +21,7 @@ import { DebugProvider } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
 import { NotificationsProvider, useNotifications } from "../notifications/NotificationsContext";
+import { X } from "lucide-react";
 import { AutoSave } from "../workspace/AutoSave";
 import { CommandPalette } from "../commands/CommandPalette";
 import { COMMANDS } from "../commands/registry";
@@ -121,6 +122,21 @@ function ShellChrome() {
     items: notificationItems,
     unread: notificationUnread,
   } = useNotifications();
+  const [toastIds, setToastIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (notificationItems.length === 0) return;
+    const latest = notificationItems[0];
+    if (!latest) return;
+    const isRecent = Date.now() - latest.createdAt < 3000;
+    if (isRecent) {
+      setToastIds((prev) => (prev.includes(latest.id) ? prev : [latest.id, ...prev].slice(0, 3)));
+      const timer = window.setTimeout(() => {
+        setToastIds((prev) => prev.filter((id) => id !== latest.id));
+      }, 5000);
+      return () => window.clearTimeout(timer);
+    }
+  }, [notificationItems]);
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -1796,6 +1812,43 @@ function ShellChrome() {
         onClose={closeSettings}
         initialTab={settingsCategory}
       />
+      {toastIds.length > 0 && (
+        <div className="app-shell__toasts" role="region" aria-label="Notifications">
+          {notificationItems
+            .filter((item) => toastIds.includes(item.id))
+            .map((item) => (
+              <div key={item.id} className="app-shell__toast island">
+                <div className="app-shell__toast-content">
+                  <strong className="app-shell__toast-title">{item.title}</strong>
+                  {item.detail && <p className="app-shell__toast-detail">{item.detail}</p>}
+                  {item.action && (
+                    <button
+                      type="button"
+                      className="app-shell__toast-action"
+                      onClick={() => {
+                        setToastIds((prev) => prev.filter((id) => id !== item.id));
+                        item.action?.run();
+                      }}
+                    >
+                      {item.action.label}
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  className="app-shell__toast-close"
+                  aria-label="Dismiss notification"
+                  onClick={() => {
+                    setToastIds((prev) => prev.filter((id) => id !== item.id));
+                    dismissNotification(item.id);
+                  }}
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }

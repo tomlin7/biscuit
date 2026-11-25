@@ -1,12 +1,21 @@
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
-import { ChevronRight } from "lucide-react";
+import {
+  ChevronRight,
+  ChevronsDownUp,
+  FilePlus,
+  FolderInput,
+  FolderOpen,
+  FolderPlus,
+  RefreshCw,
+} from "lucide-react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
-import { parentPath, relativeToRoot } from "./path";
+import { basename, parentPath, relativeToRoot } from "./path";
 import { rootForPath } from "../ai/roots";
 import { requestOpenInSplit } from "../layout/splitBus";
 import { FileIcon } from "../ui/FileIcon";
+import { IconButton } from "../ui/IconButton";
 import "./FileTree.css";
 
 type MenuState = {
@@ -270,6 +279,8 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
     createEntry,
     renameEntry,
     deleteEntry,
+    reloadDirectory,
+    collapseExplorerUnder,
   } = useWorkspace();
   const [menu, setMenu] = useState<MenuState | null>(null);
   const filtered = useMemo(
@@ -292,9 +303,10 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
   if (!rootPath) {
     return (
       <div className="file-tree file-tree--empty">
-        <p className="file-tree__hint">No folder open.</p>
+        <FolderOpen size={36} className="file-tree__empty-icon" />
+        <p className="file-tree__hint">No folder open in workspace.</p>
         <button type="button" className="file-tree__cta" onClick={() => void openFolder()}>
-          Open folder
+          Open Folder
         </button>
       </div>
     );
@@ -303,27 +315,61 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
   return (
     <div className="file-tree">
       <div className="file-tree__toolbar">
-        <button type="button" className="file-tree__cta" onClick={() => void addFolderRoot()}>
-          Add Folder
-        </button>
+        <span className="file-tree__title" title={rootPath}>
+          {basename(rootPath)}
+        </span>
+        <div className="file-tree__actions">
+          <IconButton
+            icon={FilePlus}
+            label="New file"
+            size={13}
+            onClick={() => void createEntry(rootPath, "file")}
+          />
+          <IconButton
+            icon={FolderPlus}
+            label="New folder"
+            size={13}
+            onClick={() => void createEntry(rootPath, "directory")}
+          />
+          <IconButton
+            icon={RefreshCw}
+            label="Refresh explorer"
+            size={13}
+            onClick={() => void reloadDirectory(rootPath)}
+          />
+          <IconButton
+            icon={ChevronsDownUp}
+            label="Collapse all folders"
+            size={13}
+            onClick={() => collapseExplorerUnder(rootPath)}
+          />
+          <IconButton
+            icon={FolderInput}
+            label="Add folder to workspace"
+            size={13}
+            onClick={() => void addFolderRoot()}
+          />
+        </div>
       </div>
-      {treeError ? <p className="file-tree__error">{treeError}</p> : null}
-      {busy ? <p className="file-tree__status">Working…</p> : null}
-      {filtered.length === 0 && !busy ? (
-        <p className="file-tree__hint">{filter ? "No matches." : "Folder is empty."}</p>
-      ) : (
-        <TreeRows
-          nodes={filtered}
-          depth={0}
-          forceExpand={forceExpand}
-          workspaceRoots={roots.length > 0 ? roots : rootPath ? [rootPath] : []}
-          onMenu={(event, node) => {
-            event.preventDefault();
-            event.stopPropagation();
-            setMenu({ x: event.clientX, y: event.clientY, path: node.path, kind: node.kind });
-          }}
-        />
-      )}
+      <div className="file-tree__body">
+        {treeError ? <p className="file-tree__error">{treeError}</p> : null}
+        {busy ? <p className="file-tree__status">Working…</p> : null}
+        {filtered.length === 0 && !busy ? (
+          <p className="file-tree__hint">{filter ? "No matches." : "Folder is empty."}</p>
+        ) : (
+          <TreeRows
+            nodes={filtered}
+            depth={0}
+            forceExpand={forceExpand}
+            workspaceRoots={roots.length > 0 ? roots : rootPath ? [rootPath] : []}
+            onMenu={(event, node) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setMenu({ x: event.clientX, y: event.clientY, path: node.path, kind: node.kind });
+            }}
+          />
+        )}
+      </div>
       {menu && rootPath ? (
         <div
           className="file-tree__menu-backdrop"

@@ -1,5 +1,19 @@
+import { useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ChevronRight,
+  Play,
+  RotateCcw,
+  Square,
+  StepForward,
+  Trash2,
+} from "lucide-react";
 import { useDebug } from "./DebugContext";
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { basename } from "../workspace/path";
+import { IconButton } from "../ui/IconButton";
 import "./DebugPanel.css";
 
 export function DebugPanel() {
@@ -16,155 +30,272 @@ export function DebugPanel() {
   } = useDebug();
   const { activePath, openFileAt } = useWorkspace();
 
+  const [openSections, setOpenSections] = useState({
+    sessions: true,
+    stack: true,
+    variables: true,
+    breakpoints: true,
+  });
+
+  const toggleSection = (section: keyof typeof openSections) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const isStopped = pythonStop?.event === "stopped";
+  const activeSession = sessions.find((s) => s.running) ?? sessions[0];
+
   return (
     <div className="debug-panel">
-      <div className="debug-panel__toolbar">
+      <div className="debug-panel__header-bar">
         <button
           type="button"
+          className="debug-panel__start-btn"
           disabled={!activePath}
           onClick={() => {
             if (activePath) void startSession(activePath);
           }}
+          title={activePath ? `Debug ${basename(activePath)}` : "Open a file to start debugging"}
         >
-          Run / Debug current file
+          <Play size={13} className="debug-panel__play-icon" />
+          <span>{activePath ? `Debug ${basename(activePath)}` : "Debug Current File"}</span>
         </button>
       </div>
 
-      <section className="debug-panel__section">
-        <h3>Sessions</h3>
-        {sessions.length === 0 ? (
-          <p className="debug-panel__hint">No debug sessions.</p>
-        ) : (
-          <ul>
-            {sessions.map((session) => (
-              <li key={session.id}>
-                <span>
-                  {session.running ? "●" : "○"} {session.label}
-                </span>
-                {session.running ? (
-                  <button
-                    type="button"
-                    onClick={() => void stopSession(session.id)}
-                  >
-                    Stop
-                  </button>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {pythonStop?.event === "stopped" ? (
-        <div className="debug-panel__toolbar">
-          {(
-            [
-              ["continue", "Continue"],
-              ["next", "Step over"],
-              ["step", "Step into"],
-              ["return", "Step out"],
-            ] as const
-          ).map(([command, label]) => (
-            <button
-              key={command}
-              type="button"
-              onClick={() => {
-                void stepPython(command).then((next) => {
-                  const frame = next?.frames[0];
-                  if (frame) void openFileAt(frame.file, frame.line, 1);
-                });
-              }}
-            >
-              {label}
-            </button>
-          ))}
-          <button
-            type="button"
+      {isStopped && (
+        <div className="debug-panel__control-toolbar" role="toolbar" aria-label="Debug controls">
+          <IconButton
+            icon={Play}
+            label="Continue (F5)"
+            size={14}
+            onClick={() => {
+              void stepPython("continue").then((next) => {
+                const frame = next?.frames[0];
+                if (frame) void openFileAt(frame.file, frame.line, 1);
+              });
+            }}
+          />
+          <IconButton
+            icon={StepForward}
+            label="Step Over (F10)"
+            size={14}
+            onClick={() => {
+              void stepPython("next").then((next) => {
+                const frame = next?.frames[0];
+                if (frame) void openFileAt(frame.file, frame.line, 1);
+              });
+            }}
+          />
+          <IconButton
+            icon={ArrowDown}
+            label="Step Into (F11)"
+            size={14}
+            onClick={() => {
+              void stepPython("step").then((next) => {
+                const frame = next?.frames[0];
+                if (frame) void openFileAt(frame.file, frame.line, 1);
+              });
+            }}
+          />
+          <IconButton
+            icon={ArrowUp}
+            label="Step Out (Shift+F11)"
+            size={14}
+            onClick={() => {
+              void stepPython("return").then((next) => {
+                const frame = next?.frames[0];
+                if (frame) void openFileAt(frame.file, frame.line, 1);
+              });
+            }}
+          />
+          <IconButton
+            icon={RotateCcw}
+            label="Restart"
+            size={14}
             onClick={() => {
               if (!activePath) return;
               void stopSession(pythonStop.id).then(() => startSession(activePath));
             }}
-          >
-            Restart
-          </button>
+          />
+          <IconButton
+            icon={Square}
+            label="Stop"
+            size={14}
+            className="debug-panel__stop-btn"
+            onClick={() => {
+              if (activeSession) void stopSession(activeSession.id);
+            }}
+          />
         </div>
-      ) : null}
-      {pythonError ? <p className="debug-panel__hint">{pythonError}</p> : null}
-      {pythonStop ? (
-        <>
-          <section className="debug-panel__section">
-            <h3>Call stack</h3>
-            {pythonStop.frames.length === 0 ? (
-              <p className="debug-panel__hint">
-                {pythonStop.event === "exited" ? "The program finished." : "No frames."}
-              </p>
-            ) : (
-              <ul>
-                {pythonStop.frames.map((frame) => (
-                  <li key={`${frame.file}:${frame.line}:${frame.name}`}>
-                    <button
-                      type="button"
-                      className="debug-panel__link"
-                      onClick={() => void openFileAt(frame.file, frame.line, 1)}
-                    >
-                      {frame.name} {frame.file.split(/[/\\]/).pop()}:{frame.line}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-          <section className="debug-panel__section">
-            <h3>Variables</h3>
-            {Object.keys(pythonStop.locals).length === 0 ? (
-              <p className="debug-panel__hint">No locals in the top frame.</p>
-            ) : (
-              <ul>
-                {Object.entries(pythonStop.locals).map(([name, value]) => (
-                  <li key={name}>
-                    <span>
-                      {name} = {value}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </>
-      ) : null}
+      )}
 
-      <section className="debug-panel__section">
-        <h3>Breakpoints</h3>
-        {breakpoints.length === 0 ? (
-          <p className="debug-panel__hint">
-            Click a line gutter in the editor to add a breakpoint.
-          </p>
-        ) : (
-          <ul>
-            {breakpoints.map((bp) => (
-              <li key={bp.id}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={bp.enabled}
-                    onChange={() => toggleBreakpoint(bp.id)}
-                  />
-                  <button
-                    type="button"
-                    className="debug-panel__link"
-                    onClick={() => void openFileAt(bp.path, bp.line, 1)}
-                  >
-                    {bp.path}:{bp.line}
-                  </button>
-                </label>
-                <button type="button" onClick={() => removeBreakpoint(bp.id)}>
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
+      {pythonError && <p className="debug-panel__error">{pythonError}</p>}
+
+      <div className="debug-panel__body">
+        {/* Sessions section */}
+        <section className="debug-panel__section">
+          <button
+            type="button"
+            className="debug-panel__section-header"
+            onClick={() => toggleSection("sessions")}
+          >
+            {openSections.sessions ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            <span>Sessions</span>
+            <span className="debug-panel__count">{sessions.length}</span>
+          </button>
+          {openSections.sessions && (
+            <div className="debug-panel__section-content">
+              {sessions.length === 0 ? (
+                <p className="debug-panel__hint">No active debug sessions.</p>
+              ) : (
+                <ul className="debug-panel__list">
+                  {sessions.map((session) => (
+                    <li key={session.id} className="debug-panel__session-row">
+                      <span
+                        className={`debug-panel__status-dot ${session.running ? "debug-panel__status-dot--running" : ""}`}
+                      />
+                      <span className="debug-panel__session-label">{session.label}</span>
+                      {session.running && (
+                        <IconButton
+                          icon={Square}
+                          label="Stop session"
+                          size={12}
+                          className="debug-panel__stop-btn"
+                          onClick={() => void stopSession(session.id)}
+                        />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Call Stack section */}
+        {pythonStop && (
+          <section className="debug-panel__section">
+            <button
+              type="button"
+              className="debug-panel__section-header"
+              onClick={() => toggleSection("stack")}
+            >
+              {openSections.stack ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              <span>Call Stack</span>
+              <span className="debug-panel__count">{pythonStop.frames.length}</span>
+            </button>
+            {openSections.stack && (
+              <div className="debug-panel__section-content">
+                {pythonStop.frames.length === 0 ? (
+                  <p className="debug-panel__hint">
+                    {pythonStop.event === "exited" ? "Program finished." : "No frames."}
+                  </p>
+                ) : (
+                  <ul className="debug-panel__list">
+                    {pythonStop.frames.map((frame, idx) => (
+                      <li key={`${frame.file}:${frame.line}:${frame.name}:${idx}`}>
+                        <button
+                          type="button"
+                          className="debug-panel__stack-row"
+                          onClick={() => void openFileAt(frame.file, frame.line, 1)}
+                        >
+                          <span className="debug-panel__frame-name">{frame.name}</span>
+                          <span className="debug-panel__frame-loc">
+                            {basename(frame.file)}:{frame.line}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </section>
         )}
-      </section>
+
+        {/* Variables section */}
+        {pythonStop && (
+          <section className="debug-panel__section">
+            <button
+              type="button"
+              className="debug-panel__section-header"
+              onClick={() => toggleSection("variables")}
+            >
+              {openSections.variables ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              <span>Variables</span>
+              <span className="debug-panel__count">
+                {Object.keys(pythonStop.locals).length}
+              </span>
+            </button>
+            {openSections.variables && (
+              <div className="debug-panel__section-content">
+                {Object.keys(pythonStop.locals).length === 0 ? (
+                  <p className="debug-panel__hint">No local variables.</p>
+                ) : (
+                  <ul className="debug-panel__list">
+                    {Object.entries(pythonStop.locals).map(([name, value]) => (
+                      <li key={name} className="debug-panel__var-row">
+                        <span className="debug-panel__var-name">{name}:</span>
+                        <span className="debug-panel__var-val">{String(value)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Breakpoints section */}
+        <section className="debug-panel__section">
+          <button
+            type="button"
+            className="debug-panel__section-header"
+            onClick={() => toggleSection("breakpoints")}
+          >
+            {openSections.breakpoints ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            <span>Breakpoints</span>
+            <span className="debug-panel__count">{breakpoints.length}</span>
+          </button>
+          {openSections.breakpoints && (
+            <div className="debug-panel__section-content">
+              {breakpoints.length === 0 ? (
+                <p className="debug-panel__hint">
+                  Click a line number gutter in the editor to set a breakpoint.
+                </p>
+              ) : (
+                <ul className="debug-panel__list">
+                  {breakpoints.map((bp) => (
+                    <li key={bp.id} className="debug-panel__bp-row">
+                      <label className="debug-panel__bp-toggle">
+                        <input
+                          type="checkbox"
+                          checked={bp.enabled}
+                          onChange={() => toggleBreakpoint(bp.id)}
+                        />
+                        <span className="debug-panel__bp-dot" />
+                      </label>
+                      <button
+                        type="button"
+                        className="debug-panel__bp-link"
+                        onClick={() => void openFileAt(bp.path, bp.line, 1)}
+                      >
+                        <span className="debug-panel__bp-name">{basename(bp.path)}</span>
+                        <span className="debug-panel__bp-loc">Ln {bp.line}</span>
+                      </button>
+                      <IconButton
+                        icon={Trash2}
+                        label="Remove breakpoint"
+                        size={12}
+                        onClick={() => removeBreakpoint(bp.id)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

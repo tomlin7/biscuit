@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import * as monaco from "monaco-editor";
 import { typescript } from "monaco-editor";
+import { Search, X } from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { scanOutline, type OutlineSymbol } from "./outlineScan";
 import "./OutlinePanel.css";
@@ -68,6 +69,33 @@ export async function symbolsForFile(
   return scanned;
 }
 
+function kindShort(kind: string): string {
+  switch (kind.toLowerCase()) {
+    case "function":
+      return "fn";
+    case "class":
+      return "cls";
+    case "interface":
+      return "int";
+    case "method":
+      return "m";
+    case "variable":
+    case "var":
+    case "let":
+    case "const":
+      return "var";
+    case "property":
+    case "prop":
+      return "prop";
+    case "enum":
+      return "enum";
+    case "type":
+      return "type";
+    default:
+      return kind.slice(0, 3);
+  }
+}
+
 export function OutlinePanel() {
   const { document, openFileAt } = useWorkspace();
   const fallback = useMemo(
@@ -75,6 +103,7 @@ export function OutlinePanel() {
     [document],
   );
   const [symbols, setSymbols] = useState<Symbol[]>(fallback);
+  const [filterQuery, setFilterQuery] = useState("");
 
   useEffect(() => {
     setSymbols(fallback);
@@ -95,35 +124,78 @@ export function OutlinePanel() {
     };
   }, [document, fallback]);
 
+  const filteredSymbols = useMemo(() => {
+    const q = filterQuery.trim().toLowerCase();
+    if (!q) return symbols;
+    return symbols.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.kind.toLowerCase().includes(q),
+    );
+  }, [symbols, filterQuery]);
+
   if (!document) {
     return (
       <div className="outline-panel outline-panel--empty">
-        <p className="outline-panel__hint">Open a file to see its outline.</p>
+        <p className="outline-panel__hint">Open a file to view its symbol outline.</p>
       </div>
     );
   }
 
   return (
     <div className="outline-panel">
-      {symbols.length === 0 ? (
-        <p className="outline-panel__hint">No symbols in this file.</p>
-      ) : (
-        <ul className="outline-panel__list">
-          {symbols.map((symbol) => (
-            <li key={`${symbol.line}-${symbol.kind}-${symbol.name}`}>
-              <button
-                type="button"
-                className="outline-panel__row"
-                style={{ paddingLeft: 8 + symbol.depth * 12 }}
-                onClick={() => void openFileAt(document.path, symbol.line, 1)}
-              >
-                <span className="outline-panel__kind">{symbol.kind}</span>
-                <span className="outline-panel__name">{symbol.name}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="outline-panel__toolbar">
+        <div className="outline-panel__search-wrap">
+          <Search size={13} className="outline-panel__search-icon" aria-hidden />
+          <input
+            className="outline-panel__search-input"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            placeholder="Filter symbols…"
+            aria-label="Filter symbols"
+          />
+          {filterQuery && (
+            <button
+              type="button"
+              className="outline-panel__search-clear"
+              onClick={() => setFilterQuery("")}
+              title="Clear filter"
+            >
+              <X size={12} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="outline-panel__body">
+        {symbols.length === 0 ? (
+          <p className="outline-panel__hint">No symbols found in this file.</p>
+        ) : filteredSymbols.length === 0 ? (
+          <p className="outline-panel__hint">No symbols match &ldquo;{filterQuery}&rdquo;.</p>
+        ) : (
+          <ul className="outline-panel__list">
+            {filteredSymbols.map((symbol) => {
+              const kind = symbol.kind.toLowerCase();
+              return (
+                <li key={`${symbol.line}-${symbol.kind}-${symbol.name}`}>
+                  <button
+                    type="button"
+                    className="outline-panel__row"
+                    style={{ paddingLeft: 8 + symbol.depth * 14 }}
+                    onClick={() => void openFileAt(document.path, symbol.line, 1)}
+                  >
+                    <span className={`outline-panel__kind outline-panel__kind--${kind}`}>
+                      {kindShort(symbol.kind)}
+                    </span>
+                    <span className="outline-panel__name">{symbol.name}</span>
+                    <span className="outline-panel__loc">:{symbol.line}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

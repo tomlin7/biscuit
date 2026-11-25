@@ -1,4 +1,4 @@
-import { Filter, Search } from "lucide-react";
+import { Filter, Search, X } from "lucide-react";
 import { FileTree } from "../workspace/FileTree";
 import { SearchPanel } from "../search/SearchPanel";
 import { ScmPanel } from "../scm/ScmPanel";
@@ -58,6 +58,14 @@ export function Sidebar({
             placeholder="Filter"
             aria-label="Filter files"
           />
+          {treeFilter ? (
+            <IconButton
+              icon={X}
+              label="Clear filter"
+              size={13}
+              onClick={() => onTreeFilter("")}
+            />
+          ) : null}
           <IconButton
             icon={Filter}
             label={hideDotfiles ? "Show all files" : "Hide dotfiles"}

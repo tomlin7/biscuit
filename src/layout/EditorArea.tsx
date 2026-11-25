@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Columns2,
+  ExternalLink,
   Eye,
   Search,
   Sparkles,
@@ -356,50 +357,63 @@ export function EditorArea() {
           />
         </div>
       </div>
-      {peek ? (
+      {peek && (
         <div className="editor-area__peek">
           <div className="editor-area__peek-bar">
-            <span>{peek.title}</span>
-            {peek.path ? (
-              <button
-                type="button"
-                onClick={() => void openFileAt(peek.path, peek.line, peek.column)}
-              >
-                Jump
-              </button>
-            ) : null}
-            <button type="button" onClick={clearPeek}>
-              Close
-            </button>
+            <span className="editor-area__peek-title">{peek.title}</span>
+            <div className="editor-area__peek-actions">
+              {peek.path && (
+                <IconButton
+                  icon={ExternalLink}
+                  label="Jump to definition"
+                  size={13}
+                  onClick={() => void openFileAt(peek.path, peek.line, peek.column)}
+                />
+              )}
+              <IconButton
+                icon={X}
+                label="Close peek"
+                size={13}
+                onClick={clearPeek}
+              />
+            </div>
           </div>
-          <pre>{peek.preview}</pre>
+          <pre className="editor-area__peek-code">{peek.preview}</pre>
         </div>
-      ) : null}
-      {references ? (
+      )}
+      {references && (
         <div className="editor-area__peek">
           <div className="editor-area__peek-bar">
-            <span>{references.length} references</span>
-            <button type="button" onClick={clearReferences}>
-              Close
-            </button>
+            <span className="editor-area__peek-title">
+              {references.length} reference{references.length === 1 ? "" : "s"}
+            </span>
+            <div className="editor-area__peek-actions">
+              <IconButton
+                icon={X}
+                label="Close references"
+                size={13}
+                onClick={clearReferences}
+              />
+            </div>
           </div>
           <ul className="editor-area__refs">
             {references.map((hit) => (
               <li key={`${hit.path}:${hit.line}:${hit.column}:${hit.preview}`}>
                 <button
                   type="button"
+                  className="editor-area__ref-row"
                   onClick={() => void openFileAt(hit.path, hit.line, hit.column)}
                 >
-                  <span>
+                  <span className="editor-area__ref-loc">
                     {hit.path.split(/[/\\]/).pop()}:{hit.line}
                   </span>
-                  <span>{hit.preview}</span>
+                  <span className="editor-area__ref-preview">{hit.preview}</span>
                 </button>
               </li>
             ))}
           </ul>
         </div>
-      ) : null}
+      )}
       <div
         className={
           showPreview || (split && hasFile)

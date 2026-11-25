@@ -335,62 +335,189 @@
 .editor-area__peek {
   margin: 0 8px 8px;
   border-radius: var(--radius-control);
-  background: var(--bg-root);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   color: var(--fg);
   overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .editor-area__peek-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 4px 8px;
   font-size: var(--font-size-sm);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.editor-area__peek-bar span {
-  flex: 1;
+.editor-area__peek-title {
+  font-weight: 500;
+  color: var(--fg);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.editor-area__peek-bar button {
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--bg-active);
-  color: var(--fg);
-  font-size: var(--font-size-sm);
+.editor-area__peek-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
-.editor-area__peek pre {
+.editor-area__peek-code {
   margin: 0;
-  padding: 0 10px 10px;
-  max-height: 160px;
+  padding: 8px 10px;
+  max-height: 180px;
   overflow: auto;
   color: var(--fg-muted);
+  font-family: var(--font-mono);
   font-size: 12px;
   white-space: pre-wrap;
+  background: var(--bg-root);
 }
 
 .editor-area__refs {
   list-style: none;
   margin: 0;
-  padding: 0 6px 6px;
+  padding: 4px;
   max-height: 180px;
-  overflow: auto;
+  overflow-y: auto;
 }
 
-.editor-area__refs button {
+.editor-area__ref-row {
   display: flex;
+  align-items: baseline;
   width: 100%;
   gap: 8px;
   padding: 4px 6px;
-  border-radius: 6px;
+  border-radius: 4px;
+  border: none;
   background: transparent;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
   text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.editor-area__ref-row:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
+.editor-area__ref-loc {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent, #60a5fa);
+  flex-shrink: 0;
+}
+
+.editor-area__ref-preview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* —— Floating Toasts —— */
+.app-shell__toasts {
+  position: fixed;
+  bottom: calc(var(--statusbar-height) + 12px);
+  right: 16px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  pointer-events: none;
+  max-width: min(380px, calc(100vw - 32px));
+}
+
+.app-shell__toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-island-elevated, var(--bg-island));
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  animation: toast-slide-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateY(12px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.app-shell__toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.app-shell__toast-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.app-shell__toast-detail {
+  margin: 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.app-shell__toast-action {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--fg);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.app-shell__toast-action:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.app-shell__toast-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: none;
+  background: transparent;
+  color: var(--fg-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.app-shell__toast-close:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
 }
 
 .editor-area__refs button span:first-child {

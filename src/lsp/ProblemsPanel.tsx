@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import {
+  AlertCircle,
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  ChevronsDownUp,
+  ChevronsUpDown,
+  FileCode,
+  Info,
+} from "lucide-react";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import {
   nextProblemsFilter,
@@ -7,6 +16,7 @@ import {
 } from "./problemsFilterBus";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { basename } from "../workspace/path";
+import { IconButton } from "../ui/IconButton";
 import "./ProblemsPanel.css";
 
 type SeverityFilter = "all" | "error" | "warning";
@@ -23,9 +33,22 @@ function loadFilter(): SeverityFilter {
   return "all";
 }
 
+function getRelativeDir(fullPath: string, root: string | null): string {
+  if (!root) return "";
+  const normFull = fullPath.replace(/\\/g, "/");
+  const normRoot = root.replace(/\\/g, "/").replace(/\/$/, "");
+  if (normFull.startsWith(normRoot)) {
+    const rel = normFull.slice(normRoot.length).replace(/^\//, "");
+    const parts = rel.split("/");
+    parts.pop();
+    return parts.join("/") || "./";
+  }
+  return "";
+}
+
 export function ProblemsPanel() {
   const { problems } = useDiagnostics();
-  const { openFileAt } = useWorkspace();
+  const { rootPath, openFileAt } = useWorkspace();
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(() => loadFilter());
 
@@ -43,6 +66,15 @@ export function ProblemsPanel() {
     });
     return () => setCycleProblemsFilterListener(null);
   }, []);
+
+  const errorCount = useMemo(
+    () => problems.filter((p) => p.severity === "error").length,
+    [problems],
+  );
+  const warnCount = useMemo(
+    () => problems.filter((p) => p.severity === "warning").length,
+    [problems],
+  );
 
   const filtered = useMemo(() => {
     if (severityFilter === "all") return problems;
@@ -84,62 +116,105 @@ export function ProblemsPanel() {
     });
   };
 
+  const allCollapsed = groups.length > 0 && collapsed.size === groups.length;
+
+  const toggleAll = () => {
+    if (allCollapsed) {
+      setCollapsed(new Set());
+    } else {
+      setCollapsed(new Set(groups.map(([path]) => path)));
+    }
+  };
+
   return (
     <div className="problems-panel">
-      <div className="problems-panel__filters" role="toolbar" aria-label="Filter by severity">
-        {(
-          [
-            ["all", "All"],
-            ["error", "Errors"],
-            ["warning", "Warnings"],
-          ] as const
-        ).map(([value, label]) => (
+      <div className="problems-panel__bar" role="toolbar" aria-label="Problems toolbar">
+        <div className="problems-panel__filters">
           <button
-            key={value}
             type="button"
-            className={
-              severityFilter === value
-                ? "problems-panel__filter problems-panel__filter--active"
-                : "problems-panel__filter"
-            }
-            aria-pressed={severityFilter === value}
-            onClick={() => setSeverityFilter(value)}
+            className={`problems-panel__filter ${severityFilter === "all" ? "problems-panel__filter--active" : ""}`}
+            aria-pressed={severityFilter === "all"}
+            onClick={() => setSeverityFilter("all")}
           >
-            {label}
+            <span>All</span>
+            <span className="problems-panel__pill-badge">{problems.length}</span>
           </button>
-        ))}
+          <button
+            type="button"
+            className={`problems-panel__filter ${severityFilter === "error" ? "problems-panel__filter--active" : ""}`}
+            aria-pressed={severityFilter === "error"}
+            onClick={() => setSeverityFilter("error")}
+          >
+            <AlertCircle size={12} className="problems-panel__btn-icon problems-panel__btn-icon--error" />
+            <span>Errors</span>
+            <span className="problems-panel__pill-badge">{errorCount}</span>
+          </button>
+          <button
+            type="button"
+            className={`problems-panel__filter ${severityFilter === "warning" ? "problems-panel__filter--active" : ""}`}
+            aria-pressed={severityFilter === "warning"}
+            onClick={() => setSeverityFilter("warning")}
+          >
+            <AlertTriangle size={12} className="problems-panel__btn-icon problems-panel__btn-icon--warning" />
+            <span>Warnings</span>
+            <span className="problems-panel__pill-badge">{warnCount}</span>
+          </button>
+        </div>
+
+        {groups.length > 0 && (
+          <div className="problems-panel__actions">
+            <IconButton
+              icon={allCollapsed ? ChevronsUpDown : ChevronsDownUp}
+              label={allCollapsed ? "Expand all files" : "Collapse all files"}
+              size={13}
+              onClick={toggleAll}
+            />
+          </div>
+        )}
       </div>
+
       {filtered.length === 0 ? (
-        <p className="problems-panel__empty">
-          {problems.length === 0 ? "No problems detected." : "No matching problems."}
-        </p>
+        <div className="problems-panel__empty">
+          <p>
+            {problems.length === 0
+              ? "No problems have been detected in the workspace."
+              : "No problems match the current filter."}
+          </p>
+          {severityFilter !== "all" && problems.length > 0 && (
+            <button
+              type="button"
+              className="problems-panel__reset-btn"
+              onClick={() => setSeverityFilter("all")}
+            >
+              Show all problems ({problems.length})
+            </button>
+          )}
+        </div>
       ) : (
         <ul className="problems-panel__list">
           {groups.map(([path, items]) => {
-            const open = !collapsed.has(path);
+            const isClosed = collapsed.has(path);
+            const dir = getRelativeDir(path, rootPath);
             return (
               <li key={path} className="problems-panel__group">
                 <button
                   type="button"
                   className="problems-panel__file"
                   onClick={() => toggle(path)}
-                  aria-expanded={open}
+                  aria-expanded={!isClosed}
                 >
-                  <ChevronRight
-                    size={12}
-                    strokeWidth={2}
-                    className={
-                      open
-                        ? "problems-panel__chevron problems-panel__chevron--open"
-                        : "problems-panel__chevron"
-                    }
-                    aria-hidden
-                  />
+                  <span className="problems-panel__chevron">
+                    {isClosed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+                  </span>
+                  <FileCode size={13} className="problems-panel__file-icon" />
                   <span className="problems-panel__file-name">{basename(path)}</span>
+                  {dir && <span className="problems-panel__file-dir">{dir}</span>}
                   <span className="problems-panel__count">{items.length}</span>
                 </button>
-                {open
-                  ? items.map((problem) => (
+
+                {!isClosed && (
+                  <div className="problems-panel__group-items">
+                    {items.map((problem) => (
                       <button
                         key={problem.id}
                         type="button"
@@ -148,14 +223,23 @@ export function ProblemsPanel() {
                           void openFileAt(problem.path, problem.line, problem.column)
                         }
                       >
-                        <span className="problems-panel__sev">{problem.severity}</span>
+                        <span className="problems-panel__icon-wrap">
+                          {problem.severity === "error" ? (
+                            <AlertCircle size={13} className="problems-panel__icon problems-panel__icon--error" />
+                          ) : problem.severity === "warning" ? (
+                            <AlertTriangle size={13} className="problems-panel__icon problems-panel__icon--warning" />
+                          ) : (
+                            <Info size={13} className="problems-panel__icon problems-panel__icon--info" />
+                          )}
+                        </span>
                         <span className="problems-panel__msg">{problem.message}</span>
                         <span className="problems-panel__loc">
-                          :{problem.line}:{problem.column}
+                          Ln {problem.line}, Col {problem.column}
                         </span>
                       </button>
-                    ))
-                  : null}
+                    ))}
+                  </div>
+                )}
               </li>
             );
           })}
