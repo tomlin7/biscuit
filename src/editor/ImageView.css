@@ -1,15 +1,49 @@
 .image-view {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   height: 100%;
   min-height: 0;
-  overflow: auto;
   background: var(--bg-island);
 }
 
-.image-view img {
+.image-view__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.image-view__zoom-label {
+  min-width: 48px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.image-view__zoom-label:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
+.image-view__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+}
+
+.image-view__stage img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  transform-origin: center center;
+  transition: transform 80ms ease-out;
 }
