@@ -177,6 +177,16 @@ export function StatusBar({
             Spaces: {settings.editor.tabSize}
           </button>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Toggle word wrap"
+            onClick={() => updateEditor({ wordWrap: !settings.editor.wordWrap })}
+          >
+            {settings.editor.wordWrap ? "Wrap" : "No Wrap"}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
