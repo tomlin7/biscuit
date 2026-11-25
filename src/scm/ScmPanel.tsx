@@ -190,6 +190,18 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={!summary?.branch}
+            title="Copy current branch name"
+            onClick={() => {
+              if (!summary?.branch) return;
+              void navigator.clipboard.writeText(summary.branch);
+            }}
+          >
+            Copy branch
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             disabled={acting || busy}
             onClick={() => void run("git_pull", {})}
           >
