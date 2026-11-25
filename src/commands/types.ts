@@ -268,6 +268,7 @@ export type CommandContext = {
   closeEditorsToTheRight: () => void;
   closeEditorsToTheLeft: () => void;
   openNextEditor: () => void;
+  openPreviousEditor: () => void;
 };
 
 export type Command = {

@@ -160,7 +160,13 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+PageDown",
     run: (ctx) => ctx.openNextEditor(),
   },
-
+  {
+    id: "workbench.action.previousEditor",
+    title: "Open Previous Editor",
+    category: "View",
+    keybinding: "Ctrl+PageUp",
+    run: (ctx) => ctx.openPreviousEditor(),
+  },
 
 
   {

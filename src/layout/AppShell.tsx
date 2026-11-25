@@ -1636,6 +1636,14 @@ function ShellChrome() {
         const next = tabs[((idx >= 0 ? idx : 0) + 1) % tabs.length];
         if (next) activateTab(next.path);
       },
+      openPreviousEditor: () => {
+        if (tabs.length < 2) return;
+        const idx = activePath
+          ? tabs.findIndex((tab) => tab.path === activePath)
+          : 0;
+        const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+        if (prev) activateTab(prev.path);
+      },
     }),
     [
       openFolder,
