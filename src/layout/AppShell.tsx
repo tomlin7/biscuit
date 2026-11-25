@@ -29,6 +29,7 @@ import { basename, languageFromPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
+import { requestSplitEditor } from "./splitBus";
 import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
@@ -417,6 +418,7 @@ function ShellChrome() {
       openWorkspaceSymbols,
       closePalette,
       findInFile,
+      splitEditorRight: () => requestSplitEditor("right"),
       runEditorCommand,
       revealActiveFile: () => {
         if (activePath) void revealInExplorer(activePath);

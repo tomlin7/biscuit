@@ -350,6 +350,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("replace"),
   },
   {
+    id: "workbench.action.splitEditorRight",
+    title: "Split Editor Right",
+    category: "View",
+    run: (ctx) => ctx.splitEditorRight(),
+  },
+  {
     id: "actions.find",
     title: "Find in File",
     category: "Edit",

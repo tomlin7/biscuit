@@ -22,6 +22,7 @@ export type CommandContext = {
   openWorkspaceSymbols: () => void;
   closePalette: () => void;
   findInFile: () => void;
+  splitEditorRight: () => void;
   runEditorCommand: (
     command:
       | "comment"

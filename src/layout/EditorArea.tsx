@@ -26,6 +26,7 @@ import { useLayout } from "./LayoutContext";
 import { FileIcon } from "../ui/FileIcon";
 import { IconButton } from "../ui/IconButton";
 import { ResizeHandle } from "./ResizeHandle";
+import { setSplitEditorListener } from "./splitBus";
 
 type CrumbMenuState = {
   x: number;
@@ -103,13 +104,31 @@ export function EditorArea() {
       return;
     }
     setSecondaryPath((current) => {
-      if (current && current !== activePath && tabs.some((tab) => tab.path === current)) {
+      if (current && tabs.some((tab) => tab.path === current)) {
         return current;
       }
       if (current && tabs.length === 0) return current;
-      return otherTabs[0]?.path ?? null;
+      return otherTabs[0]?.path ?? activePath;
     });
   }, [split, activePath, tabs, otherTabs]);
+
+  useEffect(() => {
+    setSplitEditorListener((mode) => {
+      if (!activePath) return;
+      if (mode === "right") {
+        setSplit(true);
+        setSecondaryPath(activePath);
+        return;
+      }
+      setSplit((value) => {
+        const next = !value;
+        if (next) setSecondaryPath(activePath);
+        else setSecondaryPath(null);
+        return next;
+      });
+    });
+    return () => setSplitEditorListener(null);
+  }, [activePath]);
 
   const crumbRoot = useMemo(() => {
     if (!document) return rootPath;
@@ -331,7 +350,15 @@ export function EditorArea() {
             size={15}
             active={split}
             disabled={!hasFile}
-            onClick={() => setSplit((v) => !v)}
+            onClick={() => {
+              if (!activePath) return;
+              setSplit((value) => {
+                const next = !value;
+                if (next) setSecondaryPath(activePath);
+                else setSecondaryPath(null);
+                return next;
+              });
+            }}
           />
           <IconButton
             icon={PanelRightClose}
