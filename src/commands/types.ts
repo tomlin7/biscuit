@@ -251,6 +251,7 @@ export type CommandContext = {
   toggleFullScreen: () => void;
   reloadWindow: () => void;
   scaffoldExtension: () => void;
+  installExtensionFromFolder: () => void;
 };
 
 export type Command = {

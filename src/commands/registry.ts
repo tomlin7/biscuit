@@ -1516,6 +1516,11 @@ export const COMMANDS: Command[] = [
     category: "Extensions",
     run: (ctx) => ctx.scaffoldExtension(),
   },
-
+  {
+    id: "t3d.installExtensionFolder",
+    title: "Install Extension from Folder",
+    category: "Extensions",
+    run: (ctx) => ctx.installExtensionFromFolder(),
+  },
 
 ];

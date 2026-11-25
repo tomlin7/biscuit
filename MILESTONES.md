@@ -391,6 +391,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.383.0** | Toggle Full Screen from palette | shipped |
 | **0.384.0** | Reload Window from palette | shipped |
 | **0.385.0** | Scaffold Extension from palette | shipped |
+| **0.386.0** | Install Extension from Folder from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
