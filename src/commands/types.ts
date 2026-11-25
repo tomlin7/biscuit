@@ -188,6 +188,7 @@ export type CommandContext = {
   copyWorkspaceRoot: () => void;
   resetSidebarWidth: () => void;
   resetBottomPanelHeight: () => void;
+  closeAi: () => void;
 };
 
 export type Command = {

@@ -1130,4 +1130,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.resetBottomPanelHeight(),
   },
+  {
+    id: "workbench.action.closeAi",
+    title: "Close AI Agent",
+    category: "View",
+    run: (ctx) => ctx.closeAi(),
+  },
 ];

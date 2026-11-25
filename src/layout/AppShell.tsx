@@ -1119,6 +1119,9 @@ function ShellChrome() {
         setBottomHeight(220);
         setBottomOpen(true);
       },
+      closeAi: () => {
+        setAiOpen(false);
+      },
     }),
     [
       openFolder,
