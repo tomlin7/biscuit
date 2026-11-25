@@ -431,6 +431,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.423.0** | Deepen vim mode with monaco-vim bindings | shipped |
 | **0.424.0** | Go to next problem from the command palette | shipped |
 | **0.425.0** | Go to previous problem from the command palette | shipped |
+| **0.426.0** | Revert file from the command palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

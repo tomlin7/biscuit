@@ -291,6 +291,7 @@ export type CommandContext = {
   openWorkspaceFile: () => void;
   goToNextProblem: () => void;
   goToPreviousProblem: () => void;
+  revertActiveFile: () => void;
 };
 
 export type Command = {

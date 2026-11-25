@@ -111,6 +111,7 @@ function ShellChrome() {
     setLanguageAt,
     activateTab,
     selectionText,
+    applyDiskValue,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1977,6 +1978,35 @@ function ShellChrome() {
         const prev = list[idx];
         void openFileAt(prev.path, prev.line, prev.column);
       },
+      revertActiveFile: () => {
+        void (async () => {
+          if (!activePath || isUntitledPath(activePath)) {
+            notify("Revert File", "Open a saved file first.");
+            return;
+          }
+          const tab = tabs.find((item) => item.path === activePath);
+          if (!tab || tab.language === "image") {
+            notify("Revert File", "Nothing to revert.");
+            return;
+          }
+          if (tab.value !== tab.baseline) {
+            const ok = window.confirm(
+              `Revert ${tab.title}? Unsaved changes will be lost.`,
+            );
+            if (!ok) return;
+          }
+          try {
+            const text = await readTextFile(activePath);
+            applyDiskValue(activePath, text);
+            notify("Revert File", `Reloaded ${tab.title}`);
+          } catch (err) {
+            notify(
+              "Revert File",
+              err instanceof Error ? err.message : String(err),
+            );
+          }
+        })();
+      },
     }),
     [
       openFolder,
@@ -2134,6 +2164,7 @@ function ShellChrome() {
       settings.vimMode,
       settings.keypressDisplay,
       resolveGithubRepoUrl,
+      applyDiskValue,
       problems,
       refreshDiagnosticsMarkers,
       openProblems,

@@ -128,6 +128,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.openWorkspaceFile(),
   },
   {
+    id: "workbench.action.files.revert",
+    title: "Revert File",
+    category: "File",
+    run: (ctx) => void ctx.revertActiveFile(),
+  },
+  {
     id: "workbench.action.closeActiveEditor",
     title: "Close Editor",
     category: "View",
