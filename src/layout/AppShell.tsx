@@ -48,6 +48,7 @@ import { requestClearAllTerminals, requestClearActiveTerminal } from "../termina
 import { requestNewTerminal } from "../terminal/newTerminal";
 import { requestKillActiveTerminal } from "../terminal/killTerminal";
 import { requestDuplicateTerminal } from "../terminal/duplicateTerminal";
+import { requestSplitTerminal } from "../terminal/splitTerminal";
 import { requestFocusTerminal } from "../terminal/focusTerminal";
 import { requestRenameActiveTerminal } from "../terminal/renameTerminal";
 import { requestRestartActiveTerminal } from "../terminal/restartTerminal";
@@ -693,6 +694,11 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestDuplicateTerminal();
+      },
+      splitTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestSplitTerminal();
       },
       focusNextTerminal: () => {
         setPanelTab("terminal");
@@ -2367,6 +2373,15 @@ function ShellChrome() {
         return;
       }
 
+      if (mod && event.shiftKey && event.code === "Digit5") {
+        event.preventDefault();
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestSplitTerminal();
+        clearChord();
+        return;
+      }
+
       if (mod && key === "f" && !event.shiftKey) {
         event.preventDefault();
         findInFile();
@@ -2481,6 +2496,8 @@ function ShellChrome() {
     toggleAi,
     openProblems,
     toggleSidebar,
+    setPanelTab,
+    setBottomOpen,
   ]);
 
   const workspaceStyle = {

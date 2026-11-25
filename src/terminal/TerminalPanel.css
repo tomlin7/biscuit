@@ -108,6 +108,18 @@
   flex-direction: column;
 }
 
+.terminal-panel__stack--split {
+  flex-direction: row;
+}
+
+.terminal-panel__stack--split .terminal-panel__slot--active {
+  min-width: 0;
+}
+
+.terminal-panel__stack--split .terminal-panel__slot--active + .terminal-panel__slot--active {
+  border-left: 1px solid var(--border-subtle);
+}
+
 .terminal-panel__slot {
   display: none;
   min-height: 0;

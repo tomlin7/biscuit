@@ -17,11 +17,12 @@ import { setDuplicateTerminalListener } from "./duplicateTerminal";
 import { setFocusTerminalListener } from "./focusTerminal";
 import { setRenameActiveTerminalListener } from "./renameTerminal";
 import { setRestartActiveTerminalListener } from "./restartTerminal";
+import { requestSplitTerminal, setSplitTerminalListener } from "./splitTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
 import { IconButton } from "../ui/IconButton";
-import { Ban, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { Ban, Columns2, Plus, RotateCcw, Trash2 } from "lucide-react";
 import "@xterm/xterm/css/xterm.css";
 import "./TerminalPanel.css";
 
@@ -329,6 +330,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   const sessionsRef = useRef(sessions);
   sessionsRef.current = sessions;
   const [activeId, setActiveId] = useState(sessions[0].id);
+  const [splitPeerId, setSplitPeerId] = useState<number | null>(null);
   const [nextShell, setNextShell] = useState<ShellChoice>("");
   const [renamingId, setRenamingId] = useState<number | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
@@ -343,6 +345,12 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       ),
     );
     setRenamingId(null);
+  };
+
+  const focusSession = (id: number) => {
+    if (id === activeId) return;
+    if (id === splitPeerId) setSplitPeerId(activeId);
+    setActiveId(id);
   };
 
   const addSession = () => {
@@ -361,9 +369,15 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       if (next.length === 0) {
         nextSession += 1;
         setActiveId(nextSession);
+        setSplitPeerId(null);
         return [{ id: nextSession, shell: nextShell, runPath: null, command: null, cwd: null }];
       }
       setActiveId((active) => (active === id ? next[next.length - 1].id : active));
+      setSplitPeerId((peer) => {
+        if (peer === id) return null;
+        if (next.length < 2) return null;
+        return peer;
+      });
       return next;
     });
   };
@@ -426,6 +440,37 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     });
     return () => setDuplicateTerminalListener(null);
   }, [activeId, nextShell]);
+
+  useEffect(() => {
+    setSplitTerminalListener(() => {
+      const list = sessionsRef.current;
+      if (splitPeerId != null) {
+        setSplitPeerId(null);
+        return;
+      }
+      if (list.length < 2) {
+        const current = list.find((item) => item.id === activeId);
+        nextSession += 1;
+        const id = nextSession;
+        setSessions((sessions) => [
+          ...sessions,
+          {
+            id,
+            shell: current?.shell ?? nextShell,
+            runPath: null,
+            command: null,
+            cwd: current?.cwd ?? null,
+          },
+        ]);
+        setSplitPeerId(id);
+        return;
+      }
+      const idx = list.findIndex((item) => item.id === activeId);
+      const peer = list[(idx + 1) % list.length];
+      if (peer) setSplitPeerId(peer.id);
+    });
+    return () => setSplitTerminalListener(null);
+  }, [activeId, nextShell, splitPeerId]);
 
   useEffect(() => {
     setFocusTerminalListener((mode) => {
@@ -551,7 +596,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
                       ? "terminal-panel__session-tab terminal-panel__session-tab--active"
                       : "terminal-panel__session-tab"
                   }
-                  onClick={() => setActiveId(session.id)}
+                  onClick={() => focusSession(session.id)}
                   onDoubleClick={() => {
                     setRenamingId(session.id);
                     setRenameDraft(shellLabel(session, index));
@@ -576,6 +621,13 @@ export function TerminalPanel({ open, embedded = false }: Props) {
             label="New terminal"
             size={13}
             onClick={addSession}
+          />
+          <IconButton
+            icon={Columns2}
+            label={splitPeerId != null ? "Unsplit terminal" : "Split terminal"}
+            size={13}
+            active={splitPeerId != null}
+            onClick={requestSplitTerminal}
           />
         </div>
 
@@ -613,18 +665,29 @@ export function TerminalPanel({ open, embedded = false }: Props) {
           />
         </div>
       </div>
-      <div className="terminal-panel__stack">
-        {sessions.map((session) => (
+      <div
+        className={
+          splitPeerId != null
+            ? "terminal-panel__stack terminal-panel__stack--split"
+            : "terminal-panel__stack"
+        }
+      >
+        {sessions.map((session) => {
+          const visible =
+            session.id === activeId ||
+            (splitPeerId != null && session.id === splitPeerId);
+          return (
           <div
             key={session.id}
             className={
-              session.id === activeId
+              visible
                 ? "terminal-panel__slot terminal-panel__slot--active"
                 : "terminal-panel__slot"
             }
+            onMouseDown={() => focusSession(session.id)}
           >
             <TerminalSession
-              active={open && session.id === activeId}
+              active={open && visible}
               cwd={session.cwd ?? rootPath}
               theme={appearance}
               shell={session.shell}
@@ -646,7 +709,8 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               }}
             />
           </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

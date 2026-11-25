@@ -667,6 +667,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.duplicateTerminal(),
   },
   {
+    id: "workbench.action.terminal.split",
+    title: "Split Terminal",
+    category: "Terminal",
+    keybinding: "Ctrl+Shift+5",
+    run: (ctx) => ctx.splitTerminal(),
+  },
+  {
     id: "workbench.action.terminal.focusNext",
     title: "Focus Next Terminal",
     category: "Terminal",

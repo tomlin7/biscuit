@@ -96,6 +96,7 @@ export type CommandContext = {
   newTerminal: () => void;
   killActiveTerminal: () => void;
   duplicateTerminal: () => void;
+  splitTerminal: () => void;
   focusNextTerminal: () => void;
   focusPreviousTerminal: () => void;
   renameActiveTerminal: () => void;

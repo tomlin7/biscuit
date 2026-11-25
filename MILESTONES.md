@@ -435,6 +435,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.427.0** | Copy active file name from the command palette | shipped |
 | **0.428.0** | Open next git changed file from the command palette | shipped |
 | **0.429.0** | Cut, copy, and paste from the command palette | shipped |
+| **0.430.0** | Split terminal side by side | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
