@@ -24,6 +24,7 @@ export type CommandContext = {
   copyActiveRelativePath: () => void;
   toggleTheme: () => void;
   toggleMinimap: () => void;
+  toggleStickyScroll: () => void;
   openPalette: () => void;
   openSymbols: () => void;
   openWorkspaceSymbols: () => void;
