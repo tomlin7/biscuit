@@ -384,6 +384,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.376.0** | Report Issue from palette | shipped |
 | **0.377.0** | Request Feature from palette | shipped |
 | **0.378.0** | View License from palette | shipped |
+| **0.379.0** | Open Code of Conduct from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

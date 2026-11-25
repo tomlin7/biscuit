@@ -1474,6 +1474,13 @@ function ShellChrome() {
           /* ignore */
         });
       },
+      openCodeOfConduct: () => {
+        void openUrl(
+          "https://github.com/tomlin7/T3D/blob/main/CODE_OF_CONDUCT.md",
+        ).catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,

@@ -244,6 +244,7 @@ export type CommandContext = {
   reportIssue: () => void;
   requestFeature: () => void;
   viewLicense: () => void;
+  openCodeOfConduct: () => void;
 };
 
 export type Command = {

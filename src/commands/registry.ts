@@ -1474,7 +1474,12 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.viewLicense(),
   },
-
+  {
+    id: "t3d.openCodeOfConduct",
+    title: "Open Code of Conduct",
+    category: "Help",
+    run: (ctx) => ctx.openCodeOfConduct(),
+  },
 
 
 ];
