@@ -94,6 +94,7 @@ function ShellChrome() {
     createEntry,
     setEol,
     renameEntry,
+    deleteEntry,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1488,6 +1489,12 @@ function ShellChrome() {
         setSidebarOpen(true);
         void renameEntry(activePath);
       },
+      deleteExplorerEntry: () => {
+        if (!activePath || isUntitledPath(activePath)) return;
+        setSidebarMode("explorer");
+        setSidebarOpen(true);
+        void deleteEntry(activePath);
+      },
     }),
     [
       openFolder,
@@ -1627,6 +1634,7 @@ function ShellChrome() {
       updateChromeAcrylic,
       settings.chromeAcrylic,
       renameEntry,
+      deleteEntry,
     ],
   );
 

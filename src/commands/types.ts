@@ -246,6 +246,7 @@ export type CommandContext = {
   viewLicense: () => void;
   openCodeOfConduct: () => void;
   renameExplorerEntry: () => void;
+  deleteExplorerEntry: () => void;
 };
 
 export type Command = {

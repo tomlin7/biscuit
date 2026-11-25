@@ -1486,5 +1486,10 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.renameExplorerEntry(),
   },
-
+  {
+    id: "explorer.delete",
+    title: "Delete File",
+    category: "File",
+    run: (ctx) => ctx.deleteExplorerEntry(),
+  },
 ];
