@@ -173,6 +173,10 @@ export function ScmPanel({ onBranch }: Props) {
     setScmRemoteListener((action: ScmRemoteAction) => {
       if (action === "pull") void run("git_pull", {});
       else if (action === "fetch") void run("git_fetch", {});
+      else if (action === "stash") {
+        const message = window.prompt("Stash message (optional)") ?? undefined;
+        void run("git_stash_push", { message: message?.trim() || null });
+      }
       else void push();
     });
     return () => setScmRemoteListener(null);
@@ -210,7 +214,7 @@ export function ScmPanel({ onBranch }: Props) {
     <div className="scm-panel">
       <div className="scm-panel__toolbar">
         <span className="scm-panel__branch">
-          {summary?.branch ?? (loading ? "…" : "—")}
+          {summary?.branch ?? (loading ? "â€¦" : "â€”")}
         </span>
         <span className="scm-panel__toolbar-actions">
           <button
@@ -331,7 +335,7 @@ export function ScmPanel({ onBranch }: Props) {
                     })();
                   }}
                 >
-                  ×
+                  Ã—
                 </button>
               ) : null}
             </div>
@@ -636,7 +640,7 @@ export function ScmPanel({ onBranch }: Props) {
           {amend ? "Amend" : "Commit"}
         </button>
       </div>
-      {loading && !summary ? <p className="scm-panel__hint">Loading…</p> : null}
+      {loading && !summary ? <p className="scm-panel__hint">Loadingâ€¦</p> : null}
       {summary && summary.entries.length === 0 ? (
         <p className="scm-panel__hint">Working tree clean.</p>
       ) : null}
@@ -678,7 +682,7 @@ export function ScmPanel({ onBranch }: Props) {
                   );
                   void openFile(joinPath(rootPath, relative));
                 }}
-                title={`${entry.path} — Enter to stage, unstage, or open`}
+                title={`${entry.path} â€” Enter to stage, unstage, or open`}
               >
                 <span className="scm-panel__status">{entry.status}</span>
                 <span className="scm-panel__path">{entry.path}</span>

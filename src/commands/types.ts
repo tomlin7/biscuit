@@ -120,6 +120,10 @@ export type CommandContext = {
   gitPull: () => void;
   gitPush: () => void;
   gitFetch: () => void;
+  gitStash: () => void;
+ openUntitled: () => void;
+ focusActiveTerminal: () => void;
+  duplicateEditorToSide: () => void;
 };
 
 export type Command = {
