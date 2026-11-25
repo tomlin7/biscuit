@@ -7,6 +7,7 @@ import {
   FileCode2,
   Grid2x2,
   Rows2,
+  Rows3,
   Search,
   Sparkles,
   Square,
@@ -180,6 +181,17 @@ export function EditorArea() {
     setPaneLayoutState((current) => {
       const activePane = current.panes.find((p) => p.id === current.activePaneId);
       if (activePane && activePane.path === activePath) return current;
+
+      // If activePath is already displayed in another pane, focus that pane
+      const existingPane = current.panes.find((p) => p.path === activePath);
+      if (existingPane) {
+        return {
+          ...current,
+          activePaneId: existingPane.id,
+        };
+      }
+
+      // Otherwise, open in the currently active pane
       return {
         ...current,
         panes: current.panes.map((p) =>
@@ -194,11 +206,21 @@ export function EditorArea() {
     setSplitEditorListener((mode, path) => {
       const tabPaths = tabs.map((t) => t.path);
       if (mode === "close") {
-        setPaneLayoutState((s) => closePane(s, s.activePaneId));
+        setPaneLayoutState((s) => {
+          const next = closePane(s, s.activePaneId);
+          const nextActive = next.panes.find((p) => p.id === next.activePaneId);
+          if (nextActive?.path) activateTab(nextActive.path);
+          return next;
+        });
         return;
       }
       if (mode === "close-all" || mode === "single") {
-        setPaneLayoutState((s) => closeAllSplits(s));
+        setPaneLayoutState((s) => {
+          const next = closeAllSplits(s);
+          const nextActive = next.panes.find((p) => p.id === next.activePaneId);
+          if (nextActive?.path) activateTab(nextActive.path);
+          return next;
+        });
         return;
       }
       if (mode === "grid") {
@@ -264,7 +286,10 @@ export function EditorArea() {
           if (s.layout === "single") {
             return splitPane(s, s.activePaneId, "right", activePath);
           }
-          return closeAllSplits(s);
+          const next = closeAllSplits(s);
+          const nextActive = next.panes.find((p) => p.id === next.activePaneId);
+          if (nextActive?.path) activateTab(nextActive.path);
+          return next;
         });
         return;
       }
@@ -345,6 +370,19 @@ export function EditorArea() {
     activateTab(droppedPath);
   };
 
+  const handleClosePane = (paneId: string) => {
+    setPaneLayoutState((s) => {
+      const next = closePane(s, paneId);
+      if (s.activePaneId === paneId) {
+        const nextActive = next.panes.find((p) => p.id === next.activePaneId);
+        if (nextActive?.path) {
+          activateTab(nextActive.path);
+        }
+      }
+      return next;
+    });
+  };
+
   const surfaceStyle = useMemo(() => {
     const { layout, splitRatio, secondarySplitRatio } = paneLayoutState;
     if (layout === "columns-2") {
@@ -360,18 +398,34 @@ export function EditorArea() {
       };
     }
     if (layout === "columns-3") {
+      const r1 = Math.min(0.45, Math.max(0.15, splitRatio));
+      const r2 = Math.min(0.85, Math.max(r1 + 0.1, secondarySplitRatio));
       return {
-        gridTemplateColumns: "1fr 6px 1fr 6px 1fr",
+        gridTemplateColumns: `${r1}fr 6px ${r2 - r1}fr 6px ${1 - r2}fr`,
         gridTemplateRows: "1fr",
       };
     }
     if (layout === "rows-3") {
+      const r1 = Math.min(0.45, Math.max(0.15, splitRatio));
+      const r2 = Math.min(0.85, Math.max(r1 + 0.1, secondarySplitRatio));
       return {
         gridTemplateColumns: "1fr",
-        gridTemplateRows: "1fr 6px 1fr 6px 1fr",
+        gridTemplateRows: `${r1}fr 6px ${r2 - r1}fr 6px ${1 - r2}fr`,
       };
     }
     if (layout === "grid-2x2") {
+      return {
+        gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr`,
+        gridTemplateRows: `${secondarySplitRatio}fr 6px ${1 - secondarySplitRatio}fr`,
+      };
+    }
+    if (layout === "split-left-stacked-right") {
+      return {
+        gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr`,
+        gridTemplateRows: `${secondarySplitRatio}fr 6px ${1 - secondarySplitRatio}fr`,
+      };
+    }
+    if (layout === "split-top-two-bottom") {
       return {
         gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr`,
         gridTemplateRows: `${secondarySplitRatio}fr 6px ${1 - secondarySplitRatio}fr`,
@@ -398,7 +452,7 @@ export function EditorArea() {
           onScrollRatio={setPreviewScroll}
           onFocus={() => handlePaneFocus(pane.id, pane.path)}
           onSelectPath={(p) => handlePaneSelectPath(pane.id, p)}
-          onClosePane={() => setPaneLayoutState((s) => closePane(s, pane.id))}
+          onClosePane={() => handleClosePane(pane.id)}
           onSplitRight={() =>
             setPaneLayoutState((s) => splitPane(s, pane.id, "right", pane.path))
           }
@@ -425,7 +479,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(panes[0].id, panes[0].path)}
             onSelectPath={(p) => handlePaneSelectPath(panes[0].id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, panes[0].id))}
+            onClosePane={() => handleClosePane(panes[0].id)}
             onSplitRight={() =>
               setPaneLayoutState((s) =>
                 splitPane(s, panes[0].id, "right", panes[0].path),
@@ -462,7 +516,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(panes[1].id, panes[1].path)}
             onSelectPath={(p) => handlePaneSelectPath(panes[1].id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, panes[1].id))}
+            onClosePane={() => handleClosePane(panes[1].id)}
             onSplitRight={() =>
               setPaneLayoutState((s) =>
                 splitPane(s, panes[1].id, "right", panes[1].path),
@@ -496,7 +550,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(panes[0].id, panes[0].path)}
             onSelectPath={(p) => handlePaneSelectPath(panes[0].id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, panes[0].id))}
+            onClosePane={() => handleClosePane(panes[0].id)}
             onSplitRight={() =>
               setPaneLayoutState((s) =>
                 splitPane(s, panes[0].id, "right", panes[0].path),
@@ -533,7 +587,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(panes[1].id, panes[1].path)}
             onSelectPath={(p) => handlePaneSelectPath(panes[1].id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, panes[1].id))}
+            onClosePane={() => handleClosePane(panes[1].id)}
             onSplitRight={() =>
               setPaneLayoutState((s) =>
                 splitPane(s, panes[1].id, "right", panes[1].path),
@@ -561,7 +615,26 @@ export function EditorArea() {
                 <ResizeHandle
                   axis="x"
                   label={`Resize column ${idx}`}
-                  onResize={() => {}}
+                  onResize={(d) => {
+                    setPaneLayoutState((s) => {
+                      if (idx === 1) {
+                        return {
+                          ...s,
+                          splitRatio: Math.min(
+                            s.secondarySplitRatio - 0.1,
+                            Math.max(0.15, s.splitRatio + d / 900),
+                          ),
+                        };
+                      }
+                      return {
+                        ...s,
+                        secondarySplitRatio: Math.min(
+                          0.85,
+                          Math.max(s.splitRatio + 0.1, s.secondarySplitRatio + d / 900),
+                        ),
+                      };
+                    });
+                  }}
                 />
               )}
               <EditorPaneView
@@ -576,7 +649,7 @@ export function EditorArea() {
                 onScrollRatio={setPreviewScroll}
                 onFocus={() => handlePaneFocus(p.id, p.path)}
                 onSelectPath={(path) => handlePaneSelectPath(p.id, path)}
-                onClosePane={() => setPaneLayoutState((s) => closePane(s, p.id))}
+                onClosePane={() => handleClosePane(p.id)}
                 onSplitRight={() =>
                   setPaneLayoutState((s) => splitPane(s, p.id, "right", p.path))
                 }
@@ -602,7 +675,26 @@ export function EditorArea() {
                 <ResizeHandle
                   axis="y"
                   label={`Resize row ${idx}`}
-                  onResize={() => {}}
+                  onResize={(d) => {
+                    setPaneLayoutState((s) => {
+                      if (idx === 1) {
+                        return {
+                          ...s,
+                          splitRatio: Math.min(
+                            s.secondarySplitRatio - 0.1,
+                            Math.max(0.15, s.splitRatio + d / 900),
+                          ),
+                        };
+                      }
+                      return {
+                        ...s,
+                        secondarySplitRatio: Math.min(
+                          0.85,
+                          Math.max(s.splitRatio + 0.1, s.secondarySplitRatio + d / 900),
+                        ),
+                      };
+                    });
+                  }}
                 />
               )}
               <EditorPaneView
@@ -617,7 +709,7 @@ export function EditorArea() {
                 onScrollRatio={setPreviewScroll}
                 onFocus={() => handlePaneFocus(p.id, p.path)}
                 onSelectPath={(path) => handlePaneSelectPath(p.id, path)}
-                onClosePane={() => setPaneLayoutState((s) => closePane(s, p.id))}
+                onClosePane={() => handleClosePane(p.id)}
                 onSplitRight={() =>
                   setPaneLayoutState((s) => splitPane(s, p.id, "right", p.path))
                 }
@@ -656,7 +748,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(p0.id, p0.path)}
             onSelectPath={(p) => handlePaneSelectPath(p0.id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, p0.id))}
+            onClosePane={() => handleClosePane(p0.id)}
             onSplitRight={() =>
               setPaneLayoutState((s) => splitPane(s, p0.id, "right", p0.path))
             }
@@ -694,7 +786,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(p1.id, p1.path)}
             onSelectPath={(p) => handlePaneSelectPath(p1.id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, p1.id))}
+            onClosePane={() => handleClosePane(p1.id)}
             onSplitRight={() =>
               setPaneLayoutState((s) => splitPane(s, p1.id, "right", p1.path))
             }
@@ -735,7 +827,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(p2.id, p2.path)}
             onSelectPath={(p) => handlePaneSelectPath(p2.id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, p2.id))}
+            onClosePane={() => handleClosePane(p2.id)}
             onSplitRight={() =>
               setPaneLayoutState((s) => splitPane(s, p2.id, "right", p2.path))
             }
@@ -773,7 +865,7 @@ export function EditorArea() {
             onScrollRatio={setPreviewScroll}
             onFocus={() => handlePaneFocus(p3.id, p3.path)}
             onSelectPath={(p) => handlePaneSelectPath(p3.id, p)}
-            onClosePane={() => setPaneLayoutState((s) => closePane(s, p3.id))}
+            onClosePane={() => handleClosePane(p3.id)}
             onSplitRight={() =>
               setPaneLayoutState((s) => splitPane(s, p3.id, "right", p3.path))
             }
@@ -788,19 +880,239 @@ export function EditorArea() {
       );
     }
 
+    if (layout === "split-left-stacked-right") {
+      const p0 = panes[0];
+      const p1 = panes[1] ?? panes[0];
+      const p2 = panes[2] ?? panes[0];
+      return (
+        <>
+          <EditorPaneView
+            style={{ gridArea: "1 / 1 / 4 / 2" }}
+            pane={p0}
+            isActive={activePaneId === p0.id}
+            totalPanes={panes.length}
+            availableTabs={tabs}
+            showPreview={showPreview && activePaneId === p0.id}
+            previewKind={previewKind}
+            previewScroll={previewScroll}
+            previewValue={document?.value ?? ""}
+            onScrollRatio={setPreviewScroll}
+            onFocus={() => handlePaneFocus(p0.id, p0.path)}
+            onSelectPath={(p) => handlePaneSelectPath(p0.id, p)}
+            onClosePane={() => handleClosePane(p0.id)}
+            onSplitRight={() =>
+              setPaneLayoutState((s) => splitPane(s, p0.id, "right", p0.path))
+            }
+            onSplitDown={() =>
+              setPaneLayoutState((s) => splitPane(s, p0.id, "bottom", p0.path))
+            }
+            onDropOnEdge={(edge, dropped) =>
+              handleDropOnPane(p0.id, edge, dropped)
+            }
+          />
+          <div style={{ gridArea: "1 / 2 / 4 / 3" }}>
+            <ResizeHandle
+              axis="x"
+              label="Resize split"
+              onResize={(d) => {
+                setPaneLayoutState((s) => ({
+                  ...s,
+                  splitRatio: Math.min(0.8, Math.max(0.2, s.splitRatio + d / 900)),
+                }));
+              }}
+            />
+          </div>
+          <EditorPaneView
+            style={{ gridArea: "1 / 3 / 2 / 4" }}
+            pane={p1}
+            isActive={activePaneId === p1.id}
+            totalPanes={panes.length}
+            availableTabs={tabs}
+            showPreview={showPreview && activePaneId === p1.id}
+            previewKind={previewKind}
+            previewScroll={previewScroll}
+            previewValue={document?.value ?? ""}
+            onScrollRatio={setPreviewScroll}
+            onFocus={() => handlePaneFocus(p1.id, p1.path)}
+            onSelectPath={(p) => handlePaneSelectPath(p1.id, p)}
+            onClosePane={() => handleClosePane(p1.id)}
+            onSplitRight={() =>
+              setPaneLayoutState((s) => splitPane(s, p1.id, "right", p1.path))
+            }
+            onSplitDown={() =>
+              setPaneLayoutState((s) => splitPane(s, p1.id, "bottom", p1.path))
+            }
+            onDropOnEdge={(edge, dropped) =>
+              handleDropOnPane(p1.id, edge, dropped)
+            }
+          />
+          <div style={{ gridArea: "2 / 3 / 3 / 4" }}>
+            <ResizeHandle
+              axis="y"
+              label="Resize stacked rows"
+              onResize={(d) => {
+                setPaneLayoutState((s) => ({
+                  ...s,
+                  secondarySplitRatio: Math.min(
+                    0.8,
+                    Math.max(0.2, s.secondarySplitRatio + d / 900),
+                  ),
+                }));
+              }}
+            />
+          </div>
+          <EditorPaneView
+            style={{ gridArea: "3 / 3 / 4 / 4" }}
+            pane={p2}
+            isActive={activePaneId === p2.id}
+            totalPanes={panes.length}
+            availableTabs={tabs}
+            showPreview={showPreview && activePaneId === p2.id}
+            previewKind={previewKind}
+            previewScroll={previewScroll}
+            previewValue={document?.value ?? ""}
+            onScrollRatio={setPreviewScroll}
+            onFocus={() => handlePaneFocus(p2.id, p2.path)}
+            onSelectPath={(p) => handlePaneSelectPath(p2.id, p)}
+            onClosePane={() => handleClosePane(p2.id)}
+            onSplitRight={() =>
+              setPaneLayoutState((s) => splitPane(s, p2.id, "right", p2.path))
+            }
+            onSplitDown={() =>
+              setPaneLayoutState((s) => splitPane(s, p2.id, "bottom", p2.path))
+            }
+            onDropOnEdge={(edge, dropped) =>
+              handleDropOnPane(p2.id, edge, dropped)
+            }
+          />
+        </>
+      );
+    }
+
+    if (layout === "split-top-two-bottom") {
+      const p0 = panes[0];
+      const p1 = panes[1] ?? panes[0];
+      const p2 = panes[2] ?? panes[0];
+      return (
+        <>
+          <EditorPaneView
+            style={{ gridArea: "1 / 1 / 2 / 4" }}
+            pane={p0}
+            isActive={activePaneId === p0.id}
+            totalPanes={panes.length}
+            availableTabs={tabs}
+            showPreview={showPreview && activePaneId === p0.id}
+            previewKind={previewKind}
+            previewScroll={previewScroll}
+            previewValue={document?.value ?? ""}
+            onScrollRatio={setPreviewScroll}
+            onFocus={() => handlePaneFocus(p0.id, p0.path)}
+            onSelectPath={(p) => handlePaneSelectPath(p0.id, p)}
+            onClosePane={() => handleClosePane(p0.id)}
+            onSplitRight={() =>
+              setPaneLayoutState((s) => splitPane(s, p0.id, "right", p0.path))
+            }
+            onSplitDown={() =>
+              setPaneLayoutState((s) => splitPane(s, p0.id, "bottom", p0.path))
+            }
+            onDropOnEdge={(edge, dropped) =>
+              handleDropOnPane(p0.id, edge, dropped)
+            }
+          />
+          <div style={{ gridArea: "2 / 1 / 3 / 4" }}>
+            <ResizeHandle
+              axis="y"
+              label="Resize top/bottom split"
+              onResize={(d) => {
+                setPaneLayoutState((s) => ({
+                  ...s,
+                  splitRatio: Math.min(0.8, Math.max(0.2, s.splitRatio + d / 900)),
+                }));
+              }}
+            />
+          </div>
+          <EditorPaneView
+            style={{ gridArea: "3 / 1 / 4 / 2" }}
+            pane={p1}
+            isActive={activePaneId === p1.id}
+            totalPanes={panes.length}
+            availableTabs={tabs}
+            showPreview={showPreview && activePaneId === p1.id}
+            previewKind={previewKind}
+            previewScroll={previewScroll}
+            previewValue={document?.value ?? ""}
+            onScrollRatio={setPreviewScroll}
+            onFocus={() => handlePaneFocus(p1.id, p1.path)}
+            onSelectPath={(p) => handlePaneSelectPath(p1.id, p)}
+            onClosePane={() => handleClosePane(p1.id)}
+            onSplitRight={() =>
+              setPaneLayoutState((s) => splitPane(s, p1.id, "right", p1.path))
+            }
+            onSplitDown={() =>
+              setPaneLayoutState((s) => splitPane(s, p1.id, "bottom", p1.path))
+            }
+            onDropOnEdge={(edge, dropped) =>
+              handleDropOnPane(p1.id, edge, dropped)
+            }
+          />
+          <div style={{ gridArea: "3 / 2 / 4 / 3" }}>
+            <ResizeHandle
+              axis="x"
+              label="Resize bottom columns"
+              onResize={(d) => {
+                setPaneLayoutState((s) => ({
+                  ...s,
+                  secondarySplitRatio: Math.min(
+                    0.8,
+                    Math.max(0.2, s.secondarySplitRatio + d / 900),
+                  ),
+                }));
+              }}
+            />
+          </div>
+          <EditorPaneView
+            style={{ gridArea: "3 / 3 / 4 / 4" }}
+            pane={p2}
+            isActive={activePaneId === p2.id}
+            totalPanes={panes.length}
+            availableTabs={tabs}
+            showPreview={showPreview && activePaneId === p2.id}
+            previewKind={previewKind}
+            previewScroll={previewScroll}
+            previewValue={document?.value ?? ""}
+            onScrollRatio={setPreviewScroll}
+            onFocus={() => handlePaneFocus(p2.id, p2.path)}
+            onSelectPath={(p) => handlePaneSelectPath(p2.id, p)}
+            onClosePane={() => handleClosePane(p2.id)}
+            onSplitRight={() =>
+              setPaneLayoutState((s) => splitPane(s, p2.id, "right", p2.path))
+            }
+            onSplitDown={() =>
+              setPaneLayoutState((s) => splitPane(s, p2.id, "bottom", p2.path))
+            }
+            onDropOnEdge={(edge, dropped) =>
+              handleDropOnPane(p2.id, edge, dropped)
+            }
+          />
+        </>
+      );
+    }
+
     return null;
   };
 
   const currentLayoutIcon =
     paneLayoutState.layout === "grid-2x2"
       ? Grid2x2
-      : paneLayoutState.layout === "rows-2" || paneLayoutState.layout === "rows-3"
-        ? Rows2
-        : paneLayoutState.layout === "columns-3"
-          ? Columns3
-          : paneLayoutState.layout === "columns-2"
-            ? Columns2
-            : Square;
+      : paneLayoutState.layout === "rows-3"
+        ? Rows3
+        : paneLayoutState.layout === "rows-2"
+          ? Rows2
+          : paneLayoutState.layout === "columns-3"
+            ? Columns3
+            : paneLayoutState.layout === "columns-2"
+              ? Columns2
+              : Square;
 
   return (
     <section className="editor-area island" aria-label="Editors">
@@ -1057,13 +1369,16 @@ export function EditorArea() {
                   type="button"
                   className={paneLayoutState.layout === "single" ? "active" : ""}
                   onClick={() => {
-                    setPaneLayoutState((s) =>
-                      setLayoutType(
+                    setPaneLayoutState((s) => {
+                      const next = setLayoutType(
                         s,
                         "single",
                         tabs.map((t) => t.path),
-                      ),
-                    );
+                      );
+                      const active = next.panes.find((p) => p.id === next.activePaneId);
+                      if (active?.path) activateTab(active.path);
+                      return next;
+                    });
                     setLayoutMenuOpen(false);
                   }}
                 >
@@ -1120,6 +1435,23 @@ export function EditorArea() {
                 >
                   <Columns3 size={13} />
                   Three Columns (1x3)
+                </button>
+                <button
+                  type="button"
+                  className={paneLayoutState.layout === "rows-3" ? "active" : ""}
+                  onClick={() => {
+                    setPaneLayoutState((s) =>
+                      setLayoutType(
+                        s,
+                        "rows-3",
+                        tabs.map((t) => t.path),
+                      ),
+                    );
+                    setLayoutMenuOpen(false);
+                  }}
+                >
+                  <Rows3 size={13} />
+                  Three Rows (3x1)
                 </button>
                 <button
                   type="button"

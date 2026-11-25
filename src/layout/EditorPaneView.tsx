@@ -163,6 +163,11 @@ export function EditorPaneView({
               onChange={(e) => onSelectPath(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             >
+              {!pane.path && (
+                <option value="" disabled>
+                  Select a file...
+                </option>
+              )}
               {availableTabs.map((tab) => (
                 <option key={tab.path} value={tab.path}>
                   {tab.title}

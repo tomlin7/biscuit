@@ -122,14 +122,54 @@ describe("paneLayout", () => {
       expect(next.panes[1].path).toBe("file1.ts");
     });
 
-    it("splits two columns into 2x2 grid when dropping on bottom", () => {
+    it("splits two columns into 2x2 grid when dropping on bottom of column 0", () => {
+      const init = createInitialPaneLayout("file1.ts");
+      const twoCols = splitPane(init, init.panes[0].id, "right", "file2.ts");
+      const quad = splitPane(twoCols, twoCols.panes[0].id, "bottom", "file3.ts");
+
+      expect(quad.layout).toBe("grid-2x2");
+      expect(quad.panes).toHaveLength(4);
+      expect(quad.panes[0].path).toBe("file1.ts");
+      expect(quad.panes[1].path).toBe("file2.ts");
+      expect(quad.panes[2].path).toBe("file3.ts");
+      expect(quad.panes[3].path).toBe("file2.ts");
+    });
+
+    it("splits two columns into 2x2 grid when dropping on bottom of column 1", () => {
       const init = createInitialPaneLayout("file1.ts");
       const twoCols = splitPane(init, init.panes[0].id, "right", "file2.ts");
       const quad = splitPane(twoCols, twoCols.panes[1].id, "bottom", "file3.ts");
 
       expect(quad.layout).toBe("grid-2x2");
       expect(quad.panes).toHaveLength(4);
-      expect(quad.panes[2].path).toBe("file3.ts");
+      expect(quad.panes[0].path).toBe("file1.ts");
+      expect(quad.panes[1].path).toBe("file2.ts");
+      expect(quad.panes[2].path).toBe("file1.ts");
+      expect(quad.panes[3].path).toBe("file3.ts");
+    });
+
+    it("splits two columns into 2x2 grid when dropping on top of column 0", () => {
+      const init = createInitialPaneLayout("file1.ts");
+      const twoCols = splitPane(init, init.panes[0].id, "right", "file2.ts");
+      const quad = splitPane(twoCols, twoCols.panes[0].id, "top", "file3.ts");
+
+      expect(quad.layout).toBe("grid-2x2");
+      expect(quad.panes).toHaveLength(4);
+      expect(quad.panes[0].path).toBe("file3.ts");
+      expect(quad.panes[1].path).toBe("file2.ts");
+      expect(quad.panes[2].path).toBe("file1.ts");
+    });
+
+    it("splits two rows into 2x2 grid when dropping on right of row 1", () => {
+      const init = createInitialPaneLayout("file1.ts");
+      const twoRows = splitPane(init, init.panes[0].id, "bottom", "file2.ts");
+      const quad = splitPane(twoRows, twoRows.panes[1].id, "right", "file3.ts");
+
+      expect(quad.layout).toBe("grid-2x2");
+      expect(quad.panes).toHaveLength(4);
+      expect(quad.panes[0].path).toBe("file1.ts");
+      expect(quad.panes[2].path).toBe("file2.ts");
+      expect(quad.panes[3].path).toBe("file3.ts");
     });
 
     it("splits two columns into 3 columns when dropping on right", () => {
@@ -151,6 +191,12 @@ describe("paneLayout", () => {
       expect(next.layout).toBe("single");
       expect(next.panes).toHaveLength(1);
       expect(next.panes[0].path).toBe("replaced.ts");
+    });
+
+    it("returns state unchanged when targetPaneId does not exist", () => {
+      const init = createInitialPaneLayout("file1.ts");
+      const next = splitPane(init, "non-existent-id", "right", "file2.ts");
+      expect(next).toBe(init);
     });
   });
 
@@ -259,6 +305,24 @@ describe("paneLayout", () => {
       expect(synced.panes[0].path).toBe("file1.ts");
       expect(synced.panes[1].path).toBe("file3.ts");
     });
+
+    it("sets pane path to null when no unused tabs remain and multiple panes exist", () => {
+      const state: PaneLayoutState = {
+        layout: "columns-2",
+        panes: [
+          { id: "p1", path: "file1.ts" },
+          { id: "p2", path: "file2.ts" },
+        ],
+        activePaneId: "p1",
+        splitRatio: 0.5,
+        secondarySplitRatio: 0.5,
+      };
+
+      // file2.ts closed, only file1.ts remains in tabs
+      const synced = syncPanesWithTabs(state, ["file1.ts"]);
+      expect(synced.panes[0].path).toBe("file1.ts");
+      expect(synced.panes[1].path).toBeNull();
+    });
   });
 
   describe("restorePaneLayoutFromSession", () => {
@@ -268,6 +332,7 @@ describe("paneLayout", () => {
         panePaths: ["1.ts", "2.ts", "3.ts", "4.ts"],
         activePaneIndex: 2,
         splitRatio: 0.6,
+        secondarySplitRatio: 0.7,
       };
       const restored = restorePaneLayoutFromSession(session, "1.ts");
       expect(restored.layout).toBe("grid-2x2");
@@ -275,6 +340,7 @@ describe("paneLayout", () => {
       expect(restored.panes[2].path).toBe("3.ts");
       expect(restored.activePaneId).toBe(restored.panes[2].id);
       expect(restored.splitRatio).toBe(0.6);
+      expect(restored.secondarySplitRatio).toBe(0.7);
     });
 
     it("restores legacy split session", () => {

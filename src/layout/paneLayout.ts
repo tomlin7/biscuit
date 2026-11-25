@@ -136,11 +136,18 @@ export function setLayoutType(
     ? state.activePaneId
     : currentPanes[0]?.id ?? "pane-primary";
 
+  const defaultSplit =
+    targetLayout === "columns-3" || targetLayout === "rows-3" ? 0.33 : state.splitRatio;
+  const defaultSecondarySplit =
+    targetLayout === "columns-3" || targetLayout === "rows-3" ? 0.67 : state.secondarySplitRatio;
+
   return {
     ...state,
     layout: targetLayout,
     panes: currentPanes,
     activePaneId: nextActiveId,
+    splitRatio: defaultSplit,
+    secondarySplitRatio: defaultSecondarySplit,
   };
 }
 
@@ -162,12 +169,15 @@ export function splitPane(
     };
   }
 
+  const targetIdx = state.panes.findIndex((p) => p.id === targetPaneId);
+  if (targetIdx === -1) {
+    return state;
+  }
+
   const newPane: EditorPaneModel = {
     id: generatePaneId(),
     path: newPath,
   };
-
-  const targetIdx = Math.max(0, state.panes.findIndex((p) => p.id === targetPaneId));
 
   if (state.layout === "single") {
     if (edge === "left") {
@@ -215,23 +225,61 @@ export function splitPane(
         layout: "columns-3",
         panes: nextPanes,
         activePaneId: newPane.id,
+        splitRatio: 0.33,
+        secondarySplitRatio: 0.67,
       };
     }
-    // Dropping top or bottom converts 2 columns to a 2x2 grid!
-    const nextPanes = [...state.panes];
-    // Fill up to 4 panes
-    nextPanes.push(newPane);
-    while (nextPanes.length < 4) {
-      nextPanes.push({
-        id: generatePaneId(),
-        path: nextPanes[0]?.path ?? null,
-      });
+
+    // Dropping top or bottom on columns-2 converts to 2x2 grid
+    // Grid cells: [0: top-left, 1: top-right, 2: bottom-left, 3: bottom-right]
+    const col0 = state.panes[0];
+    const col1 = state.panes[1];
+    let nextPanes: EditorPaneModel[];
+
+    if (targetIdx === 0) {
+      if (edge === "top") {
+        nextPanes = [
+          newPane,
+          col1,
+          col0,
+          { id: generatePaneId(), path: col1.path },
+        ];
+      } else {
+        // edge === "bottom"
+        nextPanes = [
+          col0,
+          col1,
+          newPane,
+          { id: generatePaneId(), path: col1.path },
+        ];
+      }
+    } else {
+      // targetIdx === 1 (right column)
+      if (edge === "top") {
+        nextPanes = [
+          col0,
+          newPane,
+          { id: generatePaneId(), path: col0.path },
+          col1,
+        ];
+      } else {
+        // edge === "bottom"
+        nextPanes = [
+          col0,
+          col1,
+          { id: generatePaneId(), path: col0.path },
+          newPane,
+        ];
+      }
     }
+
     return {
       ...state,
       layout: "grid-2x2",
-      panes: nextPanes.slice(0, 4),
+      panes: nextPanes,
       activePaneId: newPane.id,
+      splitRatio: state.splitRatio,
+      secondarySplitRatio: 0.5,
     };
   }
 
@@ -246,48 +294,113 @@ export function splitPane(
         layout: "rows-3",
         panes: nextPanes,
         activePaneId: newPane.id,
+        splitRatio: 0.33,
+        secondarySplitRatio: 0.67,
       };
     }
-    // Dropping left or right converts 2 rows to a 2x2 grid!
-    const nextPanes = [...state.panes];
-    nextPanes.push(newPane);
-    while (nextPanes.length < 4) {
-      nextPanes.push({
-        id: generatePaneId(),
-        path: nextPanes[0]?.path ?? null,
-      });
+
+    // Dropping left or right on rows-2 converts to 2x2 grid
+    // Grid cells: [0: top-left, 1: top-right, 2: bottom-left, 3: bottom-right]
+    const row0 = state.panes[0];
+    const row1 = state.panes[1];
+    let nextPanes: EditorPaneModel[];
+
+    if (targetIdx === 0) {
+      if (edge === "left") {
+        nextPanes = [
+          newPane,
+          row0,
+          row1,
+          { id: generatePaneId(), path: row1.path },
+        ];
+      } else {
+        // edge === "right"
+        nextPanes = [
+          row0,
+          newPane,
+          row1,
+          { id: generatePaneId(), path: row1.path },
+        ];
+      }
+    } else {
+      // targetIdx === 1 (bottom row)
+      if (edge === "left") {
+        nextPanes = [
+          row0,
+          { id: generatePaneId(), path: row0.path },
+          newPane,
+          row1,
+        ];
+      } else {
+        // edge === "right"
+        nextPanes = [
+          row0,
+          { id: generatePaneId(), path: row0.path },
+          row1,
+          newPane,
+        ];
+      }
     }
+
     return {
       ...state,
       layout: "grid-2x2",
-      panes: nextPanes.slice(0, 4),
+      panes: nextPanes,
       activePaneId: newPane.id,
+      splitRatio: 0.5,
+      secondarySplitRatio: state.splitRatio,
     };
   }
 
   if (state.layout === "columns-3") {
     if (edge === "top" || edge === "bottom") {
+      const p0 = state.panes[0];
+      const p1 = state.panes[1];
+      const p2 = state.panes[2];
+      let nextPanes: EditorPaneModel[];
+      if (targetIdx === 0) {
+        nextPanes = edge === "top" ? [newPane, p1, p0, p2] : [p0, p1, newPane, p2];
+      } else if (targetIdx === 1) {
+        nextPanes = edge === "top" ? [p0, newPane, p1, p2] : [p0, p1, p2, newPane];
+      } else {
+        nextPanes = edge === "top" ? [p0, newPane, p1, p2] : [p0, p1, p2, newPane];
+      }
       return {
         ...state,
         layout: "grid-2x2",
-        panes: [state.panes[0], state.panes[1], state.panes[2], newPane],
+        panes: nextPanes,
         activePaneId: newPane.id,
+        splitRatio: 0.5,
+        secondarySplitRatio: 0.5,
       };
     }
   }
 
   if (state.layout === "rows-3") {
     if (edge === "left" || edge === "right") {
+      const p0 = state.panes[0];
+      const p1 = state.panes[1];
+      const p2 = state.panes[2];
+      let nextPanes: EditorPaneModel[];
+      if (targetIdx === 0) {
+        nextPanes = edge === "left" ? [newPane, p0, p1, p2] : [p0, newPane, p1, p2];
+      } else if (targetIdx === 1) {
+        nextPanes = edge === "left" ? [p0, p1, newPane, p2] : [p0, p1, p2, newPane];
+      } else {
+        nextPanes = edge === "left" ? [p0, p1, newPane, p2] : [p0, p1, p2, newPane];
+      }
       return {
         ...state,
         layout: "grid-2x2",
-        panes: [state.panes[0], state.panes[1], state.panes[2], newPane],
+        panes: nextPanes,
         activePaneId: newPane.id,
+        splitRatio: 0.5,
+        secondarySplitRatio: 0.5,
       };
     }
   }
 
-  // If already at grid-2x2, drop into target pane or replace
+  // If already at grid-2x2 (or unrecognized), drop into target pane or replace
   return {
     ...state,
     panes: state.panes.map((p, idx) => (idx === targetIdx ? { ...p, path: newPath } : p)),
@@ -310,7 +423,9 @@ export function closePane(state: PaneLayoutState, paneIdToClose: string): PaneLa
     nextLayout = "single";
   } else if (remainingPanes.length === 2) {
     nextLayout =
-      state.layout === "rows-3" || state.layout === "rows-2" ? "rows-2" : "columns-2";
+      state.layout === "rows-3" || state.layout === "rows-2" || state.layout === "split-top-two-bottom"
+        ? "rows-2"
+        : "columns-2";
   } else if (remainingPanes.length === 3) {
     nextLayout = state.layout === "rows-3" ? "rows-3" : "columns-3";
   }
@@ -368,10 +483,9 @@ export function syncPanesWithTabs(
   const nextPanes = state.panes.map((pane) => {
     if (pane.path && !tabSet.has(pane.path)) {
       changed = true;
-      // find another tab not already displayed in another pane if possible
-      const fallback = currentTabs.find((t) => !state.panes.some((p) => p.path === t)) ??
-        currentTabs[0] ??
-        null;
+      // find an open tab not already displayed in another pane
+      const unusedTab = currentTabs.find((t) => !state.panes.some((p) => p.path === t));
+      const fallback = unusedTab ?? (state.panes.length === 1 ? currentTabs[0] ?? null : null);
       return { ...pane, path: fallback };
     }
     return pane;
@@ -396,6 +510,7 @@ export function restorePaneLayoutFromSession(
     paneLayout?: PaneLayoutType;
     panePaths?: string[];
     activePaneIndex?: number;
+    secondarySplitRatio?: number;
   } | null,
   activePath: string | null,
 ): PaneLayoutState {
@@ -421,7 +536,8 @@ export function restorePaneLayoutFromSession(
       panes,
       activePaneId: panes[activeIdx]?.id ?? panes[0].id,
       splitRatio: typeof session.splitRatio === "number" ? session.splitRatio : 0.5,
-      secondarySplitRatio: 0.5,
+      secondarySplitRatio:
+        typeof session.secondarySplitRatio === "number" ? session.secondarySplitRatio : 0.5,
     };
   }
 
