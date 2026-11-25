@@ -619,6 +619,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.importAiSession(),
   },
   {
+    id: "workbench.action.newAiChat",
+    title: "New AI Chat",
+    category: "AI",
+    run: (ctx) => ctx.newAiChat(),
+  },
+  {
     id: "workbench.view.explorer",
     title: "Show Explorer",
     category: "View",
