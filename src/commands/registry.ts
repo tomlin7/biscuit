@@ -1432,5 +1432,10 @@ export const COMMANDS: Command[] = [
     keybinding: "F9",
     run: (ctx) => ctx.toggleBreakpointCurrentLine(),
   },
-
+  {
+    id: "t3d.openDocumentation",
+    title: "Open Documentation",
+    category: "Help",
+    run: (ctx) => ctx.openDocumentation(),
+  },
 ];

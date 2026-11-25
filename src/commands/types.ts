@@ -237,6 +237,7 @@ export type CommandContext = {
   toggleLineEnding: () => void;
   continueDebugging: () => void;
   toggleBreakpointCurrentLine: () => void;
+  openDocumentation: () => void;
 };
 
 export type Command = {

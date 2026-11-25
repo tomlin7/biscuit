@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import "./AppShell.css";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
@@ -1420,6 +1420,11 @@ function ShellChrome() {
         }
         setSidebarMode("debug");
         setSidebarOpen(true);
+      },
+      openDocumentation: () => {
+        void openUrl("https://github.com/tomlin7/T3D#readme").catch(() => {
+          /* ignore if opener unavailable outside Tauri */
+        });
       },
     }),
     [
