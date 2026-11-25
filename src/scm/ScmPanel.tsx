@@ -216,6 +216,18 @@ export function ScmPanel({ onBranch }: Props) {
             className="scm-panel__refresh"
             disabled={acting || busy}
             onClick={() => {
+              const name = window.prompt("New branch name")?.trim();
+              if (!name) return;
+              void run("git_create_branch", { branch: name });
+            }}
+          >
+            New branch
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || busy}
+            onClick={() => {
               const message = window.prompt("Stash message (optional)") ?? undefined;
               void run("git_stash_push", { message: message?.trim() || null });
             }}
