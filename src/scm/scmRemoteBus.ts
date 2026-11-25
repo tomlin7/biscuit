@@ -9,7 +9,8 @@ export type ScmRemoteAction =
   | "stageAll"
   | "unstageAll"
   | "discardAll"
-  | "copyRelative";
+  | "copyRelative"
+  | "copyAbsolute";
 
 type Listener = (action: ScmRemoteAction) => void;
 

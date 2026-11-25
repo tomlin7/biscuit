@@ -138,6 +138,10 @@ export type CommandContext = {
   cycleAiMaxToolRounds: () => void;
   revealActiveParentInExplorer: () => void;
   gitCopyRelativePaths: () => void;
+  gitCopyAbsolutePaths: () => void;
+ cycleAiRequestTimeout: () => void;
+ gitSelectAll: () => void;
+  gitDeselectAll: () => void;
 };
 
 export type Command = {
