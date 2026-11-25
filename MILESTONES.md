@@ -232,6 +232,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.224.0** | Clear AI chat from palette | shipped |
 | **0.225.0** | Open explorer file to the side | shipped |
 | **0.226.0** | Toggle relative line numbers from palette | shipped |
+| **0.227.0** | Status bar word wrap column cycle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

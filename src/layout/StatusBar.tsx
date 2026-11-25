@@ -220,6 +220,21 @@ export function StatusBar({
             {settings.editor.wordWrap ? "Wrap" : "No Wrap"}
           </button>
         ) : null}
+        {document && document.language !== "image" && settings.editor.wordWrap ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Cycle word wrap column"
+            onClick={() => {
+              const order = [80, 100, 120];
+              const idx = order.indexOf(settings.editor.wordWrapColumn);
+              const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 80;
+              updateEditor({ wordWrapColumn: next });
+            }}
+          >
+            Wrap Col {settings.editor.wordWrapColumn}
+          </button>
+        ) : null}
         {document && document.language !== "image" ? (
           <button
             type="button"
