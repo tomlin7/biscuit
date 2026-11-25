@@ -25,6 +25,12 @@ body {
   user-select: none;
 }
 
+/* Win11 acrylic crease: clear shell canvas; islands stay opaque. */
+html[data-chrome-acrylic] body,
+html[data-chrome-acrylic] #root {
+  background: transparent;
+}
+
 button,
 input,
 textarea,
