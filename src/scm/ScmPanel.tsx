@@ -196,6 +196,9 @@ export function ScmPanel({ onBranch }: Props) {
         const name = window.prompt("Branch to check out")?.trim();
         if (!name) return;
         void run("git_checkout", { branch: name });
+      } else if (action === "stageAll") {
+        if (unstaged.length === 0) return;
+        void run("git_stage", { paths: unstaged.map((entry) => entry.path) });
       } else if (action === "discardAll") {
         if (unstaged.length === 0) return;
         const ok = window.confirm(

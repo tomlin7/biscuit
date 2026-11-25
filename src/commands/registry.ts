@@ -800,4 +800,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitDiscardAll(),
   },
+  {
+    id: "git.stageAll",
+    title: "Git: Stage All Changes",
+    category: "Git",
+    run: (ctx) => ctx.gitStageAll(),
+  },
 ];

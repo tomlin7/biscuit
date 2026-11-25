@@ -730,6 +730,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("discardAll");
       },
+      gitStageAll: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("stageAll");
+      },
     }),
     [
       openFolder,
