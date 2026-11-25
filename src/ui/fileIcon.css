@@ -15,6 +15,10 @@
   color: #a3a3a3;
 }
 
+.file-icon--env {
+  color: #4ade80;
+}
+
 .file-icon--image {
   color: #34d399;
 }

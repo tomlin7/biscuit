@@ -5,9 +5,7 @@ import {
   Command,
   Copy,
   Flame,
-  History,
   Mic,
-  PanelRightClose,
   Plus,
   Search,
   Settings2,
@@ -129,20 +127,13 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         <div className="ai-panel__actions">
           <IconButton
             icon={Search}
-            label="Search chats"
-            size={14}
-            active={showHistory}
-            onClick={() => setShowHistory(!showHistory)}
-          />
-          <IconButton
-            icon={History}
-            label="History"
+            label="Chat history"
             size={14}
             active={showHistory}
             onClick={() => setShowHistory(!showHistory)}
           />
           <IconButton icon={Plus} label="New chat" size={14} onClick={newChat} />
-          <IconButton icon={PanelRightClose} label="Hide AI" size={14} onClick={toggleAi} />
+          <IconButton icon={X} label="Hide AI" size={14} onClick={toggleAi} />
         </div>
       </div>
 
@@ -262,8 +253,10 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         </div>
       </div>
 
+      {(document && !attachments.some((a) => a.path === document.path)) ||
+      attachments.length > 0 ? (
       <div className="ai-panel__chips">
-        {document ? (
+        {document && !attachments.some((a) => a.path === document.path) ? (
           <button
             type="button"
             className="ai-panel__chip"
@@ -290,17 +283,14 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             </button>
           </span>
         ))}
-        <button
-          type="button"
-          className="ai-panel__chip"
-          onClick={onOpenSearch}
-        >
+      </div>
+      ) : null}
+
+      <div className="ai-panel__footer">
+        <button type="button" className="ai-panel__pill" onClick={onOpenSearch}>
           <Search size={12} strokeWidth={1.75} aria-hidden />
           Search
         </button>
-      </div>
-
-      <div className="ai-panel__footer">
         <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
           <Settings2 size={12} strokeWidth={1.75} aria-hidden />
           Default

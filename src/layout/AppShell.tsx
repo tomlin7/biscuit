@@ -307,16 +307,35 @@ function ShellChrome() {
   const workspaceStyle = {
     gridTemplateColumns: [
       sidebarOpen ? `${sidebarWidth}px` : "0fr",
-      sidebarOpen ? "6px" : "0px",
+      sidebarOpen ? "var(--gap-shell)" : "0px",
       "minmax(320px, 1fr)",
-      aiOpen ? "6px" : "0px",
+      aiOpen ? "var(--gap-shell)" : "0px",
       aiOpen ? `${aiWidth}px` : "0fr",
     ].join(" "),
   } as const;
 
   return (
     <div className="app-shell">
-      <TitleBar onOpenPalette={openPalette} onOpenSettings={openSettings} />
+      <TitleBar
+        sidebarMode={sidebarMode}
+        onOpenSettings={openSettings}
+        onShowExplorer={() => {
+          setSidebarMode("explorer");
+          setSidebarOpen(true);
+        }}
+        onShowSearch={() => {
+          setSidebarMode("search");
+          setSidebarOpen(true);
+        }}
+        onShowOutline={() => {
+          setSidebarMode("outline");
+          setSidebarOpen(true);
+        }}
+        onShowScm={() => {
+          setSidebarMode("scm");
+          setSidebarOpen(true);
+        }}
+      />
       <div className="app-shell__workspace" style={workspaceStyle}>
         <div
           className="app-shell__sidebar-slot"
@@ -326,7 +345,6 @@ function ShellChrome() {
             mode={sidebarMode}
             onModeChange={setSidebarMode}
             onBranch={setGitBranch}
-            onToggleTerminal={toggleTerminal}
             treeFilter={treeFilter}
             onTreeFilter={setTreeFilter}
             hideDotfiles={hideDotfiles}
@@ -388,7 +406,15 @@ function ShellChrome() {
       <StatusBar
         onOpenProblems={openProblems}
         onOpenSettings={openSettings}
-        onOpenScm={() => setSidebarMode("scm")}
+        onOpenScm={() => {
+          setSidebarMode("scm");
+          setSidebarOpen(true);
+        }}
+        onToggleTerminal={toggleTerminal}
+        onOpenDebug={() => {
+          setSidebarMode("debug");
+          setSidebarOpen(true);
+        }}
         gitBranch={gitBranch}
       />
       <CommandPalette

@@ -2,12 +2,14 @@ mod pty;
 mod git;
 mod extensions;
 mod debug;
+mod fsops;
 
 use debug::{debug_launch, debug_stop, DebugState};
 use extensions::{
     install_sample_extension, list_extensions, set_extension_enabled,
 };
-use git::git_summary;
+use fsops::{fs_create_file, fs_mkdir, fs_remove, fs_rename};
+use git::{git_commit, git_stage, git_summary, git_unstage};
 use pty::{pty_kill, pty_resize, pty_spawn, pty_write, PtyState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -24,11 +26,18 @@ pub fn run() {
             pty_resize,
             pty_kill,
             git_summary,
+            git_stage,
+            git_unstage,
+            git_commit,
             list_extensions,
             set_extension_enabled,
             install_sample_extension,
             debug_launch,
-            debug_stop
+            debug_stop,
+            fs_create_file,
+            fs_mkdir,
+            fs_rename,
+            fs_remove
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

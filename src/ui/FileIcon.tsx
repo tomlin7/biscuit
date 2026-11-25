@@ -49,7 +49,7 @@ export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
     return <GitBranch size={size} strokeWidth={1.75} className="file-icon file-icon--git" />;
   }
   if (lower.startsWith(".env")) {
-    return <Settings size={size} strokeWidth={1.75} className="file-icon file-icon--config" />;
+    return <Settings size={size} strokeWidth={1.75} className="file-icon file-icon--env" />;
   }
   if (ext === "ts") return <Badge text="TS" tone="ts" />;
   if (ext === "tsx") return <Badge text="TX" tone="ts" />;

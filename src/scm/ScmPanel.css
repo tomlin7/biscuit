@@ -62,17 +62,16 @@
   flex: 1;
 }
 
-.scm-panel__row {
+.scm-panel__file {
   display: flex;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
-  margin-bottom: 2px;
-  border-radius: 6px;
+  padding: 0;
   text-align: left;
-  color: var(--fg-muted);
-  font-size: var(--font-size-sm);
+  color: inherit;
+  background: transparent;
 }
 
 .scm-panel__row:hover {
@@ -91,4 +90,47 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.scm-panel__commit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scm-panel__message {
+  width: 100%;
+  min-height: 64px;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: var(--bg-input);
+  color: var(--fg);
+  resize: vertical;
+}
+
+.scm-panel__commit-btn,
+.scm-panel__action {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg-active);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+}
+
+.scm-panel__commit-btn:disabled,
+.scm-panel__action:disabled {
+  opacity: 0.4;
+}
+
+.scm-panel__action {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--fg-muted);
+}
+
+.scm-panel__action:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--bg-hover);
 }

@@ -23,6 +23,24 @@ export function basename(path: string): string {
   return parts[parts.length - 1] ?? path;
 }
 
+export function parentPath(path: string): string | null {
+  const trimmed = path.replace(/[\\/]+$/, "");
+  const sep = trimmed.includes("\\") ? "\\" : "/";
+  const idx = trimmed.lastIndexOf(sep);
+  if (idx < 0) return null;
+  if (/^[A-Za-z]:$/.test(trimmed.slice(0, idx))) {
+    return `${trimmed.slice(0, idx)}\\`;
+  }
+  if (idx === 0) return sep;
+  return trimmed.slice(0, idx);
+}
+
+export function isSafeEntryName(name: string): boolean {
+  const trimmed = name.trim();
+  if (!trimmed || trimmed === "." || trimmed === "..") return false;
+  return !/[\\/:*?"<>|]/.test(trimmed);
+}
+
 export function joinPath(parent: string, child: string): string {
   if (/^[A-Za-z]:[\\/]?$/.test(parent) || parent.endsWith("/") || parent.endsWith("\\")) {
     return `${parent.replace(/[\\/]+$/, "")}${parent.includes("\\") ? "\\" : "/"}${child}`;

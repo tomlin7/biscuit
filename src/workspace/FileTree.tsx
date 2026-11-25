@@ -1,9 +1,17 @@
-import { useMemo } from "react";
+import { useMemo, useState, type MouseEvent } from "react";
 import { ChevronRight } from "lucide-react";
 import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
+import { parentPath } from "./path";
 import { FileIcon } from "../ui/FileIcon";
 import "./FileTree.css";
+
+type MenuState = {
+  x: number;
+  y: number;
+  path: string;
+  kind: "file" | "directory";
+};
 
 function filterTree(
   nodes: TreeNode[],
@@ -35,10 +43,12 @@ function TreeRows({
   nodes,
   depth,
   forceExpand,
+  onMenu,
 }: {
   nodes: TreeNode[];
   depth: number;
   forceExpand: boolean;
+  onMenu: (event: MouseEvent, node: TreeNode) => void;
 }) {
   const { expanded, document, toggleDirectory, openFile } = useWorkspace();
 
@@ -57,6 +67,7 @@ function TreeRows({
                 className="file-tree__row"
                 style={{ paddingLeft }}
                 onClick={() => void toggleDirectory(node.path)}
+                onContextMenu={(event) => onMenu(event, node)}
               >
                 <ChevronRight
                   size={12}
@@ -76,6 +87,7 @@ function TreeRows({
                   nodes={node.children}
                   depth={depth + 1}
                   forceExpand={forceExpand}
+                  onMenu={onMenu}
                 />
               ) : null}
             </div>
@@ -91,6 +103,7 @@ function TreeRows({
             }
             style={{ paddingLeft }}
             onClick={() => void openFile(node.path)}
+            onContextMenu={(event) => onMenu(event, node)}
           >
             <span className="file-tree__chevron-spacer" aria-hidden />
             <FileIcon name={node.name} kind="file" />
@@ -108,7 +121,9 @@ type Props = {
 };
 
 export function FileTree({ filter = "", hideDotfiles = false }: Props) {
-  const { rootPath, tree, treeError, busy, openFolder } = useWorkspace();
+  const { rootPath, tree, treeError, busy, openFolder, createEntry, renameEntry, deleteEntry } =
+    useWorkspace();
+  const [menu, setMenu] = useState<MenuState | null>(null);
   const filtered = useMemo(
     () => filterTree(tree, filter, hideDotfiles),
     [tree, filter, hideDotfiles],
@@ -120,7 +135,7 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
       <div className="file-tree file-tree--empty">
         <p className="file-tree__hint">No folder open.</p>
         <button type="button" className="file-tree__cta" onClick={() => void openFolder()}>
-          Open Folder
+          Open folder
         </button>
       </div>
     );
@@ -133,8 +148,79 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
       {filtered.length === 0 && !busy ? (
         <p className="file-tree__hint">{filter ? "No matches." : "Folder is empty."}</p>
       ) : (
-        <TreeRows nodes={filtered} depth={0} forceExpand={forceExpand} />
+        <TreeRows
+          nodes={filtered}
+          depth={0}
+          forceExpand={forceExpand}
+          onMenu={(event, node) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setMenu({ x: event.clientX, y: event.clientY, path: node.path, kind: node.kind });
+          }}
+        />
       )}
+      {menu && rootPath ? (
+        <div
+          className="file-tree__menu-backdrop"
+          onClick={() => setMenu(null)}
+          onContextMenu={(event) => {
+            event.preventDefault();
+            setMenu(null);
+          }}
+        >
+          <span
+            className="file-tree__menu"
+            style={{ left: menu.x, top: menu.y }}
+            role="menu"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const parent = menu.kind === "directory" ? menu.path : parentPath(menu.path);
+                setMenu(null);
+                if (parent) void createEntry(parent, "file");
+              }}
+            >
+              New file
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const parent = menu.kind === "directory" ? menu.path : parentPath(menu.path);
+                setMenu(null);
+                if (parent) void createEntry(parent, "directory");
+              }}
+            >
+              New folder
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const path = menu.path;
+                setMenu(null);
+                void renameEntry(path);
+              }}
+            >
+              Rename
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const path = menu.path;
+                setMenu(null);
+                void deleteEntry(path);
+              }}
+            >
+              Delete
+            </button>
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }

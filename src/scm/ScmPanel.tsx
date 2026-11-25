@@ -25,6 +25,8 @@ export function ScmPanel({ onBranch }: Props) {
   const [summary, setSummary] = useState<GitSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [acting, setActing] = useState(false);
 
   const refresh = useCallback(async () => {
     if (!rootPath) {
@@ -51,6 +53,24 @@ export function ScmPanel({ onBranch }: Props) {
     void refresh();
   }, [refresh]);
 
+  const run = async (command: string, args: Record<string, unknown>) => {
+    if (!rootPath) return false;
+    setActing(true);
+    setError(null);
+    try {
+      await invoke(command, { cwd: rootPath, ...args });
+      await refresh();
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      return false;
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const staged = summary?.entries.filter((entry) => entry.index !== " " && entry.index !== "?") ?? [];
+
   if (!rootPath) {
     return (
       <div className="scm-panel scm-panel--empty">
@@ -75,6 +95,28 @@ export function ScmPanel({ onBranch }: Props) {
         </button>
       </div>
       {error ? <p className="scm-panel__error">{error}</p> : null}
+      <div className="scm-panel__commit">
+        <textarea
+          className="scm-panel__message"
+          rows={3}
+          placeholder="Commit message"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+        />
+        <button
+          type="button"
+          className="scm-panel__commit-btn"
+          disabled={acting || busy || !message.trim() || staged.length === 0}
+          onClick={() => {
+            const text = message.trim();
+            void run("git_commit", { message: text }).then((ok) => {
+              if (ok) setMessage("");
+            });
+          }}
+        >
+          Commit
+        </button>
+      </div>
       {loading && !summary ? <p className="scm-panel__hint">Loading…</p> : null}
       {summary && summary.entries.length === 0 ? (
         <p className="scm-panel__hint">Working tree clean.</p>
@@ -82,18 +124,40 @@ export function ScmPanel({ onBranch }: Props) {
       <ul className="scm-panel__list">
         {summary?.entries.map((entry) => (
           <li key={entry.path}>
-            <button
-              type="button"
-              className="scm-panel__row"
-              onClick={() => {
-                const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
-                void openFile(joinPath(rootPath, relative));
-              }}
-              title={entry.path}
-            >
-              <span className="scm-panel__status">{entry.status}</span>
-              <span className="scm-panel__path">{entry.path}</span>
-            </button>
+            <div className="scm-panel__row">
+              <button
+                type="button"
+                className="scm-panel__file"
+                onClick={() => {
+                  const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+                  void openFile(joinPath(rootPath, relative));
+                }}
+                title={entry.path}
+              >
+                <span className="scm-panel__status">{entry.status}</span>
+                <span className="scm-panel__path">{entry.path}</span>
+              </button>
+              {entry.worktree !== " " || entry.index === "?" ? (
+                <button
+                  type="button"
+                  className="scm-panel__action"
+                  disabled={acting}
+                  onClick={() => void run("git_stage", { paths: [entry.path] })}
+                >
+                  Stage
+                </button>
+              ) : null}
+              {entry.index !== " " && entry.index !== "?" ? (
+                <button
+                  type="button"
+                  className="scm-panel__action"
+                  disabled={acting}
+                  onClick={() => void run("git_unstage", { paths: [entry.path] })}
+                >
+                  Unstage
+                </button>
+              ) : null}
+            </div>
           </li>
         ))}
       </ul>

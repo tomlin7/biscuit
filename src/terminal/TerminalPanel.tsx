@@ -36,7 +36,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               cursor: "#1a1a1a",
             }
           : {
-              background: "#121212",
+              background: "#141414",
               foreground: "#e8e8e8",
               cursor: "#e8e8e8",
             },
@@ -99,9 +99,14 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       fit.fit();
     };
     window.addEventListener("resize", onWinResize);
+    const observer = new ResizeObserver(() => {
+      fit.fit();
+    });
+    observer.observe(hostRef.current);
 
     return () => {
       disposed = true;
+      observer.disconnect();
       window.removeEventListener("resize", onWinResize);
       unlistenData?.();
       unlistenExit?.();

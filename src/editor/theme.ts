@@ -14,7 +14,7 @@ export function defineT3dThemes(monaco: Monaco) {
     inherit: true,
     rules: [],
     colors: {
-      "editor.background": "#121212",
+      "editor.background": "#141414",
       "editor.foreground": "#e8e8e8",
       "editorLineNumber.foreground": "#5c5c5c",
       "editorLineNumber.activeForeground": "#8a8a8a",
@@ -28,7 +28,7 @@ export function defineT3dThemes(monaco: Monaco) {
       "editorWidget.border": "#2a2a2a",
       "editorSuggestWidget.background": "#1a1a1a",
       "editorSuggestWidget.border": "#2a2a2a",
-      "editorGutter.background": "#121212",
+      "editorGutter.background": "#141414",
       "scrollbarSlider.background": "#ffffff22",
       "scrollbarSlider.hoverBackground": "#ffffff33",
     },

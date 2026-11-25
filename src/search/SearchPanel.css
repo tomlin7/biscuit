@@ -15,7 +15,6 @@
   width: 100%;
   padding: 8px 10px;
   border-radius: var(--radius-control);
-  border: 1px solid var(--border);
   background: var(--bg-input);
   color: var(--fg);
   font: inherit;
@@ -24,7 +23,7 @@
 }
 
 .search-panel__input:focus {
-  border-color: var(--accent);
+  background: var(--bg-hover);
 }
 
 .search-panel__hint {

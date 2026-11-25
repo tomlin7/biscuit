@@ -16,9 +16,10 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.8.0** | Integrated terminal (PTY) | shipped |
 | **0.9.0** | Git SCM view | shipped |
 | **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipped |
-| **0.11.0** | Island layout fidelity — resize/collapse, Lucide, UI font, settings | shipping |
+| **0.11.0** | Island layout fidelity — resize/collapse, Lucide, UI font, settings | shipped |
+| **0.12.0** | Explorer create, rename, and delete | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
 
-Ship **0.11.0**: match the reference island chrome — resizable/collapsible panels, Lucide icons, IBM Plex Sans UI, settings, denser chrome with real controls.
+Ship the next workspace milestone on `0.x`. **1.0.0** stays an owner decision.

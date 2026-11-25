@@ -15,7 +15,7 @@ pub struct GitSummary {
     pub entries: Vec<GitStatusEntry>,
 }
 
-fn run_git(cwd: &str, args: &[&str]) -> Result<String, String> {
+fn run_git(cwd: &str, args: &[String]) -> Result<String, String> {
     let output = Command::new("git")
         .args(args)
         .current_dir(cwd)
@@ -47,10 +47,10 @@ fn describe_status(index: char, worktree: char) -> String {
 
 #[tauri::command]
 pub fn git_summary(cwd: String) -> Result<GitSummary, String> {
-    let branch = run_git(&cwd, &["rev-parse", "--abbrev-ref", "HEAD"])?
+    let branch = run_git(&cwd, &["rev-parse".into(), "--abbrev-ref".into(), "HEAD".into()])?
         .trim()
         .to_string();
-    let porcelain = run_git(&cwd, &["status", "--porcelain=v1", "-u"])?;
+    let porcelain = run_git(&cwd, &["status".into(), "--porcelain=v1".into(), "-u".into()])?;
     let mut entries = Vec::new();
 
     for line in porcelain.lines() {
@@ -74,4 +74,38 @@ pub fn git_summary(cwd: String) -> Result<GitSummary, String> {
     }
 
     Ok(GitSummary { branch, entries })
+}
+
+fn git_paths(cwd: &str, verb: &str, extra: &[&str], paths: Vec<String>) -> Result<(), String> {
+    if paths.is_empty() {
+        return Err("No files selected".into());
+    }
+    let mut args = vec![verb.to_string()];
+    for flag in extra {
+        args.push((*flag).to_string());
+    }
+    args.push("--".into());
+    args.extend(paths);
+    run_git(cwd, &args)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_stage(cwd: String, paths: Vec<String>) -> Result<(), String> {
+    git_paths(&cwd, "add", &[], paths)
+}
+
+#[tauri::command]
+pub fn git_unstage(cwd: String, paths: Vec<String>) -> Result<(), String> {
+    git_paths(&cwd, "restore", &["--staged"], paths)
+}
+
+#[tauri::command]
+pub fn git_commit(cwd: String, message: String) -> Result<(), String> {
+    let message = message.trim();
+    if message.is_empty() {
+        return Err("Commit message is empty".into());
+    }
+    run_git(&cwd, &["commit".into(), "-m".into(), message.to_string()])?;
+    Ok(())
 }

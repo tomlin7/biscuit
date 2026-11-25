@@ -7,10 +7,18 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { listDirectory, type TreeNode } from "./fsTree";
-import { basename, isProbablyTextFile, languageFromPath } from "./path";
+import {
+  basename,
+  isProbablyTextFile,
+  isSafeEntryName,
+  joinPath,
+  languageFromPath,
+  parentPath,
+} from "./path";
 
 export type EditorTab = {
   path: string;
@@ -55,6 +63,9 @@ export type WorkspaceState = {
   setCursor: (line: number, column: number) => void;
   clearRevealTarget: () => void;
   save: () => Promise<void>;
+  createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
+  renameEntry: (path: string) => Promise<void>;
+  deleteEntry: (path: string) => Promise<void>;
 };
 
 const WorkspaceContext = createContext<WorkspaceState | null>(null);
@@ -78,6 +89,22 @@ function updateTreeNode(
 
 function isDirty(tab: EditorTab): boolean {
   return tab.value !== tab.baseline;
+}
+
+function mergeDirectory(prev: TreeNode[] | undefined, next: TreeNode[]): TreeNode[] {
+  const previous = new Map((prev ?? []).map((node) => [node.path, node]));
+  return next.map((node) => {
+    const old = previous.get(node.path);
+    if (node.kind === "directory" && old?.kind === "directory" && old.loaded) {
+      return { ...node, children: old.children, loaded: true };
+    }
+    return node;
+  });
+}
+
+function withPrefix(path: string): string {
+  const sep = path.includes("\\") ? "\\" : "/";
+  return path.endsWith(sep) ? path : `${path}${sep}`;
 }
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
@@ -299,6 +326,131 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const reloadDirectory = useCallback(
+    async (dir: string) => {
+      const children = await listDirectory(dir);
+      if (rootPath && dir === rootPath) {
+        setTree((current) => mergeDirectory(current, children));
+        return;
+      }
+      setTree((current) =>
+        updateTreeNode(current, dir, (node) => ({
+          ...node,
+          children: mergeDirectory(node.children, children),
+          loaded: true,
+        })),
+      );
+    },
+    [rootPath],
+  );
+
+  const createEntry = useCallback(
+    async (parent: string, kind: "file" | "directory") => {
+      if (!rootPath) return;
+      const name = window.prompt(kind === "file" ? "File name" : "Folder name");
+      if (name === null) return;
+      if (!isSafeEntryName(name)) {
+        setTreeError("Name cannot be empty or contain a path separator.");
+        return;
+      }
+      const path = joinPath(parent, name.trim());
+      setBusy(true);
+      setTreeError(null);
+      try {
+        await invoke(kind === "file" ? "fs_create_file" : "fs_mkdir", {
+          root: rootPath,
+          path,
+        });
+        setExpanded((prev) => new Set(prev).add(parent));
+        await reloadDirectory(parent);
+        if (kind === "file") await openFile(path);
+      } catch (err) {
+        setTreeError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [rootPath, reloadDirectory, openFile],
+  );
+
+  const renameEntry = useCallback(
+    async (path: string) => {
+      if (!rootPath) return;
+      const currentName = basename(path);
+      const name = window.prompt("Rename", currentName);
+      if (name === null) return;
+      if (!isSafeEntryName(name)) {
+        setTreeError("Name cannot be empty or contain a path separator.");
+        return;
+      }
+      if (name.trim() === currentName) return;
+      const parent = parentPath(path);
+      if (!parent) return;
+      const nextPath = joinPath(parent, name.trim());
+      setBusy(true);
+      setTreeError(null);
+      try {
+        await invoke("fs_rename", { root: rootPath, from: path, to: nextPath });
+        const prefix = withPrefix(path);
+        const remap = (oldPath: string) => {
+          if (oldPath === path) return nextPath;
+          if (oldPath.startsWith(prefix)) {
+            return `${nextPath}${oldPath.slice(path.length)}`;
+          }
+          return oldPath;
+        };
+        setTabs((current) =>
+          current.map((tab) => {
+            const mapped = remap(tab.path);
+            if (mapped === tab.path) return tab;
+            return { ...tab, path: mapped, title: basename(mapped) };
+          }),
+        );
+        setActivePath((active) => (active ? remap(active) : active));
+        await reloadDirectory(parent);
+      } catch (err) {
+        setTreeError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [rootPath, reloadDirectory],
+  );
+
+  const deleteEntry = useCallback(
+    async (path: string) => {
+      if (!rootPath) return;
+      const ok = window.confirm(`Delete ${basename(path)}? This cannot be undone.`);
+      if (!ok) return;
+      const parent = parentPath(path);
+      if (!parent) return;
+      setBusy(true);
+      setTreeError(null);
+      try {
+        await invoke("fs_remove", { root: rootPath, path });
+        const prefix = withPrefix(path);
+        setTabs((current) => {
+          const next = current.filter(
+            (tab) => tab.path !== path && !tab.path.startsWith(prefix),
+          );
+          setActivePath((active) => {
+            if (!active || active === path || active.startsWith(prefix)) {
+              return next[0]?.path ?? null;
+            }
+            return active;
+          });
+          return next;
+        });
+        await reloadDirectory(parent);
+      } catch (err) {
+        setTreeError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [rootPath, reloadDirectory],
+  );
+
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
@@ -347,6 +499,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCursor,
       clearRevealTarget,
       save,
+      createEntry,
+      renameEntry,
+      deleteEntry,
     }),
     [
       rootPath,
@@ -370,6 +525,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCursor,
       clearRevealTarget,
       save,
+      createEntry,
+      renameEntry,
+      deleteEntry,
     ],
   );
 

@@ -26,7 +26,6 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .settings-panel__header h2 {
@@ -78,7 +77,6 @@
   min-width: 120px;
   padding: 6px 8px;
   border-radius: 7px;
-  border: 1px solid var(--border);
   background: var(--bg-input);
   color: var(--fg);
   font: inherit;

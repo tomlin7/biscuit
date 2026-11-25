@@ -107,6 +107,9 @@ export function MonacoEditor({ path, primary = true }: Props) {
     editorRef.current = ed;
     monacoRef.current = monaco;
     monaco.editor.setTheme(monacoThemeId(theme));
+    const relayout = () => ed.layout();
+    requestAnimationFrame(relayout);
+    window.setTimeout(relayout, 50);
     if (primary) ed.focus();
 
     ed.onDidFocusEditorText(() => {

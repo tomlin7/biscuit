@@ -5,10 +5,10 @@
   --font-ui: "DM Sans Variable", "DM Sans", sans-serif;
   --font-mono: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
 
-  --font-size-ui: 14px;
-  --font-size-sm: 13px;
+  --font-size-ui: 13.5px;
+  --font-size-sm: 12.5px;
   --font-size-xs: 12px;
-  --line-height-ui: 1.45;
+  --line-height-ui: 1.4;
 
   --bg-root: #000000;
   --bg-island: #141414;
@@ -37,10 +37,10 @@
   --radius-island: 12px;
   --radius-control: 8px;
   --radius-pill: 999px;
-  --gap-shell: 5px;
+  --gap-shell: 12px;
 
-  --titlebar-height: 52px;
-  --statusbar-height: 34px;
+  --titlebar-height: 44px;
+  --statusbar-height: 28px;
   --sidebar-width: 280px;
   --ai-width: 360px;
 }

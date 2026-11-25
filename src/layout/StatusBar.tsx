@@ -2,9 +2,12 @@ import { useState } from "react";
 import {
   AlertCircle,
   Bell,
+  Bug,
+  Database,
   GitBranch,
-  Layers,
   List,
+  Terminal,
+  UserRound,
 } from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
@@ -15,6 +18,8 @@ type StatusBarProps = {
   onOpenProblems?: () => void;
   onOpenSettings?: () => void;
   onOpenScm?: () => void;
+  onToggleTerminal?: () => void;
+  onOpenDebug?: () => void;
   gitBranch?: string | null;
 };
 
@@ -22,10 +27,11 @@ export function StatusBar({
   onOpenProblems,
   onOpenSettings,
   onOpenScm,
+  onToggleTerminal,
+  onOpenDebug,
   gitBranch = null,
 }: StatusBarProps) {
-  const { document, dirty, cursorLine, cursorColumn, busy, rootName } =
-    useWorkspace();
+  const { dirty, busy, rootName } = useWorkspace();
   const { problems } = useDiagnostics();
   const { items, unread, markRead, clear } = useNotifications();
   const [open, setOpen] = useState(false);
@@ -35,57 +41,74 @@ export function StatusBar({
   return (
     <footer className="status-bar" role="contentinfo">
       <div className="status-bar__group">
-        {gitBranch ? (
+        <button
+          type="button"
+          className="status-bar__chip"
+          title="Source Control"
+          onClick={onOpenScm}
+        >
+          <GitBranch size={14} strokeWidth={1.75} aria-hidden />
+          <span>{gitBranch ?? "—"}</span>
+        </button>
+        {rootName ? (
           <button
             type="button"
             className="status-bar__chip"
-            title="Source Control"
+            title={rootName}
             onClick={onOpenScm}
           >
-            <GitBranch size={15} strokeWidth={1.75} aria-hidden />
-            <span>{gitBranch}</span>
+            <UserRound size={14} strokeWidth={1.75} aria-hidden />
+            <span>{rootName}</span>
           </button>
         ) : null}
-        {rootName ? (
-          <span className="status-bar__item">{rootName}</span>
-        ) : null}
+        <IconButton
+          icon={Terminal}
+          label="Terminal"
+          size={14}
+          onClick={onToggleTerminal}
+        />
         <button
           type="button"
           className="status-bar__chip"
           title="Problems"
           onClick={onOpenProblems}
         >
-          <AlertCircle size={15} strokeWidth={1.75} aria-hidden />
-          <span className="status-bar__err">{errorCount}</span>
-          <span className="status-bar__warn">{warnCount}</span>
+          <AlertCircle size={14} strokeWidth={1.75} aria-hidden />
+          {(errorCount > 0 || warnCount > 0) && (
+            <>
+              <span className="status-bar__err">{errorCount}</span>
+              <span className="status-bar__warn">{warnCount}</span>
+            </>
+          )}
         </button>
+        <IconButton
+          icon={Bug}
+          label="Debug"
+          size={14}
+          onClick={onOpenDebug}
+        />
         {busy ? <span className="status-bar__item">Working…</span> : null}
         {dirty ? <span className="status-bar__item">Unsaved</span> : null}
-        {document ? (
-          <span className="status-bar__item">
-            Ln {cursorLine}, Col {cursorColumn}
-          </span>
-        ) : null}
       </div>
+
       <div className="status-bar__group status-bar__group--end">
-        <span className="status-bar__item status-bar__version">T3D 0.11.0</span>
         <IconButton
           icon={List}
-          label={errorCount ? `Problems (${errorCount})` : "Problems"}
-          size={16}
+          label="Problems"
+          size={14}
           onClick={onOpenProblems}
         />
         <IconButton
-          icon={Layers}
+          icon={Database}
           label="Settings"
-          size={16}
+          size={14}
           onClick={onOpenSettings}
         />
         <div className="status-bar__notify">
           <IconButton
             icon={Bell}
             label="Notifications"
-            size={16}
+            size={14}
             active={open}
             onClick={() => {
               setOpen((v) => !v);

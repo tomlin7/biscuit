@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import {
   Clock,
   Columns2,
-  PanelLeft,
   PanelRightClose,
   Search,
   Sparkles,
@@ -21,10 +20,15 @@ import { ResizeHandle } from "./ResizeHandle";
 export function EditorArea() {
   const { document, rootPath, rootName, tabs, activePath } = useWorkspace();
   const { findInFile } = useEditorActions();
-  const { toggleAi, aiOpen, toggleSidebar } = useLayout();
+  const { toggleAi, aiOpen } = useLayout();
   const [split, setSplit] = useState(false);
   const [splitRatio, setSplitRatio] = useState(0.5);
   const hasFile = document !== null;
+
+  const now = useMemo(() => {
+    const d = new Date();
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }, [document?.path]);
 
   const secondaryPath = useMemo(() => {
     if (!split || !activePath) return null;
@@ -40,11 +44,6 @@ export function EditorArea() {
     return parent ? [parent, leaf] : [leaf];
   }, [document, rootName]);
 
-  const now = useMemo(() => {
-    const d = new Date();
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }, [document?.path]);
-
   return (
     <section className="editor-area island" aria-label="Editors">
       <EditorTabs />
@@ -54,9 +53,9 @@ export function EditorArea() {
             crumbs.map((crumb, i) => (
               <span key={`${crumb}-${i}`} className="editor-area__crumb">
                 {i === crumbs.length - 1 ? (
-                  <FileIcon name={crumb} kind="file" size={13} />
+                  <FileIcon name={crumb} kind="file" size={14} />
                 ) : (
-                  <FileIcon name={crumb} kind="directory" size={13} />
+                  <FileIcon name={crumb} kind="directory" size={14} />
                 )}
                 <span>{crumb}</span>
                 {i < crumbs.length - 1 ? (
@@ -71,32 +70,31 @@ export function EditorArea() {
         <div className="editor-area__tools">
           <IconButton
             icon={Sparkles}
-            label="Ask AI about file"
-            size={14}
+            label="Ask AI"
+            size={15}
             onClick={toggleAi}
             active={aiOpen}
           />
-          <IconButton icon={Search} label="Find in file" size={14} onClick={findInFile} />
+          <IconButton
+            icon={Search}
+            label="Find in file"
+            size={15}
+            onClick={findInFile}
+          />
           <span className="editor-area__chip" title="Local time">
-            <Clock size={12} strokeWidth={1.75} aria-hidden />
+            <Clock size={13} strokeWidth={1.75} aria-hidden />
             {now}
           </span>
           {hasFile ? (
             <span className="editor-area__chip">
-              <Zap size={12} strokeWidth={1.75} aria-hidden />
+              <Zap size={13} strokeWidth={1.75} aria-hidden />
               {languageLabel(document.language)}
             </span>
           ) : null}
           <IconButton
-            icon={PanelLeft}
-            label="Toggle sidebar"
-            size={14}
-            onClick={toggleSidebar}
-          />
-          <IconButton
             icon={Columns2}
             label="Split editor"
-            size={14}
+            size={15}
             active={split}
             disabled={!hasFile}
             onClick={() => setSplit((v) => !v)}
@@ -104,7 +102,7 @@ export function EditorArea() {
           <IconButton
             icon={PanelRightClose}
             label={aiOpen ? "Hide AI" : "Show AI"}
-            size={14}
+            size={15}
             onClick={toggleAi}
           />
         </div>
@@ -145,7 +143,7 @@ export function EditorArea() {
                         "file"
                       }
                       kind="file"
-                      size={12}
+                      size={13}
                     />
                     {tabs.find((t) => t.path === secondaryPath)?.title}
                   </div>
@@ -156,10 +154,10 @@ export function EditorArea() {
           </>
         ) : (
           <div className="editor-area__empty">
-            <h1>T3D</h1>
-            <p>
+            <p className="editor-area__empty-title">T3D</p>
+            <p className="editor-area__empty-hint">
               {rootPath
-                ? "Select a text file in the explorer to edit."
+                ? "Select a file in the explorer to edit."
                 : "Open a folder to start editing."}
             </p>
           </div>

@@ -7,11 +7,13 @@
 }
 
 .terminal-panel--embedded {
-  height: 100%;
+  flex: 1;
+  height: auto;
+  min-height: 0;
   margin-top: 0;
   border: none;
   border-radius: 0;
-  background: transparent;
+  background: var(--bg-island);
 }
 
 .terminal-panel__header {
@@ -21,7 +23,6 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-muted);
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .terminal-panel__body {
@@ -36,5 +37,6 @@
 }
 
 .terminal-panel__body .xterm-viewport {
+  background-color: var(--bg-island) !important;
   overflow-y: auto !important;
 }

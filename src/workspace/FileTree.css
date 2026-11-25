@@ -9,8 +9,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
-  padding: 14px 12px;
+  gap: 8px;
+  padding: 8px 10px;
 }
 
 .file-tree__hint,
@@ -29,13 +29,43 @@
   font-size: var(--font-size-sm);
 }
 
-.file-tree__cta {
-  padding: 7px 12px;
+.file-tree__menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.file-tree__menu {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  min-width: 148px;
+  padding: 4px;
   border-radius: var(--radius-control);
-  background: var(--bg-active);
-  border: 1px solid var(--border);
+  background: var(--bg-island-elevated, var(--bg-island));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.file-tree__menu button {
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-align: left;
   color: var(--fg);
   font-size: var(--font-size-sm);
+  background: transparent;
+}
+
+.file-tree__menu button:hover {
+  background: var(--bg-hover);
+}
+
+.file-tree__cta {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-island-elevated);
+  color: var(--fg);
+  font-size: var(--font-size-ui);
+  font-weight: 500;
 }
 
 .file-tree__cta:hover {
