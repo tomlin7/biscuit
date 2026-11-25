@@ -1238,4 +1238,15 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.minimizeAiPanelWidth(),
   },
+  {
+    id: "workbench.action.maximizeSidebarWidth",
+    title: "Maximize Primary Side Bar Width",
+    category: "View",
+    run: (ctx) => ctx.maximizeSidebarWidth(),
+  },
+
+
+
+
+
 ];

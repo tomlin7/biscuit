@@ -1210,6 +1210,10 @@ function ShellChrome() {
         setAiWidth(260);
         setAiOpen(true);
       },
+      maximizeSidebarWidth: () => {
+        setSidebarWidth(520);
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
