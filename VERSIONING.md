@@ -1,6 +1,6 @@
 # Versioning
 
-T3D follows [Semantic Versioning 2.0.0](https://semver.org/).
+Biscuit follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## Version rollover & MSI constraint
 

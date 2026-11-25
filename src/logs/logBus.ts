@@ -71,7 +71,7 @@ export function formatLogs(logLines?: LogLine[]): string {
     .join("\n");
 }
 
-export async function exportLogsToFile(defaultName = "t3d.log"): Promise<string | null> {
+export async function exportLogsToFile(defaultName = "biscuit.log"): Promise<string | null> {
   const text = formatLogs();
   const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 

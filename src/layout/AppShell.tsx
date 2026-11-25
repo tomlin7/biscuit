@@ -869,7 +869,7 @@ function ShellChrome() {
           }
           const dest = await saveDialog({
             title: "Save Workspace As",
-            defaultPath: `${basename(folderList[0])}.t3d-workspace.json`,
+            defaultPath: `${basename(folderList[0])}.biscuit-workspace.json`,
             filters: [
               { name: "Biscuit Workspace", extensions: ["biscuit-workspace.json", "t3d-workspace.json", "json"] },
             ],

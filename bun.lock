@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "t3d",
+      "name": "biscuit",
       "dependencies": {
         "@fontsource-variable/dm-sans": "^5.3.0",
         "@monaco-editor/react": "^4.7.0",

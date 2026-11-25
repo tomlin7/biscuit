@@ -542,7 +542,7 @@ export default function TedDemo() {
               {bottomTab === "terminal" && (
                 <div className="flex-1 p-3 font-mono text-[11.5px] bg-[#141414] text-[#8a8a8a] flex flex-col">
                   <div className="text-[#3b82f6] font-semibold">
-                    PS E:\biscuit\T3D&gt; bun run tauri dev
+                    PS E:\biscuit&gt; bun run tauri dev
                   </div>
                   <div className="text-[#d4d4d4] mt-1">
                     $ tauri dev
