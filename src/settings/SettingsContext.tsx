@@ -31,6 +31,8 @@ export type EditorSettings = {
   stickyScroll: boolean;
   /** 0 = off; otherwise idle milliseconds before auto-save. */
   autoSaveMs: number;
+  /** Integrated terminal font size. */
+  terminalFontSize: number;
 };
 
 export type AppSettings = {
@@ -61,6 +63,7 @@ const DEFAULTS: AppSettings = {
     lineNumbers: true,
     stickyScroll: true,
     autoSaveMs: 0,
+    terminalFontSize: 13,
   },
 };
 

@@ -12,6 +12,7 @@ import { commandLabel, finishCommandOutput, setCommandListener } from "./runComm
 import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./clearAll";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
+import { useSettings } from "../settings/SettingsContext";
 import "@xterm/xterm/css/xterm.css";
 import "./TerminalPanel.css";
 
@@ -33,6 +34,7 @@ type SessionProps = {
   cwd: string | null;
   theme: "light" | "dark";
   shell: ShellChoice;
+  fontSize: number;
   runPath: string | null;
   command: string | null;
   onCommandDone?: (text: string) => void;
@@ -44,6 +46,7 @@ function TerminalSession({
   cwd,
   theme,
   shell,
+  fontSize,
   runPath,
   command,
   onCommandDone,
@@ -70,7 +73,7 @@ function TerminalSession({
     const term = new Terminal({
       cursorBlink: true,
       fontFamily: "Cascadia Code, Consolas, monospace",
-      fontSize: 13,
+      fontSize,
       theme:
         theme === "light"
           ? {
@@ -261,6 +264,13 @@ function TerminalSession({
     return () => window.clearTimeout(id);
   }, [active]);
 
+  useEffect(() => {
+    const term = termRef.current;
+    if (!term) return;
+    term.options.fontSize = fontSize;
+    fitRef.current?.fit();
+  }, [fontSize]);
+
   return <div className="terminal-panel__body" ref={hostRef} />;
 }
 
@@ -293,11 +303,13 @@ function shellLabel(session: TermSession, index: number): string {
 
 export function TerminalPanel({ open, embedded = false }: Props) {
   const { rootPath } = useWorkspace();
+  const { settings } = useSettings();
   const { theme, extras } = useTheme();
   const appearance = theme === "light" || (theme.startsWith("ext:") &&
     extras.find((item) => `ext:${item.id}` === theme)?.mode === "light")
     ? "light"
     : "dark";
+  const terminalFontSize = settings.editor.terminalFontSize;
   const [sessions, setSessions] = useState<TermSession[]>(() => [
     { id: nextSession, shell: "", runPath: null, command: null, cwd: null },
   ]);
@@ -528,6 +540,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               cwd={session.cwd ?? rootPath}
               theme={appearance}
               shell={session.shell}
+              fontSize={terminalFontSize}
               runPath={session.runPath}
               command={session.command}
               onCommandDone={

@@ -199,6 +199,24 @@ export function SettingsPanel({ open, onClose }: Props) {
                 <option value="5000">After 5s</option>
               </select>
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Terminal font size</span>
+              <input
+                type="number"
+                min={8}
+                max={32}
+                step={1}
+                value={settings.editor.terminalFontSize}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  if (Number.isFinite(next)) {
+                    updateEditor({
+                      terminalFontSize: Math.min(32, Math.max(8, Math.floor(next))),
+                    });
+                  }
+                }}
+              />
+            </label>
           </section>
 
           <section>
@@ -216,7 +234,7 @@ export function SettingsPanel({ open, onClose }: Props) {
                 type="password"
                 value={ai.apiKey}
                 onChange={(e) => setAi({ apiKey: e.target.value })}
-                placeholder="sk-…"
+                placeholder="sk-â€¦"
               />
             </label>
             <label className="settings-row settings-row--stack">
@@ -254,7 +272,7 @@ export function SettingsPanel({ open, onClose }: Props) {
                 rows={3}
                 value={ai.systemPrompt}
                 onChange={(e) => setAi({ systemPrompt: e.target.value })}
-                placeholder="Optional instructions for every chat…"
+                placeholder="Optional instructions for every chatâ€¦"
               />
             </label>
             <label className="settings-row settings-row--stack">
