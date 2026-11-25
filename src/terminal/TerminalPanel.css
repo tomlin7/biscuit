@@ -42,6 +42,17 @@
   font-size: var(--font-size-sm);
 }
 
+.terminal-panel__session-rename {
+  min-width: 80px;
+  max-width: 160px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+}
+
 .terminal-panel__shell {
   display: inline-flex;
   align-items: center;

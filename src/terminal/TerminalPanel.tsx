@@ -271,6 +271,7 @@ type TermSession = {
   runPath: string | null;
   command: string | null;
   cwd: string | null;
+  title?: string;
 };
 
 const SHELLS: { value: ShellChoice; label: string }[] = [
@@ -281,6 +282,7 @@ const SHELLS: { value: ShellChoice; label: string }[] = [
 ];
 
 function shellLabel(session: TermSession, index: number): string {
+  if (session.title?.trim()) return session.title.trim();
   if (session.command) return commandLabel(session.command);
   if (session.runPath) return basename(session.runPath);
   if (!session.shell) return `Terminal ${index + 1}`;
@@ -302,8 +304,20 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   sessionsRef.current = sessions;
   const [activeId, setActiveId] = useState(sessions[0].id);
   const [nextShell, setNextShell] = useState<ShellChoice>("");
+  const [renamingId, setRenamingId] = useState<number | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
   const controls = useRef(new Map<number, TerminalControl>());
   const commandDone = useRef(new Map<number, (text: string) => void>());
+
+  const commitRename = (id: number) => {
+    const title = renameDraft.trim();
+    setSessions((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, title: title || undefined } : item,
+      ),
+    );
+    setRenamingId(null);
+  };
 
   const addSession = () => {
     nextSession += 1;
@@ -367,19 +381,44 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       <div className="terminal-panel__sessions" role="tablist" aria-label="Terminals">
         {sessions.map((session, index) => (
           <span key={session.id} className="terminal-panel__session">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={session.id === activeId}
-              className={
-                session.id === activeId
-                  ? "terminal-panel__session-tab terminal-panel__session-tab--active"
-                  : "terminal-panel__session-tab"
-              }
-              onClick={() => setActiveId(session.id)}
-            >
-              {shellLabel(session, index)}
-            </button>
+            {renamingId === session.id ? (
+              <input
+                className="terminal-panel__session-rename"
+                value={renameDraft}
+                autoFocus
+                aria-label="Rename terminal"
+                onChange={(event) => setRenameDraft(event.target.value)}
+                onBlur={() => commitRename(session.id)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    commitRename(session.id);
+                  } else if (event.key === "Escape") {
+                    event.preventDefault();
+                    setRenamingId(null);
+                  }
+                }}
+              />
+            ) : (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={session.id === activeId}
+                className={
+                  session.id === activeId
+                    ? "terminal-panel__session-tab terminal-panel__session-tab--active"
+                    : "terminal-panel__session-tab"
+                }
+                onClick={() => setActiveId(session.id)}
+                onDoubleClick={() => {
+                  setRenamingId(session.id);
+                  setRenameDraft(shellLabel(session, index));
+                }}
+                title="Double-click to rename"
+              >
+                {shellLabel(session, index)}
+              </button>
+            )}
             <button
               type="button"
               className="terminal-panel__session-close"
