@@ -68,6 +68,19 @@ function TreeRows({
                 data-tree-path={node.path}
                 style={{ paddingLeft }}
                 onClick={() => void toggleDirectory(node.path)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === "ArrowRight") {
+                    if (!isExpanded) {
+                      event.preventDefault();
+                      void toggleDirectory(node.path);
+                    }
+                  } else if (event.key === "ArrowLeft") {
+                    if (isExpanded) {
+                      event.preventDefault();
+                      void toggleDirectory(node.path);
+                    }
+                  }
+                }}
                 onContextMenu={(event) => onMenu(event, node)}
               >
                 <ChevronRight
@@ -105,6 +118,12 @@ function TreeRows({
             }
             style={{ paddingLeft }}
             onClick={() => void openFile(node.path)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === "ArrowRight") {
+                event.preventDefault();
+                void openFile(node.path);
+              }
+            }}
             onContextMenu={(event) => onMenu(event, node)}
           >
             <span className="file-tree__chevron-spacer" aria-hidden />

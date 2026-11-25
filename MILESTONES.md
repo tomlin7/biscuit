@@ -16,7 +16,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.8.0** | Integrated terminal (PTY) | shipped |
 | **0.9.0** | Git SCM view | shipped |
 | **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipped |
-| **0.11.0** | Island layout fidelity +‚-Û+ÛG«‹-º+ÛGÈº-• resize/collapse, Lucide, UI font, settings | shipped |
+| **0.11.0** | Island layout fidelity √É¬¢√¢‚Äö¬¨√¢‚Ç¨¬ù resize/collapse, Lucide, UI font, settings | shipped |
 | **0.12.0** | Explorer create, rename, and delete | shipped |
 | **0.13.0** | Recent files, recent folders, reopen closed editor | shipped |
 | **0.14.0** | Editor comment, wrap, relative lines, go to line, move and copy lines | shipped |
@@ -146,6 +146,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.138.0** | SCM unstage selected | shipped |
 | **0.139.0** | Insert final newline on save | shipped |
 | **0.140.0** | Agent stop keeps partial reply | shipped |
+| **0.141.0** | File tree keyboard open/expand | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
