@@ -218,6 +218,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.210.0** | SCM delete local branch | shipped |
 | **0.211.0** | Duplicate terminal from palette | shipped |
 | **0.212.0** | Agent request timeout setting | shipped |
+| **0.213.0** | Explorer refresh folder with F5 | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

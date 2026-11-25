@@ -119,6 +119,7 @@ export type WorkspaceState = {
   renameEntry: (path: string) => Promise<void>;
   deleteEntry: (path: string) => Promise<void>;
   revealInExplorer: (path: string) => Promise<void>;
+  reloadDirectory: (path: string) => Promise<void>;
   explorerNonce: number;
 };
 
@@ -1235,6 +1236,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       renameEntry,
       deleteEntry,
       revealInExplorer,
+      reloadDirectory,
       explorerNonce,
     }),
     [
@@ -1290,6 +1292,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       renameEntry,
       deleteEntry,
       revealInExplorer,
+      reloadDirectory,
       explorerNonce,
     ],
   );

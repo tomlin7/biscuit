@@ -54,7 +54,7 @@ function TreeRows({
   onMenu: (event: MouseEvent, node: TreeNode) => void;
   workspaceRoots: string[];
 }) {
-  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry, collapseExplorerUnder } = useWorkspace();
+  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry, collapseExplorerUnder, reloadDirectory } = useWorkspace();
 
   const copyAbsolute = (path: string) => {
     void navigator.clipboard.writeText(path);
@@ -89,6 +89,11 @@ function TreeRows({
                   if (event.key === "F2") {
                     event.preventDefault();
                     void renameEntry(node.path);
+                    return;
+                  }
+                  if (event.key === "F5") {
+                    event.preventDefault();
+                    void reloadDirectory(node.path);
                     return;
                   }
                   if (event.key === "Delete" || event.key === "Backspace") {
@@ -180,6 +185,12 @@ function TreeRows({
               if (event.key === "F2") {
                 event.preventDefault();
                 void renameEntry(node.path);
+                return;
+              }
+              if (event.key === "F5") {
+                event.preventDefault();
+                const parent = parentPath(node.path);
+                if (parent) void reloadDirectory(parent);
                 return;
               }
               if (event.key === "Delete" || event.key === "Backspace") {
