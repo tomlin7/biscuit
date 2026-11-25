@@ -668,6 +668,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("stash");
       },
+      gitStashPop: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("stashPop");
+      },
     }),
     [
       openFolder,

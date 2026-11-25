@@ -727,4 +727,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitStash(),
   },
+  {
+    id: "git.stashPop",
+    title: "Git: Pop Stash",
+    category: "Git",
+    run: (ctx) => ctx.gitStashPop(),
+  },
 ];
