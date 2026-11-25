@@ -160,6 +160,7 @@ export type CommandContext = {
   focusAiSystemPrompt: () => void;
   gitRevealSelected: () => void;
   gitRefresh: () => void;
+  toggleDiffIgnoreWhitespace: () => void;
 };
 
 export type Command = {

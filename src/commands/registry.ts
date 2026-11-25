@@ -956,4 +956,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitRefresh(),
   },
+  {
+    id: "diff.toggleIgnoreWhitespace",
+    title: "Toggle Diff Ignore Whitespace",
+    category: "Diff",
+    run: (ctx) => ctx.toggleDiffIgnoreWhitespace(),
+  },
 ];

@@ -301,6 +301,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.293.0** | Focus AI system prompt from palette | shipped |
 | **0.294.0** | Git reveal selected in file manager from palette | shipped |
 | **0.295.0** | Git refresh from palette | shipped |
+| **0.296.0** | Toggle diff ignore whitespace from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

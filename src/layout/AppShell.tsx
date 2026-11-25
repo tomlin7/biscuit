@@ -42,6 +42,7 @@ import { requestSplitEditor } from "./splitBus";
 import { useFileDrop } from "../workspace/fileDrop";
 import { requestToggleAmend } from "../scm/amendBus";
 import { requestScmRemote } from "../scm/scmRemoteBus";
+import { readIgnoreSpacePref, writeIgnoreSpacePref } from "../scm/diffPrefs";
 import { requestCycleProblemsFilter } from "../lsp/problemsFilterBus";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
@@ -929,6 +930,9 @@ function ShellChrome() {
         setSidebarMode("scm");
         setSidebarOpen(true);
         requestScmRemote("refresh");
+      },
+      toggleDiffIgnoreWhitespace: () => {
+        writeIgnoreSpacePref(!readIgnoreSpacePref());
       },
     }),
     [
