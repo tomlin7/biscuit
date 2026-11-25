@@ -7,6 +7,7 @@ export type CommandContext = {
   closePalette: () => void;
   findInFile: () => void;
   openSearch: () => void;
+  toggleTerminal: () => void;
 };
 
 export type Command = {

@@ -50,4 +50,11 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+Shift+F",
     run: (ctx) => ctx.openSearch(),
   },
+  {
+    id: "workbench.action.terminal.toggle",
+    title: "Toggle Terminal",
+    category: "View",
+    keybinding: "Ctrl+`",
+    run: (ctx) => ctx.toggleTerminal(),
+  },
 ];

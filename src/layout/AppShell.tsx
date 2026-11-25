@@ -8,6 +8,7 @@ import {
 } from "../editor/EditorActions";
 import { CommandPalette } from "../commands/CommandPalette";
 import type { CommandContext } from "../commands/types";
+import { TerminalPanel } from "../terminal/TerminalPanel";
 import { TitleBar } from "./TitleBar";
 import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
@@ -19,10 +20,15 @@ function ShellChrome() {
   const { findInFile } = useEditorActions();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   const openPalette = useCallback(() => setPaletteOpen(true), []);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSearch = useCallback(() => setSidebarMode("search"), []);
+  const toggleTerminal = useCallback(
+    () => setTerminalOpen((open) => !open),
+    [],
+  );
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -36,6 +42,7 @@ function ShellChrome() {
       closePalette,
       findInFile,
       openSearch,
+      toggleTerminal,
     }),
     [
       openFolder,
@@ -47,6 +54,7 @@ function ShellChrome() {
       closePalette,
       findInFile,
       openSearch,
+      toggleTerminal,
     ],
   );
 
@@ -80,6 +88,13 @@ function ShellChrome() {
       if (mod && event.shiftKey && key === "f") {
         event.preventDefault();
         openSearch();
+        clearChord();
+        return;
+      }
+
+      if (mod && (key === "`" || event.code === "Backquote")) {
+        event.preventDefault();
+        toggleTerminal();
         clearChord();
         return;
       }
@@ -146,6 +161,7 @@ function ShellChrome() {
     closeTab,
     openFolder,
     toggleTheme,
+    toggleTerminal,
   ]);
 
   return (
@@ -153,9 +169,15 @@ function ShellChrome() {
       <TitleBar onOpenPalette={openPalette} />
       <div className="app-shell__workspace">
         <Sidebar mode={sidebarMode} onModeChange={setSidebarMode} />
-        <EditorArea />
+        <div className="app-shell__main">
+          <EditorArea />
+          <TerminalPanel open={terminalOpen} />
+        </div>
       </div>
-      <StatusBar />
+      <StatusBar
+        terminalOpen={terminalOpen}
+        onToggleTerminal={toggleTerminal}
+      />
       <CommandPalette
         open={paletteOpen}
         onClose={closePalette}

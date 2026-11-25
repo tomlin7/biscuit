@@ -1,0 +1,32 @@
+.terminal-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 220px;
+  margin-top: var(--gap-shell);
+}
+
+.terminal-panel__header {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.terminal-panel__body {
+  flex: 1;
+  min-height: 0;
+  padding: 4px 8px 8px;
+  overflow: hidden;
+}
+
+.terminal-panel__body .xterm {
+  height: 100%;
+}
+
+.terminal-panel__body .xterm-viewport {
+  overflow-y: auto !important;
+}

@@ -15,6 +15,13 @@
   padding: 0 var(--gap-shell) var(--gap-shell);
 }
 
+.app-shell__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
 .island {
   display: flex;
   flex-direction: column;
@@ -216,4 +223,17 @@
 
 .status-bar__item {
   white-space: nowrap;
+}
+
+.status-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: var(--fg-muted);
+}
+
+.status-bar__btn:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
 }
