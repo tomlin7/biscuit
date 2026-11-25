@@ -1033,6 +1033,11 @@ function ShellChrome() {
           window.document.getElementById("ai-composer-input")?.focus();
         }, 0);
       },
+      gitPasteCommitMessage: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("pasteCommitMessage");
+      },
     }),
     [
       openFolder,

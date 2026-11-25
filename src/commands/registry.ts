@@ -1064,4 +1064,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.focusAiComposer(),
   },
+  {
+    id: "git.pasteCommitMessage",
+    title: "Git: Paste Commit Message",
+    category: "Git",
+    run: (ctx) => ctx.gitPasteCommitMessage(),
+  },
 ];

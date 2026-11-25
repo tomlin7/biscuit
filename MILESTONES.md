@@ -318,6 +318,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.310.0** | Delete current AI session from palette | shipped |
 | **0.311.0** | Cycle AI model preset from palette | shipped |
 | **0.312.0** | Focus AI composer from palette | shipped |
+| **0.313.0** | Git paste commit message from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -177,6 +177,7 @@ export type CommandContext = {
   deleteAiSession: () => void;
   cycleAiModel: () => void;
   focusAiComposer: () => void;
+  gitPasteCommitMessage: () => void;
 };
 
 export type Command = {

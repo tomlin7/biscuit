@@ -22,7 +22,8 @@ export type ScmRemoteAction =
   | "compareSelected"
   | "revealSelected"
   | "refresh"
-  | "focusCommitMessage";
+  | "focusCommitMessage"
+  | "pasteCommitMessage";
 
 type Listener = (action: ScmRemoteAction) => void;
 

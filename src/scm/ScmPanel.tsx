@@ -387,6 +387,11 @@ export function ScmPanel({ onBranch }: Props) {
         window.setTimeout(() => {
           window.document.getElementById("scm-commit-message")?.focus();
         }, 0);
+      } else if (action === "pasteCommitMessage") {
+        void navigator.clipboard.readText().then((text) => {
+          const next = text.trim();
+          if (next) setMessage(next);
+        });
       } else void push();
     });
     return () => setScmRemoteListener(null);
