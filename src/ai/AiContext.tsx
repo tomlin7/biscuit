@@ -43,6 +43,8 @@ type AiSettings = {
   apiKey: string;
   model: string;
   effort: "low" | "medium" | "high";
+  /** Null uses the provider default. */
+  temperature: number | null;
 };
 
 type AiState = {
@@ -83,6 +85,7 @@ function defaultSettings(): AiSettings {
     apiKey: "",
     model: "gpt-4o-mini",
     effort: "high",
+    temperature: null,
   };
 }
 
@@ -392,6 +395,9 @@ export function AiProvider({ children }: { children: ReactNode }) {
                   model: settings.model,
                   messages: nextMessages,
                   tools: agentToolSchema,
+                  ...(typeof settings.temperature === "number"
+                    ? { temperature: settings.temperature }
+                    : {}),
                 }),
                 signal: controller.signal,
               },

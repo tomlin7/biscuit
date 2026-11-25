@@ -213,6 +213,28 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => setAi({ model: e.target.value })}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Temperature</span>
+              <input
+                type="number"
+                min={0}
+                max={2}
+                step={0.1}
+                placeholder="default"
+                value={ai.temperature ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  if (!raw) {
+                    setAi({ temperature: null });
+                    return;
+                  }
+                  const next = Number(raw);
+                  if (Number.isFinite(next)) {
+                    setAi({ temperature: Math.min(2, Math.max(0, next)) });
+                  }
+                }}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",

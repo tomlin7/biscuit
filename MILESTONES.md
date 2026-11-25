@@ -169,6 +169,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.161.0** | Status bar word wrap toggle | shipped |
 | **0.162.0** | SCM copy relative path | shipped |
 | **0.163.0** | Problems sort by severity | shipped |
+| **0.164.0** | Agent temperature setting | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
