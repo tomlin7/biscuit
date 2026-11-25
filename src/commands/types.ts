@@ -183,6 +183,7 @@ export type CommandContext = {
   cycleAiSeed: () => void;
   focusAiSettings: () => void;
   showGitSyncStatus: () => void;
+  resetAiPanelWidth: () => void;
 };
 
 export type Command = {

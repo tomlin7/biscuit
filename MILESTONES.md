@@ -324,6 +324,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.316.0** | Cycle AI seed from palette | shipped |
 | **0.317.0** | Focus AI settings from palette | shipped |
 | **0.318.0** | Git show sync status from palette | shipped |
+| **0.319.0** | Reset AI panel width from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -1090,6 +1090,10 @@ function ShellChrome() {
         }
         notify("Git sync", `${ahead} ahead · ${behind} behind`);
       },
+      resetAiPanelWidth: () => {
+        setAiWidth(340);
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1173,6 +1177,7 @@ function ShellChrome() {
       gitAhead,
       gitBehind,
       notify,
+      setAiWidth,
       bottomOpen,
       panelTab,
       setPanelTab,

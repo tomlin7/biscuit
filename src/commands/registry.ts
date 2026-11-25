@@ -1100,4 +1100,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.showGitSyncStatus(),
   },
+  {
+    id: "workbench.action.resetAiPanelWidth",
+    title: "Reset AI Panel Width",
+    category: "View",
+    run: (ctx) => ctx.resetAiPanelWidth(),
+  },
 ];
