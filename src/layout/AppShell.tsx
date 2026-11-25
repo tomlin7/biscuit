@@ -1567,6 +1567,14 @@ function ShellChrome() {
         }
         void openFolderAt(folders[0]);
       },
+      openRecentFile: () => {
+        const files = recentFiles();
+        if (files.length === 0) {
+          notify("Recent files", "No recent files yet.");
+          return;
+        }
+        void openFile(files[0]);
+      },
     }),
     [
       openFolder,

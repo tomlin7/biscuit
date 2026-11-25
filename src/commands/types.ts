@@ -258,6 +258,7 @@ export type CommandContext = {
   enableAllBreakpoints: () => void;
   showFileEncoding: () => void;
   openRecentFolder: () => void;
+  openRecentFile: () => void;
 };
 
 export type Command = {
