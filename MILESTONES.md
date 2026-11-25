@@ -206,6 +206,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.198.0** | SCM select all and deselect all | shipped |
 | **0.199.0** | New terminal from palette | shipped |
 | **0.200.0** | Agent stop on tool error | shipped |
+| **0.201.0** | Explorer reveal in file manager | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

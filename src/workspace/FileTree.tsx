@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { ChevronRight } from "lucide-react";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
 import { parentPath, relativeToRoot } from "./path";
@@ -62,6 +63,11 @@ function TreeRows({
     const root = rootForPath(workspaceRoots, path);
     void navigator.clipboard.writeText(relativeToRoot(root, path));
   };
+  const revealInOs = (path: string) => {
+    void revealItemInDir(path).catch(() => {
+      /* ignore opener failures */
+    });
+  };
 
   return (
     <>
@@ -94,6 +100,15 @@ function TreeRows({
                     event.preventDefault();
                     if (event.shiftKey) copyRelative(node.path);
                     else copyAbsolute(node.path);
+                    return;
+                  }
+                  if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.altKey &&
+                    event.key.toLowerCase() === "r"
+                  ) {
+                    event.preventDefault();
+                    revealInOs(node.path);
                     return;
                   }
                   if (event.key === "Enter" || event.key === "ArrowRight") {
@@ -173,6 +188,15 @@ function TreeRows({
                 event.preventDefault();
                 if (event.shiftKey) copyRelative(node.path);
                 else copyAbsolute(node.path);
+                return;
+              }
+              if (
+                (event.ctrlKey || event.metaKey) &&
+                event.altKey &&
+                event.key.toLowerCase() === "r"
+              ) {
+                event.preventDefault();
+                revealInOs(node.path);
                 return;
               }
               if (event.key === "Enter" || event.key === "ArrowRight") {
@@ -348,6 +372,19 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
               }}
             >
               Copy Relative Path
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const path = menu.path;
+                setMenu(null);
+                void revealItemInDir(path).catch(() => {
+                  /* ignore */
+                });
+              }}
+            >
+              Reveal in File Manager
             </button>
             {menu.kind === "directory" &&
             roots.length > 1 &&
