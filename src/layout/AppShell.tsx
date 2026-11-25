@@ -47,6 +47,7 @@ function ShellChrome() {
     openFolder,
     openFolderAt,
     addFolderRoot,
+    removeFolderRoot,
     openFile,
     openDroppedPaths,
     openFileAt,
@@ -245,6 +246,7 @@ function ShellChrome() {
     () => ({
       openFolder,
       addFolderRoot,
+      removeFolderRoot,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -281,6 +283,7 @@ function ShellChrome() {
     [
       openFolder,
       addFolderRoot,
+      removeFolderRoot,
       cloneRepository,
       openFolderAt,
       openFile,

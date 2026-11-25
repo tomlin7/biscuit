@@ -121,8 +121,19 @@ type Props = {
 };
 
 export function FileTree({ filter = "", hideDotfiles = false }: Props) {
-  const { rootPath, tree, treeError, busy, openFolder, addFolderRoot, createEntry, renameEntry, deleteEntry } =
-    useWorkspace();
+  const {
+    rootPath,
+    roots,
+    tree,
+    treeError,
+    busy,
+    openFolder,
+    addFolderRoot,
+    removeFolderRoot,
+    createEntry,
+    renameEntry,
+    deleteEntry,
+  } = useWorkspace();
   const [menu, setMenu] = useState<MenuState | null>(null);
   const filtered = useMemo(
     () => filterTree(tree, filter, hideDotfiles),
@@ -223,6 +234,25 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
             >
               Delete
             </button>
+            {menu.kind === "directory" &&
+            roots.length > 1 &&
+            roots.some(
+              (root) =>
+                root.replace(/\\/g, "/").toLowerCase() ===
+                menu.path.replace(/\\/g, "/").toLowerCase(),
+            ) ? (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  const path = menu.path;
+                  setMenu(null);
+                  void removeFolderRoot(path);
+                }}
+              >
+                Remove Folder from Workspace
+              </button>
+            ) : null}
           </span>
         </div>
       ) : null}

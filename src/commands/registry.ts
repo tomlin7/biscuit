@@ -35,6 +35,16 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.addFolderRoot(),
   },
   {
+    id: "workbench.action.removeRootFolder",
+    title: "Remove Folder from Workspace…",
+    category: "File",
+    run: (ctx) => {
+      const path = window.prompt("Folder path to remove from the workspace:");
+      if (!path?.trim()) return;
+      void ctx.removeFolderRoot(path.trim());
+    },
+  },
+  {
     id: "workbench.action.files.save",
     title: "Save",
     category: "File",

@@ -76,6 +76,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.68.0** | Find in file match count in the editor meta row | shipped |
 | **0.69.0** | Multi-root workspace folders | shipped |
 | **0.70.0** | Agent panel composer chrome | shipped |
+| **0.71.0** | Remove a folder from a multi-root workspace | shipped |
+| **0.72.0** | Breadcrumb folder crumb menus | shipped |
+| **0.73.0** | Diff side-by-side from working tree | shipped |
+| **0.74.0** | Terminal select-all with Ctrl+Shift+A | shipped |
+| **0.75.0** | Find match count while replace is open | shipped |
+| **0.76.0** | Agent composer @ file mention | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -62,6 +62,7 @@ export type WorkspaceState = {
   openFolder: () => Promise<void>;
   openFolderAt: (path: string) => Promise<void>;
   addFolderRoot: () => Promise<void>;
+  removeFolderRoot: (path: string) => Promise<void>;
   reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
@@ -248,6 +249,62 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     } finally {
       setBusy(false);
     }
+  }, []);
+
+  const removeFolderRoot = useCallback(async (path: string) => {
+    const key = path.replace(/\\/g, "/").toLowerCase();
+    const rootsNow = rootsRef.current;
+    if (!rootsNow.some((root) => root.replace(/\\/g, "/").toLowerCase() === key)) {
+      return;
+    }
+    const remaining = rootsNow.filter(
+      (root) => root.replace(/\\/g, "/").toLowerCase() !== key,
+    );
+    if (remaining.length === 0) {
+      setRootPath(null);
+      setRoots([]);
+      setTree([]);
+      setExpanded(new Set());
+      setTabs([]);
+      setActivePath(null);
+      writeSession(null);
+      appendLog(`Removed folder ${path}`);
+      return;
+    }
+    const underRemoved = (filePath: string) => {
+      const fileKey = filePath.replace(/\\/g, "/").toLowerCase();
+      const rootKey = path.replace(/[\\/]+$/, "").replace(/\\/g, "/").toLowerCase();
+      return fileKey === rootKey || fileKey.startsWith(`${rootKey}/`);
+    };
+    setTabs((current) => current.filter((tab) => !underRemoved(tab.path)));
+    setActivePath((current) => (current && underRemoved(current) ? null : current));
+    setRoots(remaining);
+    setRootPath(remaining[0]);
+    setExpanded((prev) => {
+      const next = new Set([...prev].filter((item) => !underRemoved(item)));
+      return next;
+    });
+    if (remaining.length === 1) {
+      const sole = remaining[0];
+      const node = findTreeNode(treeRef.current, sole);
+      if (node?.kind === "directory" && node.loaded && node.children) {
+        setTree(node.children);
+      } else {
+        try {
+          setTree(await listDirectory(sole));
+        } catch (err) {
+          setTreeError(err instanceof Error ? err.message : String(err));
+        }
+      }
+      setExpanded((prev) => {
+        const next = new Set(prev);
+        next.delete(sole);
+        return next;
+      });
+    } else {
+      setTree((current) => current.filter((node) => node.path.replace(/\\/g, "/").toLowerCase() !== key));
+    }
+    appendLog(`Removed folder ${path}`);
   }, []);
 
   const sessionReady = useRef(false);
@@ -921,6 +978,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolder,
       openFolderAt,
       addFolderRoot,
+      removeFolderRoot,
       reopenClosed,
       toggleDirectory,
       openFile,
@@ -960,6 +1018,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolder,
       openFolderAt,
       addFolderRoot,
+      removeFolderRoot,
       reopenClosed,
       toggleDirectory,
       openFile,
