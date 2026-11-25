@@ -1438,4 +1438,7 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.openDocumentation(),
   },
+
+
+
 ];

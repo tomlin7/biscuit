@@ -13,6 +13,8 @@
     "core:window:allow-toggle-maximize",
     "core:window:allow-start-dragging",
     "core:window:allow-is-maximized",
+    "core:window:allow-set-effects",
+    "core:window:allow-clear-effects",
     "opener:default",
     "dialog:default",
     "fs:allow-read-dir",

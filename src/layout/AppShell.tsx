@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
-import "./AppShell.css";
+import { applyChromeAcrylic } from "./chromeAcrylic";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import {
@@ -96,6 +96,10 @@ function ShellChrome() {
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor, reset: resetEditorSettings } = useSettings();
+
+  useEffect(() => {
+    void applyChromeAcrylic(true);
+  }, []);
   const {
     clearAttachments,
     clearChat,
