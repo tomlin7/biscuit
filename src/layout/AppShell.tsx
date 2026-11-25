@@ -157,6 +157,7 @@ function ShellChrome() {
     addBreakpoint,
     removeBreakpoint,
     clearBreakpoints,
+    setAllBreakpointsEnabled,
   } = useDebug();
   const { extensions, scaffoldInFolder, installFromFolder, installSample } = useExtensions();
   useEffect(() => {
@@ -1537,6 +1538,11 @@ function ShellChrome() {
         setSidebarMode("debug");
         setSidebarOpen(true);
       },
+      disableAllBreakpoints: () => {
+        setAllBreakpointsEnabled(false);
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1681,6 +1687,7 @@ function ShellChrome() {
       installFromFolder,
       installSample,
       clearBreakpoints,
+      setAllBreakpointsEnabled,
     ],
   );
 

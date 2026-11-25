@@ -1534,7 +1534,12 @@ export const COMMANDS: Command[] = [
     category: "Debug",
     run: (ctx) => ctx.clearAllBreakpoints(),
   },
-
+  {
+    id: "editor.debug.action.disableAllBreakpoints",
+    title: "Disable All Breakpoints",
+    category: "Debug",
+    run: (ctx) => ctx.disableAllBreakpoints(),
+  },
 
 
 

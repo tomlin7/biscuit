@@ -254,6 +254,7 @@ export type CommandContext = {
   installExtensionFromFolder: () => void;
   installSampleExtension: () => void;
   clearAllBreakpoints: () => void;
+  disableAllBreakpoints: () => void;
 };
 
 export type Command = {
