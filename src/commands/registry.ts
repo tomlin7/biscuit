@@ -709,4 +709,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitPull(),
   },
+  {
+    id: "git.push",
+    title: "Git: Push",
+    category: "Git",
+    run: (ctx) => ctx.gitPush(),
+  },
 ];

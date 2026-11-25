@@ -653,6 +653,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("pull");
       },
+      gitPush: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("push");
+      },
     }),
     [
       openFolder,

@@ -118,7 +118,8 @@ export type CommandContext = {
   showWelcome: () => void;
   openAi: () => void;
   gitPull: () => void;
- gitFetch: () => void;
+  gitPush: () => void;
+  gitFetch: () => void;
 };
 
 export type Command = {
