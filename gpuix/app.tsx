@@ -1,3 +1,4 @@
+import { T3DAppShell } from './src/layout/T3DAppShell'
 /**
  * Hiroshi, rendered directly on the GPU with GPUIX.
  *
@@ -5663,9 +5664,10 @@ export function ChatApp({
   )
 }
 
-export const MorselApp = ChatApp
+export const T3DApp = T3DAppShell
+export const MorselApp = T3DAppShell
 export const HiroshiApp = ChatApp
-export default MorselApp
+export default T3DAppShell
 
 const isEntryPoint =
   typeof Bun !== 'undefined'
@@ -5676,8 +5678,8 @@ const isEntryPoint =
 if (isEntryPoint) {
   applyMacCpuThrottleFromEnv()
   const saved = readWindowState(process.cwd())
-  render(<ChatApp turnCount={0} includeSafeMdx={false} engine />, {
-    title: 'Morsel · GPUIX Code Editor',
+  render(<T3DAppShell />, {
+    title: 'T3D · GPUIX Code Editor',
     width: saved.width,
     height: saved.height,
     titlebarTransparent: true,

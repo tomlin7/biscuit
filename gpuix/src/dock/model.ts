@@ -723,3 +723,39 @@ export function deserializeDockLayout(
     return defaultFallback ?? createInitialDockLayout()
   }
 }
+
+
+/**
+ * Creates an empty dock layout without pre-populated split panes.
+ */
+export function createEmptyDockLayout(initialTitle?: string): DockLayoutState {
+  const groupId = generateDockId('group')
+  if (initialTitle) {
+    const panelId = generateDockId('panel')
+    return {
+      root: {
+        id: groupId,
+        type: 'group',
+        panels: [
+          {
+            id: panelId,
+            title: initialTitle,
+            closable: true,
+          },
+        ],
+        activePanelId: panelId,
+      },
+      activeGroupId: groupId,
+    }
+  }
+
+  return {
+    root: {
+      id: groupId,
+      type: 'group',
+      panels: [],
+      activePanelId: '',
+    },
+    activeGroupId: groupId,
+  }
+}

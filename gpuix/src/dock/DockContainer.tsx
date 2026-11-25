@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@gpuix/react'
 import type {
   DockDragState,
@@ -32,6 +32,7 @@ export interface DockContainerProps {
   initialLayout?: DockLayoutState
   onLayoutChange?: (layout: DockLayoutState) => void
   renderPanel?: (panel: DockPanel, group: DockPanelGroupNode) => React.ReactNode
+  renderEmptyGroup?: (group: DockPanelGroupNode, onAddTab: (groupId: string) => void) => React.ReactNode
   showControls?: boolean
 }
 
@@ -41,6 +42,7 @@ export function DockContainer({
   initialLayout,
   onLayoutChange,
   renderPanel,
+  renderEmptyGroup,
   showControls = true,
 }: DockContainerProps) {
   const [layout, setLayout] = useState<DockLayoutState>(() => {
@@ -54,14 +56,14 @@ export function DockContainer({
 
   const updateLayout = useCallback(
     (updater: (prev: DockLayoutState) => DockLayoutState) => {
-      setLayout((prev) => {
-        const next = updater(prev)
-        onLayoutChange?.(next)
-        return next
-      })
+      setLayout((prev) => updater(prev))
     },
-    [onLayoutChange]
+    []
   )
+
+  useEffect(() => {
+    onLayoutChange?.(layout)
+  }, [layout, onLayoutChange])
 
   // Split handle resizing
   const handleStartResize = useCallback(
@@ -403,6 +405,7 @@ export function DockContainer({
         onHoverZone={(zone) => handleHoverZone(node.id, zone)}
         onSelectZone={(zone) => handleSelectZone(node.id, zone)}
         renderPanel={renderPanel}
+        renderEmptyGroup={renderEmptyGroup ? (g) => renderEmptyGroup(g, handleAddTab) : undefined}
       />
     )
   }

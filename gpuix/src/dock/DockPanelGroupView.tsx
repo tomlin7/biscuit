@@ -19,6 +19,7 @@ export interface DockPanelGroupViewProps {
   onSelectZone?: (zone: DockDropZone) => void
   onMoveTab?: (groupId: string, fromIndex: number, toIndex: number) => void
   renderPanel?: (panel: DockPanel, group: DockPanelGroupNode) => React.ReactNode
+  renderEmptyGroup?: (group: DockPanelGroupNode, onAddTab: (groupId: string) => void) => React.ReactNode
 }
 
 export function DockPanelGroupView({
@@ -37,6 +38,7 @@ export function DockPanelGroupView({
   onSelectZone,
   onMoveTab,
   renderPanel,
+  renderEmptyGroup,
 }: DockPanelGroupViewProps) {
   const [hoveredCloseId, setHoveredCloseId] = useState<string | null>(null)
   const activePanel =
@@ -318,6 +320,8 @@ export function DockPanelGroupView({
               </div>
             </div>
           )
+        ) : renderEmptyGroup ? (
+          renderEmptyGroup(group, onAddTab)
         ) : (
           <div
             style={{
