@@ -1222,6 +1222,10 @@ function ShellChrome() {
         setBottomHeight(480);
         setBottomOpen(true);
       },
+      minimizeBottomPanelHeight: () => {
+        setBottomHeight(120);
+        setBottomOpen(true);
+      },
     }),
     [
       openFolder,
