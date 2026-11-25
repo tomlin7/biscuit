@@ -1,4 +1,4 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { ChevronRight } from "lucide-react";
 import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
@@ -65,6 +65,7 @@ function TreeRows({
               <button
                 type="button"
                 className="file-tree__row"
+                data-tree-path={node.path}
                 style={{ paddingLeft }}
                 onClick={() => void toggleDirectory(node.path)}
                 onContextMenu={(event) => onMenu(event, node)}
@@ -98,6 +99,7 @@ function TreeRows({
           <button
             key={node.path}
             type="button"
+            data-tree-path={node.path}
             className={
               isActive ? "file-tree__row file-tree__row--active" : "file-tree__row"
             }
@@ -127,6 +129,8 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
     tree,
     treeError,
     busy,
+    document,
+    explorerNonce,
     openFolder,
     addFolderRoot,
     removeFolderRoot,
@@ -140,6 +144,17 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
     [tree, filter, hideDotfiles],
   );
   const forceExpand = filter.trim().length > 0;
+
+  useEffect(() => {
+    if (explorerNonce === 0 || !document?.path) return;
+    const timer = window.setTimeout(() => {
+      const el = globalThis.document.querySelector(
+        `[data-tree-path="${CSS.escape(document.path)}"]`,
+      );
+      el?.scrollIntoView({ block: "nearest" });
+    }, 40);
+    return () => window.clearTimeout(timer);
+  }, [explorerNonce, document?.path, filtered]);
 
   if (!rootPath) {
     return (
