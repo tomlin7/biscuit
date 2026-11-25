@@ -216,6 +216,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.208.0** | Toggle sticky scroll from palette | shipped |
 | **0.209.0** | Status bar cursor style cycle | shipped |
 | **0.210.0** | SCM delete local branch | shipped |
+| **0.211.0** | Duplicate terminal from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

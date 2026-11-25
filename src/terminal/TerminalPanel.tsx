@@ -12,6 +12,7 @@ import { commandLabel, finishCommandOutput, setCommandListener } from "./runComm
 import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./clearAll";
 import { setNewTerminalListener } from "./newTerminal";
 import { setKillActiveTerminalListener } from "./killTerminal";
+import { setDuplicateTerminalListener } from "./duplicateTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -412,6 +413,21 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     });
     return () => setKillActiveTerminalListener(null);
   }, [activeId]);
+
+  useEffect(() => {
+    setDuplicateTerminalListener(() => {
+      const current = sessionsRef.current.find((item) => item.id === activeId);
+      const shell = current?.shell ?? nextShell;
+      nextSession += 1;
+      const id = nextSession;
+      setSessions((sessions) => [
+        ...sessions,
+        { id, shell, runPath: null, command: null, cwd: current?.cwd ?? null },
+      ]);
+      setActiveId(id);
+    });
+    return () => setDuplicateTerminalListener(null);
+  }, [activeId, nextShell]);
 
   useEffect(() => {
     setRunListener((path) => {
