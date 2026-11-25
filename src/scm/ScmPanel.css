@@ -131,6 +131,11 @@
   white-space: nowrap;
 }
 
+.scm-panel__bulk {
+  display: flex;
+  gap: 4px;
+}
+
 .scm-panel__commit {
   display: flex;
   flex-direction: column;

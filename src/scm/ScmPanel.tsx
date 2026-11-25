@@ -77,6 +77,8 @@ export function ScmPanel({ onBranch }: Props) {
   };
 
   const staged = summary?.entries.filter((entry) => entry.index !== " " && entry.index !== "?") ?? [];
+  const unstaged =
+    summary?.entries.filter((entry) => entry.worktree !== " " || entry.index === "?") ?? [];
 
   if (!rootPath) {
     return (
@@ -147,6 +149,24 @@ export function ScmPanel({ onBranch }: Props) {
           value={message}
           onChange={(event) => setMessage(event.target.value)}
         />
+        <div className="scm-panel__bulk">
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || unstaged.length === 0}
+            onClick={() => void run("git_stage", { paths: unstaged.map((entry) => entry.path) })}
+          >
+            Stage all
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || staged.length === 0}
+            onClick={() => void run("git_unstage", { paths: staged.map((entry) => entry.path) })}
+          >
+            Unstage all
+          </button>
+        </div>
         <button
           type="button"
           className="scm-panel__commit-btn"
