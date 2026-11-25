@@ -428,6 +428,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.420.0** | Save workspace as from the command palette | shipped |
 | **0.421.0** | Open workspace from file from the command palette | shipped |
 | **0.422.0** | Select all in the editor from the command palette | shipped |
+| **0.423.0** | Deepen vim mode with monaco-vim bindings | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

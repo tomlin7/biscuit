@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditorNS } from "monaco-editor";
 import * as monacoApi from "monaco-editor";
+import { initVimMode } from "monaco-vim";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
@@ -56,6 +57,8 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const decorationsRef = useRef<string[]>([]);
+  const vimDisposeRef = useRef<(() => void) | null>(null);
+  const vimStatusRef = useRef<HTMLDivElement | null>(null);
   const breakpointsRef = useRef(breakpoints);
   breakpointsRef.current = breakpoints;
   const pathRef = useRef(doc?.path ?? null);
@@ -470,6 +473,26 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     );
   }, [breakpoints, doc]);
 
+  useEffect(() => {
+    const disposeVim = () => {
+      vimDisposeRef.current?.();
+      vimDisposeRef.current = null;
+    };
+    const ed = editorRef.current;
+    if (!ed || !settings.vimMode) {
+      disposeVim();
+      return disposeVim;
+    }
+    disposeVim();
+    try {
+      const adapter = initVimMode(ed, vimStatusRef.current);
+      vimDisposeRef.current = () => adapter.dispose();
+    } catch {
+      /* monaco-vim may fail if the editor model is mid-swap */
+    }
+    return disposeVim;
+  }, [settings.vimMode, doc?.path]);
+
   if (!doc) return null;
 
   const handleBeforeMount = (monaco: Monaco) => {
@@ -594,6 +617,13 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
           },
         }}
       />
+      {settings.vimMode ? (
+        <div
+          ref={vimStatusRef}
+          className="monaco-editor-host__vim-status"
+          aria-live="polite"
+        />
+      ) : null}
     </div>
   );
 }

@@ -1856,7 +1856,7 @@ function ShellChrome() {
         notify(
           "Vim Mode",
           next
-            ? "Experimental scaffold on (block caret + status badge)."
+            ? "monaco-vim bindings on (status line under the editor)."
             : "Off",
         );
       },
