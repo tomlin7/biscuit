@@ -443,6 +443,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.435.0** | Reload extensions from disk (restart extension host) | shipped |
 | **0.436.0** | Quit from the command palette and Ctrl+Q | shipped |
 | **0.437.0** | Game tabs and Tic-Tac-Toe | shipped |
+| **0.438.0** | Game of Life | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

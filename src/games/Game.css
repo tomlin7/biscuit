@@ -70,6 +70,32 @@
   background: color-mix(in srgb, var(--fg) 85%, var(--bg-island));
 }
 
+.game__button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.game__button:disabled:hover {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.game__separator {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+}
+
+.life__canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background: var(--bg-island);
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+  cursor: crosshair;
+  touch-action: none;
+}
+
 .game__score {
   display: flex;
   gap: 16px;
