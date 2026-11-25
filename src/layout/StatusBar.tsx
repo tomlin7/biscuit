@@ -221,6 +221,20 @@ export function StatusBar({
             {settings.editor.lineNumbers ? "Ln" : "No Ln"}
           </button>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Toggle render whitespace"
+            onClick={() =>
+              updateEditor({
+                renderWhitespace: !settings.editor.renderWhitespace,
+              })
+            }
+          >
+            {settings.editor.renderWhitespace ? "Ws" : "No Ws"}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"

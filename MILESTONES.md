@@ -190,6 +190,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.182.0** | Agent top_p setting | shipped |
 | **0.183.0** | Explorer rename with F2 | shipped |
 | **0.184.0** | Close editor split | shipped |
+| **0.185.0** | Status bar whitespace toggle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
