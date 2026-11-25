@@ -113,6 +113,7 @@ function ShellChrome() {
     setBottomHeight,
     toggleSidebar,
     toggleAi,
+    toggleBottom,
     setBottomOpen,
     setAiOpen,
     setSidebarOpen,
@@ -494,6 +495,7 @@ function ShellChrome() {
       },
       openSearch,
       toggleTerminal,
+      toggleBottomPanel: () => toggleBottom(),
       clearAllTerminals: () => {
         setPanelTab("terminal");
         setBottomOpen(true);
@@ -606,7 +608,8 @@ function ShellChrome() {
       exportSession,
       setAiOpen,
       setSidebarOpen,
-        openPalette,
+      toggleBottom,
+      openPalette,
       openSymbols,
       openWorkspaceSymbols,
       closePalette,

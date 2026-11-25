@@ -463,6 +463,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleTerminal(),
   },
   {
+    id: "workbench.action.togglePanel",
+    title: "Toggle Bottom Panel",
+    category: "View",
+    run: (ctx) => ctx.toggleBottomPanel(),
+  },
+  {
     id: "workbench.action.terminal.clear",
     title: "Clear Terminal",
     category: "Terminal",
