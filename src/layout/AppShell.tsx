@@ -180,7 +180,13 @@ function ShellChrome() {
     clearBreakpoints,
     setAllBreakpointsEnabled,
   } = useDebug();
-  const { extensions, scaffoldInFolder, installFromFolder, installSample } = useExtensions();
+  const {
+    extensions,
+    scaffoldInFolder,
+    installFromFolder,
+    installSample,
+    refresh: reloadExtensions,
+  } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
     setExtras(collected.themes);
@@ -1693,6 +1699,15 @@ function ShellChrome() {
         setSidebarOpen(true);
         void installSample();
       },
+      reloadExtensions: async () => {
+        const list = await reloadExtensions();
+        notify(
+          "Extensions",
+          list
+            ? `Reloaded ${list.length} extension${list.length === 1 ? "" : "s"} from disk.`
+            : "Could not reload extensions; see the Extensions view for details.",
+        );
+      },
       clearAllBreakpoints: () => {
         clearBreakpoints();
         setSidebarMode("debug");
@@ -2272,6 +2287,7 @@ function ShellChrome() {
       scaffoldInFolder,
       installFromFolder,
       installSample,
+      reloadExtensions,
       clearBreakpoints,
       setAllBreakpointsEnabled,
       setLanguageAt,

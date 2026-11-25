@@ -266,6 +266,7 @@ export type CommandContext = {
   scaffoldExtension: () => void;
   installExtensionFromFolder: () => void;
   installSampleExtension: () => void;
+  reloadExtensions: () => Promise<void> | void;
   clearAllBreakpoints: () => void;
   disableAllBreakpoints: () => void;
   enableAllBreakpoints: () => void;

@@ -1698,6 +1698,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.installSampleExtension(),
   },
   {
+    id: "workbench.action.restartExtensionHost",
+    title: "Reload Extensions",
+    category: "Extensions",
+    run: (ctx) => void ctx.reloadExtensions(),
+  },
+  {
     id: "editor.debug.action.removeAllBreakpoints",
     title: "Remove All Breakpoints",
     category: "Debug",

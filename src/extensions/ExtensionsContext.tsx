@@ -33,7 +33,8 @@ type ExtensionsState = {
   extensions: ExtensionManifest[];
   loading: boolean;
   error: string | null;
-  refresh: () => Promise<void>;
+  /** Resolves to the reloaded manifests, or null when listing failed (see `error`). */
+  refresh: () => Promise<ExtensionManifest[] | null>;
   setEnabled: (id: string, enabled: boolean) => Promise<void>;
   installSample: () => Promise<void>;
   installFromFolder: () => Promise<void>;
@@ -53,8 +54,10 @@ export function ExtensionsProvider({ children }: { children: ReactNode }) {
     try {
       const list = await invoke<ExtensionManifest[]>("list_extensions");
       setExtensions(list);
+      return list;
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+      return null;
     } finally {
       setLoading(false);
     }
