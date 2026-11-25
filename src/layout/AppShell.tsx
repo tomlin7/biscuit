@@ -1469,6 +1469,11 @@ function ShellChrome() {
           /* ignore */
         });
       },
+      viewLicense: () => {
+        void openUrl("https://github.com/tomlin7/T3D/blob/main/LICENSE").catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,

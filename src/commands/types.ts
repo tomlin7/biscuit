@@ -243,6 +243,7 @@ export type CommandContext = {
   showAbout: () => void;
   reportIssue: () => void;
   requestFeature: () => void;
+  viewLicense: () => void;
 };
 
 export type Command = {

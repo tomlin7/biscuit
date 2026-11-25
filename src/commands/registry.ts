@@ -1468,7 +1468,12 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.requestFeature(),
   },
-
+  {
+    id: "t3d.viewLicense",
+    title: "View License",
+    category: "Help",
+    run: (ctx) => ctx.viewLicense(),
+  },
 
 
 
