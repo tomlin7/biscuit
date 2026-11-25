@@ -740,4 +740,10 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+N",
     run: (ctx) => ctx.openUntitled(),
   },
+  {
+    id: "workbench.actions.view.cycleProblemsFilter",
+    title: "Cycle Problems Severity Filter",
+    category: "View",
+    run: (ctx) => ctx.cycleProblemsFilter(),
+  },
 ];

@@ -264,6 +264,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.256.0** | Git Stash from palette | shipped |
 | **0.257.0** | Git Pop Stash from palette | shipped |
 | **0.258.0** | Open untitled editor | shipped |
+| **0.259.0** | Cycle Problems severity filter from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

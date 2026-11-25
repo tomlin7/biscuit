@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
+import {
+  nextProblemsFilter,
+  setCycleProblemsFilterListener,
+} from "./problemsFilterBus";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { basename } from "../workspace/path";
 import "./ProblemsPanel.css";
@@ -32,6 +36,13 @@ export function ProblemsPanel() {
       /* ignore */
     }
   }, [severityFilter]);
+
+  useEffect(() => {
+    setCycleProblemsFilterListener(() => {
+      setSeverityFilter((current) => nextProblemsFilter(current));
+    });
+    return () => setCycleProblemsFilterListener(null);
+  }, []);
 
   const filtered = useMemo(() => {
     if (severityFilter === "all") return problems;
