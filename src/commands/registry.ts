@@ -73,6 +73,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.addFolderRoot(),
   },
   {
+    id: "workbench.action.addActiveFileFolderToWorkspace",
+    title: "Add Active File Folder to Workspace",
+    category: "File",
+    run: (ctx) => void ctx.addActiveFolderRoot(),
+  },
+  {
     id: "workbench.action.removeRootFolder",
     title: "Remove Folder from Workspace…",
     category: "File",

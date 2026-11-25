@@ -25,7 +25,7 @@ import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog } from "../logs/logBus";
-import { basename, languageFromPath } from "../workspace/path";
+import { basename, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
@@ -56,6 +56,7 @@ function ShellChrome() {
     openFolder,
     openFolderAt,
     addFolderRoot,
+    addFolderRootPath,
     removeFolderRoot,
     reopenRemovedRoot,
     closeFolder,
@@ -392,6 +393,12 @@ function ShellChrome() {
     () => ({
       openFolder,
       addFolderRoot,
+      addActiveFolderRoot: async () => {
+        if (!activePath) return;
+        const folder = parentPath(activePath);
+        if (!folder) return;
+        await addFolderRootPath(folder);
+      },
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,
@@ -455,6 +462,8 @@ function ShellChrome() {
     [
       openFolder,
       addFolderRoot,
+      addFolderRootPath,
+      activePath,
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,

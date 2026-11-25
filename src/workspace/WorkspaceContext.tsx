@@ -83,6 +83,7 @@ export type WorkspaceState = {
   openFolder: () => Promise<void>;
   openFolderAt: (path: string) => Promise<void>;
   addFolderRoot: () => Promise<void>;
+  addFolderRootPath: (path: string) => Promise<void>;
   removeFolderRoot: (path: string) => Promise<void>;
   reopenRemovedRoot: () => Promise<void>;
   closeFolder: () => void;
@@ -289,6 +290,13 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     if (!path) return;
     await addFolderRootAt(path);
   }, [addFolderRootAt]);
+
+  const addFolderRootPath = useCallback(
+    async (path: string) => {
+      await addFolderRootAt(path);
+    },
+    [addFolderRootAt],
+  );
 
   const reopenRemovedRoot = useCallback(async () => {
     const path = popRemovedRoot();
@@ -1179,6 +1187,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolder,
       openFolderAt,
       addFolderRoot,
+      addFolderRootPath,
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,
@@ -1232,6 +1241,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolder,
       openFolderAt,
       addFolderRoot,
+      addFolderRootPath,
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,
