@@ -122,8 +122,9 @@ export type CommandContext = {
   gitFetch: () => void;
   gitStash: () => void;
   gitStashPop: () => void;
- cycleProblemsFilter: () => void;
- duplicateEditorToSide: () => void;
+  openUntitled: () => void;
+ focusActiveTerminal: () => void;
+  duplicateEditorToSide: () => void;
 };
 
 export type Command = {

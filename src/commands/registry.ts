@@ -733,4 +733,11 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitStashPop(),
   },
+  {
+    id: "workbench.action.files.newUntitledFile",
+    title: "New Untitled File",
+    category: "File",
+    keybinding: "Ctrl+N",
+    run: (ctx) => ctx.openUntitled(),
+  },
 ];

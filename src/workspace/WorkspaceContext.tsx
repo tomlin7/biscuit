@@ -17,6 +17,7 @@ import {
   isImageFile,
   isProbablyTextFile,
   isSafeEntryName,
+  isUntitledPath,
   joinPath,
   languageFromPath,
   parentPath,
@@ -91,6 +92,7 @@ export type WorkspaceState = {
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
   openDroppedPaths: (paths: string[]) => Promise<void>;
+  openUntitled: () => void;
   openFileAt: (path: string, line: number, column: number) => Promise<void>;
   activateTab: (path: string) => void;
   closeTab: (path: string) => void;
@@ -184,6 +186,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [treeError, setTreeError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [tabs, setTabs] = useState<EditorTab[]>([]);
+  const untitledSeq = useRef(0);
   const [activePath, setActivePath] = useState<string | null>(null);
   const [revealTarget, setRevealTarget] = useState<RevealTarget | null>(null);
   const [selectionChars, setSelectionChars] = useState(0);
@@ -554,6 +557,24 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const openUntitled = useCallback(() => {
+    untitledSeq.current += 1;
+    const n = untitledSeq.current;
+    const path = `untitled:${n}`;
+    const title = `Untitled-${n}`;
+    const next: EditorTab = {
+      path,
+      title,
+      language: "plaintext",
+      value: "",
+      baseline: "",
+      cursorLine: 1,
+      cursorColumn: 1,
+    };
+    setTabs((current) => [...current, next]);
+    setActivePath(path);
+  }, []);
+
   const openDroppedPaths = useCallback(
     async (paths: string[]) => {
       const files: string[] = [];
@@ -660,14 +681,22 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       writeSession(null);
       return;
     }
+    const session = readSession();
+    const secondary =
+      session?.secondary && !isUntitledPath(session.secondary)
+        ? session.secondary
+        : null;
     writeSession({
       root: rootPath,
       roots: roots.length > 0 ? roots : [rootPath],
-      tabs: tabs.map((tab) => tab.path),
-      active: activePath,
-      preview: readSession()?.preview ?? false,
-      split: readSession()?.split ?? false,
-      secondary: readSession()?.secondary ?? null,
+      tabs: tabs.map((tab) => tab.path).filter((path) => !isUntitledPath(path)),
+      active:
+        activePath && !isUntitledPath(activePath)
+          ? activePath
+          : tabs.find((tab) => !isUntitledPath(tab.path))?.path ?? null,
+      preview: session?.preview ?? false,
+      split: session?.split ?? false,
+      secondary,
     });
   }, [rootPath, roots, tabs, activePath]);
 
@@ -708,7 +737,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       if (!ok) return;
     }
 
-    pushClosedEditor(path);
+    if (!isUntitledPath(path)) pushClosedEditor(path);
     setTabs((current) => {
       const index = current.findIndex((t) => t.path === path);
       if (index < 0) return current;
@@ -876,7 +905,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   }, [tree]);
 
   const saveDirtyAuto = useCallback(async () => {
-    const dirty = tabsRef.current.filter(isDirty);
+    const dirty = tabsRef.current.filter(
+      (tab) => isDirty(tab) && !isUntitledPath(tab.path) && tab.language !== "image",
+    );
     if (dirty.length === 0) return;
     const saved = new Map<string, string>();
     for (const tab of dirty) {
@@ -1028,7 +1059,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
 
   const saveAll = useCallback(async () => {
-    const dirty = tabsRef.current.filter(isDirty);
+    const dirty = tabsRef.current.filter(
+      (tab) => isDirty(tab) && !isUntitledPath(tab.path) && tab.language !== "image",
+    );
     if (dirty.length === 0) return;
     setBusy(true);
     setTreeError(null);
@@ -1110,35 +1143,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const save = useCallback(async () => {
-    const path = activePathRef.current;
-    const tab = tabsRef.current.find((t) => t.path === path);
-    if (!tab || tab.language === "image") return;
-
-    setBusy(true);
-    setTreeError(null);
-    try {
-      const text = await textForSave(tab.path, tab.value, rootPath);
-      await writeTextFile(tab.path, text);
-      setTabs((current) =>
-        current.map((t) =>
-          t.path === tab.path ? { ...t, value: text, baseline: text } : t,
-        ),
-      );
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setTreeError(message);
-      appendLog(`Save failed: ${message}`);
-    } finally {
-      setBusy(false);
-    }
-  }, [rootPath]);
-
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
     if (!tab || tab.language === "image") return;
-    const dest = await saveDialog({ defaultPath: tab.path, title: "Save As" });
+    const dest = await saveDialog({
+      defaultPath: isUntitledPath(tab.path) ? `${tab.title}.txt` : tab.path,
+      title: "Save As",
+    });
     if (!dest) return;
     setBusy(true);
     setTreeError(null);
@@ -1178,6 +1190,34 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, [rootPath, reloadDirectory]);
 
+  const save = useCallback(async () => {
+    const path = activePathRef.current;
+    const tab = tabsRef.current.find((t) => t.path === path);
+    if (!tab || tab.language === "image") return;
+    if (isUntitledPath(tab.path)) {
+      await saveAs();
+      return;
+    }
+
+    setBusy(true);
+    setTreeError(null);
+    try {
+      const text = await textForSave(tab.path, tab.value, rootPath);
+      await writeTextFile(tab.path, text);
+      setTabs((current) =>
+        current.map((t) =>
+          t.path === tab.path ? { ...t, value: text, baseline: text } : t,
+        ),
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setTreeError(message);
+      appendLog(`Save failed: ${message}`);
+    } finally {
+      setBusy(false);
+    }
+  }, [rootPath, saveAs]);
+
   const state = useMemo<WorkspaceState>(
     () => ({
       rootPath,
@@ -1208,6 +1248,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       toggleDirectory,
       openFile,
       openDroppedPaths,
+      openUntitled,
       openFileAt,
       activateTab,
       closeTab,
@@ -1264,6 +1305,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       toggleDirectory,
       openFile,
       openDroppedPaths,
+      openUntitled,
       openFileAt,
       activateTab,
       closeTab,

@@ -25,6 +25,11 @@ export function basename(path: string): string {
   return parts[parts.length - 1] ?? path;
 }
 
+/** Synthetic buffer that has never been saved to disk. */
+export function isUntitledPath(path: string): boolean {
+  return path.startsWith("untitled:");
+}
+
 export function parentPath(path: string): string | null {
   const trimmed = path.replace(/[\\/]+$/, "");
   const sep = trimmed.includes("\\") ? "\\" : "/";

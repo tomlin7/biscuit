@@ -72,6 +72,7 @@ function ShellChrome() {
     closeFolder,
     openFile,
     openDroppedPaths,
+    openUntitled,
     openFileAt,
     reopenClosed,
     document,
@@ -673,6 +674,7 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("stashPop");
       },
+      openUntitled: () => openUntitled(),
     }),
     [
       openFolder,
@@ -690,6 +692,7 @@ function ShellChrome() {
       cloneRepository,
       openFolderAt,
       openFile,
+      openUntitled,
       reopenClosed,
       save,
       saveAs,
@@ -813,6 +816,12 @@ function ShellChrome() {
         return;
       }
 
+      if (mod && !event.shiftKey && key === "n") {
+        event.preventDefault();
+        openUntitled();
+        clearChord();
+        return;
+      }
 
       if (mod && event.shiftKey && key === "t") {
         event.preventDefault();
@@ -995,6 +1004,7 @@ function ShellChrome() {
     openGoToFile,
     openKeybindings,
     reopenClosed,
+    openUntitled,
     openSettings,
     openSearch,
     findInFile,
