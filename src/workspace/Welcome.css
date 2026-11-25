@@ -35,6 +35,13 @@
   background: var(--bg-hover);
 }
 
+.welcome__recent--active,
+.welcome__list button:focus-visible {
+  background: var(--bg-active);
+  color: var(--fg);
+  outline: none;
+}
+
 .welcome__label {
   margin: 0 0 6px;
   color: var(--fg-muted);
