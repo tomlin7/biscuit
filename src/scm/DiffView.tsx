@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Columns2, Rows2, Space, X } from "lucide-react";
 import { closeDiffTab, patchDiffTab, subscribeDiff } from "./diffBus";
+import { writeIgnoreSpacePref } from "./diffPrefs";
 import { IconButton } from "../ui/IconButton";
 import "./DiffView.css";
 
@@ -48,6 +49,7 @@ export function DiffView({
       ignoreSpace: next,
     })
       .then((nextText) => {
+        writeIgnoreSpacePref(next);
         patchDiffTab({ text: nextText, ignoreSpace: next });
       })
       .catch(() => {

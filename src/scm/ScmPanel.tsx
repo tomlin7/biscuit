@@ -5,6 +5,7 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
 import { openDiffTab } from "./diffBus";
+import { readIgnoreSpacePref } from "./diffPrefs";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -457,10 +458,12 @@ export function ScmPanel({ onBranch }: Props) {
                   const absolute = joinPath(rootPath, relative);
                   void (async () => {
                     try {
+                      const ignoreSpace = readIgnoreSpacePref();
                       const text = await invoke<string>("git_diff", {
                         cwd: rootPath,
                         path: entry.path,
                         staged: stagedOnly,
+                        ignoreSpace,
                       });
                       let head: string | null = null;
                       try {
@@ -482,7 +485,7 @@ export function ScmPanel({ onBranch }: Props) {
                         working,
                         cwd: rootPath,
                         staged: stagedOnly,
-                        ignoreSpace: false,
+                        ignoreSpace,
                       });
                     } catch (err) {
                       setError(err instanceof Error ? err.message : String(err));
