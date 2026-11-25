@@ -13,6 +13,48 @@ html[data-chrome-acrylic] .app-shell {
   background: transparent;
 }
 
+/* Crease sits on acrylic/wallpaper — white glyphs stay readable. */
+html[data-chrome-acrylic] .titlebar .icon-btn,
+html[data-chrome-acrylic] .titlebar__window-btn,
+html[data-chrome-acrylic] .status-bar,
+html[data-chrome-acrylic] .status-bar .icon-btn,
+html[data-chrome-acrylic] .status-bar__chip,
+html[data-chrome-acrylic] .status-bar__sync,
+html[data-chrome-acrylic] .status-bar__lang select,
+html[data-chrome-acrylic] .status-bar__item,
+html[data-chrome-acrylic] .status-bar__selection {
+  color: #ffffff;
+}
+
+html[data-chrome-acrylic] .titlebar .icon-btn:hover:not(:disabled),
+html[data-chrome-acrylic] .titlebar__window-btn:hover,
+html[data-chrome-acrylic] .status-bar .icon-btn:hover:not(:disabled),
+html[data-chrome-acrylic] .status-bar__chip:hover,
+html[data-chrome-acrylic] .status-bar__lang select:hover,
+html[data-chrome-acrylic] .status-bar__lang select:focus {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+html[data-chrome-acrylic] .titlebar .icon-btn--active,
+html[data-chrome-acrylic] .status-bar .icon-btn--active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+html[data-chrome-acrylic] .titlebar__window-btn--close:hover {
+  background: #e81123;
+  color: #fff;
+}
+
+html[data-chrome-acrylic] .status-bar__err {
+  color: #f87171;
+}
+
+html[data-chrome-acrylic] .status-bar__warn {
+  color: #fbbf24;
+}
+
 .app-shell__workspace {
   display: grid;
   gap: 0;
@@ -92,7 +134,7 @@ html[data-chrome-acrylic] .app-shell {
   width: 40px;
   height: 28px;
   border-radius: 7px;
-  color: var(--fg-muted);
+  color: var(--fg);
 }
 
 .titlebar__window-btn:hover {
@@ -541,31 +583,6 @@ html[data-chrome-acrylic] .app-shell {
   color: var(--fg);
 }
 
-.editor-area__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 100%;
-  padding: 24px;
-  text-align: center;
-}
-
-.editor-area__empty-title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--fg-dim);
-  letter-spacing: 0.04em;
-}
-
-.editor-area__empty-hint {
-  margin: 0;
-  color: var(--fg-dim);
-  font-size: var(--font-size-ui);
-}
-
 /* —— Status bar —— */
 .status-bar {
   display: flex;
@@ -574,7 +591,7 @@ html[data-chrome-acrylic] .app-shell {
   gap: 12px;
   padding: 0 10px;
   font-size: var(--font-size-sm);
-  color: var(--fg-muted);
+  color: var(--fg);
   background: transparent;
 }
 
@@ -597,7 +614,7 @@ html[data-chrome-acrylic] .app-shell {
   height: 28px;
   padding: 0 8px;
   border-radius: 6px;
-  color: var(--fg-muted);
+  color: var(--fg);
   font-size: var(--font-size-sm);
   overflow: hidden;
 }
@@ -631,7 +648,7 @@ html[data-chrome-acrylic] .app-shell {
   padding: 0 6px;
   border-radius: 6px;
   background: transparent;
-  color: var(--fg-muted);
+  color: var(--fg);
   font-size: var(--font-size-sm);
 }
 
