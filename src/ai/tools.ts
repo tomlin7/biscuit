@@ -149,11 +149,57 @@ export async function writeWorkspaceFile(
   }
 }
 
+export function describeWorkspace(
+  root: string,
+  activePath: string | null,
+  activeText: string | null,
+): string {
+  const buffer = (activeText ?? "").slice(0, 1500);
+  return `root: ${root || "(none)"}\nactive: ${activePath ?? "(none)"}\nbuffer:\n${buffer || "(none)"}`;
+}
+
+export const agentToolSchema = [
+  toolDef("read_file", "Read a text file inside the open workspace.", { path: "File path" }, ["path"]),
+  toolDef("list_directory", "List one directory inside the open workspace.", { path: "Directory path, or . for the root" }, ["path"]),
+  toolDef("search_text", "Search text in the workspace.", { query: "Text to find" }, ["query"]),
+  toolDef(
+    "edit_file",
+    "Replace the first exact match in a workspace file.",
+    { path: "File path", find: "Exact text to replace", replace: "Replacement text" },
+    ["path", "find", "replace"],
+  ),
+  toolDef("write_file", "Write a whole file inside the workspace.", { path: "File path", contents: "Full new text" }, ["path", "contents"]),
+  toolDef("workspace_info", "Return the open folder, the active file, and the start of its buffer.", {}, []),
+];
+
+function toolDef(
+  name: string,
+  description: string,
+  properties: Record<string, string>,
+  required: string[],
+) {
+  return {
+    type: "function" as const,
+    function: {
+      name,
+      description,
+      parameters: {
+        type: "object",
+        properties: Object.fromEntries(
+          Object.entries(properties).map(([key, detail]) => [key, { type: "string", description: detail }]),
+        ),
+        required,
+      },
+    },
+  };
+}
+
 export async function runAgentTool(
   name: string,
   args: Record<string, string>,
   root: string,
   host: FileHost = noFiles,
+  focus: { path: string | null; text: string | null } = { path: null, text: null },
 ): Promise<ToolOutcome> {
   if (!root) return { ok: false, text: "Open a folder first." };
   if (name === "read_file") return readWorkspaceFile(root, args.path ?? "");
@@ -164,6 +210,9 @@ export async function runAgentTool(
   }
   if (name === "write_file") {
     return writeWorkspaceFile(root, args.path ?? "", args.contents ?? "", host);
+  }
+  if (name === "workspace_info") {
+    return { ok: true, text: describeWorkspace(root, focus.path, focus.text) };
   }
   return { ok: false, text: `unknown tool ${name}` };
 }
