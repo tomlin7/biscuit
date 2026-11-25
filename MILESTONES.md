@@ -198,6 +198,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.190.0** | Pin active editor from palette | shipped |
 | **0.191.0** | Status bar insert final newline toggle | shipped |
 | **0.192.0** | SCM open selected | shipped |
+| **0.193.0** | Status bar trim trailing whitespace toggle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
