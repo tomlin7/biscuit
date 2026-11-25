@@ -85,6 +85,7 @@ type AiState = {
   attachFiles: () => Promise<void>;
   removeAttachment: (path: string) => void;
   clearAttachments: () => void;
+  clearChat: () => void;
   attachPath: (path: string, name: string, content: string) => void;
   attachImage: (name: string, dataUrl: string, mime: string) => void;
   cycleEffort: () => void;
@@ -290,6 +291,15 @@ export function AiProvider({ children }: { children: ReactNode }) {
   const clearAttachments = useCallback(() => {
     setAttachments([]);
   }, []);
+
+  const clearChat = useCallback(() => {
+    patchActive((session) => ({
+      ...session,
+      messages: [],
+      updatedAt: Date.now(),
+    }));
+    setError(null);
+  }, [patchActive]);
 
   const attachFiles = useCallback(async () => {
     const selected = await open({
@@ -679,6 +689,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       attachFiles,
       removeAttachment,
       clearAttachments,
+      clearChat,
       attachPath,
       attachImage,
       cycleEffort,
@@ -704,6 +715,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       attachFiles,
       removeAttachment,
       clearAttachments,
+      clearChat,
       attachPath,
       attachImage,
       cycleEffort,

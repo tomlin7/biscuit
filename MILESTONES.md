@@ -229,6 +229,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.221.0** | Status bar rulers cycle | shipped |
 | **0.222.0** | SCM copy current branch | shipped |
 | **0.223.0** | Rename active terminal from palette | shipped |
+| **0.224.0** | Clear AI chat from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -91,6 +91,7 @@ export type CommandContext = {
   expandExplorer: () => void;
   openKeybindings: () => void;
   clearAiAttachments: () => void;
+  clearAiChat: () => void;
 };
 
 export type Command = {
