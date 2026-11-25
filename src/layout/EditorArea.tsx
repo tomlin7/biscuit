@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Clock,
   Columns2,
+  PanelLeft,
   PanelRightClose,
   Search,
   Sparkles,
@@ -15,12 +16,21 @@ import { useEditorActions } from "../editor/EditorActions";
 import { useLayout } from "./LayoutContext";
 import { FileIcon } from "../ui/FileIcon";
 import { IconButton } from "../ui/IconButton";
+import { ResizeHandle } from "./ResizeHandle";
 
 export function EditorArea() {
-  const { document, rootPath, rootName } = useWorkspace();
+  const { document, rootPath, rootName, tabs, activePath } = useWorkspace();
   const { findInFile } = useEditorActions();
   const { toggleAi, aiOpen, toggleSidebar } = useLayout();
+  const [split, setSplit] = useState(false);
+  const [splitRatio, setSplitRatio] = useState(0.5);
   const hasFile = document !== null;
+
+  const secondaryPath = useMemo(() => {
+    if (!split || !activePath) return null;
+    const other = tabs.find((t) => t.path !== activePath);
+    return other?.path ?? activePath;
+  }, [split, tabs, activePath]);
 
   const crumbs = useMemo(() => {
     if (!document) return [];
@@ -59,7 +69,13 @@ export function EditorArea() {
           )}
         </div>
         <div className="editor-area__tools">
-          <IconButton icon={Sparkles} label="Ask AI about file" size={14} onClick={toggleAi} active={aiOpen} />
+          <IconButton
+            icon={Sparkles}
+            label="Ask AI about file"
+            size={14}
+            onClick={toggleAi}
+            active={aiOpen}
+          />
           <IconButton icon={Search} label="Find in file" size={14} onClick={findInFile} />
           <span className="editor-area__chip" title="Local time">
             <Clock size={12} strokeWidth={1.75} aria-hidden />
@@ -71,7 +87,20 @@ export function EditorArea() {
               {languageLabel(document.language)}
             </span>
           ) : null}
-          <IconButton icon={Columns2} label="Toggle sidebar" size={14} onClick={toggleSidebar} />
+          <IconButton
+            icon={PanelLeft}
+            label="Toggle sidebar"
+            size={14}
+            onClick={toggleSidebar}
+          />
+          <IconButton
+            icon={Columns2}
+            label="Split editor"
+            size={14}
+            active={split}
+            disabled={!hasFile}
+            onClick={() => setSplit((v) => !v)}
+          />
           <IconButton
             icon={PanelRightClose}
             label={aiOpen ? "Hide AI" : "Show AI"}
@@ -80,9 +109,51 @@ export function EditorArea() {
           />
         </div>
       </div>
-      <div className="editor-area__surface">
-        {hasFile ? (
-          <MonacoEditor />
+      <div
+        className={
+          split && secondaryPath
+            ? "editor-area__surface editor-area__surface--split"
+            : "editor-area__surface"
+        }
+        style={
+          split && secondaryPath
+            ? { gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr` }
+            : undefined
+        }
+      >
+        {hasFile && activePath ? (
+          <>
+            <div className="editor-area__pane">
+              <MonacoEditor path={activePath} primary />
+            </div>
+            {split && secondaryPath ? (
+              <>
+                <ResizeHandle
+                  axis="x"
+                  label="Resize split"
+                  onResize={(d) => {
+                    setSplitRatio((r) =>
+                      Math.min(0.8, Math.max(0.2, r + d / 900)),
+                    );
+                  }}
+                />
+                <div className="editor-area__pane">
+                  <div className="editor-area__secondary-label">
+                    <FileIcon
+                      name={
+                        tabs.find((t) => t.path === secondaryPath)?.title ??
+                        "file"
+                      }
+                      kind="file"
+                      size={12}
+                    />
+                    {tabs.find((t) => t.path === secondaryPath)?.title}
+                  </div>
+                  <MonacoEditor path={secondaryPath} primary={false} />
+                </div>
+              </>
+            ) : null}
+          </>
         ) : (
           <div className="editor-area__empty">
             <h1>T3D</h1>

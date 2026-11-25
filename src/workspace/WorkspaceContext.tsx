@@ -51,6 +51,7 @@ export type WorkspaceState = {
   closeTab: (path: string) => void;
   moveTab: (fromPath: string, toPath: string) => void;
   setValue: (value: string) => void;
+  setValueAt: (path: string, value: string) => void;
   setCursor: (line: number, column: number) => void;
   clearRevealTarget: () => void;
   save: () => Promise<void>;
@@ -280,6 +281,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const setValueAt = useCallback((path: string, value: string) => {
+    setTabs((current) =>
+      current.map((tab) => (tab.path === path ? { ...tab, value } : tab)),
+    );
+  }, []);
+
   const setCursor = useCallback((line: number, column: number) => {
     const path = activePathRef.current;
     if (!path) return;
@@ -336,6 +343,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       closeTab,
       moveTab,
       setValue,
+      setValueAt,
       setCursor,
       clearRevealTarget,
       save,
@@ -358,6 +366,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       closeTab,
       moveTab,
       setValue,
+      setValueAt,
       setCursor,
       clearRevealTarget,
       save,

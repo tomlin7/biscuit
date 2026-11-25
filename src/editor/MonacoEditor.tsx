@@ -10,14 +10,27 @@ import { useSettings } from "../settings/SettingsContext";
 import { defineT3dThemes, monacoThemeId } from "./theme";
 import "./MonacoEditor.css";
 
-export function MonacoEditor() {
+type Props = {
+  /** Bind to a specific tab path. Defaults to the active document. */
+  path?: string;
+  /** Only the primary pane owns find-in-file. */
+  primary?: boolean;
+};
+
+export function MonacoEditor({ path, primary = true }: Props) {
   const {
-    document,
+    document: activeDoc,
+    tabs,
     setValue,
+    setValueAt,
     setCursor,
     revealTarget,
     clearRevealTarget,
+    activateTab,
   } = useWorkspace();
+  const doc = path
+    ? (tabs.find((t) => t.path === path) ?? null)
+    : activeDoc;
   const { theme } = useTheme();
   const { registerFindHandler } = useEditorActions();
   const { breakpoints, addBreakpoint, removeBreakpoint } = useDebug();
@@ -27,8 +40,8 @@ export function MonacoEditor() {
   const decorationsRef = useRef<string[]>([]);
   const breakpointsRef = useRef(breakpoints);
   breakpointsRef.current = breakpoints;
-  const pathRef = useRef(document?.path ?? null);
-  pathRef.current = document?.path ?? null;
+  const pathRef = useRef(doc?.path ?? null);
+  pathRef.current = doc?.path ?? null;
 
   useEffect(() => {
     if (monacoRef.current) {
@@ -37,16 +50,17 @@ export function MonacoEditor() {
   }, [theme]);
 
   useEffect(() => {
+    if (!primary) return;
     registerFindHandler(() => {
       const ed = editorRef.current;
       if (!ed) return;
       void ed.getAction("actions.find")?.run();
     });
     return () => registerFindHandler(null);
-  }, [registerFindHandler]);
+  }, [registerFindHandler, primary]);
 
   useEffect(() => {
-    if (!revealTarget || !document || revealTarget.path !== document.path) {
+    if (!primary || !revealTarget || !doc || revealTarget.path !== doc.path) {
       return;
     }
     const ed = editorRef.current;
@@ -61,13 +75,13 @@ export function MonacoEditor() {
     });
     ed.focus();
     clearRevealTarget();
-  }, [revealTarget, document, clearRevealTarget]);
+  }, [revealTarget, doc, clearRevealTarget, primary]);
 
   useEffect(() => {
     const ed = editorRef.current;
-    if (!ed || !document) return;
+    if (!ed || !doc) return;
     const forFile = breakpoints.filter(
-      (bp) => bp.path === document.path && bp.enabled,
+      (bp) => bp.path === doc.path && bp.enabled,
     );
     decorationsRef.current = ed.deltaDecorations(
       decorationsRef.current,
@@ -80,9 +94,9 @@ export function MonacoEditor() {
         },
       })),
     );
-  }, [breakpoints, document]);
+  }, [breakpoints, doc]);
 
-  if (!document) return null;
+  if (!doc) return null;
 
   const handleBeforeMount = (monaco: Monaco) => {
     defineT3dThemes(monaco);
@@ -93,9 +107,14 @@ export function MonacoEditor() {
     editorRef.current = ed;
     monacoRef.current = monaco;
     monaco.editor.setTheme(monacoThemeId(theme));
-    ed.focus();
+    if (primary) ed.focus();
+
+    ed.onDidFocusEditorText(() => {
+      if (pathRef.current) activateTab(pathRef.current);
+    });
 
     const syncCursor = () => {
+      if (!primary) return;
       const position = ed.getPosition();
       if (position) {
         setCursor(position.lineNumber, position.column);
@@ -113,42 +132,31 @@ export function MonacoEditor() {
         return;
       }
       const line = e.target.position?.lineNumber;
-      const path = pathRef.current;
-      if (!line || !path) return;
+      const filePath = pathRef.current;
+      if (!line || !filePath) return;
       const existing = breakpointsRef.current.find(
-        (bp) => bp.path === path && bp.line === line,
+        (bp) => bp.path === filePath && bp.line === line,
       );
       if (existing) {
         removeBreakpoint(existing.id);
       } else {
-        addBreakpoint(path, line);
+        addBreakpoint(filePath, line);
       }
     });
-
-    if (revealTarget && revealTarget.path === document.path) {
-      ed.revealPositionInCenter({
-        lineNumber: revealTarget.line,
-        column: revealTarget.column,
-      });
-      ed.setPosition({
-        lineNumber: revealTarget.line,
-        column: revealTarget.column,
-      });
-      clearRevealTarget();
-    }
   };
 
   return (
     <div className="monaco-editor-host">
       <Editor
-        path={document.path ?? undefined}
+        path={doc.path}
         theme={monacoThemeId(theme)}
-        language={document.language}
-        value={document.value}
+        language={doc.language}
+        value={doc.value}
         beforeMount={handleBeforeMount}
         onMount={handleMount}
         onChange={(next) => {
-          setValue(next ?? "");
+          if (path) setValueAt(path, next ?? "");
+          else setValue(next ?? "");
         }}
         loading={<div className="monaco-editor-host__loading">Loading editor…</div>}
         options={{
