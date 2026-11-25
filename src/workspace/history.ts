@@ -1,8 +1,10 @@
 const FILES_KEY = "t3d.recentFiles";
 const FOLDERS_KEY = "t3d.recentFolders";
 const CLOSED_KEY = "t3d.closedEditors";
+const REMOVED_ROOTS_KEY = "t3d.removedRoots";
 const LIMIT = 15;
 const CLOSED_LIMIT = 20;
+const REMOVED_ROOTS_LIMIT = 10;
 
 function readList(key: string): string[] {
   try {
@@ -50,4 +52,18 @@ export function popClosedEditor(): string | null {
   const [next, ...rest] = readList(CLOSED_KEY);
   writeList(CLOSED_KEY, rest);
   return next ?? null;
+}
+
+export function pushRemovedRoot(path: string) {
+  remember(REMOVED_ROOTS_KEY, path, REMOVED_ROOTS_LIMIT);
+}
+
+export function popRemovedRoot(): string | null {
+  const [next, ...rest] = readList(REMOVED_ROOTS_KEY);
+  writeList(REMOVED_ROOTS_KEY, rest);
+  return next ?? null;
+}
+
+export function recentRemovedRoots(): string[] {
+  return readList(REMOVED_ROOTS_KEY);
 }

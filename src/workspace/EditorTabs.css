@@ -12,8 +12,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  max-width: 200px;
-  padding: 5px 6px 5px 10px;
+  max-width: 220px;
+  padding: 5px 6px 5px 6px;
   border-radius: 8px;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
@@ -46,6 +46,32 @@
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
+}
+
+.editor-tabs__pin {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--fg-dim);
+  opacity: 0;
+}
+
+.editor-tabs__tab:hover .editor-tabs__pin,
+.editor-tabs__tab--active .editor-tabs__pin,
+.editor-tabs__pin--on {
+  opacity: 1;
+}
+
+.editor-tabs__pin--on {
+  color: var(--accent, var(--fg));
+}
+
+.editor-tabs__pin:hover {
+  color: var(--fg);
+  background: var(--bg-active);
 }
 
 .editor-tabs__close {

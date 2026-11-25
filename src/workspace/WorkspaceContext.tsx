@@ -22,7 +22,7 @@ import {
   parentPath,
   directoryChain,
 } from "./path";
-import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
+import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor, pushRemovedRoot, popRemovedRoot } from "./history";
 import { readSession, writeSession } from "./session";
 import { applyEditorConfigText, editorConfigFor, type ResolvedEditorConfig } from "../editor/editorconfig";
 import { readInsertFinalNewlineSetting, readTrimTrailingWhitespaceSetting } from "../settings/SettingsContext";
@@ -52,6 +52,7 @@ export type EditorTab = {
   baseline: string;
   cursorLine: number;
   cursorColumn: number;
+  pinned?: boolean;
 };
 
 export type RevealTarget = {
@@ -83,6 +84,7 @@ export type WorkspaceState = {
   openFolderAt: (path: string) => Promise<void>;
   addFolderRoot: () => Promise<void>;
   removeFolderRoot: (path: string) => Promise<void>;
+  reopenRemovedRoot: () => Promise<void>;
   closeFolder: () => void;
   reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
@@ -91,6 +93,7 @@ export type WorkspaceState = {
   openFileAt: (path: string, line: number, column: number) => Promise<void>;
   activateTab: (path: string) => void;
   closeTab: (path: string) => void;
+  togglePinTab: (path: string) => void;
   moveTab: (fromPath: string, toPath: string) => void;
   setValue: (value: string) => void;
   setEol: (eol: "lf" | "crlf") => void;
@@ -216,14 +219,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const addFolderRoot = useCallback(async () => {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-      title: "Add Folder to Workspace",
-    });
-    if (selected === null) return;
-    const path = Array.isArray(selected) ? selected[0] : selected;
+  const addFolderRootAt = useCallback(async (path: string) => {
     if (!path) return;
     if (rootsRef.current.some((root) => root.replace(/\\/g, "/").toLowerCase() === path.replace(/\\/g, "/").toLowerCase())) {
       return;
@@ -281,12 +277,34 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const addFolderRoot = useCallback(async () => {
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: "Add Folder to Workspace",
+    });
+    if (selected === null) return;
+    const path = Array.isArray(selected) ? selected[0] : selected;
+    if (!path) return;
+    await addFolderRootAt(path);
+  }, [addFolderRootAt]);
+
+  const reopenRemovedRoot = useCallback(async () => {
+    const path = popRemovedRoot();
+    if (!path) {
+      appendLog("No recently removed folder roots.");
+      return;
+    }
+    await addFolderRootAt(path);
+  }, [addFolderRootAt]);
+
   const removeFolderRoot = useCallback(async (path: string) => {
     const key = path.replace(/\\/g, "/").toLowerCase();
     const rootsNow = rootsRef.current;
     if (!rootsNow.some((root) => root.replace(/\\/g, "/").toLowerCase() === key)) {
       return;
     }
+    pushRemovedRoot(path);
     const remaining = rootsNow.filter(
       (root) => root.replace(/\\/g, "/").toLowerCase() !== key,
     );
@@ -695,6 +713,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const togglePinTab = useCallback((path: string) => {
+    setTabs((current) =>
+      current.map((tab) =>
+        tab.path === path ? { ...tab, pinned: !tab.pinned } : tab,
+      ),
+    );
+  }, []);
+
   const moveTab = useCallback((fromPath: string, toPath: string) => {
     if (fromPath === toPath) return;
     setTabs((current) => {
@@ -1026,7 +1052,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const closeOtherEditors = useCallback(() => {
     const keep = activePathRef.current;
     if (!keep) return;
-    const others = tabsRef.current.filter((tab) => tab.path !== keep);
+    const others = tabsRef.current.filter(
+      (tab) => tab.path !== keep && !tab.pinned,
+    );
     if (others.length === 0) return;
     const dirty = others.filter(isDirty);
     if (dirty.length > 0) {
@@ -1038,7 +1066,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       if (!ok) return;
     }
     for (const tab of others) pushClosedEditor(tab.path);
-    setTabs((current) => current.filter((tab) => tab.path === keep));
+    const keepPinned = new Set(
+      tabsRef.current.filter((tab) => tab.pinned || tab.path === keep).map((t) => t.path),
+    );
+    setTabs((current) => current.filter((tab) => keepPinned.has(tab.path)));
     setActivePath(keep);
   }, []);
 
@@ -1133,6 +1164,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolderAt,
       addFolderRoot,
       removeFolderRoot,
+      reopenRemovedRoot,
       closeFolder,
       reopenClosed,
       toggleDirectory,
@@ -1141,6 +1173,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFileAt,
       activateTab,
       closeTab,
+      togglePinTab,
       moveTab,
       setValue,
       setEol,
@@ -1183,6 +1216,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolderAt,
       addFolderRoot,
       removeFolderRoot,
+      reopenRemovedRoot,
       closeFolder,
       reopenClosed,
       toggleDirectory,
@@ -1191,6 +1225,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFileAt,
       activateTab,
       closeTab,
+      togglePinTab,
       moveTab,
       setValue,
       setEol,

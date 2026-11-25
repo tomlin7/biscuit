@@ -1,11 +1,11 @@
 import { useRef } from "react";
-import { X } from "lucide-react";
+import { Pin, X } from "lucide-react";
 import { useWorkspace } from "./WorkspaceContext";
 import { FileIcon } from "../ui/FileIcon";
 import "./EditorTabs.css";
 
 export function EditorTabs() {
-  const { tabs, activePath, activateTab, closeTab, moveTab } = useWorkspace();
+  const { tabs, activePath, activateTab, closeTab, togglePinTab, moveTab } = useWorkspace();
   const dragPath = useRef<string | null>(null);
 
   if (tabs.length === 0) {
@@ -17,6 +17,7 @@ export function EditorTabs() {
       {tabs.map((tab) => {
         const dirty = tab.value !== tab.baseline;
         const active = tab.path === activePath;
+        const pinned = Boolean(tab.pinned);
         return (
           <div
             key={tab.path}
@@ -49,6 +50,22 @@ export function EditorTabs() {
             }}
             title={tab.path}
           >
+            <button
+              type="button"
+              className={
+                pinned
+                  ? "editor-tabs__pin editor-tabs__pin--on"
+                  : "editor-tabs__pin"
+              }
+              aria-label={pinned ? `Unpin ${tab.title}` : `Pin ${tab.title}`}
+              title={pinned ? "Unpin" : "Pin"}
+              onClick={(event) => {
+                event.stopPropagation();
+                togglePinTab(tab.path);
+              }}
+            >
+              <Pin size={11} strokeWidth={2} aria-hidden />
+            </button>
             <FileIcon name={tab.title} kind="file" size={13} />
             <span className="editor-tabs__label">
               {tab.title}
