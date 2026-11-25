@@ -1455,6 +1455,13 @@ function ShellChrome() {
             );
           });
       },
+      reportIssue: () => {
+        void openUrl(
+          "https://github.com/tomlin7/T3D/issues/new?labels=bug&template=bug_report.md",
+        ).catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,

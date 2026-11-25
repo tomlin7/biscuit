@@ -1456,4 +1456,15 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.showAbout(),
   },
+  {
+    id: "t3d.reportIssue",
+    title: "Report Issue",
+    category: "Help",
+    run: (ctx) => ctx.reportIssue(),
+  },
+
+
+
+
+
 ];

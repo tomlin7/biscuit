@@ -241,6 +241,7 @@ export type CommandContext = {
   toggleChromeAcrylic: () => void;
   openReleaseNotes: () => void;
   showAbout: () => void;
+  reportIssue: () => void;
 };
 
 export type Command = {
