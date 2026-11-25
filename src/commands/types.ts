@@ -202,6 +202,8 @@ export type CommandContext = {
   closeBottomPanel: () => void;
   closeSidebar: () => void;
   markNotificationsRead: () => void;
+  increaseTerminalFontSize: () => void;
+  decreaseTerminalFontSize: () => void;
 };
 
 export type Command = {

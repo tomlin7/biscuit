@@ -1192,6 +1192,16 @@ function ShellChrome() {
       markNotificationsRead: () => {
         markNotificationsReadList();
       },
+      increaseTerminalFontSize: () => {
+        updateEditor({
+          terminalFontSize: Math.min(32, settings.editor.terminalFontSize + 1),
+        });
+      },
+      decreaseTerminalFontSize: () => {
+        updateEditor({
+          terminalFontSize: Math.max(8, settings.editor.terminalFontSize - 1),
+        });
+      },
     }),
     [
       openFolder,

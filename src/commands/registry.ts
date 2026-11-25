@@ -1214,4 +1214,16 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.markNotificationsRead(),
   },
+  {
+    id: "terminal.action.fontZoomIn",
+    title: "Increase Terminal Font Size",
+    category: "Terminal",
+    run: (ctx) => ctx.increaseTerminalFontSize(),
+  },
+  {
+    id: "terminal.action.fontZoomOut",
+    title: "Decrease Terminal Font Size",
+    category: "Terminal",
+    run: (ctx) => ctx.decreaseTerminalFontSize(),
+  },
 ];
