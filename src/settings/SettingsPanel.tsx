@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
+import { BUILTIN_THEMES } from "../editor/theme";
 import { useAi } from "../ai/AiContext";
 import { IconButton } from "../ui/IconButton";
 import { useSettings } from "./SettingsContext";
@@ -32,8 +33,11 @@ export function SettingsPanel({ open, onClose }: Props) {
             <label className="settings-row">
               <span>Theme</span>
               <select value={theme} onChange={(e) => setTheme(e.target.value)}>
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
+                {BUILTIN_THEMES.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
                 {extras.map((extra) => (
                   <option key={extra.id} value={`ext:${extra.id}`}>
                     {extra.label}

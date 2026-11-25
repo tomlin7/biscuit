@@ -254,9 +254,10 @@ function shellLabel(session: TermSession, index: number): string {
 export function TerminalPanel({ open, embedded = false }: Props) {
   const { rootPath } = useWorkspace();
   const { theme, extras } = useTheme();
-  const appearance =
-    extras.find((item) => `ext:${item.id}` === theme)?.mode ??
-    (theme === "light" ? "light" : "dark");
+  const appearance = theme === "light" || (theme.startsWith("ext:") &&
+    extras.find((item) => `ext:${item.id}` === theme)?.mode === "light")
+    ? "light"
+    : "dark";
   const [sessions, setSessions] = useState<TermSession[]>(() => [
     { id: nextSession, shell: "", runPath: null, command: null, cwd: null },
   ]);

@@ -25,12 +25,22 @@ const ThemeContext = createContext<ThemeState | null>(null);
 function readStoredTheme(): string {
   try {
     const value = localStorage.getItem(STORAGE_KEY);
-    if (value === "light" || value === "dark") return value;
+    if (value === "light" || value === "dark" || value === "gruvbox" || value === "catppuccin") {
+      return value;
+    }
     if (value?.startsWith("ext:") && value.length > 4) return value;
   } catch {
     /* ignore */
   }
   return "dark";
+}
+
+export function chromeTheme(theme: string, extras: ExtraTheme[]): string {
+  if (theme === "light" || theme === "dark" || theme === "gruvbox" || theme === "catppuccin") {
+    return theme;
+  }
+  const extra = extras.find((item) => `ext:${item.id}` === theme);
+  return extra?.mode === "light" ? "light" : "dark";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -39,9 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [extrasReady, setExtrasReady] = useState(false);
 
   useEffect(() => {
-    const extra = extras.find((item) => `ext:${item.id}` === theme);
-    const chrome = extra?.mode ?? (theme === "light" ? "light" : "dark");
-    document.documentElement.setAttribute("data-theme", chrome);
+    document.documentElement.setAttribute("data-theme", chromeTheme(theme, extras));
     try {
       localStorage.setItem(STORAGE_KEY, theme);
     } catch {

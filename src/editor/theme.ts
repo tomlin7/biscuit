@@ -3,9 +3,20 @@ import type { ExtraTheme } from "../extensions/contributions";
 
 export const T3D_THEME_DARK = "t3d-dark";
 export const T3D_THEME_LIGHT = "t3d-light";
+export const T3D_THEME_GRUVBOX = "t3d-gruvbox";
+export const T3D_THEME_CATPPUCCIN = "t3d-catppuccin";
+
+export const BUILTIN_THEMES = [
+  { id: "dark", label: "Dark" },
+  { id: "light", label: "Light" },
+  { id: "gruvbox", label: "Gruvbox" },
+  { id: "catppuccin", label: "Catppuccin" },
+] as const;
 
 export function monacoThemeId(theme: string, extras: ExtraTheme[] = []): string {
   if (theme === "light") return T3D_THEME_LIGHT;
+  if (theme === "gruvbox") return T3D_THEME_GRUVBOX;
+  if (theme === "catppuccin") return T3D_THEME_CATPPUCCIN;
   if (theme.startsWith("ext:")) {
     const id = theme.slice(4);
     if (extras.some((item) => item.id === id)) return `t3d-ext-${id}`;
@@ -77,6 +88,44 @@ export function defineT3dThemes(monaco: Monaco) {
       "editorGutter.background": "#ffffff",
       "scrollbarSlider.background": "#00000022",
       "scrollbarSlider.hoverBackground": "#00000033",
+    },
+  });
+
+  monaco.editor.defineTheme(T3D_THEME_GRUVBOX, {
+    base: "vs-dark",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editor.background": "#282828",
+      "editor.foreground": "#ebdbb2",
+      "editorLineNumber.foreground": "#928374",
+      "editorLineNumber.activeForeground": "#ebdbb2",
+      "editorCursor.foreground": "#fe8019",
+      "editor.selectionBackground": "#504945",
+      "editor.inactiveSelectionBackground": "#3c3836",
+      "editor.lineHighlightBackground": "#3c3836",
+      "editorGutter.background": "#282828",
+      "editorWidget.background": "#3c3836",
+      "editorWidget.border": "#504945",
+    },
+  });
+
+  monaco.editor.defineTheme(T3D_THEME_CATPPUCCIN, {
+    base: "vs-dark",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editor.background": "#1e1e2e",
+      "editor.foreground": "#cdd6f4",
+      "editorLineNumber.foreground": "#6c7086",
+      "editorLineNumber.activeForeground": "#bac2de",
+      "editorCursor.foreground": "#f5e0dc",
+      "editor.selectionBackground": "#45475a",
+      "editor.inactiveSelectionBackground": "#313244",
+      "editor.lineHighlightBackground": "#313244",
+      "editorGutter.background": "#1e1e2e",
+      "editorWidget.background": "#313244",
+      "editorWidget.border": "#45475a",
     },
   });
 }
