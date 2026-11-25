@@ -184,6 +184,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.176.0** | Agent max tokens setting | shipped |
 | **0.177.0** | Explorer new folder from keyboard | shipped |
 | **0.178.0** | Add active file folder to workspace | shipped |
+| **0.179.0** | Status bar line numbers toggle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

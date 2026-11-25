@@ -209,6 +209,18 @@ export function StatusBar({
             {settings.editor.minimap ? "Minimap" : "No Map"}
           </button>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Toggle line numbers"
+            onClick={() =>
+              updateEditor({ lineNumbers: !settings.editor.lineNumbers })
+            }
+          >
+            {settings.editor.lineNumbers ? "Ln" : "No Ln"}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
