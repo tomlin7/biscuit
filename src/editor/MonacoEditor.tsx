@@ -38,7 +38,8 @@ export function MonacoEditor({ path, primary = true }: Props) {
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
   const { theme, extras } = useTheme();
-  const { registerFindHandler, registerEditor, showPeek, showReferences } = useEditorActions();
+  const { registerFindHandler, registerEditor, showPeek, showReferences, setFindMatchLabel } =
+    useEditorActions();
   const showPeekRef = useRef(showPeek);
   showPeekRef.current = showPeek;
   const showReferencesRef = useRef(showReferences);
@@ -96,6 +97,41 @@ export function MonacoEditor({ path, primary = true }: Props) {
       if (!ed) return;
       void ed.getAction("actions.find")?.run();
     });
+    const updateFindLabel = () => {
+      const ed = editorRef.current;
+      if (!ed) {
+        setFindMatchLabel(null);
+        return;
+      }
+      try {
+        const controller = (
+          ed as unknown as {
+            getContribution: (id: string) => {
+              getState?: () => {
+                matchesCount?: number;
+                currentMatch?: number;
+                isRevealed?: boolean;
+                searchString?: string;
+              };
+            } | null;
+          }
+        ).getContribution("editor.contrib.findController");
+        const state = controller?.getState?.();
+        if (!state?.isRevealed || !state.searchString) {
+          setFindMatchLabel(null);
+          return;
+        }
+        const total = state.matchesCount ?? 0;
+        const current = state.currentMatch ?? 0;
+        setFindMatchLabel(total > 0 ? `${current || 1} of ${total}` : "No results");
+      } catch {
+        setFindMatchLabel(null);
+      }
+    };
+    const findDisposable = editorRef.current?.onDidChangeCursorSelection(() => {
+      window.setTimeout(updateFindLabel, 0);
+    });
+    const findTimer = window.setInterval(updateFindLabel, 400);
     registerEditor({
       trigger: (action) => {
         void editorRef.current?.getAction(action)?.run();
@@ -283,8 +319,11 @@ export function MonacoEditor({ path, primary = true }: Props) {
     return () => {
       registerFindHandler(null);
       registerEditor(null);
+      findDisposable?.dispose();
+      window.clearInterval(findTimer);
+      setFindMatchLabel(null);
     };
-  }, [registerFindHandler, registerEditor, primary]);
+  }, [registerFindHandler, registerEditor, primary, setFindMatchLabel]);
 
   useEffect(() => {
     if (!primary || !revealTarget || !doc || revealTarget.path !== doc.path) {

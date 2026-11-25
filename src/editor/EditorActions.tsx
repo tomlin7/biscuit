@@ -52,6 +52,8 @@ type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
   registerEditor: (handle: EditorHandle | null) => void;
   findInFile: () => void;
+  findMatchLabel: string | null;
+  setFindMatchLabel: (label: string | null) => void;
   runEditorCommand: (command: EditorCommand) => void;
   peek: PeekInfo | null;
   clearPeek: () => void;
@@ -70,6 +72,7 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
   const lineNumbers = useRef<"on" | "relative">("on");
   const [peek, setPeek] = useState<PeekInfo | null>(null);
   const [references, setReferences] = useState<ReferenceHit[] | null>(null);
+  const [findMatchLabel, setFindMatchLabel] = useState<string | null>(null);
   const clearPeek = useCallback(() => setPeek(null), []);
   const clearReferences = useCallback(() => setReferences(null), []);
 
@@ -137,6 +140,8 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
       registerFindHandler,
       registerEditor,
       findInFile,
+      findMatchLabel,
+      setFindMatchLabel,
       runEditorCommand,
       peek,
       clearPeek,
@@ -149,6 +154,7 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
       registerFindHandler,
       registerEditor,
       findInFile,
+      findMatchLabel,
       runEditorCommand,
       peek,
       clearPeek,
