@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUp,
+  BookOpen,
   Copy,
   Download,
   FilePlus,
@@ -25,6 +26,13 @@ import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
 import { EmptyState } from "../ui/EmptyState";
 import { RichMessage } from "./RichMessage";
+import {
+  applyTemplateToDraft,
+  onInsertPromptTemplate,
+  onOpenPromptLibrary,
+  type PromptTemplate,
+} from "./promptLibrary";
+import { PromptLibraryModal } from "./PromptLibraryModal";
 import "./AiPanel.css";
 
 type MentionItem =
@@ -68,6 +76,39 @@ export function AiPanel({ onOpenSettings }: Props) {
   const [listening, setListening] = useState(false);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
+  const [showPromptLibrary, setShowPromptLibrary] = useState(false);
+
+  const draftRef = useRef(draft);
+  draftRef.current = draft;
+
+  const handleInsertPrompt = useCallback(
+    (template: PromptTemplate) => {
+      const nextDraft = applyTemplateToDraft(draftRef.current, template.prompt, {
+        selection: selectionText,
+        language: document?.language,
+        fileName: document?.title,
+        filePath: document?.path,
+      });
+      setDraft(nextDraft);
+      setShowPromptLibrary(false);
+      window.setTimeout(() => {
+        window.document.getElementById("ai-composer-input")?.focus();
+      }, 0);
+    },
+    [selectionText, document],
+  );
+
+  useEffect(() => {
+    return onOpenPromptLibrary(() => {
+      setShowPromptLibrary(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    return onInsertPromptTemplate((template) => {
+      handleInsertPrompt(template);
+    });
+  }, [handleInsertPrompt]);
 
   useEffect(() => {
     if (!document) return;
@@ -77,7 +118,7 @@ export function AiPanel({ onOpenSettings }: Props) {
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
     if (lastUser) {
       const t = lastUser.content.trim().replace(/\s+/g, " ");
-      return t.length > 42 ? `${t.slice(0, 41)}…` : t;
+      return t.length > 42 ? `${t.slice(0, 41)}â€¦` : t;
     }
     return "Agent";
   }, [messages]);
@@ -350,7 +391,7 @@ export function AiPanel({ onOpenSettings }: Props) {
                   <summary>
                     {msg.toolCalls.length} tool calls
                     {msg.toolCalls.some((t) => t.ok === false)
-                      ? ` · ${msg.toolCalls.filter((t) => t.ok === false).length} failed`
+                      ? ` Â· ${msg.toolCalls.filter((t) => t.ok === false).length} failed`
                       : ""}
                   </summary>
                   <ul>
@@ -500,7 +541,7 @@ export function AiPanel({ onOpenSettings }: Props) {
             className="ai-panel__composer-input"
             id="ai-composer-input"
             rows={3}
-            placeholder="Ask anything… (@ files/folders, / commands)"
+            placeholder="Ask anythingâ€¦ (@ files/folders, / commands)"
             value={draft}
             disabled={busy}
             onChange={(e) => onDraftChange(e.target.value)}
@@ -577,6 +618,13 @@ export function AiPanel({ onOpenSettings }: Props) {
                 }}
               />
               <IconButton
+                icon={BookOpen}
+                label="Prompt library"
+                size={14}
+                active={showPromptLibrary}
+                onClick={() => setShowPromptLibrary(true)}
+              />
+              <IconButton
                 icon={RefreshCw}
                 label="Regenerate"
                 size={14}
@@ -585,7 +633,7 @@ export function AiPanel({ onOpenSettings }: Props) {
               />
               <IconButton
                 icon={Mic}
-                label={listening ? "Listening…" : "Voice input"}
+                label={listening ? "Listeningâ€¦" : "Voice input"}
                 size={14}
                 active={listening}
                 onClick={startVoice}
@@ -629,6 +677,15 @@ export function AiPanel({ onOpenSettings }: Props) {
           />
         </div>
       </div>
+
+      <PromptLibraryModal
+        isOpen={showPromptLibrary}
+        onClose={() => setShowPromptLibrary(false)}
+        onInsert={handleInsertPrompt}
+        selection={selectionText}
+        language={document?.language}
+        fileName={document?.title}
+      />
     </aside>
   );
 }

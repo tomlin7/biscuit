@@ -2120,4 +2120,16 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCherryPickAbort(),
   },
+  {
+    id: "ai.promptLibrary.open",
+    title: "AI: Open Prompt Library...",
+    category: "AI",
+    run: (ctx) => ctx.openPromptLibrary(),
+  },
+  {
+    id: "ai.promptLibrary.insert",
+    title: "AI: Insert Prompt Template...",
+    category: "AI",
+    run: (ctx) => ctx.insertPromptTemplate(),
+  },
 ];
