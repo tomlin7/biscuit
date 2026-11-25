@@ -242,6 +242,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.234.0** | SCM clear commit message | shipped |
 | **0.235.0** | Toggle bottom panel from palette | shipped |
 | **0.236.0** | Import AI session from palette | shipped |
+| **0.237.0** | Show Search SCM and Outline from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

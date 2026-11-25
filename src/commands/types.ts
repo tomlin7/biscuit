@@ -100,7 +100,8 @@ export type CommandContext = {
   exportAiSession: () => void;
   importAiSession: () => void;
   showExplorer: () => void;
- showScm: () => void;
+  showSearch: () => void;
+  showScm: () => void;
   showOutline: () => void;
 };
 
