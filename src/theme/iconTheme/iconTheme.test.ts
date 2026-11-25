@@ -228,6 +228,88 @@ describe("installable / contributed custom icon themes", () => {
   });
 });
 
+describe("icon resolution - paths and edge cases", () => {
+  it("resolves file and folder icons when given Windows or POSIX paths", () => {
+    const dockerWin = resolveIcon(MATERIAL_THEME, "C:\\repo\\Dockerfile", "file");
+    expect(dockerWin.color).toBe("#2496ed");
+
+    const pkgWin = resolveIcon(MATERIAL_THEME, "C:\\repo\\project\\package.json", "file");
+    expect(pkgWin.color).toBe("#cb3837");
+
+    const compPosix = resolveIcon(MATERIAL_THEME, "src/components", "directory", false);
+    expect(compPosix.color).toBe("#6366f1");
+
+    const nodeWin = resolveIcon(MATERIAL_THEME, "D:\\workspace\\node_modules\\", "directory", false);
+    expect(nodeWin.color).toBe("#8b5cf6");
+
+    const dottedPath = resolveIcon(MATERIAL_THEME, "v1.2.3/index.ts", "file");
+    expect(dottedPath.color).toBe("#3178c6");
+  });
+
+  it("extracts viewBox from raw SVG strings and icon definitions", () => {
+    const customSvgTheme: IconThemeDefinition = {
+      id: "svg-test",
+      label: "SVG Test",
+      fileExtensions: {
+        raw: '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="16"/></svg>',
+        def: {
+          svg: '<svg viewBox="0 0 48 48"><rect width="48" height="48"/></svg>',
+          color: "#00ff00",
+        },
+      },
+    };
+
+    const raw = resolveIcon(customSvgTheme, "file.raw", "file");
+    expect(raw.viewBox).toBe("0 0 32 32");
+
+    const def = resolveIcon(customSvgTheme, "file.def", "file");
+    expect(def.viewBox).toBe("0 0 48 48");
+    expect(def.color).toBe("#00ff00");
+  });
+
+  it("allows custom themes to reference standard built-in icon keys directly", () => {
+    const customTheme: IconThemeDefinition = {
+      id: "ref-test",
+      label: "Ref Test",
+      fileExtensions: {
+        customcode: "typescript",
+      },
+    };
+
+    const res = resolveIcon(customTheme, "script.customcode", "file");
+    expect(res.svg).toBeDefined();
+  });
+
+  it("resolves multi-dot compound extensions from most specific to least", () => {
+    const multiTheme: IconThemeDefinition = {
+      id: "multi-test",
+      label: "Multi Test",
+      fileExtensions: {
+        "spec.ts": { color: "#111111" },
+        "component.spec.ts": { color: "#222222" },
+        ts: { color: "#333333" },
+      },
+    };
+
+    const specific = resolveIcon(multiTheme, "Button.component.spec.ts", "file");
+    expect(specific.color).toBe("#222222");
+
+    const general = resolveIcon(multiTheme, "math.spec.ts", "file");
+    expect(general.color).toBe("#111111");
+
+    const single = resolveIcon(multiTheme, "index.ts", "file");
+    expect(single.color).toBe("#333333");
+  });
+
+  it("handles null/undefined themes or empty filenames safely", () => {
+    const nullThemeRes = resolveIcon(null as unknown as IconThemeDefinition, "file.ts", "file");
+    expect(nullThemeRes.svg).toBeDefined();
+
+    const emptyFileRes = resolveIcon(MATERIAL_THEME, "", "file");
+    expect(emptyFileRes.svg).toBeDefined();
+  });
+});
+
 describe("command palette registration", () => {
   it("registers workbench.action.selectIconTheme in COMMANDS registry", () => {
     const cmd = COMMANDS.find((c) => c.id === "workbench.action.selectIconTheme");
@@ -237,3 +319,4 @@ describe("command palette registration", () => {
     expect(typeof cmd?.run).toBe("function");
   });
 });
+

@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { SettingsContext } from "../../settings/SettingsContext";
 import { BUILTIN_ICON_THEMES, MATERIAL_THEME } from "./builtins";
 import { resolveIcon } from "./resolver";
 import type { IconThemeDefinition, ResolvedIcon } from "./types";
@@ -31,6 +32,13 @@ function readStoredTheme(): string {
     const val = localStorage.getItem(STORAGE_KEY);
     if (val && typeof val === "string" && val.trim()) {
       return val.trim();
+    }
+    const rawSettings = localStorage.getItem("t3d.settings.v1");
+    if (rawSettings) {
+      const parsed = JSON.parse(rawSettings);
+      if (parsed?.iconTheme && typeof parsed.iconTheme === "string" && parsed.iconTheme.trim()) {
+        return parsed.iconTheme.trim();
+      }
     }
   } catch {
     /* ignore */
@@ -68,11 +76,24 @@ const DEFAULT_STATE: IconThemeState = {
 const IconThemeContext = createContext<IconThemeState>(DEFAULT_STATE);
 
 export function IconThemeProvider({ children }: { children: ReactNode }) {
-  const [iconTheme, setIconThemeState] = useState<string>(() => readStoredTheme());
+  const settingsCtx = useContext(SettingsContext);
+  const [iconTheme, setIconThemeState] = useState<string>(() => {
+    if (settingsCtx?.settings?.iconTheme) {
+      return settingsCtx.settings.iconTheme;
+    }
+    return readStoredTheme();
+  });
   const [contributedThemes, setContributedThemesState] = useState<IconThemeDefinition[]>([]);
   const [customThemes, setCustomThemes] = useState<IconThemeDefinition[]>(() =>
     readStoredCustomThemes(),
   );
+
+  // Sync from SettingsContext if it changes externally (e.g. settings reset)
+  useEffect(() => {
+    if (settingsCtx?.settings?.iconTheme && settingsCtx.settings.iconTheme !== iconTheme) {
+      setIconThemeState(settingsCtx.settings.iconTheme);
+    }
+  }, [settingsCtx?.settings?.iconTheme, iconTheme]);
 
   useEffect(() => {
     try {
@@ -94,6 +115,15 @@ export function IconThemeProvider({ children }: { children: ReactNode }) {
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY && e.newValue) {
         setIconThemeState(e.newValue);
+      } else if (e.key === "t3d.settings.v1" && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed?.iconTheme && typeof parsed.iconTheme === "string") {
+            setIconThemeState(parsed.iconTheme);
+          }
+        } catch {
+          /* ignore */
+        }
       } else if (e.key === CUSTOM_STORAGE_KEY && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
@@ -107,9 +137,15 @@ export function IconThemeProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const setIconTheme = useCallback((id: string) => {
-    setIconThemeState(id);
-  }, []);
+  const setIconTheme = useCallback(
+    (id: string) => {
+      setIconThemeState(id);
+      if (settingsCtx && settingsCtx.settings.iconTheme !== id) {
+        settingsCtx.updateApp({ iconTheme: id });
+      }
+    },
+    [settingsCtx],
+  );
 
   const setContributedThemes = useCallback((themes: IconThemeDefinition[]) => {
     setContributedThemesState(themes);

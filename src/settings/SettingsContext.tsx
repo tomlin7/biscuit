@@ -122,7 +122,7 @@ const DEFAULTS: AppSettings = {
   jsonSchemas: [],
 };
 
-const SettingsContext = createContext<SettingsState | null>(null);
+export const SettingsContext = createContext<SettingsState | null>(null);
 
 function load(): AppSettings {
   try {

@@ -44,8 +44,11 @@ function renderClassic(name: string, kind: "file" | "directory", open: boolean, 
     return <Icon size={size} strokeWidth={1.75} className="file-icon file-icon--folder" />;
   }
 
-  const ext = extOf(name);
-  const lower = name.toLowerCase();
+  const clean = name.trim().replace(/[/\\]+$/, "");
+  const lastSlash = Math.max(clean.lastIndexOf("/"), clean.lastIndexOf("\\"));
+  const base = lastSlash >= 0 ? clean.slice(lastSlash + 1) : clean;
+  const ext = extOf(base);
+  const lower = base.toLowerCase();
 
   if (lower === ".gitignore" || lower === ".gitattributes") {
     return <GitBranch size={size} strokeWidth={1.75} className="file-icon file-icon--git" />;
