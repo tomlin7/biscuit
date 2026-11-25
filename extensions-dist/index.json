@@ -1,0 +1,34 @@
+[
+  {
+    "id": "t3d.games",
+    "name": "Classic Games",
+    "version": "1.0.0",
+    "description": "Classic casual games in sandboxed editor tabs: Tic-Tac-Toe, Game of Life, Minesweeper, Pong, and Whoops 404.",
+    "downloadUrl": "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/t3d.games.zip",
+    "sha256": "aeaff1e90dd55f4dea6adcfe76488cd926cc8f031ea4e73ec19dea0c0a1353f5"
+  },
+  {
+    "id": "t3d.keypress-display",
+    "name": "Keypress Display",
+    "version": "1.0.0",
+    "description": "Streamer-style real-time keypress HUD in the status bar.",
+    "downloadUrl": "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/t3d.keypress-display.zip",
+    "sha256": "be1ffe7c5890ea5a0175d042a2fa405a1cade1bff252eec067f18c14317730e6"
+  },
+  {
+    "id": "t3d.vim",
+    "name": "Vim Mode",
+    "version": "1.0.0",
+    "description": "Vim emulation for the T3D editor via monaco-vim.",
+    "downloadUrl": "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/t3d.vim.zip",
+    "sha256": "87a6c873cf55b9ffcefd2dab82e9eb0f2c081248a199bf8f357132af2c61973b"
+  },
+  {
+    "id": "t3d.web-search",
+    "name": "Web Search",
+    "version": "1.0.0",
+    "description": "Search Google and GitHub issues/pull requests directly from the editor.",
+    "downloadUrl": "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/t3d.web-search.zip",
+    "sha256": "a54c63ce708f40d98b528c8ba4500af1800a5d7c854f3dc021e3c71721822861"
+  }
+]

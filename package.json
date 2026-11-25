@@ -1,13 +1,14 @@
 {
   "name": "t3d",
   "private": true,
-  "version": "0.448.0",
+  "version": "0.449.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "extensions:build": "bun scripts/build-extensions.ts"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",
