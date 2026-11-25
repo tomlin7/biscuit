@@ -703,4 +703,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.openAi(),
   },
+  {
+    id: "git.pull",
+    title: "Git: Pull",
+    category: "Git",
+    run: (ctx) => ctx.gitPull(),
+  },
 ];

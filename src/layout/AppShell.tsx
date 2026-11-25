@@ -40,6 +40,7 @@ import { rootForPath } from "../ai/roots";
 import { requestSplitEditor } from "./splitBus";
 import { useFileDrop } from "../workspace/fileDrop";
 import { requestToggleAmend } from "../scm/amendBus";
+import { requestScmRemote } from "../scm/scmRemoteBus";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
 import { symbolsForFile } from "../lsp/OutlinePanel";
@@ -647,6 +648,11 @@ function ShellChrome() {
       },
       showWelcome: () => closeFolder(),
       openAi: () => setAiOpen(true),
+      gitPull: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("pull");
+      },
     }),
     [
       openFolder,

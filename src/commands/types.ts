@@ -117,8 +117,8 @@ export type CommandContext = {
   reopenLastFolder: () => void;
   showWelcome: () => void;
   openAi: () => void;
- gitPush: () => void;
-  gitFetch: () => void;
+  gitPull: () => void;
+ gitFetch: () => void;
 };
 
 export type Command = {

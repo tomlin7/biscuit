@@ -258,6 +258,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.250.0** | Show Welcome from palette | shipped |
 | **0.251.0** | Show AI Agent from palette | shipped |
 | **0.252.0** | Copy Line Up keybinding | shipped |
+| **0.253.0** | Git Pull from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

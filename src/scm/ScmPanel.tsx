@@ -8,6 +8,7 @@ import { appendLog } from "../logs/logBus";
 import { openDiffTab } from "./diffBus";
 import { readIgnoreSpacePref } from "./diffPrefs";
 import { setToggleAmendListener } from "./amendBus";
+import { setScmRemoteListener, type ScmRemoteAction } from "./scmRemoteBus";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -167,6 +168,15 @@ export function ScmPanel({ onBranch }: Props) {
       setActing(false);
     }
   };
+
+  useEffect(() => {
+    setScmRemoteListener((action: ScmRemoteAction) => {
+      if (action === "pull") void run("git_pull", {});
+      else if (action === "fetch") void run("git_fetch", {});
+      else void push();
+    });
+    return () => setScmRemoteListener(null);
+  });
 
   const staged = summary?.entries.filter((entry) => entry.index !== " " && entry.index !== "?") ?? [];
   const unstaged =
