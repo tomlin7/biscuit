@@ -132,6 +132,10 @@ export type CommandContext = {
   cycleWordWrapColumn: () => void;
   clearLogs: () => void;
   revealActiveFileInOs: () => void;
+  gitDiscardAll: () => void;
+ gitUnstageAll: () => void;
+ revealActiveParentInExplorer: () => void;
+  gitCopyRelativePaths: () => void;
 };
 
 export type Command = {

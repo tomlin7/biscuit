@@ -169,6 +169,17 @@ export function ScmPanel({ onBranch }: Props) {
     }
   };
 
+  const staged = summary?.entries.filter((entry) => entry.index !== " " && entry.index !== "?") ?? [];
+  const unstaged =
+    summary?.entries.filter((entry) => entry.worktree !== " " || entry.index === "?") ?? [];
+  const selectedPaths = summary?.entries.filter((entry) => selected.has(entry.path)).map((e) => e.path) ?? [];
+  const selectedUnstaged = selectedPaths.filter((path) =>
+    unstaged.some((entry) => entry.path === path),
+  );
+  const selectedStaged = selectedPaths.filter((path) =>
+    staged.some((entry) => entry.path === path),
+  );
+
   useEffect(() => {
     setScmRemoteListener((action: ScmRemoteAction) => {
       if (action === "pull") void run("git_pull", {});
@@ -185,21 +196,47 @@ export function ScmPanel({ onBranch }: Props) {
         const name = window.prompt("Branch to check out")?.trim();
         if (!name) return;
         void run("git_checkout", { branch: name });
+      } else if (action === "discardAll") {
+        if (unstaged.length === 0) return;
+        const ok = window.confirm(
+          `Discard all unstaged changes in ${unstaged.length} path(s)?`,
+        );
+        if (!ok) return;
+        void (async () => {
+          for (const entry of unstaged) {
+            const untracked = entry.index === "?";
+            const succeeded = await run("git_discard", {
+              path: entry.path,
+              untracked,
+            });
+            if (!succeeded || !rootPath) continue;
+            const relative = entry.path.replace(
+              /\//g,
+              rootPath.includes("\\") ? "\\" : "/",
+            );
+            const absolute = joinPath(rootPath, relative);
+            const open = tabs.find(
+              (tab) =>
+                tab.path.replace(/\\/g, "/").toLowerCase() ===
+                absolute.replace(/\\/g, "/").toLowerCase(),
+            );
+            if (!open) continue;
+            if (untracked) {
+              closeTab(open.path);
+              continue;
+            }
+            try {
+              const text = await readTextFile(absolute);
+              applyDiskValue(open.path, text);
+            } catch {
+              closeTab(open.path);
+            }
+          }
+        })();
       } else void push();
     });
     return () => setScmRemoteListener(null);
   });
-
-  const staged = summary?.entries.filter((entry) => entry.index !== " " && entry.index !== "?") ?? [];
-  const unstaged =
-    summary?.entries.filter((entry) => entry.worktree !== " " || entry.index === "?") ?? [];
-  const selectedPaths = summary?.entries.filter((entry) => selected.has(entry.path)).map((e) => e.path) ?? [];
-  const selectedUnstaged = selectedPaths.filter((path) =>
-    unstaged.some((entry) => entry.path === path),
-  );
-  const selectedStaged = selectedPaths.filter((path) =>
-    staged.some((entry) => entry.path === path),
-  );
 
   const toggleSelected = (path: string) => {
     setSelected((current) => {
@@ -222,7 +259,7 @@ export function ScmPanel({ onBranch }: Props) {
     <div className="scm-panel">
       <div className="scm-panel__toolbar">
         <span className="scm-panel__branch">
-          {summary?.branch ?? (loading ? "…" : "—")}
+          {summary?.branch ?? (loading ? "â€¦" : "â€”")}
         </span>
         <span className="scm-panel__toolbar-actions">
           <button
@@ -343,7 +380,7 @@ export function ScmPanel({ onBranch }: Props) {
                     })();
                   }}
                 >
-                  ×
+                  Ã—
                 </button>
               ) : null}
             </div>
@@ -648,7 +685,7 @@ export function ScmPanel({ onBranch }: Props) {
           {amend ? "Amend" : "Commit"}
         </button>
       </div>
-      {loading && !summary ? <p className="scm-panel__hint">Loading…</p> : null}
+      {loading && !summary ? <p className="scm-panel__hint">Loadingâ€¦</p> : null}
       {summary && summary.entries.length === 0 ? (
         <p className="scm-panel__hint">Working tree clean.</p>
       ) : null}
@@ -690,7 +727,7 @@ export function ScmPanel({ onBranch }: Props) {
                   );
                   void openFile(joinPath(rootPath, relative));
                 }}
-                title={`${entry.path} — Enter to stage, unstage, or open`}
+                title={`${entry.path} â€” Enter to stage, unstage, or open`}
               >
                 <span className="scm-panel__status">{entry.status}</span>
                 <span className="scm-panel__path">{entry.path}</span>
