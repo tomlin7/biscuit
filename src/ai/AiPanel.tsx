@@ -51,6 +51,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     deleteSession,
     attachFiles,
     removeAttachment,
+    clearAttachments,
     attachPath,
     cycleEffort,
     exportSession,
@@ -305,6 +306,16 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
                 </button>
               </span>
             ))}
+            {attachments.length > 0 ? (
+              <button
+                type="button"
+                className="ai-panel__chip ai-panel__chip--clear"
+                title="Clear all attachments"
+                onClick={clearAttachments}
+              >
+                Clear all
+              </button>
+            ) : null}
           </div>
         ) : null}
 

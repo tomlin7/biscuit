@@ -61,6 +61,7 @@ type AiState = {
   deleteSession: (id: string) => void;
   attachFiles: () => Promise<void>;
   removeAttachment: (path: string) => void;
+  clearAttachments: () => void;
   attachPath: (path: string, name: string, content: string) => void;
   cycleEffort: () => void;
   exportSession: () => void;
@@ -241,6 +242,10 @@ export function AiProvider({ children }: { children: ReactNode }) {
 
   const removeAttachment = useCallback((path: string) => {
     setAttachments((current) => current.filter((a) => a.path !== path));
+  }, []);
+
+  const clearAttachments = useCallback(() => {
+    setAttachments([]);
   }, []);
 
   const attachFiles = useCallback(async () => {
@@ -555,6 +560,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       deleteSession,
       attachFiles,
       removeAttachment,
+      clearAttachments,
       attachPath,
       cycleEffort,
       exportSession,
@@ -578,6 +584,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       deleteSession,
       attachFiles,
       removeAttachment,
+      clearAttachments,
       attachPath,
       cycleEffort,
       exportSession,

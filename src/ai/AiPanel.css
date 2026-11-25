@@ -315,6 +315,16 @@
   cursor: default;
 }
 
+.ai-panel__chip--clear {
+  color: var(--fg-dim);
+  background: transparent;
+}
+
+.ai-panel__chip--clear:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
 .ai-panel__chip-x {
   display: inline-flex;
   margin-left: 2px;
