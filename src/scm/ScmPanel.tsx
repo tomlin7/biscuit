@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { readTextFile } from "@tauri-apps/plugin-fs";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
@@ -353,6 +354,26 @@ export function ScmPanel({ onBranch }: Props) {
             }}
           >
             Copy path
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || selectedPaths.length === 0 || !rootPath}
+            onClick={() => {
+              if (!rootPath) return;
+              const targets = selectedPaths.map((path) => {
+                const relative = path.replace(
+                  /\//g,
+                  rootPath.includes("\\") ? "\\" : "/",
+                );
+                return joinPath(rootPath, relative);
+              });
+              void revealItemInDir(targets).catch((err) => {
+                setError(err instanceof Error ? err.message : String(err));
+              });
+            }}
+          >
+            Reveal in Explorer
           </button>
         </div>
         <label className="scm-panel__amend">
