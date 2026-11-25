@@ -59,6 +59,11 @@ pub struct ExtensionManifest {
     pub path: String,
     #[serde(default)]
     pub contributes: Option<ExtensionContributes>,
+    /// Entry module, relative to the extension folder, run in the extension host.
+    #[serde(default)]
+    pub main: Option<String>,
+    #[serde(default, rename = "activationEvents")]
+    pub activation_events: Vec<String>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -218,6 +223,12 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
     } else {
         Some(parsed)
     };
+    let main = value
+        .get("main")
+        .and_then(|v| v.as_str())
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty());
+    let activation_events = string_list(value.get("activationEvents"));
     let enabled = enabled_map.enabled.get(&id).copied().unwrap_or(true);
     Some(ExtensionManifest {
         id,
@@ -227,7 +238,43 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         enabled,
         path: dir.to_string_lossy().to_string(),
         contributes,
+        main,
+        activation_events,
     })
+}
+
+const MAX_EXTENSION_FILE: u64 = 16 * 1024 * 1024;
+
+/// Resolves `relative` inside the installed extension `id`, refusing anything that escapes it.
+pub fn extension_file_path(root: &Path, id: &str, relative: &str) -> Result<PathBuf, String> {
+    valid_extension_id(id)?;
+    let relative = relative.trim_start_matches(['/', '\\']);
+    if relative.is_empty() {
+        return Err("extension file path is empty".into());
+    }
+    let base = root
+        .join(id)
+        .canonicalize()
+        .map_err(|_| format!("extension {id} is not installed"))?;
+    let file = base
+        .join(relative)
+        .canonicalize()
+        .map_err(|_| format!("{relative} was not found in {id}"))?;
+    if !file.starts_with(&base) || !file.is_file() {
+        return Err(format!("{relative} is not a file inside {id}"));
+    }
+    let size = fs::metadata(&file).map_err(|e| e.to_string())?.len();
+    if size > MAX_EXTENSION_FILE {
+        return Err(format!("{relative} is larger than 16 MB"));
+    }
+    Ok(file)
+}
+
+#[tauri::command]
+pub fn read_extension_file(app: AppHandle, id: String, path: String) -> Result<String, String> {
+    let root = extensions_root(&app)?;
+    let file = extension_file_path(&root, &id, &path)?;
+    fs::read_to_string(file).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -356,16 +403,45 @@ pub fn scaffold_extension_at(dest: &Path) -> Result<String, String> {
     } else {
         folder.to_string()
     };
+    let command = format!("{id}.hello");
     let body = serde_json::to_string_pretty(&serde_json::json!({
         "id": id,
         "name": name,
         "version": "0.1.0",
         "description": "",
-        "contributes": { "commands": [] }
+        "main": "main.js",
+        "contributes": {
+            "commands": [{ "id": command, "title": format!("{name}: Say Hello") }]
+        }
     }))
     .map_err(|e| e.to_string())?;
     fs::write(manifest, body).map_err(|e| e.to_string())?;
+    let main = dest.join("main.js");
+    if !main.exists() {
+        fs::write(main, sample_main_js(&command, &name)).map_err(|e| e.to_string())?;
+    }
     Ok(id)
+}
+
+fn sample_main_js(command: &str, name: &str) -> String {
+    let command = serde_json::to_string(command).unwrap_or_else(|_| "\"hello\"".into());
+    let greeting = serde_json::to_string(&format!("Hello from {name}!"))
+        .unwrap_or_else(|_| "\"Hello!\"".into());
+    format!(
+        r#"// Runs in the T3D extension host (a Web Worker) the first time the command is used.
+export function activate(t3d, context) {{
+  context.subscriptions.push(
+    t3d.commands.registerCommand({command}, async () => {{
+      const state = await t3d.workspace.getState();
+      const file = state.activeDocument ? ` You are editing ${{state.activeDocument.title}}.` : "";
+      await t3d.window.showInformationMessage({greeting} + file);
+    }}),
+  );
+}}
+
+export function deactivate() {{}}
+"#
+    )
 }
 
 #[tauri::command]
@@ -387,8 +463,9 @@ pub fn install_sample_extension(app: AppHandle) -> Result<(), String> {
     let manifest = r#"{
   "id": "t3d.sample-hello",
   "name": "Sample Hello",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sample extension that contributes a Hello command to the palette.",
+  "main": "main.js",
   "contributes": {
     "commands": [
       { "id": "sample.hello", "title": "Sample: Say Hello" }
@@ -397,6 +474,8 @@ pub fn install_sample_extension(app: AppHandle) -> Result<(), String> {
 }
 "#;
     fs::write(dir.join("extension.json"), manifest).map_err(|e| e.to_string())?;
+    fs::write(dir.join("main.js"), sample_main_js("sample.hello", "Sample Hello"))
+        .map_err(|e| e.to_string())?;
     let mut map = load_enabled(&root);
     map.enabled.insert("t3d.sample-hello".into(), true);
     save_enabled(&root, &map)?;
@@ -514,5 +593,20 @@ mod tests {
         let parsed = super::parse_contributes(&value);
         assert_eq!(parsed.commands[0].runs.as_deref(), Some("open-folder"));
         assert_eq!(parsed.commands[1].runs, None);
+    }
+
+    #[test]
+    fn extension_files_stay_inside_their_folder() {
+        let root = scratch("file-root");
+        let ext = root.join("local.files");
+        fs::create_dir_all(ext.join("dist")).unwrap();
+        fs::write(ext.join("dist").join("main.js"), "export {}").unwrap();
+        fs::write(root.join("secret.txt"), "nope").unwrap();
+        let ok = super::extension_file_path(&root, "local.files", "dist/main.js").unwrap();
+        assert!(ok.ends_with("main.js"));
+        assert!(super::extension_file_path(&root, "local.files", "../secret.txt").is_err());
+        assert!(super::extension_file_path(&root, "local.files", "dist").is_err());
+        assert!(super::extension_file_path(&root, "../local.files", "dist/main.js").is_err());
+        let _ = fs::remove_dir_all(&root);
     }
 }

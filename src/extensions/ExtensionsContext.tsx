@@ -27,6 +27,9 @@ export type ExtensionManifest = {
     }>;
     languages?: Array<{ id: string; aliases: string[]; extensions: string[] }>;
   };
+  /** Entry module run in the extension host; absent for declarative-only extensions. */
+  main?: string | null;
+  activationEvents?: string[];
 };
 
 type ExtensionsState = {

@@ -21,6 +21,8 @@ import { AiProvider, useAi } from "../ai/AiContext";
 import { AiPanel } from "../ai/AiPanel";
 import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsContext";
 import { collectContributions, registerExtraLanguages } from "../extensions/contributions";
+import { extensionHost } from "../extensions/host/extensionHost";
+import type { WorkspaceSnapshot } from "../extensions/host/protocol";
 import * as monaco from "monaco-editor";
 import { DebugProvider, useDebug } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
@@ -415,7 +417,15 @@ function ShellChrome() {
     return () => window.removeEventListener("t3d:keybindings", onKeybindings);
   }, [openKeybindings]);
 
-  const closePalette = useCallback(() => setPaletteOpen(false), []);
+  const quickPickResolverRef = useRef<((value: string | undefined) => void) | null>(null);
+  const closePalette = useCallback(() => {
+    setPaletteOpen(false);
+    const resolve = quickPickResolverRef.current;
+    if (resolve) {
+      quickPickResolverRef.current = null;
+      window.setTimeout(() => resolve(undefined), 0);
+    }
+  }, []);
 
   const resolveGithubRepoUrl = useCallback(async (): Promise<string | null> => {
     if (!rootPath) {
@@ -514,6 +524,21 @@ function ShellChrome() {
     setBottomOpen(true);
   }, [bottomOpen, panelTab, setBottomOpen]);
 
+  useEffect(() => {
+    extensionHost.setManifests(extensions);
+  }, [extensions]);
+
+  const startupFiredRef = useRef(false);
+  useEffect(() => {
+    if (startupFiredRef.current || extensions.length === 0) return;
+    startupFiredRef.current = true;
+    window.setTimeout(() => extensionHost.fireEvent("onStartupFinished"), 1500);
+  }, [extensions]);
+
+  useEffect(() => {
+    if (document?.language) extensionHost.fireEvent(`onLanguage:${document.language}`);
+  }, [document?.language]);
+
   const extensionCommands = useMemo<Command[]>(() => {
     const cmds: Command[] = [];
     for (const ext of extensions) {
@@ -522,9 +547,15 @@ function ShellChrome() {
         cmds.push({
           id: contrib.id,
           title: contrib.title,
-          category: "Extension",
+          category: ext.name,
           run: (ctx) => {
             const action = contrib.runs?.trim();
+            if (!action && ext.main) {
+              void extensionHost.executeCommand(contrib.id).catch((error: unknown) => {
+                notify(ext.name, error instanceof Error ? error.message : String(error));
+              });
+              return;
+            }
             if (action === "open-folder") {
               void ctx.openFolder();
               return;
@@ -537,13 +568,13 @@ function ShellChrome() {
               ctx.toggleTerminal();
               return;
             }
-            window.alert(`${contrib.title}\n\n(from ${ext.name})`);
+            notify(ext.name, `${contrib.title} has no handler: add "main" code or a "runs" action.`);
           },
         });
       }
     }
     return cmds;
-  }, [extensions]);
+  }, [extensions, notify]);
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -1733,6 +1764,7 @@ function ShellChrome() {
         void installSample();
       },
       reloadExtensions: async () => {
+        extensionHost.restart();
         const list = await reloadExtensions();
         notify(
           "Extensions",
@@ -2343,6 +2375,57 @@ function ShellChrome() {
   );
   const commandContextRef = useRef(commandContext);
   commandContextRef.current = commandContext;
+
+  const workspaceSnapshotRef = useRef<WorkspaceSnapshot>({ rootPath: null, roots: [], activeDocument: null });
+  workspaceSnapshotRef.current = {
+    rootPath,
+    roots,
+    activeDocument: document
+      ? {
+          path: document.path,
+          title: document.title,
+          language: document.language,
+          selectionText,
+          isUntitled: isVirtualPath(document.path),
+        }
+      : null,
+  };
+
+  useEffect(() => {
+    extensionHost.setServices({
+      showMessage: (_level, message, extensionName) => notify(extensionName, message),
+      showInputBox: async (options) => {
+        const value = window.prompt(options.prompt ?? options.placeHolder ?? "", options.value ?? "");
+        return value ?? undefined;
+      },
+      showQuickPick: (items, options) =>
+        new Promise<string | undefined>((resolve) => {
+          quickPickResolverRef.current?.(undefined);
+          quickPickResolverRef.current = resolve;
+          const prefix = `${options.placeHolder?.trim() || "Pick"}:`;
+          setRecentCommands([]);
+          setSymbolCommands(
+            items.map((item, index) => ({
+              id: `t3d.quickPick:${index}`,
+              title: `${prefix} ${item}`,
+              category: "Extension",
+              run: () => resolve(item),
+            })),
+          );
+          setPaletteSeed(prefix);
+          setPaletteOpen(true);
+        }),
+      executeCoreCommand: async (command) => {
+        const target = COMMANDS.find((item) => item.id === command);
+        if (!target) throw new Error(`Unknown command ${command}`);
+        await target.run(commandContextRef.current);
+        return null;
+      },
+      openExternal: (url) => openUrl(url),
+      writeClipboard: (text) => navigator.clipboard.writeText(text),
+      getWorkspaceState: () => workspaceSnapshotRef.current,
+    });
+  }, [notify]);
 
   useEffect(() => {
     let chord: string | null = null;

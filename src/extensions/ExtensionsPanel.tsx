@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import {
   Blocks,
   FolderDown,
@@ -9,12 +9,22 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { useExtensions } from "./ExtensionsContext";
+import { useExtensions, type ExtensionManifest } from "./ExtensionsContext";
+import { extensionHost, type ActivationRecord } from "./host/extensionHost";
 import { IconButton } from "../ui/IconButton";
 import { EmptyState } from "../ui/EmptyState";
 import "./ExtensionsPanel.css";
 
+function activationLabel(ext: ExtensionManifest, record: ActivationRecord | undefined) {
+  if (!ext.enabled || !ext.main) return null;
+  if (!record) return { text: "Not activated", title: "Starts on its first activation event", tone: "idle" };
+  if (record.status === "activating") return { text: "Activating…", title: record.reason, tone: "idle" };
+  if (record.status === "failed") return { text: "Failed", title: record.error ?? "", tone: "error" };
+  return { text: `Active · ${record.ms ?? 0} ms`, title: `Activated by ${record.reason}`, tone: "ok" };
+}
+
 export function ExtensionsPanel() {
+  const activations = useSyncExternalStore(extensionHost.subscribe, extensionHost.getRecords);
   const {
     extensions,
     loading,
@@ -133,39 +143,50 @@ export function ExtensionsPanel() {
           />
         ) : (
           <ul className="ext-panel__list">
-            {shown.map((ext) => (
-              <li key={ext.id} className="ext-panel__card">
-                <div className="ext-panel__card-top">
-                  <div className="ext-panel__icon-box">
-                    <Blocks size={16} className="ext-panel__icon" />
-                  </div>
-                  <div className="ext-panel__meta">
-                    <div className="ext-panel__name-row">
-                      <strong className="ext-panel__name">{ext.name}</strong>
-                      <span className="ext-panel__version">v{ext.version}</span>
+            {shown.map((ext) => {
+              const status = activationLabel(ext, activations.get(ext.id));
+              return (
+                <li key={ext.id} className="ext-panel__card">
+                  <div className="ext-panel__card-top">
+                    <div className="ext-panel__icon-box">
+                      <Blocks size={16} className="ext-panel__icon" />
                     </div>
-                    <span className="ext-panel__id">{ext.id}</span>
+                    <div className="ext-panel__meta">
+                      <div className="ext-panel__name-row">
+                        <strong className="ext-panel__name">{ext.name}</strong>
+                        <span className="ext-panel__version">v{ext.version}</span>
+                      </div>
+                      <span className="ext-panel__id">{ext.id}</span>
+                    </div>
                   </div>
-                </div>
-
-                <p className="ext-panel__desc">
-                  {ext.description || "No description provided."}
-                </p>
-
-                <div className="ext-panel__card-footer">
-                  <label className="ext-panel__toggle">
-                    <input
-                      type="checkbox"
-                      checked={ext.enabled}
-                      onChange={(e) => void setEnabled(ext.id, e.target.checked)}
-                    />
-                    <span className="ext-panel__toggle-label">
-                      {ext.enabled ? "Enabled" : "Disabled"}
-                    </span>
-                  </label>
-                </div>
-              </li>
-            ))}
+  
+                  <p className="ext-panel__desc">
+                    {ext.description || "No description provided."}
+                  </p>
+  
+                  <div className="ext-panel__card-footer">
+                    {status && (
+                      <span
+                        className={`ext-panel__status ext-panel__status--${status.tone}`}
+                        title={status.title}
+                      >
+                        {status.text}
+                      </span>
+                    )}
+                    <label className="ext-panel__toggle">
+                      <input
+                        type="checkbox"
+                        checked={ext.enabled}
+                        onChange={(e) => void setEnabled(ext.id, e.target.checked)}
+                      />
+                      <span className="ext-panel__toggle-label">
+                        {ext.enabled ? "Enabled" : "Disabled"}
+                      </span>
+                    </label>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

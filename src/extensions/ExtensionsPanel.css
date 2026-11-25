@@ -242,6 +242,21 @@
   padding-top: 2px;
 }
 
+.ext-panel__status {
+  margin-right: auto;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--fg-dim);
+}
+
+.ext-panel__status--ok {
+  color: var(--success-fg, #4ade80);
+}
+
+.ext-panel__status--error {
+  color: var(--danger-fg);
+}
+
 .ext-panel__toggle {
   display: inline-flex;
   align-items: center;
