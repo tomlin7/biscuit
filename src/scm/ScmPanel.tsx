@@ -199,6 +199,9 @@ export function ScmPanel({ onBranch }: Props) {
       } else if (action === "stageAll") {
         if (unstaged.length === 0) return;
         void run("git_stage", { paths: unstaged.map((entry) => entry.path) });
+      } else if (action === "unstageAll") {
+        if (staged.length === 0) return;
+        void run("git_unstage", { paths: staged.map((entry) => entry.path) });
       } else if (action === "discardAll") {
         if (unstaged.length === 0) return;
         const ok = window.confirm(

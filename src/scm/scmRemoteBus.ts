@@ -7,7 +7,8 @@ export type ScmRemoteAction =
   | "createBranch"
   | "checkout"
   | "discardAll"
-  | "stageAll";
+  | "stageAll"
+  | "unstageAll";
 
 type Listener = (action: ScmRemoteAction) => void;
 

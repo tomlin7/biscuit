@@ -1,7 +1,7 @@
 {
   "name": "t3d",
   "private": true,
-  "version": "0.269.0",
+  "version": "0.270.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

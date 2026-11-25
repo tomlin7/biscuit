@@ -806,4 +806,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitStageAll(),
   },
+  {
+    id: "git.unstageAll",
+    title: "Git: Unstage All Changes",
+    category: "Git",
+    run: (ctx) => ctx.gitUnstageAll(),
+  },
 ];
