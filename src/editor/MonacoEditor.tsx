@@ -111,13 +111,19 @@ export function MonacoEditor({ path, primary = true }: Props) {
                 matchesCount?: number;
                 currentMatch?: number;
                 isRevealed?: boolean;
+                isReplaceRevealed?: boolean;
                 searchString?: string;
               };
             } | null;
           }
         ).getContribution("editor.contrib.findController");
         const state = controller?.getState?.();
-        if (!state?.isRevealed || !state.searchString) {
+        if (!state?.searchString) {
+          setFindMatchLabel(null);
+          return;
+        }
+        const open = state.isRevealed === true || state.isReplaceRevealed === true;
+        if (!open) {
           setFindMatchLabel(null);
           return;
         }
