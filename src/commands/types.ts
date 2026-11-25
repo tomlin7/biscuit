@@ -264,6 +264,7 @@ export type CommandContext = {
   copyFileEncoding: () => void;
   openExtensionsMarketplace: () => void;
   toggleZenMode: () => void;
+  cycleLanguageMode: () => void;
 };
 
 export type Command = {

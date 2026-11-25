@@ -404,6 +404,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.396.0** | Toggle zen mode from palette | shipped |
 | **0.397.0** | Select line from palette | shipped |
 | **0.398.0** | Delete line from palette | shipped |
+| **0.399.0** | Cycle language mode from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

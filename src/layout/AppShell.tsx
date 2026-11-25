@@ -30,6 +30,7 @@ import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
+import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -96,6 +97,7 @@ function ShellChrome() {
     setEol,
     renameEntry,
     deleteEntry,
+    setLanguageAt,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1613,6 +1615,14 @@ function ShellChrome() {
         setAiOpen(false);
         setBottomOpen(false);
       },
+      cycleLanguageMode: () => {
+        if (!document) return;
+        const langs = PICKABLE_LANGUAGES as readonly string[];
+        const idx = langs.indexOf(document.language);
+        const next = langs[(idx >= 0 ? idx + 1 : 0) % langs.length];
+        setLanguageAt(document.path, next);
+        notify("Language Mode", languageLabel(next));
+      },
     }),
     [
       openFolder,
@@ -1758,6 +1768,7 @@ function ShellChrome() {
       installSample,
       clearBreakpoints,
       setAllBreakpointsEnabled,
+      setLanguageAt,
       sidebarOpen,
       aiOpen,
     ],

@@ -1597,5 +1597,10 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+K Z",
     run: (ctx) => ctx.toggleZenMode(),
   },
-
+  {
+    id: "workbench.action.editor.changeLanguageMode",
+    title: "Cycle Language Mode",
+    category: "View",
+    run: (ctx) => ctx.cycleLanguageMode(),
+  },
 ];
