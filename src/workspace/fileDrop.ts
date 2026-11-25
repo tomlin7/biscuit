@@ -8,6 +8,9 @@ export function useFileDrop(onDrop: (paths: string[]) => void) {
   useEffect(() => {
     let unlisten: (() => void) | undefined;
     let disposed = false;
+    if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+      return;
+    }
     void getCurrentWebview()
       .onDragDropEvent((event) => {
         if (event.payload.type !== "drop" || event.payload.paths.length === 0) return;

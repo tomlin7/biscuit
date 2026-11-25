@@ -7,6 +7,7 @@ import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import { applyChromeAcrylic } from "./chromeAcrylic";
+import "./AppShell.css";
 import { editorConfigFor } from "../editor/editorconfig";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
