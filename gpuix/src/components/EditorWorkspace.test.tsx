@@ -61,4 +61,46 @@ describeNative('EditorWorkspace component', () => {
 
     await app.close()
   })
+
+  it('supports toggling edit buffer mode and interactive editing', async () => {
+    const { render, renderer } = createTestRoot({ width: 1000, height: 700 })
+    render(<EditorWorkspace />)
+    const app = await connectTest(renderer)
+
+    const toggleBtn = app.getByTestId('editor-mode-toggle')
+    await toggleBtn.waitFor({ timeoutMs: 5000 })
+    await toggleBtn.click()
+
+    const textarea = app.getByTestId('editor-interactive-textarea')
+    await textarea.waitFor({ timeoutMs: 5000 })
+    expect(await textarea.bounds()).toBeDefined()
+
+    // Switch back to syntax view
+    await toggleBtn.click()
+    const codeView = app.getByTestId('editor-code-view')
+    await codeView.waitFor({ timeoutMs: 5000 })
+    expect(await codeView.bounds()).toBeDefined()
+
+    await app.close()
+  })
+
+  it('opens quick open bar and loads file path', async () => {
+    const { render, renderer } = createTestRoot({ width: 1000, height: 700 })
+    render(<EditorWorkspace />)
+    const app = await connectTest(renderer)
+
+    const quickOpenBtn = app.getByTestId('editor-quick-open-btn')
+    await quickOpenBtn.waitFor({ timeoutMs: 5000 })
+    await quickOpenBtn.click()
+
+    const quickOpenBar = app.getByTestId('editor-quick-open-bar')
+    await quickOpenBar.waitFor({ timeoutMs: 5000 })
+    expect(await quickOpenBar.bounds()).toBeDefined()
+
+    const quickOpenCancel = app.getByTestId('editor-quick-open-cancel')
+    await quickOpenCancel.waitFor({ timeoutMs: 5000 })
+    await quickOpenCancel.click()
+
+    await app.close()
+  })
 })

@@ -26,7 +26,7 @@ export const ENGINE_NAME = 'hiroshi-engine'
 export const PROTOCOL_VERSION = 18
 
 /** Kept in step with `package.json` by a test. */
-export const ENGINE_VERSION = '0.27.0'
+export const ENGINE_VERSION = '0.1.0'
 
 export interface ModelInfo {
   /** Stable catalog identity; the adapter owns the provider's model id. */

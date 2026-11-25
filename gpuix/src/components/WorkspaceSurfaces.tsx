@@ -33,7 +33,7 @@ function useReview(engine: EngineHandle, active: boolean, base?: string) {
   return { review, error, refresh: () => setTick((value) => value + 1) }
 }
 
-export function FilesSurface({ engine, active, initialFile, initialLine }: { engine: EngineHandle; active: boolean; initialFile?: string; initialLine?: number }) {
+export function FilesSurface({ engine, active, initialFile, initialLine, onOpenEditor }: { engine: EngineHandle; active: boolean; initialFile?: string; initialLine?: number; onOpenEditor?: (path: string) => void }) {
   const [directory, setDirectory] = useState(initialFile?.split('/').slice(0, -1).join('/') ?? ''), [selected, setSelected] = useState(initialFile ?? '')
   const [listing, setListing] = useState<WorkspaceDirectory | null>(null), [file, setFile] = useState<WorkspaceFile | null>(null)
   const [review, setReview] = useState<WorkspaceReview | null>(null), [error, setError] = useState(''), [tick, setTick] = useState(0)
@@ -77,7 +77,14 @@ export function FilesSurface({ engine, active, initialFile, initialLine }: { eng
       {listing && !listing.entries.length && <text style={{ fontSize: 12, color: muted }}>{'This directory is empty.'}</text>}
       {listing?.truncated && <text style={{ fontSize: 11, color: muted }}>{'Directory limited to 500 entries.'}</text>}
     </div>
-    {selected && <text style={{ fontSize: 11, color: muted }}>{selected}</text>}
+    {selected && <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <text style={{ fontSize: 11, color: muted, flexGrow: 1 }}>{selected}</text>
+      {onOpenEditor && (
+        <Button testId="files-open-editor" onClick={() => onOpenEditor(selected)} style={{ ...button, padding: 5 }}>
+          <text style={{ fontSize: 11, color: ink, whiteSpace: 'nowrap' }}>Open in Editor</text>
+        </Button>
+      )}
+    </div>}
     {file && selected === initialFile && initialLine && <text testId="file-line-target" style={{ fontSize: 12, color: '#e7aa81' }}>{`${initialLine}: ${file.text.split(/\r?\n/)[initialLine - 1] ?? 'Line unavailable in this preview'}`}</text>}
     {file && <div testId="workspace-file-content" style={{ flexGrow: 1, minHeight: 100, overflow: 'scroll' }}>
       {file.binary ? <text style={{ fontSize: 12, color: muted }}>{`Binary file · ${file.bytes} bytes`}</text> : <code code={file.text} path={file.path} showLineNumbers style={{ fontSize: 12, color: ink }} />}

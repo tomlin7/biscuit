@@ -9,11 +9,15 @@
   "scripts": {
     "tauri:dev": "cd tauri && bun run dev",
     "tauri:build": "cd tauri && bun run build",
+    "tauri:test": "cd tauri && bun test",
+    "tauri:typecheck": "cd tauri && bunx tsc --noEmit",
     "gpuix:dev": "cd gpuix && bun run dev",
     "gpuix:build": "cd gpuix && bun run build",
     "gpuix:test": "cd gpuix && bun run test",
     "gpuix:typecheck": "cd gpuix && bun run typecheck",
     "www:dev": "cd www && bun run dev",
-    "www:build": "cd www && bun run build"
+    "www:build": "cd www && bun run build",
+    "test": "bun run tauri:test && bun run gpuix:test",
+    "typecheck": "bun run tauri:typecheck && bun run gpuix:typecheck"
   }
 }

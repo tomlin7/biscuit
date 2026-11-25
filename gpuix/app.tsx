@@ -3793,9 +3793,9 @@ function SurfacePanel({
       )}
 
       <BrowserSurface engine={engine} active={open && activeSurface === 'browser'} />
-      <FilesSurface engine={engine} active={open && activeSurface === 'files'} initialFile={initialFile} initialLine={initialLine} />
+      <FilesSurface engine={engine} active={open && activeSurface === 'files'} initialFile={initialFile} initialLine={initialLine} onOpenEditor={() => onChangeSurface('editor')} />
       <ReviewSurface engine={engine} active={open && activeSurface === 'review'} />
-      {open && activeSurface === 'editor' && <EditorWorkspace engine={engine} />}
+      {open && activeSurface === 'editor' && <EditorWorkspace engine={engine} initialFile={initialFile} />}
           </motion.div>
         </AnimatePresence>
       </div>

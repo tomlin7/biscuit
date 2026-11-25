@@ -67,13 +67,58 @@ function detectLanguage(path: string): string {
 export function EditorWorkspace({
   engine,
   onOpenFile,
+  initialFile,
 }: {
   engine?: EngineHandle
   onOpenFile?: (path: string) => void
+  initialFile?: string
 }) {
   const [tabs, setTabs] = useState<EditorTab[]>(DEFAULT_TABS)
   const [activeTabId, setActiveTabId] = useState<string>('tab-1')
   const [saveStatus, setSaveStatus] = useState<string>('')
+  const [errorStatus, setErrorStatus] = useState<string>('')
+  const [editingMode, setEditingMode] = useState<boolean>(false)
+  const [quickOpenOpen, setQuickOpenOpen] = useState<boolean>(false)
+  const [quickOpenPath, setQuickOpenPath] = useState<string>('')
+
+  // Dynamically load initialFile if supplied
+  React.useEffect(() => {
+    if (!initialFile) return
+    let active = true
+    const cleanPath = initialFile.replace(/^workspace[\\/]/, '')
+    if (engine?.workspaceFile) {
+      engine.workspaceFile(cleanPath).then((wf) => {
+        if (!active || !wf || wf.binary) return
+        const tabId = `file-${wf.path}`
+        setTabs((prev) => {
+          const found = prev.find((t) => t.path === wf.path)
+          if (found) {
+            return prev.map((t) => (t.path === wf.path ? { ...t, content: wf.text } : t))
+          }
+          return [
+            ...prev,
+            {
+              id: tabId,
+              path: wf.path,
+              name: wf.path.split(/[\\/]/).pop() ?? wf.path,
+              content: wf.text,
+              language: detectLanguage(wf.path),
+              dirty: false,
+            },
+          ]
+        })
+        setActiveTabId(tabId)
+      }).catch((err) => {
+        if (active) {
+          setErrorStatus(err instanceof Error ? err.message : String(err))
+          setTimeout(() => setErrorStatus(''), 3000)
+        }
+      })
+    }
+    return () => {
+      active = false
+    }
+  }, [initialFile, engine?.workspaceFile])
 
   const activeTab = useMemo(
     () => tabs.find((t) => t.id === activeTabId) ?? tabs[0],
@@ -89,6 +134,66 @@ export function EditorWorkspace({
     if (!activeTab?.content) return 0
     return activeTab.content.length
   }, [activeTab?.content])
+
+  const handleContentChange = (newContent: string) => {
+    if (!activeTab) return
+    setTabs((prev) =>
+      prev.map((t) => (t.id === activeTab.id ? { ...t, content: newContent, dirty: true } : t)),
+    )
+  }
+
+  const handleQuickOpenLoad = async () => {
+    if (!quickOpenPath.trim()) return
+    const target = quickOpenPath.trim().replace(/^workspace[\\/]/, '')
+    if (engine?.workspaceFile) {
+      try {
+        const wf = await engine.workspaceFile(target)
+        if (wf.binary) {
+          setErrorStatus('Cannot open binary file')
+          setTimeout(() => setErrorStatus(''), 3000)
+          return
+        }
+        const tabId = `file-${wf.path}`
+        setTabs((prev) => {
+          const found = prev.find((t) => t.path === wf.path)
+          if (found) return prev
+          return [
+            ...prev,
+            {
+              id: tabId,
+              path: wf.path,
+              name: wf.path.split(/[\\/]/).pop() ?? wf.path,
+              content: wf.text,
+              language: detectLanguage(wf.path),
+              dirty: false,
+            },
+          ]
+        })
+        setActiveTabId(tabId)
+        setQuickOpenOpen(false)
+        setQuickOpenPath('')
+      } catch (err) {
+        setErrorStatus(err instanceof Error ? err.message : String(err))
+        setTimeout(() => setErrorStatus(''), 3000)
+      }
+    } else {
+      const tabId = `file-${target}`
+      setTabs((prev) => [
+        ...prev,
+        {
+          id: tabId,
+          path: target,
+          name: target.split(/[\\/]/).pop() ?? target,
+          content: `// Scratch buffer: ${target}\n`,
+          language: detectLanguage(target),
+          dirty: false,
+        },
+      ])
+      setActiveTabId(tabId)
+      setQuickOpenOpen(false)
+      setQuickOpenPath('')
+    }
+  }
 
   const handleCloseTab = (id: string, e?: any) => {
     if (e && typeof e.stopPropagation === 'function') e.stopPropagation()
@@ -221,7 +326,110 @@ export function EditorWorkspace({
         >
           <text style={{ fontSize: 13, color: muted, whiteSpace: 'nowrap' }}>{'+'}</text>
         </Button>
+
+        <div style={{ flexGrow: 1 }} />
+
+        <Button
+          testId="editor-quick-open-btn"
+          onClick={() => setQuickOpenOpen((v) => !v)}
+          style={{
+            paddingLeft: 8,
+            paddingRight: 8,
+            height: 24,
+            borderRadius: 5,
+            backgroundColor: quickOpenOpen ? accent : '#242428',
+            cursor: 'pointer',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <text
+            style={{
+              fontSize: 11,
+              color: quickOpenOpen ? '#17181c' : ink,
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {'Open File…'}
+          </text>
+        </Button>
       </div>
+
+      {/* Quick Open Row */}
+      {quickOpenOpen && (
+        <div
+          testId="editor-quick-open-bar"
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            height: 34,
+            backgroundColor: '#19191d',
+            borderBottomWidth: 1,
+            borderColor: border,
+            paddingLeft: 10,
+            paddingRight: 10,
+            gap: 8,
+            flexShrink: 0,
+          }}
+        >
+          <input
+            testId="editor-quick-open-input"
+            value={quickOpenPath}
+            placeholder="Relative path (e.g. gpuix/app.tsx or tauri/package.json)"
+            onChange={(e: any) => setQuickOpenPath(e?.value ?? '')}
+            onSubmit={handleQuickOpenLoad}
+            style={{
+              flexGrow: 1,
+              height: 24,
+              backgroundColor: '#111113',
+              borderRadius: 4,
+              borderWidth: 1,
+              borderColor: border,
+              paddingLeft: 8,
+              paddingRight: 8,
+              fontSize: 11,
+              color: ink,
+            }}
+          />
+          <Button
+            testId="editor-quick-open-load"
+            onClick={handleQuickOpenLoad}
+            style={{
+              paddingLeft: 10,
+              paddingRight: 10,
+              height: 24,
+              borderRadius: 4,
+              backgroundColor: accent,
+              cursor: 'pointer',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <text style={{ fontSize: 11, color: '#17181c', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              {'Load'}
+            </text>
+          </Button>
+          <Button
+            testId="editor-quick-open-cancel"
+            onClick={() => setQuickOpenOpen(false)}
+            style={{
+              paddingLeft: 8,
+              paddingRight: 8,
+              height: 24,
+              borderRadius: 4,
+              backgroundColor: '#26262a',
+              cursor: 'pointer',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <text style={{ fontSize: 11, color: muted, whiteSpace: 'nowrap' }}>{'Cancel'}</text>
+          </Button>
+        </div>
+      )}
 
       {/* Breadcrumb & Action bar */}
       {activeTab && (
@@ -248,11 +456,36 @@ export function EditorWorkspace({
             {`workspace / ${activeTab.path}`}
           </text>
 
+          {errorStatus && (
+            <text style={{ fontSize: 11, color: '#f87171', whiteSpace: 'nowrap' }}>
+              {errorStatus}
+            </text>
+          )}
+
           {saveStatus && (
             <text style={{ fontSize: 11, color: '#34d399', whiteSpace: 'nowrap' }}>
               {saveStatus}
             </text>
           )}
+
+          <Button
+            testId="editor-mode-toggle"
+            onClick={() => setEditingMode((v) => !v)}
+            style={{
+              paddingLeft: 8,
+              paddingRight: 8,
+              height: 22,
+              borderRadius: 4,
+              backgroundColor: editingMode ? '#3a3a42' : '#26262a',
+              cursor: 'pointer',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <text style={{ fontSize: 11, color: ink, whiteSpace: 'nowrap' }}>
+              {editingMode ? 'Syntax View' : 'Edit Buffer'}
+            </text>
+          </Button>
 
           <Button
             testId="editor-save-button"
@@ -282,24 +515,56 @@ export function EditorWorkspace({
 
       {/* Editor Main Content */}
       {activeTab ? (
-        <div
-          testId="editor-code-container"
-          style={{
-            flexGrow: 1,
-            minHeight: 0,
-            padding: 12,
-            overflowY: 'scroll',
-            backgroundColor: '#161616',
-          }}
-        >
-          <code
-            testId="editor-code-view"
-            code={activeTab.content}
-            path={activeTab.path}
-            showLineNumbers
-            style={{ fontSize: 13, color: ink }}
-          />
-        </div>
+        editingMode ? (
+          <div
+            testId="editor-interactive-container"
+            style={{
+              flexGrow: 1,
+              minHeight: 0,
+              padding: 12,
+              backgroundColor: '#161616',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <textarea
+              testId="editor-interactive-textarea"
+              value={activeTab.content}
+              onChange={(e: any) => handleContentChange(e?.value ?? '')}
+              style={{
+                flexGrow: 1,
+                minHeight: 0,
+                fontSize: 13,
+                lineHeight: 18,
+                color: ink,
+                backgroundColor: '#131313',
+                borderRadius: 6,
+                borderWidth: 1,
+                borderColor: border,
+                padding: 10,
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            testId="editor-code-container"
+            style={{
+              flexGrow: 1,
+              minHeight: 0,
+              padding: 12,
+              overflowY: 'scroll',
+              backgroundColor: '#161616',
+            }}
+          >
+            <code
+              testId="editor-code-view"
+              code={activeTab.content}
+              path={activeTab.path}
+              showLineNumbers
+              style={{ fontSize: 13, color: ink }}
+            />
+          </div>
+        )
       ) : (
         <div
           testId="editor-empty-state"
