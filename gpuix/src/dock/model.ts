@@ -455,6 +455,9 @@ export function closePanel(state: DockLayoutState, panelId: string): DockLayoutS
       const idx = current.panels.findIndex((p) => p.id === panelId)
       if (idx === -1) return current
 
+      const target = current.panels[idx]
+      if (target.closable === false) return current
+
       const remaining = current.panels.filter((p) => p.id !== panelId)
       let nextActiveId = current.activePanelId
       if (current.activePanelId === panelId) {
@@ -679,13 +682,15 @@ export function deserializeDockLayout(
         return {
           id: String(node.id),
           type: 'group',
-          panels: node.panels.map((p: any) => ({
-            id: String(p.id),
-            title: String(p.title ?? 'Panel'),
-            closable: p.closable !== false,
-            icon: p.icon ? String(p.icon) : undefined,
-            data: p.data && typeof p.data === 'object' ? p.data : undefined,
-          })),
+          panels: node.panels
+            .filter((p: any) => p && typeof p === 'object')
+            .map((p: any) => ({
+              id: p.id ? String(p.id) : generateDockId('panel'),
+              title: String(p.title ?? 'Panel'),
+              closable: p.closable !== false,
+              icon: p.icon ? String(p.icon) : undefined,
+              data: p.data && typeof p.data === 'object' ? p.data : undefined,
+            })),
           activePanelId: String(node.activePanelId ?? node.panels[0]?.id ?? ''),
         }
       }

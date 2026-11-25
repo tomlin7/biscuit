@@ -1,18 +1,46 @@
 import React from 'react'
 import type { StyleDesc } from '@gpuix/react'
 import type { DockDropZone } from './types'
+import { calculateDropZone } from './model'
 
 export interface DockDropOverlayProps {
   groupId: string
   activeZone?: DockDropZone
+  onHoverZone?: (zone: DockDropZone) => void
   onSelectZone?: (zone: DockDropZone) => void
 }
 
 export function DockDropOverlay({
   groupId,
-  activeZone,
+  activeZone = 'center',
+  onHoverZone,
   onSelectZone,
 }: DockDropOverlayProps) {
+  const handleZoneEnter = (zone: DockDropZone) => {
+    if (onHoverZone) {
+      onHoverZone(zone)
+    } else {
+      onSelectZone?.(zone)
+    }
+  }
+
+  const handleZoneCommit = (e: any, zone: DockDropZone) => {
+    e.stopPropagation?.()
+    onSelectZone?.(zone)
+  }
+
+  const handleMouseMove = (e: any) => {
+    const clientX = e.clientX ?? e.x
+    const clientY = e.clientY ?? e.y
+    if (clientX === undefined || clientY === undefined) return
+
+    const rect = e.currentTarget?.getBoundingClientRect?.()
+    if (rect && rect.width > 0 && rect.height > 0) {
+      const zone = calculateDropZone(rect, clientX, clientY, 0.25)
+      onHoverZone?.(zone)
+    }
+  }
+
   const getPreviewStyle = (): StyleDesc => {
     switch (activeZone) {
       case 'left':
@@ -87,13 +115,14 @@ export function DockDropOverlay({
   return (
     <div
       testId={`dock-drop-overlay-${groupId}`}
+      onMouseMove={handleMouseMove}
       style={{
         position: 'absolute',
         left: 0,
         top: 0,
         right: 0,
         bottom: 0,
-        pointerEvents: 'none',
+        pointerEvents: 'auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -117,8 +146,9 @@ export function DockDropOverlay({
         {/* Top Drop Zone */}
         <div
           testId="dock-drop-zone-top"
-          onMouseEnter={() => onSelectZone?.('top')}
-          onClick={() => onSelectZone?.('top')}
+          onMouseEnter={() => handleZoneEnter('top')}
+          onClick={(e: any) => handleZoneCommit(e, 'top')}
+          onMouseUp={(e: any) => handleZoneCommit(e, 'top')}
           style={{
             position: 'absolute',
             top: 0,
@@ -141,8 +171,9 @@ export function DockDropOverlay({
         {/* Bottom Drop Zone */}
         <div
           testId="dock-drop-zone-bottom"
-          onMouseEnter={() => onSelectZone?.('bottom')}
-          onClick={() => onSelectZone?.('bottom')}
+          onMouseEnter={() => handleZoneEnter('bottom')}
+          onClick={(e: any) => handleZoneCommit(e, 'bottom')}
+          onMouseUp={(e: any) => handleZoneCommit(e, 'bottom')}
           style={{
             position: 'absolute',
             bottom: 0,
@@ -165,8 +196,9 @@ export function DockDropOverlay({
         {/* Left Drop Zone */}
         <div
           testId="dock-drop-zone-left"
-          onMouseEnter={() => onSelectZone?.('left')}
-          onClick={() => onSelectZone?.('left')}
+          onMouseEnter={() => handleZoneEnter('left')}
+          onClick={(e: any) => handleZoneCommit(e, 'left')}
+          onMouseUp={(e: any) => handleZoneCommit(e, 'left')}
           style={{
             position: 'absolute',
             left: 0,
@@ -189,8 +221,9 @@ export function DockDropOverlay({
         {/* Right Drop Zone */}
         <div
           testId="dock-drop-zone-right"
-          onMouseEnter={() => onSelectZone?.('right')}
-          onClick={() => onSelectZone?.('right')}
+          onMouseEnter={() => handleZoneEnter('right')}
+          onClick={(e: any) => handleZoneCommit(e, 'right')}
+          onMouseUp={(e: any) => handleZoneCommit(e, 'right')}
           style={{
             position: 'absolute',
             right: 0,
@@ -213,8 +246,9 @@ export function DockDropOverlay({
         {/* Center Drop Zone */}
         <div
           testId="dock-drop-zone-center"
-          onMouseEnter={() => onSelectZone?.('center')}
-          onClick={() => onSelectZone?.('center')}
+          onMouseEnter={() => handleZoneEnter('center')}
+          onClick={(e: any) => handleZoneCommit(e, 'center')}
+          onMouseUp={(e: any) => handleZoneCommit(e, 'center')}
           style={{
             position: 'absolute',
             left: 45,
@@ -231,7 +265,7 @@ export function DockDropOverlay({
             cursor: 'pointer',
           }}
         >
-          <text style={{ fontSize: 10, color: activeZone === 'center' ? '#ffffff' : '#ffffff' }}>Tab</text>
+          <text style={{ fontSize: 10, color: '#ffffff' }}>Tab</text>
         </div>
       </div>
     </div>

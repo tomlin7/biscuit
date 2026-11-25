@@ -15,7 +15,9 @@ export interface DockPanelGroupViewProps {
   onSplitVertical?: (groupId: string) => void
   isDragHovered?: boolean
   dragHoverZone?: DockDropZone
+  onHoverZone?: (zone: DockDropZone) => void
   onSelectZone?: (zone: DockDropZone) => void
+  onMoveTab?: (groupId: string, fromIndex: number, toIndex: number) => void
   renderPanel?: (panel: DockPanel, group: DockPanelGroupNode) => React.ReactNode
 }
 
@@ -31,7 +33,9 @@ export function DockPanelGroupView({
   onSplitVertical,
   isDragHovered = false,
   dragHoverZone,
+  onHoverZone,
   onSelectZone,
+  onMoveTab,
   renderPanel,
 }: DockPanelGroupViewProps) {
   const [hoveredCloseId, setHoveredCloseId] = useState<string | null>(null)
@@ -333,6 +337,7 @@ export function DockPanelGroupView({
           <DockDropOverlay
             groupId={group.id}
             activeZone={dragHoverZone}
+            onHoverZone={onHoverZone}
             onSelectZone={onSelectZone}
           />
         )}

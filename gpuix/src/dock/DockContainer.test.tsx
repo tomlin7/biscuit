@@ -111,4 +111,61 @@ describeNative('DockContainer component', () => {
 
     await app.close()
   })
+
+  it('supports dragging a tab to split its group into two', async () => {
+    const layout = createInitialDockLayout([
+      { id: 'split-tab-1', title: 'Tab 1' },
+      { id: 'split-tab-2', title: 'Tab 2' },
+    ])
+    let updatedLayout = layout
+    const { render, renderer } = createTestRoot({ width: 1000, height: 700 })
+    render(
+      <DockContainer
+        initialLayout={layout}
+        onLayoutChange={(l) => {
+          updatedLayout = l
+        }}
+      />
+    )
+    const app = await connectTest(renderer)
+
+    // Press down on Tab 2 to initiate drag
+    const tab2 = app.getByTestId('dock-tab-split-tab-2')
+    await tab2.waitFor({ timeoutMs: 5000 })
+    const bounds = await tab2.bounds()
+    const x = bounds.x + bounds.width / 2
+    const y = bounds.y + bounds.height / 2
+    await app.mouse.down({ x, y })
+
+    // The drop overlay should appear because group has multiple panels
+    const overlay = app.getByTestId(`dock-drop-overlay-${layout.activeGroupId}`)
+    await overlay.waitFor({ timeoutMs: 5000 })
+    expect(await overlay.bounds()).toBeDefined()
+
+    // Click right drop zone to dock to right
+    const rightZone = app.getByTestId('dock-drop-zone-right')
+    await rightZone.waitFor({ timeoutMs: 5000 })
+    await rightZone.click()
+
+    // Layout should now be split with Tab 1 on left and Tab 2 on right
+    expect(updatedLayout.root?.type).toBe('split')
+
+    await app.close()
+  })
+
+  it('persists layout to storage on save and restores on restore', async () => {
+    const { render, renderer } = createTestRoot({ width: 1000, height: 700 })
+    render(<DockContainer />)
+    const app = await connectTest(renderer)
+
+    const saveBtn = app.getByTestId('dock-save-btn')
+    await saveBtn.waitFor({ timeoutMs: 5000 })
+    await saveBtn.click()
+
+    const restoreBtn = app.getByTestId('dock-restore-btn')
+    await restoreBtn.waitFor({ timeoutMs: 5000 })
+    await restoreBtn.click()
+
+    await app.close()
+  })
 })

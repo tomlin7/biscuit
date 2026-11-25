@@ -67,12 +67,25 @@ export function DockContainer({
   const handleStartResize = useCallback(
     (e: any, splitId: string, direction: DockSplitDirection) => {
       e.stopPropagation?.()
-      const clientX = e.clientX ?? 0
-      const clientY = e.clientY ?? 0
+      const clientX = e.clientX ?? e.x ?? 0
+      const clientY = e.clientY ?? e.y ?? 0
 
-      // Estimate container dimension (default 800x600 if not measured)
+      // Dynamic container measurement (fallback to 800x600 if unmeasured)
       const isHorizontal = direction === 'horizontal'
-      const totalDimension = isHorizontal ? 800 : 600
+      let totalDimension = isHorizontal ? 800 : 600
+
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect?.()
+        if (rect && rect.width > 0 && rect.height > 0) {
+          totalDimension = isHorizontal ? rect.width : rect.height
+        } else if (containerRef.current.offsetWidth || containerRef.current.clientWidth) {
+          const w = containerRef.current.offsetWidth ?? containerRef.current.clientWidth
+          const h = containerRef.current.offsetHeight ?? containerRef.current.clientHeight
+          if (w > 0 && h > 0) {
+            totalDimension = isHorizontal ? w : h
+          }
+        }
+      }
 
       // Find current ratio
       let currentRatio = 0.5
@@ -105,8 +118,8 @@ export function DockContainer({
   const handleStartDragTab = useCallback(
     (e: any, panel: DockPanel, sourceGroupId: string) => {
       e.stopPropagation?.()
-      const clientX = e.clientX ?? 0
-      const clientY = e.clientY ?? 0
+      const clientX = e.clientX ?? e.x ?? 0
+      const clientY = e.clientY ?? e.y ?? 0
 
       setDragState({
         panelId: panel.id,
@@ -115,7 +128,7 @@ export function DockContainer({
         currentX: clientX,
         currentY: clientY,
         targetGroupId: sourceGroupId,
-        targetZone: 'center',
+        targetZone: undefined,
       })
     },
     []
@@ -124,8 +137,8 @@ export function DockContainer({
   // Mouse move over container
   const handleContainerMouseMove = useCallback(
     (e: any) => {
-      const clientX = e.clientX ?? 0
-      const clientY = e.clientY ?? 0
+      const clientX = e.clientX ?? e.x ?? 0
+      const clientY = e.clientY ?? e.y ?? 0
 
       // Handle split divider resizing
       if (resizeState) {
@@ -166,7 +179,22 @@ export function DockContainer({
     }
   }, [resizeState, dragState, updateLayout])
 
-  // Select drop zone on a hovered group
+  // Hover drop zone on a group during drag
+  const handleHoverZone = useCallback(
+    (groupId: string, zone: DockDropZone) => {
+      setDragState((prev) => {
+        if (!prev) return null
+        return {
+          ...prev,
+          targetGroupId: groupId,
+          targetZone: zone,
+        }
+      })
+    },
+    []
+  )
+
+  // Select drop zone on a hovered group (direct click or drop)
   const handleSelectZone = useCallback(
     (groupId: string, zone: DockDropZone) => {
       if (dragState) {
@@ -353,7 +381,11 @@ export function DockContainer({
     }
 
     // Node is a panel group
-    const isDragHovered = dragState !== null && dragState.sourceGroupId !== node.id
+    const canSelfDrop = node.panels.length > 1
+    const isDragHovered =
+      dragState !== null &&
+      (dragState.sourceGroupId !== node.id || canSelfDrop)
+
     return (
       <DockPanelGroupView
         key={node.id}
@@ -367,7 +399,8 @@ export function DockContainer({
         onSplitHorizontal={handleSplitHorizontal}
         onSplitVertical={handleSplitVertical}
         isDragHovered={isDragHovered}
-        dragHoverZone={dragState?.targetGroupId === node.id ? dragState.targetZone : 'center'}
+        dragHoverZone={dragState?.targetGroupId === node.id ? (dragState.targetZone ?? 'center') : 'center'}
+        onHoverZone={(zone) => handleHoverZone(node.id, zone)}
         onSelectZone={(zone) => handleSelectZone(node.id, zone)}
         renderPanel={renderPanel}
       />

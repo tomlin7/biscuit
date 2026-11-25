@@ -292,9 +292,52 @@ describe('GPUIX Dock Layout Engine - Tree Model', () => {
       expect((split.first as DockPanelGroupNode).panels[0].id).toBe('p1')
       expect((split.second as DockPanelGroupNode).panels[0].id).toBe('p2')
     })
+
+    it('splits a group when dragging a panel to an edge of its own group', () => {
+      const state = createInitialDockLayout([
+        { id: 'tab-1', title: 'Tab 1' },
+        { id: 'tab-2', title: 'Tab 2' },
+      ])
+      const g = getAllGroups(state.root)[0]
+
+      // Dock tab-2 to the right of its own group g
+      const docked = dockPanel(state, 'tab-2', g.id, 'right', 0.5)
+      expect(docked.root?.type).toBe('split')
+      const split = docked.root as DockSplitNode
+      expect(split.direction).toBe('horizontal')
+      expect((split.first as DockPanelGroupNode).panels[0].id).toBe('tab-1')
+      expect((split.second as DockPanelGroupNode).panels[0].id).toBe('tab-2')
+    })
+
+    it('docks panel to top edge of target group (creating vertical split with first position)', () => {
+      const state = createInitialDockLayout([
+        { id: 'tab-1', title: 'Tab 1' },
+        { id: 'tab-2', title: 'Tab 2' },
+      ])
+      const g = getAllGroups(state.root)[0]
+
+      const docked = dockPanel(state, 'tab-2', g.id, 'top', 0.3)
+      expect(docked.root?.type).toBe('split')
+      const split = docked.root as DockSplitNode
+      expect(split.direction).toBe('vertical')
+      expect(split.ratio).toBe(0.3)
+      expect((split.first as DockPanelGroupNode).panels[0].id).toBe('tab-2')
+      expect((split.second as DockPanelGroupNode).panels[0].id).toBe('tab-1')
+    })
   })
 
   describe('Closing panels and Tree pruning', () => {
+    it('refuses to close a panel marked as closable: false', () => {
+      const state = createInitialDockLayout([
+        { id: 'pinned', title: 'Pinned', closable: false },
+        { id: 'regular', title: 'Regular', closable: true },
+      ])
+      const attempt = closePanel(state, 'pinned')
+      const panels = getAllPanels(attempt.root)
+      expect(panels.length).toBe(2)
+      expect(panels.some((p) => p.id === 'pinned')).toBe(true)
+    })
+
     it('closes a panel in a multi-panel group without removing the group', () => {
       const state = createInitialDockLayout([
         { id: 'p1', title: 'P1' },
@@ -364,6 +407,23 @@ describe('GPUIX Dock Layout Engine - Tree Model', () => {
       const json = JSON.stringify(state)
       const deserialized = deserializeDockLayout(json)
       expect((deserialized.root as DockSplitNode).ratio).toBe(0.95) // clamped to 0.95
+    })
+
+    it('sanitizes panels with missing IDs by generating fresh IDs', () => {
+      const state = {
+        root: {
+          id: 'g1',
+          type: 'group',
+          panels: [{ title: 'No ID' }],
+          activePanelId: '',
+        },
+      }
+      const json = JSON.stringify(state)
+      const deserialized = deserializeDockLayout(json)
+      const panels = getAllPanels(deserialized.root)
+      expect(panels.length).toBe(1)
+      expect(panels[0].id).toBeTruthy()
+      expect(panels[0].title).toBe('No ID')
     })
   })
 })
