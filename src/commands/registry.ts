@@ -500,6 +500,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.renameActiveTerminal(),
   },
   {
+    id: "workbench.action.terminal.restart",
+    title: "Restart Active Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.restartActiveTerminal(),
+  },
+  {
     id: "workbench.action.runFile",
     title: "Run File",
     category: "Run",

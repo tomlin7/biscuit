@@ -15,6 +15,7 @@ import { setKillActiveTerminalListener } from "./killTerminal";
 import { setDuplicateTerminalListener } from "./duplicateTerminal";
 import { setFocusTerminalListener } from "./focusTerminal";
 import { setRenameActiveTerminalListener } from "./renameTerminal";
+import { setRestartActiveTerminalListener } from "./restartTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -457,6 +458,13 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       setRenameDraft(shellLabel(session, idx >= 0 ? idx : 0));
     });
     return () => setRenameActiveTerminalListener(null);
+  }, [activeId]);
+
+  useEffect(() => {
+    setRestartActiveTerminalListener(() => {
+      void controls.current.get(activeId)?.restart();
+    });
+    return () => setRestartActiveTerminalListener(null);
   }, [activeId]);
 
   useEffect(() => {
