@@ -281,6 +281,7 @@ export type CommandContext = {
   toggleKeypressDisplay: () => void;
   changeEncoding: () => void;
   searchGitHubIssues: () => void;
+  searchGitHubPullRequests: () => void;
 };
 
 export type Command = {

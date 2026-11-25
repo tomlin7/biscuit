@@ -1824,6 +1824,15 @@ function ShellChrome() {
           });
         });
       },
+      searchGitHubPullRequests: () => {
+        void resolveGithubRepoUrl().then((web) => {
+          if (!web) return;
+          const q = selectionText.trim() || window.prompt("Search pull requests for:")?.trim() || "";
+          void openUrl(githubPullsSearchUrl(web, q)).catch(() => {
+            /* ignore */
+          });
+        });
+      },
     }),
     [
       openFolder,
