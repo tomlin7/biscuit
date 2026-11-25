@@ -782,4 +782,10 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.cycleWordWrapColumn(),
   },
+  {
+    id: "workbench.action.clearLogs",
+    title: "Clear Logs",
+    category: "View",
+    run: (ctx) => ctx.clearLogs(),
+  },
 ];

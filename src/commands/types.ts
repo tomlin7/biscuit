@@ -130,7 +130,8 @@ export type CommandContext = {
   gitCheckout: () => void;
   cycleRulers: () => void;
   cycleWordWrapColumn: () => void;
- revealActiveFileInOs: () => void;
+  clearLogs: () => void;
+  revealActiveFileInOs: () => void;
 };
 
 export type Command = {

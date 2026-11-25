@@ -24,7 +24,7 @@ import { CommandPalette } from "../commands/CommandPalette";
 import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
-import { appendLog } from "../logs/logBus";
+import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
 import { basename, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -712,6 +712,11 @@ function ShellChrome() {
         const idx = order.indexOf(settings.editor.wordWrapColumn);
         const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 80;
         updateEditor({ wordWrapColumn: next });
+      },
+      clearLogs: () => {
+        setPanelTab("logs");
+        setBottomOpen(true);
+        clearLogBuffer();
       },
     }),
     [
