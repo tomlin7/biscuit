@@ -11,6 +11,7 @@ import { referencesAt, renamePlan } from "../lsp/tsLocations";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { editorConfigFor } from "./editorconfig";
+import { detectIndentFromText } from "./detectIndent";
 import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
 import { registerTsHoverProviders } from "../lsp/tsHover";
 import "./MonacoEditor.css";
@@ -68,17 +69,51 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     if (!ed || !doc) return;
     let cancelled = false;
     void editorConfigFor(doc.path, rootPath).then((config) => {
-      if (cancelled || !config.indentSize && !config.indentStyle) return;
+      if (cancelled) return;
+      if (config.indentSize || config.indentStyle) {
+        ed.updateOptions({
+          detectIndentation: false,
+          ...(config.indentSize ? { tabSize: config.indentSize } : {}),
+          ...(config.indentStyle ? { insertSpaces: config.indentStyle === "space" } : {}),
+        });
+        return;
+      }
+      const sniffed = detectIndentFromText(doc.value);
+      if (!sniffed) return;
       ed.updateOptions({
         detectIndentation: false,
-        ...(config.indentSize ? { tabSize: config.indentSize } : {}),
-        ...(config.indentStyle ? { insertSpaces: config.indentStyle === "space" } : {}),
+        tabSize: sniffed.tabSize,
+        insertSpaces: sniffed.insertSpaces,
       });
     });
     return () => {
       cancelled = true;
     };
   }, [doc?.path, rootPath]);
+
+  const applyReveal = () => {
+    if (!primary || !revealTarget || !doc || revealTarget.path !== doc.path) return false;
+    const ed = editorRef.current;
+    if (!ed) return false;
+    const line = Math.max(1, revealTarget.line);
+    const column = Math.max(1, revealTarget.column);
+    ed.revealPositionInCenter({ lineNumber: line, column });
+    ed.setPosition({ lineNumber: line, column });
+    ed.focus();
+    clearRevealTarget();
+    return true;
+  };
+
+  useEffect(() => {
+    if (!primary || !revealTarget || !doc || revealTarget.path !== doc.path) return;
+    if (applyReveal()) return;
+    const timer = window.setTimeout(() => {
+      applyReveal();
+    }, 40);
+    return () => window.clearTimeout(timer);
+    // applyReveal reads latest refs; deps cover the reveal trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealTarget, doc?.path, clearRevealTarget, primary]);
 
   useEffect(() => {
     if (monacoRef.current) {
@@ -337,24 +372,6 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   }, [registerFindHandler, registerEditor, primary, setFindMatchLabel]);
 
   useEffect(() => {
-    if (!primary || !revealTarget || !doc || revealTarget.path !== doc.path) {
-      return;
-    }
-    const ed = editorRef.current;
-    if (!ed) return;
-    ed.revealPositionInCenter({
-      lineNumber: revealTarget.line,
-      column: revealTarget.column,
-    });
-    ed.setPosition({
-      lineNumber: revealTarget.line,
-      column: revealTarget.column,
-    });
-    ed.focus();
-    clearRevealTarget();
-  }, [revealTarget, doc, clearRevealTarget, primary]);
-
-  useEffect(() => {
     const ed = editorRef.current;
     if (!ed || !doc) return;
     const forFile = breakpoints.filter(
@@ -396,6 +413,9 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     requestAnimationFrame(relayout);
     window.setTimeout(relayout, 50);
     if (primary) ed.focus();
+    window.setTimeout(() => {
+      applyReveal();
+    }, 0);
 
     ed.onDidFocusEditorText(() => {
       if (pathRef.current) activateTab(pathRef.current);
