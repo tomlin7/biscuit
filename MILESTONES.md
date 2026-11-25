@@ -57,6 +57,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.49.0** | Attach the active editor buffer to the chat | shipped |
 | **0.50.0** | Extensions can contribute a theme and a language | shipped |
 | **0.51.0** | Welcome screen lists recent folders and files | shipped |
+| **0.52.0** | Image files open in a viewer | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

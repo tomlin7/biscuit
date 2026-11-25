@@ -14,6 +14,7 @@ import { exists, readTextFile, stat, writeTextFile } from "@tauri-apps/plugin-fs
 import { listDirectory, type TreeNode } from "./fsTree";
 import {
   basename,
+  isImageFile,
   isProbablyTextFile,
   isSafeEntryName,
   joinPath,
@@ -285,6 +286,27 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
 
   const openFile = useCallback(async (path: string) => {
+    if (isImageFile(path)) {
+      if (tabsRef.current.some((tab) => tab.path === path)) {
+        setActivePath(path);
+        rememberFile(path);
+        return;
+      }
+      const next: EditorTab = {
+        path,
+        title: basename(path),
+        language: "image",
+        value: "",
+        baseline: "",
+        cursorLine: 1,
+        cursorColumn: 1,
+      };
+      setTabs((current) => (current.some((tab) => tab.path === path) ? current : [...current, next]));
+      setActivePath(path);
+      rememberFile(path);
+      return;
+    }
+
     if (!isProbablyTextFile(path)) {
       setTreeError(`Cannot open binary file: ${basename(path)}`);
       return;
@@ -676,7 +698,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
-    if (!tab) return;
+    if (!tab || tab.language === "image") return;
 
     setBusy(true);
     setTreeError(null);
@@ -701,7 +723,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
-    if (!tab) return;
+    if (!tab || tab.language === "image") return;
     const dest = await saveDialog({ defaultPath: tab.path, title: "Save As" });
     if (!dest) return;
     setBusy(true);

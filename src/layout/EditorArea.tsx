@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
+import { ImageView } from "../editor/ImageView";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
@@ -193,7 +194,11 @@ export function EditorArea() {
         {hasFile && activePath ? (
           <>
             <div className="editor-area__pane">
-              <MonacoEditor path={activePath} primary />
+              {document?.language === "image" ? (
+                <ImageView path={activePath} />
+              ) : (
+                <MonacoEditor path={activePath} primary />
+              )}
             </div>
             {showPreview ? (
               <>
@@ -235,7 +240,11 @@ export function EditorArea() {
                     />
                     {tabs.find((t) => t.path === secondaryPath)?.title}
                   </div>
-                  <MonacoEditor path={secondaryPath} primary={false} />
+                  {tabs.find((tab) => tab.path === secondaryPath)?.language === "image" ? (
+                    <ImageView path={secondaryPath} />
+                  ) : (
+                    <MonacoEditor path={secondaryPath} primary={false} />
+                  )}
                 </div>
               </>
             ) : null}

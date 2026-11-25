@@ -116,6 +116,15 @@ export function languageFromPath(path: string): string {
   }
 }
 
+const IMAGE_EXT = new Set(["png", "jpg", "jpeg", "gif", "webp", "svg"]);
+
+export function isImageFile(path: string): boolean {
+  const name = basename(path).toLowerCase();
+  const dot = name.lastIndexOf(".");
+  if (dot < 0) return false;
+  return IMAGE_EXT.has(name.slice(dot + 1));
+}
+
 export function isProbablyTextFile(path: string): boolean {
   const name = basename(path).toLowerCase();
   if (

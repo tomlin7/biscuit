@@ -38,6 +38,8 @@ export function languageLabel(languageId: string): string {
       return "INI";
     case "plaintext":
       return "Plain Text";
+    case "image":
+      return "Image";
     default:
       return languageId;
   }
