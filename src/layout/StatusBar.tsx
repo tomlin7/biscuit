@@ -263,6 +263,23 @@ export function StatusBar({
             {settings.editor.trimTrailingWhitespace ? "Trim Ws" : "No Trim"}
           </button>
         ) : null}
+        {document ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Cycle auto-save delay"
+            onClick={() => {
+              const order = [0, 1000, 2000, 5000];
+              const idx = order.indexOf(settings.editor.autoSaveMs);
+              const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 0;
+              updateEditor({ autoSaveMs: next });
+            }}
+          >
+            {settings.editor.autoSaveMs === 0
+              ? "No Auto"
+              : `Auto ${settings.editor.autoSaveMs / 1000}s`}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
