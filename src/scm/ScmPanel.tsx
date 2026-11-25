@@ -348,12 +348,30 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={acting || selectedPaths.length === 0 || !rootPath}
+            onClick={() => {
+              if (!rootPath) return;
+              const absolutes = selectedPaths.map((path) => {
+                const relative = path.replace(
+                  /\//g,
+                  rootPath.includes("\\") ? "\\" : "/",
+                );
+                return joinPath(rootPath, relative);
+              });
+              void navigator.clipboard.writeText(absolutes.join("\n"));
+            }}
+          >
+            Copy path
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             disabled={acting || selectedPaths.length === 0}
             onClick={() => {
               void navigator.clipboard.writeText(selectedPaths.join("\n"));
             }}
           >
-            Copy path
+            Copy relative path
           </button>
           <button
             type="button"

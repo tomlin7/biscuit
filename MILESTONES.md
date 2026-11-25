@@ -167,6 +167,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.159.0** | SCM compare with HEAD | shipped |
 | **0.160.0** | Pin editor tabs | shipped |
 | **0.161.0** | Status bar word wrap toggle | shipped |
+| **0.162.0** | SCM copy relative path | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
