@@ -899,6 +899,21 @@ function ShellChrome() {
         setSidebarMode("scm");
         setSidebarOpen(true);
       },
+      cycleAiFrequencyPenalty: () => {
+        const order: Array<number | null> = [null, 0, 0.5, 1];
+        const current = aiSettings.frequencyPenalty;
+        const idx = order.findIndex(
+          (value) =>
+            value === current ||
+            (value === null && current === null) ||
+            (typeof value === "number" &&
+              typeof current === "number" &&
+              value === current),
+        );
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? null;
+        setSettings({ frequencyPenalty: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -961,10 +976,12 @@ function ShellChrome() {
       aiSettings.topP,
       aiSettings.maxTokens,
       aiSettings.presencePenalty,
+      aiSettings.frequencyPenalty,
       showHistory,
       setShowHistory,
       setAiOpen,
       setSidebarMode,
+      openSettings,
       setSidebarOpen,
       toggleBottom,
       toggleProblems,

@@ -662,12 +662,6 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.newAiChat(),
   },
   {
-    id: "workbench.view.explorer",
-    title: "Show Explorer",
-    category: "View",
-    run: (ctx) => ctx.showExplorer(),
-  },
-  {
     id: "workbench.view.search",
     title: "Show Search",
     category: "View",
@@ -937,5 +931,11 @@ export const COMMANDS: Command[] = [
     title: "Focus on Source Control View",
     category: "View",
     run: (ctx) => ctx.focusScm(),
+  },
+  {
+    id: "workbench.action.cycleAiFrequencyPenalty",
+    title: "Cycle AI Frequency Penalty",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiFrequencyPenalty(),
   },
 ];

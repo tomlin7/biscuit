@@ -156,6 +156,7 @@ export type CommandContext = {
   cycleAiMaxTokens: () => void;
   cycleAiPresencePenalty: () => void;
   focusScm: () => void;
+  cycleAiFrequencyPenalty: () => void;
 };
 
 export type Command = {
