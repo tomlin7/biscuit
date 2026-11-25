@@ -259,6 +259,7 @@ export type CommandContext = {
   showFileEncoding: () => void;
   openRecentFolder: () => void;
   openRecentFile: () => void;
+  copyFileEncoding: () => void;
 };
 
 export type Command = {

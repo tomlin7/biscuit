@@ -289,6 +289,8 @@ export const COMMANDS: Command[] = [
     keybinding: "Shift+Alt+Left",
     run: (ctx) => ctx.runEditorCommand("smartSelectShrink"),
   },
+
+
   {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
@@ -1564,4 +1566,13 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.openRecentFile(),
   },
+  {
+    id: "workbench.action.editor.copyEncoding",
+    title: "Copy File Encoding",
+    category: "File",
+    run: (ctx) => ctx.copyFileEncoding(),
+  },
+
+
+
 ];

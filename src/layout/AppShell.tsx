@@ -1575,6 +1575,18 @@ function ShellChrome() {
         }
         void openFile(files[0]);
       },
+      copyFileEncoding: () => {
+        if (!document || isUntitledPath(document.path)) {
+          void navigator.clipboard.writeText("UTF-8");
+          notify("Encoding", "Copied UTF-8");
+          return;
+        }
+        void editorConfigFor(document.path, rootPath).then((config) => {
+          const charset = (config.charset?.trim() || "utf-8").toUpperCase();
+          void navigator.clipboard.writeText(charset);
+          notify("Encoding", `Copied ${charset}`);
+        });
+      },
     }),
     [
       openFolder,
