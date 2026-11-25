@@ -1,13 +1,9 @@
 import {
-  Braces,
   File,
-  FileCode2,
-  FileJson,
-  FileText,
   Folder,
   FolderOpen,
   GitBranch,
-  Image,
+  Image as ImageIcon,
   Settings,
   Terminal,
 } from "lucide-react";
@@ -26,6 +22,20 @@ function extOf(name: string): string {
   return name.slice(i + 1).toLowerCase();
 }
 
+function Badge({
+  text,
+  tone,
+}: {
+  text: string;
+  tone: string;
+}) {
+  return (
+    <span className={`file-badge file-badge--${tone}`} aria-hidden>
+      {text}
+    </span>
+  );
+}
+
 export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
   if (kind === "directory") {
     const Icon = open ? FolderOpen : Folder;
@@ -38,38 +48,28 @@ export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
   if (lower === ".gitignore" || lower === ".gitattributes") {
     return <GitBranch size={size} strokeWidth={1.75} className="file-icon file-icon--git" />;
   }
-  if (lower.startsWith(".env") || lower.includes("config") || lower.endsWith("rc")) {
+  if (lower.startsWith(".env")) {
     return <Settings size={size} strokeWidth={1.75} className="file-icon file-icon--config" />;
   }
-  if (ext === "ts" || ext === "tsx") {
-    return <FileCode2 size={size} strokeWidth={1.75} className="file-icon file-icon--ts" />;
-  }
-  if (ext === "js" || ext === "jsx" || ext === "mjs" || ext === "cjs") {
-    return <FileCode2 size={size} strokeWidth={1.75} className="file-icon file-icon--js" />;
-  }
-  if (ext === "json" || ext === "jsonc") {
-    return <FileJson size={size} strokeWidth={1.75} className="file-icon file-icon--json" />;
-  }
-  if (ext === "md" || ext === "mdx" || ext === "txt") {
-    return <FileText size={size} strokeWidth={1.75} className="file-icon file-icon--text" />;
-  }
-  if (ext === "yml" || ext === "yaml" || ext === "toml") {
-    return <Braces size={size} strokeWidth={1.75} className="file-icon file-icon--data" />;
-  }
-  if (ext === "rs") {
-    return <FileCode2 size={size} strokeWidth={1.75} className="file-icon file-icon--rust" />;
-  }
-  if (ext === "css" || ext === "scss" || ext === "less") {
-    return <Braces size={size} strokeWidth={1.75} className="file-icon file-icon--css" />;
-  }
-  if (ext === "html" || ext === "svg") {
-    return <Braces size={size} strokeWidth={1.75} className="file-icon file-icon--html" />;
-  }
-  if (["png", "jpg", "jpeg", "gif", "webp", "ico"].includes(ext)) {
-    return <Image size={size} strokeWidth={1.75} className="file-icon file-icon--image" />;
+  if (ext === "ts") return <Badge text="TS" tone="ts" />;
+  if (ext === "tsx") return <Badge text="TX" tone="ts" />;
+  if (ext === "js" || ext === "mjs" || ext === "cjs") return <Badge text="JS" tone="js" />;
+  if (ext === "jsx") return <Badge text="JX" tone="js" />;
+  if (ext === "json" || ext === "jsonc") return <Badge text="{}" tone="json" />;
+  if (ext === "md" || ext === "mdx") return <Badge text="MD" tone="md" />;
+  if (ext === "yml" || ext === "yaml") return <Badge text="YML" tone="yaml" />;
+  if (ext === "toml") return <Badge text="TM" tone="yaml" />;
+  if (ext === "rs") return <Badge text="RS" tone="rust" />;
+  if (ext === "css" || ext === "scss") return <Badge text="#" tone="css" />;
+  if (ext === "html") return <Badge text="<>" tone="html" />;
+  if (ext === "svg" || ["png", "jpg", "jpeg", "gif", "webp", "ico"].includes(ext)) {
+    return <ImageIcon size={size} strokeWidth={1.75} className="file-icon file-icon--image" />;
   }
   if (["sh", "bash", "zsh", "ps1", "bat", "cmd"].includes(ext)) {
     return <Terminal size={size} strokeWidth={1.75} className="file-icon file-icon--shell" />;
+  }
+  if (lower.includes("config") || lower.endsWith("rc") || ext === "lock") {
+    return <Settings size={size} strokeWidth={1.75} className="file-icon file-icon--config" />;
   }
   return <File size={size} strokeWidth={1.75} className="file-icon" />;
 }

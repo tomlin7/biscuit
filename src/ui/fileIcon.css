@@ -7,18 +7,6 @@
   color: #60a5fa;
 }
 
-.file-icon--ts {
-  color: #38bdf8;
-}
-
-.file-icon--js {
-  color: #fbbf24;
-}
-
-.file-icon--json {
-  color: #facc15;
-}
-
 .file-icon--git {
   color: #f97316;
 }
@@ -27,30 +15,66 @@
   color: #a3a3a3;
 }
 
-.file-icon--text {
-  color: #94a3b8;
-}
-
-.file-icon--data {
-  color: #c084fc;
-}
-
-.file-icon--rust {
-  color: #fb923c;
-}
-
-.file-icon--css {
-  color: #22d3ee;
-}
-
-.file-icon--html {
-  color: #f87171;
-}
-
 .file-icon--image {
   color: #34d399;
 }
 
 .file-icon--shell {
   color: #4ade80;
+}
+
+.file-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  flex-shrink: 0;
+  color: #0a0a0a;
+}
+
+.file-badge--ts {
+  background: #3178c6;
+  color: #fff;
+}
+
+.file-badge--js {
+  background: #f7df1e;
+}
+
+.file-badge--json {
+  background: #cbcb41;
+  color: #1a1a1a;
+  font-size: 9px;
+}
+
+.file-badge--md {
+  background: #64748b;
+  color: #fff;
+}
+
+.file-badge--yaml {
+  background: #cb171e;
+  color: #fff;
+}
+
+.file-badge--rust {
+  background: #dea584;
+  color: #1a1a1a;
+}
+
+.file-badge--css {
+  background: #264de4;
+  color: #fff;
+}
+
+.file-badge--html {
+  background: #e34f26;
+  color: #fff;
 }
