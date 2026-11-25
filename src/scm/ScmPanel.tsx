@@ -255,19 +255,37 @@ export function ScmPanel({ onBranch }: Props) {
       {branches.length > 0 ? (
         <div className="scm-panel__branches">
           {branches.map((branch) => (
-            <button
-              key={branch}
-              type="button"
-              className={
-                branch === summary?.branch
-                  ? "scm-panel__branch-btn scm-panel__branch-btn--current"
-                  : "scm-panel__branch-btn"
-              }
-              disabled={acting || branch === summary?.branch}
-              onClick={() => void run("git_checkout", { branch })}
-            >
-              {branch}
-            </button>
+            <div key={branch} className="scm-panel__branch-row">
+              <button
+                type="button"
+                className={
+                  branch === summary?.branch
+                    ? "scm-panel__branch-btn scm-panel__branch-btn--current"
+                    : "scm-panel__branch-btn"
+                }
+                disabled={acting || branch === summary?.branch}
+                onClick={() => void run("git_checkout", { branch })}
+              >
+                {branch}
+              </button>
+              {branch !== summary?.branch ? (
+                <button
+                  type="button"
+                  className="scm-panel__branch-delete"
+                  title={`Delete branch ${branch}`}
+                  disabled={acting}
+                  onClick={() => {
+                    const ok = window.confirm(
+                      `Delete local branch "${branch}"?`,
+                    );
+                    if (!ok) return;
+                    void run("git_delete_branch", { branch });
+                  }}
+                >
+                  ×
+                </button>
+              ) : null}
+            </div>
           ))}
         </div>
       ) : null}

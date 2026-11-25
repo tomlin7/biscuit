@@ -170,6 +170,13 @@ pub fn git_create_branch(cwd: String, branch: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn git_delete_branch(cwd: String, branch: String) -> Result<(), String> {
+    let branch = valid_branch(&branch)?;
+    run_git(&cwd, &["branch".into(), "-d".into(), branch.to_string()])?;
+    Ok(())
+}
+
+#[tauri::command]
 pub fn git_push(cwd: String, set_upstream: Option<bool>) -> Result<String, String> {
     let args = if set_upstream.unwrap_or(false) {
         vec![

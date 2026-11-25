@@ -39,6 +39,38 @@
   gap: 4px;
 }
 
+.scm-panel__branch-row {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.scm-panel__branch-delete {
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  background: transparent;
+  color: var(--fg-muted, var(--fg));
+  padding: 0 6px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.scm-panel__branch-row .scm-panel__branch-btn {
+  border-radius: 4px 0 0 4px;
+}
+
+.scm-panel__branch-row .scm-panel__branch-btn:only-child,
+.scm-panel__branch-btn--current {
+  border-radius: 4px;
+}
+
+.scm-panel__branch-delete:hover:not(:disabled) {
+  background: var(--danger, #a33);
+  color: #fff;
+}
+
 .scm-panel__branch-btn {
   padding: 3px 8px;
   border-radius: 999px;
