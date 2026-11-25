@@ -36,6 +36,31 @@ export function Welcome() {
           Clone Repository
         </button>
       </div>
+      <section className="welcome__tips">
+        <p className="welcome__label">Tips</p>
+        <ul className="welcome__tips-list">
+          <li>
+            <button type="button" onClick={() => void openFolder()}>
+              Open a folder to start editing
+            </button>
+          </li>
+          <li>
+            <button type="button" onClick={() => void clone()}>
+              Clone a git repository
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("t3d:keybindings"))
+              }
+            >
+              Browse keyboard shortcuts
+            </button>
+          </li>
+        </ul>
+      </section>
       {folders.length > 0 ? (
         <section>
           <p className="welcome__label">Recent folders</p>
