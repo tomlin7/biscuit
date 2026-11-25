@@ -19,7 +19,8 @@ export type ScmRemoteAction =
   | "discardSelected"
   | "copyBranch"
   | "ignoreSelected"
-  | "compareSelected";
+  | "compareSelected"
+  | "revealSelected";
 
 type Listener = (action: ScmRemoteAction) => void;
 

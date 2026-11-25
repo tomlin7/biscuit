@@ -299,6 +299,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.291.0** | Focus Source Control view from palette | shipped |
 | **0.292.0** | Cycle AI frequency penalty from palette | shipped |
 | **0.293.0** | Focus AI system prompt from palette | shipped |
+| **0.294.0** | Git reveal selected in file manager from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

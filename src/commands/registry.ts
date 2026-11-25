@@ -944,4 +944,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.focusAiSystemPrompt(),
   },
+  {
+    id: "git.revealSelected",
+    title: "Git: Reveal Selected in File Manager",
+    category: "Git",
+    run: (ctx) => ctx.gitRevealSelected(),
+  },
 ];

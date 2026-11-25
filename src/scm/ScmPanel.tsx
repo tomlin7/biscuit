@@ -369,6 +369,18 @@ export function ScmPanel({ onBranch }: Props) {
             setError(err instanceof Error ? err.message : String(err));
           }
         })();
+      } else if (action === "revealSelected") {
+        if (selectedPaths.length === 0 || !rootPath) return;
+        const targets = selectedPaths.map((path) => {
+          const relative = path.replace(
+            /\//g,
+            rootPath.includes("\\") ? "\\" : "/",
+          );
+          return joinPath(rootPath, relative);
+        });
+        void revealItemInDir(targets).catch((err) => {
+          setError(err instanceof Error ? err.message : String(err));
+        });
       } else void push();
     });
     return () => setScmRemoteListener(null);

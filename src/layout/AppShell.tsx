@@ -920,6 +920,11 @@ function ShellChrome() {
           window.document.getElementById("settings-ai-system-prompt")?.focus();
         }, 0);
       },
+      gitRevealSelected: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("revealSelected");
+      },
     }),
     [
       openFolder,
