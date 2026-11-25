@@ -1493,6 +1493,21 @@ function ShellChrome() {
         }
         void getCurrentWindow().close();
       },
+      quit: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          return;
+        }
+        const unsaved = tabs.filter((tab) => tab.value !== tab.baseline).length;
+        if (
+          unsaved > 0 &&
+          !window.confirm(
+            `Quit T3D? ${unsaved} editor${unsaved === 1 ? " has" : "s have"} unsaved changes that will be lost.`,
+          )
+        ) {
+          return;
+        }
+        void invoke("quit_app");
+      },
       copyUnreadNotificationCount: () => {
         void navigator.clipboard.writeText(String(notificationUnread));
       },
@@ -2307,6 +2322,8 @@ function ShellChrome() {
       document,
     ],
   );
+  const commandContextRef = useRef(commandContext);
+  commandContextRef.current = commandContext;
 
   useEffect(() => {
     let chord: string | null = null;
@@ -2457,6 +2474,13 @@ function ShellChrome() {
       if (mod && (key === "`" || event.code === "Backquote")) {
         event.preventDefault();
         toggleTerminal();
+        clearChord();
+        return;
+      }
+
+      if (mod && key === "q" && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        commandContextRef.current.quit();
         clearChord();
         return;
       }

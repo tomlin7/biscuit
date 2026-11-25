@@ -17,6 +17,11 @@ use git::{
 };
 use pty::{pty_exec, pty_kill, pty_resize, pty_run_file, pty_spawn, pty_write, PtyState};
 
+#[tauri::command]
+fn quit_app(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -64,7 +69,8 @@ pub fn run() {
             fs_create_file,
             fs_mkdir,
             fs_rename,
-            fs_remove
+            fs_remove,
+            quit_app
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

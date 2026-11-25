@@ -1516,6 +1516,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeWindow(),
   },
   {
+    id: "workbench.action.quit",
+    title: "Quit",
+    category: "File",
+    keybinding: "Ctrl+Q",
+    run: (ctx) => ctx.quit(),
+  },
+  {
     id: "notifications.copyUnreadCount",
     title: "Copy Notification Unread Count",
     category: "View",
