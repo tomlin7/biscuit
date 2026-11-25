@@ -1076,4 +1076,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitClearCommitMessage(),
   },
+  {
+    id: "workbench.action.copyLastAiResponse",
+    title: "Copy Last AI Response",
+    category: "AI",
+    run: (ctx) => ctx.copyLastAiResponse(),
+  },
 ];

@@ -179,6 +179,7 @@ export type CommandContext = {
   focusAiComposer: () => void;
   gitPasteCommitMessage: () => void;
   gitClearCommitMessage: () => void;
+  copyLastAiResponse: () => void;
 };
 
 export type Command = {

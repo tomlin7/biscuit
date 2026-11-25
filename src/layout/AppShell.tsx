@@ -109,6 +109,7 @@ function ShellChrome() {
     attachFiles,
     deleteSession,
     activeSessionId,
+    messages,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
@@ -1043,6 +1044,16 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("clearCommitMessage");
       },
+      copyLastAiResponse: () => {
+        for (let i = messages.length - 1; i >= 0; i--) {
+          const message = messages[i];
+          if (message?.role === "assistant" && message.content.trim()) {
+            void navigator.clipboard.writeText(message.content);
+            setAiOpen(true);
+            return;
+          }
+        }
+      },
     }),
     [
       openFolder,
@@ -1120,6 +1131,7 @@ function ShellChrome() {
       attachFiles,
       deleteSession,
       activeSessionId,
+      messages,
       aiSettings.model,
       bottomOpen,
       panelTab,
