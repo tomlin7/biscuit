@@ -54,7 +54,8 @@ export type EditorCommand =
   | "unfoldAll"
   | "uppercase"
   | "lowercase"
-  | "blockComment";
+  | "blockComment"
+  | "joinLines";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -153,6 +154,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "blockComment":
         handle.trigger("editor.action.blockComment");
+        break;
+      case "joinLines":
+        handle.trigger("editor.action.joinLines");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

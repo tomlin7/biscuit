@@ -41,7 +41,8 @@ export type CommandContext = {
       | "unfoldAll"
       | "uppercase"
       | "lowercase"
-      | "blockComment",
+      | "blockComment"
+      | "joinLines",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;

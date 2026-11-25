@@ -171,6 +171,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("blockComment"),
   },
   {
+    id: "editor.action.joinLines",
+    title: "Join Lines",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("joinLines"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",
