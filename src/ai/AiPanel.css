@@ -123,6 +123,51 @@
   white-space: pre-wrap;
 }
 
+.ai-panel__code {
+  margin: 8px 0;
+  border-radius: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  white-space: normal;
+}
+
+.ai-panel__code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
+  color: var(--fg-dim);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ai-panel__code-copy {
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: var(--bg-active);
+  color: var(--fg-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.ai-panel__code-copy:hover {
+  color: var(--fg);
+}
+
+.ai-panel__code pre {
+  margin: 0;
+  padding: 10px 12px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.45;
+  white-space: pre;
+}
+
 .ai-panel__bubble--user {
   padding: 10px 12px;
   border-radius: 12px;
