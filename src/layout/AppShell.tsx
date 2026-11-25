@@ -1663,6 +1663,29 @@ function ShellChrome() {
           /* ignore */
         });
       },
+      toggleBlockCursor: () => {
+        const next =
+          settings.editor.cursorStyle === "block" ? "line" : "block";
+        updateEditor({ cursorStyle: next });
+        notify("Cursor", next === "block" ? "Block cursor" : "Line cursor");
+      },
+      showActiveEditors: () => {
+        if (tabs.length === 0) {
+          notify("Open Editors", "No editors are open.");
+          return;
+        }
+        setRecentCommands([]);
+        setSymbolCommands(
+          tabs.map((tab) => ({
+            id: `active-editor:${tab.path}`,
+            title: `Open Editors — ${tab.title}${tab.pinned ? " (pinned)" : ""}`,
+            category: "Open Editors",
+            run: () => activateTab(tab.path),
+          })),
+        );
+        setPaletteSeed("Open Editors");
+        setPaletteOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1815,6 +1838,7 @@ function ShellChrome() {
       aiOpen,
       activateTab,
       selectionText,
+      toggleAi,
     ],
   );
 

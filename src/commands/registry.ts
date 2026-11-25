@@ -1641,4 +1641,20 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.cycleLanguageMode(),
   },
+  {
+    id: "editor.action.toggleBlockCursor",
+    title: "Toggle Block Cursor",
+    category: "View",
+    run: (ctx) => ctx.toggleBlockCursor(),
+  },
+  {
+    id: "workbench.action.showActiveEditors",
+    title: "Show Active Editors",
+    category: "View",
+    run: (ctx) => ctx.showActiveEditors(),
+  },
+
+
+
+
 ];

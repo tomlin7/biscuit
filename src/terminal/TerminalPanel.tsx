@@ -549,7 +549,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
                 aria-label={`Close terminal ${index + 1}`}
                 onClick={() => closeSession(session.id)}
               >
-                ×
+                ├ù
               </button>
             </span>
           ))}

@@ -271,6 +271,8 @@ export type CommandContext = {
   openPreviousEditor: () => void;
   toggleAutoSave: () => void;
   searchGoogle: () => void;
+  toggleBlockCursor: () => void;
+  showActiveEditors: () => void;
 };
 
 export type Command = {
