@@ -26,6 +26,19 @@
   background: var(--bg-hover);
 }
 
+.search-panel__replace {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg-active);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+}
+
+.search-panel__replace:disabled {
+  opacity: 0.4;
+}
+
 .search-panel__hint {
   margin: 0 2px;
   font-size: var(--font-size-sm);

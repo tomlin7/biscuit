@@ -63,6 +63,7 @@ export type WorkspaceState = {
   moveTab: (fromPath: string, toPath: string) => void;
   setValue: (value: string) => void;
   setValueAt: (path: string, value: string) => void;
+  applyDiskValue: (path: string, value: string) => void;
   setCursor: (line: number, column: number) => void;
   clearRevealTarget: () => void;
   save: () => Promise<void>;
@@ -330,6 +331,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const applyDiskValue = useCallback((path: string, value: string) => {
+    setTabs((current) =>
+      current.map((tab) =>
+        tab.path === path ? { ...tab, value, baseline: value } : tab,
+      ),
+    );
+  }, []);
+
   const setCursor = useCallback((line: number, column: number) => {
     const path = activePathRef.current;
     if (!path) return;
@@ -514,6 +523,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       moveTab,
       setValue,
       setValueAt,
+      applyDiskValue,
       setCursor,
       clearRevealTarget,
       save,
@@ -542,6 +552,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       moveTab,
       setValue,
       setValueAt,
+      applyDiskValue,
       setCursor,
       clearRevealTarget,
       save,

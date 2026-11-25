@@ -88,6 +88,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("moveLineDown"),
   },
   {
+    id: "editor.action.startFindReplaceAction",
+    title: "Replace in File",
+    category: "Edit",
+    keybinding: "Ctrl+H",
+    run: (ctx) => ctx.runEditorCommand("replace"),
+  },
+  {
     id: "actions.find",
     title: "Find in File",
     category: "Edit",

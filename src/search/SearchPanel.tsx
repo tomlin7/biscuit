@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
-import { hitLabel, searchWorkspace, type SearchHit } from "./workspaceSearch";
+import { readTextFile } from "@tauri-apps/plugin-fs";
+import {
+  hitLabel,
+  replaceInWorkspace,
+  searchWorkspace,
+  type SearchHit,
+} from "./workspaceSearch";
 import "./SearchPanel.css";
 
 type Props = {
@@ -8,8 +14,11 @@ type Props = {
 };
 
 export function SearchPanel({ onOpenHit }: Props) {
-  const { rootPath, busy } = useWorkspace();
+  const { rootPath, busy, tabs, applyDiskValue } = useWorkspace();
   const [query, setQuery] = useState("");
+  const [replacement, setReplacement] = useState("");
+  const [replaceNote, setReplaceNote] = useState<string | null>(null);
+  const [revision, setRevision] = useState(0);
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +53,7 @@ export function SearchPanel({ onOpenHit }: Props) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [rootPath, query]);
+  }, [rootPath, query, revision]);
 
   if (!rootPath) {
     return (
@@ -66,6 +75,48 @@ export function SearchPanel({ onOpenHit }: Props) {
         autoFocus
         disabled={busy}
       />
+      <input
+        className="search-panel__input"
+        value={replacement}
+        onChange={(e) => setReplacement(e.target.value)}
+        placeholder="Replace with…"
+        aria-label="Replacement text"
+        disabled={busy}
+      />
+      <button
+        type="button"
+        className="search-panel__replace"
+        disabled={busy || !query.trim()}
+        onClick={() => {
+          if (!rootPath) return;
+          const dirty = new Set(
+            tabs.filter((tab) => tab.value !== tab.baseline).map((tab) => tab.path),
+          );
+          setReplaceNote(null);
+          void replaceInWorkspace(rootPath, query, replacement, dirty)
+            .then(async (result) => {
+              for (const path of result.paths) {
+                if (tabs.some((tab) => tab.path === path)) {
+                  applyDiskValue(path, await readTextFile(path));
+                }
+              }
+              const skipped =
+                result.skippedDirty > 0
+                  ? ` Skipped ${result.skippedDirty} unsaved file${result.skippedDirty === 1 ? "" : "s"}.`
+                  : "";
+              setReplaceNote(
+                `Replaced ${result.replacements} in ${result.files} file${result.files === 1 ? "" : "s"}.${skipped}`,
+              );
+              setRevision((value) => value + 1);
+            })
+            .catch((err) => {
+              setError(err instanceof Error ? err.message : String(err));
+            });
+        }}
+      >
+        Replace all
+      </button>
+      {replaceNote ? <p className="search-panel__hint">{replaceNote}</p> : null}
       {searching ? <p className="search-panel__hint">Searching…</p> : null}
       {error ? <p className="search-panel__error">{error}</p> : null}
       {!searching && query.trim() && hits.length === 0 ? (

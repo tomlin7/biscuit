@@ -22,7 +22,8 @@ export type EditorCommand =
   | "goto"
   | "copyLineDown"
   | "moveLineUp"
-  | "moveLineDown";
+  | "moveLineDown"
+  | "replace";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -69,6 +70,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "moveLineDown":
         handle.trigger("editor.action.moveLinesDownAction");
+        break;
+      case "replace":
+        handle.trigger("editor.action.startFindReplaceAction");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

@@ -17,7 +17,8 @@ export type CommandContext = {
       | "goto"
       | "copyLineDown"
       | "moveLineUp"
-      | "moveLineDown",
+      | "moveLineDown"
+      | "replace",
   ) => void;
   openSearch: () => void;
   toggleTerminal: () => void;
