@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
@@ -1701,6 +1702,27 @@ function ShellChrome() {
         );
         setPaletteSeed("Indent");
         setPaletteOpen(true);
+      },
+      openNewWindow: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          notify("New Window", "Available only in the desktop app.");
+          return;
+        }
+        const label = `t3d-${Date.now()}`;
+        const created = new WebviewWindow(label, {
+          url: "index.html",
+          title: "T3D",
+          width: 1280,
+          height: 800,
+          minWidth: 800,
+          minHeight: 500,
+          decorations: false,
+          transparent: true,
+          resizable: true,
+        });
+        void created.once("tauri://error", (event) => {
+          notify("New Window", String(event.payload ?? "Failed to open window"));
+        });
       },
     }),
     [

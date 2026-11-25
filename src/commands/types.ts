@@ -274,6 +274,7 @@ export type CommandContext = {
   toggleBlockCursor: () => void;
   showActiveEditors: () => void;
   changeIndentationLevel: () => void;
+  openNewWindow: () => void;
 };
 
 export type Command = {

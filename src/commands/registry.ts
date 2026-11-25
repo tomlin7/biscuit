@@ -1659,7 +1659,13 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.changeIndentationLevel(),
   },
-
+  {
+    id: "workbench.action.newWindow",
+    title: "New Window",
+    category: "File",
+    keybinding: "Ctrl+Shift+N",
+    run: (ctx) => ctx.openNewWindow(),
+  },
 
 
 ];
