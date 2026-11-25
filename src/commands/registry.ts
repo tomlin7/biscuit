@@ -438,6 +438,7 @@ export const COMMANDS: Command[] = [
     id: "editor.action.copyLinesUp",
     title: "Copy Line Up",
     category: "Edit",
+    keybinding: "Alt+Shift+Up",
     run: (ctx) => ctx.runEditorCommand("copyLineUp"),
   },
   {

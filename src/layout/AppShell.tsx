@@ -780,6 +780,12 @@ function ShellChrome() {
         }
       }
 
+      if (event.altKey && event.shiftKey && !mod && (key === "arrowup" || event.code === "ArrowUp")) {
+        event.preventDefault();
+        runEditorCommand("copyLineUp");
+        clearChord();
+        return;
+      }
 
       if (mod && event.shiftKey && key === "t") {
         event.preventDefault();
