@@ -32,6 +32,7 @@ import { requestClearAllTerminals, requestClearActiveTerminal } from "../termina
 import { requestNewTerminal } from "../terminal/newTerminal";
 import { requestKillActiveTerminal } from "../terminal/killTerminal";
 import { requestDuplicateTerminal } from "../terminal/duplicateTerminal";
+import { requestFocusTerminal } from "../terminal/focusTerminal";
 import { relativeToRoot } from "../workspace/path";
 import { rootForPath } from "../ai/roots";
 import { requestSplitEditor } from "./splitBus";
@@ -494,6 +495,16 @@ function ShellChrome() {
         setBottomOpen(true);
         requestDuplicateTerminal();
       },
+      focusNextTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestFocusTerminal("next");
+      },
+      focusPreviousTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestFocusTerminal("previous");
+      },
       runFile: () => {
         if (!activePath) return;
         requestRunFile(activePath);
@@ -539,6 +550,7 @@ function ShellChrome() {
       toggleTheme,
       settings.editor.minimap,
       settings.editor.stickyScroll,
+      settings.editor.wordWrap,
       updateEditor,
       openPalette,
       openSymbols,

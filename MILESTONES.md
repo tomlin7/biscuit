@@ -222,6 +222,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.214.0** | Toggle word wrap from palette | shipped |
 | **0.215.0** | Status bar font size cycle | shipped |
 | **0.216.0** | SCM force-delete unmerged branch | shipped |
+| **0.217.0** | Focus next or previous terminal | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

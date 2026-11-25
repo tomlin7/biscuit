@@ -13,6 +13,7 @@ import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./
 import { setNewTerminalListener } from "./newTerminal";
 import { setKillActiveTerminalListener } from "./killTerminal";
 import { setDuplicateTerminalListener } from "./duplicateTerminal";
+import { setFocusTerminalListener } from "./focusTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -428,6 +429,22 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     });
     return () => setDuplicateTerminalListener(null);
   }, [activeId, nextShell]);
+
+  useEffect(() => {
+    setFocusTerminalListener((mode) => {
+      const list = sessionsRef.current;
+      if (list.length === 0) return;
+      const idx = list.findIndex((item) => item.id === activeId);
+      if (idx < 0) return;
+      const nextIdx =
+        mode === "next"
+          ? (idx + 1) % list.length
+          : (idx - 1 + list.length) % list.length;
+      const next = list[nextIdx];
+      if (next) setActiveId(next.id);
+    });
+    return () => setFocusTerminalListener(null);
+  }, [activeId]);
 
   useEffect(() => {
     setRunListener((path) => {

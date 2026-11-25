@@ -470,6 +470,18 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.duplicateTerminal(),
   },
   {
+    id: "workbench.action.terminal.focusNext",
+    title: "Focus Next Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.focusNextTerminal(),
+  },
+  {
+    id: "workbench.action.terminal.focusPrevious",
+    title: "Focus Previous Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.focusPreviousTerminal(),
+  },
+  {
     id: "workbench.action.runFile",
     title: "Run File",
     category: "Run",
