@@ -6,7 +6,8 @@ mod fsops;
 
 use debug::{debug_launch, debug_py_command, debug_py_start, debug_stop, DebugState};
 use extensions::{
-    install_sample_extension, list_extensions, set_extension_enabled,
+    install_local_extension, install_sample_extension, list_extensions, scaffold_extension,
+    set_extension_enabled,
 };
 use fsops::{fs_create_file, fs_mkdir, fs_remove, fs_rename};
 use git::{
@@ -45,6 +46,8 @@ pub fn run() {
             list_extensions,
             set_extension_enabled,
             install_sample_extension,
+            install_local_extension,
+            scaffold_extension,
             debug_launch,
             debug_py_start,
             debug_py_command,

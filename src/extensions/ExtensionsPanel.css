@@ -9,6 +9,7 @@
 
 .ext-panel__toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
@@ -23,6 +24,15 @@
 .ext-panel__toolbar button:hover {
   color: var(--fg);
   background: var(--bg-hover);
+}
+
+.ext-panel__search {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
 }
 
 .ext-panel__hint {

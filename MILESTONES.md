@@ -51,6 +51,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.43.0** | Agent tools to edit one match or write a file | shipped |
 | **0.44.0** | Agent tool for the open folder and the active buffer | shipped |
 | **0.45.0** | Chat calls workspace tools through the configured model | shipped |
+| **0.46.0** | Install or scaffold a local extension folder | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

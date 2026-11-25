@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 
 export type ExtensionManifest = {
   id: string;
@@ -28,6 +29,8 @@ type ExtensionsState = {
   refresh: () => Promise<void>;
   setEnabled: (id: string, enabled: boolean) => Promise<void>;
   installSample: () => Promise<void>;
+  installFromFolder: () => Promise<void>;
+  scaffoldInFolder: () => Promise<void>;
 };
 
 const ExtensionsContext = createContext<ExtensionsState | null>(null);
@@ -63,6 +66,37 @@ export function ExtensionsProvider({ children }: { children: ReactNode }) {
     await refresh();
   }, [refresh]);
 
+  const installFromFolder = useCallback(async () => {
+    setError(null);
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: "Extension folder",
+    });
+    if (selected === null || Array.isArray(selected)) return;
+    try {
+      await invoke("install_local_extension", { source: selected });
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }, [refresh]);
+
+  const scaffoldInFolder = useCallback(async () => {
+    setError(null);
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: "Folder for a new extension",
+    });
+    if (selected === null || Array.isArray(selected)) return;
+    try {
+      await invoke("scaffold_extension", { dest: selected });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }, []);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
@@ -75,8 +109,19 @@ export function ExtensionsProvider({ children }: { children: ReactNode }) {
       refresh,
       setEnabled,
       installSample,
+      installFromFolder,
+      scaffoldInFolder,
     }),
-    [extensions, loading, error, refresh, setEnabled, installSample],
+    [
+      extensions,
+      loading,
+      error,
+      refresh,
+      setEnabled,
+      installSample,
+      installFromFolder,
+      scaffoldInFolder,
+    ],
   );
 
   return (
