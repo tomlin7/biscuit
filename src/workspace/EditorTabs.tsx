@@ -4,6 +4,7 @@ import { useWorkspace } from "./WorkspaceContext";
 import { FileIcon } from "../ui/FileIcon";
 import { relativeToRoot } from "./path";
 import { rootForPath } from "../ai/roots";
+import { setDraggedTab } from "./tabDragBus";
 import "./EditorTabs.css";
 
 type TabContextMenuState = {
@@ -89,17 +90,26 @@ export function EditorTabs() {
             role="tab"
             aria-selected={active}
             draggable
-            onDragStart={() => {
+            onDragStart={(event) => {
               dragPath.current = tab.path;
+              event.dataTransfer.setData("application/x-t3d-tab-path", tab.path);
+              event.dataTransfer.setData("text/plain", tab.path);
+              event.dataTransfer.effectAllowed = "move";
+              setDraggedTab(tab.path);
+            }}
+            onDragEnd={() => {
+              dragPath.current = null;
+              setDraggedTab(null);
             }}
             onDragOver={(event) => {
               event.preventDefault();
             }}
             onDrop={(event) => {
               event.preventDefault();
-              const from = dragPath.current;
+              const from = dragPath.current ?? event.dataTransfer.getData("application/x-t3d-tab-path");
               if (from) moveTab(from, tab.path);
               dragPath.current = null;
+              setDraggedTab(null);
             }}
             onClick={() => activateTab(tab.path)}
             onAuxClick={(event) => {

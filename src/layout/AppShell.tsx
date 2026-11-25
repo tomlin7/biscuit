@@ -785,7 +785,16 @@ function ShellChrome() {
       replaceInSelection,
       splitEditorRight: () => requestSplitEditor("right"),
       splitEditorDown: () => requestSplitEditor("down"),
+      splitEditorLeft: () => requestSplitEditor("left"),
+      splitEditorUp: () => requestSplitEditor("up"),
+      setEditorLayoutTwoByTwo: () => requestSplitEditor("grid"),
+      setEditorLayoutThreeColumns: () => requestSplitEditor("three-columns"),
+      setEditorLayoutTwoColumns: () => requestSplitEditor("two-columns"),
+      setEditorLayoutTwoRows: () => requestSplitEditor("two-rows"),
+      setEditorLayoutSingle: () => requestSplitEditor("single"),
       closeEditorGroup: () => requestSplitEditor("close"),
+      closeAllEditorSplits: () => requestSplitEditor("close-all"),
+      focusNextEditorPane: () => requestSplitEditor("next-pane"),
       runEditorCommand,
       revealActiveFile: () => {
         if (activePath) void revealInExplorer(activePath);

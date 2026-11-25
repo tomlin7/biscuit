@@ -54,7 +54,16 @@ export type CommandContext = {
   replaceInSelection: () => void;
   splitEditorRight: () => void;
   splitEditorDown: () => void;
+  splitEditorLeft: () => void;
+  splitEditorUp: () => void;
+  setEditorLayoutTwoByTwo: () => void;
+  setEditorLayoutThreeColumns: () => void;
+  setEditorLayoutTwoColumns: () => void;
+  setEditorLayoutTwoRows: () => void;
+  setEditorLayoutSingle: () => void;
   closeEditorGroup: () => void;
+  closeAllEditorSplits: () => void;
+  focusNextEditorPane: () => void;
   runEditorCommand: (
     command:
       | "comment"

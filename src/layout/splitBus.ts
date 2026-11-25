@@ -1,10 +1,24 @@
-type SplitMode = "toggle" | "right" | "down" | "close" | "open";
+export type SplitMode =
+  | "toggle"
+  | "right"
+  | "down"
+  | "left"
+  | "up"
+  | "grid"
+  | "three-columns"
+  | "two-columns"
+  | "two-rows"
+  | "single"
+  | "close"
+  | "close-all"
+  | "next-pane"
+  | "open";
 
-type Listener = (mode: SplitMode, path?: string) => void;
+export type SplitListener = (mode: SplitMode, path?: string) => void;
 
-let listener: Listener | null = null;
+let listener: SplitListener | null = null;
 
-export function setSplitEditorListener(next: Listener | null) {
+export function setSplitEditorListener(next: SplitListener | null) {
   listener = next;
 }
 

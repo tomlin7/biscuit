@@ -11,6 +11,18 @@ export type EditorSession = {
   splitOrientation?: "right" | "down";
   splitRatio?: number;
   secondary?: string | null;
+  paneLayout?:
+    | "single"
+    | "columns-2"
+    | "rows-2"
+    | "columns-3"
+    | "rows-3"
+    | "grid-2x2"
+    | "split-left-stacked-right"
+    | "split-top-two-bottom";
+  panePaths?: string[];
+  activePaneIndex?: number;
+  secondarySplitRatio?: number;
 };
 
 export function readSession(): EditorSession | null {
@@ -49,6 +61,33 @@ function parseSession(raw: string | null): EditorSession | null {
           ? parsed.splitRatio
           : undefined,
       secondary: typeof parsed.secondary === "string" ? parsed.secondary : null,
+      paneLayout:
+        parsed.paneLayout === "single" ||
+        parsed.paneLayout === "columns-2" ||
+        parsed.paneLayout === "rows-2" ||
+        parsed.paneLayout === "columns-3" ||
+        parsed.paneLayout === "rows-3" ||
+        parsed.paneLayout === "grid-2x2" ||
+        parsed.paneLayout === "split-left-stacked-right" ||
+        parsed.paneLayout === "split-top-two-bottom"
+          ? parsed.paneLayout
+          : undefined,
+      panePaths: Array.isArray(parsed.panePaths)
+        ? parsed.panePaths.filter((p): p is string => typeof p === "string")
+        : undefined,
+      activePaneIndex:
+        typeof parsed.activePaneIndex === "number" &&
+        Number.isInteger(parsed.activePaneIndex) &&
+        parsed.activePaneIndex >= 0
+          ? parsed.activePaneIndex
+          : undefined,
+      secondarySplitRatio:
+        typeof parsed.secondarySplitRatio === "number" &&
+        Number.isFinite(parsed.secondarySplitRatio) &&
+        parsed.secondarySplitRatio >= 0.2 &&
+        parsed.secondarySplitRatio <= 0.8
+          ? parsed.secondarySplitRatio
+          : undefined,
     };
   } catch {
     return null;
