@@ -1,6 +1,6 @@
 [package]
 name = "t3d"
-version = "0.185.0"
+version = "0.186.0"
 description = "T3D - modern code editor (Tauri)"
 authors = ["Tomlin7 <billydevbusiness@gmail.com>"]
 edition = "2021"

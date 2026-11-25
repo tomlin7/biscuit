@@ -528,11 +528,19 @@ export function ScmPanel({ onBranch }: Props) {
                   const canUnstage = entry.index !== " " && entry.index !== "?";
                   if (canStage) {
                     void run("git_stage", { paths: [entry.path] });
-                  } else if (canUnstage) {
-                    void run("git_unstage", { paths: [entry.path] });
+                    return;
                   }
+                  if (canUnstage) {
+                    void run("git_unstage", { paths: [entry.path] });
+                    return;
+                  }
+                  const relative = entry.path.replace(
+                    /\//g,
+                    rootPath.includes("\\") ? "\\" : "/",
+                  );
+                  void openFile(joinPath(rootPath, relative));
                 }}
-                title={`${entry.path} — Enter to stage/unstage`}
+                title={`${entry.path} — Enter to stage, unstage, or open`}
               >
                 <span className="scm-panel__status">{entry.status}</span>
                 <span className="scm-panel__path">{entry.path}</span>
