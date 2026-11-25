@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { useWorkspace } from "../workspace/WorkspaceContext";
@@ -7,11 +7,31 @@ import "./ProblemsPanel.css";
 
 type SeverityFilter = "all" | "error" | "warning";
 
+const FILTER_KEY = "t3d.problems.filter.v1";
+
+function loadFilter(): SeverityFilter {
+  try {
+    const raw = localStorage.getItem(FILTER_KEY);
+    if (raw === "error" || raw === "warning" || raw === "all") return raw;
+  } catch {
+    /* ignore */
+  }
+  return "all";
+}
+
 export function ProblemsPanel() {
   const { problems } = useDiagnostics();
   const { openFileAt } = useWorkspace();
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
-  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(() => loadFilter());
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(FILTER_KEY, severityFilter);
+    } catch {
+      /* ignore */
+    }
+  }, [severityFilter]);
 
   const filtered = useMemo(() => {
     if (severityFilter === "all") return problems;
