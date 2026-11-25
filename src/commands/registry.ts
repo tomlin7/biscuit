@@ -1082,4 +1082,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.copyLastAiResponse(),
   },
+  {
+    id: "workbench.action.cycleAiSeed",
+    title: "Cycle AI Seed",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiSeed(),
+  },
 ];

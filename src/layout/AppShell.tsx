@@ -1054,6 +1054,21 @@ function ShellChrome() {
           }
         }
       },
+      cycleAiSeed: () => {
+        const order: Array<number | null> = [null, 0, 1, 42];
+        const current = aiSettings.seed;
+        const idx = order.findIndex(
+          (value) =>
+            value === current ||
+            (value === null && current === null) ||
+            (typeof value === "number" &&
+              typeof current === "number" &&
+              value === current),
+        );
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? null;
+        setSettings({ seed: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1133,6 +1148,7 @@ function ShellChrome() {
       activeSessionId,
       messages,
       aiSettings.model,
+      aiSettings.seed,
       bottomOpen,
       panelTab,
       setPanelTab,

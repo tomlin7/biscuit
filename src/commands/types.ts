@@ -180,6 +180,7 @@ export type CommandContext = {
   gitPasteCommitMessage: () => void;
   gitClearCommitMessage: () => void;
   copyLastAiResponse: () => void;
+  cycleAiSeed: () => void;
 };
 
 export type Command = {
