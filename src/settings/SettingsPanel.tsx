@@ -394,6 +394,24 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => setAi({ stopOnToolError: e.target.checked })}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Max tool rounds</span>
+              <input
+                type="number"
+                min={1}
+                max={32}
+                step={1}
+                value={ai.maxToolRounds}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  if (Number.isFinite(next)) {
+                    setAi({
+                      maxToolRounds: Math.min(32, Math.max(1, Math.floor(next))),
+                    });
+                  }
+                }}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",

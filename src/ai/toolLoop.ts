@@ -138,5 +138,8 @@ export async function runToolLoop(input: {
       }
     }
   }
-  return { content: "Stopped after 8 tool rounds.", toolCalls: shown };
+  return {
+    content: `Stopped after ${maxRounds} tool rounds.`,
+    toolCalls: shown,
+  };
 }

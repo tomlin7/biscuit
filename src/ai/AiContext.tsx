@@ -59,6 +59,8 @@ type AiSettings = {
   seed: number | null;
   /** When true, halt the tool loop after a failed tool call. */
   stopOnToolError: boolean;
+  /** Max tool-loop rounds per request (clamped 1–32). */
+  maxToolRounds: number;
 };
 
 type AiState = {
@@ -107,6 +109,7 @@ function defaultSettings(): AiSettings {
     frequencyPenalty: null,
     seed: null,
     stopOnToolError: false,
+    maxToolRounds: 8,
   };
 }
 
@@ -409,6 +412,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
           messages: history,
           signal: controller.signal,
           stopOnToolError: settings.stopOnToolError === true,
+          maxRounds: Math.min(32, Math.max(1, settings.maxToolRounds || 8)),
           complete: async (nextMessages) => {
             const res = await fetch(
               `${settings.baseUrl.replace(/\/$/, "")}/chat/completions`,
