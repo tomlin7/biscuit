@@ -164,6 +164,7 @@ export type CommandContext = {
   focusExplorer: () => void;
   focusSearch: () => void;
   focusExtensions: () => void;
+  focusDebug: () => void;
 };
 
 export type Command = {

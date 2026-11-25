@@ -986,4 +986,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.focusExtensions(),
   },
+  {
+    id: "workbench.action.focusDebug",
+    title: "Focus on Run and Debug View",
+    category: "View",
+    run: (ctx) => ctx.focusDebug(),
+  },
 ];

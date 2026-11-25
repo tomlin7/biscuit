@@ -946,6 +946,10 @@ function ShellChrome() {
         setSidebarMode("extensions");
         setSidebarOpen(true);
       },
+      focusDebug: () => {
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
