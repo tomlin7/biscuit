@@ -365,6 +365,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleTerminal(),
   },
   {
+    id: "workbench.action.terminal.clear",
+    title: "Clear Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.clearActiveTerminal(),
+  },
+  {
     id: "workbench.action.terminal.clearAll",
     title: "Clear All Terminals",
     category: "Terminal",

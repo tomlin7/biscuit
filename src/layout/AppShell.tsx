@@ -28,7 +28,7 @@ import { appendLog } from "../logs/logBus";
 import { basename, languageFromPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
-import { requestClearAllTerminals } from "../terminal/clearAll";
+import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
 import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
@@ -425,6 +425,11 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestClearAllTerminals();
+      },
+      clearActiveTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestClearActiveTerminal();
       },
       runFile: () => {
         if (!activePath) return;

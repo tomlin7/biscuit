@@ -1,11 +1,20 @@
 type Listener = () => void;
 
-let listener: Listener | null = null;
+let clearAllListener: Listener | null = null;
+let clearActiveListener: Listener | null = null;
 
 export function setClearAllTerminalsListener(next: Listener | null) {
-  listener = next;
+  clearAllListener = next;
 }
 
 export function requestClearAllTerminals() {
-  listener?.();
+  clearAllListener?.();
+}
+
+export function setClearActiveTerminalListener(next: Listener | null) {
+  clearActiveListener = next;
+}
+
+export function requestClearActiveTerminal() {
+  clearActiveListener?.();
 }

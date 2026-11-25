@@ -9,7 +9,7 @@ import { reduceTerminalInput } from "./terminalInput";
 import { basename } from "../workspace/path";
 import { setRunListener } from "./runFile";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
-import { setClearAllTerminalsListener } from "./clearAll";
+import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./clearAll";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import "@xterm/xterm/css/xterm.css";
@@ -370,6 +370,14 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     setClearAllTerminalsListener(clearAll);
     return () => setClearAllTerminalsListener(null);
   }, [nextShell]);
+
+  useEffect(() => {
+    const clearActive = () => {
+      controls.current.get(activeId)?.clear();
+    };
+    setClearActiveTerminalListener(clearActive);
+    return () => setClearActiveTerminalListener(null);
+  }, [activeId]);
 
   useEffect(() => {
     setRunListener((path) => {

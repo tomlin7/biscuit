@@ -57,6 +57,7 @@ export type CommandContext = {
   openSearch: () => void;
   toggleTerminal: () => void;
   clearAllTerminals: () => void;
+  clearActiveTerminal: () => void;
   runFile: () => void;
   openProblems: () => void;
   toggleAi: () => void;
