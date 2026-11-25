@@ -12,6 +12,7 @@ import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { editorConfigFor } from "./editorconfig";
 import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
+import { registerTsHoverProviders } from "../lsp/tsHover";
 import "./MonacoEditor.css";
 
 type Props = {
@@ -90,8 +91,9 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     editorRef.current?.updateOptions({
       minimap: { enabled: settings.editor.minimap, scale: 1 },
       stickyScroll: { enabled: settings.editor.stickyScroll },
+      tabSize: settings.editor.tabSize,
     });
-  }, [settings.editor.minimap, settings.editor.stickyScroll]);
+  }, [settings.editor.minimap, settings.editor.stickyScroll, settings.editor.tabSize]);
 
   useEffect(() => {
     if (!primary) return;
@@ -375,6 +377,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
 
   const handleBeforeMount = (monaco: Monaco) => {
     defineT3dThemes(monaco);
+    registerTsHoverProviders(monaco);
     monacoRef.current = monaco;
   };
 

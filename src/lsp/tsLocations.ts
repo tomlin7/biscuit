@@ -131,3 +131,20 @@ export async function referencesAt(
   }
   return located;
 }
+
+export async function hoverAt(
+  model: monaco.editor.ITextModel,
+  offset: number,
+): Promise<{ title: string; docs: string } | null> {
+  const session = await tsClient(model);
+  if (!session) return null;
+  const info = await session.client.getQuickInfoAtPosition(model.uri.toString(), offset);
+  if (!info) return null;
+  const title = (info.displayParts ?? []).map((part) => part.text).join("").trim();
+  const docs =
+    typeof info.documentation === "string"
+      ? info.documentation.trim()
+      : (info.documentation ?? []).map((part) => part.text).join("").trim();
+  if (!title && !docs) return null;
+  return { title, docs };
+}
