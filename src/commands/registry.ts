@@ -1262,6 +1262,11 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.minimizeBottomPanelHeight(),
   },
-
+  {
+    id: "notifications.dismissLatest",
+    title: "Dismiss Latest Notification",
+    category: "View",
+    run: (ctx) => ctx.dismissLatestNotification(),
+  },
 
 ];

@@ -116,6 +116,8 @@ function ShellChrome() {
     push: notify,
     clear: clearNotificationsList,
     markRead: markNotificationsReadList,
+    dismiss: dismissNotification,
+    items: notificationItems,
   } = useNotifications();
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
@@ -1226,6 +1228,10 @@ function ShellChrome() {
         setBottomHeight(120);
         setBottomOpen(true);
       },
+      dismissLatestNotification: () => {
+        const latest = notificationItems[0];
+        if (latest) dismissNotification(latest.id);
+      },
     }),
     [
       openFolder,
@@ -1316,6 +1322,8 @@ function ShellChrome() {
       gitDirtyCount,
       clearNotificationsList,
       markNotificationsReadList,
+      dismissNotification,
+      notificationItems,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,
