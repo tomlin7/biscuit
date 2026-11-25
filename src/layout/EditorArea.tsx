@@ -17,6 +17,7 @@ import { Welcome } from "../workspace/Welcome";
 import { languageLabel } from "../editor/languages";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { workspaceCrumbs } from "../workspace/path";
+import { patchSession, readSession } from "../workspace/session";
 import { useEditorActions } from "../editor/EditorActions";
 import { useLayout } from "./LayoutContext";
 import { FileIcon } from "../ui/FileIcon";
@@ -31,7 +32,25 @@ export function EditorArea() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [splitRatio, setSplitRatio] = useState(0.5);
   const [secondaryPath, setSecondaryPath] = useState<string | null>(null);
+  const [layoutReady, setLayoutReady] = useState(false);
   const hasFile = document !== null;
+
+  useEffect(() => {
+    const session = readSession();
+    if (session?.preview) setPreviewOpen(true);
+    if (session?.split) setSplit(true);
+    if (session?.secondary) setSecondaryPath(session.secondary);
+    setLayoutReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!layoutReady) return;
+    patchSession({
+      preview: previewOpen,
+      split,
+      secondary: secondaryPath,
+    });
+  }, [layoutReady, previewOpen, split, secondaryPath]);
 
   const now = useMemo(() => {
     const d = new Date();
@@ -51,13 +70,14 @@ export function EditorArea() {
 
   useEffect(() => {
     if (!split || !activePath) {
-      setSecondaryPath(null);
+      if (!split) setSecondaryPath(null);
       return;
     }
     setSecondaryPath((current) => {
       if (current && current !== activePath && tabs.some((tab) => tab.path === current)) {
         return current;
       }
+      if (current && tabs.length === 0) return current;
       return otherTabs[0]?.path ?? null;
     });
   }, [split, activePath, tabs, otherTabs]);

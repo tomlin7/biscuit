@@ -409,6 +409,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       root: rootPath,
       tabs: tabs.map((tab) => tab.path),
       active: activePath,
+      preview: readSession()?.preview ?? false,
+      split: readSession()?.split ?? false,
+      secondary: readSession()?.secondary ?? null,
     });
   }, [rootPath, tabs, activePath]);
 

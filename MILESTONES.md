@@ -64,6 +64,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.56.0** | Built-in Gruvbox and Catppuccin themes | shipped |
 | **0.57.0** | Contributed languages skip TypeScript problems | shipped |
 | **0.58.0** | Outline uses text scan for contributed languages | shipped |
+| **0.59.0** | Session restores preview and split | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

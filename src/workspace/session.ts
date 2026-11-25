@@ -4,6 +4,9 @@ export type EditorSession = {
   root: string;
   tabs: string[];
   active: string | null;
+  preview?: boolean;
+  split?: boolean;
+  secondary?: string | null;
 };
 
 export function readSession(): EditorSession | null {
@@ -19,6 +22,9 @@ export function readSession(): EditorSession | null {
       root: parsed.root,
       tabs,
       active: typeof parsed.active === "string" ? parsed.active : null,
+      preview: parsed.preview === true,
+      split: parsed.split === true,
+      secondary: typeof parsed.secondary === "string" ? parsed.secondary : null,
     };
   } catch {
     return null;
@@ -31,4 +37,10 @@ export function writeSession(session: EditorSession | null) {
     return;
   }
   localStorage.setItem(KEY, JSON.stringify(session));
+}
+
+export function patchSession(partial: Partial<EditorSession>) {
+  const current = readSession();
+  if (!current) return;
+  writeSession({ ...current, ...partial });
 }
