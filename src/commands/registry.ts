@@ -342,6 +342,20 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("deleteLine"),
   },
   {
+    id: "undo",
+    title: "Undo",
+    category: "Edit",
+    keybinding: "Ctrl+Z",
+    run: (ctx) => ctx.runEditorCommand("undo"),
+  },
+  {
+    id: "redo",
+    title: "Redo",
+    category: "Edit",
+    keybinding: "Ctrl+Y",
+    run: (ctx) => ctx.runEditorCommand("redo"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

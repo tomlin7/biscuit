@@ -78,7 +78,9 @@ export type CommandContext = {
       | "smartSelectExpand"
       | "smartSelectShrink"
       | "selectLine"
-      | "deleteLine",
+      | "deleteLine"
+      | "undo"
+      | "redo",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;

@@ -66,7 +66,9 @@ export type EditorCommand =
   | "smartSelectExpand"
   | "smartSelectShrink"
   | "selectLine"
-  | "deleteLine";
+  | "deleteLine"
+  | "undo"
+  | "redo";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -223,6 +225,12 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "deleteLine":
         handle.trigger("editor.action.deleteLines");
+        break;
+      case "undo":
+        handle.trigger("undo");
+        break;
+      case "redo":
+        handle.trigger("redo");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";
