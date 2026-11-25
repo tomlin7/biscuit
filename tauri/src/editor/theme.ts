@@ -1,6 +1,6 @@
 import type { Monaco } from "@monaco-editor/react";
 import type { ExtraTheme } from "../extensions/contributions";
-import type { CustomThemeDefinition } from "../theme/customTheme";
+import { loadCustomThemes, type CustomThemeDefinition } from "../theme/customTheme";
 
 export const T3D_THEME_DARK = "t3d-dark";
 export const T3D_THEME_LIGHT = "t3d-light";
@@ -28,7 +28,7 @@ export function monacoThemeId(
   }
   if (theme.startsWith("custom:")) {
     const id = theme.slice(7);
-    if (customThemes.some((item) => item.id === id)) return `t3d-custom-${id}`;
+    return `t3d-custom-${id}`;
   }
   const custom = customThemes.find((item) => item.id === theme);
   if (custom) return `t3d-custom-${custom.id}`;
@@ -41,19 +41,23 @@ export function defineCustomThemes(
   customThemes: CustomThemeDefinition[] = []
 ) {
   if (!monaco?.editor?.defineTheme) return;
-  for (const custom of customThemes) {
+  const list = customThemes.length > 0 ? customThemes : loadCustomThemes();
+  for (const custom of list) {
     const isLight = custom.uiTheme === "vs";
-    const colors = custom.colors;
+    const colors = custom.colors || {};
+    const fg = colors["editor.foreground"] || (isLight ? "#1a1a1a" : "#e8e8e8");
     monaco.editor.defineTheme(`t3d-custom-${custom.id}`, {
       base: isLight ? "vs" : "vs-dark",
       inherit: true,
-      rules: [],
+      rules: [
+        { token: "", foreground: fg.replace("#", "") },
+      ],
       colors: {
         "editor.background": colors["editor.background"] || (isLight ? "#ffffff" : "#141414"),
-        "editor.foreground": colors["editor.foreground"] || (isLight ? "#1a1a1a" : "#e8e8e8"),
+        "editor.foreground": fg,
         "editorLineNumber.foreground": isLight ? "#9a9a9a" : "#5c5c5c",
-        "editorLineNumber.activeForeground": colors["editor.foreground"] || (isLight ? "#6b6b6b" : "#8a8a8a"),
-        "editorCursor.foreground": colors.accent || colors["editor.foreground"] || (isLight ? "#1a1a1a" : "#e8e8e8"),
+        "editorLineNumber.activeForeground": fg,
+        "editorCursor.foreground": colors.accent || fg,
         "editor.selectionBackground": colors["editor.selectionBackground"] || (isLight ? "#add6ff" : "#264f78"),
         "editor.inactiveSelectionBackground": colors["editor.lineHighlightBackground"] || (isLight ? "#e5ebf1" : "#3a3d41"),
         "editor.lineHighlightBackground": colors["editor.lineHighlightBackground"] || (isLight ? "#f5f5f5" : "#1a1a1a"),

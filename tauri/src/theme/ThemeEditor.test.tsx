@@ -15,9 +15,11 @@ import {
   exportCustomThemeJson,
   importCustomThemeFromJson,
   applyCustomThemeCss,
+  stripJsonComments,
   type CustomThemeDefinition,
 } from "./customTheme";
 import { monacoThemeId, defineCustomThemes } from "../editor/theme";
+import { collectContributions } from "../extensions/contributions";
 import { ThemeEditor } from "./ThemeEditor";
 import { ThemeProvider } from "./ThemeContext";
 import { COMMANDS } from "../commands/registry";
@@ -284,6 +286,90 @@ describe("JSON Export and Import", () => {
     expect(imported.colors["sideBar.background"]).toBe("#f5f5f5");
   });
 
+  it("strips single-line and multi-line comments and trailing commas from JSONC", () => {
+    const rawJsonc = `
+      // VS Code theme header comment
+      {
+        /* Block comment describing theme */
+        "name": "Synthwave Glow",
+        "type": "dark",
+        "colors": {
+          "editor.background": "#262335",
+          "editor.foreground": "#ffffff",
+          "accent": "#fe4450", // inline comment
+          "sideBar.background": "#241b2f",
+        },
+      }
+    `;
+
+    const cleaned = stripJsonComments(rawJsonc);
+    expect(cleaned).not.toContain("//");
+    expect(cleaned).not.toContain("/*");
+
+    const imported = importCustomThemeFromJson(rawJsonc);
+    expect(imported.label).toBe("Synthwave Glow");
+    expect(imported.id).toBe("synthwave-glow");
+    expect(imported.uiTheme).toBe("vs-dark");
+    expect(imported.colors["editor.background"]).toBe("#262335");
+    expect(imported.colors.accent).toBe("#fe4450");
+  });
+
+  it("preserves 8-character hex colors with alpha channels on import", () => {
+    const jsonWithAlpha = JSON.stringify({
+      id: "alpha-neon",
+      label: "Alpha Neon",
+      colors: {
+        "editor.background": "#1e1e2ecc",
+        "editor.selectionBackground": "#45475a80",
+        accent: "#f38ba8ff",
+      },
+    });
+
+    const imported = importCustomThemeFromJson(jsonWithAlpha);
+    expect(imported.colors["editor.background"]).toBe("#1e1e2ecc");
+    expect(imported.colors["editor.selectionBackground"]).toBe("#45475a80");
+    expect(imported.colors.accent).toBe("#f38ba8ff");
+  });
+
+  it("exports themes consumable by extension collectContributions", () => {
+    const themeDef: CustomThemeDefinition = {
+      id: "amber-glow",
+      label: "Amber Glow",
+      uiTheme: "vs-dark",
+      colors: {
+        ...THEME_PRESETS.dark.colors,
+        "editor.background": "#1a120b",
+        "editor.foreground": "#e5b869",
+        accent: "#d48128",
+      },
+    };
+
+    const exportedJson = exportCustomThemeJson(themeDef);
+    const parsed = JSON.parse(exportedJson);
+    expect(parsed.mode).toBe("dark");
+    expect(parsed.colors.bg).toBe("#1a120b");
+    expect(parsed.colors.fg).toBe("#e5b869");
+
+    const mockManifest = {
+      id: "test.theme-ext",
+      name: "Theme Extension",
+      version: "1.0.0",
+      description: "Test theme extension",
+      enabled: true,
+      path: "/mock/ext",
+      contributes: {
+        themes: [parsed],
+      },
+    };
+
+    const contributions = collectContributions([mockManifest as any]);
+    expect(contributions.themes.length).toBe(1);
+    expect(contributions.themes[0].id).toBe("amber-glow");
+    expect(contributions.themes[0].colors.bg).toBe("#1a120b");
+    expect(contributions.themes[0].colors.fg).toBe("#e5b869");
+    expect(contributions.themes[0].colors.accent).toBe("#d48128");
+  });
+
   it("throws clear error on malformed JSON or empty string", () => {
     expect(() => importCustomThemeFromJson("")).toThrow("must be a non-empty string");
     expect(() => importCustomThemeFromJson("{ bad json }")).toThrow("Failed to parse theme JSON");
@@ -339,6 +425,41 @@ describe("Monaco and Dynamic CSS Variables Integration", () => {
   it("injects and cleans up custom CSS variables style tag safely", () => {
     // In node/bun environment without real DOM, applyCustomThemeCss gracefully checks document
     expect(() => applyCustomThemeCss(null)).not.toThrow();
+
+    // Mock document to verify CSS output rules
+    const styleTags: Record<string, any> = {};
+    const mockDoc = {
+      getElementById: (id: string) => styleTags[id] ?? null,
+      createElement: (_tag: string) => ({ id: "", textContent: "", remove: () => {} }),
+      head: {
+        appendChild: (el: any) => {
+          styleTags[el.id] = el;
+        },
+      },
+    };
+    (globalThis as any).document = mockDoc;
+
+    const themeWithMissingSlots: CustomThemeDefinition = {
+      id: "partial-theme",
+      label: "Partial Theme",
+      uiTheme: "vs-dark",
+      colors: {
+        "editor.background": "#101010",
+        // all other slots missing
+      } as any,
+    };
+
+    expect(() => applyCustomThemeCss(themeWithMissingSlots)).not.toThrow();
+    const injected = styleTags["t3d-custom-theme-vars"];
+    expect(injected).toBeDefined();
+    expect(injected.textContent).toContain(":root, :root[data-theme], [data-theme]");
+    expect(injected.textContent).toContain("--bg-island: #101010;");
+    // Fallbacks applied for missing slots
+    expect(injected.textContent).not.toContain("undefined");
+    expect(injected.textContent).toContain("--scrollbar-thumb:");
+
+    // Clean up mock document
+    delete (globalThis as any).document;
   });
 });
 

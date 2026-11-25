@@ -62,7 +62,7 @@ export function chromeTheme(
   }
   if (theme.startsWith("custom:")) {
     const customId = theme.slice(7);
-    const custom = customThemes.find((item) => item.id === customId);
+    const custom = customThemes.find((item) => item.id === customId) ?? getCustomTheme(customId);
     return custom?.uiTheme === "vs" ? "light" : "dark";
   }
   const extra = extras.find((item) => `ext:${item.id}` === theme);
@@ -84,7 +84,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     );
     if (theme.startsWith("custom:")) {
       const customId = theme.slice(7);
-      const custom = customThemes.find((t) => t.id === customId);
+      const custom = customThemes.find((t) => t.id === customId) ?? getCustomTheme(customId);
       applyCustomThemeCss(custom || null);
     } else {
       applyCustomThemeCss(null);
@@ -114,6 +114,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       setThemeState("dark");
     }
   }, [extras, extrasReady, theme]);
+
+  useEffect(() => {
+    if (theme.startsWith("custom:")) {
+      const customId = theme.slice(7);
+      if (!customThemes.some((item) => item.id === customId) && !getCustomTheme(customId)) {
+        setThemeState("dark");
+      }
+    }
+  }, [customThemes, theme]);
 
   const setTheme = useCallback((next: string) => {
     setThemeState(next);

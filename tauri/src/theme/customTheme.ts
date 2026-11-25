@@ -295,13 +295,74 @@ export function getCustomTheme(id: string): CustomThemeDefinition | undefined {
 }
 
 /**
+ * Strip single-line and multi-line comments and trailing commas from JSON strings (JSONC).
+ */
+export function stripJsonComments(input: string): string {
+  let insideString = false;
+  let stringChar = "";
+  let isEscaped = false;
+  let result = "";
+  const len = input.length;
+
+  for (let i = 0; i < len; i++) {
+    const ch = input[i];
+    const next = i + 1 < len ? input[i + 1] : "";
+
+    if (insideString) {
+      result += ch;
+      if (isEscaped) {
+        isEscaped = false;
+      } else if (ch === "\\") {
+        isEscaped = true;
+      } else if (ch === stringChar) {
+        insideString = false;
+      }
+      continue;
+    }
+
+    if (ch === '"' || ch === "'") {
+      insideString = true;
+      stringChar = ch;
+      result += ch;
+      continue;
+    }
+
+    // Single-line comment
+    if (ch === "/" && next === "/") {
+      while (i < len && input[i] !== "\n" && input[i] !== "\r") {
+        i++;
+      }
+      result += "\n";
+      continue;
+    }
+
+    // Multi-line comment
+    if (ch === "/" && next === "*") {
+      i += 2;
+      while (i < len && !(input[i] === "*" && input[i + 1] === "/")) {
+        i++;
+      }
+      i++;
+      continue;
+    }
+
+    result += ch;
+  }
+
+  // Remove trailing commas before } or ]
+  return result.replace(/,\s*([\]}])/g, "$1");
+}
+
+/**
  * Format custom theme definition into extension theme contribution format (contributes.themes schema).
  */
 export function exportCustomThemeJson(theme: CustomThemeDefinition): string {
+  const isLight = theme.uiTheme === "vs";
   const payload = {
     id: theme.id,
     label: theme.label,
     uiTheme: theme.uiTheme,
+    mode: isLight ? "light" : "dark",
     colors: {
       "editor.background": theme.colors["editor.background"],
       "editor.foreground": theme.colors["editor.foreground"],
@@ -315,6 +376,9 @@ export function exportCustomThemeJson(theme: CustomThemeDefinition): string {
       "statusBar.foreground": theme.colors["statusBar.foreground"],
       accent: theme.colors.accent,
       border: theme.colors.border,
+      // Extension shorthand compatibility
+      bg: theme.colors["editor.background"],
+      fg: theme.colors["editor.foreground"],
     },
   };
   return JSON.stringify(payload, null, 2);
@@ -329,8 +393,9 @@ export function importCustomThemeFromJson(rawJson: string): CustomThemeDefinitio
   }
 
   let parsed: any;
+  const cleaned = stripJsonComments(rawJson.trim());
   try {
-    parsed = JSON.parse(rawJson.trim());
+    parsed = JSON.parse(cleaned);
   } catch (err: any) {
     throw new Error(`Failed to parse theme JSON: ${err?.message || "Invalid JSON syntax"}`);
   }
@@ -346,10 +411,15 @@ export function importCustomThemeFromJson(rawJson: string): CustomThemeDefinitio
     throw new Error("Theme payload must be a JSON object");
   }
 
-  const label = typeof parsed.label === "string" && parsed.label.trim() ? parsed.label.trim() : "Custom Imported Theme";
-  const id = typeof parsed.id === "string" && parsed.id.trim() ? slugifyThemeId(parsed.id) : slugifyThemeId(label);
+  const label =
+    (typeof parsed.label === "string" && parsed.label.trim()) ||
+    (typeof parsed.name === "string" && parsed.name.trim()) ||
+    "Custom Imported Theme";
+  const id =
+    (typeof parsed.id === "string" && parsed.id.trim() && slugifyThemeId(parsed.id)) ||
+    slugifyThemeId(label);
 
-  const rawUiTheme = String(parsed.uiTheme || parsed.mode || "").toLowerCase();
+  const rawUiTheme = String(parsed.uiTheme || parsed.type || parsed.mode || "").toLowerCase();
   const uiTheme: UiTheme = rawUiTheme === "vs" || rawUiTheme === "light" ? "vs" : "vs-dark";
 
   const rawColors = parsed.colors || parsed.theme?.colors;
@@ -361,8 +431,13 @@ export function importCustomThemeFromJson(rawJson: string): CustomThemeDefinitio
 
   const resolve = (keys: string[], fallback: string): string => {
     for (const k of keys) {
-      if (rawColors[k] && typeof rawColors[k] === "string") {
-        return normalizeHex(rawColors[k], fallback);
+      const val = rawColors[k];
+      if (typeof val === "string" && val.trim()) {
+        const trimmed = val.trim();
+        if (isValidHexColor(trimmed)) {
+          return trimmed.toLowerCase();
+        }
+        return normalizeHex(trimmed, fallback);
       }
     }
     return fallback;
@@ -378,19 +453,19 @@ export function importCustomThemeFromJson(rawJson: string): CustomThemeDefinitio
       baseDefault.colors["editor.foreground"]
     ),
     "editor.lineHighlightBackground": resolve(
-      ["editor.lineHighlightBackground", "lineHighlight", "lineHighlightBackground"],
+      ["editor.lineHighlightBackground", "lineHighlight", "lineHighlightBackground", "editor.lineHighlightBorder"],
       baseDefault.colors["editor.lineHighlightBackground"]
     ),
     "editor.selectionBackground": resolve(
-      ["editor.selectionBackground", "selectionBackground", "selection"],
+      ["editor.selectionBackground", "selectionBackground", "selection", "editor.selectionHighlightBackground"],
       baseDefault.colors["editor.selectionBackground"]
     ),
     "activityBar.background": resolve(
-      ["activityBar.background", "activityBarBackground"],
+      ["activityBar.background", "activityBarBackground", "titleBar.activeBackground"],
       baseDefault.colors["activityBar.background"]
     ),
     "activityBar.foreground": resolve(
-      ["activityBar.foreground", "activityBarForeground"],
+      ["activityBar.foreground", "activityBarForeground", "titleBar.activeForeground"],
       baseDefault.colors["activityBar.foreground"]
     ),
     "sideBar.background": resolve(
@@ -402,15 +477,21 @@ export function importCustomThemeFromJson(rawJson: string): CustomThemeDefinitio
       baseDefault.colors["sideBar.foreground"]
     ),
     "statusBar.background": resolve(
-      ["statusBar.background", "statusBarBackground"],
+      ["statusBar.background", "statusBarBackground", "statusBar.debuggingBackground"],
       baseDefault.colors["statusBar.background"]
     ),
     "statusBar.foreground": resolve(
       ["statusBar.foreground", "statusBarForeground"],
       baseDefault.colors["statusBar.foreground"]
     ),
-    accent: resolve(["accent", "activityBarBadge.background", "focusBorder"], baseDefault.colors.accent),
-    border: resolve(["border", "sideBar.border", "panel.border"], baseDefault.colors.border),
+    accent: resolve(
+      ["accent", "activityBarBadge.background", "focusBorder", "button.background", "badge.background"],
+      baseDefault.colors.accent
+    ),
+    border: resolve(
+      ["border", "sideBar.border", "panel.border", "editorGroup.border", "contrastBorder", "window.activeBorder"],
+      baseDefault.colors.border
+    ),
   };
 
   return {
@@ -436,32 +517,50 @@ export function applyCustomThemeCss(theme: CustomThemeDefinition | null): void {
     return;
   }
 
-  const { colors, uiTheme } = theme;
+  const { uiTheme } = theme;
+  const baseDefault = uiTheme === "vs" ? THEME_PRESETS.light.colors : THEME_PRESETS.dark.colors;
+  const colors = theme.colors || {};
+
+  // Safe fallback resolution for all slots to prevent undefined or empty CSS values
+  const editorBg = colors["editor.background"] || baseDefault["editor.background"];
+  const editorFg = colors["editor.foreground"] || baseDefault["editor.foreground"];
+  const sideBarBg = colors["sideBar.background"] || baseDefault["sideBar.background"];
+  const sideBarFg = colors["sideBar.foreground"] || baseDefault["sideBar.foreground"];
+  const activityBarBg = colors["activityBar.background"] || baseDefault["activityBar.background"];
+  const activityBarFg = colors["activityBar.foreground"] || baseDefault["activityBar.foreground"];
+  const statusBarBg = colors["statusBar.background"] || baseDefault["statusBar.background"];
+  const statusBarFg = colors["statusBar.foreground"] || baseDefault["statusBar.foreground"];
+  const accent = colors.accent || baseDefault.accent;
+  const border = colors.border || baseDefault.border;
 
   const css = `
-:root, [data-theme] {
+:root, :root[data-theme], [data-theme] {
   color-scheme: ${uiTheme === "vs" ? "light" : "dark"};
-  --bg-island: ${colors["editor.background"]};
-  --bg-island-elevated: ${colors["sideBar.background"]};
-  --bg-root: ${colors["activityBar.background"]};
-  --bg-hover: color-mix(in srgb, ${colors["editor.background"]} 88%, ${colors["editor.foreground"]});
-  --bg-active: color-mix(in srgb, ${colors["editor.background"]} 80%, ${colors["editor.foreground"]});
-  --bg-input: ${colors["sideBar.background"]};
-  --bg-tab: ${colors["sideBar.background"]};
-  --bg-tab-active: ${colors["editor.background"]};
-  --border: ${colors.border};
-  --border-subtle: color-mix(in srgb, ${colors.border} 70%, transparent);
-  --fg: ${colors["editor.foreground"]};
-  --fg-muted: color-mix(in srgb, ${colors["editor.foreground"]} 65%, transparent);
-  --fg-dim: color-mix(in srgb, ${colors["editor.foreground"]} 45%, transparent);
-  --accent: ${colors.accent};
-  --accent-soft: color-mix(in srgb, ${colors.accent} 18%, transparent);
-  --activity-bar-bg: ${colors["activityBar.background"]};
-  --activity-bar-fg: ${colors["activityBar.foreground"]};
-  --sidebar-bg: ${colors["sideBar.background"]};
-  --sidebar-fg: ${colors["sideBar.foreground"]};
-  --statusbar-bg: ${colors["statusBar.background"]};
-  --statusbar-fg: ${colors["statusBar.foreground"]};
+  --bg-island: ${editorBg};
+  --bg-island-elevated: ${sideBarBg};
+  --bg-root: ${activityBarBg};
+  --bg-hover: color-mix(in srgb, ${editorBg} 88%, ${editorFg});
+  --bg-active: color-mix(in srgb, ${editorBg} 80%, ${editorFg});
+  --bg-input: ${sideBarBg};
+  --bg-tab: ${sideBarBg};
+  --bg-tab-active: ${editorBg};
+  --border: ${border};
+  --border-subtle: color-mix(in srgb, ${border} 70%, transparent);
+  --fg: ${editorFg};
+  --fg-muted: color-mix(in srgb, ${editorFg} 65%, transparent);
+  --fg-dim: color-mix(in srgb, ${editorFg} 45%, transparent);
+  --fg-inverse: ${uiTheme === "vs" ? "#000000" : "#ffffff"};
+  --accent: ${accent};
+  --accent-soft: color-mix(in srgb, ${accent} 18%, transparent);
+  --activity-bar-bg: ${activityBarBg};
+  --activity-bar-fg: ${activityBarFg};
+  --sidebar-bg: ${sideBarBg};
+  --sidebar-fg: ${sideBarFg};
+  --statusbar-bg: ${statusBarBg};
+  --statusbar-fg: ${statusBarFg};
+  --scrollbar-thumb: color-mix(in srgb, ${editorFg} 18%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, ${editorFg} 32%, transparent);
+  --scrollbar-thumb-active: color-mix(in srgb, ${editorFg} 48%, transparent);
 }
 `;
 

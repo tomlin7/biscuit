@@ -82,14 +82,20 @@ export function collectContributions(extensions: ExtensionManifest[]): {
     if (!ext.enabled) continue;
     for (const theme of ext.contributes?.themes ?? []) {
       if (!theme.id) continue;
+      const rawTheme = theme as any;
+      const isLight =
+        theme.mode === "light" ||
+        rawTheme.uiTheme === "vs" ||
+        rawTheme.type === "light";
+      const colors = (theme.colors ?? {}) as Record<string, string>;
       themes.push({
         id: theme.id,
         label: theme.label || theme.id,
-        mode: theme.mode === "light" ? "light" : "dark",
+        mode: isLight ? "light" : "dark",
         colors: {
-          bg: theme.colors?.bg ?? "",
-          fg: theme.colors?.fg ?? "",
-          accent: theme.colors?.accent ?? "",
+          bg: colors.bg ?? colors["editor.background"] ?? "",
+          fg: colors.fg ?? colors["editor.foreground"] ?? "",
+          accent: colors.accent ?? "",
         },
       });
     }

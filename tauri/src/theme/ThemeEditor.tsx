@@ -85,6 +85,13 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
         setId(found.id);
         setUiTheme(found.uiTheme);
         setColors({ ...found.colors });
+      } else {
+        setSelectedThemeId("new");
+        const base = THEME_PRESETS.dark;
+        setLabel("New Custom Theme");
+        setId(`custom-${Date.now().toString(36).slice(-4)}`);
+        setUiTheme("vs-dark");
+        setColors({ ...base.colors });
       }
     },
     [customThemes]
@@ -102,7 +109,7 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
     }));
   }, []);
 
-  // Update live preview in real app when enabled
+  // Update live preview in real app when enabled with unified unmount cleanup
   useEffect(() => {
     if (livePreview) {
       applyCustomThemeCss({
@@ -112,7 +119,6 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
         colors,
       });
     } else {
-      // Restore active theme CSS
       if (activeTheme.startsWith("custom:")) {
         const activeCustom = customThemes.find((t) => t.id === activeTheme.slice(7));
         applyCustomThemeCss(activeCustom || null);
@@ -120,10 +126,7 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
         applyCustomThemeCss(null);
       }
     }
-  }, [livePreview, id, label, uiTheme, colors, activeTheme, customThemes]);
 
-  // Cleanup on unmount
-  useEffect(() => {
     return () => {
       if (activeTheme.startsWith("custom:")) {
         const activeCustom = customThemes.find((t) => t.id === activeTheme.slice(7));
@@ -132,13 +135,30 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
         applyCustomThemeCss(null);
       }
     };
-  }, [activeTheme, customThemes]);
+  }, [livePreview, id, label, uiTheme, colors, activeTheme, customThemes]);
+
+  // Modal keyboard accessibility
+  useEffect(() => {
+    if (!exportOpen && !importOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setExportOpen(false);
+        setImportOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [exportOpen, importOpen]);
 
   // Clone from preset
   const handleClonePreset = (presetKey: PresetKey) => {
     const preset = THEME_PRESETS[presetKey];
     setUiTheme(preset.uiTheme);
     setColors({ ...preset.colors });
+    if (selectedThemeId === "new" && (label === "New Custom Theme" || label.startsWith("New Custom"))) {
+      setLabel(`${preset.label} Custom`);
+      setId(`${presetKey}-custom`);
+    }
     setSaveStatus(`Applied preset '${preset.label}'. Save to persist.`);
     setTimeout(() => setSaveStatus(null), 3000);
   };
@@ -152,6 +172,9 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
       uiTheme,
       colors,
     };
+    if (selectedThemeId !== "new" && selectedThemeId !== cleanId) {
+      deleteCustomTheme(selectedThemeId);
+    }
     saveCustomTheme(newTheme);
     setSelectedThemeId(cleanId);
     setId(cleanId);
@@ -187,12 +210,35 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
   }, [id, label, uiTheme, colors]);
 
   const handleCopyExport = async () => {
-    try {
-      await navigator.clipboard.writeText(currentExportJson);
+    let copiedSuccess = false;
+    if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(currentExportJson);
+        copiedSuccess = true;
+      } catch {
+        /* Fallback below */
+      }
+    }
+
+    if (!copiedSuccess && typeof document !== "undefined") {
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = currentExportJson;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        textarea.setAttribute("readonly", "");
+        document.body.appendChild(textarea);
+        textarea.select();
+        copiedSuccess = document.execCommand("copy");
+        document.body.removeChild(textarea);
+      } catch {
+        /* copy failed */
+      }
+    }
+
+    if (copiedSuccess) {
       setExportCopied(true);
       setTimeout(() => setExportCopied(false), 2000);
-    } catch {
-      // Fallback
     }
   };
 
@@ -202,8 +248,12 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
     const a = document.createElement("a");
     a.href = url;
     a.download = `${slugifyThemeId(id || label)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    if (typeof document !== "undefined") {
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
   };
 
   // Import handler
@@ -600,7 +650,7 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
                   <div
                     className="theme-preview-tree-item theme-preview-tree-item--active"
                     style={{
-                      backgroundColor: normalizeHex(colors["sideBar.foreground"]) + "18",
+                      backgroundColor: normalizeHex(colors["sideBar.foreground"], "#e8e8e8") + "18",
                     }}
                   >
                     📄 <span>App.tsx</span>
@@ -727,7 +777,15 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
 
       {/* Export JSON Modal */}
       {exportOpen && (
-        <div className="theme-editor-modal__overlay" role="dialog" aria-modal="true" aria-label="Export Theme JSON">
+        <div
+          className="theme-editor-modal__overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Export Theme JSON"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setExportOpen(false);
+          }}
+        >
           <div className="theme-editor-modal island">
             <div className="theme-editor-modal__header">
               <h4>Export Theme JSON</h4>
@@ -773,7 +831,15 @@ export function ThemeEditor({ onClose }: ThemeEditorProps) {
 
       {/* Import JSON Modal */}
       {importOpen && (
-        <div className="theme-editor-modal__overlay" role="dialog" aria-modal="true" aria-label="Import Theme JSON">
+        <div
+          className="theme-editor-modal__overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Import Theme JSON"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setImportOpen(false);
+          }}
+        >
           <div className="theme-editor-modal island">
             <div className="theme-editor-modal__header">
               <h4>Import Theme from JSON</h4>

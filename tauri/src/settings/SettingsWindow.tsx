@@ -7,6 +7,7 @@ import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { AiProvider } from "../ai/AiContext";
 import { SettingsProvider } from "./SettingsContext";
 import { IconThemeProvider } from "../theme/iconTheme/IconThemeContext";
+import { ThemeProvider } from "../theme/ThemeContext";
 import { SettingsPanel, type SettingsCategory } from "./SettingsPanel";
 import { applyChromeAcrylic } from "../layout/chromeAcrylic";
 import { SETTINGS_TAB_EVENT, type SettingsTab } from "./openSettingsWindow";
@@ -85,16 +86,18 @@ function SettingsWindowChrome() {
 /** Dedicated acrylic settings window entry (no editor chrome). */
 export function SettingsWindowApp() {
   return (
-    <SettingsProvider>
-      <WorkspaceProvider>
-        <NotificationsProvider>
-          <AiProvider>
-            <IconThemeProvider>
-              <SettingsWindowChrome />
-            </IconThemeProvider>
-          </AiProvider>
-        </NotificationsProvider>
-      </WorkspaceProvider>
-    </SettingsProvider>
+    <ThemeProvider>
+      <SettingsProvider>
+        <WorkspaceProvider>
+          <NotificationsProvider>
+            <AiProvider>
+              <IconThemeProvider>
+                <SettingsWindowChrome />
+              </IconThemeProvider>
+            </AiProvider>
+          </NotificationsProvider>
+        </WorkspaceProvider>
+      </SettingsProvider>
+    </ThemeProvider>
   );
 }
