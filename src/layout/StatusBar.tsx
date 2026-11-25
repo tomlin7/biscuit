@@ -27,7 +27,7 @@ export function StatusBar({
   return (
     <footer className="status-bar" role="contentinfo">
       <div className="status-bar__group">
-        <span className="status-bar__item">T3D 1.0.0</span>
+        <span className="status-bar__item">T3D 0.10.0</span>
         {gitBranch ? (
           <span className="status-bar__item">{gitBranch}</span>
         ) : null}
