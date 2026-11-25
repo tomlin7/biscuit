@@ -484,6 +484,15 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **1.220.0** | Installable icon themes and theme selector | shipped |
 | **2.0.0** | Stable product | owner decision only |
 
+## GPUIX Milestones (Independent track starting from 0.1.0)
+
+| Version | Feature | Status |
+|---|---|---|
+| **0.1.0** | Monorepo reorganization (`tauri/` & `gpuix/`), GPUIX shell parity, transparent Win32 titlebar dragging, editor buffer workspace & tabs | shipped |
+| **0.2.0** | Integrated Monaco/GPUI text buffers with syntax highlighting and outline | planned |
+| **0.3.0** | Embedded terminal emulator and pty integration | planned |
+| **0.4.0** | Git source control panel, diff viewer, and staging bus | planned |
+
 ## Current target
 
-Ship the next workspace milestone on `1.x`. **2.0.0** stays an owner decision.
+Ship progressive GPUIX 0.x parity capabilities alongside Tauri 1.x. **2.0.0** stays an owner decision.

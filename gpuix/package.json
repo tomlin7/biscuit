@@ -1,0 +1,51 @@
+{
+  "name": "morsel-gpuix",
+  "version": "0.1.0",
+  "description": "GPU-accelerated code editor and agent cockpit rendered with GPUIX",
+  "private": true,
+  "type": "module",
+  "engines": { "bun": ">=1.4.2" },
+  "scripts": {
+    "predev": "bun scripts/build-window-macos.ts",
+    "dev": "bun --hot app.tsx",
+    "build": "bun scripts/build.ts",
+    "test:archive": "bun scripts/smoke-archive.ts",
+    "web:dev": "bun web.ts",
+    "web:build": "bun web.ts --build",
+    "test:web": "bun scripts/browser-smoke.ts",
+    "screenshot": "bun screenshot.ts",
+    "test": "vitest run",
+    "test:engine": "bun test engine",
+    "test:integration": "bun integration.ts",
+    "test:projects": "bun projects.integration.ts",
+    "test:settings": "bun settings.integration.ts",
+    "test:cli": "bun cli.integration.ts",
+    "test:access": "bun access.integration.ts",
+    "test:skills": "bun skills.integration.ts",
+    "test:pairing": "bun pairing.integration.ts",
+    "test:internet": "bun internet.integration.ts",
+    "engine": "bun engine/src/index.ts",
+    "engine:status": "bun engine/src/index.ts status",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gpuix/react": "^0.11.0",
+    "@opentunnel/client": "0.6.1",
+    "@types/mdast": "^4.0.4",
+    "ajv": "^8.20.0",
+    "effect": "4.0.0",
+    "htmlparser2": "^12.0.0",
+    "react": "^19.2.4",
+    "safe-mdx": "1.14.0",
+    "uqr": "^0.1.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.2.0",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.18"
+  }
+}

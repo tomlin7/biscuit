@@ -1,0 +1,131 @@
+name: Integration
+
+# The integration tests that need a real window.
+#
+# `.github/workflows/ci.yml` runs the in-process suite (`bun run test`) on
+# macOS and Windows: the GPUIX native test renderer builds a real tree, paints
+# it and hit tests it, but no window and no child process is involved.
+#
+# This workflow is the other half. It starts `bun app.tsx` as a real process
+# and drives the real window through `@gpuix/react/automation`, which also
+# means the daemon the cockpit spawns and the run it hands to it are real.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  windowed:
+    name: windowed (windows-latest)
+    # A hosted macOS runner has no desktop session, so `bun screenshot.ts`-style
+    # scripts hang there forever (the automation client waits for the app's
+    # `initialize` with no deadline). Windows runners do have an interactive
+    # desktop, so a window can be created on them.
+    runs-on: windows-latest
+    # A window that never opens must fail the job, not hold a runner for the
+    # default six hours.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Cache the bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Verify the development script opens a visible window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("scripts/smoke-window.ts","--dev") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 45'
+
+      # The test isolates its state under `HIROSHI_HOME` in the temp directory,
+      # so nothing here touches the runner's profile.
+      - name: Run the windowed integration test
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:integration") -MaxProcesses 12 -MemoryMB 3072 -TimeoutSeconds 300'
+
+      - name: Check the Wasm browser preview under resource limits
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:web") -MaxProcesses 12 -MemoryMB 3072 -TimeoutSeconds 90'
+
+      - name: Verify project switching and recovery in a source window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:projects") -MaxProcesses 8 -MemoryMB 3072 -TimeoutSeconds 120'
+
+      - name: Build packaged desktop under resource limits
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","build") -MaxProcesses 3 -MemoryMB 2048 -TimeoutSeconds 120'
+
+      - name: Verify all permission modes in a source window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:access") -MaxProcesses 10 -MemoryMB 2560 -TimeoutSeconds 150'
+
+      - name: Verify installed skills in a source window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:skills") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+
+      - name: Verify device pairing in a source window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:pairing") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+
+      - name: Verify device pairing in the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:pairing") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Verify installed skills in the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:skills") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Verify all permission modes in the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:access") -MaxProcesses 10 -MemoryMB 2560 -TimeoutSeconds 150'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Verify native CLI follow-up and explicit recovery in a source window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:cli") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+
+      - name: Verify native CLI follow-up and explicit recovery in the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:cli") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Verify usage, daemon access and project menus in a source window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:settings") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+
+      - name: Verify usage, daemon access and project menus in the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:settings") -MaxProcesses 8 -MemoryMB 2048 -TimeoutSeconds 120'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Test packaged desktop and sidecar under resource limits
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:integration") -MaxProcesses 12 -MemoryMB 3072 -TimeoutSeconds 300'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Check intentional close does not restart the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("scripts/smoke-window.ts") -MaxProcesses 6 -MemoryMB 1536 -TimeoutSeconds 45'
+
+      - name: Verify project switching and recovery in the packaged window
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("run","test:projects") -MaxProcesses 8 -MemoryMB 3072 -TimeoutSeconds 120'
+        env:
+          HIROSHI_TEST_PACKAGED: ${{ github.workspace }}/dist/hiroshi.exe
+
+      - name: Keep what the window looked like
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windowed-integration
+          path: screenshots/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,0 +1,31 @@
+<!-- Hiroshi browser preview. GPUIX creates the canvas itself. -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+    <title>Hiroshi · Browser preview</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #1a1a1a; }
+      canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+      /* The app draws every glyph itself, so the page must not behave like a
+         document: a long press would select the body and pop the iOS callout. */
+      html, body, canvas {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* GPUI's hidden IME textarea still needs a real selection for
+         composition, backspace context, and clipboard. */
+      [data-gpui-input] {
+        -webkit-user-select: text !important;
+        user-select: text !important;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

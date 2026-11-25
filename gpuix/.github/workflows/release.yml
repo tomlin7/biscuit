@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  pull_request:
+  push:
+    tags: ['v0.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  package:
+    name: package (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-15, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun install --frozen-lockfile
+      - name: Build the cockpit and engine together
+        run: bun run build
+      - name: Smoke test packaged binaries outside the checkout
+        run: bun scripts/smoke.ts
+      - name: Fetch the previous delta manifest when available
+        if: startsWith(github.ref, 'refs/tags/')
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p tmp/previous
+          gh release download --repo "$GITHUB_REPOSITORY" --pattern 'manifest-*.json' --dir tmp/previous
+      - name: Build release archives, checksums, and delta chunks
+        run: bun scripts/release.ts
+      - name: Test the extracted download archive on Windows under resource limits
+        if: runner.os == 'Windows'
+        run: '& ./scripts/run-guarded.ps1 -Executable (Get-Command bun.exe).Source -Arguments @("scripts/smoke-archive.ts") -MaxProcesses 6 -MemoryMB 1536 -TimeoutSeconds 60'
+      - name: Test the extracted download archive on macOS and Linux
+        if: runner.os != 'Windows'
+        timeout-minutes: 2
+        run: bun scripts/smoke-archive.ts
+      - name: Sign release provenance
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: |
+            dist/release/*.tar.gz
+            dist/release/manifest-*.json
+      - name: Keep release packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.os }}
+          path: |
+            dist/release/*.tar.gz
+            dist/release/*.sha256
+            dist/release/*.json
+          retention-days: 7
+      - name: Keep delta chunks for publication
+        uses: actions/upload-artifact@v4
+        with:
+          name: delta-${{ matrix.os }}
+          path: dist/release/blobs/
+          retention-days: 1
+
+  verify:
+    name: verify complete release
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: assets
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: delta-*
+          path: assets/blobs
+          merge-multiple: true
+      - name: Validate the exact inputs to publication without changing GitHub
+        run: bun scripts/verify-release.ts
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: assets
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: delta-*
+          path: assets/blobs
+          merge-multiple: true
+      - name: Publish only the complete, signed release
+        run: bun scripts/publish.ts
+        env:
+          GH_TOKEN: ${{ github.token }}

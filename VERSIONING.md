@@ -24,3 +24,10 @@ Version strings must stay aligned across:
 
 Git tags use the form `v1.212.0`, matching the active release version.
 
+## GPUIX Versioning
+
+The GPUIX desktop app (`gpuix/`) maintains its own independent SemVer versioning starting from `0.1.0`.
+- Major stays `0` until complete feature parity with Tauri and full stability.
+- Minor increments with each shipped feature parity slice.
+- Source of truth for GPUIX lives in `gpuix/package.json` and `gpuix/CHANGELOG.md`.
+

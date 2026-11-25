@@ -1,0 +1,151 @@
+name: CI
+run-name: ${{ inputs.remote_url != '' && format('Remote reachability {0}', inputs.probe_id) || 'CI' }}
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      remote_url:
+        description: Optional public OpenTunnel origin for an unauthenticated reachability check
+        type: string
+        default: ''
+      probe_id:
+        description: Public correlation identifier for an explicit remote check
+        type: string
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.remote_url != '' && 'remote-probe' || 'standard' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  remote_reachability:
+    name: independent network reachability
+    if: github.event_name == 'workflow_dispatch' && inputs.remote_url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - name: Verify the public gateway without credentials
+        run: bun scripts/remote-reachability.ts
+        env:
+          HIROSHI_PROBE_URL: ${{ inputs.remote_url }}
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Cache the bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      # The lockfile and package.json must not drift apart.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+  engine:
+    name: engine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Cache the bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # The engine tests spawn real daemons and read a real SQLite file, but
+      # they need no GPU and no test renderer. A plain Linux box is the honest
+      # place to prove that a run survives the process that started it.
+      - name: Run the engine tests
+        run: bun run test:engine
+
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # The GPUIX native test renderer only ships with the builds that
+        # carry the `test-support` feature: macOS and Windows. The Linux
+        # build is `--no-default-features` and the suites skip themselves
+        # there, so it only runs the typecheck.
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Cache the bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run the native integration tests
+        run: bun run test
+
+      - name: Verify installed skill discovery and daemon integration
+        run: bun test engine/test/skills.test.ts
+
+      - name: Verify scoped configuration and write-time instruction checks
+        run: bun test engine/test/configuration.test.ts
+
+      - name: Verify device pairing and network credentials
+        run: bun test engine/test/pairing.test.ts engine/test/pairing-daemon.test.ts engine/test/pairing-cli.test.ts engine/test/network-access.test.ts engine/test/internet-access.test.ts engine/test/internet-daemon.test.ts engine/test/remote-commands.test.ts engine/test/internet-recovery.test.ts engine/test/probe-home.test.ts
+
+      - name: Run the integration tests
+        # The native suite uses an in-process renderer. These additional tests
+        # exercise actual daemon/IPC/process-group and Windows Job behavior.
+        run: bun test engine/test/execution.test.ts engine/test/execution-daemon.test.ts engine/test/access.test.ts engine/test/cli-provider.test.ts engine/test/cli-conversations.test.ts engine/test/provider-setup.test.ts engine/test/projects.test.ts engine/test/local-transport.test.ts engine/test/prompt-drafts.test.ts
+
+      - name: Keep native control failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-controls-${{ runner.os }}
+          path: screenshots/native-*-controls.*
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Test the native macOS window drag bridge
+        if: runner.os == 'macOS'
+        timeout-minutes: 2
+        run: bun scripts/test-window-macos.ts

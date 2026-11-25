@@ -30,7 +30,8 @@ Download the latest version (`v1.212.0`) from the [GitHub Releases](https://gith
 
 | Layer | Technology | Role |
 |---|---|---|
-| **Desktop Shell** | Tauri 2 (Rust) | Native window management, file system access, process lifecycle |
+| **GPUIX Cockpit** | GPUIX + React 19 | GPU-rendered desktop editor & orchestration in `gpuix/` |
+| **Desktop Shell** | Tauri 2 (Rust) | Native window management and desktop application in `tauri/` |
 | **Terminal Core** | `portable-pty` | Direct pseudoterminal spawning for PowerShell, Bash, and Zsh |
 | **Editor Engine** | Monaco Editor | Syntax highlighting, multi-cursor editing, minimap, diff viewer |
 | **Frontend UI** | React 19 + TypeScript | Split layouts, tabs, command palette, settings, file tree |
@@ -61,36 +62,35 @@ Download the latest version (`v1.212.0`) from the [GitHub Releases](https://gith
   - **macOS**: Xcode Command Line Tools
   - **Linux**: `libwebkit2gtk-4.1-dev`, `build-essential`, `curl`, `wget`, `file`, `libxdo-dev`, `libssl-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`
 
-### Running the Editor
+### Running the Editors
 
 ```bash
 # Clone the repository
 git clone https://github.com/tomlin7/Morsel.git
 cd Morsel
 
-# Install dependencies
+# Install root dependencies
 bun install
 
-# Start development mode (Vite + Tauri)
-bun run tauri dev
+# Run GPUIX Cockpit (GPU accelerated)
+bun run gpuix:dev
+
+# Run Tauri Editor (Vite + Tauri)
+bun run tauri:dev
 ```
 
-### Packaging Extensions
+### Running Tests & Verification
 
 ```bash
-bun run extensions:build
-```
+# GPUIX typecheck and tests
+bun run gpuix:typecheck
+bun run gpuix:test
 
-Builds zip archives and regenerates `extensions-dist/index.json` with SHA-256 integrity hashes.
+# Tauri frontend typecheck
+cd tauri && bunx tsc --noEmit
 
-### Running Tests
-
-```bash
-# Frontend type check
-bunx tsc --noEmit
-
-# Rust unit tests
-cargo test --manifest-path src-tauri/Cargo.toml --lib
+# Tauri Rust unit tests
+cargo test --manifest-path tauri/src-tauri/Cargo.toml --lib
 ```
 
 ### Landing Page (`www/`)
