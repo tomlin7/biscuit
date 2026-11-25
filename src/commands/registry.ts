@@ -914,4 +914,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiTopP(),
   },
+  {
+    id: "workbench.action.cycleAiMaxTokens",
+    title: "Cycle AI Max Tokens",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiMaxTokens(),
+  },
 ];

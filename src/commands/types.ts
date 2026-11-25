@@ -153,6 +153,7 @@ export type CommandContext = {
   gitIgnoreSelected: () => void;
   gitCompareSelected: () => void;
   cycleAiTopP: () => void;
+  cycleAiMaxTokens: () => void;
 };
 
 export type Command = {

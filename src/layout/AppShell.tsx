@@ -865,6 +865,21 @@ function ShellChrome() {
         setSettings({ topP: next });
         setAiOpen(true);
       },
+      cycleAiMaxTokens: () => {
+        const order: Array<number | null> = [null, 1024, 2048, 4096, 8192];
+        const current = aiSettings.maxTokens;
+        const idx = order.findIndex(
+          (value) =>
+            value === current ||
+            (value === null && current === null) ||
+            (typeof value === "number" &&
+              typeof current === "number" &&
+              value === current),
+        );
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? null;
+        setSettings({ maxTokens: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -925,6 +940,7 @@ function ShellChrome() {
       aiSettings.stopOnToolError,
       aiSettings.temperature,
       aiSettings.topP,
+      aiSettings.maxTokens,
       showHistory,
       setShowHistory,
       setAiOpen,
