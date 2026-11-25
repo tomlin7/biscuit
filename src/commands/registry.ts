@@ -1352,5 +1352,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.closeWindow(),
   },
-
+  {
+    id: "notifications.copyUnreadCount",
+    title: "Copy Notification Unread Count",
+    category: "View",
+    run: (ctx) => ctx.copyUnreadNotificationCount(),
+  },
 ];

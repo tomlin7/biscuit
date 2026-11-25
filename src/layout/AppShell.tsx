@@ -1323,6 +1323,9 @@ function ShellChrome() {
         }
         void getCurrentWindow().close();
       },
+      copyUnreadNotificationCount: () => {
+        void navigator.clipboard.writeText(String(notificationUnread));
+      },
     }),
     [
       openFolder,
