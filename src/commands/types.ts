@@ -204,6 +204,7 @@ export type CommandContext = {
   markNotificationsRead: () => void;
   increaseTerminalFontSize: () => void;
   decreaseTerminalFontSize: () => void;
+  maximizeAiPanelWidth: () => void;
 };
 
 export type Command = {

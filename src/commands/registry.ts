@@ -1226,4 +1226,10 @@ export const COMMANDS: Command[] = [
     category: "Terminal",
     run: (ctx) => ctx.decreaseTerminalFontSize(),
   },
+  {
+    id: "workbench.action.maximizeAiPanelWidth",
+    title: "Maximize AI Panel Width",
+    category: "View",
+    run: (ctx) => ctx.maximizeAiPanelWidth(),
+  },
 ];

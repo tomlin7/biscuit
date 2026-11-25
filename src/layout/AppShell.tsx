@@ -1202,6 +1202,10 @@ function ShellChrome() {
           terminalFontSize: Math.max(8, settings.editor.terminalFontSize - 1),
         });
       },
+      maximizeAiPanelWidth: () => {
+        setAiWidth(560);
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
