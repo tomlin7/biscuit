@@ -1522,5 +1522,10 @@ export const COMMANDS: Command[] = [
     category: "Extensions",
     run: (ctx) => ctx.installExtensionFromFolder(),
   },
-
+  {
+    id: "t3d.installSampleExtension",
+    title: "Install Sample Extension",
+    category: "Extensions",
+    run: (ctx) => ctx.installSampleExtension(),
+  },
 ];

@@ -252,6 +252,7 @@ export type CommandContext = {
   reloadWindow: () => void;
   scaffoldExtension: () => void;
   installExtensionFromFolder: () => void;
+  installSampleExtension: () => void;
 };
 
 export type Command = {

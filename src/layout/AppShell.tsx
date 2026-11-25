@@ -157,7 +157,7 @@ function ShellChrome() {
     addBreakpoint,
     removeBreakpoint,
   } = useDebug();
-  const { extensions, scaffoldInFolder, installFromFolder } = useExtensions();
+  const { extensions, scaffoldInFolder, installFromFolder, installSample } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
     setExtras(collected.themes);
@@ -1526,6 +1526,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         void installFromFolder();
       },
+      installSampleExtension: () => {
+        setSidebarMode("extensions");
+        setSidebarOpen(true);
+        void installSample();
+      },
     }),
     [
       openFolder,
@@ -1668,6 +1673,7 @@ function ShellChrome() {
       deleteEntry,
       scaffoldInFolder,
       installFromFolder,
+      installSample,
     ],
   );
 
