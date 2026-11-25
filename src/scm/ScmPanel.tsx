@@ -244,6 +244,14 @@ export function ScmPanel({ onBranch }: Props) {
                 type="button"
                 className="scm-panel__action"
                 disabled={acting}
+                onClick={() => void run("git_ignore", { path: entry.path })}
+              >
+                Ignore
+              </button>
+              <button
+                type="button"
+                className="scm-panel__action"
+                disabled={acting}
                 onClick={() => {
                   if (diffPath === entry.path) {
                     setDiffPath(null);

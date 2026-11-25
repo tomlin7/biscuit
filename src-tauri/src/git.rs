@@ -209,6 +209,48 @@ pub fn git_clone(url: String, parent: String) -> Result<String, String> {
     Ok(dest.display().to_string())
 }
 
+fn normalize_ignore_path(path: &str) -> Result<String, String> {
+    let path = path.trim().replace('\\', "/");
+    if path.is_empty()
+        || path.contains('\n')
+        || path.contains('\r')
+        || path.contains('\0')
+        || path.starts_with('/')
+        || path.chars().nth(1) == Some(':')
+    {
+        return Err("invalid ignore path".into());
+    }
+    if path.split('/').any(|part| part.is_empty() || part == ".." || part == ".") {
+        return Err("invalid ignore path".into());
+    }
+    Ok(path)
+}
+
+#[tauri::command]
+pub fn git_ignore(cwd: String, path: String) -> Result<(), String> {
+    let line = normalize_ignore_path(&path)?;
+    let root = run_git(
+        &cwd,
+        &["rev-parse".into(), "--show-toplevel".into()],
+    )?;
+    let ignore_path = std::path::Path::new(root.trim()).join(".gitignore");
+    let mut existing = if ignore_path.exists() {
+        std::fs::read_to_string(&ignore_path).map_err(|err| err.to_string())?
+    } else {
+        String::new()
+    };
+    if existing.lines().any(|current| current.trim() == line) {
+        return Ok(());
+    }
+    if !existing.is_empty() && !existing.ends_with('\n') {
+        existing.push('\n');
+    }
+    existing.push_str(&line);
+    existing.push('\n');
+    std::fs::write(&ignore_path, existing).map_err(|err| err.to_string())?;
+    Ok(())
+}
+
 #[tauri::command]
 pub fn git_commit(cwd: String, message: String) -> Result<(), String> {
     let message = message.trim();
@@ -217,4 +259,45 @@ pub fn git_commit(cwd: String, message: String) -> Result<(), String> {
     }
     run_git(&cwd, &["commit".into(), "-m".into(), message.to_string()])?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::normalize_ignore_path;
+
+    #[test]
+    fn ignore_path_rules() {
+        assert_eq!(normalize_ignore_path("notes.tmp").unwrap(), "notes.tmp");
+        assert_eq!(
+            normalize_ignore_path("src\\notes.tmp").unwrap(),
+            "src/notes.tmp"
+        );
+        assert!(normalize_ignore_path("").is_err());
+        assert!(normalize_ignore_path("a\nb").is_err());
+        assert!(normalize_ignore_path("/etc/passwd").is_err());
+        assert!(normalize_ignore_path("C:/secret").is_err());
+        assert!(normalize_ignore_path("../outside").is_err());
+    }
+
+    #[test]
+    fn appends_ignore_line_and_hides_the_file() {
+        let dir = std::env::temp_dir().join(format!("t3d-ignore-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let init = std::process::Command::new("git")
+            .args(["init"])
+            .current_dir(&dir)
+            .status()
+            .expect("git init");
+        assert!(init.success());
+        std::fs::write(dir.join("notes.tmp"), "x").unwrap();
+        let cwd = dir.display().to_string();
+        super::git_ignore(cwd.clone(), "notes.tmp".into()).unwrap();
+        super::git_ignore(cwd.clone(), "notes.tmp".into()).unwrap();
+        let text = std::fs::read_to_string(dir.join(".gitignore")).unwrap();
+        assert_eq!(text, "notes.tmp\n");
+        let status = super::run_git(&cwd, &["status".into(), "--porcelain".into()]).unwrap();
+        assert!(!status.contains("notes.tmp"), "{status}");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }
