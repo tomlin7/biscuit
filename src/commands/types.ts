@@ -174,6 +174,7 @@ export type CommandContext = {
   attachActiveToAi: () => void;
   toggleLogs: () => void;
   attachFilesToAi: () => void;
+  deleteAiSession: () => void;
 };
 
 export type Command = {

@@ -107,6 +107,8 @@ function ShellChrome() {
     regenerate,
     attachPath,
     attachFiles,
+    deleteSession,
+    activeSessionId,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
@@ -1008,6 +1010,10 @@ function ShellChrome() {
         setAiOpen(true);
         void attachFiles();
       },
+      deleteAiSession: () => {
+        deleteSession(activeSessionId);
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1083,6 +1089,8 @@ function ShellChrome() {
       regenerate,
       attachPath,
       attachFiles,
+      deleteSession,
+      activeSessionId,
       bottomOpen,
       panelTab,
       setPanelTab,

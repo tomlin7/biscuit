@@ -1046,4 +1046,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.attachFilesToAi(),
   },
+  {
+    id: "workbench.action.deleteAiSession",
+    title: "Delete Current AI Session",
+    category: "AI",
+    run: (ctx) => ctx.deleteAiSession(),
+  },
 ];
