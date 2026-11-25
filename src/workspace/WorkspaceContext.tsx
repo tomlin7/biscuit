@@ -19,6 +19,7 @@ import {
   joinPath,
   languageFromPath,
   parentPath,
+  directoryChain,
 } from "./path";
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
 import { readSession, writeSession } from "./session";
@@ -77,9 +78,23 @@ export type WorkspaceState = {
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
   renameEntry: (path: string) => Promise<void>;
   deleteEntry: (path: string) => Promise<void>;
+  revealInExplorer: (path: string) => Promise<void>;
+  explorerNonce: number;
 };
 
 const WorkspaceContext = createContext<WorkspaceState | null>(null);
+
+function findTreeNode(nodes: TreeNode[], path: string): TreeNode | undefined {
+  const key = path.replace(/\\/g, "/").toLowerCase();
+  for (const node of nodes) {
+    if (node.path.replace(/\\/g, "/").toLowerCase() === key) return node;
+    if (node.children) {
+      const found = findTreeNode(node.children, path);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
 
 function updateTreeNode(
   nodes: TreeNode[],
@@ -130,6 +145,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const revealToken = useRef(0);
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
+  const treeRef = useRef(tree);
+  treeRef.current = tree;
+  const [explorerNonce, setExplorerNonce] = useState(0);
   const activePathRef = useRef(activePath);
   activePathRef.current = activePath;
 
@@ -220,6 +238,47 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       }
     },
     [expanded, tree],
+  );
+
+  const revealInExplorer = useCallback(
+    async (path: string) => {
+      if (!rootPath) return;
+      const dirs = directoryChain(rootPath, path);
+      if (dirs.length === 0) return;
+      setExplorerNonce((value) => value + 1);
+      setBusy(true);
+      setTreeError(null);
+      try {
+        let current = treeRef.current;
+        for (const dir of dirs) {
+          const node = findTreeNode(current, dir);
+          if (!node || node.kind !== "directory") break;
+          if (!node.loaded) {
+            const children = await listDirectory(dir);
+            current = updateTreeNode(current, node.path, (item) => ({
+              ...item,
+              children,
+              loaded: true,
+            }));
+          }
+        }
+        setTree(current);
+        setExpanded((prev) => {
+          const next = new Set(prev);
+          for (const dir of dirs) next.add(dir);
+          const known = dirs
+            .map((dir) => findTreeNode(current, dir)?.path)
+            .filter((item): item is string => Boolean(item));
+          for (const dir of known) next.add(dir);
+          return next;
+        });
+      } catch (err) {
+        setTreeError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [rootPath],
   );
 
   const openFile = useCallback(async (path: string) => {
@@ -699,6 +758,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       createEntry,
       renameEntry,
       deleteEntry,
+      revealInExplorer,
+      explorerNonce,
     }),
     [
       rootPath,
@@ -732,6 +793,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       createEntry,
       renameEntry,
       deleteEntry,
+      revealInExplorer,
+      explorerNonce,
     ],
   );
 

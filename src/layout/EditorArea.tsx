@@ -14,6 +14,7 @@ import { MonacoEditor } from "../editor/MonacoEditor";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { languageLabel } from "../editor/languages";
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { workspaceCrumbs } from "../workspace/path";
 import { useEditorActions } from "../editor/EditorActions";
 import { useLayout } from "./LayoutContext";
 import { FileIcon } from "../ui/FileIcon";
@@ -21,7 +22,7 @@ import { IconButton } from "../ui/IconButton";
 import { ResizeHandle } from "./ResizeHandle";
 
 export function EditorArea() {
-  const { document, rootPath, rootName, tabs, activePath, openFileAt } = useWorkspace();
+  const { document, rootPath, tabs, activePath, openFileAt, revealInExplorer } = useWorkspace();
   const { findInFile, peek, clearPeek, references, clearReferences } = useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
   const [split, setSplit] = useState(false);
@@ -46,13 +47,10 @@ export function EditorArea() {
     return other?.path ?? activePath;
   }, [split, tabs, activePath]);
 
-  const crumbs = useMemo(() => {
-    if (!document) return [];
-    const parts = document.path.replace(/\\/g, "/").split("/").filter(Boolean);
-    const leaf = parts[parts.length - 1] ?? document.title;
-    const parent = parts.length > 1 ? parts[parts.length - 2] : rootName;
-    return parent ? [parent, leaf] : [leaf];
-  }, [document, rootName]);
+  const crumbs = useMemo(
+    () => (document ? workspaceCrumbs(rootPath, document.path) : []),
+    [document, rootPath],
+  );
 
   return (
     <section className="editor-area island" aria-label="Editors">
@@ -61,13 +59,22 @@ export function EditorArea() {
         <div className="editor-area__crumbs">
           {hasFile ? (
             crumbs.map((crumb, i) => (
-              <span key={`${crumb}-${i}`} className="editor-area__crumb">
-                {i === crumbs.length - 1 ? (
-                  <FileIcon name={crumb} kind="file" size={14} />
+              <span key={`${crumb.path}-${i}`} className="editor-area__crumb">
+                {crumb.kind === "directory" ? (
+                  <button
+                    type="button"
+                    className="editor-area__crumb-btn"
+                    onClick={() => void revealInExplorer(crumb.path)}
+                  >
+                    <FileIcon name={crumb.name} kind="directory" size={14} />
+                    <span>{crumb.name}</span>
+                  </button>
                 ) : (
-                  <FileIcon name={crumb} kind="directory" size={14} />
+                  <>
+                    <FileIcon name={crumb.name} kind="file" size={14} />
+                    <span>{crumb.name}</span>
+                  </>
                 )}
-                <span>{crumb}</span>
                 {i < crumbs.length - 1 ? (
                   <span className="editor-area__crumb-sep">/</span>
                 ) : null}

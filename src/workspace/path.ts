@@ -162,3 +162,48 @@ export function isProbablyTextFile(path: string): boolean {
   if (dot < 0) return true;
   return !binaryExt.has(name.slice(dot + 1));
 }
+
+export type PathCrumb = {
+  name: string;
+  path: string;
+  kind: "directory" | "file";
+};
+
+function insideRoot(rootPath: string, targetPath: string): string | null {
+  const root = rootPath.replace(/[\\/]+$/, "");
+  const rootKey = root.replace(/\\/g, "/").toLowerCase();
+  const targetKey = targetPath.replace(/\\/g, "/").replace(/\/+$/, "").toLowerCase();
+  if (targetKey === rootKey) return "";
+  if (!targetKey.startsWith(`${rootKey}/`)) return null;
+  return targetPath.replace(/\\/g, "/").replace(/\/+$/, "").slice(root.length).replace(/^\//, "");
+}
+
+export function workspaceCrumbs(rootPath: string | null, filePath: string): PathCrumb[] {
+  const leaf = basename(filePath);
+  if (!rootPath) return [{ name: leaf, path: filePath, kind: "file" }];
+  const rest = insideRoot(rootPath, filePath);
+  if (rest === null || rest === "") return [{ name: leaf, path: filePath, kind: "file" }];
+  const names = rest.split("/").filter(Boolean);
+  const root = rootPath.replace(/[\\/]+$/, "");
+  let acc = root;
+  return names.map((name, index) => {
+    acc = joinPath(acc, name);
+    return {
+      name,
+      path: acc,
+      kind: index === names.length - 1 ? "file" : "directory",
+    };
+  });
+}
+
+export function directoryChain(rootPath: string, directoryPath: string): string[] {
+  const rest = insideRoot(rootPath, directoryPath);
+  if (rest === null || rest === "") return [];
+  const names = rest.split("/").filter(Boolean);
+  const root = rootPath.replace(/[\\/]+$/, "");
+  let acc = root;
+  return names.map((name) => {
+    acc = joinPath(acc, name);
+    return acc;
+  });
+}

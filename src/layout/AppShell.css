@@ -205,6 +205,22 @@
   min-width: 0;
 }
 
+.editor-area__crumb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: inherit;
+  min-width: 0;
+}
+
+.editor-area__crumb-btn:hover {
+  color: var(--fg);
+}
+
 .editor-area__crumb span {
   overflow: hidden;
   text-overflow: ellipsis;

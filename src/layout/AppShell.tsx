@@ -47,6 +47,7 @@ function ShellChrome() {
     reopenClosed,
     document,
     rootPath,
+    explorerNonce,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme } = useTheme();
@@ -79,6 +80,12 @@ function ShellChrome() {
   const [gitBranch, setGitBranch] = useState<string | null>(null);
   const [treeFilter, setTreeFilter] = useState("");
   const [hideDotfiles, setHideDotfiles] = useState(false);
+
+  useEffect(() => {
+    if (explorerNonce === 0) return;
+    setSidebarMode("explorer");
+    setSidebarOpen(true);
+  }, [explorerNonce, setSidebarOpen]);
 
   useEffect(() => {
     if (!rootPath) {
