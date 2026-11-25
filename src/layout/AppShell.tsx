@@ -45,6 +45,7 @@ function ShellChrome() {
     toggleAi,
     setBottomOpen,
     setAiOpen,
+    setSidebarOpen,
   } = useLayout();
 
   const [paletteOpen, setPaletteOpen] = useState(false);

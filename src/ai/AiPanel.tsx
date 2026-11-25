@@ -287,6 +287,14 @@ export function AiPanel({ onOpenSettings, onOpenSearch }: Props) {
             </button>
           </span>
         ))}
+        <button
+          type="button"
+          className="ai-panel__chip"
+          onClick={onOpenSearch}
+        >
+          <Search size={12} strokeWidth={1.75} aria-hidden />
+          Search
+        </button>
       </div>
 
       <div className="ai-panel__footer">
