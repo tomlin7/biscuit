@@ -16,6 +16,18 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.reopenClosed(),
   },
   {
+    id: "workbench.action.reopenWithHexEditor",
+    title: "Reopen with Hex Editor",
+    category: "View",
+    run: (ctx) => ctx.reopenWithHexEditor(),
+  },
+  {
+    id: "workbench.action.reopenWithTextEditor",
+    title: "Reopen with Text Editor",
+    category: "View",
+    run: (ctx) => ctx.reopenWithTextEditor(),
+  },
+  {
     id: "git.clone",
     title: "Clone Repository…",
     category: "Git",

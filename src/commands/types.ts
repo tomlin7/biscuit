@@ -24,6 +24,8 @@ export type CommandContext = {
   activeEditorPinned: boolean;
   copyActivePath: () => void;
   copyActiveRelativePath: () => void;
+  reopenWithHexEditor: () => void;
+  reopenWithTextEditor: () => void;
   toggleTheme: () => void;
   toggleMinimap: () => void;
   toggleStickyScroll: () => void;

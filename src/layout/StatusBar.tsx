@@ -68,7 +68,8 @@ export function StatusBar({
     document &&
     document.language !== "image" &&
     document.language !== "pdf" &&
-    document.language !== "webview"
+    document.language !== "webview" &&
+    document.language !== "hex"
       ? document
       : null;
   const eol = textDocument ? (textDocument.value.includes("\r\n") ? "CRLF" : "LF") : null;

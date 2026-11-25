@@ -74,6 +74,9 @@ export function joinPath(parent: string, child: string): string {
 export function languageFromPath(path: string): string {
   const extra = extraLanguageFor(path);
   if (extra) return extra;
+  if (isImageFile(path)) return "image";
+  if (isPdfFile(path)) return "pdf";
+  if (isBinaryFile(path)) return "hex";
   const name = basename(path).toLowerCase();
   const dot = name.lastIndexOf(".");
   const ext = dot >= 0 ? name.slice(dot + 1) : "";
@@ -199,10 +202,20 @@ export function isProbablyTextFile(path: string): boolean {
     "avi",
     "sqlite",
     "db",
+    "dat",
+    "iso",
+    "img",
+    "rom",
+    "hex",
+    "elf",
   ]);
   const dot = name.lastIndexOf(".");
   if (dot < 0) return true;
   return !binaryExt.has(name.slice(dot + 1));
+}
+
+export function isBinaryFile(path: string): boolean {
+  return !isProbablyTextFile(path) && !isImageFile(path) && !isPdfFile(path);
 }
 
 export type PathCrumb = {

@@ -12,6 +12,7 @@ import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { ImageView } from "../editor/ImageView";
 import { PdfView } from "../editor/PdfView";
+import { HexView } from "../editor/HexView";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { DiffView, useDiffTab } from "../scm/DiffView";
 import { CompareView } from "../scm/CompareView";
@@ -586,6 +587,8 @@ export function EditorArea() {
                 <ImageView path={activePath} />
               ) : document?.language === "pdf" ? (
                 <PdfView path={activePath} />
+              ) : document?.language === "hex" ? (
+                <HexView path={activePath} />
               ) : (
                 <MonacoEditor
                   path={activePath}
@@ -671,6 +674,8 @@ export function EditorArea() {
                     <ImageView path={secondaryPath} />
                   ) : tabs.find((tab) => tab.path === secondaryPath)?.language === "pdf" ? (
                     <PdfView path={secondaryPath} />
+                  ) : tabs.find((tab) => tab.path === secondaryPath)?.language === "hex" ? (
+                    <HexView path={secondaryPath} />
                   ) : (
                     <MonacoEditor path={secondaryPath} primary={false} />
                   )}

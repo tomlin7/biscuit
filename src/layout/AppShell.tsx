@@ -2124,7 +2124,7 @@ function ShellChrome() {
             return;
           }
           const tab = tabs.find((item) => item.path === activePath);
-          if (!tab || tab.language === "image" || tab.language === "pdf") {
+          if (!tab || tab.language === "image" || tab.language === "pdf" || tab.language === "hex") {
             notify("Revert File", "Nothing to revert.");
             return;
           }
@@ -2145,6 +2145,14 @@ function ShellChrome() {
             );
           }
         })();
+      },
+      reopenWithHexEditor: () => {
+        if (!activePath) return;
+        setLanguageAt(activePath, "hex");
+      },
+      reopenWithTextEditor: () => {
+        if (!activePath) return;
+        setLanguageAt(activePath, languageFromPath(activePath));
       },
       copyActiveFileName: () => {
         if (!activePath) return;

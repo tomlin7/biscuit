@@ -42,6 +42,8 @@ export function languageLabel(languageId: string): string {
       return "Image";
     case "pdf":
       return "PDF";
+    case "hex":
+      return "Hex";
     default:
       return languageId;
   }

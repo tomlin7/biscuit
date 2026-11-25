@@ -476,6 +476,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **1.212.0** | Version rollover for Windows MSI limit (minor <= 255); CI/CD release pipeline | shipped |
 | **1.213.0** | Status bar memory usage indicator | shipped |
 | **1.214.0** | PDF viewer tab with page navigation and zoom controls | shipped |
+| **1.215.0** | Hex Editor view for binary files | shipped |
 | **2.0.0** | Stable product | owner decision only |
 
 ## Current target

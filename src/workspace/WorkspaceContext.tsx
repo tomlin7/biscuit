@@ -14,6 +14,7 @@ import { exists, readTextFile, stat, writeTextFile } from "@tauri-apps/plugin-fs
 import { listDirectory, type TreeNode } from "./fsTree";
 import {
   basename,
+  isBinaryFile,
   isImageFile,
   isPdfFile,
   isProbablyTextFile,
@@ -506,16 +507,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
 
   const openFile = useCallback(async (path: string) => {
-    if (isImageFile(path) || isPdfFile(path)) {
+    if (isImageFile(path) || isPdfFile(path) || isBinaryFile(path)) {
       if (tabsRef.current.some((tab) => tab.path === path)) {
         setActivePath(path);
         rememberFile(path);
         return;
       }
+      const lang = isPdfFile(path) ? "pdf" : isImageFile(path) ? "image" : "hex";
       const next: EditorTab = {
         path,
         title: basename(path),
-        language: isPdfFile(path) ? "pdf" : "image",
+        language: lang,
         value: "",
         baseline: "",
         cursorLine: 1,
@@ -524,11 +526,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setTabs((current) => (current.some((tab) => tab.path === path) ? current : [...current, next]));
       setActivePath(path);
       rememberFile(path);
-      return;
-    }
-
-    if (!isProbablyTextFile(path)) {
-      setTreeError(`Cannot open binary file: ${basename(path)}`);
       return;
     }
 
@@ -558,6 +555,26 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setActivePath(path);
       rememberFile(path);
     } catch (err) {
+      // If reading as text fails (e.g. invalid UTF-8 in binary file), fallback to opening in Hex Editor
+      try {
+        if (await exists(path)) {
+          const next: EditorTab = {
+            path,
+            title: basename(path),
+            language: "hex",
+            value: "",
+            baseline: "",
+            cursorLine: 1,
+            cursorColumn: 1,
+          };
+          setTabs((current) => (current.some((tab) => tab.path === path) ? current : [...current, next]));
+          setActivePath(path);
+          rememberFile(path);
+          return;
+        }
+      } catch {
+        /* proceed to error report */
+      }
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
       setBusy(false);
@@ -965,7 +982,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         isDirty(tab) &&
         !isVirtualPath(tab.path) &&
         tab.language !== "image" &&
-        tab.language !== "pdf",
+        tab.language !== "pdf" &&
+        tab.language !== "hex",
     );
     if (dirty.length === 0) return;
     const saved = new Map<string, string>();
@@ -1123,7 +1141,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         isDirty(tab) &&
         !isVirtualPath(tab.path) &&
         tab.language !== "image" &&
-        tab.language !== "pdf",
+        tab.language !== "pdf" &&
+        tab.language !== "hex",
     );
     if (dirty.length === 0) return;
     setBusy(true);
@@ -1245,7 +1264,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
-    if (!tab || tab.language === "image" || tab.language === "pdf" || isWebviewPath(tab.path)) return;
+    if (!tab || tab.language === "image" || tab.language === "pdf" || tab.language === "hex" || isWebviewPath(tab.path)) return;
     const dest = await saveDialog({
       defaultPath: isVirtualPath(tab.path) ? `${tab.title}.txt` : tab.path,
       title: "Save As",
@@ -1292,7 +1311,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
-    if (!tab || tab.language === "image" || tab.language === "pdf" || isWebviewPath(tab.path)) return;
+    if (!tab || tab.language === "image" || tab.language === "pdf" || tab.language === "hex" || isWebviewPath(tab.path)) return;
     if (isVirtualPath(tab.path)) {
       await saveAs();
       return;
