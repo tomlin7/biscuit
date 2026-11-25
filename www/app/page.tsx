@@ -120,7 +120,7 @@ export default function Page() {
   };
 
   const handleCopy = () => {
-    void navigator.clipboard.writeText("git clone https://github.com/tomlin7/T3D.git");
+    void navigator.clipboard.writeText("git clone https://github.com/tomlin7/Morsel.git");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -163,7 +163,7 @@ export default function Page() {
 
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/tomlin7/T3D"
+              href="https://github.com/tomlin7/Morsel"
               target="_blank"
               rel="noreferrer"
               aria-label="GitHub"
@@ -215,7 +215,7 @@ export default function Page() {
               </a>
 
               <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground" data-ui="quickstart">
-                <code>git clone https://github.com/tomlin7/T3D.git</code>
+                <code>git clone https://github.com/tomlin7/Morsel.git</code>
                 <button
                   type="button"
                   onClick={handleCopy}
@@ -369,7 +369,7 @@ export default function Page() {
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
-                href="https://github.com/tomlin7/T3D/releases/latest"
+                href="https://github.com/tomlin7/Morsel/releases/latest"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 gap-2 h-10 px-4 text-sm font-medium transition-colors"
@@ -379,7 +379,7 @@ export default function Page() {
               </a>
 
               <a
-                href="https://github.com/tomlin7/T3D/releases/latest"
+                href="https://github.com/tomlin7/Morsel/releases/latest"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex shrink-0 items-center justify-center rounded-lg border border-border bg-card text-foreground hover:bg-muted/80 gap-2 h-10 px-4 text-sm font-medium transition-colors"
@@ -390,7 +390,7 @@ export default function Page() {
               </a>
 
               <a
-                href="https://github.com/tomlin7/T3D/releases/latest"
+                href="https://github.com/tomlin7/Morsel/releases/latest"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex shrink-0 items-center justify-center rounded-lg border border-border bg-card text-foreground hover:bg-muted/80 gap-2 h-10 px-4 text-sm font-medium transition-colors"
@@ -404,7 +404,7 @@ export default function Page() {
             <div className="mt-8 text-xs text-muted-foreground">
               <span>All builds cryptographically signed and verifiable on </span>
               <a
-                href="https://github.com/tomlin7/T3D/releases"
+                href="https://github.com/tomlin7/Morsel/releases"
                 target="_blank"
                 rel="noreferrer"
                 className="text-foreground hover:underline underline-offset-2"
@@ -460,7 +460,7 @@ export default function Page() {
 
           <div className="flex items-center gap-5">
             <a
-              href="https://github.com/tomlin7/T3D"
+              href="https://github.com/tomlin7/Morsel"
               target="_blank"
               rel="noreferrer"
               className="hover:text-foreground transition-colors"
@@ -468,7 +468,7 @@ export default function Page() {
               GitHub
             </a>
             <a
-              href="https://github.com/tomlin7/T3D/releases"
+              href="https://github.com/tomlin7/Morsel/releases"
               target="_blank"
               rel="noreferrer"
               className="hover:text-foreground transition-colors"
@@ -476,7 +476,7 @@ export default function Page() {
               Releases
             </a>
             <a
-              href="https://github.com/tomlin7/T3D/blob/main/LICENSE"
+              href="https://github.com/tomlin7/Morsel/blob/main/LICENSE"
               target="_blank"
               rel="noreferrer"
               className="hover:text-foreground transition-colors"

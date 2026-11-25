@@ -6,7 +6,7 @@ A focused desktop code editor built on Tauri&nbsp;2, React&nbsp;19, and Monaco.
 
 Morsel pairs a native Rust application core with a modern web frontend. It provides sub-second startup, an integrated terminal with real PTY support, split-pane editing, source control, an extensible theme and plugin system, and optional local or cloud AI assistance.
 
-[Releases](https://github.com/tomlin7/t3d/releases) · [Milestones](MILESTONES.md) · [Versioning](VERSIONING.md) · [Website](https://t3d.sh)
+[Releases](https://github.com/tomlin7/Morsel/releases) · [Milestones](MILESTONES.md) · [Versioning](VERSIONING.md) · [Website](https://t3d.sh)
 
 ---
 
@@ -20,7 +20,7 @@ Official multi-platform binaries are built on every release tag using GitHub Act
 | **macOS** | `.dmg` | Universal binary (Apple Silicon and Intel) |
 | **Linux** | `.AppImage` / `.deb` | Standalone AppImage and Debian package |
 
-Download the latest version (`v1.212.0`) from the [GitHub Releases](https://github.com/tomlin7/t3d/releases) page.
+Download the latest version (`v1.212.0`) from the [GitHub Releases](https://github.com/tomlin7/Morsel/releases) page.
 
 > Release versioning: Following the 0.255 milestone, versions transitioned to 1.x (`1.212.0` = milestone 467) to comply with Windows MSI installer minor version limits (minor &le; 255). Stable 2.0 will ship when the full roadmap is complete.
 
@@ -65,8 +65,8 @@ Download the latest version (`v1.212.0`) from the [GitHub Releases](https://gith
 
 ```bash
 # Clone the repository
-git clone https://github.com/tomlin7/t3d.git
-cd t3d
+git clone https://github.com/tomlin7/Morsel.git
+cd Morsel
 
 # Install dependencies
 bun install

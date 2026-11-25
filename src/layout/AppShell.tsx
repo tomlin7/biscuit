@@ -1731,7 +1731,7 @@ function ShellChrome() {
         setSidebarOpen(true);
       },
       openDocumentation: () => {
-        void openUrl("https://github.com/tomlin7/T3D#readme").catch(() => {
+        void openUrl("https://github.com/tomlin7/Morsel#readme").catch(() => {
           /* ignore if opener unavailable outside Tauri */
         });
       },
@@ -1739,7 +1739,7 @@ function ShellChrome() {
         updateChromeAcrylic(!settings.chromeAcrylic);
       },
       openReleaseNotes: () => {
-        void openUrl("https://github.com/tomlin7/T3D/releases").catch(() => {
+        void openUrl("https://github.com/tomlin7/Morsel/releases").catch(() => {
           /* ignore */
         });
       },
@@ -1760,26 +1760,26 @@ function ShellChrome() {
       },
       reportIssue: () => {
         void openUrl(
-          "https://github.com/tomlin7/T3D/issues/new?labels=bug&template=bug_report.md",
+          "https://github.com/tomlin7/Morsel/issues/new?labels=bug&template=bug_report.md",
         ).catch(() => {
           /* ignore */
         });
       },
       requestFeature: () => {
         void openUrl(
-          "https://github.com/tomlin7/T3D/issues/new?labels=enhancement&template=feature_request.md",
+          "https://github.com/tomlin7/Morsel/issues/new?labels=enhancement&template=feature_request.md",
         ).catch(() => {
           /* ignore */
         });
       },
       viewLicense: () => {
-        void openUrl("https://github.com/tomlin7/T3D/blob/main/LICENSE").catch(() => {
+        void openUrl("https://github.com/tomlin7/Morsel/blob/main/LICENSE").catch(() => {
           /* ignore */
         });
       },
       openCodeOfConduct: () => {
         void openUrl(
-          "https://github.com/tomlin7/T3D/blob/main/CODE_OF_CONDUCT.md",
+          "https://github.com/tomlin7/Morsel/blob/main/CODE_OF_CONDUCT.md",
         ).catch(() => {
           /* ignore */
         });

@@ -74,7 +74,7 @@ export function buildExtensions(): RegistryEntry[] {
     execFileSync("tar", ["-a", "-c", "-f", zipPath, "-C", extDir, "."]);
 
     const hash = sha256File(zipPath);
-    const downloadUrl = `https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/${zipName}`;
+    const downloadUrl = `https://raw.githubusercontent.com/tomlin7/Morsel/main/extensions-dist/${zipName}`;
 
     registry.push({
       id: manifest.id,

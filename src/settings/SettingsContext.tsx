@@ -115,7 +115,7 @@ const DEFAULTS: AppSettings = {
   chromeAcrylic: true,
   preferredEncoding: "UTF-8",
   extensionRegistryUrl:
-    "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/index.json",
+    "https://raw.githubusercontent.com/tomlin7/Morsel/main/extensions-dist/index.json",
   desktopNotifications: true,
   terminalTheme: "auto",
   iconTheme: "material",

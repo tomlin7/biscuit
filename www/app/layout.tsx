@@ -105,13 +105,13 @@ const jsonLd = {
       "softwareVersion": "1.220.0",
       "description":
         "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2). Fast, focused desktop code editor built with Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
-      "downloadUrl": "https://github.com/tomlin7/t3d/releases",
+      "downloadUrl": "https://github.com/tomlin7/Morsel/releases",
       "author": {
         "@type": "Person",
         "name": "Tomlin7",
         "url": "https://github.com/tomlin7",
       },
-      "license": "https://github.com/tomlin7/T3D/blob/main/LICENSE",
+      "license": "https://github.com/tomlin7/Morsel/blob/main/LICENSE",
     },
     {
       "@type": "WebSite",
