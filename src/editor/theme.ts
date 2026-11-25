@@ -1,9 +1,15 @@
 import type { Monaco } from "@monaco-editor/react";
+import type { ThemeMode } from "../theme/ThemeContext";
 
-export const T3D_THEME = "t3d-dark";
+export const T3D_THEME_DARK = "t3d-dark";
+export const T3D_THEME_LIGHT = "t3d-light";
 
-export function defineT3dTheme(monaco: Monaco) {
-  monaco.editor.defineTheme(T3D_THEME, {
+export function monacoThemeId(theme: ThemeMode): string {
+  return theme === "light" ? T3D_THEME_LIGHT : T3D_THEME_DARK;
+}
+
+export function defineT3dThemes(monaco: Monaco) {
+  monaco.editor.defineTheme(T3D_THEME_DARK, {
     base: "vs-dark",
     inherit: true,
     rules: [],
@@ -25,6 +31,31 @@ export function defineT3dTheme(monaco: Monaco) {
       "editorGutter.background": "#121212",
       "scrollbarSlider.background": "#ffffff22",
       "scrollbarSlider.hoverBackground": "#ffffff33",
+    },
+  });
+
+  monaco.editor.defineTheme(T3D_THEME_LIGHT, {
+    base: "vs",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editor.background": "#ffffff",
+      "editor.foreground": "#1a1a1a",
+      "editorLineNumber.foreground": "#9a9a9a",
+      "editorLineNumber.activeForeground": "#6b6b6b",
+      "editorCursor.foreground": "#1a1a1a",
+      "editor.selectionBackground": "#add6ff",
+      "editor.inactiveSelectionBackground": "#e5ebf1",
+      "editor.lineHighlightBackground": "#f5f5f5",
+      "editorIndentGuide.background1": "#e4e4e4",
+      "editorIndentGuide.activeBackground1": "#d4d4d4",
+      "editorWidget.background": "#ffffff",
+      "editorWidget.border": "#d4d4d4",
+      "editorSuggestWidget.background": "#ffffff",
+      "editorSuggestWidget.border": "#d4d4d4",
+      "editorGutter.background": "#ffffff",
+      "scrollbarSlider.background": "#00000022",
+      "scrollbarSlider.hoverBackground": "#00000033",
     },
   });
 }

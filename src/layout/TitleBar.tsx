@@ -1,7 +1,9 @@
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { useTheme } from "../theme/ThemeContext";
 
 export function TitleBar() {
   const { rootName, openFolder, save, document, dirty, busy } = useWorkspace();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="titlebar" role="banner">
@@ -37,7 +39,17 @@ export function TitleBar() {
         </span>
       </button>
 
-      <div className="titlebar__right" />
+      <div className="titlebar__right">
+        <button
+          type="button"
+          className="titlebar__text-btn"
+          onClick={toggleTheme}
+          title="Toggle theme"
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+        >
+          {theme === "dark" ? "Light" : "Dark"}
+        </button>
+      </div>
     </header>
   );
 }

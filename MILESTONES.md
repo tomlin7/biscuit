@@ -1,7 +1,7 @@
 # Milestones
 
 Gradual rewrite of the Biscuit editor experience on Tauri 2 + React + Monaco.
-Each row is a shippable `0.x` release. **1.0.0 is future-only.**
+Each row is a shippable `0.x` release until **1.0.0**.
 
 | Version | Focus | Status |
 |---------|--------|--------|
@@ -9,8 +9,8 @@ Each row is a shippable `0.x` release. **1.0.0 is future-only.**
 | **0.2.0** | Monaco editor engine | shipped |
 | **0.2.1** | Island chrome (Biscuit-like floating panels) | shipped |
 | **0.3.0** | Workspace FS — open folder, explorer tree, open/save files | shipped |
-| **0.4.0** | Editor tabs — multi-file buffers, dirty state, close/reorder | shipping |
-| **0.5.0** | Theming polish — light mode, deeper token refinements | planned |
+| **0.4.0** | Editor tabs — multi-file buffers, dirty state, close/reorder | shipped |
+| **0.5.0** | Theming polish — light/dark tokens + Monaco themes | shipping |
 | **0.6.0** | Command palette + keybindings foundation | planned |
 | **0.7.0** | Find in file / workspace search | planned |
 | **0.8.0** | Integrated terminal (PTY) | planned |
@@ -20,8 +20,8 @@ Each row is a shippable `0.x` release. **1.0.0 is future-only.**
 
 ## Layout language
 
-Biscuit-style **island** chrome: black canvas, rounded floating panels, gutters,
-explorer + editor. Out-of-scope chrome stays out of the UI until its milestone.
+Biscuit-style **island** chrome: floating rounded panels with gutters,
+explorer + editor. Out-of-scope chrome stays out until its milestone.
 
 ## Architecture principles
 
@@ -32,4 +32,4 @@ explorer + editor. Out-of-scope chrome stays out of the UI until its milestone.
 
 ## Current target
 
-Ship **0.4.0**: multi-file tabs with dirty state, close, and drag reorder.
+Ship **0.5.0**: light/dark theme with persisted preference and Monaco sync.

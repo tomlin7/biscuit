@@ -8,7 +8,7 @@ export function StatusBar() {
   return (
     <footer className="status-bar" role="contentinfo">
       <div className="status-bar__group">
-        <span className="status-bar__item">T3D 0.4.0</span>
+        <span className="status-bar__item">T3D 0.5.0</span>
         {tabs.length > 0 ? (
           <span className="status-bar__item">{tabs.length} tabs</span>
         ) : null}

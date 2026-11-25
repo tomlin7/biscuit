@@ -6,7 +6,7 @@ Successor architecture to Biscuit — same product spirit, cleaner structure, be
 
 ## Status
 
-Current version: **0.4.0** (pre-1.0).
+Current version: **0.5.0** (pre-1.0).
 
 See [VERSIONING.md](VERSIONING.md) and [MILESTONES.md](MILESTONES.md).
 

@@ -24,8 +24,8 @@
   margin: 6px;
   padding: 8px;
   border-radius: 8px;
-  background: #3a1515;
-  color: #f0b4b4;
+  background: var(--danger-bg);
+  color: var(--danger-fg);
   font-size: 12px;
 }
 
