@@ -7,6 +7,7 @@ export type EditorSession = {
   active: string | null;
   preview?: boolean;
   split?: boolean;
+  splitRatio?: number;
   secondary?: string | null;
 };
 
@@ -28,6 +29,13 @@ export function readSession(): EditorSession | null {
       active: typeof parsed.active === "string" ? parsed.active : null,
       preview: parsed.preview === true,
       split: parsed.split === true,
+      splitRatio:
+        typeof parsed.splitRatio === "number" &&
+        Number.isFinite(parsed.splitRatio) &&
+        parsed.splitRatio >= 0.2 &&
+        parsed.splitRatio <= 0.8
+          ? parsed.splitRatio
+          : undefined,
       secondary: typeof parsed.secondary === "string" ? parsed.secondary : null,
     };
   } catch {

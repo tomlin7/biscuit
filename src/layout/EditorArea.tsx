@@ -67,6 +67,7 @@ export function EditorArea() {
     if (session?.preview) setPreviewOpen(true);
     if (session?.split) setSplit(true);
     if (session?.secondary) setSecondaryPath(session.secondary);
+    if (typeof session?.splitRatio === "number") setSplitRatio(session.splitRatio);
     setLayoutReady(true);
   }, []);
 
@@ -76,8 +77,9 @@ export function EditorArea() {
       preview: previewOpen,
       split,
       secondary: secondaryPath,
+      splitRatio,
     });
-  }, [layoutReady, previewOpen, split, secondaryPath]);
+  }, [layoutReady, previewOpen, split, secondaryPath, splitRatio]);
 
   const now = useMemo(() => {
     const d = new Date();
