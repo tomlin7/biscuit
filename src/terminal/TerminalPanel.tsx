@@ -4,6 +4,8 @@ import { FitAddon } from "@xterm/addon-fit";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { useAi } from "../ai/AiContext";
+import { reduceTerminalInput } from "./terminalInput";
 import { basename } from "../workspace/path";
 import { setRunListener } from "./runFile";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
@@ -56,6 +58,10 @@ function TerminalSession({
   onCommandDoneRef.current = onCommandDone;
   const commandOutputRef = useRef("");
   const unmountTimerRef = useRef<number | null>(null);
+  const lineRef = useRef("");
+  const { send } = useAi();
+  const sendRef = useRef(send);
+  sendRef.current = send;
 
   useEffect(() => {
     if (!hostRef.current || termRef.current) return;
@@ -128,7 +134,18 @@ function TerminalSession({
     term.onData((data) => {
       const current = ptyIdRef.current;
       if (!current) return;
-      void invoke("pty_write", { id: current, data });
+      const next = reduceTerminalInput(lineRef.current, data);
+      lineRef.current = next.line;
+      for (const action of next.actions) {
+        if (action.type === "echo") term.write(action.text);
+        else if (action.type === "erase-local") term.write("\b \b".repeat(action.count));
+        else if (action.type === "write-pty") void invoke("pty_write", { id: current, data: action.data });
+        else {
+          void sendRef.current(action.prompt).then((reply) => {
+            if (reply) term.writeln(reply);
+          });
+        }
+      }
     });
     term.onResize(({ cols, rows }) => {
       const current = ptyIdRef.current;

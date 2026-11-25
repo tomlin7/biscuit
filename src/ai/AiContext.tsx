@@ -53,7 +53,7 @@ type AiState = {
   showHistory: boolean;
   setShowHistory: (open: boolean) => void;
   setSettings: (next: Partial<AiSettings>) => void;
-  send: (prompt: string) => Promise<void>;
+  send: (prompt: string) => Promise<string | null>;
   newChat: () => void;
   selectSession: (id: string) => void;
   deleteSession: (id: string) => void;
@@ -245,7 +245,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
   const send = useCallback(
     async (prompt: string) => {
       const trimmed = prompt.trim();
-      if (!trimmed || busy) return;
+      if (!trimmed || busy) return null;
 
       let fullPrompt = trimmed;
       if (attachments.length > 0) {
@@ -291,7 +291,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
             messages: [...session.messages, assistant],
             updatedAt: Date.now(),
           }));
-          return;
+          return assistant.content;
         }
 
         const history = [...messages, userMsg].map((m) => ({
@@ -391,8 +391,11 @@ export function AiProvider({ children }: { children: ReactNode }) {
           ],
           updatedAt: Date.now(),
         }));
+        return result.content;
       } catch (err) {
-        setError(err instanceof Error ? err.message : String(err));
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message);
+        return message;
       } finally {
         setBusy(false);
       }
