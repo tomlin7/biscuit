@@ -248,6 +248,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.240.0** | Toggle SCM amend from palette | shipped |
 | **0.241.0** | Toggle Problems panel from palette | shipped |
 | **0.242.0** | New AI chat from palette | shipped |
+| **0.243.0** | Reopen last folder from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
