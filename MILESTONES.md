@@ -469,6 +469,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.461.0** | Compare Branches/commits diff view | shipped |
 | **0.462.0** | In-file symbol breadcrumb segment | shipped |
 | **0.463.0** | Sticky condensed outline beside the minimap | shipped |
+| **0.464.0** | Call Hierarchy view for JS/TS | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

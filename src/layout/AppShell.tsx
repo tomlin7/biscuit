@@ -680,6 +680,10 @@ function ShellChrome() {
         updateEditor({ stickyOutline: next });
         notify("settings", `Sticky outline ${next ? "enabled" : "disabled"}`);
       },
+      showCallHierarchy: () => {
+        setSidebarMode("callHierarchy");
+        setSidebarOpen(true);
+      },
       toggleWordWrap: () =>
         updateEditor({ wordWrap: !settings.editor.wordWrap }),
       toggleRenderWhitespace: () =>

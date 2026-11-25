@@ -5,6 +5,7 @@ import { ScmPanel } from "../scm/ScmPanel";
 import { ExtensionsPanel } from "../extensions/ExtensionsPanel";
 import { DebugPanel } from "../debug/DebugPanel";
 import { OutlinePanel } from "../lsp/OutlinePanel";
+import { CallHierarchyPanel } from "../lsp/CallHierarchyPanel";
 import { ExtensionWebviewView } from "../extensions/ExtensionWebviewView";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { IconButton } from "../ui/IconButton";
@@ -16,6 +17,7 @@ export type SidebarMode =
   | "explorer"
   | "search"
   | "outline"
+  | "callHierarchy"
   | "scm"
   | "extensions"
   | "debug"
@@ -94,6 +96,7 @@ export function Sidebar({
         ) : null}
         {mode === "search" ? <SearchPanel onOpenHit={onOpenHit} /> : null}
         {mode === "outline" ? <OutlinePanel /> : null}
+        {mode === "callHierarchy" ? <CallHierarchyPanel /> : null}
         {mode === "scm" ? <ScmPanel onBranch={onBranch} /> : null}
         {mode === "extensions" ? <ExtensionsPanel /> : null}
         {mode === "debug" ? <DebugPanel /> : null}

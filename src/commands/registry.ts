@@ -255,6 +255,18 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleStickyOutline(),
   },
   {
+    id: "editor.action.showCallHierarchy",
+    title: "Calls: Show Call Hierarchy",
+    category: "Calls",
+    run: (ctx) => ctx.showCallHierarchy(),
+  },
+  {
+    id: "workbench.view.callHierarchy",
+    title: "View: Show Call Hierarchy",
+    category: "View",
+    run: (ctx) => ctx.showCallHierarchy(),
+  },
+  {
     id: "editor.action.formatDocument",
     title: "Format Document",
     category: "Edit",
