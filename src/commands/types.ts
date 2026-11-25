@@ -9,6 +9,16 @@ export type CommandContext = {
   openPalette: () => void;
   closePalette: () => void;
   findInFile: () => void;
+  runEditorCommand: (
+    command:
+      | "comment"
+      | "wordWrap"
+      | "relativeLines"
+      | "goto"
+      | "copyLineDown"
+      | "moveLineUp"
+      | "moveLineDown",
+  ) => void;
   openSearch: () => void;
   toggleTerminal: () => void;
   openProblems: () => void;

@@ -32,7 +32,7 @@ export function MonacoEditor({ path, primary = true }: Props) {
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
   const { theme } = useTheme();
-  const { registerFindHandler } = useEditorActions();
+  const { registerFindHandler, registerEditor } = useEditorActions();
   const { breakpoints, addBreakpoint, removeBreakpoint } = useDebug();
   const { settings } = useSettings();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
@@ -56,8 +56,19 @@ export function MonacoEditor({ path, primary = true }: Props) {
       if (!ed) return;
       void ed.getAction("actions.find")?.run();
     });
-    return () => registerFindHandler(null);
-  }, [registerFindHandler, primary]);
+    registerEditor({
+      trigger: (action) => {
+        void editorRef.current?.getAction(action)?.run();
+      },
+      updateOptions: (options) => {
+        editorRef.current?.updateOptions(options);
+      },
+    });
+    return () => {
+      registerFindHandler(null);
+      registerEditor(null);
+    };
+  }, [registerFindHandler, registerEditor, primary]);
 
   useEffect(() => {
     if (!primary || !revealTarget || !doc || revealTarget.path !== doc.path) {

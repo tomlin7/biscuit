@@ -32,7 +32,7 @@ function ShellChrome() {
   const { save, closeTab, activePath, openFolder, openFolderAt, openFile, reopenClosed, rootPath } =
     useWorkspace();
   const { toggleTheme } = useTheme();
-  const { findInFile } = useEditorActions();
+  const { findInFile, runEditorCommand } = useEditorActions();
   const { extensions } = useExtensions();
   const {
     sidebarWidth,
@@ -150,6 +150,7 @@ function ShellChrome() {
       openPalette,
       closePalette,
       findInFile,
+      runEditorCommand,
       openSearch,
       toggleTerminal,
       openProblems,
@@ -171,6 +172,7 @@ function ShellChrome() {
       openPalette,
       closePalette,
       findInFile,
+      runEditorCommand,
       openSearch,
       toggleTerminal,
       openProblems,

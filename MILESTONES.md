@@ -19,6 +19,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.11.0** | Island layout fidelity — resize/collapse, Lucide, UI font, settings | shipped |
 | **0.12.0** | Explorer create, rename, and delete | shipped |
 | **0.13.0** | Recent files, recent folders, reopen closed editor | shipped |
+| **0.14.0** | Editor comment, wrap, relative lines, go to line, move and copy lines | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
