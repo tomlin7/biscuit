@@ -141,7 +141,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.closeEditorsToTheRight(),
   },
-
+  {
+    id: "workbench.action.closeEditorsToTheLeft",
+    title: "Close Editors to the Left",
+    category: "View",
+    run: (ctx) => ctx.closeEditorsToTheLeft(),
+  },
   {
     id: "workbench.action.closeUnmodifiedEditors",
     title: "Close Saved Editors",

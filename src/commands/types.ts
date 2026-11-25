@@ -266,6 +266,7 @@ export type CommandContext = {
   toggleZenMode: () => void;
   cycleLanguageMode: () => void;
   closeEditorsToTheRight: () => void;
+  closeEditorsToTheLeft: () => void;
 };
 
 export type Command = {

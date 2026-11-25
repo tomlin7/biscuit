@@ -71,6 +71,7 @@ function ShellChrome() {
     closeOtherEditors,
     closeSavedEditors,
     closeEditorsToTheRight,
+    closeEditorsToTheLeft,
     activePath,
     openFolder,
     openFolderAt,
@@ -529,6 +530,7 @@ function ShellChrome() {
       closeOtherEditors,
       closeSavedEditors,
       closeEditorsToTheRight,
+      closeEditorsToTheLeft,
       pinActiveEditor: () => {
         if (!activePath) return;
         const tab = tabs.find((item) => item.path === activePath);
@@ -1651,6 +1653,7 @@ function ShellChrome() {
       closeOtherEditors,
       closeSavedEditors,
       closeEditorsToTheRight,
+      closeEditorsToTheLeft,
       togglePinTab,
       tabs,
       roots,
