@@ -1028,4 +1028,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.regenerateAi(),
   },
+  {
+    id: "workbench.action.attachActiveToAi",
+    title: "Attach Active Editor to AI",
+    category: "AI",
+    run: (ctx) => ctx.attachActiveToAi(),
+  },
 ];

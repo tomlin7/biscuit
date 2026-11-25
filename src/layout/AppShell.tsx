@@ -105,6 +105,7 @@ function ShellChrome() {
     cycleEffort,
     stop,
     regenerate,
+    attachPath,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
@@ -987,6 +988,13 @@ function ShellChrome() {
         setAiOpen(true);
         void regenerate();
       },
+      attachActiveToAi: () => {
+        if (!activePath) return;
+        const tab = tabs.find((item) => item.path === activePath);
+        if (!tab) return;
+        attachPath(tab.path, tab.title, tab.value.slice(0, 12000));
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1060,6 +1068,7 @@ function ShellChrome() {
       cycleEffort,
       stop,
       regenerate,
+      attachPath,
       toggleBottom,
       toggleProblems,
       openFolderAt,

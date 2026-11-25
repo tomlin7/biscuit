@@ -171,6 +171,7 @@ export type CommandContext = {
   cycleAiEffort: () => void;
   stopAi: () => void;
   regenerateAi: () => void;
+  attachActiveToAi: () => void;
 };
 
 export type Command = {
