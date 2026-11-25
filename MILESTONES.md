@@ -69,6 +69,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.61.0** | Workspace replace shows a match count first | shipped |
 | **0.62.0** | Markdown preview loads sibling images | shipped |
 | **0.63.0** | Extension commands can run a built-in action | shipped |
+| **0.64.0** | Status bar language picker for the active file | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

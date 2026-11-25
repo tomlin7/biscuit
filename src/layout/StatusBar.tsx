@@ -12,6 +12,7 @@ import {
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { useNotifications } from "../notifications/NotificationsContext";
+import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { IconButton } from "../ui/IconButton";
 
 type StatusBarProps = {
@@ -31,7 +32,7 @@ export function StatusBar({
   onOpenDebug,
   gitBranch = null,
 }: StatusBarProps) {
-  const { dirty, busy, rootName, document, setEol } = useWorkspace();
+  const { dirty, busy, rootName, document, setEol, setLanguageAt } = useWorkspace();
   const eol = document ? (document.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, dismiss, clear } = useNotifications();
@@ -93,6 +94,28 @@ export function StatusBar({
       </div>
 
       <div className="status-bar__group status-bar__group--end">
+        {document && document.language !== "image" ? (
+          <label className="status-bar__chip status-bar__lang" title="Language mode">
+            <select
+              aria-label="Language mode"
+              value={
+                (PICKABLE_LANGUAGES as readonly string[]).includes(document.language)
+                  ? document.language
+                  : "plaintext"
+              }
+              onChange={(event) => setLanguageAt(document.path, event.target.value)}
+            >
+              {!(PICKABLE_LANGUAGES as readonly string[]).includes(document.language) ? (
+                <option value={document.language}>{languageLabel(document.language)}</option>
+              ) : null}
+              {PICKABLE_LANGUAGES.map((id) => (
+                <option key={id} value={id}>
+                  {languageLabel(id)}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         {eol ? (
           <button
             type="button"

@@ -71,6 +71,7 @@ export type WorkspaceState = {
   setValue: (value: string) => void;
   setEol: (eol: "lf" | "crlf") => void;
   setValueAt: (path: string, value: string) => void;
+  setLanguageAt: (path: string, language: string) => void;
   applyDiskValue: (path: string, value: string) => void;
   setCursor: (line: number, column: number) => void;
   clearRevealTarget: () => void;
@@ -508,6 +509,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const setLanguageAt = useCallback((path: string, language: string) => {
+    setTabs((current) =>
+      current.map((tab) => (tab.path === path ? { ...tab, language } : tab)),
+    );
+  }, []);
+
   const applyDiskValue = useCallback((path: string, value: string) => {
     setTabs((current) =>
       current.map((tab) =>
@@ -796,6 +803,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setValue,
       setEol,
       setValueAt,
+      setLanguageAt,
       applyDiskValue,
       setCursor,
       clearRevealTarget,
@@ -832,6 +840,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setValue,
       setEol,
       setValueAt,
+      setLanguageAt,
       applyDiskValue,
       setCursor,
       clearRevealTarget,

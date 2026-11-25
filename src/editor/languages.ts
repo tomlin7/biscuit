@@ -44,3 +44,25 @@ export function languageLabel(languageId: string): string {
       return languageId;
   }
 }
+
+export const PICKABLE_LANGUAGES = [
+  "typescript",
+  "javascript",
+  "json",
+  "html",
+  "css",
+  "scss",
+  "markdown",
+  "python",
+  "rust",
+  "yaml",
+  "shell",
+  "sql",
+  "go",
+  "java",
+  "c",
+  "cpp",
+  "xml",
+  "ini",
+  "plaintext",
+] as const;

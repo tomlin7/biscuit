@@ -456,6 +456,27 @@
   background: var(--bg-hover);
 }
 
+.status-bar__lang {
+  max-width: 160px;
+  padding: 0;
+}
+
+.status-bar__lang select {
+  max-width: 150px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.status-bar__lang select:hover,
+.status-bar__lang select:focus {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
 .status-bar__err {
   color: #f87171;
 }
