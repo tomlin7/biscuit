@@ -289,6 +289,7 @@ export type CommandContext = {
   openRepositoryOnGitHub: () => void;
   saveWorkspaceAs: () => void;
   openWorkspaceFile: () => void;
+  goToNextProblem: () => void;
 };
 
 export type Command = {

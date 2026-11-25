@@ -672,6 +672,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.openProblems(),
   },
   {
+    id: "editor.action.marker.next",
+    title: "Go to Next Problem",
+    category: "Go",
+    keybinding: "F8",
+    run: (ctx) => ctx.goToNextProblem(),
+  },
+  {
     id: "workbench.action.output.toggleOutput",
     title: "Show Logs",
     category: "View",
