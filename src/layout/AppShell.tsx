@@ -17,7 +17,7 @@ import { AiPanel } from "../ai/AiPanel";
 import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsContext";
 import { collectContributions, registerExtraLanguages } from "../extensions/contributions";
 import * as monaco from "monaco-editor";
-import { DebugProvider } from "../debug/DebugContext";
+import { DebugProvider, useDebug } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
 import { NotificationsProvider, useNotifications } from "../notifications/NotificationsContext";
@@ -138,6 +138,9 @@ function ShellChrome() {
     }
   }, [notificationItems]);
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
+  const {
+    startSession: startDebugSession,
+  } = useDebug();
   const { extensions } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
@@ -1326,6 +1329,12 @@ function ShellChrome() {
       copyUnreadNotificationCount: () => {
         void navigator.clipboard.writeText(String(notificationUnread));
       },
+      startDebugging: () => {
+        if (!activePath) return;
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+        void startDebugSession(activePath);
+      },
     }),
     [
       openFolder,
@@ -1450,6 +1459,7 @@ function ShellChrome() {
       openDebug,
       openSettings,
       toggleSidebar,
+      startDebugSession,
     ],
   );
 

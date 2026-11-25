@@ -226,6 +226,7 @@ export type CommandContext = {
   resetEditorFontSize: () => void;
   closeWindow: () => void;
   copyUnreadNotificationCount: () => void;
+  startDebugging: () => void;
 };
 
 export type Command = {

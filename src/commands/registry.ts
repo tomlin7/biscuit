@@ -1358,4 +1358,11 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.copyUnreadNotificationCount(),
   },
+  {
+    id: "workbench.action.debug.start",
+    title: "Start Debugging",
+    category: "Debug",
+    keybinding: "F5",
+    run: (ctx) => ctx.startDebugging(),
+  },
 ];
