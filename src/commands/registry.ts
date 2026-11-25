@@ -136,11 +136,22 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeOtherEditors(),
   },
   {
+    id: "workbench.action.closeEditorsToTheRight",
+    title: "Close Editors to the Right",
+    category: "View",
+    run: (ctx) => ctx.closeEditorsToTheRight(),
+  },
+
+  {
     id: "workbench.action.closeUnmodifiedEditors",
     title: "Close Saved Editors",
     category: "View",
     run: (ctx) => ctx.closeSavedEditors(),
   },
+
+
+
+
   {
     id: "workbench.action.pinEditor",
     title: "Pin Active Editor",

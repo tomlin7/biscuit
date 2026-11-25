@@ -117,6 +117,8 @@ export type WorkspaceState = {
   closeAll: () => void;
   closeOtherEditors: () => void;
   closeSavedEditors: () => void;
+  closeEditorsToTheRight: () => void;
+  closeEditorsToTheLeft: () => void;
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
   renameEntry: (path: string) => Promise<void>;
   deleteEntry: (path: string) => Promise<void>;
@@ -1143,6 +1145,42 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const closeEditorsInRange = useCallback((from: number, to: number) => {
+    const keep = activePathRef.current;
+    if (!keep) return;
+    const slice = tabsRef.current.slice(from, to).filter((tab) => !tab.pinned);
+    if (slice.length === 0) return;
+    const dirty = slice.filter(isDirty);
+    if (dirty.length > 0) {
+      const ok = window.confirm(
+        dirty.length === 1
+          ? `Close ${dirty[0].title} without saving?`
+          : `Close ${dirty.length} unsaved files without saving?`,
+      );
+      if (!ok) return;
+    }
+    for (const tab of slice) pushClosedEditor(tab.path);
+    const closing = new Set(slice.map((tab) => tab.path));
+    setTabs((current) => current.filter((tab) => !closing.has(tab.path)));
+    setActivePath(keep);
+  }, []);
+
+  const closeEditorsToTheRight = useCallback(() => {
+    const keep = activePathRef.current;
+    if (!keep) return;
+    const idx = tabsRef.current.findIndex((tab) => tab.path === keep);
+    if (idx < 0 || idx >= tabsRef.current.length - 1) return;
+    closeEditorsInRange(idx + 1, tabsRef.current.length);
+  }, [closeEditorsInRange]);
+
+  const closeEditorsToTheLeft = useCallback(() => {
+    const keep = activePathRef.current;
+    if (!keep) return;
+    const idx = tabsRef.current.findIndex((tab) => tab.path === keep);
+    if (idx <= 0) return;
+    closeEditorsInRange(0, idx);
+  }, [closeEditorsInRange]);
+
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
@@ -1273,6 +1311,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       closeAll,
       closeOtherEditors,
       closeSavedEditors,
+      closeEditorsToTheRight,
+      closeEditorsToTheLeft,
       createEntry,
       renameEntry,
       deleteEntry,
@@ -1330,6 +1370,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       closeAll,
       closeOtherEditors,
       closeSavedEditors,
+      closeEditorsToTheRight,
+      closeEditorsToTheLeft,
       createEntry,
       renameEntry,
       deleteEntry,

@@ -265,6 +265,7 @@ export type CommandContext = {
   openExtensionsMarketplace: () => void;
   toggleZenMode: () => void;
   cycleLanguageMode: () => void;
+  closeEditorsToTheRight: () => void;
 };
 
 export type Command = {
