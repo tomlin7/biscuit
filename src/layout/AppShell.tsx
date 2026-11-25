@@ -156,6 +156,7 @@ function ShellChrome() {
     stepPython: stepDebugPython,
     addBreakpoint,
     removeBreakpoint,
+    clearBreakpoints,
   } = useDebug();
   const { extensions, scaffoldInFolder, installFromFolder, installSample } = useExtensions();
   useEffect(() => {
@@ -1531,6 +1532,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         void installSample();
       },
+      clearAllBreakpoints: () => {
+        clearBreakpoints();
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1674,6 +1680,7 @@ function ShellChrome() {
       scaffoldInFolder,
       installFromFolder,
       installSample,
+      clearBreakpoints,
     ],
   );
 

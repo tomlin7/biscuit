@@ -253,6 +253,7 @@ export type CommandContext = {
   scaffoldExtension: () => void;
   installExtensionFromFolder: () => void;
   installSampleExtension: () => void;
+  clearAllBreakpoints: () => void;
 };
 
 export type Command = {

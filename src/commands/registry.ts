@@ -1528,4 +1528,15 @@ export const COMMANDS: Command[] = [
     category: "Extensions",
     run: (ctx) => ctx.installSampleExtension(),
   },
+  {
+    id: "editor.debug.action.removeAllBreakpoints",
+    title: "Remove All Breakpoints",
+    category: "Debug",
+    run: (ctx) => ctx.clearAllBreakpoints(),
+  },
+
+
+
+
+
 ];

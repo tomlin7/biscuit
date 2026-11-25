@@ -42,6 +42,7 @@ type DebugState = {
   addBreakpoint: (path: string, line: number) => void;
   removeBreakpoint: (id: string) => void;
   toggleBreakpoint: (id: string) => void;
+  clearBreakpoints: () => void;
   startSession: (path: string) => Promise<void>;
   stopSession: (id: string) => Promise<void>;
   stepPython: (command: "continue" | "next" | "step" | "return") => Promise<PyStop | null>;
@@ -87,6 +88,11 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       ),
     );
   }, []);
+
+  const clearBreakpoints = useCallback(() => {
+    setBreakpoints([]);
+  }, []);
+
 
   const startSession = useCallback(async (path: string) => {
     setPythonError(null);
@@ -159,6 +165,7 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       addBreakpoint,
       removeBreakpoint,
       toggleBreakpoint,
+      clearBreakpoints,
       startSession,
       stopSession,
       stepPython,
@@ -171,6 +178,7 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       addBreakpoint,
       removeBreakpoint,
       toggleBreakpoint,
+      clearBreakpoints,
       startSession,
       stopSession,
       stepPython,
