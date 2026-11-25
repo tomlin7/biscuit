@@ -208,6 +208,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.200.0** | Agent stop on tool error | shipped |
 | **0.201.0** | Explorer reveal in file manager | shipped |
 | **0.202.0** | Copy active file path from palette | shipped |
+| **0.203.0** | Status bar relative line numbers | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

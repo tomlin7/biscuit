@@ -28,6 +28,8 @@ export type EditorSettings = {
   cursorStyle: "line" | "block" | "underline";
   minimap: boolean;
   lineNumbers: boolean;
+  /** When line numbers are on, show relative numbers instead of absolute. */
+  relativeLineNumbers: boolean;
   stickyScroll: boolean;
   /** 0 = off; otherwise idle milliseconds before auto-save. */
   autoSaveMs: number;
@@ -61,6 +63,7 @@ const DEFAULTS: AppSettings = {
     cursorStyle: "line",
     minimap: true,
     lineNumbers: true,
+    relativeLineNumbers: false,
     stickyScroll: true,
     autoSaveMs: 0,
     terminalFontSize: 13,

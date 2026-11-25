@@ -213,12 +213,22 @@ export function StatusBar({
           <button
             type="button"
             className="status-bar__chip"
-            title="Toggle line numbers"
-            onClick={() =>
-              updateEditor({ lineNumbers: !settings.editor.lineNumbers })
-            }
+            title="Toggle line numbers / relative"
+            onClick={() => {
+              if (!settings.editor.lineNumbers) {
+                updateEditor({ lineNumbers: true, relativeLineNumbers: false });
+              } else if (!settings.editor.relativeLineNumbers) {
+                updateEditor({ relativeLineNumbers: true });
+              } else {
+                updateEditor({ lineNumbers: false, relativeLineNumbers: false });
+              }
+            }}
           >
-            {settings.editor.lineNumbers ? "Ln" : "No Ln"}
+            {!settings.editor.lineNumbers
+              ? "No Ln"
+              : settings.editor.relativeLineNumbers
+                ? "Rel Ln"
+                : "Ln"}
           </button>
         ) : null}
         {document && document.language !== "image" ? (
