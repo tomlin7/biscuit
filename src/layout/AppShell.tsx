@@ -2007,6 +2007,11 @@ function ShellChrome() {
           }
         })();
       },
+      copyActiveFileName: () => {
+        if (!activePath) return;
+        void navigator.clipboard.writeText(basename(activePath));
+        notify("Copied", basename(activePath));
+      },
     }),
     [
       openFolder,

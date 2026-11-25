@@ -292,6 +292,7 @@ export type CommandContext = {
   goToNextProblem: () => void;
   goToPreviousProblem: () => void;
   revertActiveFile: () => void;
+  copyActiveFileName: () => void;
 };
 
 export type Command = {

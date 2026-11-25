@@ -134,6 +134,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.revertActiveFile(),
   },
   {
+    id: "copyFileName",
+    title: "Copy Active File Name",
+    category: "File",
+    run: (ctx) => ctx.copyActiveFileName(),
+  },
+  {
     id: "workbench.action.closeActiveEditor",
     title: "Close Editor",
     category: "View",
