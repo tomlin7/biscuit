@@ -187,6 +187,18 @@ export function StatusBar({
             {settings.editor.wordWrap ? "Wrap" : "No Wrap"}
           </button>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Toggle sticky scroll"
+            onClick={() =>
+              updateEditor({ stickyScroll: !settings.editor.stickyScroll })
+            }
+          >
+            {settings.editor.stickyScroll ? "Sticky" : "No Sticky"}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
