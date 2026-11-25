@@ -1250,7 +1250,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.minimizeSidebarWidth(),
   },
-
+  {
+    id: "workbench.action.maximizeBottomPanelHeight",
+    title: "Maximize Bottom Panel Height",
+    category: "View",
+    run: (ctx) => ctx.maximizeBottomPanelHeight(),
+  },
 
 
 

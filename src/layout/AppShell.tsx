@@ -1218,6 +1218,10 @@ function ShellChrome() {
         setSidebarWidth(180);
         setSidebarOpen(true);
       },
+      maximizeBottomPanelHeight: () => {
+        setBottomHeight(480);
+        setBottomOpen(true);
+      },
     }),
     [
       openFolder,
