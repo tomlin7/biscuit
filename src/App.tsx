@@ -1,19 +1,9 @@
+import { AppShell } from "./layout/AppShell";
+import "./styles/tokens.css";
+import "./styles/global.css";
+
 function App() {
-  return (
-    <main
-      style={{
-        margin: 0,
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        fontFamily: "Segoe UI, sans-serif",
-        background: "#1e1e1e",
-        color: "#cccccc",
-      }}
-    >
-      <p>T3D</p>
-    </main>
-  );
+  return <AppShell />;
 }
 
 export default App;
