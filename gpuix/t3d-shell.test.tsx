@@ -2,7 +2,7 @@ import React from 'react'
 import { describe, expect, it } from 'vitest'
 import { connectTest } from '@gpuix/react/automation'
 import { createTestRoot, hasNativeTestRenderer } from '@gpuix/react/testing'
-import { T3DAppShell } from './src/layout/T3DAppShell'
+import { T3DAppShell, createT3DStarterLayout } from './src/layout/T3DAppShell'
 
 const describeNative = hasNativeTestRenderer ? describe : describe.skip
 
@@ -123,6 +123,54 @@ describeNative('T3D Clean Empty Dockable Layout', () => {
         }
         expect(hasSplit).toBe(true)
       }
+    }
+
+    await app.close()
+  })
+
+  it('renders starter layout with docked Explorer and Welcome panes', async () => {
+    const starter = createT3DStarterLayout()
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(<T3DAppShell initialLayout={starter} />)
+    const app = await connectTest(renderer)
+
+    const explorerTab = app.getByTestId('dock-tab-panel-explorer')
+    await explorerTab.waitFor({ timeoutMs: 5_000 })
+    expect(await explorerTab.bounds()).toBeDefined()
+
+    const welcomeTab = app.getByTestId('dock-tab-panel-welcome')
+    await welcomeTab.waitFor({ timeoutMs: 5_000 })
+    expect(await welcomeTab.bounds()).toBeDefined()
+
+    const fileTree = app.getByTestId('workspace-file-tree')
+    await fileTree.waitFor({ timeoutMs: 5_000 })
+    expect(await fileTree.bounds()).toBeDefined()
+
+    await app.close()
+  })
+
+  it('adds an Explorer tab from an empty group and renders file tree', async () => {
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(<T3DAppShell />)
+    const app = await connectTest(renderer)
+
+    let addExplorerBtnId: string | undefined
+    for (let i = 0; i < 40; i++) {
+      const ids = testIds(renderer)
+      addExplorerBtnId = ids.find((id) => id.startsWith('empty-add-explorer-btn-'))
+      if (addExplorerBtnId) break
+      await new Promise((r) => setTimeout(r, 25))
+    }
+    expect(addExplorerBtnId).toBeDefined()
+
+    if (addExplorerBtnId) {
+      const addExpBtn = app.getByTestId(addExplorerBtnId)
+      await addExpBtn.waitFor({ timeoutMs: 5_000 })
+      await addExpBtn.click()
+
+      const fileTree = app.getByTestId('workspace-file-tree')
+      await fileTree.waitFor({ timeoutMs: 5_000 })
+      expect(await fileTree.bounds()).toBeDefined()
     }
 
     await app.close()

@@ -63,6 +63,12 @@ export function DockContainer({
   )
 
   useEffect(() => {
+    if (initialLayout) {
+      setLayout(initialLayout)
+    }
+  }, [initialLayout])
+
+  useEffect(() => {
     onLayoutChange?.(layout)
   }, [layout, onLayoutChange])
 
