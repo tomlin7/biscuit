@@ -260,6 +260,13 @@ function ShellChrome() {
       const mod = event.ctrlKey || event.metaKey;
       const key = event.key.toLowerCase();
 
+      if (event.key === "F12") {
+        event.preventDefault();
+        runEditorCommand("definition");
+        clearChord();
+        return;
+      }
+
       if (event.key === "Escape") {
         if (settingsOpen) {
           event.preventDefault();
@@ -412,6 +419,7 @@ function ShellChrome() {
     openSettings,
     openSearch,
     findInFile,
+    runEditorCommand,
     save,
     saveAll,
     closeAll,

@@ -273,6 +273,47 @@
   font-size: var(--font-size-sm);
 }
 
+.editor-area__peek {
+  margin: 0 8px 8px;
+  border-radius: var(--radius-control);
+  background: var(--bg-root);
+  color: var(--fg);
+  overflow: hidden;
+}
+
+.editor-area__peek-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: var(--font-size-sm);
+}
+
+.editor-area__peek-bar span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-area__peek-bar button {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--bg-active);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+}
+
+.editor-area__peek pre {
+  margin: 0;
+  padding: 0 10px 10px;
+  max-height: 160px;
+  overflow: auto;
+  color: var(--fg-muted);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
 .editor-area__empty {
   display: flex;
   flex-direction: column;

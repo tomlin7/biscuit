@@ -20,8 +20,8 @@ import { IconButton } from "../ui/IconButton";
 import { ResizeHandle } from "./ResizeHandle";
 
 export function EditorArea() {
-  const { document, rootPath, rootName, tabs, activePath } = useWorkspace();
-  const { findInFile } = useEditorActions();
+  const { document, rootPath, rootName, tabs, activePath, openFileAt } = useWorkspace();
+  const { findInFile, peek, clearPeek } = useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
   const [split, setSplit] = useState(false);
   const [markdownPreview, setMarkdownPreview] = useState(false);
@@ -121,6 +121,25 @@ export function EditorArea() {
           />
         </div>
       </div>
+      {peek ? (
+        <div className="editor-area__peek">
+          <div className="editor-area__peek-bar">
+            <span>{peek.title}</span>
+            {peek.path ? (
+              <button
+                type="button"
+                onClick={() => void openFileAt(peek.path, peek.line, peek.column)}
+              >
+                Jump
+              </button>
+            ) : null}
+            <button type="button" onClick={clearPeek}>
+              Close
+            </button>
+          </div>
+          <pre>{peek.preview}</pre>
+        </div>
+      ) : null}
       <div
         className={
           (showPreview || (split && secondaryPath))

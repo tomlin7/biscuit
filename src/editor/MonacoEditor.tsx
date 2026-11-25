@@ -5,6 +5,8 @@ import * as monacoApi from "monaco-editor";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
+import { typescript } from "monaco-editor";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { defineT3dThemes, monacoThemeId } from "./theme";
@@ -27,12 +29,17 @@ export function MonacoEditor({ path, primary = true }: Props) {
     revealTarget,
     clearRevealTarget,
     activateTab,
+    openFileAt,
   } = useWorkspace();
   const doc = path
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
   const { theme } = useTheme();
-  const { registerFindHandler, registerEditor } = useEditorActions();
+  const { registerFindHandler, registerEditor, showPeek } = useEditorActions();
+  const showPeekRef = useRef(showPeek);
+  showPeekRef.current = showPeek;
+  const openFileAtRef = useRef(openFileAt);
+  openFileAtRef.current = openFileAt;
   const { breakpoints, addBreakpoint, removeBreakpoint } = useDebug();
   const { settings } = useSettings();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
@@ -62,6 +69,66 @@ export function MonacoEditor({ path, primary = true }: Props) {
       },
       updateOptions: (options) => {
         editorRef.current?.updateOptions(options);
+      },
+      lookupDefinition: (jump) => {
+        void (async () => {
+          const ed = editorRef.current;
+          const model = ed?.getModel();
+          const position = ed?.getPosition();
+          if (!model || !position) return;
+          const language = model.getLanguageId();
+          if (language !== "typescript" && language !== "javascript") {
+            showPeekRef.current({
+              title: "No language service",
+              preview: "Peek definition is available for JavaScript and TypeScript.",
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          const worker = await typescript.getTypeScriptWorker();
+          const client = await worker(model.uri);
+          const defs = (await client.getDefinitionAtPosition(
+            model.uri.toString(),
+            model.getOffsetAt(position),
+          )) as Array<{ fileName?: string; textSpan?: { start?: number } }> | undefined;
+          const def = defs?.[0];
+          const start = def?.textSpan?.start;
+          if (!def?.fileName || start == null) {
+            showPeekRef.current({
+              title: "No definition",
+              preview: "The language service did not find a definition here.",
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          const targetPath = def.fileName.startsWith("file:")
+            ? monacoApi.Uri.parse(def.fileName).fsPath
+            : def.fileName;
+          const text = await readTextFile(targetPath);
+          const before = text.slice(0, start);
+          const line = before.split(/\n/).length;
+          const lastBreak = before.lastIndexOf("\n");
+          const column = start - (lastBreak < 0 ? 0 : lastBreak);
+          const preview = text
+            .split(/\n/)
+            .slice(Math.max(0, line - 3), line + 6)
+            .join("\n");
+          const title = targetPath.split(/[/\\]/).pop() ?? targetPath;
+          showPeekRef.current({ title, preview, path: targetPath, line, column });
+          if (jump) await openFileAtRef.current(targetPath, line, column);
+        })().catch((err) => {
+          showPeekRef.current({
+            title: "Definition failed",
+            preview: err instanceof Error ? err.message : String(err),
+            path: "",
+            line: 1,
+            column: 1,
+          });
+        });
       },
     });
     return () => {

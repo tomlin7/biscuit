@@ -28,6 +28,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.20.0** | Restore the last folder and open editors | shipped |
 | **0.21.0** | Multiple terminal sessions | shipped |
 | **0.22.0** | Clone a repository into a folder and open it | shipped |
+| **0.23.0** | Peek and go to definition for JavaScript and TypeScript | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

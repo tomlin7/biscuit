@@ -4,8 +4,17 @@ import {
   useContext,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
+
+export type PeekInfo = {
+  title: string;
+  preview: string;
+  path: string;
+  line: number;
+  column: number;
+};
 
 type EditorHandle = {
   trigger: (action: string) => void;
@@ -13,6 +22,7 @@ type EditorHandle = {
     wordWrap?: "on" | "off";
     lineNumbers?: "on" | "relative";
   }) => void;
+  lookupDefinition?: (jump: boolean) => void;
 };
 
 export type EditorCommand =
@@ -23,13 +33,18 @@ export type EditorCommand =
   | "copyLineDown"
   | "moveLineUp"
   | "moveLineDown"
-  | "replace";
+  | "replace"
+  | "peek"
+  | "definition";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
   registerEditor: (handle: EditorHandle | null) => void;
   findInFile: () => void;
   runEditorCommand: (command: EditorCommand) => void;
+  peek: PeekInfo | null;
+  clearPeek: () => void;
+  showPeek: (info: PeekInfo | null) => void;
 };
 
 const EditorActionsContext = createContext<EditorActionsState | null>(null);
@@ -39,6 +54,8 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
   const editorHandle = useRef<EditorHandle | null>(null);
   const wordWrap = useRef<"on" | "off">("off");
   const lineNumbers = useRef<"on" | "relative">("on");
+  const [peek, setPeek] = useState<PeekInfo | null>(null);
+  const clearPeek = useCallback(() => setPeek(null), []);
 
   const registerFindHandler = useCallback((handler: (() => void) | null) => {
     findHandler.current = handler;
@@ -74,6 +91,12 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
       case "replace":
         handle.trigger("editor.action.startFindReplaceAction");
         break;
+      case "peek":
+        handle.lookupDefinition?.(false);
+        break;
+      case "definition":
+        handle.lookupDefinition?.(true);
+        break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";
         handle.updateOptions({ wordWrap: wordWrap.current });
@@ -88,8 +111,16 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ registerFindHandler, registerEditor, findInFile, runEditorCommand }),
-    [registerFindHandler, registerEditor, findInFile, runEditorCommand],
+    () => ({
+      registerFindHandler,
+      registerEditor,
+      findInFile,
+      runEditorCommand,
+      peek,
+      clearPeek,
+      showPeek: setPeek,
+    }),
+    [registerFindHandler, registerEditor, findInFile, runEditorCommand, peek, clearPeek],
   );
 
   return (

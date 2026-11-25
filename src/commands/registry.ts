@@ -83,6 +83,19 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("relativeLines"),
   },
   {
+    id: "editor.action.peekDefinition",
+    title: "Peek Definition",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("peek"),
+  },
+  {
+    id: "editor.action.revealDefinition",
+    title: "Go to Definition",
+    category: "Edit",
+    keybinding: "F12",
+    run: (ctx) => ctx.runEditorCommand("definition"),
+  },
+  {
     id: "workbench.action.gotoSymbol",
     title: "Go to Symbol in Editor",
     category: "Edit",

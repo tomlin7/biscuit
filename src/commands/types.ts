@@ -22,7 +22,9 @@ export type CommandContext = {
       | "copyLineDown"
       | "moveLineUp"
       | "moveLineDown"
-      | "replace",
+      | "replace"
+      | "peek"
+      | "definition",
   ) => void;
   openSearch: () => void;
   toggleTerminal: () => void;
