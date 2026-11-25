@@ -275,6 +275,7 @@ export type CommandContext = {
   showActiveEditors: () => void;
   changeIndentationLevel: () => void;
   openNewWindow: () => void;
+  toggleSecondarySidebar: () => void;
 };
 
 export type Command = {

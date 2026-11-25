@@ -1666,6 +1666,11 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+Shift+N",
     run: (ctx) => ctx.openNewWindow(),
   },
-
+  {
+    id: "workbench.action.toggleSecondarySideBarVisibility",
+    title: "Toggle Secondary Side Bar",
+    category: "View",
+    run: (ctx) => ctx.toggleSecondarySidebar(),
+  },
 
 ];

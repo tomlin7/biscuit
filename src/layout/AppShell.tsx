@@ -1724,6 +1724,9 @@ function ShellChrome() {
           notify("New Window", String(event.payload ?? "Failed to open window"));
         });
       },
+      toggleSecondarySidebar: () => {
+        toggleAi();
+      },
     }),
     [
       openFolder,
