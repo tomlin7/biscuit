@@ -58,6 +58,8 @@ export type WorkspaceState = {
   dirty: boolean;
   cursorLine: number;
   cursorColumn: number;
+  selectionChars: number;
+  selectionLines: number;
   revealTarget: RevealTarget | null;
   openFolder: () => Promise<void>;
   openFolderAt: (path: string) => Promise<void>;
@@ -78,7 +80,9 @@ export type WorkspaceState = {
   setLanguageAt: (path: string, language: string) => void;
   applyDiskValue: (path: string, value: string) => void;
   setCursor: (line: number, column: number) => void;
+  setSelection: (chars: number, lines: number) => void;
   clearRevealTarget: () => void;
+  refreshExplorer: () => Promise<void>;
   save: () => Promise<void>;
   saveAs: () => Promise<void>;
   saveAll: () => Promise<void>;
@@ -153,6 +157,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [tabs, setTabs] = useState<EditorTab[]>([]);
   const [activePath, setActivePath] = useState<string | null>(null);
   const [revealTarget, setRevealTarget] = useState<RevealTarget | null>(null);
+  const [selectionChars, setSelectionChars] = useState(0);
+  const [selectionLines, setSelectionLines] = useState(0);
   const revealToken = useRef(0);
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
@@ -732,6 +738,50 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const setSelection = useCallback((chars: number, lines: number) => {
+    setSelectionChars(chars);
+    setSelectionLines(lines);
+  }, []);
+
+  const refreshExplorer = useCallback(async () => {
+    const rootsNow =
+      rootsRef.current.length > 0
+        ? rootsRef.current
+        : rootPath
+          ? [rootPath]
+          : [];
+    if (rootsNow.length === 0) return;
+    setBusy(true);
+    setTreeError(null);
+    try {
+      if (rootsNow.length === 1) {
+        setTree(await listDirectory(rootsNow[0]));
+        return;
+      }
+      const next: TreeNode[] = [];
+      for (const root of rootsNow) {
+        const children = await listDirectory(root);
+        next.push({
+          name: basename(root),
+          path: root,
+          kind: "directory",
+          children,
+          loaded: true,
+        });
+      }
+      setTree(next);
+      setExpanded((prev) => {
+        const nextSet = new Set(prev);
+        for (const root of rootsNow) nextSet.add(root);
+        return nextSet;
+      });
+    } catch (err) {
+      setTreeError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }, [rootPath]);
+
   const reloadDirectory = useCallback(
     async (dir: string) => {
       const children = await listDirectory(dir);
@@ -987,6 +1037,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       dirty: document ? isDirty(document) : false,
       cursorLine: document?.cursorLine ?? 1,
       cursorColumn: document?.cursorColumn ?? 1,
+      selectionChars,
+      selectionLines,
       revealTarget,
       openFolder,
       openFolderAt,
@@ -1007,7 +1059,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setLanguageAt,
       applyDiskValue,
       setCursor,
+      setSelection,
       clearRevealTarget,
+      refreshExplorer,
       save,
       saveAs,
       saveAll,
@@ -1029,6 +1083,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       activePath,
       document,
       revealTarget,
+      selectionChars,
+      selectionLines,
       openFolder,
       openFolderAt,
       addFolderRoot,
@@ -1048,7 +1104,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setLanguageAt,
       applyDiskValue,
       setCursor,
+      setSelection,
       clearRevealTarget,
+      refreshExplorer,
       save,
       saveAs,
       saveAll,

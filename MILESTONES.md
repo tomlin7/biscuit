@@ -94,6 +94,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.86.0** | Git commit amend when HEAD is local | shipped |
 | **0.87.0** | Editor sticky scroll setting | shipped |
 | **0.88.0** | Agent model preset chips | shipped |
+| **0.89.0** | Status bar selection character count | shipped |
+| **0.90.0** | Refresh Explorer command | shipped |
+| **0.91.0** | Git stash push and pop | shipped |
+| **0.92.0** | Markdown preview scroll sync | shipped |
+| **0.93.0** | Copy button on agent code blocks | shipped |
+| **0.94.0** | Keyboard shortcuts cheatsheet | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

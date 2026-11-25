@@ -32,7 +32,8 @@ export function StatusBar({
   onOpenDebug,
   gitBranch = null,
 }: StatusBarProps) {
-  const { dirty, busy, rootName, document, setEol, setLanguageAt } = useWorkspace();
+  const { dirty, busy, rootName, document, selectionChars, selectionLines, setEol, setLanguageAt } =
+    useWorkspace();
   const eol = document ? (document.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, dismiss, clear } = useNotifications();
@@ -91,6 +92,12 @@ export function StatusBar({
         />
         {busy ? <span className="status-bar__item">Working…</span> : null}
         {dirty ? <span className="status-bar__item">Unsaved</span> : null}
+        {selectionChars > 0 ? (
+          <span className="status-bar__item" title="Selection">
+            {selectionChars} char{selectionChars === 1 ? "" : "s"}
+            {selectionLines > 1 ? ` · ${selectionLines} lines` : ""}
+          </span>
+        ) : null}
       </div>
 
       <div className="status-bar__group status-bar__group--end">

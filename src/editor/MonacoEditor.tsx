@@ -19,15 +19,17 @@ type Props = {
   path?: string;
   /** Only the primary pane owns find-in-file. */
   primary?: boolean;
+  onScrollRatio?: (ratio: number) => void;
 };
 
-export function MonacoEditor({ path, primary = true }: Props) {
+export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   const {
     document: activeDoc,
     tabs,
     setValue,
     setValueAt,
     setCursor,
+    setSelection,
     revealTarget,
     clearRevealTarget,
     activateTab,
@@ -402,10 +404,28 @@ export function MonacoEditor({ path, primary = true }: Props) {
       if (position) {
         setCursor(position.lineNumber, position.column);
       }
+      const selection = ed.getSelection();
+      if (!selection || selection.isEmpty()) {
+        setSelection(0, 0);
+        return;
+      }
+      const model = ed.getModel();
+      const text = model?.getValueInRange(selection) ?? "";
+      const lines = selection.endLineNumber - selection.startLineNumber + 1;
+      setSelection(text.length, lines);
     };
 
     syncCursor();
     ed.onDidChangeCursorPosition(syncCursor);
+    ed.onDidChangeCursorSelection(syncCursor);
+
+    if (primary && onScrollRatio) {
+      ed.onDidScrollChange(() => {
+        const top = ed.getScrollTop();
+        const height = ed.getScrollHeight() - ed.getLayoutInfo().height;
+        onScrollRatio(height > 0 ? Math.min(1, Math.max(0, top / height)) : 0);
+      });
+    }
 
     ed.onMouseDown((e) => {
       if (
