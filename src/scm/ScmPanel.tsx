@@ -274,6 +274,45 @@ export function ScmPanel({ onBranch }: Props) {
       } else if (action === "unstageSelected") {
         if (selectedStaged.length === 0) return;
         void run("git_unstage", { paths: selectedStaged });
+      } else if (action === "discardSelected") {
+        if (selectedUnstaged.length === 0) return;
+        const ok = window.confirm(
+          `Discard changes in ${selectedUnstaged.length} selected path(s)?`,
+        );
+        if (!ok) return;
+        void (async () => {
+          for (const path of selectedUnstaged) {
+            const entry = unstaged.find((item) => item.path === path);
+            if (!entry) continue;
+            const untracked = entry.index === "?";
+            const succeeded = await run("git_discard", {
+              path: entry.path,
+              untracked,
+            });
+            if (!succeeded || !rootPath) continue;
+            const relative = entry.path.replace(
+              /\//g,
+              rootPath.includes("\\") ? "\\" : "/",
+            );
+            const absolute = joinPath(rootPath, relative);
+            const openTab = tabs.find(
+              (tab) =>
+                tab.path.replace(/\\/g, "/").toLowerCase() ===
+                absolute.replace(/\\/g, "/").toLowerCase(),
+            );
+            if (!openTab) continue;
+            if (untracked) {
+              closeTab(openTab.path);
+              continue;
+            }
+            try {
+              const text = await readTextFile(absolute);
+              applyDiskValue(openTab.path, text);
+            } catch {
+              closeTab(openTab.path);
+            }
+          }
+        })();
       } else void push();
     });
     return () => setScmRemoteListener(null);

@@ -801,6 +801,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("unstageSelected");
       },
+      gitDiscardSelected: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("discardSelected");
+      },
     }),
     [
       openFolder,
