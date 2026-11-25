@@ -29,6 +29,7 @@ import {
   flattenWorkspaceFiles,
   type PaletteMode,
 } from '../commands'
+import { StatusBar } from '../statusbar'
 
 export interface T3DAppShellProps {
   initialLayout?: DockLayoutState
@@ -95,8 +96,11 @@ function T3DAppShellWorkspaceContent({
   const { renderer } = useGpuix()
   const isDarwin = typeof process !== 'undefined' && process.platform === 'darwin'
   const [maximized, setMaximized] = useState(false)
-  const { openFile, activeBufferId, saveBuffer, createUntitledBuffer } = useEditor()
-  const { entries, rootPath } = useWorkspace()
+  const { openFile, buffers, activeBufferId, saveBuffer, createUntitledBuffer } = useEditor()
+  const { entries, rootPath, rootName } = useWorkspace()
+
+  const activeBuffer = activeBufferId ? buffers[activeBufferId] : undefined
+  const activeLineEnding = activeBuffer?.content.includes('\r\n') ? 'CRLF' : 'LF'
 
   // Default to clean empty layout if no initialLayout is passed
   const [shellLayout, setShellLayout] = useState<DockLayoutState>(() => {
@@ -509,8 +513,11 @@ function T3DAppShellWorkspaceContent({
           <text style={{ fontSize: 12, fontWeight: 'bold', color: '#f4f4f5' }}>
             Morsel
           </text>
-          <text style={{ fontSize: 11, color: '#71717a' }}>
-            Dockable Layout
+          <text
+            testId="titlebar-workspace-title"
+            style={{ fontSize: 11, color: '#71717a' }}
+          >
+            {rootName ? `— ${rootName}` : 'Dockable Layout'}
           </text>
         </div>
 
@@ -672,6 +679,18 @@ function T3DAppShellWorkspaceContent({
           showControls={false}
         />
       </div>
+
+      {/* Bottom Status Bar with editor metrics, encoding, branch, and diagnostics */}
+      <StatusBar
+        branch="main"
+        workspaceName={rootName}
+        cursorLine={activeBuffer?.cursorLine}
+        cursorCol={activeBuffer?.cursorCol}
+        language={activeBuffer?.language}
+        lineEnding={activeLineEnding}
+        onLanguageClick={handleOpenCommandPalette}
+        onBranchClick={handleOpenQuickOpen}
+      />
 
       {/* Command Palette / Quick Open Overlay */}
       <CommandPalette

@@ -262,4 +262,30 @@ describeNative('T3D Clean Empty Dockable Layout', () => {
 
     await app.close()
   })
+
+  it('renders bottom status bar and titlebar workspace name', async () => {
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(<T3DAppShell initialRootPath="E:/biscuit/T3D" />)
+    const app = await connectTest(renderer)
+
+    const titlebarTitle = app.getByTestId('titlebar-workspace-title')
+    await titlebarTitle.waitFor({ timeoutMs: 5_000 })
+    expect(await titlebarTitle.bounds()).toBeDefined()
+
+    const statusBar = app.getByTestId('bottom-status-bar')
+    await statusBar.waitFor({ timeoutMs: 5_000 })
+    expect(await statusBar.bounds()).toBeDefined()
+
+    const branch = app.getByTestId('status-git-branch')
+    await branch.waitFor({ timeoutMs: 5_000 })
+    expect(await branch.bounds()).toBeDefined()
+
+    const painted = renderer.getPaintedText()
+    expect(painted).toContain('T3D')
+    expect(painted).toContain('main')
+    expect(painted).toContain('UTF-8')
+    expect(painted).toContain('LF')
+
+    await app.close()
+  })
 })
