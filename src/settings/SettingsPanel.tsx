@@ -278,6 +278,28 @@ export function SettingsPanel({ open, onClose }: Props) {
                 }}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>Top P</span>
+              <input
+                type="number"
+                min={0}
+                max={1}
+                step={0.05}
+                placeholder="default"
+                value={ai.topP ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value.trim();
+                  if (!raw) {
+                    setAi({ topP: null });
+                    return;
+                  }
+                  const next = Number(raw);
+                  if (Number.isFinite(next)) {
+                    setAi({ topP: Math.min(1, Math.max(0, next)) });
+                  }
+                }}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",
