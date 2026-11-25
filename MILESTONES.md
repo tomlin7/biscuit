@@ -327,6 +327,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.319.0** | Reset AI panel width from palette | shipped |
 | **0.320.0** | Copy problems from palette | shipped |
 | **0.321.0** | Copy workspace root path from palette | shipped |
+| **0.322.0** | Reset sidebar width from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

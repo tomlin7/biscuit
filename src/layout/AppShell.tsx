@@ -1111,6 +1111,10 @@ function ShellChrome() {
         if (!rootPath) return;
         void navigator.clipboard.writeText(rootPath);
       },
+      resetSidebarWidth: () => {
+        setSidebarWidth(280);
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1196,6 +1200,7 @@ function ShellChrome() {
       notify,
       setAiWidth,
       problems,
+      setSidebarWidth,
       bottomOpen,
       panelTab,
       setPanelTab,

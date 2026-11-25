@@ -1118,4 +1118,10 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.copyWorkspaceRoot(),
   },
+  {
+    id: "workbench.action.resetSidebarWidth",
+    title: "Reset Sidebar Width",
+    category: "View",
+    run: (ctx) => ctx.resetSidebarWidth(),
+  },
 ];
