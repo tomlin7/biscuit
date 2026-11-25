@@ -39,11 +39,14 @@ export type EditorSettings = {
 
 export type AppSettings = {
   editor: EditorSettings;
+  /** Win11 acrylic on shell crease (title/status/gutters). Islands stay opaque. */
+  chromeAcrylic: boolean;
 };
 
 type SettingsState = {
   settings: AppSettings;
   updateEditor: (patch: Partial<EditorSettings>) => void;
+  updateChromeAcrylic: (on: boolean) => void;
   reset: () => void;
 };
 
@@ -68,6 +71,7 @@ const DEFAULTS: AppSettings = {
     autoSaveMs: 0,
     terminalFontSize: 13,
   },
+  chromeAcrylic: true,
 };
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -76,9 +80,15 @@ function load(): AppSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULTS;
-    const parsed = JSON.parse(raw) as Partial<AppSettings>;
+    const parsed = JSON.parse(raw) as Partial<AppSettings> & {
+      editor?: Partial<EditorSettings>;
+    };
     return {
       editor: { ...DEFAULTS.editor, ...parsed.editor },
+      chromeAcrylic:
+        typeof parsed.chromeAcrylic === "boolean"
+          ? parsed.chromeAcrylic
+          : DEFAULTS.chromeAcrylic,
     };
   } catch {
     return DEFAULTS;
@@ -112,11 +122,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const updateChromeAcrylic = useCallback((on: boolean) => {
+    setSettings((s) => ({ ...s, chromeAcrylic: on }));
+  }, []);
+
   const reset = useCallback(() => setSettings(DEFAULTS), []);
 
   const value = useMemo(
-    () => ({ settings, updateEditor, reset }),
-    [settings, updateEditor, reset],
+    () => ({ settings, updateEditor, updateChromeAcrylic, reset }),
+    [settings, updateEditor, updateChromeAcrylic, reset],
   );
 
   return (

@@ -232,6 +232,14 @@
   grid-template-columns: 1fr auto;
 }
 
+.settings-hint {
+  margin: -4px 0 8px;
+  padding: 0 2px;
+  color: var(--fg-dim);
+  font-size: var(--font-size-xs);
+  line-height: 1.35;
+}
+
 .settings-row input[type="number"],
 .settings-row input[type="text"],
 .settings-row input[type="password"],

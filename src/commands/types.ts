@@ -238,6 +238,7 @@ export type CommandContext = {
   continueDebugging: () => void;
   toggleBreakpointCurrentLine: () => void;
   openDocumentation: () => void;
+  toggleChromeAcrylic: () => void;
 };
 
 export type Command = {

@@ -17,7 +17,7 @@ type Props = {
 
 export function SettingsPanel({ open, onClose, initialTab = "editor" }: Props) {
   const { theme, extras, setTheme } = useTheme();
-  const { settings, updateEditor, reset } = useSettings();
+  const { settings, updateEditor, updateChromeAcrylic, reset } = useSettings();
   const { settings: ai, setSettings: setAi } = useAi();
   const [activeTab, setActiveTab] = useState<SettingsCategory>(initialTab);
   const [showAdvancedAi, setShowAdvancedAi] = useState(false);
@@ -34,7 +34,7 @@ export function SettingsPanel({ open, onClose, initialTab = "editor" }: Props) {
 
   const q = searchQuery.trim().toLowerCase();
 
-  const matchesAppearance = !q || "theme color dark light appearance".includes(q);
+  const matchesAppearance = !q || "theme color dark light appearance acrylic mica chrome glass translucen".includes(q);
   const matchesEditorTypography = !q || "font size font family terminal font typography cascadia monospace".includes(q);
   const matchesEditorDisplay = !q || "word wrap column rulers cursor minimap line numbers sticky scroll display layout".includes(q);
   const matchesEditorFormatting = !q || "tab size whitespace trim trailing newline insert auto save formatting".includes(q);
@@ -151,6 +151,17 @@ export function SettingsPanel({ open, onClose, initialTab = "editor" }: Props) {
                   ))}
                 </select>
               </label>
+              <label className="settings-row">
+                <span>Chrome acrylic</span>
+                <input
+                  type="checkbox"
+                  checked={settings.chromeAcrylic}
+                  onChange={(e) => updateChromeAcrylic(e.target.checked)}
+                />
+              </label>
+              <p className="settings-hint">
+                Windows 11 acrylic on the title bar, status bar, and outer gutters. Editor and side panels stay solid.
+              </p>
             </section>
           )}
 

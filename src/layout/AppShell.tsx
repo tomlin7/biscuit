@@ -95,11 +95,12 @@ function ShellChrome() {
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
-  const { settings, updateEditor, reset: resetEditorSettings } = useSettings();
+  const { settings, updateEditor, updateChromeAcrylic, reset: resetEditorSettings } =
+    useSettings();
 
   useEffect(() => {
-    void applyChromeAcrylic(true);
-  }, []);
+    void applyChromeAcrylic(settings.chromeAcrylic);
+  }, [settings.chromeAcrylic]);
   const {
     clearAttachments,
     clearChat,
@@ -1430,6 +1431,9 @@ function ShellChrome() {
           /* ignore if opener unavailable outside Tauri */
         });
       },
+      toggleChromeAcrylic: () => {
+        updateChromeAcrylic(!settings.chromeAcrylic);
+      },
     }),
     [
       openFolder,
@@ -1566,6 +1570,8 @@ function ShellChrome() {
       removeBreakpoint,
       openFileAt,
       rootPath,
+      updateChromeAcrylic,
+      settings.chromeAcrylic,
     ],
   );
 

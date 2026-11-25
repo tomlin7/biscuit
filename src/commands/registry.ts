@@ -1438,7 +1438,12 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.openDocumentation(),
   },
-
+  {
+    id: "t3d.toggleChromeAcrylic",
+    title: "Toggle Chrome Acrylic",
+    category: "View",
+    run: (ctx) => ctx.toggleChromeAcrylic(),
+  },
 
 
 ];
