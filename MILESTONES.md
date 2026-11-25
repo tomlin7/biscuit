@@ -194,6 +194,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.186.0** | SCM Enter opens unchanged path | shipped |
 | **0.187.0** | Terminal font size setting | shipped |
 | **0.188.0** | Agent presence and frequency penalty | shipped |
+| **0.189.0** | Explorer delete from keyboard | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -50,7 +50,7 @@ function TreeRows({
   forceExpand: boolean;
   onMenu: (event: MouseEvent, node: TreeNode) => void;
 }) {
-  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry } = useWorkspace();
+  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry } = useWorkspace();
 
   return (
     <>
@@ -72,6 +72,11 @@ function TreeRows({
                   if (event.key === "F2") {
                     event.preventDefault();
                     void renameEntry(node.path);
+                    return;
+                  }
+                  if (event.key === "Delete" || event.key === "Backspace") {
+                    event.preventDefault();
+                    void deleteEntry(node.path);
                     return;
                   }
                   if (event.key === "Enter" || event.key === "ArrowRight") {
@@ -139,6 +144,11 @@ function TreeRows({
               if (event.key === "F2") {
                 event.preventDefault();
                 void renameEntry(node.path);
+                return;
+              }
+              if (event.key === "Delete" || event.key === "Backspace") {
+                event.preventDefault();
+                void deleteEntry(node.path);
                 return;
               }
               if (event.key === "Enter" || event.key === "ArrowRight") {
