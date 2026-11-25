@@ -4,11 +4,13 @@ import { useWorkspace } from "../workspace/WorkspaceContext";
 type StatusBarProps = {
   terminalOpen?: boolean;
   onToggleTerminal?: () => void;
+  gitBranch?: string | null;
 };
 
 export function StatusBar({
   terminalOpen = false,
   onToggleTerminal,
+  gitBranch = null,
 }: StatusBarProps) {
   const { document, dirty, cursorLine, cursorColumn, busy, tabs } =
     useWorkspace();
@@ -16,7 +18,10 @@ export function StatusBar({
   return (
     <footer className="status-bar" role="contentinfo">
       <div className="status-bar__group">
-        <span className="status-bar__item">T3D 0.8.0</span>
+        <span className="status-bar__item">T3D 0.9.0</span>
+        {gitBranch ? (
+          <span className="status-bar__item">{gitBranch}</span>
+        ) : null}
         {tabs.length > 0 ? (
           <span className="status-bar__item">{tabs.length} tabs</span>
         ) : null}

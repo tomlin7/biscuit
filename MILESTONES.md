@@ -13,11 +13,11 @@ Each row is a shippable `0.x` release until **1.0.0**.
 | **0.5.0** | Theming light/dark | shipped |
 | **0.6.0** | Command palette + keybindings | shipped |
 | **0.7.0** | Find in file / workspace search | shipped |
-| **0.8.0** | Integrated terminal (PTY) | shipping |
-| **0.9.0** | Git SCM view | planned |
+| **0.8.0** | Integrated terminal (PTY) | shipped |
+| **0.9.0** | Git SCM view | shipping |
 | **0.10.0+** | LSP, AI agents, extensions, debugger | planned |
 | **1.0.0** | Stable product | later |
 
 ## Current target
 
-Ship **0.8.0**: toggleable PTY terminal (Ctrl+`) with xterm.js.
+Ship **0.9.0**: Git status sidebar and branch in the status bar.

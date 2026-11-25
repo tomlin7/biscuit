@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import "./AppShell.css";
 import { WorkspaceProvider, useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
@@ -9,18 +10,39 @@ import {
 import { CommandPalette } from "../commands/CommandPalette";
 import type { CommandContext } from "../commands/types";
 import { TerminalPanel } from "../terminal/TerminalPanel";
+import type { GitSummary } from "../scm/ScmPanel";
 import { TitleBar } from "./TitleBar";
 import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
 import { StatusBar } from "./StatusBar";
 
 function ShellChrome() {
-  const { save, closeTab, activePath, openFolder } = useWorkspace();
+  const { save, closeTab, activePath, openFolder, rootPath } = useWorkspace();
   const { toggleTheme } = useTheme();
   const { findInFile } = useEditorActions();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [gitBranch, setGitBranch] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!rootPath) {
+      setGitBranch(null);
+      return;
+    }
+    let cancelled = false;
+    void invoke<GitSummary>("git_summary", { cwd: rootPath })
+      .then((summary) => {
+        if (!cancelled) setGitBranch(summary.branch);
+      })
+      .catch(() => {
+        if (!cancelled) setGitBranch(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [rootPath]);
+
 
   const openPalette = useCallback(() => setPaletteOpen(true), []);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
@@ -168,7 +190,11 @@ function ShellChrome() {
     <div className="app-shell">
       <TitleBar onOpenPalette={openPalette} />
       <div className="app-shell__workspace">
-        <Sidebar mode={sidebarMode} onModeChange={setSidebarMode} />
+        <Sidebar
+          mode={sidebarMode}
+          onModeChange={setSidebarMode}
+          onBranch={setGitBranch}
+        />
         <div className="app-shell__main">
           <EditorArea />
           <TerminalPanel open={terminalOpen} />
@@ -177,6 +203,7 @@ function ShellChrome() {
       <StatusBar
         terminalOpen={terminalOpen}
         onToggleTerminal={toggleTerminal}
+        gitBranch={gitBranch}
       />
       <CommandPalette
         open={paletteOpen}
