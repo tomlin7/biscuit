@@ -163,6 +163,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.155.0** | Close other editors | shipped |
 | **0.156.0** | Clear active terminal | shipped |
 | **0.157.0** | Editor cursor style setting | shipped |
+| **0.158.0** | Agent paste image attachment | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

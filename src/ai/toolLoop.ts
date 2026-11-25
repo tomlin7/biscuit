@@ -6,7 +6,13 @@ export type ModelToolCall = {
 
 export type ModelMessage = {
   role: string;
-  content?: string | null;
+  content?:
+    | string
+    | null
+    | Array<
+        | { type: "text"; text: string }
+        | { type: "image_url"; image_url: { url: string } }
+      >;
   tool_calls?: Array<{
     id: string;
     type: "function";

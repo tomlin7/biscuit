@@ -34,6 +34,8 @@ export type AiAttachment = {
   path: string;
   name: string;
   content: string;
+  kind?: "text" | "image";
+  mime?: string;
 };
 
 type AiSettings = {
@@ -64,6 +66,7 @@ type AiState = {
   removeAttachment: (path: string) => void;
   clearAttachments: () => void;
   attachPath: (path: string, name: string, content: string) => void;
+  attachImage: (name: string, dataUrl: string, mime: string) => void;
   cycleEffort: () => void;
   exportSession: () => void;
   importSession: () => Promise<void>;
@@ -238,8 +241,16 @@ export function AiProvider({ children }: { children: ReactNode }) {
   const attachPath = useCallback((path: string, name: string, content: string) => {
     setAttachments((current) => {
       if (current.some((a) => a.path === path)) return current;
-      return [...current, { path, name, content }];
+      return [...current, { path, name, content, kind: "text" as const }];
     });
+  }, []);
+
+  const attachImage = useCallback((name: string, dataUrl: string, mime: string) => {
+    const path = `clipboard-image://${crypto.randomUUID()}`;
+    setAttachments((current) => [
+      ...current,
+      { path, name, content: dataUrl, kind: "image", mime },
+    ]);
   }, []);
 
   const removeAttachment = useCallback((path: string) => {
@@ -275,12 +286,18 @@ export function AiProvider({ children }: { children: ReactNode }) {
       let fullPrompt = trimmed;
       if (attachments.length > 0) {
         const blocks = attachments
+          .filter((a) => a.kind !== "image")
           .map(
             (a) =>
               `File: ${a.path}\n\`\`\`\n${a.content.slice(0, 12000)}\n\`\`\``,
           )
           .join("\n\n");
-        fullPrompt = `${trimmed}\n\n---\nAttached context:\n\n${blocks}`;
+        const imageNote = attachments
+          .filter((a) => a.kind === "image")
+          .map((a) => `Image attached: ${a.name} (${a.mime ?? "image"})`)
+          .join("\n");
+        const parts = [blocks, imageNote].filter(Boolean).join("\n\n");
+        if (parts) fullPrompt = `${trimmed}\n\n---\nAttached context:\n\n${parts}`;
       }
 
       const userMsg: ChatMessage = {
@@ -321,14 +338,32 @@ export function AiProvider({ children }: { children: ReactNode }) {
           return assistant.content;
         }
 
-        const history = [...messagesRef.current, userMsg].map((m) => ({
+        const history: Array<{
+          role: string;
+          content:
+            | string
+            | Array<
+                | { type: "text"; text: string }
+                | { type: "image_url"; image_url: { url: string } }
+              >;
+        }> = [...messagesRef.current, userMsg].map((m) => ({
           role: m.role,
           content: m.content,
         }));
-        if (attachments.length > 0) {
+        const imageAtts = attachments.filter((a) => a.kind === "image");
+        if (attachments.length > 0 || imageAtts.length > 0) {
           history[history.length - 1] = {
             role: "user",
-            content: fullPrompt,
+            content:
+              imageAtts.length > 0
+                ? [
+                    { type: "text", text: fullPrompt },
+                    ...imageAtts.map((a) => ({
+                      type: "image_url" as const,
+                      image_url: { url: a.content },
+                    })),
+                  ]
+                : fullPrompt,
           };
         }
         if (settings.effort !== "medium") {
@@ -583,6 +618,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       removeAttachment,
       clearAttachments,
       attachPath,
+      attachImage,
       cycleEffort,
       exportSession,
       importSession,
@@ -607,6 +643,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
       removeAttachment,
       clearAttachments,
       attachPath,
+      attachImage,
       cycleEffort,
       exportSession,
       importSession,

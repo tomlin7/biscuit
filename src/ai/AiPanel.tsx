@@ -59,6 +59,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     removeAttachment,
     clearAttachments,
     attachPath,
+    attachImage,
     cycleEffort,
     exportSession,
     importSession,
@@ -394,7 +395,11 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             ) : null}
             {attachments.map((a) => (
               <span key={a.path} className="ai-panel__chip ai-panel__chip--attached">
-                <FileIcon name={a.name} kind="file" size={12} />
+                {a.kind === "image" ? (
+                  <img src={a.content} alt="" className="ai-panel__chip-thumb" />
+                ) : (
+                  <FileIcon name={a.name} kind="file" size={12} />
+                )}
                 <span>{a.name}</span>
                 <button
                   type="button"
@@ -458,6 +463,28 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             value={draft}
             disabled={busy}
             onChange={(e) => onDraftChange(e.target.value)}
+            onPaste={(e) => {
+              const items = e.clipboardData?.items;
+              if (!items) return;
+              for (const item of items) {
+                if (!item.type.startsWith("image/")) continue;
+                e.preventDefault();
+                const file = item.getAsFile();
+                if (!file) continue;
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const dataUrl = String(reader.result ?? "");
+                  if (!dataUrl.startsWith("data:")) return;
+                  attachImage(
+                    file.name || `clipboard.${item.type.split("/")[1] || "png"}`,
+                    dataUrl,
+                    item.type,
+                  );
+                };
+                reader.readAsDataURL(file);
+                return;
+              }
+            }}
             onKeyDown={(e) => {
               if (mentionCandidates.length > 0) {
                 if (e.key === "ArrowDown") {

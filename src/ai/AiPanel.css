@@ -342,6 +342,14 @@
   cursor: default;
 }
 
+.ai-panel__chip-thumb {
+  width: 16px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
 .ai-panel__chip--clear {
   color: var(--fg-dim);
   background: transparent;
