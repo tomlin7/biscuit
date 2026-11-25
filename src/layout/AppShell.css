@@ -289,6 +289,24 @@
   font-size: var(--font-size-sm);
 }
 
+.editor-area__secondary-label select {
+  min-width: 0;
+  flex: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+}
+
+.editor-area__pane--hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-dim);
+  font-size: var(--font-size-sm);
+}
+
 .editor-area__peek {
   margin: 0 8px 8px;
   border-radius: var(--radius-control);
