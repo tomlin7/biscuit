@@ -393,7 +393,11 @@ export function EditorArea() {
                 <MonacoEditor
                   path={activePath}
                   primary
-                  onScrollRatio={showPreview && previewKind === "markdown" ? setPreviewScroll : undefined}
+                  onScrollRatio={
+                    showPreview && (previewKind === "markdown" || previewKind === "html")
+                      ? setPreviewScroll
+                      : undefined
+                  }
                 />
               )}
             </div>
@@ -408,7 +412,11 @@ export function EditorArea() {
                 />
                 <div className="editor-area__pane">
                   {previewKind === "html" ? (
-                    <HtmlPreview source={document?.value ?? ""} filePath={activePath} />
+                    <HtmlPreview
+                      source={document?.value ?? ""}
+                      filePath={activePath}
+                      scrollRatio={previewScroll}
+                    />
                   ) : (
                     <MarkdownPreview
                       source={document?.value ?? ""}
