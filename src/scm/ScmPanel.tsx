@@ -260,6 +260,50 @@ export function ScmPanel({ onBranch }: Props) {
           >
             Unstage all
           </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || unstaged.length === 0}
+            onClick={() => {
+              const ok = window.confirm(
+                `Discard all unstaged changes in ${unstaged.length} path(s)?`,
+              );
+              if (!ok) return;
+              void (async () => {
+                for (const entry of unstaged) {
+                  const untracked = entry.index === "?";
+                  const succeeded = await run("git_discard", {
+                    path: entry.path,
+                    untracked,
+                  });
+                  if (!succeeded || !rootPath) continue;
+                  const relative = entry.path.replace(
+                    /\//g,
+                    rootPath.includes("\\") ? "\\" : "/",
+                  );
+                  const absolute = joinPath(rootPath, relative);
+                  const open = tabs.find(
+                    (tab) =>
+                      tab.path.replace(/\\/g, "/").toLowerCase() ===
+                      absolute.replace(/\\/g, "/").toLowerCase(),
+                  );
+                  if (!open) continue;
+                  if (untracked) {
+                    closeTab(open.path);
+                    continue;
+                  }
+                  try {
+                    const text = await readTextFile(absolute);
+                    applyDiskValue(open.path, text);
+                  } catch {
+                    closeTab(open.path);
+                  }
+                }
+              })();
+            }}
+          >
+            Discard all
+          </button>
         </div>
         <label className="scm-panel__amend">
           <input
