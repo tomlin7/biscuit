@@ -1406,7 +1406,12 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.newExplorerFile(),
   },
-
+  {
+    id: "explorer.newFolder",
+    title: "New Folder",
+    category: "File",
+    run: (ctx) => ctx.newExplorerFolder(),
+  },
 
 
 

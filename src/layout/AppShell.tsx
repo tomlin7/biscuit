@@ -1380,6 +1380,16 @@ function ShellChrome() {
         setSidebarOpen(true);
         void createEntry(parent, "file");
       },
+      newExplorerFolder: () => {
+        if (!rootPath) return;
+        const parent =
+          activePath && !isUntitledPath(activePath)
+            ? parentPath(activePath) ?? rootPath
+            : rootPath;
+        setSidebarMode("explorer");
+        setSidebarOpen(true);
+        void createEntry(parent, "directory");
+      },
     }),
     [
       openFolder,
