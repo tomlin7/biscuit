@@ -369,6 +369,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.361.0** | Step over in debugger from palette | shipped |
 | **0.362.0** | Step into in debugger from palette | shipped |
 | **0.363.0** | Step out in debugger from palette | shipped |
+| **0.364.0** | New File in Explorer from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

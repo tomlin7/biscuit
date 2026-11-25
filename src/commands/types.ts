@@ -232,6 +232,7 @@ export type CommandContext = {
   stepOverDebugging: () => void;
   stepIntoDebugging: () => void;
   stepOutDebugging: () => void;
+  newExplorerFile: () => void;
 };
 
 export type Command = {

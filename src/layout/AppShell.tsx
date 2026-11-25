@@ -90,6 +90,7 @@ function ShellChrome() {
     explorerNonce,
     revealInExplorer,
     togglePinTab,
+    createEntry,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1369,6 +1370,16 @@ function ShellChrome() {
           if (frame) void openFileAt(frame.file, frame.line, 1);
         });
       },
+      newExplorerFile: () => {
+        if (!rootPath) return;
+        const parent =
+          activePath && !isUntitledPath(activePath)
+            ? parentPath(activePath) ?? rootPath
+            : rootPath;
+        setSidebarMode("explorer");
+        setSidebarOpen(true);
+        void createEntry(parent, "file");
+      },
     }),
     [
       openFolder,
@@ -1497,6 +1508,10 @@ function ShellChrome() {
       startDebugSession,
       stopDebugSession,
       stepDebugPython,
+      createEntry,
+      document,
+      openFileAt,
+      rootPath,
     ],
   );
 

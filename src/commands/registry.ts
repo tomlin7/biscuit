@@ -1400,4 +1400,15 @@ export const COMMANDS: Command[] = [
     keybinding: "Shift+F11",
     run: (ctx) => ctx.stepOutDebugging(),
   },
+  {
+    id: "explorer.newFile",
+    title: "New File",
+    category: "File",
+    run: (ctx) => ctx.newExplorerFile(),
+  },
+
+
+
+
+
 ];
