@@ -39,6 +39,7 @@ import { relativeToRoot } from "../workspace/path";
 import { rootForPath } from "../ai/roots";
 import { requestSplitEditor } from "./splitBus";
 import { useFileDrop } from "../workspace/fileDrop";
+import { requestToggleAmend } from "../scm/amendBus";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
 import { symbolsForFile } from "../lsp/OutlinePanel";
@@ -561,6 +562,11 @@ function ShellChrome() {
         setBottomOpen(true);
       },
       openProblems,
+      toggleScmAmend: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestToggleAmend();
+      },
       toggleAi,
       openExtensions,
       openDebug,

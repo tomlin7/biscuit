@@ -7,6 +7,7 @@ import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
 import { openDiffTab } from "./diffBus";
 import { readIgnoreSpacePref } from "./diffPrefs";
+import { setToggleAmendListener } from "./amendBus";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -89,6 +90,21 @@ export function ScmPanel({ onBranch }: Props) {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    setToggleAmendListener(() => {
+      setAmend((current) => {
+        if (!current && !canAmend) {
+          const ok = window.confirm(
+            "HEAD may already be on the remote. Amend anyway?",
+          );
+          if (!ok) return current;
+        }
+        return !current;
+      });
+    });
+    return () => setToggleAmendListener(null);
+  }, [canAmend]);
 
   const run = async (command: string, args: Record<string, unknown> = {}) => {
     if (!rootPath) return false;
