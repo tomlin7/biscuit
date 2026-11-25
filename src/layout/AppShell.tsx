@@ -1311,6 +1311,9 @@ function ShellChrome() {
         setAiWidth(aiWidth - 20);
         setAiOpen(true);
       },
+      resetTerminalFontSize: () => {
+        updateEditor({ terminalFontSize: 13 });
+      },
     }),
     [
       openFolder,

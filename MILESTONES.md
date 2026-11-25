@@ -359,6 +359,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.351.0** | Copy latest notification from palette | shipped |
 | **0.352.0** | Increase and decrease bottom panel height from palette | shipped |
 | **0.353.0** | Increase and decrease AI panel width from palette | shipped |
+| **0.354.0** | Reset terminal font size from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

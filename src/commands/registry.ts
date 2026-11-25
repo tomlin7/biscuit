@@ -1334,7 +1334,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.decreaseAiPanelWidth(),
   },
-
+  {
+    id: "terminal.action.resetFontSize",
+    title: "Reset Terminal Font Size",
+    category: "Terminal",
+    run: (ctx) => ctx.resetTerminalFontSize(),
+  },
 
 
 
