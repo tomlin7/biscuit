@@ -63,6 +63,7 @@ export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
   if (ext === "css" || ext === "scss") return <Badge text="#" tone="css" />;
   if (ext === "html") return <Badge text="<>" tone="html" />;
   if (ext === "pdf") return <Badge text="PDF" tone="pdf" />;
+  if (ext === "csv" || ext === "tsv") return <Badge text="CSV" tone="csv" />;
   if (
     [
       "bin",

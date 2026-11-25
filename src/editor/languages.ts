@@ -44,6 +44,10 @@ export function languageLabel(languageId: string): string {
       return "PDF";
     case "hex":
       return "Hex";
+    case "csv":
+      return "CSV";
+    case "tsv":
+      return "TSV";
     default:
       return languageId;
   }

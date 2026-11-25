@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
+import { CsvTableView } from "../editor/CsvTableView";
 import { ImageView } from "../editor/ImageView";
 import { PdfView } from "../editor/PdfView";
 import { HexView } from "../editor/HexView";
@@ -139,7 +140,10 @@ export function EditorArea() {
   }, [layoutReady, previewOpen, split, splitOrientation, secondaryPath, splitRatio]);
 
   const previewKind =
-    document?.language === "markdown" || document?.language === "html"
+    document?.language === "markdown" ||
+    document?.language === "html" ||
+    document?.language === "csv" ||
+    document?.language === "tsv"
       ? document.language
       : null;
   const showPreview = previewOpen && previewKind !== null;
@@ -458,7 +462,13 @@ export function EditorArea() {
           {previewKind ? (
             <IconButton
               icon={Eye}
-              label={previewKind === "html" ? "Preview HTML" : "Preview markdown"}
+              label={
+                previewKind === "html"
+                  ? "Preview HTML"
+                  : previewKind === "csv" || previewKind === "tsv"
+                    ? "Preview spreadsheet"
+                    : "Preview markdown"
+              }
               size={15}
               active={showPreview}
               onClick={() => setPreviewOpen((value) => !value)}
@@ -616,6 +626,12 @@ export function EditorArea() {
                       source={document?.value ?? ""}
                       filePath={activePath}
                       scrollRatio={previewScroll}
+                    />
+                  ) : previewKind === "csv" || previewKind === "tsv" ? (
+                    <CsvTableView
+                      source={document?.value ?? ""}
+                      filePath={activePath}
+                      delimiter={previewKind === "tsv" ? "\t" : ","}
                     />
                   ) : (
                     <MarkdownPreview

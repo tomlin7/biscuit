@@ -136,6 +136,10 @@ export function languageFromPath(path: string): string {
       return "cpp";
     case "pdf":
       return "pdf";
+    case "csv":
+      return "csv";
+    case "tsv":
+      return "tsv";
     default:
       return "plaintext";
   }
