@@ -747,6 +747,14 @@ function ShellChrome() {
         setSettings({ maxToolRounds: next });
         setAiOpen(true);
       },
+      revealActiveParentInExplorer: () => {
+        if (!activePath || isUntitledPath(activePath)) return;
+        const parent = parentPath(activePath);
+        if (!parent) return;
+        setSidebarMode("explorer");
+        setSidebarOpen(true);
+        void revealInExplorer(parent);
+      },
     }),
     [
       openFolder,

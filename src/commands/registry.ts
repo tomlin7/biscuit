@@ -818,4 +818,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiMaxToolRounds(),
   },
+  {
+    id: "workbench.files.action.revealParentInExplorer",
+    title: "Reveal Parent Folder in Explorer",
+    category: "File",
+    run: (ctx) => ctx.revealActiveParentInExplorer(),
+  },
 ];
