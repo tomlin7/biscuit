@@ -287,6 +287,7 @@ export type CommandContext = {
   searchGitHubPullRequests: () => void;
   openRepositoryOnGitHub: () => void;
   saveWorkspaceAs: () => void;
+  openWorkspaceFile: () => void;
 };
 
 export type Command = {

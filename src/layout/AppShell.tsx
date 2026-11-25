@@ -39,7 +39,7 @@ import {
   githubPullsSearchUrl,
   githubWebUrlFromRemote,
 } from "../scm/githubRemote";
-import { serializeWorkspace } from "../workspace/workspaceFile";
+import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -733,6 +733,44 @@ function ShellChrome() {
             });
             await writeTextFile(dest, text);
             notify("Workspace", `Saved ${basename(dest)}`);
+          } catch (err) {
+            notify(
+              "Workspace",
+              err instanceof Error ? err.message : String(err),
+            );
+          }
+        })();
+      },
+      openWorkspaceFile: () => {
+        void (async () => {
+          const selected = await openDialog({
+            multiple: false,
+            title: "Open Workspace",
+            filters: [
+              { name: "T3D Workspace", extensions: ["t3d-workspace.json", "json"] },
+            ],
+          });
+          if (selected === null) return;
+          const path = Array.isArray(selected) ? selected[0] : selected;
+          if (!path) return;
+          try {
+            const text = await readTextFile(path);
+            const workspace = parseWorkspace(text);
+            if (!workspace) {
+              notify("Workspace", "Invalid workspace file.");
+              return;
+            }
+            await openFolderAt(workspace.roots[0]);
+            for (const extra of workspace.roots.slice(1)) {
+              await addFolderRootPath(extra);
+            }
+            for (const tabPath of workspace.tabs ?? []) {
+              await openFile(tabPath);
+            }
+            if (workspace.active) {
+              await openFile(workspace.active);
+            }
+            notify("Workspace", `Opened ${basename(path)}`);
           } catch (err) {
             notify(
               "Workspace",
