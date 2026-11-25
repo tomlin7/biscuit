@@ -13,6 +13,8 @@ pub struct GitStatusEntry {
 pub struct GitSummary {
     pub branch: String,
     pub entries: Vec<GitStatusEntry>,
+    pub ahead: Option<i32>,
+    pub behind: Option<i32>,
 }
 
 fn run_git(cwd: &str, args: &[String]) -> Result<String, String> {
@@ -73,7 +75,31 @@ pub fn git_summary(cwd: String) -> Result<GitSummary, String> {
         });
     }
 
-    Ok(GitSummary { branch, entries })
+    let sync = git_ahead_behind(&cwd);
+    Ok(GitSummary {
+        branch,
+        entries,
+        ahead: sync.0,
+        behind: sync.1,
+    })
+}
+
+fn git_ahead_behind(cwd: &str) -> (Option<i32>, Option<i32>) {
+    let output = Command::new("git")
+        .args(["rev-list", "--left-right", "--count", "HEAD...@{upstream}"])
+        .current_dir(cwd)
+        .output();
+    let Ok(out) = output else {
+        return (None, None);
+    };
+    if !out.status.success() {
+        return (None, None);
+    }
+    let text = String::from_utf8_lossy(&out.stdout);
+    let mut parts = text.trim().split_whitespace();
+    let ahead = parts.next().and_then(|v| v.parse().ok());
+    let behind = parts.next().and_then(|v| v.parse().ok());
+    (ahead, behind)
 }
 
 fn git_paths(cwd: &str, verb: &str, extra: &[&str], paths: Vec<String>) -> Result<(), String> {

@@ -17,10 +17,18 @@ export type GitStatusEntry = {
 export type GitSummary = {
   branch: string;
   entries: GitStatusEntry[];
+  ahead?: number | null;
+  behind?: number | null;
+};
+
+export type GitBranchInfo = {
+  branch: string;
+  ahead: number | null;
+  behind: number | null;
 };
 
 type Props = {
-  onBranch: (branch: string | null) => void;
+  onBranch: (info: GitBranchInfo | null) => void;
 };
 
 export function ScmPanel({ onBranch }: Props) {
@@ -46,7 +54,11 @@ export function ScmPanel({ onBranch }: Props) {
     try {
       const next = await invoke<GitSummary>("git_summary", { cwd: rootPath });
       setSummary(next);
-      onBranch(next.branch);
+      onBranch({
+        branch: next.branch,
+        ahead: next.ahead ?? null,
+        behind: next.behind ?? null,
+      });
       const names = await invoke<string[]>("git_branches", { cwd: rootPath });
       setBranches(names);
       try {

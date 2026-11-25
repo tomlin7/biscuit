@@ -22,6 +22,8 @@ type StatusBarProps = {
   onToggleTerminal?: () => void;
   onOpenDebug?: () => void;
   gitBranch?: string | null;
+  gitAhead?: number | null;
+  gitBehind?: number | null;
 };
 
 export function StatusBar({
@@ -31,6 +33,8 @@ export function StatusBar({
   onToggleTerminal,
   onOpenDebug,
   gitBranch = null,
+  gitAhead = null,
+  gitBehind = null,
 }: StatusBarProps) {
   const { dirty, busy, rootName, document, selectionChars, selectionLines, setEol, setLanguageAt } =
     useWorkspace();
@@ -52,6 +56,13 @@ export function StatusBar({
         >
           <GitBranch size={14} strokeWidth={1.75} aria-hidden />
           <span>{gitBranch ?? "—"}</span>
+          {gitBranch && (gitAhead != null || gitBehind != null) ? (
+            <span className="status-bar__sync" title="Ahead / behind upstream">
+              {gitAhead != null && gitAhead > 0 ? `↑${gitAhead}` : null}
+              {gitBehind != null && gitBehind > 0 ? `↓${gitBehind}` : null}
+              {gitAhead === 0 && gitBehind === 0 ? "✓" : null}
+            </span>
+          ) : null}
         </button>
         {rootName ? (
           <button

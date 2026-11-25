@@ -8,6 +8,7 @@ import { OutlinePanel } from "../lsp/OutlinePanel";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { IconButton } from "../ui/IconButton";
 import type { SearchHit } from "../search/workspaceSearch";
+import type { GitBranchInfo } from "../scm/ScmPanel";
 
 export type SidebarMode =
   | "explorer"
@@ -20,7 +21,7 @@ export type SidebarMode =
 type SidebarProps = {
   mode: SidebarMode;
   onModeChange: (mode: SidebarMode) => void;
-  onBranch: (branch: string | null) => void;
+  onBranch: (info: GitBranchInfo | null) => void;
   treeFilter: string;
   onTreeFilter: (value: string) => void;
   hideDotfiles: boolean;

@@ -461,13 +461,20 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  max-width: 140px;
+  max-width: 200px;
   height: 28px;
   padding: 0 8px;
   border-radius: 6px;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
   overflow: hidden;
+}
+
+.status-bar__sync {
+  flex-shrink: 0;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 .status-bar__chip span {
