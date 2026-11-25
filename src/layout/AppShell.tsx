@@ -1587,6 +1587,13 @@ function ShellChrome() {
           notify("Encoding", `Copied ${charset}`);
         });
       },
+      openExtensionsMarketplace: () => {
+        void openUrl(
+          "https://github.com/search?q=topic%3At3d-extension&type=repositories",
+        ).catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,

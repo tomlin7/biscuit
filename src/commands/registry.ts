@@ -1572,7 +1572,12 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.copyFileEncoding(),
   },
-
+  {
+    id: "workbench.extensions.action.openMarketplace",
+    title: "Open Extensions Marketplace",
+    category: "Extensions",
+    run: (ctx) => ctx.openExtensionsMarketplace(),
+  },
 
 
 ];

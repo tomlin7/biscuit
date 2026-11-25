@@ -260,6 +260,7 @@ export type CommandContext = {
   openRecentFolder: () => void;
   openRecentFile: () => void;
   copyFileEncoding: () => void;
+  openExtensionsMarketplace: () => void;
 };
 
 export type Command = {
