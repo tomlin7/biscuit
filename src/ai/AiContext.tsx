@@ -93,7 +93,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
             id: crypto.randomUUID(),
             role: "assistant",
             content:
-              "No API key configured. Open AI settings (gear in this panel), set an OpenAI-compatible base URL + API key, then try again. This is the 0.10.0 agent foundation.",
+              "No API key configured. Open Settings (Ctrl+,) → AI, set an OpenAI-compatible base URL + API key, then try again.",
           };
           setMessages((m) => [...m, assistant]);
           return;

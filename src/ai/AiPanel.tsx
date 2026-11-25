@@ -39,9 +39,14 @@ export function AiPanel({ onOpenSettings }: Props) {
   }, [messages]);
 
   const submit = () => {
-    const text = draft;
+    const text = draft.trim();
+    if (!text) return;
     setDraft("");
-    void send(text);
+    const withContext =
+      document != null
+        ? `Regarding file \`${document.path}\`:\n\n${text}`
+        : text;
+    void send(withContext);
   };
 
   return (

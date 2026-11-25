@@ -52,6 +52,7 @@ function ShellChrome() {
   const [panelTab, setPanelTab] = useState<BottomTab>("terminal");
   const [gitBranch, setGitBranch] = useState<string | null>(null);
   const [treeFilter, setTreeFilter] = useState("");
+  const [hideDotfiles, setHideDotfiles] = useState(false);
 
   useEffect(() => {
     if (!rootPath) {
@@ -325,6 +326,8 @@ function ShellChrome() {
             onOpenProblems={openProblems}
             treeFilter={treeFilter}
             onTreeFilter={setTreeFilter}
+            hideDotfiles={hideDotfiles}
+            onToggleHideDotfiles={() => setHideDotfiles((v) => !v)}
           />
         </div>
         {sidebarOpen ? (

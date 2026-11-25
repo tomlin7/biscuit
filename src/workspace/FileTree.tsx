@@ -5,21 +5,26 @@ import { useWorkspace } from "./WorkspaceContext";
 import { FileIcon } from "../ui/FileIcon";
 import "./FileTree.css";
 
-function filterTree(nodes: TreeNode[], query: string): TreeNode[] {
+function filterTree(
+  nodes: TreeNode[],
+  query: string,
+  hideDotfiles: boolean,
+): TreeNode[] {
   const q = query.trim().toLowerCase();
-  if (!q) return nodes;
   const out: TreeNode[] = [];
   for (const node of nodes) {
+    if (hideDotfiles && node.name.startsWith(".")) continue;
     if (node.kind === "directory") {
-      const children = filterTree(node.children ?? [], query);
-      if (children.length > 0 || node.name.toLowerCase().includes(q)) {
+      const children = filterTree(node.children ?? [], query, hideDotfiles);
+      const nameMatch = !q || node.name.toLowerCase().includes(q);
+      if (nameMatch || children.length > 0) {
         out.push({
           ...node,
-          children,
+          children: q ? children : (node.children ?? children),
           loaded: true,
         });
       }
-    } else if (node.name.toLowerCase().includes(q)) {
+    } else if (!q || node.name.toLowerCase().includes(q)) {
       out.push(node);
     }
   }
@@ -99,11 +104,15 @@ function TreeRows({
 
 type Props = {
   filter?: string;
+  hideDotfiles?: boolean;
 };
 
-export function FileTree({ filter = "" }: Props) {
+export function FileTree({ filter = "", hideDotfiles = false }: Props) {
   const { rootPath, tree, treeError, busy, openFolder } = useWorkspace();
-  const filtered = useMemo(() => filterTree(tree, filter), [tree, filter]);
+  const filtered = useMemo(
+    () => filterTree(tree, filter, hideDotfiles),
+    [tree, filter, hideDotfiles],
+  );
   const forceExpand = filter.trim().length > 0;
 
   if (!rootPath) {

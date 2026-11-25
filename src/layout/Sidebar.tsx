@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   AlertCircle,
   Bug,
@@ -34,6 +34,8 @@ type SidebarProps = {
   onOpenProblems: () => void;
   treeFilter: string;
   onTreeFilter: (value: string) => void;
+  hideDotfiles: boolean;
+  onToggleHideDotfiles: () => void;
 };
 
 export function Sidebar({
@@ -45,10 +47,11 @@ export function Sidebar({
   onOpenProblems,
   treeFilter,
   onTreeFilter,
+  hideDotfiles,
+  onToggleHideDotfiles,
 }: SidebarProps) {
   const { rootName, openFileAt } = useWorkspace();
   const { setBottomOpen } = useLayout();
-  const [filterOpen, setFilterOpen] = useState(false);
 
   const onOpenHit = (hit: SearchHit) => {
     void openFileAt(hit.path, hit.line, hit.column);
@@ -72,10 +75,10 @@ export function Sidebar({
           />
           <IconButton
             icon={Filter}
-            label="Filter"
+            label={hideDotfiles ? "Showing non-dotfiles (click to show all)" : "Hide dotfiles"}
             size={14}
-            active={filterOpen}
-            onClick={() => setFilterOpen((v) => !v)}
+            active={hideDotfiles}
+            onClick={onToggleHideDotfiles}
           />
         </div>
       ) : null}
@@ -110,7 +113,9 @@ export function Sidebar({
       ) : null}
 
       <div className="sidebar__content">
-        {mode === "explorer" ? <FileTree filter={treeFilter} /> : null}
+        {mode === "explorer" ? (
+          <FileTree filter={treeFilter} hideDotfiles={hideDotfiles} />
+        ) : null}
         {mode === "search" ? <SearchPanel onOpenHit={onOpenHit} /> : null}
         {mode === "scm" ? <ScmPanel onBranch={onBranch} /> : null}
         {mode === "extensions" ? <ExtensionsPanel /> : null}
