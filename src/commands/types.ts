@@ -44,6 +44,7 @@ export type CommandContext = {
   openSettings: () => void;
   toggleSidebar: () => void;
   refreshExplorer: () => Promise<void> | void;
+  collapseExplorer: () => void;
   openKeybindings: () => void;
 };
 
