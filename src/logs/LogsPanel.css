@@ -1,0 +1,52 @@
+.logs-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.logs-panel__bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 8px;
+}
+
+.logs-panel__bar button {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.logs-panel__bar button:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
+.logs-panel__empty {
+  margin: 8px 12px;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.logs-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 8px 8px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.logs-panel__list li {
+  display: flex;
+  gap: 10px;
+  padding: 3px 4px;
+  color: var(--fg);
+}
+
+.logs-panel__list time {
+  flex: none;
+  color: var(--fg-dim);
+}
