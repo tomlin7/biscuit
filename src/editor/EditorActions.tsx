@@ -55,7 +55,8 @@ export type EditorCommand =
   | "uppercase"
   | "lowercase"
   | "blockComment"
-  | "joinLines";
+  | "joinLines"
+  | "sortLines";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -157,6 +158,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "joinLines":
         handle.trigger("editor.action.joinLines");
+        break;
+      case "sortLines":
+        handle.trigger("editor.action.sortLinesAscending");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

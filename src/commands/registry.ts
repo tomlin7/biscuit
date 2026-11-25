@@ -177,6 +177,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("joinLines"),
   },
   {
+    id: "editor.action.sortLinesAscending",
+    title: "Sort Lines Ascending",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("sortLines"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",
