@@ -67,6 +67,8 @@ export type WorkspaceState = {
   setCursor: (line: number, column: number) => void;
   clearRevealTarget: () => void;
   save: () => Promise<void>;
+  saveAll: () => Promise<void>;
+  closeAll: () => void;
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
   renameEntry: (path: string) => Promise<void>;
   deleteEntry: (path: string) => Promise<void>;
@@ -476,6 +478,46 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     [rootPath, reloadDirectory],
   );
 
+  const saveAll = useCallback(async () => {
+    const dirty = tabsRef.current.filter(isDirty);
+    if (dirty.length === 0) return;
+    setBusy(true);
+    setTreeError(null);
+    try {
+      for (const tab of dirty) {
+        await writeTextFile(tab.path, tab.value);
+      }
+      const saved = new Map(dirty.map((tab) => [tab.path, tab.value]));
+      setTabs((current) =>
+        current.map((tab) => {
+          const value = saved.get(tab.path);
+          return value === undefined ? tab : { ...tab, baseline: value };
+        }),
+      );
+    } catch (err) {
+      setTreeError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
+  const closeAll = useCallback(() => {
+    const open = tabsRef.current;
+    if (open.length === 0) return;
+    const dirty = open.filter(isDirty);
+    if (dirty.length > 0) {
+      const ok = window.confirm(
+        dirty.length === 1
+          ? `Close ${dirty[0].title} without saving?`
+          : `Close ${dirty.length} unsaved files without saving?`,
+      );
+      if (!ok) return;
+    }
+    for (const tab of open) pushClosedEditor(tab.path);
+    setTabs([]);
+    setActivePath(null);
+  }, []);
+
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
@@ -527,6 +569,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCursor,
       clearRevealTarget,
       save,
+      saveAll,
+      closeAll,
       createEntry,
       renameEntry,
       deleteEntry,
@@ -556,6 +600,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setCursor,
       clearRevealTarget,
       save,
+      saveAll,
+      closeAll,
       createEntry,
       renameEntry,
       deleteEntry,

@@ -23,6 +23,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.15.0** | Git branches, push, pull, discard, and diff | shipped |
 | **0.16.0** | Replace in the open file and across the workspace | shipped |
 | **0.17.0** | Markdown preview beside the editor | shipped |
+| **0.18.0** | Save all and close all editors | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

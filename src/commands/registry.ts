@@ -30,11 +30,25 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.save(),
   },
   {
+    id: "workbench.action.files.saveAll",
+    title: "Save All",
+    category: "File",
+    keybinding: "Ctrl+K S",
+    run: (ctx) => void ctx.saveAll(),
+  },
+  {
     id: "workbench.action.closeActiveEditor",
     title: "Close Editor",
     category: "View",
     keybinding: "Ctrl+W",
     run: (ctx) => ctx.closeActive(),
+  },
+  {
+    id: "workbench.action.closeAllEditors",
+    title: "Close All Editors",
+    category: "View",
+    keybinding: "Ctrl+K W",
+    run: (ctx) => ctx.closeAll(),
   },
   {
     id: "workbench.action.toggleTheme",

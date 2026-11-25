@@ -29,8 +29,18 @@ import { LayoutProvider, useLayout } from "./LayoutContext";
 import { ResizeHandle } from "./ResizeHandle";
 
 function ShellChrome() {
-  const { save, closeTab, activePath, openFolder, openFolderAt, openFile, reopenClosed, rootPath } =
-    useWorkspace();
+  const {
+    save,
+    saveAll,
+    closeTab,
+    closeAll,
+    activePath,
+    openFolder,
+    openFolderAt,
+    openFile,
+    reopenClosed,
+    rootPath,
+  } = useWorkspace();
   const { toggleTheme } = useTheme();
   const { findInFile, runEditorCommand } = useEditorActions();
   const { extensions } = useExtensions();
@@ -143,9 +153,11 @@ function ShellChrome() {
       openFile,
       reopenClosed,
       save,
+      saveAll,
       closeActive: () => {
         if (activePath) closeTab(activePath);
       },
+      closeAll,
       toggleTheme,
       openPalette,
       closePalette,
@@ -166,6 +178,8 @@ function ShellChrome() {
       openFile,
       reopenClosed,
       save,
+      saveAll,
+      closeAll,
       activePath,
       closeTab,
       toggleTheme,
@@ -274,6 +288,20 @@ function ShellChrome() {
         return;
       }
 
+      if (chord === "ctrl+k" && key === "s") {
+        event.preventDefault();
+        void saveAll();
+        clearChord();
+        return;
+      }
+
+      if (chord === "ctrl+k" && key === "w") {
+        event.preventDefault();
+        closeAll();
+        clearChord();
+        return;
+      }
+
       if (mod && key === "s") {
         event.preventDefault();
         void save();
@@ -329,6 +357,8 @@ function ShellChrome() {
     openSearch,
     findInFile,
     save,
+    saveAll,
+    closeAll,
     activePath,
     closeTab,
     openFolder,
