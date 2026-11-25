@@ -12,7 +12,7 @@
 
 <br />
 
-[Downloads](#downloads) &ensp;·&ensp; [Quickstart](#quickstart) &ensp;·&ensp; [Workspaces](#packages) &ensp;·&ensp; [Milestones](MILESTONES.md) &ensp;·&ensp; [Website](https://t3d.sh)
+[Downloads](#downloads) &ensp;·&ensp; [Quickstart](#quickstart) &ensp;·&ensp; [Workspaces](#packages) &ensp;·&ensp; [Milestones](docs/MILESTONES.md) &ensp;·&ensp; [Website](https://t3d.sh)
 
 </div>
 

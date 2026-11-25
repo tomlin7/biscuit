@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import TedDemo from "@/components/TedDemo";
+import Image from "next/image";
 
 function DownloadIcon({ className }: { className?: string }) {
   return (
@@ -126,7 +126,7 @@ export default function Page() {
           </a>
 
           <nav className="hidden md:flex items-center gap-6 text-[13px] text-muted-foreground">
-            <a href="#demo" className="hover:text-foreground transition-colors">Editor Canvas</a>
+            <a href="#demo" className="hover:text-foreground transition-colors">Preview</a>
             <a href="#capabilities" className="hover:text-foreground transition-colors">Capabilities</a>
             <a href="#architecture" className="hover:text-foreground transition-colors">Architecture</a>
             <a href="#shortcuts" className="hover:text-foreground transition-colors">Shortcuts</a>
@@ -208,26 +208,16 @@ export default function Page() {
                 Zero Telemetry
               </span>
             </div>
-          </section>
-
-          {/* ── Section 1: Interactive App Canvas ─────────────────────────── */}
-          <section id="demo" className="py-12 md:py-16">
-            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 animate-morsel-enter">
-              <div>
-                <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                  Interactive editor surface
-                </h2>
-                <p className="mt-1 text-[13px] text-muted-foreground">
-                  Explore tabs, split views, runnable terminal commands, CSV tables, and hex dumps in this live preview.
-                </p>
-              </div>
-              <div className="text-[13px] text-muted-foreground flex items-center gap-2">
-                <span>Press <kbd className="px-1.5 py-0.5 rounded bg-muted text-[13px]">Ctrl+Shift+P</kbd> for palette</span>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-card p-2 sm:p-4 animate-morsel-enter" data-ui="morsel-editor">
-              <TedDemo />
+            {/* ── Hero Preview ────────────────────────────────────────────── */}
+            <div id="demo" className="mt-12 overflow-hidden rounded-xl border border-border/70 bg-card shadow-2xl animate-morsel-enter" data-ui="hero-preview">
+              <Image
+                src="/hero.png"
+                alt="Morsel code editor preview"
+                width={1455}
+                height={961}
+                priority
+                className="w-full h-auto block"
+              />
             </div>
           </section>
 
