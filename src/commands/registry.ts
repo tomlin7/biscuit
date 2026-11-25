@@ -207,6 +207,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("jumpToBracket"),
   },
   {
+    id: "editor.action.selectHighlights",
+    title: "Select All Occurrences",
+    category: "Edit",
+    keybinding: "Ctrl+Shift+L",
+    run: (ctx) => ctx.runEditorCommand("selectHighlights"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

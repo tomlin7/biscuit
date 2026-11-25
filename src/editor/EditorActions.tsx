@@ -59,7 +59,8 @@ export type EditorCommand =
   | "sortLines"
   | "duplicateSelection"
   | "transposeLetters"
-  | "jumpToBracket";
+  | "jumpToBracket"
+  | "selectHighlights";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -173,6 +174,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "jumpToBracket":
         handle.trigger("editor.action.jumpToBracket");
+        break;
+      case "selectHighlights":
+        handle.trigger("editor.action.selectHighlights");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

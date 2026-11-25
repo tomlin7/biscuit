@@ -46,7 +46,8 @@ export type CommandContext = {
       | "sortLines"
       | "duplicateSelection"
       | "transposeLetters"
-      | "jumpToBracket",
+      | "jumpToBracket"
+      | "selectHighlights",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;
