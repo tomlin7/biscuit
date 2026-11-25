@@ -1,6 +1,6 @@
 [package]
 name = "t3d"
-version = "0.2.1"
+version = "0.3.0"
 description = "T3D — modern code editor (Tauri)"
 authors = ["Tomlin7 <billydevbusiness@gmail.com>"]
 edition = "2021"
@@ -17,6 +17,8 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri-plugin-dialog = "2.7.3"
+tauri-plugin-fs = "2.5.2"
 
 [profile.release]
 codegen-units = 1
