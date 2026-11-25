@@ -1280,7 +1280,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleMaximizeWindow(),
   },
-
+  {
+    id: "workbench.action.minimizeWindow",
+    title: "Minimize Window",
+    category: "View",
+    run: (ctx) => ctx.minimizeWindow(),
+  },
 
 
 

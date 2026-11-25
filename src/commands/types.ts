@@ -213,6 +213,7 @@ export type CommandContext = {
   dismissLatestNotification: () => void;
   notifyUnreadCount: () => void;
   toggleMaximizeWindow: () => void;
+  minimizeWindow: () => void;
 };
 
 export type Command = {

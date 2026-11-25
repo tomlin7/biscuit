@@ -1249,6 +1249,12 @@ function ShellChrome() {
         }
         void getCurrentWindow().toggleMaximize();
       },
+      minimizeWindow: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          return;
+        }
+        void getCurrentWindow().minimize();
+      },
     }),
     [
       openFolder,

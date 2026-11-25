@@ -352,6 +352,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.344.0** | Dismiss latest notification from palette | shipped |
 | **0.345.0** | Show notification unread count from palette | shipped |
 | **0.346.0** | Toggle maximize window from palette | shipped |
+| **0.347.0** | Minimize window from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
