@@ -203,6 +203,25 @@ export function StatusBar({
           <button
             type="button"
             className="status-bar__chip"
+            title="Cycle cursor style"
+            onClick={() => {
+              const order = ["line", "block", "underline"] as const;
+              const idx = order.indexOf(settings.editor.cursorStyle);
+              const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? "line";
+              updateEditor({ cursorStyle: next });
+            }}
+          >
+            {settings.editor.cursorStyle === "line"
+              ? "Caret"
+              : settings.editor.cursorStyle === "block"
+                ? "Block"
+                : "Under"}
+          </button>
+        ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
             title="Toggle minimap"
             onClick={() => updateEditor({ minimap: !settings.editor.minimap })}
           >
