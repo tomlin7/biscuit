@@ -1152,6 +1152,9 @@ function ShellChrome() {
       openSidebar: () => {
         setSidebarOpen(true);
       },
+      openBottomPanel: () => {
+        setBottomOpen(true);
+      },
     }),
     [
       openFolder,

@@ -335,6 +335,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.327.0** | Copy Git branch sync summary from palette | shipped |
 | **0.328.0** | Reset all layout sizes from palette | shipped |
 | **0.329.0** | Open primary side bar from palette | shipped |
+| **0.330.0** | Open bottom panel from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

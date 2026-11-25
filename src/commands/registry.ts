@@ -1166,4 +1166,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.openSidebar(),
   },
+  {
+    id: "workbench.action.openBottomPanel",
+    title: "Open Bottom Panel",
+    category: "View",
+    run: (ctx) => ctx.openBottomPanel(),
+  },
 ];

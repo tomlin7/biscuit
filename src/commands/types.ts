@@ -194,6 +194,7 @@ export type CommandContext = {
   copyGitBranchSync: () => void;
   resetAllLayoutSizes: () => void;
   openSidebar: () => void;
+  openBottomPanel: () => void;
 };
 
 export type Command = {
