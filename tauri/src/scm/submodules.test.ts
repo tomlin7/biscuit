@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   formatSubmoduleStatus,
   formatSubmoduleCommit,
+  formatSubmoduleRef,
   fetchGitSubmodules,
   initGitSubmodule,
   updateGitSubmodule,
@@ -42,7 +43,7 @@ describe("Git Submodules Frontend helpers", () => {
     expect(unknownFallback.badgeClass).toBe("scm-panel__submodule-badge--up-to-date");
   });
 
-  test("formats submodule commit hashes cleanly", () => {
+  test("formats submodule commit hashes and refs cleanly", () => {
     expect(formatSubmoduleCommit("4b825dc642cb6eb9a060e54bf8d69288fbee4904")).toBe("4b825dc");
     expect(formatSubmoduleCommit("1234567")).toBe("1234567");
     expect(formatSubmoduleCommit("abc")).toBe("abc");
@@ -50,6 +51,11 @@ describe("Git Submodules Frontend helpers", () => {
     expect(formatSubmoduleCommit(undefined)).toBe("—");
     expect(formatSubmoduleCommit("")).toBe("—");
     expect(formatSubmoduleCommit("   ")).toBe("—");
+
+    expect(formatSubmoduleRef("4b825dc642cb6eb9a060e54bf8d69288fbee4904", "main")).toBe("4b825dc (main)");
+    expect(formatSubmoduleRef("4b825dc642cb6eb9a060e54bf8d69288fbee4904", null)).toBe("4b825dc");
+    expect(formatSubmoduleRef(null, "main")).toBe("main");
+    expect(formatSubmoduleRef(null, null)).toBe("—");
   });
 
   test("validates GitSubmoduleInfo objects", () => {
@@ -58,12 +64,15 @@ describe("Git Submodules Frontend helpers", () => {
       path: "vendor/lib",
       url: "https://github.com/example/lib.git",
       head_commit: "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+      branch: "main",
       status: "up-to-date",
     };
     expect(sub.name).toBe("vendor/lib");
     expect(sub.path).toBe("vendor/lib");
     expect(sub.url).toContain("https://");
+    expect(sub.branch).toBe("main");
     expect(formatSubmoduleCommit(sub.head_commit)).toBe("4b825dc");
+    expect(formatSubmoduleRef(sub.head_commit, sub.branch)).toBe("4b825dc (main)");
     expect(formatSubmoduleStatus(sub.status).label).toBe("up-to-date");
   });
 

@@ -36,7 +36,7 @@ import {
   updateGitSubmodule,
   syncGitSubmodules,
   formatSubmoduleStatus,
-  formatSubmoduleCommit,
+  formatSubmoduleRef,
   type GitSubmoduleInfo,
 } from "./submodules";
 import { IconButton } from "../ui/IconButton";
@@ -444,8 +444,10 @@ export function ScmPanel({ onBranch }: Props) {
     setActing(true);
     setError(null);
     try {
-      const out = await initGitSubmodule(rootPath, sub.path);
-      if (out?.trim()) appendLog(out.trim());
+      const outInit = await initGitSubmodule(rootPath, sub.path);
+      if (outInit?.trim()) appendLog(outInit.trim());
+      const outUpdate = await updateGitSubmodule(rootPath, sub.path, true);
+      if (outUpdate?.trim()) appendLog(outUpdate.trim());
       await refresh();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -519,8 +521,10 @@ export function ScmPanel({ onBranch }: Props) {
     setActing(true);
     setError(null);
     try {
-      const out = await initGitSubmodule(rootPath, null);
-      if (out?.trim()) appendLog(out.trim());
+      const outInit = await initGitSubmodule(rootPath, null);
+      if (outInit?.trim()) appendLog(outInit.trim());
+      const outUpdate = await updateGitSubmodule(rootPath, null, true);
+      if (outUpdate?.trim()) appendLog(outUpdate.trim());
       await refresh();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -533,7 +537,7 @@ export function ScmPanel({ onBranch }: Props) {
 
   const renderSubmoduleRow = (sub: GitSubmoduleInfo) => {
     const statusInfo = formatSubmoduleStatus(sub.status);
-    const commitShort = formatSubmoduleCommit(sub.head_commit);
+    const commitOrBranch = formatSubmoduleRef(sub.head_commit, sub.branch);
     const isUninit = sub.status.toLowerCase() === "uninitialized";
 
     return (
@@ -558,9 +562,9 @@ export function ScmPanel({ onBranch }: Props) {
               </span>
               <span
                 className="scm-panel__submodule-commit"
-                title={`Commit: ${sub.head_commit ?? "none"}`}
+                title={`Commit: ${sub.head_commit ?? "none"}${sub.branch ? ` (${sub.branch})` : ""}`}
               >
-                {commitShort}
+                {commitOrBranch}
               </span>
             </div>
           </div>
@@ -892,7 +896,7 @@ export function ScmPanel({ onBranch }: Props) {
       {/* Changes list area */}
       <div className="scm-panel__lists">
         {loading && !summary ? <p className="scm-panel__hint">Loading git status…</p> : null}
-        {summary && summary.entries.length === 0 && submodules.length === 0 ? (
+        {summary && summary.entries.length === 0 ? (
           <EmptyState
             compact
             icon={CheckCircle2}

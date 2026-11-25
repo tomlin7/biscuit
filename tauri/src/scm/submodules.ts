@@ -12,6 +12,7 @@ export type GitSubmoduleInfo = {
   path: string;
   url: string;
   head_commit?: string | null;
+  branch?: string | null;
   status: GitSubmoduleStatus;
 };
 
@@ -76,4 +77,13 @@ export function formatSubmoduleStatus(status: string): {
 export function formatSubmoduleCommit(sha?: string | null): string {
   if (!sha || !sha.trim()) return "—";
   return sha.trim().slice(0, 7);
+}
+
+export function formatSubmoduleRef(sha?: string | null, branch?: string | null): string {
+  const commit = formatSubmoduleCommit(sha);
+  const cleanBranch = branch?.trim();
+  if (cleanBranch) {
+    return commit !== "—" ? `${commit} (${cleanBranch})` : cleanBranch;
+  }
+  return commit;
 }
