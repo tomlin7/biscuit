@@ -16,7 +16,7 @@
 .file-tree__hint,
 .file-tree__status {
   margin: 8px 6px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 
@@ -26,7 +26,7 @@
   border-radius: 8px;
   background: var(--danger-bg);
   color: var(--danger-fg);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .file-tree__cta {
@@ -35,7 +35,7 @@
   background: var(--bg-active);
   border: 1px solid var(--border);
   color: var(--fg);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .file-tree__cta:hover {
@@ -52,7 +52,7 @@
   padding-bottom: 3px;
   border-radius: 6px;
   color: var(--fg-muted);
-  font-size: 12.5px;
+  font-size: var(--font-size-ui);
   text-align: left;
 }
 

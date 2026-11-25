@@ -17,7 +17,7 @@
   padding: 6px 4px 8px 10px;
   border-radius: 8px 8px 0 0;
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   background: transparent;
   cursor: pointer;
   user-select: none;

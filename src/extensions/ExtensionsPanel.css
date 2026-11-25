@@ -17,7 +17,7 @@
   border-radius: 6px;
   background: var(--bg-input);
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .ext-panel__toolbar button:hover {
@@ -28,14 +28,14 @@
 .ext-panel__hint {
   margin: 8px 0;
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   line-height: 1.45;
 }
 
 .ext-panel__error {
   margin: 0;
   color: var(--danger-fg);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .ext-panel__list {
@@ -65,19 +65,19 @@
 }
 
 .ext-panel__meta strong {
-  font-size: 13px;
+  font-size: var(--font-size-ui);
   color: var(--fg);
 }
 
 .ext-panel__meta span {
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   color: var(--fg-dim);
   font-family: var(--font-mono);
 }
 
 .ext-panel__meta p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 
@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
   white-space: nowrap;
 }

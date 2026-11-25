@@ -9,7 +9,7 @@
   place-items: center;
   height: 100%;
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .monaco-editor-host .monaco-editor,

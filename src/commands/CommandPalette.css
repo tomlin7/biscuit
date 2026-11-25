@@ -52,7 +52,7 @@
 .command-palette__empty {
   padding: 12px;
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .command-palette__item {
@@ -64,7 +64,7 @@
   padding: 8px 10px;
   border-radius: 8px;
   color: var(--fg);
-  font-size: 13px;
+  font-size: var(--font-size-ui);
   text-align: left;
 }
 
@@ -80,6 +80,6 @@
 .command-palette__keys {
   flex-shrink: 0;
   color: var(--fg-dim);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-family: var(--font-mono);
 }

@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@fontsource-variable/ibm-plex-sans": "^5.3.0",
+    "@fontsource-variable/dm-sans": "^5.3.0",
     "@monaco-editor/react": "^4.7.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2.7.3",

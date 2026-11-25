@@ -13,7 +13,7 @@
   border-radius: 6px;
   background: var(--bg-input);
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .debug-panel__toolbar button:hover:not(:disabled),
@@ -28,7 +28,7 @@
 
 .debug-panel__section h3 {
   margin: 0 0 6px;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -37,7 +37,7 @@
 
 .debug-panel__hint {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 
@@ -53,7 +53,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 4px 0;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 

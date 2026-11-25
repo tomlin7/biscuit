@@ -306,11 +306,11 @@ function ShellChrome() {
 
   const workspaceStyle = {
     gridTemplateColumns: [
-      sidebarOpen ? `${sidebarWidth}px` : "0px",
+      sidebarOpen ? `${sidebarWidth}px` : "0fr",
       sidebarOpen ? "6px" : "0px",
-      "minmax(0, 1fr)",
+      "minmax(320px, 1fr)",
       aiOpen ? "6px" : "0px",
-      aiOpen ? `${aiWidth}px` : "0px",
+      aiOpen ? `${aiWidth}px` : "0fr",
     ].join(" "),
   } as const;
 
@@ -326,9 +326,7 @@ function ShellChrome() {
             mode={sidebarMode}
             onModeChange={setSidebarMode}
             onBranch={setGitBranch}
-            gitBranch={gitBranch}
             onToggleTerminal={toggleTerminal}
-            onOpenProblems={openProblems}
             treeFilter={treeFilter}
             onTreeFilter={setTreeFilter}
             hideDotfiles={hideDotfiles}
@@ -390,6 +388,7 @@ function ShellChrome() {
       <StatusBar
         onOpenProblems={openProblems}
         onOpenSettings={openSettings}
+        onOpenScm={() => setSidebarMode("scm")}
         gitBranch={gitBranch}
       />
       <CommandPalette

@@ -2,8 +2,13 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --font-ui: "IBM Plex Sans Variable", "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-ui: "DM Sans Variable", "DM Sans", sans-serif;
   --font-mono: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
+
+  --font-size-ui: 14px;
+  --font-size-sm: 13px;
+  --font-size-xs: 12px;
+  --line-height-ui: 1.45;
 
   --bg-root: #000000;
   --bg-island: #141414;
@@ -34,8 +39,8 @@
   --radius-pill: 999px;
   --gap-shell: 5px;
 
-  --titlebar-height: 48px;
-  --statusbar-height: 28px;
+  --titlebar-height: 52px;
+  --statusbar-height: 34px;
   --sidebar-width: 280px;
   --ai-width: 360px;
 }

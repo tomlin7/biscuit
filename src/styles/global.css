@@ -15,9 +15,10 @@ body,
 
 body {
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: var(--font-size-ui);
   font-weight: 450;
-  line-height: 1.4;
+  line-height: var(--line-height-ui);
+  letter-spacing: -0.01em;
   color: var(--fg);
   background: var(--bg-root);
   -webkit-font-smoothing: antialiased;
@@ -29,6 +30,8 @@ input,
 textarea,
 select {
   font: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
 }
 
 button {

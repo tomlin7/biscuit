@@ -21,6 +21,14 @@
   min-width: 0;
   min-height: 0;
   display: flex;
+  overflow: hidden;
+}
+
+.app-shell__sidebar-slot > .sidebar,
+.app-shell__ai-slot > .ai-panel {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
 }
 
 .app-shell__main {
@@ -72,13 +80,13 @@
   align-items: center;
   gap: 8px;
   max-width: 280px;
-  padding: 7px 12px;
+  padding: 8px 14px;
   border-radius: var(--radius-pill);
   background: var(--bg-island);
   border: 1px solid var(--border);
   color: var(--fg);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--font-size-ui);
+  font-weight: 550;
   -webkit-app-region: no-drag;
 }
 
@@ -102,7 +110,7 @@
 }
 
 .titlebar__kbd-text {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--fg-dim);
@@ -147,7 +155,7 @@
   padding: 0 7px;
   border-radius: 7px;
   color: var(--fg-muted);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-variant-numeric: tabular-nums;
 }
 
@@ -172,12 +180,12 @@
 .sidebar__search input {
   flex: 1;
   min-width: 0;
-  padding: 8px 0;
+  padding: 9px 0;
   border: none;
   background: transparent;
   color: var(--fg);
   font: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-ui);
   outline: none;
 }
 
@@ -196,7 +204,7 @@
   padding: 6px 4px;
   border-radius: 6px;
   color: var(--fg-muted);
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -222,32 +230,10 @@
 .sidebar__dock {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 2px;
   padding: 6px 8px 8px;
   border-top: 1px solid var(--border-subtle);
-}
-
-.sidebar__dock-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  max-width: 84px;
-  padding: 4px 7px;
-  border-radius: 7px;
-  color: var(--fg-muted);
-  font-size: 11px;
-  overflow: hidden;
-}
-
-.sidebar__dock-chip span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sidebar__dock-chip:hover {
-  color: var(--fg);
-  background: var(--bg-hover);
 }
 
 .editor-area {
@@ -264,7 +250,7 @@
   gap: 8px;
   padding: 2px 8px 6px 12px;
   color: var(--fg-muted);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
 }
 
 .editor-area__crumbs {
@@ -311,7 +297,7 @@
   padding: 3px 7px;
   border-radius: 6px;
   color: var(--fg-muted);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   white-space: nowrap;
 }
 
@@ -343,7 +329,7 @@
   padding: 4px 10px;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--fg-muted);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
 }
 
 .editor-area__empty {
@@ -365,7 +351,7 @@
   margin: 0;
   max-width: 320px;
   color: var(--fg-muted);
-  font-size: 13px;
+  font-size: var(--font-size-ui);
   line-height: 1.45;
 }
 
@@ -374,8 +360,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 10px;
-  font-size: 11px;
+  padding: 0 12px;
+  font-size: var(--font-size-ui);
   color: var(--fg-muted);
   background: transparent;
 }
@@ -383,8 +369,36 @@
 .status-bar__group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
+}
+
+.status-bar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-bar__chip:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
+.status-bar__err {
+  color: #f87171;
+}
+
+.status-bar__warn {
+  color: #fbbf24;
+}
+
+.status-bar__version {
+  color: var(--fg-dim);
 }
 
 .status-bar__group--end {
@@ -422,7 +436,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--fg-muted);
   text-transform: uppercase;
@@ -431,7 +445,7 @@
 
 .status-bar__popover-head button {
   color: var(--fg-dim);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   text-transform: none;
   letter-spacing: 0;
   font-weight: 500;
@@ -444,7 +458,7 @@
 .status-bar__popover-empty {
   margin: 8px 4px;
   color: var(--fg-dim);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .status-bar__popover ul {
@@ -459,7 +473,7 @@
   gap: 2px;
   padding: 8px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 

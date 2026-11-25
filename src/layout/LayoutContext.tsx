@@ -33,7 +33,7 @@ type LayoutState = LayoutPersisted & {
 
 const DEFAULTS: LayoutPersisted = {
   sidebarWidth: 280,
-  aiWidth: 360,
+  aiWidth: 340,
   bottomHeight: 220,
   sidebarOpen: true,
   aiOpen: true,

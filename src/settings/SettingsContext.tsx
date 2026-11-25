@@ -30,7 +30,7 @@ const STORAGE_KEY = "t3d.settings.v1";
 
 const DEFAULTS: AppSettings = {
   editor: {
-    fontSize: 13,
+    fontSize: 14,
     tabSize: 2,
     wordWrap: false,
     minimap: true,

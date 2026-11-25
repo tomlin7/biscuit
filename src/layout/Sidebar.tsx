@@ -1,13 +1,10 @@
-import { useMemo } from "react";
 import {
-  AlertCircle,
   Bug,
   Filter,
   FolderTree,
   GitBranch,
   LayoutGrid,
   Search,
-  Tag,
   Terminal,
 } from "lucide-react";
 import { FileTree } from "../workspace/FileTree";
@@ -17,7 +14,6 @@ import { ExtensionsPanel } from "../extensions/ExtensionsPanel";
 import { DebugPanel } from "../debug/DebugPanel";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useLayout } from "./LayoutContext";
-import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { IconButton } from "../ui/IconButton";
 import type { SearchHit } from "../search/workspaceSearch";
 
@@ -32,9 +28,7 @@ type SidebarProps = {
   mode: SidebarMode;
   onModeChange: (mode: SidebarMode) => void;
   onBranch: (branch: string | null) => void;
-  gitBranch: string | null;
   onToggleTerminal: () => void;
-  onOpenProblems: () => void;
   treeFilter: string;
   onTreeFilter: (value: string) => void;
   hideDotfiles: boolean;
@@ -45,36 +39,25 @@ export function Sidebar({
   mode,
   onModeChange,
   onBranch,
-  gitBranch,
   onToggleTerminal,
-  onOpenProblems,
   treeFilter,
   onTreeFilter,
   hideDotfiles,
   onToggleHideDotfiles,
 }: SidebarProps) {
-  const { rootName, openFileAt } = useWorkspace();
+  const { openFileAt } = useWorkspace();
   const { setBottomOpen } = useLayout();
-  const { problems } = useDiagnostics();
 
   const onOpenHit = (hit: SearchHit) => {
     void openFileAt(hit.path, hit.line, hit.column);
   };
-
-  const shortBranch = useMemo(() => {
-    if (!gitBranch) return null;
-    return gitBranch.length > 12 ? `${gitBranch.slice(0, 11)}…` : gitBranch;
-  }, [gitBranch]);
-
-  const errorCount = problems.filter((p) => p.severity === "error").length;
-  const warnCount = problems.filter((p) => p.severity === "warning").length;
 
   return (
     <aside className="sidebar island" aria-label="Sidebar">
       <div className="sidebar__top">
         <div className="sidebar__search">
           <Search
-            size={14}
+            size={16}
             strokeWidth={1.75}
             className="sidebar__search-icon"
             aria-hidden
@@ -98,28 +81,28 @@ export function Sidebar({
           <IconButton
             icon={FolderTree}
             label="Explorer"
-            size={14}
+            size={16}
             active={mode === "explorer"}
             onClick={() => onModeChange("explorer")}
           />
           <IconButton
             icon={Search}
             label="Search"
-            size={14}
+            size={16}
             active={mode === "search"}
             onClick={() => onModeChange("search")}
           />
           <IconButton
             icon={GitBranch}
             label="Source Control"
-            size={14}
+            size={16}
             active={mode === "scm"}
             onClick={() => onModeChange("scm")}
           />
           <IconButton
             icon={LayoutGrid}
             label="Extensions"
-            size={14}
+            size={16}
             active={mode === "extensions"}
             onClick={() => onModeChange("extensions")}
           />
@@ -130,7 +113,7 @@ export function Sidebar({
                 ? "Showing non-dotfiles (click to show all)"
                 : "Hide dotfiles"
             }
-            size={14}
+            size={16}
             active={hideDotfiles}
             onClick={onToggleHideDotfiles}
           />
@@ -148,53 +131,19 @@ export function Sidebar({
       </div>
 
       <div className="sidebar__dock">
-        <button
-          type="button"
-          className="sidebar__dock-chip"
-          title="Source Control"
-          onClick={() => onModeChange("scm")}
-        >
-          <GitBranch size={13} strokeWidth={1.75} aria-hidden />
-          <span>{shortBranch ?? "git"}</span>
-        </button>
-        <button
-          type="button"
-          className="sidebar__dock-chip"
-          title={rootName ?? "Workspace"}
-          onClick={() => onModeChange("explorer")}
-        >
-          <Tag size={13} strokeWidth={1.75} aria-hidden />
-          <span>
-            {rootName
-              ? rootName.length > 10
-                ? `${rootName.slice(0, 9)}…`
-                : rootName
-              : "—"}
-          </span>
-        </button>
         <IconButton
           icon={Terminal}
           label="Terminal"
-          size={14}
+          size={16}
           onClick={() => {
             setBottomOpen(true);
             onToggleTerminal();
           }}
         />
-        <button
-          type="button"
-          className="sidebar__dock-count"
-          title="Problems"
-          onClick={onOpenProblems}
-        >
-          <AlertCircle size={13} strokeWidth={1.75} aria-hidden />
-          <span className="sidebar__dock-count-err">{errorCount}</span>
-          <span className="sidebar__dock-count-warn">{warnCount}</span>
-        </button>
         <IconButton
           icon={Bug}
           label="Debug"
-          size={14}
+          size={16}
           active={mode === "debug"}
           onClick={() => onModeChange("debug")}
         />

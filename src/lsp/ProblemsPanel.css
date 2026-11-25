@@ -8,7 +8,7 @@
 .problems-panel__empty {
   margin: 10px;
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .problems-panel__list {
@@ -26,7 +26,7 @@
   margin-bottom: 2px;
   border-radius: 6px;
   text-align: left;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 
@@ -37,7 +37,7 @@
 
 .problems-panel__sev {
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   font-weight: 700;
 }
 
@@ -59,5 +59,5 @@
 .problems-panel__loc {
   color: var(--fg-dim);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
 }

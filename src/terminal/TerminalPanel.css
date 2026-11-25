@@ -16,7 +16,7 @@
 
 .terminal-panel__header {
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;

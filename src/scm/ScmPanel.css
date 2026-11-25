@@ -19,7 +19,7 @@
 }
 
 .scm-panel__branch {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--fg);
   overflow: hidden;
@@ -31,7 +31,7 @@
   padding: 4px 8px;
   border-radius: 6px;
   color: var(--fg-muted);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
 }
 
 .scm-panel__refresh:hover:not(:disabled) {
@@ -41,7 +41,7 @@
 
 .scm-panel__hint {
   margin: 0 2px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--fg-muted);
 }
 
@@ -51,7 +51,7 @@
   border-radius: 8px;
   background: var(--danger-bg);
   color: var(--danger-fg);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .scm-panel__list {
@@ -72,7 +72,7 @@
   border-radius: 6px;
   text-align: left;
   color: var(--fg-muted);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
 }
 
 .scm-panel__row:hover {
@@ -84,7 +84,7 @@
   flex-shrink: 0;
   min-width: 72px;
   color: var(--accent);
-  font-size: 11px;
+  font-size: var(--font-size-sm);
 }
 
 .scm-panel__path {
