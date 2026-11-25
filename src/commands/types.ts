@@ -32,7 +32,9 @@ export type CommandContext = {
   toggleTrimTrailingWhitespace: () => void;
   cycleAutoSave: () => void;
   cycleFontSize: () => void;
-  openPalette: () => void;
+  cycleCursorStyle: () => void;
+ cycleTerminalFontSize: () => void;
+ openPalette: () => void;
   openSymbols: () => void;
   openWorkspaceSymbols: () => void;
   closePalette: () => void;
@@ -48,7 +50,7 @@ export type CommandContext = {
       | "relativeLines"
       | "goto"
       | "copyLineDown"
-      | "moveLineUp"
+     | "moveLineUp"
       | "moveLineDown"
       | "replace"
       | "peek"
@@ -88,7 +90,7 @@ export type CommandContext = {
   restartActiveTerminal: () => void;
   runFile: () => void;
   openProblems: () => void;
-  toggleProblems: () => void;
+ toggleProblems: () => void;
   toggleScmAmend: () => void;
   toggleAi: () => void;
   openExtensions: () => void;
