@@ -1107,6 +1107,10 @@ function ShellChrome() {
         void navigator.clipboard.writeText(lines.join("\n"));
         openProblems();
       },
+      copyWorkspaceRoot: () => {
+        if (!rootPath) return;
+        void navigator.clipboard.writeText(rootPath);
+      },
     }),
     [
       openFolder,

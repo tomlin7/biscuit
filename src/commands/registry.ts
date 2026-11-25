@@ -1112,4 +1112,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.copyProblems(),
   },
+  {
+    id: "workbench.action.copyWorkspaceRoot",
+    title: "Copy Workspace Root Path",
+    category: "File",
+    run: (ctx) => ctx.copyWorkspaceRoot(),
+  },
 ];
