@@ -316,6 +316,10 @@ export type CommandContext = {
   terminalFind: () => void;
   gitCreatePullRequest: () => Promise<void> | void;
   gitCompareBranches: () => Promise<void> | void;
+  applyLayoutPreset: (presetIdOrName?: string) => void;
+  saveCurrentLayoutPreset: () => void;
+  deleteLayoutPreset: () => void;
+  resetLayoutPresets: () => void;
 };
 
 export type Command = {

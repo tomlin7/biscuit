@@ -212,6 +212,7 @@ function ShellChrome() {
     sidebarOpen,
     aiOpen,
     bottomOpen,
+    presets,
     setSidebarWidth,
     setAiWidth,
     setBottomHeight,
@@ -221,6 +222,10 @@ function ShellChrome() {
     setBottomOpen,
     setAiOpen,
     setSidebarOpen,
+    applyPreset,
+    saveCurrentAsPreset,
+    deletePreset,
+    resetPresets,
   } = useLayout();
 
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -599,6 +604,20 @@ function ShellChrome() {
     }
     return cmds;
   }, [extensions, notify, openWebviewTab, setSidebarMode, setSidebarOpen]);
+
+  const customPresetCommands = useMemo<Command[]>(() => {
+    return presets
+      .filter((p) => !p.isBuiltin)
+      .map((p) => ({
+        id: `workbench.action.layoutPresets.custom.${p.id}`,
+        title: `Layout Preset: ${p.name}`,
+        category: "View",
+        run: () => {
+          applyPreset(p.id);
+          notify("Layout", `Applied '${p.name}' preset.`);
+        },
+      }));
+  }, [presets, applyPreset, notify]);
 
   const commandContext = useMemo<CommandContext>(
     () => ({
@@ -2301,8 +2320,74 @@ function ShellChrome() {
           }
         })();
       },
+      applyLayoutPreset: (presetIdOrName?: string) => {
+        if (presetIdOrName) {
+          const success = applyPreset(presetIdOrName);
+          if (success) {
+            const p = presets.find(
+              (item) =>
+                item.id === presetIdOrName ||
+                item.name.toLowerCase() === presetIdOrName.toLowerCase(),
+            );
+            notify("Layout", `Applied '${p?.name ?? presetIdOrName}' preset.`);
+          } else {
+            notify("Layout", `Layout preset '${presetIdOrName}' not found.`);
+          }
+        } else {
+          setRecentCommands([]);
+          setSymbolCommands(
+            presets.map((p) => ({
+              id: `layout-preset:${p.id}`,
+              title: `Layout Preset: ${p.name}`,
+              category: "View",
+              run: () => {
+                applyPreset(p.id);
+                notify("Layout", `Applied '${p.name}' preset.`);
+              },
+            })),
+          );
+          setPaletteSeed("Layout Preset:");
+          setPaletteOpen(true);
+        }
+      },
+      saveCurrentLayoutPreset: () => {
+        const name = window.prompt("Enter name for layout preset:");
+        if (!name || !name.trim()) return;
+        const preset = saveCurrentAsPreset(name.trim());
+        notify("Layout", `Saved layout preset '${preset.name}'.`);
+      },
+      deleteLayoutPreset: () => {
+        const custom = presets.filter((p) => !p.isBuiltin);
+        if (custom.length === 0) {
+          notify("Layout", "No custom presets available to delete.");
+          return;
+        }
+        setRecentCommands([]);
+        setSymbolCommands(
+          custom.map((p) => ({
+            id: `delete-layout-preset:${p.id}`,
+            title: `Delete Preset: ${p.name}`,
+            category: "View",
+            run: () => {
+              deletePreset(p.id);
+              notify("Layout", `Deleted layout preset '${p.name}'.`);
+            },
+          })),
+        );
+        setPaletteSeed("Delete Preset:");
+        setPaletteOpen(true);
+      },
+      resetLayoutPresets: () => {
+        resetPresets();
+        notify("Layout", "Reset layout presets to defaults.");
+      },
     }),
     [
+      presets,
+      applyPreset,
+      saveCurrentAsPreset,
+      deletePreset,
+      resetPresets,
       sidebarViews,
       openFolder,
       addFolderRoot,
@@ -2931,7 +3016,7 @@ function ShellChrome() {
         onClose={closePalette}
         context={commandContext}
         seed={paletteSeed}
-        extraCommands={[...symbolCommands, ...recentCommands, ...extensionCommands]}
+        extraCommands={[...symbolCommands, ...recentCommands, ...extensionCommands, ...customPresetCommands]}
       />
       <SettingsPanel
         open={settingsOpen}
