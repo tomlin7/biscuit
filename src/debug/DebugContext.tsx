@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { appendLog } from "../logs/logBus";
 
 export type Breakpoint = {
   id: string;
@@ -67,11 +68,17 @@ export function DebugProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startSession = useCallback(async (path: string) => {
-    const id = await invoke<string>("debug_launch", { path });
-    setSessions((current) => [
-      ...current,
-      { id, label: path, running: true },
-    ]);
+    try {
+      const id = await invoke<string>("debug_launch", { path });
+      setSessions((current) => [
+        ...current,
+        { id, label: path, running: true },
+      ]);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      appendLog(`Debug launch failed: ${message}`);
+      throw err;
+    }
   }, []);
 
   const stopSession = useCallback(async (id: string) => {

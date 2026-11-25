@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
+import { appendLog } from "../logs/logBus";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -69,7 +70,9 @@ export function ScmPanel({ onBranch }: Props) {
       await refresh();
       return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
+      appendLog(`Git failed: ${message}`);
       return false;
     } finally {
       setActing(false);

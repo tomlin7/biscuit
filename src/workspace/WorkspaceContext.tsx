@@ -24,6 +24,7 @@ import {
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
 import { readSession, writeSession } from "./session";
 import { applyEditorConfigText, editorConfigFor } from "../editor/editorconfig";
+import { appendLog } from "../logs/logBus";
 
 export type EditorTab = {
   path: string;
@@ -168,6 +169,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setTabs([]);
       setActivePath(null);
       rememberFolder(path);
+      appendLog(`Opened folder ${path}`);
     } catch (err) {
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -646,7 +648,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         }),
       );
     } catch (err) {
-      setTreeError(err instanceof Error ? err.message : String(err));
+      const message = err instanceof Error ? err.message : String(err);
+      setTreeError(message);
+      appendLog(`Save failed: ${message}`);
     } finally {
       setBusy(false);
     }
@@ -686,7 +690,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         ),
       );
     } catch (err) {
-      setTreeError(err instanceof Error ? err.message : String(err));
+      const message = err instanceof Error ? err.message : String(err);
+      setTreeError(message);
+      appendLog(`Save failed: ${message}`);
     } finally {
       setBusy(false);
     }
@@ -729,7 +735,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         await reloadDirectory(parent);
       }
     } catch (err) {
-      setTreeError(err instanceof Error ? err.message : String(err));
+      const message = err instanceof Error ? err.message : String(err);
+      setTreeError(message);
+      appendLog(`Save failed: ${message}`);
     } finally {
       setBusy(false);
     }

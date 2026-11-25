@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { TerminalPanel } from "../terminal/TerminalPanel";
 import { ProblemsPanel } from "../lsp/ProblemsPanel";
+import { LogsPanel } from "../logs/LogsPanel";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import "./BottomPanel.css";
 
-export type BottomTab = "terminal" | "problems";
+export type BottomTab = "terminal" | "problems" | "logs";
 
 type Props = {
   open: boolean;
@@ -59,6 +60,17 @@ export function BottomPanel({ open, tab, onTabChange, height = 220 }: Props) {
             <span className="bottom-panel__badge">{problems.length}</span>
           ) : null}
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "logs"}
+          className={
+            tab === "logs" ? "bottom-panel__tab bottom-panel__tab--active" : "bottom-panel__tab"
+          }
+          onClick={() => onTabChange("logs")}
+        >
+          Logs
+        </button>
       </div>
       <div className="bottom-panel__body">
         {mountedTerminal ? (
@@ -72,6 +84,11 @@ export function BottomPanel({ open, tab, onTabChange, height = 220 }: Props) {
         {tab === "problems" ? (
           <div className="bottom-panel__pane">
             <ProblemsPanel />
+          </div>
+        ) : null}
+        {tab === "logs" ? (
+          <div className="bottom-panel__pane">
+            <LogsPanel />
           </div>
         ) : null}
       </div>

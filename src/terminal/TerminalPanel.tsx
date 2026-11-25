@@ -6,6 +6,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { basename } from "../workspace/path";
 import { setRunListener } from "./runFile";
+import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import "@xterm/xterm/css/xterm.css";
 import "./TerminalPanel.css";
@@ -85,7 +86,9 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
         }
         ptyIdRef.current = id;
       } catch (err) {
-        term.writeln(`Failed to start terminal: ${String(err)}`);
+        const message = err instanceof Error ? err.message : String(err);
+        term.writeln(`Failed to start terminal: ${message}`);
+        appendLog(`Terminal failed: ${message}`);
       }
     };
 

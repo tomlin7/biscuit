@@ -43,6 +43,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.35.0** | Choose PowerShell, Command Prompt, or bash for a new terminal | shipped |
 | **0.36.0** | Kill, restart, and clear the active terminal | shipped |
 | **0.37.0** | Run the active file in a terminal tab | shipped |
+| **0.38.0** | Logs panel for folder, save, git, terminal, and debug failures | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
