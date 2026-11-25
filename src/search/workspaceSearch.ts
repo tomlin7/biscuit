@@ -222,6 +222,41 @@ export async function replaceInWorkspace(
   return { files, replacements, skippedDirty, paths };
 }
 
+const MAX_FILE_INDEX = 2500;
+
+export async function listWorkspaceFiles(roots: string[]): Promise<string[]> {
+  const files: string[] = [];
+  const seen = new Set<string>();
+  for (const root of roots) {
+    if (!root) continue;
+    const queue = [root];
+    while (queue.length > 0 && files.length < MAX_FILE_INDEX) {
+      const dir = queue.shift()!;
+      let entries;
+      try {
+        entries = await readDir(dir);
+      } catch {
+        continue;
+      }
+      for (const entry of entries) {
+        if (!entry.name || entry.name === ".DS_Store") continue;
+        const path = joinPath(dir, entry.name);
+        if (entry.isDirectory) {
+          if (!shouldSkipDir(entry.name)) queue.push(path);
+          continue;
+        }
+        if (!entry.isFile) continue;
+        const key = path.replace(/\\/g, "/").toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        files.push(path);
+        if (files.length >= MAX_FILE_INDEX) return files;
+      }
+    }
+  }
+  return files;
+}
+
 export function hitLabel(path: string): string {
   return basename(path);
 }
