@@ -63,11 +63,12 @@ export default function Page() {
                 T3D
               </span>
               <span className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">
-                v0.467.0
+                v1.212.0
               </span>
             </Link>
 
             <div className="hidden md:flex items-center gap-6 text-sm text-zinc-400">
+              <a href="#downloads" className="hover:text-white transition-colors">Downloads</a>
               <a href="#features" className="hover:text-white transition-colors">Features</a>
               <a href="#architecture" className="hover:text-white transition-colors">Architecture</a>
               <a href="#milestones" className="hover:text-white transition-colors">Milestones</a>
@@ -109,6 +110,7 @@ export default function Page() {
 
         {mobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2 px-2 flex flex-col gap-3 text-sm text-zinc-300">
+            <a href="#downloads" onClick={() => setMobileMenuOpen(false)} className="py-1">Downloads</a>
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1">Features</a>
             <a href="#architecture" onClick={() => setMobileMenuOpen(false)} className="py-1">Architecture</a>
             <a href="#milestones" onClick={() => setMobileMenuOpen(false)} className="py-1">Milestones</a>
@@ -121,45 +123,53 @@ export default function Page() {
         )}
       </nav>
 
-      {/* ── Hero Section ─────────────────────────────────────────────────── */}
-      <header className="pt-16 pb-12 px-6">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-tight">
-            The high-density desktop code editor.
-          </h1>
+      {/* ── Main Landmark ─────────────────────────────────────────────────── */}
+      <main id="main-content">
+        {/* ── Hero Section ─────────────────────────────────────────────────── */}
+        <header className="pt-16 pb-12 px-6">
+          <div className="mx-auto max-w-4xl text-center">
+            <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-tight">
+              The high-density desktop code editor.
+            </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-            Engineered with compiled Rust, Tauri 2, and Monaco. True island layout, native PTY terminal with shell integration, sandboxed webview extensions, and sub-100ms startup.
-          </p>
+            <p className="mt-6 text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto leading-relaxed">
+              Engineered with compiled Rust, Tauri 2, and Monaco. True island layout, native PTY terminal with shell integration, sandboxed webview extensions, and sub-100ms startup.
+            </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#quickstart"
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-sm bg-white hover:bg-zinc-200 text-black text-sm font-semibold transition-[background-color,transform] duration-150 active:scale-[0.96]"
-            >
-              <span>Quickstart with Bun &amp; Tauri</span>
-              <ArrowRightIcon />
-            </a>
-            <a
-              href="https://github.com/tomlin7/T3D"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-sm bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-sm font-medium transition-[background-color,transform] duration-150 active:scale-[0.96]"
-            >
-              <GithubIcon />
-              <span>View Source Code</span>
-            </a>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="#downloads"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-sm bg-white hover:bg-zinc-200 text-black text-sm font-semibold transition-[background-color,transform] duration-150 active:scale-[0.96]"
+              >
+                <span>Download v1.212.0</span>
+                <ArrowRightIcon />
+              </a>
+              <a
+                href="#quickstart"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-sm bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-sm font-medium transition-[background-color,transform] duration-150 active:scale-[0.96]"
+              >
+                <span>Quickstart with Bun</span>
+              </a>
+              <a
+                href="https://github.com/tomlin7/T3D"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-sm bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-sm font-medium transition-[background-color,transform] duration-150 active:scale-[0.96]"
+              >
+                <GithubIcon />
+                <span>Source Code</span>
+              </a>
+            </div>
+
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-zinc-400">
+              <span>v1.212.0 release</span>
+              <span>467 shipped milestones</span>
+              <span>Sub-100ms cold startup</span>
+              <span>Zero telemetry</span>
+              <span>MIT License</span>
+            </div>
           </div>
-
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-zinc-400">
-            <span>v0.467.0 release</span>
-            <span>467 shipped milestones</span>
-            <span>Sub-100ms cold startup</span>
-            <span>Zero telemetry</span>
-            <span>MIT License</span>
-          </div>
-        </div>
-      </header>
+        </header>
 
       {/* ── Interactive Live Centerpiece ──────────────────────────────────── */}
       <section className="px-6 py-8" id="demo">
@@ -311,9 +321,9 @@ export default function Page() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
             <div className="rounded-lg bg-[#141418] p-5">
-              <div className="text-xs text-zinc-500">v0.467.0</div>
-              <div className="mt-1 font-semibold text-white">Code Lens Reference Counts</div>
-              <p className="mt-1.5 text-xs text-zinc-400">Reference counters and implementation badges directly above JS/TS declarations.</p>
+              <div className="text-xs text-zinc-500">v1.212.0</div>
+              <div className="mt-1 font-semibold text-white">Code Lens &amp; Multi-Platform Release</div>
+              <p className="mt-1.5 text-xs text-zinc-400">Reference counters, inlay hints, and automated multi-platform release binaries.</p>
             </div>
 
             <div className="rounded-lg bg-[#141418] p-5">
@@ -349,8 +359,106 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ── Downloads Section ─────────────────────────────────────────────── */}
+      <section className="py-20 px-6" id="downloads">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-2xl mb-12">
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+              Install T3D for your desktop.
+            </h2>
+            <p className="mt-4 text-base text-zinc-400 leading-relaxed">
+              Standalone native binaries compiled for Windows, macOS, and Linux. No telemetry, offline-first.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Windows */}
+            <div className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-semibold text-blue-400">Windows</span>
+                <h3 className="mt-2 text-lg font-semibold text-white">64-bit Installer</h3>
+                <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
+                  Self-contained NSIS installer (.exe) or enterprise Windows Installer package (.msi).
+                </p>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <a
+                  href="https://github.com/tomlin7/T3D/releases/latest"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition-colors"
+                >
+                  <span>Download .exe</span>
+                  <ArrowRightIcon />
+                </a>
+                <a
+                  href="https://github.com/tomlin7/T3D/releases/latest"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs transition-colors"
+                >
+                  <span>.msi</span>
+                </a>
+              </div>
+            </div>
+
+            {/* macOS */}
+            <div className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-semibold text-blue-400">macOS</span>
+                <h3 className="mt-2 text-lg font-semibold text-white">Universal Disk Image</h3>
+                <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
+                  Single universal .dmg running natively on Apple Silicon (M1–M4) and Intel Macs.
+                </p>
+              </div>
+              <div className="mt-6">
+                <a
+                  href="https://github.com/tomlin7/T3D/releases/latest"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition-colors"
+                >
+                  <span>Download .dmg</span>
+                  <ArrowRightIcon />
+                </a>
+              </div>
+            </div>
+
+            {/* Linux */}
+            <div className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-semibold text-blue-400">Linux</span>
+                <h3 className="mt-2 text-lg font-semibold text-white">AppImage &amp; Debian</h3>
+                <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
+                  Zero-install portable .AppImage or standard Debian (.deb) package for Ubuntu and Debian.
+                </p>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <a
+                  href="https://github.com/tomlin7/T3D/releases/latest"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition-colors"
+                >
+                  <span>.AppImage</span>
+                  <ArrowRightIcon />
+                </a>
+                <a
+                  href="https://github.com/tomlin7/T3D/releases/latest"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs transition-colors"
+                >
+                  <span>.deb</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Quickstart Section ────────────────────────────────────────────── */}
-      <section className="py-20 px-6" id="quickstart">
+      <section className="py-20 px-6 bg-[#0f0f13]" id="quickstart">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             Run T3D locally in seconds.
@@ -395,6 +503,7 @@ export default function Page() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
       <footer className="py-12 px-6 bg-[#0a0a0c]">
@@ -411,6 +520,7 @@ export default function Page() {
           </div>
 
           <div className="flex items-center gap-6">
+            <a href="#downloads" className="hover:text-zinc-200 transition-colors">Downloads</a>
             <a href="#features" className="hover:text-zinc-200 transition-colors">Features</a>
             <a href="#architecture" className="hover:text-zinc-200 transition-colors">Architecture</a>
             <a href="#milestones" className="hover:text-zinc-200 transition-colors">Milestones</a>
