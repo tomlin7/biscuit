@@ -79,7 +79,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
     if (lastUser) {
       const t = lastUser.content.trim().replace(/\s+/g, " ");
-      return t.length > 42 ? `${t.slice(0, 41)}ΓÇª` : t;
+      return t.length > 42 ? `${t.slice(0, 41)}…` : t;
     }
     return "Agent";
   }, [messages]);
@@ -310,7 +310,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
                   <summary>
                     {msg.toolCalls.length} tool calls
                     {msg.toolCalls.some((t) => t.ok === false)
-                      ? ` ┬╖ ${msg.toolCalls.filter((t) => t.ok === false).length} failed`
+                      ? ` · ${msg.toolCalls.filter((t) => t.ok === false).length} failed`
                       : ""}
                   </summary>
                   <ul>
@@ -458,8 +458,9 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
           ) : null}
           <textarea
             className="ai-panel__composer-input"
+            id="ai-composer-input"
             rows={3}
-            placeholder="Ask anythingΓÇª (@ files/folders, / commands)"
+            placeholder="Ask anything… (@ files/folders, / commands)"
             value={draft}
             disabled={busy}
             onChange={(e) => onDraftChange(e.target.value)}
@@ -544,7 +545,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
               />
               <IconButton
                 icon={Mic}
-                label={listening ? "ListeningΓÇª" : "Voice input"}
+                label={listening ? "Listening…" : "Voice input"}
                 size={14}
                 active={listening}
                 onClick={startVoice}

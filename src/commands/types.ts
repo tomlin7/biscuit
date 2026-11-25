@@ -176,6 +176,7 @@ export type CommandContext = {
   attachFilesToAi: () => void;
   deleteAiSession: () => void;
   cycleAiModel: () => void;
+  focusAiComposer: () => void;
 };
 
 export type Command = {

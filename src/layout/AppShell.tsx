@@ -1027,6 +1027,12 @@ function ShellChrome() {
         setSettings({ model: next });
         setAiOpen(true);
       },
+      focusAiComposer: () => {
+        setAiOpen(true);
+        window.setTimeout(() => {
+          window.document.getElementById("ai-composer-input")?.focus();
+        }, 0);
+      },
     }),
     [
       openFolder,
