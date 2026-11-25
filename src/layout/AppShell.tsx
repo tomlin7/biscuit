@@ -1341,6 +1341,15 @@ function ShellChrome() {
         const active = debugSessions[0];
         if (active) void stopDebugSession(active.id);
       },
+      restartDebugging: () => {
+        if (!activePath) return;
+        const active = debugSessions[0];
+        if (active) {
+          void stopDebugSession(active.id).then(() => startDebugSession(activePath));
+        } else {
+          void startDebugSession(activePath);
+        }
+      },
     }),
     [
       openFolder,

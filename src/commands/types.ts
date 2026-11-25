@@ -228,6 +228,7 @@ export type CommandContext = {
   copyUnreadNotificationCount: () => void;
   startDebugging: () => void;
   stopDebugging: () => void;
+  restartDebugging: () => void;
 };
 
 export type Command = {

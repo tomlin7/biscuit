@@ -1372,4 +1372,11 @@ export const COMMANDS: Command[] = [
     keybinding: "Shift+F5",
     run: (ctx) => ctx.stopDebugging(),
   },
+  {
+    id: "workbench.action.debug.restart",
+    title: "Restart Debugging",
+    category: "Debug",
+    keybinding: "Ctrl+Shift+F5",
+    run: (ctx) => ctx.restartDebugging(),
+  },
 ];
