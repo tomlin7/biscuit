@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditorNS } from "monaco-editor";
 import * as monacoApi from "monaco-editor";
-import { initVimMode } from "monaco-vim";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
@@ -474,6 +473,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   }, [breakpoints, doc]);
 
   useEffect(() => {
+    let cancelled = false;
     const disposeVim = () => {
       vimDisposeRef.current?.();
       vimDisposeRef.current = null;
@@ -484,13 +484,23 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       return disposeVim;
     }
     disposeVim();
-    try {
-      const adapter = initVimMode(ed, vimStatusRef.current);
-      vimDisposeRef.current = () => adapter.dispose();
-    } catch {
-      /* monaco-vim may fail if the editor model is mid-swap */
-    }
-    return disposeVim;
+    void import("monaco-vim")
+      .then(({ initVimMode }) => {
+        if (cancelled || editorRef.current !== ed || !settings.vimMode) return;
+        try {
+          const adapter = initVimMode(ed, vimStatusRef.current);
+          vimDisposeRef.current = () => adapter.dispose();
+        } catch {
+          /* monaco-vim may fail if the editor model is mid-swap */
+        }
+      })
+      .catch(() => {
+        /* bundler / monaco-vim interop failed — keep scaffold caret only */
+      });
+    return () => {
+      cancelled = true;
+      disposeVim();
+    };
   }, [settings.vimMode, doc?.path]);
 
   if (!doc) return null;
