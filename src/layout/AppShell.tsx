@@ -1314,6 +1314,9 @@ function ShellChrome() {
       resetTerminalFontSize: () => {
         updateEditor({ terminalFontSize: 13 });
       },
+      resetEditorFontSize: () => {
+        updateEditor({ fontSize: 14 });
+      },
     }),
     [
       openFolder,

@@ -1340,7 +1340,12 @@ export const COMMANDS: Command[] = [
     category: "Terminal",
     run: (ctx) => ctx.resetTerminalFontSize(),
   },
-
+  {
+    id: "editor.action.resetFontSize",
+    title: "Reset Editor Font Size",
+    category: "View",
+    run: (ctx) => ctx.resetEditorFontSize(),
+  },
 
 
 ];
