@@ -1690,7 +1690,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleKeypressDisplay(),
   },
-
+  {
+    id: "workbench.action.editor.changeEncoding",
+    title: "Change File Encoding",
+    category: "File",
+    run: (ctx) => ctx.changeEncoding(),
+  },
 
 
 

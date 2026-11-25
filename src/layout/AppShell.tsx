@@ -1769,6 +1769,29 @@ function ShellChrome() {
         updateApp({ keypressDisplay: next });
         notify("Keypress Display", next ? "On" : "Off");
       },
+      changeEncoding: () => {
+        const encodings = [
+          "UTF-8",
+          "UTF-16LE",
+          "UTF-16BE",
+          "ISO-8859-1",
+          "WINDOWS-1252",
+        ];
+        setRecentCommands([]);
+        setSymbolCommands(
+          encodings.map((enc) => ({
+            id: `encoding:${enc}`,
+            title: `Encoding: ${enc}`,
+            category: "Encoding",
+            run: () => {
+              updateApp({ preferredEncoding: enc });
+              notify("Encoding", enc);
+            },
+          })),
+        );
+        setPaletteSeed("Encoding");
+        setPaletteOpen(true);
+      },
     }),
     [
       openFolder,

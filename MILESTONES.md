@@ -419,6 +419,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.411.0** | Configure run command from palette | shipped |
 | **0.412.0** | Toggle vim mode scaffold from palette | shipped |
 | **0.413.0** | Toggle keypress display from palette | shipped |
+| **0.414.0** | Change file encoding from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
