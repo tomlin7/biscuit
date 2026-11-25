@@ -16,7 +16,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.8.0** | Integrated terminal (PTY) | shipped |
 | **0.9.0** | Git SCM view | shipped |
 | **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipped |
-| **0.11.0** | Island layout fidelity ╬ô├╢┬úΓö£├│╬ô├╢┬╝Γö£Γöé╬ô├╢┬úΓö£ΓöéΓò¼├┤Γö£├ºΓö£┬ú╬ô├╢┬╝Γö¼Γò¥╬ô├╢┬úΓö£ΓöéΓò¼├┤Γö£ΓîÉΓö¼Γò¥╬ô├╢┬╝Γö¼├æ resize/collapse, Lucide, UI font, settings | shipped |
+| **0.11.0** | Island layout fidelity Γò¼├┤Γö£ΓòóΓö¼├║╬ô├╢┬úΓö£ΓöéΓò¼├┤Γö£ΓòóΓö¼Γò¥╬ô├╢┬ú╬ô├╢├⌐Γò¼├┤Γö£ΓòóΓö¼├║╬ô├╢┬ú╬ô├╢├⌐╬ô├▓┬╝Γö£Γöñ╬ô├╢┬úΓö£┬║╬ô├╢┬úΓö¼├║Γò¼├┤Γö£ΓòóΓö¼Γò¥╬ô├╢┬╝╬ô├▓┬ÑΓò¼├┤Γö£ΓòóΓö¼├║╬ô├╢┬ú╬ô├╢├⌐╬ô├▓┬╝Γö£Γöñ╬ô├╢┬ú╬ô├«├ë╬ô├╢┬╝╬ô├▓┬ÑΓò¼├┤Γö£ΓòóΓö¼Γò¥╬ô├╢┬╝Γö£├ª resize/collapse, Lucide, UI font, settings | shipped |
 | **0.12.0** | Explorer create, rename, and delete | shipped |
 | **0.13.0** | Recent files, recent folders, reopen closed editor | shipped |
 | **0.14.0** | Editor comment, wrap, relative lines, go to line, move and copy lines | shipped |
@@ -207,6 +207,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.199.0** | New terminal from palette | shipped |
 | **0.200.0** | Agent stop on tool error | shipped |
 | **0.201.0** | Explorer reveal in file manager | shipped |
+| **0.202.0** | Copy active file path from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

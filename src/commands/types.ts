@@ -20,6 +20,8 @@ export type CommandContext = {
   pinActiveEditor: () => void;
   unpinActiveEditor: () => void;
   activeEditorPinned: boolean;
+  copyActivePath: () => void;
+  copyActiveRelativePath: () => void;
   toggleTheme: () => void;
   toggleMinimap: () => void;
   openPalette: () => void;
