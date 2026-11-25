@@ -4,6 +4,7 @@ mod extensions;
 mod debug;
 mod fsops;
 mod notifications;
+mod system;
 
 use debug::{debug_launch, debug_py_command, debug_py_start, debug_stop, DebugState};
 use extensions::{
@@ -23,6 +24,7 @@ use pty::{
     kill_pty_process, list_pty_processes, pty_exec, pty_kill, pty_resize, pty_run_file,
     pty_spawn, pty_write, PtyState,
 };
+use system::get_memory_usage;
 
 #[tauri::command]
 fn quit_app(app: tauri::AppHandle) {
@@ -87,6 +89,7 @@ pub fn run() {
             fs_mkdir,
             fs_rename,
             fs_remove,
+            get_memory_usage,
             quit_app
         ])
         .run(tauri::generate_context!())

@@ -3,12 +3,14 @@ import {
   AlertCircle,
   Bell,
   Bug,
+  Cpu,
   Folder,
   GitBranch,
   Settings,
   SlidersHorizontal,
   Terminal,
 } from "lucide-react";
+import { invoke } from "@tauri-apps/api/core";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import { useNotifications } from "../notifications/NotificationsContext";
@@ -17,6 +19,13 @@ import { editorConfigFor } from "../editor/editorconfig";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { IconButton } from "../ui/IconButton";
 import { extensionHost } from "../extensions/host/extensionHost";
+
+type MemoryUsage = {
+  resident_bytes: number;
+  formatted: string;
+  peak_bytes?: number | null;
+  peak_formatted?: string | null;
+};
 
 type StatusBarProps = {
   onOpenProblems?: () => void;
@@ -63,11 +72,36 @@ export function StatusBar({
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [encoding, setEncoding] = useState("UTF-8");
+  const [memory, setMemory] = useState<MemoryUsage | null>(null);
   const configMenuRef = useRef<HTMLDivElement>(null);
   const notifyMenuRef = useRef<HTMLDivElement>(null);
 
   const errorCount = problems.filter((p) => p.severity === "error").length;
   const warnCount = problems.filter((p) => p.severity === "warning").length;
+
+  useEffect(() => {
+    let active = true;
+    const fetchMemory = async () => {
+      try {
+        const usage = await invoke<MemoryUsage>("get_memory_usage");
+        if (active && usage) {
+          setMemory(usage);
+        }
+      } catch {
+        // Tauri backend unavailable (e.g. web/preview environment)
+      }
+    };
+
+    void fetchMemory();
+    const timer = setInterval(() => {
+      void fetchMemory();
+    }, 4000);
+
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (!document) {
@@ -302,6 +336,28 @@ export function StatusBar({
               ))}
             </select>
           </label>
+        ) : null}
+
+        {/* Live Memory Usage Indicator */}
+        {memory && memory.formatted ? (
+          <button
+            type="button"
+            className="status-bar__chip status-bar__memory"
+            title={`Memory Usage: ${memory.formatted}${
+              memory.peak_formatted ? ` (Peak: ${memory.peak_formatted})` : ""
+            }\nClick to refresh`}
+            onClick={async () => {
+              try {
+                const usage = await invoke<MemoryUsage>("get_memory_usage");
+                if (usage) setMemory(usage);
+              } catch {
+                // Ignore
+              }
+            }}
+          >
+            <Cpu size={13} style={{ flexShrink: 0, opacity: 0.8 }} />
+            <span>{memory.formatted}</span>
+          </button>
         ) : null}
 
         {/* Quick Editor Config Popover Toggle */}
