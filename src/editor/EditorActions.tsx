@@ -47,7 +47,8 @@ export type EditorCommand =
   | "definition"
   | "references"
   | "rename"
-  | "format";
+  | "format"
+  | "hover";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -125,6 +126,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "format":
         handle.trigger("editor.action.formatDocument");
+        break;
+      case "hover":
+        handle.trigger("editor.action.showHover");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

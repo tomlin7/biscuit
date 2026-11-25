@@ -126,6 +126,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("format"),
   },
   {
+    id: "editor.action.showHover",
+    title: "Show Hover",
+    category: "Edit",
+    keybinding: "Ctrl+K Ctrl+I",
+    run: (ctx) => ctx.runEditorCommand("hover"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",
@@ -242,6 +249,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     keybinding: "Ctrl+`",
     run: (ctx) => ctx.toggleTerminal(),
+  },
+  {
+    id: "workbench.action.terminal.clearAll",
+    title: "Clear All Terminals",
+    category: "Terminal",
+    run: (ctx) => ctx.clearAllTerminals(),
   },
   {
     id: "workbench.action.runFile",

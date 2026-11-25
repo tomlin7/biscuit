@@ -117,6 +117,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.109.0** | TS/JS hover documentation | shipped |
 | **0.110.0** | Tab size cycle in status bar | shipped |
 | **0.111.0** | Reload editor after SCM discard | shipped |
+| **0.112.0** | Show Hover command | shipped |
+| **0.113.0** | Detect indentation from content | shipped |
+| **0.114.0** | SCM discard all unstaged | shipped |
+| **0.115.0** | Breadcrumb copy path for folders | shipped |
+| **0.116.0** | Problems jump to column | shipped |
+| **0.117.0** | Clear all terminal tabs | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

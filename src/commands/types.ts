@@ -33,11 +33,13 @@ export type CommandContext = {
       | "definition"
       | "references"
       | "rename"
-      | "format",
+      | "format"
+      | "hover",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;
   toggleTerminal: () => void;
+  clearAllTerminals: () => void;
   runFile: () => void;
   openProblems: () => void;
   toggleAi: () => void;

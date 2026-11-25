@@ -27,6 +27,7 @@ import { appendLog } from "../logs/logBus";
 import { basename } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
+import { requestClearAllTerminals } from "../terminal/clearAll";
 import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { listWorkspaceFiles } from "../search/workspaceSearch";
@@ -345,6 +346,11 @@ function ShellChrome() {
       },
       openSearch,
       toggleTerminal,
+      clearAllTerminals: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestClearAllTerminals();
+      },
       runFile: () => {
         if (!activePath) return;
         requestRunFile(activePath);
@@ -545,6 +551,13 @@ function ShellChrome() {
         return;
       }
 
+      if (chord === "ctrl+k" && key === "i") {
+        event.preventDefault();
+        runEditorCommand("hover");
+        clearChord();
+        return;
+      }
+
       if (mod && key === "s") {
         event.preventDefault();
         void save();
@@ -577,6 +590,12 @@ function ShellChrome() {
         if (key === "t") {
           event.preventDefault();
           toggleTheme();
+          clearChord();
+          return;
+        }
+        if (key === "i") {
+          event.preventDefault();
+          runEditorCommand("hover");
           clearChord();
           return;
         }
