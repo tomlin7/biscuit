@@ -235,6 +235,15 @@ export function SettingsPanel({ open, onClose }: Props) {
                 }}
               />
             </label>
+            <label className="settings-row settings-row--stack">
+              <span>System prompt</span>
+              <textarea
+                rows={3}
+                value={ai.systemPrompt}
+                onChange={(e) => setAi({ systemPrompt: e.target.value })}
+                placeholder="Optional instructions for every chat…"
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",

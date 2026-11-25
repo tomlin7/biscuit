@@ -45,6 +45,8 @@ type AiSettings = {
   effort: "low" | "medium" | "high";
   /** Null uses the provider default. */
   temperature: number | null;
+  /** Optional custom system prompt prepended to each request. */
+  systemPrompt: string;
 };
 
 type AiState = {
@@ -86,6 +88,7 @@ function defaultSettings(): AiSettings {
     model: "gpt-4o-mini",
     effort: "high",
     temperature: null,
+    systemPrompt: "",
   };
 }
 
@@ -369,7 +372,12 @@ export function AiProvider({ children }: { children: ReactNode }) {
                 : fullPrompt,
           };
         }
-        if (settings.effort !== "medium") {
+        if (settings.systemPrompt.trim()) {
+          history.unshift({
+            role: "system",
+            content: settings.systemPrompt.trim(),
+          });
+        } else if (settings.effort !== "medium") {
           history.unshift({
             role: "system",
             content:
