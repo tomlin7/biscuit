@@ -61,6 +61,7 @@ export async function runToolLoop(input: {
   callTool: (name: string, args: Record<string, string>) => Promise<{ ok: boolean; text: string }>;
   maxRounds?: number;
   signal?: AbortSignal;
+  stopOnToolError?: boolean;
 }): Promise<{ content: string; toolCalls: ShownToolCall[] }> {
   const messages = [...input.messages];
   const shown: ShownToolCall[] = [];
@@ -127,6 +128,14 @@ export async function runToolLoop(input: {
         tool_call_id: call.id,
         content: outcome.ok ? outcome.text : `Error: ${outcome.text}`,
       });
+      if (!outcome.ok && input.stopOnToolError) {
+        return {
+          content:
+            lastPartial ||
+            `Stopped after tool error in ${call.name}: ${outcome.text.slice(0, 200)}`,
+          toolCalls: shown,
+        };
+      }
     }
   }
   return { content: "Stopped after 8 tool rounds.", toolCalls: shown };

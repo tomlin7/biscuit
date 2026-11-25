@@ -386,6 +386,14 @@ export function SettingsPanel({ open, onClose }: Props) {
                 }}
               />
             </label>
+            <label className="settings-row settings-row--check">
+              <span>Stop on tool error</span>
+              <input
+                type="checkbox"
+                checked={ai.stopOnToolError}
+                onChange={(e) => setAi({ stopOnToolError: e.target.checked })}
+              />
+            </label>
             <div className="settings-presets" role="group" aria-label="Model presets">
               {[
                 "gpt-4o-mini",

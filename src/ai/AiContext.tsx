@@ -57,6 +57,8 @@ type AiSettings = {
   frequencyPenalty: number | null;
   /** Null uses the provider default. */
   seed: number | null;
+  /** When true, halt the tool loop after a failed tool call. */
+  stopOnToolError: boolean;
 };
 
 type AiState = {
@@ -104,6 +106,7 @@ function defaultSettings(): AiSettings {
     presencePenalty: null,
     frequencyPenalty: null,
     seed: null,
+    stopOnToolError: false,
   };
 }
 
@@ -405,6 +408,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
         const result = await runToolLoop({
           messages: history,
           signal: controller.signal,
+          stopOnToolError: settings.stopOnToolError === true,
           complete: async (nextMessages) => {
             const res = await fetch(
               `${settings.baseUrl.replace(/\/$/, "")}/chat/completions`,
