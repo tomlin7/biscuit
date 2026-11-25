@@ -370,6 +370,10 @@ function ShellChrome() {
     setBottomOpen(true);
   }, [setBottomOpen]);
 
+  const openLogs = useCallback(() => {
+    setPanelTab("logs");
+    setBottomOpen(true);
+  }, [setBottomOpen]);
 
   const toggleProblems = useCallback(() => {
     if (bottomOpen && panelTab === "problems") {
@@ -588,6 +592,7 @@ function ShellChrome() {
         setBottomOpen(true);
       },
       openProblems,
+      openLogs,
       toggleProblems,
       toggleScmAmend: () => {
         setSidebarMode("scm");
@@ -700,6 +705,7 @@ function ShellChrome() {
       toggleTerminal,
       setBottomOpen,
       openProblems,
+      openLogs,
       toggleAi,
       openExtensions,
       openDebug,

@@ -568,6 +568,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.openProblems(),
   },
   {
+    id: "workbench.action.output.toggleOutput",
+    title: "Show Logs",
+    category: "View",
+    run: (ctx) => ctx.openLogs(),
+  },
+  {
     id: "workbench.actions.view.toggleProblems",
     title: "Toggle Problems",
     category: "View",
