@@ -191,6 +191,7 @@ export type CommandContext = {
   closeAi: () => void;
   notifyProblemsCount: () => void;
   refreshDiagnostics: () => void;
+  copyGitBranchSync: () => void;
 };
 
 export type Command = {

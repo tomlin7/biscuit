@@ -1134,6 +1134,16 @@ function ShellChrome() {
         refreshDiagnosticsMarkers();
         openProblems();
       },
+      copyGitBranchSync: () => {
+        if (!gitBranch) return;
+        const ahead = gitAhead ?? 0;
+        const behind = gitBehind ?? 0;
+        const sync =
+          gitAhead === null && gitBehind === null
+            ? gitBranch
+            : `${gitBranch} +${ahead}/-${behind}`;
+        void navigator.clipboard.writeText(sync);
+      },
     }),
     [
       openFolder,
@@ -1220,6 +1230,7 @@ function ShellChrome() {
       setAiWidth,
       problems,
       refreshDiagnosticsMarkers,
+      gitBranch,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,

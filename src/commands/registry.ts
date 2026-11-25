@@ -1148,4 +1148,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.refreshDiagnostics(),
   },
+  {
+    id: "git.copyBranchSync",
+    title: "Git: Copy Branch Sync Summary",
+    category: "Git",
+    run: (ctx) => ctx.copyGitBranchSync(),
+  },
 ];
