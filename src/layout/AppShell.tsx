@@ -46,6 +46,7 @@ function ShellChrome() {
     activePath,
     openFolder,
     openFolderAt,
+    addFolderRoot,
     openFile,
     openDroppedPaths,
     openFileAt,
@@ -243,6 +244,7 @@ function ShellChrome() {
   const commandContext = useMemo<CommandContext>(
     () => ({
       openFolder,
+      addFolderRoot,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -278,6 +280,7 @@ function ShellChrome() {
     }),
     [
       openFolder,
+      addFolderRoot,
       cloneRepository,
       openFolderAt,
       openFile,

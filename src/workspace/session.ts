@@ -2,6 +2,7 @@ const KEY = "t3d.session";
 
 export type EditorSession = {
   root: string;
+  roots?: string[];
   tabs: string[];
   active: string | null;
   preview?: boolean;
@@ -20,6 +21,9 @@ export function readSession(): EditorSession | null {
       : [];
     return {
       root: parsed.root,
+      roots: Array.isArray(parsed.roots)
+        ? parsed.roots.filter((path): path is string => typeof path === "string" && path.length > 0)
+        : [parsed.root],
       tabs,
       active: typeof parsed.active === "string" ? parsed.active : null,
       preview: parsed.preview === true,

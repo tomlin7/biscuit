@@ -46,6 +46,7 @@ export type RevealTarget = {
 
 export type WorkspaceState = {
   rootPath: string | null;
+  roots: string[];
   rootName: string | null;
   tree: TreeNode[];
   expanded: Set<string>;
@@ -60,6 +61,7 @@ export type WorkspaceState = {
   revealTarget: RevealTarget | null;
   openFolder: () => Promise<void>;
   openFolderAt: (path: string) => Promise<void>;
+  addFolderRoot: () => Promise<void>;
   reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
@@ -139,7 +141,10 @@ function withPrefix(path: string): string {
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [rootPath, setRootPath] = useState<string | null>(null);
+  const [roots, setRoots] = useState<string[]>([]);
   const [tree, setTree] = useState<TreeNode[]>([]);
+  const rootsRef = useRef(roots);
+  rootsRef.current = roots;
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [treeError, setTreeError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -166,12 +171,78 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     try {
       const children = await listDirectory(path);
       setRootPath(path);
+      setRoots([path]);
       setTree(children);
       setExpanded(new Set());
       setTabs([]);
       setActivePath(null);
       rememberFolder(path);
       appendLog(`Opened folder ${path}`);
+    } catch (err) {
+      setTreeError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
+  const addFolderRoot = useCallback(async () => {
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: "Add Folder to Workspace",
+    });
+    if (selected === null) return;
+    const path = Array.isArray(selected) ? selected[0] : selected;
+    if (!path) return;
+    if (rootsRef.current.some((root) => root.replace(/\\/g, "/").toLowerCase() === path.replace(/\\/g, "/").toLowerCase())) {
+      return;
+    }
+    setBusy(true);
+    setTreeError(null);
+    try {
+      const children = await listDirectory(path);
+      const nextRoots = rootsRef.current.length === 0 ? [path] : [...rootsRef.current, path];
+      if (rootsRef.current.length === 0) {
+        setRootPath(path);
+        setTree(children);
+        setRoots([path]);
+      } else if (rootsRef.current.length === 1) {
+        const primary = rootsRef.current[0];
+        const primaryChildren = treeRef.current;
+        setRoots(nextRoots);
+        setTree([
+          {
+            name: basename(primary),
+            path: primary,
+            kind: "directory",
+            children: primaryChildren,
+            loaded: true,
+          },
+          {
+            name: basename(path),
+            path,
+            kind: "directory",
+            children,
+            loaded: true,
+          },
+        ]);
+        setExpanded((prev) => new Set(prev).add(primary).add(path));
+      } else {
+        setRoots(nextRoots);
+        setTree((current) => [
+          ...current,
+          {
+            name: basename(path),
+            path,
+            kind: "directory",
+            children,
+            loaded: true,
+          },
+        ]);
+        setExpanded((prev) => new Set(prev).add(path));
+      }
+      rememberFolder(path);
+      appendLog(`Added folder ${path}`);
     } catch (err) {
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -247,9 +318,19 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const revealInExplorer = useCallback(
     async (path: string) => {
-      if (!rootPath) return;
-      const dirs = directoryChain(rootPath, path);
-      if (dirs.length === 0) return;
+      const rootsNow = rootsRef.current;
+      const owner =
+        rootsNow.find((root) => {
+          const rootKey = root.replace(/[\\/]+$/, "").replace(/\\/g, "/").toLowerCase();
+          const key = path.replace(/\\/g, "/").toLowerCase();
+          return key === rootKey || key.startsWith(`${rootKey}/`);
+        }) ?? rootPath;
+      if (!owner) return;
+      const dirs = directoryChain(owner, path);
+      if (dirs.length === 0) {
+        setExplorerNonce((value) => value + 1);
+        return;
+      }
       setExplorerNonce((value) => value + 1);
       setBusy(true);
       setTreeError(null);
@@ -380,7 +461,52 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       const session = readSession();
       try {
         if (session && (await exists(session.root))) {
-          await openFolderAt(session.root);
+          const folderList =
+            session.roots && session.roots.length > 0 ? session.roots : [session.root];
+          await openFolderAt(folderList[0]);
+          if (cancelled) return;
+          for (const extra of folderList.slice(1)) {
+            if (!(await exists(extra))) continue;
+            if (cancelled) return;
+            const children = await listDirectory(extra);
+            setRoots((current) => {
+              if (current.some((root) => root === extra)) return current;
+              return [...current, extra];
+            });
+            setTree((current) => {
+              if (current.some((node) => node.path === extra)) return current;
+              if (current.length > 0 && current[0].path === folderList[0] && current[0].kind === "directory" && current[0].loaded) {
+                return [
+                  ...current,
+                  {
+                    name: basename(extra),
+                    path: extra,
+                    kind: "directory" as const,
+                    children,
+                    loaded: true,
+                  },
+                ];
+              }
+              const primary = folderList[0];
+              return [
+                {
+                  name: basename(primary),
+                  path: primary,
+                  kind: "directory" as const,
+                  children: current,
+                  loaded: true,
+                },
+                {
+                  name: basename(extra),
+                  path: extra,
+                  kind: "directory" as const,
+                  children,
+                  loaded: true,
+                },
+              ];
+            });
+            setExpanded((prev) => new Set(prev).add(folderList[0]).add(extra));
+          }
           if (cancelled) return;
           for (const path of session.tabs) {
             if (await exists(path)) await openFile(path);
@@ -408,13 +534,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
     writeSession({
       root: rootPath,
+      roots: roots.length > 0 ? roots : [rootPath],
       tabs: tabs.map((tab) => tab.path),
       active: activePath,
       preview: readSession()?.preview ?? false,
       split: readSession()?.split ?? false,
       secondary: readSession()?.secondary ?? null,
     });
-  }, [rootPath, tabs, activePath]);
+  }, [rootPath, roots, tabs, activePath]);
 
   const openFileAt = useCallback(
     async (path: string, line: number, column: number) => {
@@ -778,6 +905,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const state = useMemo<WorkspaceState>(
     () => ({
       rootPath,
+      roots,
       rootName: rootPath ? basename(rootPath) : null,
       tree,
       expanded,
@@ -792,6 +920,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       revealTarget,
       openFolder,
       openFolderAt,
+      addFolderRoot,
       reopenClosed,
       toggleDirectory,
       openFile,
@@ -819,6 +948,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }),
     [
       rootPath,
+      roots,
       tree,
       expanded,
       treeError,
@@ -829,6 +959,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       revealTarget,
       openFolder,
       openFolderAt,
+      addFolderRoot,
       reopenClosed,
       toggleDirectory,
       openFile,

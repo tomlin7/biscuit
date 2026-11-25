@@ -118,9 +118,9 @@ function basename(path: string): string {
 }
 
 export function AiProvider({ children }: { children: ReactNode }) {
-  const { rootPath, tabs, document, setValueAt, applyDiskValue } = useWorkspace();
-  const workspaceRef = useRef({ rootPath, tabs, document, setValueAt, applyDiskValue });
-  workspaceRef.current = { rootPath, tabs, document, setValueAt, applyDiskValue };
+  const { rootPath, roots, tabs, document, setValueAt, applyDiskValue } = useWorkspace();
+  const workspaceRef = useRef({ rootPath, roots, tabs, document, setValueAt, applyDiskValue });
+  workspaceRef.current = { rootPath, roots, tabs, document, setValueAt, applyDiskValue };
   const initial = useMemo(() => loadSessions(), []);
   const [sessions, setSessions] = useState<ChatSession[]>(initial.sessions);
   const [activeSessionId, setActiveSessionId] = useState(initial.activeSessionId);
@@ -362,7 +362,11 @@ export function AiProvider({ children }: { children: ReactNode }) {
             const outcome = await runAgentTool(
               name,
               args,
-              workspace.rootPath ?? "",
+              workspace.roots.length > 0
+                ? workspace.roots
+                : workspace.rootPath
+                  ? [workspace.rootPath]
+                  : [],
               {
                 tabs: workspace.tabs,
                 setValueAt: workspace.setValueAt,

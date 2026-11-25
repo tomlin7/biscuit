@@ -1,7 +1,7 @@
 import { exists, readDir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { applyEditorConfigText, editorConfigFor } from "../editor/editorconfig";
 import { searchWorkspace, type SearchHit } from "../search/workspaceSearch";
-import { pathInsideRoot } from "./workspacePath";
+import { pathInsideRoots } from "./roots";
 import { requestRunCommand, requestShowTerminal } from "../terminal/runCommand";
 
 const MAX_FILE_CHARS = 20_000;
@@ -53,8 +53,8 @@ export function replaceOnce(source: string, find: string, replacement: string): 
   return source.slice(0, index) + replacement + source.slice(index + find.length);
 }
 
-export async function readWorkspaceFile(root: string, input: string): Promise<ToolOutcome> {
-  const path = pathInsideRoot(root, input);
+export async function readWorkspaceFile(roots: string[], input: string): Promise<ToolOutcome> {
+  const path = pathInsideRoots(roots, input);
   if (!path) return outside();
   try {
     const text = await readTextFile(path);
@@ -65,8 +65,8 @@ export async function readWorkspaceFile(root: string, input: string): Promise<To
   }
 }
 
-export async function listWorkspaceDirectory(root: string, input: string): Promise<ToolOutcome> {
-  const path = pathInsideRoot(root, input.trim() ? input : ".");
+export async function listWorkspaceDirectory(roots: string[], input: string): Promise<ToolOutcome> {
+  const path = pathInsideRoots(roots, input.trim() ? input : ".");
   if (!path) return outside();
   try {
     const entries = await readDir(path);
@@ -82,11 +82,15 @@ export async function listWorkspaceDirectory(root: string, input: string): Promi
   }
 }
 
-export async function searchWorkspaceText(root: string, query: string): Promise<ToolOutcome> {
+export async function searchWorkspaceText(roots: string[], query: string): Promise<ToolOutcome> {
   const needle = query.trim();
   if (!needle) return { ok: false, text: "query is empty" };
+  if (roots.length === 0) return { ok: false, text: "Open a folder first." };
   try {
-    const hits = await searchWorkspace(root, needle, { matchCase: false, useRegex: false });
+    const hits = [];
+    for (const root of roots) {
+      hits.push(...(await searchWorkspace(root, needle, { matchCase: false, useRegex: false })));
+    }
     return { ok: true, text: formatSearchHits(hits) };
   } catch (err) {
     return { ok: false, text: err instanceof Error ? err.message : String(err) };
@@ -94,13 +98,13 @@ export async function searchWorkspaceText(root: string, query: string): Promise<
 }
 
 export async function editWorkspaceFile(
-  root: string,
+  roots: string[],
   input: string,
   find: string,
   replacement: string,
   host: FileHost = noFiles,
 ): Promise<ToolOutcome> {
-  const path = pathInsideRoot(root, input);
+  const path = pathInsideRoots(roots, input);
   if (!path) return outside();
   const tab = host.tabs.find((item) => samePath(item.path, path));
   try {
@@ -111,7 +115,7 @@ export async function editWorkspaceFile(
       host.setValueAt(tab.path, next);
       return { ok: true, text: `Updated ${path} in the editor. Save to write it.` };
     }
-    const config = await editorConfigFor(path, root);
+    const config = await editorConfigFor(path, roots[0] ?? null);
     const text = applyEditorConfigText(next, config);
     await writeTextFile(path, text);
     return { ok: true, text: `Wrote ${path}` };
@@ -121,12 +125,12 @@ export async function editWorkspaceFile(
 }
 
 export async function writeWorkspaceFile(
-  root: string,
+  roots: string[],
   input: string,
   contents: string,
   host: FileHost = noFiles,
 ): Promise<ToolOutcome> {
-  const path = pathInsideRoot(root, input);
+  const path = pathInsideRoots(roots, input);
   if (!path) return outside();
   const tab = host.tabs.find((item) => samePath(item.path, path));
   try {
@@ -135,12 +139,12 @@ export async function writeWorkspaceFile(
       return { ok: true, text: `Updated ${path} in the editor. Save to write it.` };
     }
     if (!tab && !(await exists(path))) {
-      const config = await editorConfigFor(path, root);
+      const config = await editorConfigFor(path, roots[0] ?? null);
       const text = applyEditorConfigText(contents, config);
       await writeTextFile(path, text);
       return { ok: true, text: `Wrote ${path}` };
     }
-    const config = await editorConfigFor(path, root);
+    const config = await editorConfigFor(path, roots[0] ?? null);
     const text = applyEditorConfigText(contents, config);
     await writeTextFile(path, text);
     if (tab) host.applyDiskValue(tab.path, text);
@@ -201,9 +205,10 @@ function toolDef(
   };
 }
 
-export async function runTerminalCommand(root: string, command: string): Promise<ToolOutcome> {
+export async function runTerminalCommand(roots: string[], command: string): Promise<ToolOutcome> {
   const line = command.trim();
   if (!line) return { ok: false, text: "command is empty" };
+  const root = roots[0] ?? "";
   if (!root) return { ok: false, text: "Open a folder first." };
   requestShowTerminal();
   try {
@@ -217,23 +222,23 @@ export async function runTerminalCommand(root: string, command: string): Promise
 export async function runAgentTool(
   name: string,
   args: Record<string, string>,
-  root: string,
+  roots: string[],
   host: FileHost = noFiles,
   focus: { path: string | null; text: string | null } = { path: null, text: null },
 ): Promise<ToolOutcome> {
-  if (name === "run_terminal") return runTerminalCommand(root, args.command ?? "");
-  if (!root) return { ok: false, text: "Open a folder first." };
-  if (name === "read_file") return readWorkspaceFile(root, args.path ?? "");
-  if (name === "list_directory") return listWorkspaceDirectory(root, args.path ?? ".");
-  if (name === "search_text") return searchWorkspaceText(root, args.query ?? "");
+  if (name === "run_terminal") return runTerminalCommand(roots, args.command ?? "");
+  if (roots.length === 0) return { ok: false, text: "Open a folder first." };
+  if (name === "read_file") return readWorkspaceFile(roots, args.path ?? "");
+  if (name === "list_directory") return listWorkspaceDirectory(roots, args.path ?? ".");
+  if (name === "search_text") return searchWorkspaceText(roots, args.query ?? "");
   if (name === "edit_file") {
-    return editWorkspaceFile(root, args.path ?? "", args.find ?? "", args.replace ?? "", host);
+    return editWorkspaceFile(roots, args.path ?? "", args.find ?? "", args.replace ?? "", host);
   }
   if (name === "write_file") {
-    return writeWorkspaceFile(root, args.path ?? "", args.contents ?? "", host);
+    return writeWorkspaceFile(roots, args.path ?? "", args.contents ?? "", host);
   }
   if (name === "workspace_info") {
-    return { ok: true, text: describeWorkspace(root, focus.path, focus.text) };
+    return { ok: true, text: describeWorkspace(roots.join("\n") || "(none)", focus.path, focus.text) };
   }
   return { ok: false, text: `unknown tool ${name}` };
 }

@@ -121,7 +121,7 @@ type Props = {
 };
 
 export function FileTree({ filter = "", hideDotfiles = false }: Props) {
-  const { rootPath, tree, treeError, busy, openFolder, createEntry, renameEntry, deleteEntry } =
+  const { rootPath, tree, treeError, busy, openFolder, addFolderRoot, createEntry, renameEntry, deleteEntry } =
     useWorkspace();
   const [menu, setMenu] = useState<MenuState | null>(null);
   const filtered = useMemo(
@@ -143,6 +143,11 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
 
   return (
     <div className="file-tree">
+      <div className="file-tree__toolbar">
+        <button type="button" className="file-tree__cta" onClick={() => void addFolderRoot()}>
+          Add Folder
+        </button>
+      </div>
       {treeError ? <p className="file-tree__error">{treeError}</p> : null}
       {busy ? <p className="file-tree__status">Working…</p> : null}
       {filtered.length === 0 && !busy ? (

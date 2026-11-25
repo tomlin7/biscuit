@@ -29,6 +29,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.openFolder(),
   },
   {
+    id: "workbench.action.addRootFolder",
+    title: "Add Folder to Workspace…",
+    category: "File",
+    run: (ctx) => void ctx.addFolderRoot(),
+  },
+  {
     id: "workbench.action.files.save",
     title: "Save",
     category: "File",
