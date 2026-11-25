@@ -1258,6 +1258,10 @@ function ShellChrome() {
       resetEditorSettings: () => {
         resetEditorSettings();
       },
+      increaseSidebarWidth: () => {
+        setSidebarWidth(sidebarWidth + 20);
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1352,6 +1356,7 @@ function ShellChrome() {
       notificationItems,
       notificationUnread,
       resetEditorSettings,
+      sidebarWidth,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,

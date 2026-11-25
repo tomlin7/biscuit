@@ -1292,7 +1292,12 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.resetEditorSettings(),
   },
-
+  {
+    id: "workbench.action.increaseSidebarWidth",
+    title: "Increase Primary Side Bar Width",
+    category: "View",
+    run: (ctx) => ctx.increaseSidebarWidth(),
+  },
 
 
 ];

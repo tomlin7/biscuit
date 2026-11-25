@@ -215,6 +215,7 @@ export type CommandContext = {
   toggleMaximizeWindow: () => void;
   minimizeWindow: () => void;
   resetEditorSettings: () => void;
+  increaseSidebarWidth: () => void;
 };
 
 export type Command = {
