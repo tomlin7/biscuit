@@ -160,15 +160,33 @@ pub fn git_checkout(cwd: String, branch: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn git_push(cwd: String) -> Result<(), String> {
-    run_git(&cwd, &["push".into()])?;
-    Ok(())
+pub fn git_push(cwd: String, set_upstream: Option<bool>) -> Result<String, String> {
+    let args = if set_upstream.unwrap_or(false) {
+        vec![
+            "push".into(),
+            "-u".into(),
+            "origin".into(),
+            "HEAD".into(),
+        ]
+    } else {
+        vec!["push".into()]
+    };
+    let out = run_git(&cwd, &args)?;
+    Ok(if out.trim().is_empty() {
+        "Push completed.".into()
+    } else {
+        out
+    })
 }
 
 #[tauri::command]
-pub fn git_pull(cwd: String) -> Result<(), String> {
-    run_git(&cwd, &["pull".into()])?;
-    Ok(())
+pub fn git_pull(cwd: String) -> Result<String, String> {
+    let out = run_git(&cwd, &["pull".into(), "--ff-only".into()])?;
+    Ok(if out.trim().is_empty() {
+        "Already up to date.".into()
+    } else {
+        out
+    })
 }
 
 #[tauri::command]

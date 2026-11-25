@@ -32,7 +32,7 @@ type Props = {
 };
 
 export function ScmPanel({ onBranch }: Props) {
-  const { rootPath, openFile, busy } = useWorkspace();
+  const { rootPath, openFile, busy, tabs, applyDiskValue, closeTab } = useWorkspace();
   const [summary, setSummary] = useState<GitSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -81,12 +81,15 @@ export function ScmPanel({ onBranch }: Props) {
     void refresh();
   }, [refresh]);
 
-  const run = async (command: string, args: Record<string, unknown>) => {
+  const run = async (command: string, args: Record<string, unknown> = {}) => {
     if (!rootPath) return false;
     setActing(true);
     setError(null);
     try {
-      await invoke(command, { cwd: rootPath, ...args });
+      const result = await invoke<unknown>(command, { cwd: rootPath, ...args });
+      if (typeof result === "string" && result.trim()) {
+        appendLog(result.trim());
+      }
       await refresh();
       return true;
     } catch (err) {
@@ -94,6 +97,47 @@ export function ScmPanel({ onBranch }: Props) {
       setError(message);
       appendLog(`Git failed: ${message}`);
       return false;
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const push = async () => {
+    if (!rootPath) return;
+    setActing(true);
+    setError(null);
+    try {
+      const out = await invoke<string>("git_push", { cwd: rootPath });
+      if (out?.trim()) appendLog(out.trim());
+      else appendLog("Push completed.");
+      await refresh();
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
+      if (/no upstream|set the remote as upstream|has no upstream branch/i.test(detail)) {
+        const confirmPush = window.confirm(
+          "This branch has no upstream. Push and set origin as upstream?",
+        );
+        if (confirmPush) {
+          try {
+            const out = await invoke<string>("git_push", {
+              cwd: rootPath,
+              setUpstream: true,
+            });
+            if (out?.trim()) appendLog(out.trim());
+            else appendLog("Pushed and set upstream to origin.");
+            await refresh();
+            return;
+          } catch (upstreamErr) {
+            const upstreamDetail =
+              upstreamErr instanceof Error ? upstreamErr.message : String(upstreamErr);
+            setError(upstreamDetail);
+            appendLog(`Git failed: ${upstreamDetail}`);
+            return;
+          }
+        }
+      }
+      setError(detail);
+      appendLog(`Git failed: ${detail}`);
     } finally {
       setActing(false);
     }
@@ -138,7 +182,7 @@ export function ScmPanel({ onBranch }: Props) {
             type="button"
             className="scm-panel__refresh"
             disabled={acting || busy}
-            onClick={() => void run("git_push", {})}
+            onClick={() => void push()}
           >
             Push
           </button>
@@ -314,7 +358,34 @@ export function ScmPanel({ onBranch }: Props) {
                         : `Discard changes in ${entry.path}?`,
                     );
                     if (!ok) return;
-                    void run("git_discard", { path: entry.path, untracked });
+                    void (async () => {
+                      const succeeded = await run("git_discard", {
+                        path: entry.path,
+                        untracked,
+                      });
+                      if (!succeeded || !rootPath) return;
+                      const relative = entry.path.replace(
+                        /\//g,
+                        rootPath.includes("\\") ? "\\" : "/",
+                      );
+                      const absolute = joinPath(rootPath, relative);
+                      const open = tabs.find(
+                        (tab) =>
+                          tab.path.replace(/\\/g, "/").toLowerCase() ===
+                          absolute.replace(/\\/g, "/").toLowerCase(),
+                      );
+                      if (!open) return;
+                      if (untracked) {
+                        closeTab(open.path);
+                        return;
+                      }
+                      try {
+                        const text = await readTextFile(absolute);
+                        applyDiskValue(open.path, text);
+                      } catch {
+                        closeTab(open.path);
+                      }
+                    })();
                   }}
                 >
                   Discard

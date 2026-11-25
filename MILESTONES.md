@@ -111,6 +111,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.103.0** | Persist editor split ratio | shipped |
 | **0.104.0** | Clear all agent attachments | shipped |
 | **0.105.0** | Welcome tips strip | shipped |
+| **0.106.0** | Git push with upstream fallback | shipped |
+| **0.107.0** | Git pull fast-forward only | shipped |
+| **0.108.0** | EditorConfig charset on status bar | shipped |
+| **0.109.0** | TS/JS hover documentation | shipped |
+| **0.110.0** | Tab size cycle in status bar | shipped |
+| **0.111.0** | Reload editor after SCM discard | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
