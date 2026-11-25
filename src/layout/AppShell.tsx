@@ -262,7 +262,7 @@ function ShellChrome() {
 
       if (event.key === "F12") {
         event.preventDefault();
-        runEditorCommand("definition");
+        runEditorCommand(event.shiftKey ? "references" : "definition");
         clearChord();
         return;
       }

@@ -8,6 +8,13 @@ import {
   type ReactNode,
 } from "react";
 
+export type ReferenceHit = {
+  path: string;
+  line: number;
+  column: number;
+  preview: string;
+};
+
 export type PeekInfo = {
   title: string;
   preview: string;
@@ -23,6 +30,7 @@ type EditorHandle = {
     lineNumbers?: "on" | "relative";
   }) => void;
   lookupDefinition?: (jump: boolean) => void;
+  findReferences?: () => void;
 };
 
 export type EditorCommand =
@@ -35,7 +43,8 @@ export type EditorCommand =
   | "moveLineDown"
   | "replace"
   | "peek"
-  | "definition";
+  | "definition"
+  | "references";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -45,6 +54,9 @@ type EditorActionsState = {
   peek: PeekInfo | null;
   clearPeek: () => void;
   showPeek: (info: PeekInfo | null) => void;
+  references: ReferenceHit[] | null;
+  clearReferences: () => void;
+  showReferences: (hits: ReferenceHit[] | null) => void;
 };
 
 const EditorActionsContext = createContext<EditorActionsState | null>(null);
@@ -55,7 +67,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
   const wordWrap = useRef<"on" | "off">("off");
   const lineNumbers = useRef<"on" | "relative">("on");
   const [peek, setPeek] = useState<PeekInfo | null>(null);
+  const [references, setReferences] = useState<ReferenceHit[] | null>(null);
   const clearPeek = useCallback(() => setPeek(null), []);
+  const clearReferences = useCallback(() => setReferences(null), []);
 
   const registerFindHandler = useCallback((handler: (() => void) | null) => {
     findHandler.current = handler;
@@ -97,6 +111,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
       case "definition":
         handle.lookupDefinition?.(true);
         break;
+      case "references":
+        handle.findReferences?.();
+        break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";
         handle.updateOptions({ wordWrap: wordWrap.current });
@@ -119,8 +136,20 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
       peek,
       clearPeek,
       showPeek: setPeek,
+      references,
+      clearReferences,
+      showReferences: setReferences,
     }),
-    [registerFindHandler, registerEditor, findInFile, runEditorCommand, peek, clearPeek],
+    [
+      registerFindHandler,
+      registerEditor,
+      findInFile,
+      runEditorCommand,
+      peek,
+      clearPeek,
+      references,
+      clearReferences,
+    ],
   );
 
   return (

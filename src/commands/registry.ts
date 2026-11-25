@@ -89,6 +89,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("peek"),
   },
   {
+    id: "editor.action.findReferences",
+    title: "Find All References",
+    category: "Edit",
+    keybinding: "Shift+F12",
+    run: (ctx) => ctx.runEditorCommand("references"),
+  },
+  {
     id: "editor.action.revealDefinition",
     title: "Go to Definition",
     category: "Edit",

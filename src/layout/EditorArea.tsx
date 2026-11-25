@@ -21,7 +21,7 @@ import { ResizeHandle } from "./ResizeHandle";
 
 export function EditorArea() {
   const { document, rootPath, rootName, tabs, activePath, openFileAt } = useWorkspace();
-  const { findInFile, peek, clearPeek } = useEditorActions();
+  const { findInFile, peek, clearPeek, references, clearReferences } = useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
   const [split, setSplit] = useState(false);
   const [markdownPreview, setMarkdownPreview] = useState(false);
@@ -138,6 +138,31 @@ export function EditorArea() {
             </button>
           </div>
           <pre>{peek.preview}</pre>
+        </div>
+      ) : null}
+      {references ? (
+        <div className="editor-area__peek">
+          <div className="editor-area__peek-bar">
+            <span>{references.length} references</span>
+            <button type="button" onClick={clearReferences}>
+              Close
+            </button>
+          </div>
+          <ul className="editor-area__refs">
+            {references.map((hit) => (
+              <li key={`${hit.path}:${hit.line}:${hit.column}:${hit.preview}`}>
+                <button
+                  type="button"
+                  onClick={() => void openFileAt(hit.path, hit.line, hit.column)}
+                >
+                  <span>
+                    {hit.path.split(/[/\\]/).pop()}:{hit.line}
+                  </span>
+                  <span>{hit.preview}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
       <div

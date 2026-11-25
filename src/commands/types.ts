@@ -24,7 +24,8 @@ export type CommandContext = {
       | "moveLineDown"
       | "replace"
       | "peek"
-      | "definition",
+      | "definition"
+      | "references",
   ) => void;
   openSearch: () => void;
   toggleTerminal: () => void;

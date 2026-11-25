@@ -314,6 +314,42 @@
   white-space: pre-wrap;
 }
 
+.editor-area__refs {
+  list-style: none;
+  margin: 0;
+  padding: 0 6px 6px;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.editor-area__refs button {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.editor-area__refs button span:first-child {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.editor-area__refs button span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-area__refs button:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
 .editor-area__empty {
   display: flex;
   flex-direction: column;

@@ -7,6 +7,7 @@ import { useTheme } from "../theme/ThemeContext";
 import { useEditorActions } from "./EditorActions";
 import { typescript } from "monaco-editor";
 import { readTextFile } from "@tauri-apps/plugin-fs";
+import { referencesAt } from "../lsp/tsLocations";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { defineT3dThemes, monacoThemeId } from "./theme";
@@ -35,9 +36,11 @@ export function MonacoEditor({ path, primary = true }: Props) {
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
   const { theme } = useTheme();
-  const { registerFindHandler, registerEditor, showPeek } = useEditorActions();
+  const { registerFindHandler, registerEditor, showPeek, showReferences } = useEditorActions();
   const showPeekRef = useRef(showPeek);
   showPeekRef.current = showPeek;
+  const showReferencesRef = useRef(showReferences);
+  showReferencesRef.current = showReferences;
   const openFileAtRef = useRef(openFileAt);
   openFileAtRef.current = openFileAt;
   const { breakpoints, addBreakpoint, removeBreakpoint } = useDebug();
@@ -123,6 +126,54 @@ export function MonacoEditor({ path, primary = true }: Props) {
         })().catch((err) => {
           showPeekRef.current({
             title: "Definition failed",
+            preview: err instanceof Error ? err.message : String(err),
+            path: "",
+            line: 1,
+            column: 1,
+          });
+        });
+      },
+      findReferences: () => {
+        void (async () => {
+          const ed = editorRef.current;
+          const model = ed?.getModel();
+          const position = ed?.getPosition();
+          if (!model || !position) return;
+          const language = model.getLanguageId();
+          if (language !== "typescript" && language !== "javascript") {
+            showPeekRef.current({
+              title: "No language service",
+              preview: "Find references is available for JavaScript and TypeScript.",
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            return;
+          }
+          const hits = await referencesAt(model, model.getOffsetAt(position));
+          if (hits.length === 0) {
+            showPeekRef.current({
+              title: "No references",
+              preview: "The language service did not find references here.",
+              path: "",
+              line: 1,
+              column: 1,
+            });
+            showReferencesRef.current(null);
+            return;
+          }
+          showPeekRef.current(null);
+          showReferencesRef.current(
+            hits.map((hit) => ({
+              path: hit.path,
+              line: hit.line,
+              column: hit.column,
+              preview: hit.preview,
+            })),
+          );
+        })().catch((err) => {
+          showPeekRef.current({
+            title: "References failed",
             preview: err instanceof Error ? err.message : String(err),
             path: "",
             line: 1,
