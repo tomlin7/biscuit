@@ -10,6 +10,7 @@ import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { referencesAt, renamePlan } from "../lsp/tsLocations";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
+import { editorConfigFor } from "./editorconfig";
 import { defineT3dThemes, monacoThemeId } from "./theme";
 import "./MonacoEditor.css";
 
@@ -31,6 +32,7 @@ export function MonacoEditor({ path, primary = true }: Props) {
     clearRevealTarget,
     activateTab,
     openFileAt,
+    rootPath,
   } = useWorkspace();
   const doc = path
     ? (tabs.find((t) => t.path === path) ?? null)
@@ -56,6 +58,23 @@ export function MonacoEditor({ path, primary = true }: Props) {
   tabsRef.current = tabs;
   const setValueAtRef = useRef(setValueAt);
   setValueAtRef.current = setValueAt;
+
+  useEffect(() => {
+    const ed = editorRef.current;
+    if (!ed || !doc) return;
+    let cancelled = false;
+    void editorConfigFor(doc.path, rootPath).then((config) => {
+      if (cancelled || !config.indentSize && !config.indentStyle) return;
+      ed.updateOptions({
+        detectIndentation: false,
+        ...(config.indentSize ? { tabSize: config.indentSize } : {}),
+        ...(config.indentStyle ? { insertSpaces: config.indentStyle === "space" } : {}),
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [doc?.path, rootPath]);
 
   useEffect(() => {
     if (monacoRef.current) {

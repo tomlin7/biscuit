@@ -22,6 +22,7 @@ import {
 } from "./path";
 import { pushClosedEditor, rememberFile, rememberFolder, popClosedEditor } from "./history";
 import { readSession, writeSession } from "./session";
+import { applyEditorConfigText, editorConfigFor } from "../editor/editorconfig";
 
 export type EditorTab = {
   path: string;
@@ -527,14 +528,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     setTreeError(null);
     try {
+      const saved = new Map<string, string>();
       for (const tab of dirty) {
-        await writeTextFile(tab.path, tab.value);
+        const config = await editorConfigFor(tab.path, rootPath);
+        const text = applyEditorConfigText(tab.value, config);
+        await writeTextFile(tab.path, text);
+        saved.set(tab.path, text);
       }
-      const saved = new Map(dirty.map((tab) => [tab.path, tab.value]));
       setTabs((current) =>
         current.map((tab) => {
           const value = saved.get(tab.path);
-          return value === undefined ? tab : { ...tab, baseline: value };
+          return value === undefined ? tab : { ...tab, value, baseline: value };
         }),
       );
     } catch (err) {
@@ -542,7 +546,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [rootPath]);
 
   const closeAll = useCallback(() => {
     const open = tabsRef.current;
@@ -569,10 +573,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     setTreeError(null);
     try {
-      await writeTextFile(tab.path, tab.value);
+      const config = await editorConfigFor(tab.path, rootPath);
+      const text = applyEditorConfigText(tab.value, config);
+      await writeTextFile(tab.path, text);
       setTabs((current) =>
         current.map((t) =>
-          t.path === tab.path ? { ...t, baseline: t.value } : t,
+          t.path === tab.path ? { ...t, value: text, baseline: text } : t,
         ),
       );
     } catch (err) {
@@ -580,7 +586,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [rootPath]);
 
   const state = useMemo<WorkspaceState>(
     () => ({
