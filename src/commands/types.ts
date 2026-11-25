@@ -269,6 +269,7 @@ export type CommandContext = {
   closeEditorsToTheLeft: () => void;
   openNextEditor: () => void;
   openPreviousEditor: () => void;
+  toggleAutoSave: () => void;
 };
 
 export type Command = {

@@ -1644,6 +1644,11 @@ function ShellChrome() {
         const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
         if (prev) activateTab(prev.path);
       },
+      toggleAutoSave: () => {
+        const next = settings.editor.autoSaveMs > 0 ? 0 : 1000;
+        updateEditor({ autoSaveMs: next });
+        notify("Auto Save", next > 0 ? `On (${next} ms)` : "Off");
+      },
     }),
     [
       openFolder,

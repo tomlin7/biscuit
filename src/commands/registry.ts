@@ -167,7 +167,12 @@ export const COMMANDS: Command[] = [
     keybinding: "Ctrl+PageUp",
     run: (ctx) => ctx.openPreviousEditor(),
   },
-
+  {
+    id: "workbench.action.toggleAutoSave",
+    title: "Toggle Auto Save",
+    category: "File",
+    run: (ctx) => ctx.toggleAutoSave(),
+  },
 
   {
     id: "workbench.action.pinEditor",
