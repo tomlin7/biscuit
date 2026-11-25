@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
@@ -1438,6 +1439,21 @@ function ShellChrome() {
         void openUrl("https://github.com/tomlin7/T3D/releases").catch(() => {
           /* ignore */
         });
+      },
+      showAbout: () => {
+        void getVersion()
+          .then((version) => {
+            notify(
+              "About T3D",
+              `T3D ${version} — Tauri 2 + React + Monaco. Successor architecture to Biscuit.`,
+            );
+          })
+          .catch(() => {
+            notify(
+              "About T3D",
+              "T3D — Tauri 2 + React + Monaco. Successor architecture to Biscuit.",
+            );
+          });
       },
     }),
     [

@@ -240,6 +240,7 @@ export type CommandContext = {
   openDocumentation: () => void;
   toggleChromeAcrylic: () => void;
   openReleaseNotes: () => void;
+  showAbout: () => void;
 };
 
 export type Command = {

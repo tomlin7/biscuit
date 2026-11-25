@@ -1450,5 +1450,10 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.openReleaseNotes(),
   },
-
+  {
+    id: "t3d.showAbout",
+    title: "About T3D",
+    category: "Help",
+    run: (ctx) => ctx.showAbout(),
+  },
 ];

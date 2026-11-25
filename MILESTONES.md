@@ -380,6 +380,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.372.0** | Acrylic-visible shell crease CSS | shipped |
 | **0.373.0** | Toggle chrome acrylic from settings and palette | shipped |
 | **0.374.0** | Open release notes from palette | shipped |
+| **0.375.0** | Show About T3D from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
