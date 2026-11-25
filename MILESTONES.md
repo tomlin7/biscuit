@@ -35,6 +35,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.27.0** | Stage all and unstage all | shipped |
 | **0.28.0** | Save the open file under a new path | shipped |
 | **0.29.0** | Match case and regular expressions in workspace search | shipped |
+| **0.30.0** | Drop a file or folder onto the window to open it | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

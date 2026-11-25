@@ -10,7 +10,7 @@ import {
 } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open, save as saveDialog } from "@tauri-apps/plugin-dialog";
-import { exists, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { exists, readTextFile, stat, writeTextFile } from "@tauri-apps/plugin-fs";
 import { listDirectory, type TreeNode } from "./fsTree";
 import {
   basename,
@@ -60,6 +60,7 @@ export type WorkspaceState = {
   reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
+  openDroppedPaths: (paths: string[]) => Promise<void>;
   openFileAt: (path: string, line: number, column: number) => Promise<void>;
   activateTab: (path: string) => void;
   closeTab: (path: string) => void;
@@ -258,6 +259,35 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setBusy(false);
     }
   }, []);
+
+  const openDroppedPaths = useCallback(
+    async (paths: string[]) => {
+      const files: string[] = [];
+      const folders: string[] = [];
+      for (const path of paths) {
+        try {
+          const info = await stat(path);
+          if (info.isDirectory) folders.push(path);
+          else if (info.isFile) files.push(path);
+        } catch (err) {
+          setTreeError(err instanceof Error ? err.message : String(err));
+        }
+      }
+
+      if (folders.length > 0 && files.length === 0) {
+        await openFolderAt(folders[0]);
+        return;
+      }
+
+      const opened: string[] = [];
+      for (const path of files) {
+        await openFile(path);
+        if (isProbablyTextFile(path)) opened.push(path);
+      }
+      if (opened[0]) setActivePath(opened[0]);
+    },
+    [openFolderAt, openFile],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -652,6 +682,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       reopenClosed,
       toggleDirectory,
       openFile,
+      openDroppedPaths,
       openFileAt,
       activateTab,
       closeTab,
@@ -684,6 +715,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       reopenClosed,
       toggleDirectory,
       openFile,
+      openDroppedPaths,
       openFileAt,
       activateTab,
       closeTab,

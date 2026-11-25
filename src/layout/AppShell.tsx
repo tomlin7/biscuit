@@ -20,6 +20,7 @@ import { CommandPalette } from "../commands/CommandPalette";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
 import { basename } from "../workspace/path";
+import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { symbolsForFile } from "../lsp/OutlinePanel";
 import { TitleBar } from "./TitleBar";
@@ -41,11 +42,13 @@ function ShellChrome() {
     openFolder,
     openFolderAt,
     openFile,
+    openDroppedPaths,
     openFileAt,
     reopenClosed,
     document,
     rootPath,
   } = useWorkspace();
+  useFileDrop(openDroppedPaths);
   const { toggleTheme } = useTheme();
   const { findInFile, runEditorCommand } = useEditorActions();
   const { extensions } = useExtensions();
