@@ -7,6 +7,7 @@ import {
   ArchiveRestore,
   ArrowDown,
   ArrowUp,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
   GitBranch,
@@ -24,6 +25,7 @@ import { setToggleAmendListener } from "./amendBus";
 import { setScmRemoteListener, type ScmRemoteAction } from "./scmRemoteBus";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
+import { EmptyState } from "../ui/EmptyState";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -395,7 +397,12 @@ export function ScmPanel({ onBranch }: Props) {
   if (!rootPath) {
     return (
       <div className="scm-panel scm-panel--empty">
-        <p className="scm-panel__hint">Open a folder to view Git status.</p>
+        <EmptyState
+          compact
+          icon={GitBranch}
+          title="No repository"
+          description="Open a folder under Git to stage, commit, and sync changes."
+        />
       </div>
     );
   }
@@ -667,7 +674,12 @@ export function ScmPanel({ onBranch }: Props) {
       <div className="scm-panel__lists">
         {loading && !summary ? <p className="scm-panel__hint">Loading git status…</p> : null}
         {summary && summary.entries.length === 0 ? (
-          <p className="scm-panel__hint">Working tree clean. No changes.</p>
+          <EmptyState
+            compact
+            icon={CheckCircle2}
+            title="Working tree clean"
+            description="No changes to commit."
+          />
         ) : null}
 
         {/* Staged Changes Section */}

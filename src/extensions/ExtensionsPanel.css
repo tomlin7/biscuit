@@ -144,34 +144,6 @@
   font-size: var(--font-size-sm);
 }
 
-.ext-panel__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 12px;
-  padding: 32px 16px;
-}
-
-.ext-panel__empty-icon {
-  color: var(--fg-dim);
-}
-
-.ext-panel__cta-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--fg);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-}
-
-.ext-panel__cta-btn:hover {
-  background: var(--bg-hover);
-}
-
 .ext-panel__list {
   list-style: none;
   margin: 0;

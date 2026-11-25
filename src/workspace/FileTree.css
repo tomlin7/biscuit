@@ -9,16 +9,6 @@
 
 .file-tree--empty {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 36px 16px;
-  text-align: center;
-}
-
-.file-tree__empty-icon {
-  color: var(--fg-dim);
 }
 
 .file-tree__toolbar {

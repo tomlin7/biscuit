@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import * as monaco from "monaco-editor";
 import { typescript } from "monaco-editor";
-import { Search, X } from "lucide-react";
+import { ListTree, Search, SearchX, X } from "lucide-react";
+import { EmptyState } from "../ui/EmptyState";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { scanOutline, type OutlineSymbol } from "./outlineScan";
 import "./OutlinePanel.css";
@@ -137,7 +138,12 @@ export function OutlinePanel() {
   if (!document) {
     return (
       <div className="outline-panel outline-panel--empty">
-        <p className="outline-panel__hint">Open a file to view its symbol outline.</p>
+        <EmptyState
+          compact
+          icon={ListTree}
+          title="No outline"
+          description="Open a file to see its symbols here."
+        />
       </div>
     );
   }
@@ -169,9 +175,19 @@ export function OutlinePanel() {
 
       <div className="outline-panel__body">
         {symbols.length === 0 ? (
-          <p className="outline-panel__hint">No symbols found in this file.</p>
+          <EmptyState
+            compact
+            icon={ListTree}
+            title="No symbols"
+            description="This file has no functions, classes, or headings to list."
+          />
         ) : filteredSymbols.length === 0 ? (
-          <p className="outline-panel__hint">No symbols match &ldquo;{filterQuery}&rdquo;.</p>
+          <EmptyState
+            compact
+            icon={SearchX}
+            title="No matches"
+            description={<>No symbols match &ldquo;{filterQuery}&rdquo;.</>}
+          />
         ) : (
           <ul className="outline-panel__list">
             {filteredSymbols.map((symbol) => {

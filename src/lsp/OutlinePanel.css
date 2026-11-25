@@ -9,7 +9,8 @@
 }
 
 .outline-panel--empty {
-  padding: 16px 12px;
+  display: flex;
+  padding: 0;
 }
 
 .outline-panel__toolbar {

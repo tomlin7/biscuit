@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownToLine, Ban, Copy, Search, X } from "lucide-react";
+import { ArrowDownToLine, Ban, Copy, ScrollText, Search, SearchX, X } from "lucide-react";
+import { EmptyState } from "../ui/EmptyState";
 import { clearLogs, subscribeLogs, type LogLine } from "./logBus";
 import { IconButton } from "../ui/IconButton";
 import "./LogsPanel.css";
@@ -83,9 +84,23 @@ export function LogsPanel() {
       </div>
 
       {lines.length === 0 ? (
-        <p className="logs-panel__empty">No output log lines yet.</p>
+        <div className="logs-panel__empty">
+          <EmptyState
+            compact
+            icon={ScrollText}
+            title="No output yet"
+            description="Workspace, git, and extension activity will be logged here."
+          />
+        </div>
       ) : filteredLines.length === 0 ? (
-        <p className="logs-panel__empty">No lines match filter &ldquo;{filter}&rdquo;.</p>
+        <div className="logs-panel__empty">
+          <EmptyState
+            compact
+            icon={SearchX}
+            title="No matches"
+            description={<>No lines match &ldquo;{filter}&rdquo;.</>}
+          />
+        </div>
       ) : (
         <ol ref={listRef} className="logs-panel__list">
           {filteredLines.map((line) => (

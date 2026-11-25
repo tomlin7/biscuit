@@ -3,6 +3,7 @@ import {
   Columns2,
   ExternalLink,
   Eye,
+  FileCode2,
   Search,
   Sparkles,
   X,
@@ -23,6 +24,7 @@ import { useEditorActions } from "../editor/EditorActions";
 import { useLayout } from "./LayoutContext";
 import { FileIcon } from "../ui/FileIcon";
 import { IconButton } from "../ui/IconButton";
+import { EmptyState } from "../ui/EmptyState";
 import { ResizeHandle } from "./ResizeHandle";
 import { setSplitEditorListener } from "./splitBus";
 
@@ -35,8 +37,17 @@ type CrumbMenuState = {
 };
 
 export function EditorArea() {
-  const { document, rootPath, roots, tabs, activePath, openFile, openFileAt, revealInExplorer } =
-    useWorkspace();
+  const {
+    document,
+    rootPath,
+    roots,
+    tabs,
+    activePath,
+    openFile,
+    openFileAt,
+    openUntitled,
+    revealInExplorer,
+  } = useWorkspace();
   const { findInFile, peek, clearPeek, references, clearReferences, findMatchLabel } =
     useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
@@ -576,10 +587,18 @@ export function EditorArea() {
         ) : !rootPath ? (
           <Welcome />
         ) : (
-          <div className="editor-area__empty">
-            <p className="editor-area__empty-title">T3D</p>
-            <p className="editor-area__empty-hint">Select a file in the explorer to edit.</p>
-          </div>
+          <EmptyState
+            icon={FileCode2}
+            title="No editor open"
+            description="Pick a file from the explorer, or jump straight to one."
+            actions={[{ label: "New File", onClick: openUntitled }]}
+            hints={[
+              { label: "Go to file", keys: "Ctrl+P" },
+              { label: "Command palette", keys: "Ctrl+Shift+P" },
+              { label: "Search workspace", keys: "Ctrl+Shift+F" },
+              { label: "Toggle terminal", keys: "Ctrl+`" },
+            ]}
+          />
         )}
       </div>
     </section>

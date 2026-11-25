@@ -9,7 +9,8 @@
 }
 
 .search-panel--empty {
-  padding: 16px 12px;
+  display: flex;
+  padding: 0;
 }
 
 .search-panel__inputs {
@@ -130,11 +131,6 @@
   margin: 4px 8px;
   font-size: var(--font-size-sm);
   color: var(--fg-muted);
-}
-
-.search-panel__hint--empty {
-  font-style: italic;
-  padding: 12px 8px;
 }
 
 .search-panel__error {

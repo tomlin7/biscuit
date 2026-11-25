@@ -2,13 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   AlertTriangle,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
   ChevronsDownUp,
   ChevronsUpDown,
   FileCode,
+  Filter,
   Info,
 } from "lucide-react";
+import { EmptyState } from "../ui/EmptyState";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
 import {
   nextProblemsFilter,
@@ -175,19 +178,25 @@ export function ProblemsPanel() {
 
       {filtered.length === 0 ? (
         <div className="problems-panel__empty">
-          <p>
-            {problems.length === 0
-              ? "No problems have been detected in the workspace."
-              : "No problems match the current filter."}
-          </p>
-          {severityFilter !== "all" && problems.length > 0 && (
-            <button
-              type="button"
-              className="problems-panel__reset-btn"
-              onClick={() => setSeverityFilter("all")}
-            >
-              Show all problems ({problems.length})
-            </button>
+          {problems.length === 0 ? (
+            <EmptyState
+              compact
+              icon={CheckCircle2}
+              title="No problems"
+              description="Errors and warnings from open files will show up here."
+            />
+          ) : (
+            <EmptyState
+              compact
+              icon={Filter}
+              title="Nothing matches this filter"
+              description={`${problems.length} problem${problems.length === 1 ? " is" : "s are"} hidden by the current filter.`}
+              actions={
+                severityFilter !== "all"
+                  ? [{ label: "Show All Problems", onClick: () => setSeverityFilter("all") }]
+                  : undefined
+              }
+            />
           )}
         </div>
       ) : (

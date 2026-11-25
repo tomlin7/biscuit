@@ -16,6 +16,7 @@ import { rootForPath } from "../ai/roots";
 import { requestOpenInSplit } from "../layout/splitBus";
 import { FileIcon } from "../ui/FileIcon";
 import { IconButton } from "../ui/IconButton";
+import { EmptyState } from "../ui/EmptyState";
 import "./FileTree.css";
 
 type MenuState = {
@@ -303,11 +304,13 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
   if (!rootPath) {
     return (
       <div className="file-tree file-tree--empty">
-        <FolderOpen size={36} className="file-tree__empty-icon" />
-        <p className="file-tree__hint">No folder open in workspace.</p>
-        <button type="button" className="file-tree__cta" onClick={() => void openFolder()}>
-          Open Folder
-        </button>
+        <EmptyState
+          compact
+          icon={FolderOpen}
+          title="No folder open"
+          description="Open a folder to browse and edit its files."
+          actions={[{ label: "Open Folder", onClick: () => void openFolder(), primary: true }]}
+        />
       </div>
     );
   }

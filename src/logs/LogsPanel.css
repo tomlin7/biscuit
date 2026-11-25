@@ -74,10 +74,9 @@
 }
 
 .logs-panel__empty {
-  margin: 16px;
-  color: var(--fg-muted);
-  font-size: var(--font-size-sm);
-  font-style: italic;
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .logs-panel__list {

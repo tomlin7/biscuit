@@ -82,28 +82,8 @@
 
 .problems-panel__empty {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 32px 16px;
-  color: var(--fg-muted);
-  font-size: var(--font-size-sm);
-  text-align: center;
-}
-
-.problems-panel__reset-btn {
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--fg);
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.problems-panel__reset-btn:hover {
-  background: var(--bg-hover);
+  flex: 1;
+  min-height: 0;
 }
 
 .problems-panel__list {

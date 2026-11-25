@@ -8,7 +8,8 @@
 }
 
 .scm-panel--empty {
-  padding: 14px 12px;
+  display: flex;
+  padding: 0;
 }
 
 /* Header toolbar with branch picker & actions */

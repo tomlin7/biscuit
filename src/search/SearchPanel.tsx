@@ -9,6 +9,7 @@ import {
   type SearchHit,
 } from "./workspaceSearch";
 import { IconButton } from "../ui/IconButton";
+import { EmptyState } from "../ui/EmptyState";
 import {
   CaseSensitive,
   ChevronDown,
@@ -19,6 +20,8 @@ import {
   Regex,
   RefreshCw,
   ReplaceAll,
+  Search,
+  SearchX,
 } from "lucide-react";
 import "./SearchPanel.css";
 
@@ -177,7 +180,12 @@ export function SearchPanel({ onOpenHit }: Props) {
   if (!rootPath) {
     return (
       <div className="search-panel search-panel--empty">
-        <p className="search-panel__hint">Open a folder to search the workspace.</p>
+        <EmptyState
+          compact
+          icon={Search}
+          title="Nothing to search"
+          description="Open a folder to search and replace across the workspace."
+        />
       </div>
     );
   }
@@ -291,7 +299,12 @@ export function SearchPanel({ onOpenHit }: Props) {
       )}
 
       {!searching && query.trim() && hits.length === 0 && !error && (
-        <p className="search-panel__hint search-panel__hint--empty">No results found.</p>
+        <EmptyState
+          compact
+          icon={SearchX}
+          title="No results"
+          description="Try a different query, or toggle case and regex matching."
+        />
       )}
 
       <div className="search-panel__tree" role="tree">

@@ -23,6 +23,7 @@ import { basename } from "../workspace/path";
 import { useLayout } from "../layout/LayoutContext";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
+import { EmptyState } from "../ui/EmptyState";
 import { RichMessage } from "./RichMessage";
 import "./AiPanel.css";
 
@@ -285,12 +286,54 @@ export function AiPanel({ onOpenSettings }: Props) {
         </div>
       ) : null}
 
-      <div className="ai-panel__body">
+      <div
+        className={
+          messages.length === 0 ? "ai-panel__body ai-panel__body--empty" : "ai-panel__body"
+        }
+      >
         {messages.length === 0 ? (
-          <div className="ai-panel__empty">
-            <Sparkles size={18} strokeWidth={1.75} aria-hidden />
-            <p>Ask anything about the open workspace.</p>
-          </div>
+          <EmptyState
+            icon={Sparkles}
+            title="Ask the agent"
+            description={
+              <>
+                Chat about the open workspace. Mention files with <kbd>@</kbd> and run
+                commands with <kbd>/</kbd>.
+              </>
+            }
+            actions={
+              !settings.apiKey.trim() && onOpenSettings
+                ? [{ label: "Configure Model", onClick: onOpenSettings, primary: true }]
+                : undefined
+            }
+          >
+            <div className="empty-state__suggestions">
+              {(document
+                ? [
+                    "Explain what this file does",
+                    "Find bugs in this file",
+                    "Suggest refactors for this file",
+                  ]
+                : [
+                    "Summarize this workspace",
+                    "Where is the entry point?",
+                    "What should I work on next?",
+                  ]
+              ).map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  className="empty-state__suggestion"
+                  onClick={() => {
+                    setDraft(prompt);
+                    window.document.getElementById("ai-composer-input")?.focus();
+                  }}
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </EmptyState>
         ) : (
           messages.map((msg) => (
             <div

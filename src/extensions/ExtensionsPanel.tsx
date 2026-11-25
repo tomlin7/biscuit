@@ -5,11 +5,13 @@ import {
   Plus,
   RefreshCw,
   Search,
+  SearchX,
   Sparkles,
   X,
 } from "lucide-react";
 import { useExtensions } from "./ExtensionsContext";
 import { IconButton } from "../ui/IconButton";
+import { EmptyState } from "../ui/EmptyState";
 import "./ExtensionsPanel.css";
 
 export function ExtensionsPanel() {
@@ -112,21 +114,23 @@ export function ExtensionsPanel() {
         {loading && <p className="ext-panel__hint">Loading extensions…</p>}
         {error && <p className="ext-panel__error">{error}</p>}
         {extensions.length === 0 && !loading ? (
-          <div className="ext-panel__empty">
-            <Blocks size={32} className="ext-panel__empty-icon" />
-            <p className="ext-panel__hint">
-              No extensions installed. Install an extension from a folder or install the sample.
-            </p>
-            <button
-              type="button"
-              className="ext-panel__cta-btn"
-              onClick={() => void installSample()}
-            >
-              Install Sample Extension
-            </button>
-          </div>
+          <EmptyState
+            compact
+            icon={Blocks}
+            title="No extensions installed"
+            description="Install one from a folder, or try the sample to see how they work."
+            actions={[
+              { label: "Install Sample", onClick: () => void installSample(), primary: true },
+              { label: "From Folder…", onClick: () => void installFromFolder() },
+            ]}
+          />
         ) : shown.length === 0 ? (
-          <p className="ext-panel__hint">No extensions match &ldquo;{query}&rdquo;.</p>
+          <EmptyState
+            compact
+            icon={SearchX}
+            title="No matches"
+            description={<>No extensions match &ldquo;{query}&rdquo;.</>}
+          />
         ) : (
           <ul className="ext-panel__list">
             {shown.map((ext) => (
