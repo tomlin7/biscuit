@@ -1040,4 +1040,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleLogs(),
   },
+  {
+    id: "workbench.action.attachFilesToAi",
+    title: "Attach Files to AI",
+    category: "AI",
+    run: (ctx) => ctx.attachFilesToAi(),
+  },
 ];

@@ -106,6 +106,7 @@ function ShellChrome() {
     stop,
     regenerate,
     attachPath,
+    attachFiles,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
@@ -1003,6 +1004,10 @@ function ShellChrome() {
         setPanelTab("logs");
         setBottomOpen(true);
       },
+      attachFilesToAi: () => {
+        setAiOpen(true);
+        void attachFiles();
+      },
     }),
     [
       openFolder,
@@ -1077,6 +1082,7 @@ function ShellChrome() {
       stop,
       regenerate,
       attachPath,
+      attachFiles,
       bottomOpen,
       panelTab,
       setPanelTab,

@@ -173,6 +173,7 @@ export type CommandContext = {
   regenerateAi: () => void;
   attachActiveToAi: () => void;
   toggleLogs: () => void;
+  attachFilesToAi: () => void;
 };
 
 export type Command = {
