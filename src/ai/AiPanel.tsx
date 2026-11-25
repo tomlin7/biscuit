@@ -55,7 +55,6 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
 
   useEffect(() => {
     if (!document) return;
-    // Keep active file as a soft context chip via attachments if empty name match
   }, [document]);
 
   const title = useMemo(() => {
@@ -118,6 +117,10 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
   const filteredHistory = useMemo(() => {
     return [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
   }, [sessions]);
+
+  const showSoftChip =
+    document != null && !attachments.some((a) => a.path === document.path);
+  const showChips = showSoftChip || attachments.length > 0;
 
   return (
     <aside className="ai-panel island" aria-label="AI">
@@ -214,132 +217,135 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         {error ? <p className="ai-panel__error">{error}</p> : null}
       </div>
 
-      <div className="ai-panel__composer">
-        <textarea
-          className="ai-panel__composer-input"
-          rows={3}
-          placeholder="Ask anything… (@ files, / commands)"
-          value={draft}
-          disabled={busy}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              submit();
-            }
-          }}
-        />
-        <div className="ai-panel__composer-actions">
-          <IconButton
-            icon={Plus}
-            label="Attach files"
-            size={14}
-            onClick={() => void attachFiles()}
-          />
-          <IconButton
-            icon={FilePlus}
-            label="Attach active file"
-            size={14}
-            disabled={!document}
-            onClick={() => {
-              if (!document) return;
-              attachPath(document.path, document.title, document.value.slice(0, 12000));
+      <div className="ai-panel__dock">
+        {showChips ? (
+          <div className="ai-panel__chips">
+            {showSoftChip && document ? (
+              <button
+                type="button"
+                className="ai-panel__chip"
+                title="Pin active file to context"
+                onClick={() =>
+                  attachPath(document.path, document.title, document.value)
+                }
+              >
+                <FileIcon name={document.title} kind="file" size={12} />
+                <span>{document.title}</span>
+              </button>
+            ) : null}
+            {attachments.map((a) => (
+              <span key={a.path} className="ai-panel__chip ai-panel__chip--attached">
+                <FileIcon name={a.name} kind="file" size={12} />
+                <span>{a.name}</span>
+                <button
+                  type="button"
+                  className="ai-panel__chip-x"
+                  aria-label={`Remove ${a.name}`}
+                  onClick={() => removeAttachment(a.path)}
+                >
+                  <X size={10} strokeWidth={2} />
+                </button>
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="ai-panel__composer">
+          <textarea
+            className="ai-panel__composer-input"
+            rows={3}
+            placeholder="Ask anything… (@ files, / commands)"
+            value={draft}
+            disabled={busy}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
             }}
           />
-          <IconButton
-            icon={Mic}
-            label={listening ? "Listening…" : "Voice input"}
-            size={14}
-            active={listening}
-            onClick={startVoice}
-          />
-          <IconButton
-            icon={ArrowUp}
-            label="Send"
-            size={14}
-            disabled={busy || !draft.trim()}
-            onClick={submit}
-            className="ai-panel__send"
-          />
+          <div className="ai-panel__composer-bar">
+            <div className="ai-panel__composer-tools">
+              <IconButton
+                icon={Plus}
+                label="Attach files"
+                size={14}
+                onClick={() => void attachFiles()}
+              />
+              <IconButton
+                icon={FilePlus}
+                label="Attach active file"
+                size={14}
+                disabled={!document}
+                onClick={() => {
+                  if (!document) return;
+                  attachPath(document.path, document.title, document.value.slice(0, 12000));
+                }}
+              />
+              <IconButton
+                icon={Mic}
+                label={listening ? "Listening…" : "Voice input"}
+                size={14}
+                active={listening}
+                onClick={startVoice}
+              />
+            </div>
+            <IconButton
+              icon={ArrowUp}
+              label="Send"
+              size={14}
+              disabled={busy || !draft.trim()}
+              onClick={submit}
+              className="ai-panel__send"
+            />
+          </div>
         </div>
-      </div>
 
-      {(document && !attachments.some((a) => a.path === document.path)) ||
-      attachments.length > 0 ? (
-      <div className="ai-panel__chips">
-        {document && !attachments.some((a) => a.path === document.path) ? (
+        <div className="ai-panel__footer">
+          <button type="button" className="ai-panel__pill" onClick={onOpenSearch}>
+            <Search size={12} strokeWidth={1.75} aria-hidden />
+            Search
+          </button>
+          <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
+            <Settings2 size={12} strokeWidth={1.75} aria-hidden />
+            Default
+          </button>
+          <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
+            <Sparkles size={12} strokeWidth={1.75} aria-hidden />
+            {settings.model}
+          </button>
           <button
             type="button"
-            className="ai-panel__chip"
-            title="Pin active file to context"
-            onClick={() =>
-              attachPath(document.path, document.title, document.value)
-            }
+            className="ai-panel__pill"
+            title="Cycle effort"
+            onClick={cycleEffort}
           >
-            <FileIcon name={document.title} kind="file" size={12} />
-            {document.title}
+            <Flame size={12} strokeWidth={1.75} aria-hidden />
+            {effortLabel}
           </button>
-        ) : null}
-        {attachments.map((a) => (
-          <span key={a.path} className="ai-panel__chip ai-panel__chip--attached">
-            <FileIcon name={a.name} kind="file" size={12} />
-            {a.name}
-            <button
-              type="button"
-              className="ai-panel__chip-x"
-              aria-label={`Remove ${a.name}`}
-              onClick={() => removeAttachment(a.path)}
-            >
-              <X size={10} strokeWidth={2} />
-            </button>
-          </span>
-        ))}
-      </div>
-      ) : null}
-
-      <div className="ai-panel__footer">
-        <button type="button" className="ai-panel__pill" onClick={onOpenSearch}>
-          <Search size={12} strokeWidth={1.75} aria-hidden />
-          Search
-        </button>
-        <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
-          <Settings2 size={12} strokeWidth={1.75} aria-hidden />
-          Default
-        </button>
-        <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
-          <Sparkles size={12} strokeWidth={1.75} aria-hidden />
-          {settings.model}
-        </button>
-        <button
-          type="button"
-          className="ai-panel__pill"
-          title="Cycle effort"
-          onClick={cycleEffort}
-        >
-          <Flame size={12} strokeWidth={1.75} aria-hidden />
-          {effortLabel}
-        </button>
-        {onOpenPalette ? (
+          {onOpenPalette ? (
+            <IconButton
+              icon={Command}
+              label="Command palette"
+              size={13}
+              onClick={onOpenPalette}
+            />
+          ) : (
+            <IconButton
+              icon={Command}
+              label="Open settings"
+              size={13}
+              onClick={onOpenSettings}
+            />
+          )}
           <IconButton
-            icon={Command}
-            label="Command palette"
-            size={13}
-            onClick={onOpenPalette}
-          />
-        ) : (
-          <IconButton
-            icon={Command}
-            label="Open settings"
+            icon={BookOpen}
+            label="Docs / settings"
             size={13}
             onClick={onOpenSettings}
           />
-        )}
-        <IconButton
-          icon={BookOpen}
-          label="Docs / settings"
-          size={13}
-          onClick={onOpenSettings}
-        />
+        </div>
       </div>
     </aside>
   );

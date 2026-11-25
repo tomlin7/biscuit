@@ -12,6 +12,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 10px 10px 8px 14px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .ai-panel__title {
@@ -142,12 +143,23 @@
   font-size: var(--font-size-sm);
 }
 
+.ai-panel__dock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 10px 10px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
 .ai-panel__composer {
-  position: relative;
-  margin: 0 10px;
-  padding: 10px 10px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 10px 8px;
   border-radius: var(--radius-control);
   background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
 }
 
 .ai-panel__composer-input {
@@ -159,19 +171,26 @@
   font-size: var(--font-size-ui);
   outline: none;
   resize: none;
+  min-height: 60px;
 }
 
-.ai-panel__composer-actions {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
+.ai-panel__composer-bar {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-panel__composer-tools {
+  display: flex;
+  align-items: center;
   gap: 2px;
 }
 
 .ai-panel__send {
   background: var(--accent) !important;
   color: #fff !important;
+  border-radius: 999px !important;
 }
 
 .ai-panel__send:disabled {
@@ -182,19 +201,25 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 8px 12px 0;
+  padding: 0 2px;
 }
 
 .ai-panel__chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  max-width: 140px;
-  padding: 4px 8px;
+  max-width: 160px;
+  padding: 4px 9px;
+  border: none;
   border-radius: 999px;
-  background: var(--bg-input);
+  background: var(--bg-island-elevated);
   color: var(--fg-muted);
+  font: inherit;
   font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.ai-panel__chip > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -207,12 +232,18 @@
 
 .ai-panel__chip--attached {
   background: var(--bg-active);
+  color: var(--fg);
+  cursor: default;
 }
 
 .ai-panel__chip-x {
   display: inline-flex;
   margin-left: 2px;
+  padding: 0;
+  border: none;
+  background: none;
   color: var(--fg-dim);
+  cursor: pointer;
 }
 
 .ai-panel__chip-x:hover {
@@ -223,6 +254,7 @@
   max-height: 160px;
   overflow: auto;
   padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .ai-panel__history-row {
@@ -252,9 +284,10 @@
 
 .ai-panel__footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  padding: 8px 10px 10px;
+  padding: 0 2px;
 }
 
 .ai-panel__pill {
@@ -263,13 +296,16 @@
   gap: 5px;
   max-width: 110px;
   padding: 4px 8px;
+  border: none;
   border-radius: 999px;
   background: var(--bg-input);
   color: var(--fg-muted);
+  font: inherit;
   font-size: var(--font-size-sm);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .ai-panel__pill:hover {
