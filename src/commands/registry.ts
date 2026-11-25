@@ -1462,7 +1462,12 @@ export const COMMANDS: Command[] = [
     category: "Help",
     run: (ctx) => ctx.reportIssue(),
   },
-
+  {
+    id: "t3d.requestFeature",
+    title: "Request Feature",
+    category: "Help",
+    run: (ctx) => ctx.requestFeature(),
+  },
 
 
 

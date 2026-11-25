@@ -242,6 +242,7 @@ export type CommandContext = {
   openReleaseNotes: () => void;
   showAbout: () => void;
   reportIssue: () => void;
+  requestFeature: () => void;
 };
 
 export type Command = {

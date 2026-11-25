@@ -1462,6 +1462,13 @@ function ShellChrome() {
           /* ignore */
         });
       },
+      requestFeature: () => {
+        void openUrl(
+          "https://github.com/tomlin7/T3D/issues/new?labels=enhancement&template=feature_request.md",
+        ).catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,

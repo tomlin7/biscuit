@@ -382,6 +382,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.374.0** | Open release notes from palette | shipped |
 | **0.375.0** | Show About T3D from palette | shipped |
 | **0.376.0** | Report Issue from palette | shipped |
+| **0.377.0** | Request Feature from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
