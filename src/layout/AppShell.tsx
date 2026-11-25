@@ -654,6 +654,7 @@ function ShellChrome() {
       findInSelection,
       replaceInSelection,
       splitEditorRight: () => requestSplitEditor("right"),
+      splitEditorDown: () => requestSplitEditor("down"),
       closeEditorGroup: () => requestSplitEditor("close"),
       runEditorCommand,
       revealActiveFile: () => {

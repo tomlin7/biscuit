@@ -44,6 +44,7 @@ export type CommandContext = {
   findInSelection: () => void;
   replaceInSelection: () => void;
   splitEditorRight: () => void;
+  splitEditorDown: () => void;
   closeEditorGroup: () => void;
   runEditorCommand: (
     command:

@@ -7,6 +7,7 @@ export type EditorSession = {
   active: string | null;
   preview?: boolean;
   split?: boolean;
+  splitOrientation?: "right" | "down";
   splitRatio?: number;
   secondary?: string | null;
 };
@@ -29,6 +30,8 @@ export function readSession(): EditorSession | null {
       active: typeof parsed.active === "string" ? parsed.active : null,
       preview: parsed.preview === true,
       split: parsed.split === true,
+      splitOrientation:
+        parsed.splitOrientation === "down" ? "down" : parsed.split ? "right" : undefined,
       splitRatio:
         typeof parsed.splitRatio === "number" &&
         Number.isFinite(parsed.splitRatio) &&

@@ -42,6 +42,7 @@ export function EditorArea() {
   const { toggleAi, aiOpen } = useLayout();
   const diffTab = useDiffTab();
   const [split, setSplit] = useState(false);
+  const [splitOrientation, setSplitOrientation] = useState<"right" | "down">("right");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [splitRatio, setSplitRatio] = useState(0.5);
   const [secondaryPath, setSecondaryPath] = useState<string | null>(null);
@@ -65,6 +66,9 @@ export function EditorArea() {
     const session = readSession();
     if (session?.preview) setPreviewOpen(true);
     if (session?.split) setSplit(true);
+    if (session?.splitOrientation === "down" || session?.splitOrientation === "right") {
+      setSplitOrientation(session.splitOrientation);
+    }
     if (session?.secondary) setSecondaryPath(session.secondary);
     if (typeof session?.splitRatio === "number") setSplitRatio(session.splitRatio);
     setLayoutReady(true);
@@ -75,10 +79,11 @@ export function EditorArea() {
     patchSession({
       preview: previewOpen,
       split,
+      splitOrientation,
       secondary: secondaryPath,
       splitRatio,
     });
-  }, [layoutReady, previewOpen, split, secondaryPath, splitRatio]);
+  }, [layoutReady, previewOpen, split, splitOrientation, secondaryPath, splitRatio]);
 
   const previewKind =
     document?.language === "markdown" || document?.language === "html"
@@ -121,6 +126,13 @@ export function EditorArea() {
       }
       if (!activePath) return;
       if (mode === "right") {
+        setSplitOrientation("right");
+        setSplit(true);
+        setSecondaryPath(activePath);
+        return;
+      }
+      if (mode === "down") {
+        setSplitOrientation("down");
         setSplit(true);
         setSecondaryPath(activePath);
         return;
@@ -340,6 +352,7 @@ export function EditorArea() {
             disabled={!hasFile}
             onClick={() => {
               if (!activePath) return;
+              setSplitOrientation("right");
               setSplit((value) => {
                 const next = !value;
                 if (next) setSecondaryPath(activePath);
@@ -422,7 +435,9 @@ export function EditorArea() {
         }
         style={
           showPreview || (split && hasFile)
-            ? { gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr` }
+            ? !showPreview && splitOrientation === "down"
+              ? { gridTemplateRows: `${splitRatio}fr 6px ${1 - splitRatio}fr` }
+              : { gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr` }
             : undefined
         }
       >
@@ -482,7 +497,7 @@ export function EditorArea() {
             ) : split && secondaryPath ? (
               <>
                 <ResizeHandle
-                  axis="x"
+                  axis={splitOrientation === "down" ? "y" : "x"}
                   label="Resize split"
                   onResize={(d) => {
                     setSplitRatio((r) =>
@@ -531,7 +546,7 @@ export function EditorArea() {
             ) : split ? (
               <>
                 <ResizeHandle
-                  axis="x"
+                  axis={splitOrientation === "down" ? "y" : "x"}
                   label="Resize split"
                   onResize={(d) => {
                     setSplitRatio((r) =>
