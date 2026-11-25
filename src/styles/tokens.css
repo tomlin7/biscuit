@@ -1,33 +1,36 @@
 :root {
   color-scheme: dark;
 
-  --font-ui: "Segoe UI", "Helvetica Neue", sans-serif;
-  --font-mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+  --font-ui: "Segoe UI", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-mono: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
 
-  --bg-root: #1e1e1e;
-  --bg-chrome: #252526;
-  --bg-elevated: #2d2d2d;
-  --bg-hover: #2a2d2e;
-  --bg-active: #37373d;
-  --bg-sidebar: #252526;
-  --bg-editor: #1e1e1e;
-  --bg-panel: #1e1e1e;
-  --bg-statusbar: #007acc;
-  --bg-activity: #333333;
+  /* Window canvas — panels float on this */
+  --bg-root: #000000;
+  --bg-island: #121212;
+  --bg-island-elevated: #1a1a1a;
+  --bg-hover: #1e1e1e;
+  --bg-active: #252525;
+  --bg-input: #1a1a1a;
+  --bg-tab: #1a1a1a;
+  --bg-tab-active: #222222;
 
-  --border: #3c3c3c;
-  --border-subtle: #2b2b2b;
+  --border: #2a2a2a;
+  --border-subtle: #1f1f1f;
 
-  --fg: #cccccc;
-  --fg-muted: #969696;
-  --fg-dim: #6e6e6e;
+  --fg: #e8e8e8;
+  --fg-muted: #8a8a8a;
+  --fg-dim: #5c5c5c;
   --fg-inverse: #ffffff;
-  --accent: #007acc;
-  --accent-hover: #1a8ad4;
+  --accent: #3b82f6;
+  --accent-soft: rgba(59, 130, 246, 0.15);
 
-  --menubar-height: 30px;
-  --activity-width: 48px;
+  --radius-island: 12px;
+  --radius-control: 8px;
+  --radius-pill: 999px;
+  --gap-shell: 8px;
+
+  --titlebar-height: 44px;
+  --statusbar-height: 28px;
   --sidebar-width: 260px;
-  --panel-height: 180px;
-  --statusbar-height: 22px;
+  --ai-width: 340px;
 }

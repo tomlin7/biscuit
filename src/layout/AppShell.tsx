@@ -1,24 +1,20 @@
 import "./AppShell.css";
 import { EditorSessionProvider } from "../editor/EditorSession";
-import { Menubar } from "./Menubar";
-import { ActivityBar } from "./ActivityBar";
+import { TitleBar } from "./TitleBar";
 import { Sidebar } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
-import { Panel } from "./Panel";
+import { AiPanel } from "./AiPanel";
 import { StatusBar } from "./StatusBar";
 
 export function AppShell() {
   return (
     <EditorSessionProvider>
       <div className="app-shell">
-        <Menubar />
-        <div className="app-shell__body">
-          <ActivityBar />
+        <TitleBar />
+        <div className="app-shell__workspace">
           <Sidebar />
-          <div className="app-shell__main">
-            <EditorArea />
-            <Panel />
-          </div>
+          <EditorArea />
+          <AiPanel />
         </div>
         <StatusBar />
       </div>

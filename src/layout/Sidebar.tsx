@@ -1,10 +1,23 @@
 export function Sidebar() {
   return (
-    <aside className="sidebar" aria-label="Sidebar">
-      <div className="sidebar__title">Explorer</div>
+    <aside className="sidebar island" aria-label="Explorer">
+      <div className="sidebar__search">
+        <span aria-hidden="true">⌕</span>
+        <input
+          className="sidebar__search-input"
+          type="search"
+          placeholder="Search"
+          aria-label="Search files"
+          disabled
+        />
+      </div>
       <div className="sidebar__body">
+        <div className="sidebar__placeholder-row">src</div>
+        <div className="sidebar__placeholder-row sidebar__placeholder-row--active">
+          untitled-1.ts
+        </div>
         <p className="sidebar__hint">
-          Editing an in-memory buffer. Open folder lands in 0.3.0.
+          Island chrome matches Biscuit. Real folder tree arrives in 0.3.0.
         </p>
       </div>
     </aside>

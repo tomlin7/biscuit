@@ -6,7 +6,7 @@ export function EditorArea() {
   const tabLabel = session.dirty ? `${session.title} •` : session.title;
 
   return (
-    <section className="editor-area" aria-label="Editors">
+    <section className="editor-area island" aria-label="Editors">
       <div className="editor-area__tabs" role="tablist" aria-label="Open editors">
         <div
           className="editor-area__tab editor-area__tab--active"
@@ -15,6 +15,12 @@ export function EditorArea() {
         >
           {tabLabel}
         </div>
+      </div>
+      <div className="editor-area__meta">
+        <div className="editor-area__crumbs">
+          <span>{session.title}</span>
+        </div>
+        <span>{session.languageLabel}</span>
       </div>
       <div className="editor-area__surface">
         <MonacoEditor />
