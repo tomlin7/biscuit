@@ -88,6 +88,7 @@ export type CommandContext = {
   collapseExplorer: () => void;
   expandExplorer: () => void;
   openKeybindings: () => void;
+  clearAiAttachments: () => void;
 };
 
 export type Command = {
