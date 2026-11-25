@@ -145,6 +145,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.137.0** | Sort lines ascending | shipped |
 | **0.138.0** | SCM unstage selected | shipped |
 | **0.139.0** | Insert final newline on save | shipped |
+| **0.140.0** | Agent stop keeps partial reply | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -12,7 +12,8 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { agentToolSchema, runAgentTool } from "./tools";
-import { runToolLoop } from "./toolLoop";
+import { runToolLoop, AgentAbortError } from "./toolLoop";
+import { useNotifications } from "../notifications/NotificationsContext";
 
 export type ChatMessage = {
   id: string;
@@ -132,6 +133,7 @@ function basename(path: string): string {
 
 export function AiProvider({ children }: { children: ReactNode }) {
   const { rootPath, roots, tabs, document, setValueAt, applyDiskValue } = useWorkspace();
+  const { push: notify } = useNotifications();
   const workspaceRef = useRef({ rootPath, roots, tabs, document, setValueAt, applyDiskValue });
   workspaceRef.current = { rootPath, roots, tabs, document, setValueAt, applyDiskValue };
   const initial = useMemo(() => loadSessions(), []);
@@ -426,7 +428,17 @@ export function AiProvider({ children }: { children: ReactNode }) {
         }));
         return result.content;
       } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") {
+        if (
+          (err instanceof DOMException && err.name === "AbortError") ||
+          err instanceof AgentAbortError
+        ) {
+          const partial =
+            err instanceof AgentAbortError
+              ? err.partial.trim()
+              : "";
+          const content = partial
+            ? `${partial}\n\n_(generation stopped)_`
+            : "(stopped)";
           patchActive((session) => ({
             ...session,
             messages: [
@@ -434,12 +446,21 @@ export function AiProvider({ children }: { children: ReactNode }) {
               {
                 id: crypto.randomUUID(),
                 role: "assistant",
-                content: "(stopped)",
+                content,
                 createdAt: Date.now(),
+                toolCalls:
+                  err instanceof AgentAbortError && err.toolCalls.length > 0
+                    ? err.toolCalls
+                    : undefined,
               },
             ],
             updatedAt: Date.now(),
           }));
+          notify("Generation stopped", {
+            detail: partial
+              ? "Partial reply kept in the chat."
+              : "No partial reply was available.",
+          });
           return null;
         }
         const message = err instanceof Error ? err.message : String(err);
@@ -450,7 +471,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
         setBusy(false);
       }
     },
-    [attachments, busy, patchActive, settings],
+    [attachments, busy, patchActive, settings, notify],
   );
 
   const stop = useCallback(() => {

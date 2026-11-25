@@ -21,6 +21,18 @@ export type ShownToolCall = {
   detail: string;
 };
 
+export class AgentAbortError extends Error {
+  partial: string;
+  toolCalls: ShownToolCall[];
+
+  constructor(partial: string, toolCalls: ShownToolCall[]) {
+    super("Aborted");
+    this.name = "AbortError";
+    this.partial = partial;
+    this.toolCalls = toolCalls;
+  }
+}
+
 function stringArgs(raw: string): Record<string, string> {
   try {
     const parsed = JSON.parse(raw || "{}") as Record<string, unknown>;
@@ -45,12 +57,26 @@ export async function runToolLoop(input: {
 }): Promise<{ content: string; toolCalls: ShownToolCall[] }> {
   const messages = [...input.messages];
   const shown: ShownToolCall[] = [];
+  let lastPartial = "";
   const maxRounds = input.maxRounds ?? 8;
   for (let round = 0; round < maxRounds; round++) {
     if (input.signal?.aborted) {
-      throw new DOMException("Aborted", "AbortError");
+      throw new AgentAbortError(lastPartial, shown);
     }
-    const next = await input.complete(messages);
+    let next: { content: string | null; toolCalls: ModelToolCall[] };
+    try {
+      next = await input.complete(messages);
+    } catch (err) {
+      if (
+        (err instanceof DOMException && err.name === "AbortError") ||
+        (err instanceof Error && err.name === "AbortError") ||
+        input.signal?.aborted
+      ) {
+        throw new AgentAbortError(lastPartial, shown);
+      }
+      throw err;
+    }
+    if (next.content?.trim()) lastPartial = next.content.trim();
     if (next.toolCalls.length === 0) {
       return {
         content: next.content?.trim() || "(empty response from model)",
@@ -68,9 +94,21 @@ export async function runToolLoop(input: {
     });
     for (const call of next.toolCalls) {
       if (input.signal?.aborted) {
-        throw new DOMException("Aborted", "AbortError");
+        throw new AgentAbortError(lastPartial, shown);
       }
-      const text = await input.callTool(call.name, stringArgs(call.arguments));
+      let text: string;
+      try {
+        text = await input.callTool(call.name, stringArgs(call.arguments));
+      } catch (err) {
+        if (
+          (err instanceof DOMException && err.name === "AbortError") ||
+          (err instanceof Error && err.name === "AbortError") ||
+          input.signal?.aborted
+        ) {
+          throw new AgentAbortError(lastPartial, shown);
+        }
+        throw err;
+      }
       shown.push({ id: call.id, name: call.name, detail: text.slice(0, 240) });
       messages.push({ role: "tool", tool_call_id: call.id, content: text });
     }

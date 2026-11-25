@@ -863,20 +863,20 @@ export function AppShell() {
     <WorkspaceProvider>
       <EditorActionsProvider>
         <DiagnosticsProvider>
-          <AiProvider>
-            <ExtensionsProvider>
-              <DebugProvider>
-                <SettingsProvider>
-                  <NotificationsProvider>
+          <NotificationsProvider>
+            <AiProvider>
+              <ExtensionsProvider>
+                <DebugProvider>
+                  <SettingsProvider>
                     <AutoSave />
                     <LayoutProvider>
                       <ShellChrome />
                     </LayoutProvider>
-                  </NotificationsProvider>
-                </SettingsProvider>
-              </DebugProvider>
-            </ExtensionsProvider>
-          </AiProvider>
+                  </SettingsProvider>
+                </DebugProvider>
+              </ExtensionsProvider>
+            </AiProvider>
+          </NotificationsProvider>
         </DiagnosticsProvider>
       </EditorActionsProvider>
     </WorkspaceProvider>
