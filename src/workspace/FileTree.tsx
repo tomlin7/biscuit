@@ -5,6 +5,7 @@ import type { TreeNode } from "./fsTree";
 import { useWorkspace } from "./WorkspaceContext";
 import { parentPath, relativeToRoot } from "./path";
 import { rootForPath } from "../ai/roots";
+import { requestOpenInSplit } from "../layout/splitBus";
 import { FileIcon } from "../ui/FileIcon";
 import "./FileTree.css";
 
@@ -222,6 +223,14 @@ function TreeRows({
                 revealInOs(node.path);
                 return;
               }
+              if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key === "Enter"
+              ) {
+                event.preventDefault();
+                requestOpenInSplit(node.path);
+                return;
+              }
               if (event.key === "Enter" || event.key === "ArrowRight") {
                 event.preventDefault();
                 void openFile(node.path);
@@ -254,6 +263,7 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
     document,
     explorerNonce,
     openFolder,
+    openFile,
     addFolderRoot,
     addFolderRootPath,
     removeFolderRoot,
@@ -329,6 +339,32 @@ export function FileTree({ filter = "", hideDotfiles = false }: Props) {
             role="menu"
             onClick={(event) => event.stopPropagation()}
           >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                const path = menu.path;
+                setMenu(null);
+                if (menu.kind === "file") {
+                  void openFile(path);
+                }
+              }}
+            >
+              Open
+            </button>
+            {menu.kind === "file" ? (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  const path = menu.path;
+                  setMenu(null);
+                  requestOpenInSplit(path);
+                }}
+              >
+                Open to the Side
+              </button>
+            ) : null}
             <button
               type="button"
               role="menuitem"

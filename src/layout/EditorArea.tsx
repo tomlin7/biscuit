@@ -113,10 +113,17 @@ export function EditorArea() {
   }, [split, activePath, tabs, otherTabs]);
 
   useEffect(() => {
-    setSplitEditorListener((mode) => {
+    setSplitEditorListener((mode, path) => {
       if (mode === "close") {
         setSplit(false);
         setSecondaryPath(null);
+        return;
+      }
+      if (mode === "open" && path) {
+        void openFile(path).then(() => {
+          setSplit(true);
+          setSecondaryPath(path);
+        });
         return;
       }
       if (!activePath) return;
@@ -133,7 +140,7 @@ export function EditorArea() {
       });
     });
     return () => setSplitEditorListener(null);
-  }, [activePath]);
+  }, [activePath, openFile]);
 
   const crumbRoot = useMemo(() => {
     if (!document) return rootPath;
