@@ -189,6 +189,7 @@ export type CommandContext = {
   resetSidebarWidth: () => void;
   resetBottomPanelHeight: () => void;
   closeAi: () => void;
+  notifyProblemsCount: () => void;
 };
 
 export type Command = {

@@ -1122,6 +1122,14 @@ function ShellChrome() {
       closeAi: () => {
         setAiOpen(false);
       },
+      notifyProblemsCount: () => {
+        const count = problems.length;
+        notify(
+          "Problems",
+          count === 0 ? "No problems detected." : `${count} problem${count === 1 ? "" : "s"}.`,
+        );
+        openProblems();
+      },
     }),
     [
       openFolder,

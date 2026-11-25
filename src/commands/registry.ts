@@ -1136,4 +1136,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.closeAi(),
   },
+  {
+    id: "workbench.action.notifyProblemsCount",
+    title: "Show Problems Count",
+    category: "View",
+    run: (ctx) => ctx.notifyProblemsCount(),
+  },
 ];

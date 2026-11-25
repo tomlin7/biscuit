@@ -330,6 +330,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.322.0** | Reset sidebar width from palette | shipped |
 | **0.323.0** | Reset bottom panel height from palette | shipped |
 | **0.324.0** | Close AI Agent from palette | shipped |
+| **0.325.0** | Show problems count from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
