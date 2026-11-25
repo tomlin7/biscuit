@@ -43,7 +43,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
   const { theme, extras } = useTheme();
-  const { registerFindHandler, registerFindInSelectionHandler, registerEditor, showPeek, showReferences, setFindMatchLabel } =
+  const { registerFindHandler, registerFindInSelectionHandler, registerReplaceInSelectionHandler, registerEditor, showPeek, showReferences, setFindMatchLabel } =
     useEditorActions();
   const showPeekRef = useRef(showPeek);
   showPeekRef.current = showPeek;
@@ -174,6 +174,27 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       } catch {
         /* ignore */
       }
+    });
+    registerReplaceInSelectionHandler(() => {
+      const ed = editorRef.current;
+      if (!ed) return;
+      void ed.getAction("editor.action.startFindReplaceAction")?.run();
+      window.setTimeout(() => {
+        try {
+          const controller = (
+            ed as unknown as {
+              getContribution: (id: string) => {
+                toggleSearchScope?: () => void;
+                getState?: () => { searchScope?: unknown };
+              } | null;
+            }
+          ).getContribution("editor.contrib.findController");
+          const state = controller?.getState?.();
+          if (!state?.searchScope) controller?.toggleSearchScope?.();
+        } catch {
+          /* ignore */
+        }
+      }, 0);
     });
     const updateFindLabel = () => {
       const ed = editorRef.current;
@@ -403,6 +424,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     return () => {
       registerFindHandler(null);
       registerFindInSelectionHandler(null);
+      registerReplaceInSelectionHandler(null);
       registerEditor(null);
       findDisposable?.dispose();
       window.clearInterval(findTimer);
@@ -411,6 +433,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   }, [
     registerFindHandler,
     registerFindInSelectionHandler,
+    registerReplaceInSelectionHandler,
     registerEditor,
     primary,
     setFindMatchLabel,

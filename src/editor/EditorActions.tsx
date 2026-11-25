@@ -68,9 +68,11 @@ export type EditorCommand =
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
   registerFindInSelectionHandler: (handler: (() => void) | null) => void;
+  registerReplaceInSelectionHandler: (handler: (() => void) | null) => void;
   registerEditor: (handle: EditorHandle | null) => void;
   findInFile: () => void;
   findInSelection: () => void;
+  replaceInSelection: () => void;
   findMatchLabel: string | null;
   setFindMatchLabel: (label: string | null) => void;
   runEditorCommand: (command: EditorCommand) => void;
@@ -87,6 +89,7 @@ const EditorActionsContext = createContext<EditorActionsState | null>(null);
 export function EditorActionsProvider({ children }: { children: ReactNode }) {
   const findHandler = useRef<(() => void) | null>(null);
   const findInSelectionHandler = useRef<(() => void) | null>(null);
+  const replaceInSelectionHandler = useRef<(() => void) | null>(null);
   const editorHandle = useRef<EditorHandle | null>(null);
   const wordWrap = useRef<"on" | "off">("off");
   const lineNumbers = useRef<"on" | "relative">("on");
@@ -104,6 +107,10 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
     findInSelectionHandler.current = handler;
   }, []);
 
+  const registerReplaceInSelectionHandler = useCallback((handler: (() => void) | null) => {
+    replaceInSelectionHandler.current = handler;
+  }, []);
+
   const registerEditor = useCallback((handle: EditorHandle | null) => {
     editorHandle.current = handle;
   }, []);
@@ -114,6 +121,10 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
 
   const findInSelection = useCallback(() => {
     findInSelectionHandler.current?.();
+  }, []);
+
+  const replaceInSelection = useCallback(() => {
+    replaceInSelectionHandler.current?.();
   }, []);
 
   const runEditorCommand = useCallback((command: EditorCommand) => {
@@ -218,9 +229,11 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
     () => ({
       registerFindHandler,
       registerFindInSelectionHandler,
+      registerReplaceInSelectionHandler,
       registerEditor,
       findInFile,
       findInSelection,
+      replaceInSelection,
       findMatchLabel,
       setFindMatchLabel,
       runEditorCommand,
@@ -234,9 +247,11 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
     [
       registerFindHandler,
       registerFindInSelectionHandler,
+      registerReplaceInSelectionHandler,
       registerEditor,
       findInFile,
       findInSelection,
+      replaceInSelection,
       findMatchLabel,
       runEditorCommand,
       peek,
