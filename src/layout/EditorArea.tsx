@@ -8,6 +8,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { EditorTabs } from "../workspace/EditorTabs";
@@ -24,7 +25,7 @@ export function EditorArea() {
   const { findInFile, peek, clearPeek, references, clearReferences } = useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
   const [split, setSplit] = useState(false);
-  const [markdownPreview, setMarkdownPreview] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [splitRatio, setSplitRatio] = useState(0.5);
   const hasFile = document !== null;
 
@@ -33,7 +34,11 @@ export function EditorArea() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }, [document?.path]);
 
-  const showPreview = markdownPreview && document?.language === "markdown";
+  const previewKind =
+    document?.language === "markdown" || document?.language === "html"
+      ? document.language
+      : null;
+  const showPreview = previewOpen && previewKind !== null;
 
   const secondaryPath = useMemo(() => {
     if (!split || !activePath) return null;
@@ -96,13 +101,13 @@ export function EditorArea() {
               {languageLabel(document.language)}
             </span>
           ) : null}
-          {document?.language === "markdown" ? (
+          {previewKind ? (
             <IconButton
               icon={Eye}
-              label="Preview markdown"
+              label={previewKind === "html" ? "Preview HTML" : "Preview markdown"}
               size={15}
               active={showPreview}
-              onClick={() => setMarkdownPreview((value) => !value)}
+              onClick={() => setPreviewOpen((value) => !value)}
             />
           ) : null}
           <IconButton
@@ -192,7 +197,11 @@ export function EditorArea() {
                   }}
                 />
                 <div className="editor-area__pane">
-                  <MarkdownPreview source={document?.value ?? ""} />
+                  {previewKind === "html" ? (
+                    <HtmlPreview source={document?.value ?? ""} />
+                  ) : (
+                    <MarkdownPreview source={document?.value ?? ""} />
+                  )}
                 </div>
               </>
             ) : split && secondaryPath ? (
