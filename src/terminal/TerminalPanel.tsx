@@ -133,6 +133,13 @@ function TerminalSession({
 
     term.attachCustomKeyEventHandler((event) => {
       if (event.type !== "keydown") return true;
+      if (event.key === "Escape") {
+        if (term.hasSelection()) {
+          term.clearSelection();
+          event.preventDefault();
+          return false;
+        }
+      }
       const mod = event.ctrlKey || event.metaKey;
       if (!mod || !event.shiftKey) return true;
       if (event.key.toLowerCase() === "c") {
