@@ -1214,6 +1214,10 @@ function ShellChrome() {
         setSidebarWidth(520);
         setSidebarOpen(true);
       },
+      minimizeSidebarWidth: () => {
+        setSidebarWidth(180);
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,

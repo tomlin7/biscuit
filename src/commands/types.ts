@@ -207,6 +207,7 @@ export type CommandContext = {
   maximizeAiPanelWidth: () => void;
   minimizeAiPanelWidth: () => void;
   maximizeSidebarWidth: () => void;
+  minimizeSidebarWidth: () => void;
 };
 
 export type Command = {

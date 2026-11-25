@@ -346,6 +346,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.338.0** | Maximize AI panel width from palette | shipped |
 | **0.339.0** | Minimize AI panel width from palette | shipped |
 | **0.340.0** | Maximize primary side bar width from palette | shipped |
+| **0.341.0** | Minimize primary side bar width from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -1244,7 +1244,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.maximizeSidebarWidth(),
   },
-
+  {
+    id: "workbench.action.minimizeSidebarWidth",
+    title: "Minimize Primary Side Bar Width",
+    category: "View",
+    run: (ctx) => ctx.minimizeSidebarWidth(),
+  },
 
 
 
