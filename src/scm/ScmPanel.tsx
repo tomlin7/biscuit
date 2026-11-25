@@ -125,6 +125,25 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={acting || busy}
+            onClick={() => {
+              const message = window.prompt("Stash message (optional)") ?? undefined;
+              void run("git_stash_push", { message: message?.trim() || null });
+            }}
+          >
+            Stash
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || busy}
+            onClick={() => void run("git_stash_pop", {})}
+          >
+            Pop stash
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             onClick={() => void refresh()}
             disabled={busy || loading}
           >

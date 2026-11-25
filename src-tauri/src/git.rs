@@ -325,6 +325,26 @@ pub fn git_can_amend(cwd: String) -> Result<bool, String> {
     Ok(true)
 }
 
+#[tauri::command]
+pub fn git_stash_push(cwd: String, message: Option<String>) -> Result<(), String> {
+    let mut args = vec!["stash".into(), "push".into(), "-u".into()];
+    if let Some(msg) = message {
+        let trimmed = msg.trim();
+        if !trimmed.is_empty() {
+            args.push("-m".into());
+            args.push(trimmed.to_string());
+        }
+    }
+    run_git(&cwd, &args)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn git_stash_pop(cwd: String) -> Result<(), String> {
+    run_git(&cwd, &["stash".into(), "pop".into()])?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::normalize_ignore_path;
