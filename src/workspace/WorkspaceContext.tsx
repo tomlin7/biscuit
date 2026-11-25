@@ -112,6 +112,7 @@ export type WorkspaceState = {
   saveDirtyAuto: () => Promise<void>;
   closeAll: () => void;
   closeOtherEditors: () => void;
+  closeSavedEditors: () => void;
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
   renameEntry: (path: string) => Promise<void>;
   deleteEntry: (path: string) => Promise<void>;
@@ -1073,6 +1074,21 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setActivePath(keep);
   }, []);
 
+  const closeSavedEditors = useCallback(() => {
+    const saved = tabsRef.current.filter((tab) => !isDirty(tab) && !tab.pinned);
+    if (saved.length === 0) return;
+    for (const tab of saved) pushClosedEditor(tab.path);
+    const closing = new Set(saved.map((tab) => tab.path));
+    setTabs((current) => {
+      const next = current.filter((tab) => !closing.has(tab.path));
+      setActivePath((active) => {
+        if (active && !closing.has(active)) return active;
+        return next[0]?.path ?? null;
+      });
+      return next;
+    });
+  }, []);
+
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
@@ -1192,6 +1208,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       saveDirtyAuto,
       closeAll,
       closeOtherEditors,
+      closeSavedEditors,
       createEntry,
       renameEntry,
       deleteEntry,
@@ -1244,6 +1261,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       saveDirtyAuto,
       closeAll,
       closeOtherEditors,
+      closeSavedEditors,
       createEntry,
       renameEntry,
       deleteEntry,
