@@ -1142,4 +1142,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.notifyProblemsCount(),
   },
+  {
+    id: "workbench.action.refreshDiagnostics",
+    title: "Refresh Diagnostics",
+    category: "View",
+    run: (ctx) => ctx.refreshDiagnostics(),
+  },
 ];

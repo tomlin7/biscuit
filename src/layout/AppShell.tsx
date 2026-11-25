@@ -113,7 +113,7 @@ function ShellChrome() {
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
-  const { problems } = useDiagnostics();
+  const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
@@ -1130,6 +1130,10 @@ function ShellChrome() {
         );
         openProblems();
       },
+      refreshDiagnostics: () => {
+        refreshDiagnosticsMarkers();
+        openProblems();
+      },
     }),
     [
       openFolder,
@@ -1215,6 +1219,7 @@ function ShellChrome() {
       notify,
       setAiWidth,
       problems,
+      refreshDiagnosticsMarkers,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,

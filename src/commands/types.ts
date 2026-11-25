@@ -190,6 +190,7 @@ export type CommandContext = {
   resetBottomPanelHeight: () => void;
   closeAi: () => void;
   notifyProblemsCount: () => void;
+  refreshDiagnostics: () => void;
 };
 
 export type Command = {
