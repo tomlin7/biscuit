@@ -196,6 +196,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.188.0** | Agent presence and frequency penalty | shipped |
 | **0.189.0** | Explorer delete from keyboard | shipped |
 | **0.190.0** | Pin active editor from palette | shipped |
+| **0.191.0** | Status bar insert final newline toggle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

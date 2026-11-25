@@ -83,17 +83,17 @@ export function StatusBar({
           onClick={onOpenScm}
         >
           <GitBranch size={14} strokeWidth={1.75} aria-hidden />
-          <span>{gitBranch ?? "—"}</span>
+          <span>{gitBranch ?? "â€”"}</span>
           {gitBranch && (gitAhead != null || gitBehind != null) ? (
             <span className="status-bar__sync" title="Ahead / behind upstream">
-              {gitAhead != null && gitAhead > 0 ? `↑${gitAhead}` : null}
-              {gitBehind != null && gitBehind > 0 ? `↓${gitBehind}` : null}
-              {gitAhead === 0 && gitBehind === 0 ? "✓" : null}
+              {gitAhead != null && gitAhead > 0 ? `â†‘${gitAhead}` : null}
+              {gitBehind != null && gitBehind > 0 ? `â†“${gitBehind}` : null}
+              {gitAhead === 0 && gitBehind === 0 ? "âœ“" : null}
             </span>
           ) : null}
           {gitDirtyCount > 0 ? (
             <span className="status-bar__sync" title="Changed files">
-              ●{gitDirtyCount}
+              â—{gitDirtyCount}
             </span>
           ) : null}
         </button>
@@ -134,12 +134,12 @@ export function StatusBar({
           size={14}
           onClick={onOpenDebug}
         />
-        {busy ? <span className="status-bar__item">Working…</span> : null}
+        {busy ? <span className="status-bar__item">Workingâ€¦</span> : null}
         {dirty ? <span className="status-bar__item">Unsaved</span> : null}
         {selectionChars > 0 ? (
           <span className="status-bar__item" title="Selection">
             {selectionChars} char{selectionChars === 1 ? "" : "s"}
-            {selectionLines > 1 ? ` · ${selectionLines} lines` : ""}
+            {selectionLines > 1 ? ` Â· ${selectionLines} lines` : ""}
           </span>
         ) : null}
       </div>
@@ -171,7 +171,7 @@ export function StatusBar({
           <button
             type="button"
             className="status-bar__chip"
-            title="Indentation — click to cycle tab size"
+            title="Indentation â€” click to cycle tab size"
             onClick={cycleTabSize}
           >
             Spaces: {settings.editor.tabSize}
@@ -235,6 +235,20 @@ export function StatusBar({
             {settings.editor.renderWhitespace ? "Ws" : "No Ws"}
           </button>
         ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
+            title="Toggle insert final newline"
+            onClick={() =>
+              updateEditor({
+                insertFinalNewline: !settings.editor.insertFinalNewline,
+              })
+            }
+          >
+            {settings.editor.insertFinalNewline ? "Final NL" : "No Final NL"}
+          </button>
+        ) : null}
         {eol ? (
           <button
             type="button"
@@ -295,7 +309,7 @@ export function StatusBar({
                           aria-label={`Dismiss ${n.title}`}
                           onClick={() => dismiss(n.id)}
                         >
-                          ×
+                          Ã—
                         </button>
                       </div>
                       {n.detail ? <span>{n.detail}</span> : null}
