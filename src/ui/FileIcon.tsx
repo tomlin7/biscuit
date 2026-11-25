@@ -62,6 +62,7 @@ export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
   if (ext === "rs") return <Badge text="RS" tone="rust" />;
   if (ext === "css" || ext === "scss") return <Badge text="#" tone="css" />;
   if (ext === "html") return <Badge text="<>" tone="html" />;
+  if (ext === "pdf") return <Badge text="PDF" tone="pdf" />;
   if (ext === "svg" || ["png", "jpg", "jpeg", "gif", "webp", "ico"].includes(ext)) {
     return <ImageIcon size={size} strokeWidth={1.75} className="file-icon file-icon--image" />;
   }

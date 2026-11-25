@@ -145,6 +145,13 @@ export function isImageFile(path: string): boolean {
   return IMAGE_EXT.has(name.slice(dot + 1));
 }
 
+export function isPdfFile(path: string): boolean {
+  const name = basename(path).toLowerCase();
+  const dot = name.lastIndexOf(".");
+  if (dot < 0) return false;
+  return name.slice(dot + 1) === "pdf";
+}
+
 export function isProbablyTextFile(path: string): boolean {
   const name = basename(path).toLowerCase();
   if (

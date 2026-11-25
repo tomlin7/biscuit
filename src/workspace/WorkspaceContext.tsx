@@ -15,6 +15,7 @@ import { listDirectory, type TreeNode } from "./fsTree";
 import {
   basename,
   isImageFile,
+  isPdfFile,
   isProbablyTextFile,
   isSafeEntryName,
   isWebviewPath,
@@ -505,7 +506,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
 
   const openFile = useCallback(async (path: string) => {
-    if (isImageFile(path)) {
+    if (isImageFile(path) || isPdfFile(path)) {
       if (tabsRef.current.some((tab) => tab.path === path)) {
         setActivePath(path);
         rememberFile(path);
@@ -514,7 +515,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       const next: EditorTab = {
         path,
         title: basename(path),
-        language: "image",
+        language: isPdfFile(path) ? "pdf" : "image",
         value: "",
         baseline: "",
         cursorLine: 1,
@@ -960,7 +961,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const saveDirtyAuto = useCallback(async () => {
     const dirty = tabsRef.current.filter(
-      (tab) => isDirty(tab) && !isVirtualPath(tab.path) && tab.language !== "image",
+      (tab) =>
+        isDirty(tab) &&
+        !isVirtualPath(tab.path) &&
+        tab.language !== "image" &&
+        tab.language !== "pdf",
     );
     if (dirty.length === 0) return;
     const saved = new Map<string, string>();
@@ -1114,7 +1119,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   const saveAll = useCallback(async () => {
     const dirty = tabsRef.current.filter(
-      (tab) => isDirty(tab) && !isVirtualPath(tab.path) && tab.language !== "image",
+      (tab) =>
+        isDirty(tab) &&
+        !isVirtualPath(tab.path) &&
+        tab.language !== "image" &&
+        tab.language !== "pdf",
     );
     if (dirty.length === 0) return;
     setBusy(true);
@@ -1236,7 +1245,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
-    if (!tab || tab.language === "image" || isWebviewPath(tab.path)) return;
+    if (!tab || tab.language === "image" || tab.language === "pdf" || isWebviewPath(tab.path)) return;
     const dest = await saveDialog({
       defaultPath: isVirtualPath(tab.path) ? `${tab.title}.txt` : tab.path,
       title: "Save As",
@@ -1283,7 +1292,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
-    if (!tab || tab.language === "image" || isWebviewPath(tab.path)) return;
+    if (!tab || tab.language === "image" || tab.language === "pdf" || isWebviewPath(tab.path)) return;
     if (isVirtualPath(tab.path)) {
       await saveAs();
       return;

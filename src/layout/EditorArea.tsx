@@ -11,6 +11,7 @@ import {
 import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { ImageView } from "../editor/ImageView";
+import { PdfView } from "../editor/PdfView";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { DiffView, useDiffTab } from "../scm/DiffView";
 import { CompareView } from "../scm/CompareView";
@@ -583,6 +584,8 @@ export function EditorArea() {
                 <ExtensionWebviewView path={activePath} />
               ) : document?.language === "image" ? (
                 <ImageView path={activePath} />
+              ) : document?.language === "pdf" ? (
+                <PdfView path={activePath} />
               ) : (
                 <MonacoEditor
                   path={activePath}
@@ -666,6 +669,8 @@ export function EditorArea() {
                     <ExtensionWebviewView path={secondaryPath} />
                   ) : tabs.find((tab) => tab.path === secondaryPath)?.language === "image" ? (
                     <ImageView path={secondaryPath} />
+                  ) : tabs.find((tab) => tab.path === secondaryPath)?.language === "pdf" ? (
+                    <PdfView path={secondaryPath} />
                   ) : (
                     <MonacoEditor path={secondaryPath} primary={false} />
                   )}
