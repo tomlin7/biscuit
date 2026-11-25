@@ -363,6 +363,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.findInFile(),
   },
   {
+    id: "actions.findWithSelection",
+    title: "Find in Selection",
+    category: "Edit",
+    run: (ctx) => ctx.findInSelection(),
+  },
+  {
     id: "workbench.action.findInFiles",
     title: "Search in Workspace",
     category: "Edit",

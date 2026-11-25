@@ -174,6 +174,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.166.0** | Split editor right | shipped |
 | **0.167.0** | Status bar sticky scroll toggle | shipped |
 | **0.168.0** | SCM discard selected | shipped |
+| **0.169.0** | Find in selection | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -43,7 +43,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
   const { theme, extras } = useTheme();
-  const { registerFindHandler, registerEditor, showPeek, showReferences, setFindMatchLabel } =
+  const { registerFindHandler, registerFindInSelectionHandler, registerEditor, showPeek, showReferences, setFindMatchLabel } =
     useEditorActions();
   const showPeekRef = useRef(showPeek);
   showPeekRef.current = showPeek;
@@ -152,6 +152,28 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       const ed = editorRef.current;
       if (!ed) return;
       void ed.getAction("actions.find")?.run();
+    });
+    registerFindInSelectionHandler(() => {
+      const ed = editorRef.current;
+      if (!ed) return;
+      const withSelection = ed.getAction("actions.findWithSelection");
+      if (withSelection) {
+        void withSelection.run();
+        return;
+      }
+      void ed.getAction("actions.find")?.run();
+      try {
+        const controller = (
+          ed as unknown as {
+            getContribution: (id: string) => {
+              toggleSearchScope?: () => void;
+            } | null;
+          }
+        ).getContribution("editor.contrib.findController");
+        controller?.toggleSearchScope?.();
+      } catch {
+        /* ignore */
+      }
     });
     const updateFindLabel = () => {
       const ed = editorRef.current;
@@ -380,12 +402,19 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     });
     return () => {
       registerFindHandler(null);
+      registerFindInSelectionHandler(null);
       registerEditor(null);
       findDisposable?.dispose();
       window.clearInterval(findTimer);
       setFindMatchLabel(null);
     };
-  }, [registerFindHandler, registerEditor, primary, setFindMatchLabel]);
+  }, [
+    registerFindHandler,
+    registerFindInSelectionHandler,
+    registerEditor,
+    primary,
+    setFindMatchLabel,
+  ]);
 
   useEffect(() => {
     const ed = editorRef.current;
