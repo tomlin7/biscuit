@@ -392,6 +392,8 @@ export function ScmPanel({ onBranch }: Props) {
           const next = text.trim();
           if (next) setMessage(next);
         });
+      } else if (action === "clearCommitMessage") {
+        setMessage("");
       } else void push();
     });
     return () => setScmRemoteListener(null);

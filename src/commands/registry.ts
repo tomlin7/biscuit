@@ -1070,4 +1070,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitPasteCommitMessage(),
   },
+  {
+    id: "git.clearCommitMessage",
+    title: "Git: Clear Commit Message",
+    category: "Git",
+    run: (ctx) => ctx.gitClearCommitMessage(),
+  },
 ];

@@ -1038,6 +1038,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("pasteCommitMessage");
       },
+      gitClearCommitMessage: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("clearCommitMessage");
+      },
     }),
     [
       openFolder,

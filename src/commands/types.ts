@@ -178,6 +178,7 @@ export type CommandContext = {
   cycleAiModel: () => void;
   focusAiComposer: () => void;
   gitPasteCommitMessage: () => void;
+  gitClearCommitMessage: () => void;
 };
 
 export type Command = {
