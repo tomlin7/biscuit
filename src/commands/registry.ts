@@ -17,13 +17,13 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "git.clone",
-    title: "Clone Repositoryâ€¦",
+    title: "Clone Repository…",
     category: "Git",
     run: (ctx) => void ctx.cloneRepository(),
   },
   {
     id: "workbench.action.files.openFolder",
-    title: "Open Folderâ€¦",
+    title: "Open Folder…",
     category: "File",
     keybinding: "Ctrl+K Ctrl+O",
     run: (ctx) => void ctx.openFolder(),
@@ -54,7 +54,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.quickOpen",
-    title: "Go to Fileâ€¦",
+    title: "Go to File…",
     category: "Go",
     keybinding: "Ctrl+P",
     run: (ctx) => ctx.openGoToFile(),
@@ -68,7 +68,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.addRootFolder",
-    title: "Add Folder to Workspaceâ€¦",
+    title: "Add Folder to Workspace…",
     category: "File",
     run: (ctx) => void ctx.addFolderRoot(),
   },
@@ -80,7 +80,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.removeRootFolder",
-    title: "Remove Folder from Workspaceâ€¦",
+    title: "Remove Folder from Workspace…",
     category: "File",
     run: (ctx) => {
       const path = window.prompt("Folder path to remove from the workspace:");
@@ -103,7 +103,7 @@ export const COMMANDS: Command[] = [
   },
   {
     id: "workbench.action.files.saveAs",
-    title: "Save Asâ€¦",
+    title: "Save As…",
     category: "File",
     keybinding: "Ctrl+Shift+S",
     run: (ctx) => void ctx.saveAs(),
@@ -859,5 +859,11 @@ export const COMMANDS: Command[] = [
     title: "Git: Select All Changes",
     category: "Git",
     run: (ctx) => ctx.gitSelectAll(),
+  },
+  {
+    id: "git.deselectAll",
+    title: "Git: Deselect All Changes",
+    category: "Git",
+    run: (ctx) => ctx.gitDeselectAll(),
   },
 ];
