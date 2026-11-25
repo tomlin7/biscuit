@@ -263,6 +263,9 @@ export function ScmPanel({ onBranch }: Props) {
             await openFile(joinPath(rootPath, relative));
           }
         })();
+      } else if (action === "selectAll") {
+        if (!summary?.entries.length) return;
+        setSelected(new Set(summary.entries.map((entry) => entry.path)));
       } else void push();
     });
     return () => setScmRemoteListener(null);

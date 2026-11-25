@@ -11,7 +11,8 @@ export type ScmRemoteAction =
   | "discardAll"
   | "copyRelative"
   | "copyAbsolute"
-  | "openSelected";
+  | "openSelected"
+  | "selectAll";
 
 type Listener = (action: ScmRemoteAction) => void;
 

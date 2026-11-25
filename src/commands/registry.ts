@@ -854,4 +854,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.toggleAiStopOnToolError(),
   },
+  {
+    id: "git.selectAll",
+    title: "Git: Select All Changes",
+    category: "Git",
+    run: (ctx) => ctx.gitSelectAll(),
+  },
 ];

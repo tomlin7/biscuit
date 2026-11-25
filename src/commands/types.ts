@@ -142,7 +142,8 @@ export type CommandContext = {
   gitOpenSelected: () => void;
   cycleAiRequestTimeout: () => void;
   toggleAiStopOnToolError: () => void;
- gitDeselectAll: () => void;
+  gitSelectAll: () => void;
+  gitDeselectAll: () => void;
 };
 
 export type Command = {

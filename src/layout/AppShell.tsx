@@ -781,6 +781,11 @@ function ShellChrome() {
         setSettings({ stopOnToolError: !aiSettings.stopOnToolError });
         setAiOpen(true);
       },
+      gitSelectAll: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("selectAll");
+      },
     }),
     [
       openFolder,
