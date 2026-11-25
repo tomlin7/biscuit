@@ -1,6 +1,7 @@
 import { AppShell } from "./layout/AppShell";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { SettingsWindowApp } from "./settings/SettingsWindow";
+import { ErrorBoundary } from "./ui/ErrorBoundary";
 import "./styles/tokens.css";
 import "./styles/global.css";
 
@@ -10,18 +11,12 @@ function isSettingsWindow() {
 }
 
 function App() {
-  if (isSettingsWindow()) {
-    return (
-      <ThemeProvider>
-        <SettingsWindowApp />
-      </ThemeProvider>
-    );
-  }
-
   return (
-    <ThemeProvider>
-      <AppShell />
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        {isSettingsWindow() ? <SettingsWindowApp /> : <AppShell />}
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

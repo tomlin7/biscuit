@@ -14,6 +14,7 @@ import { isWebviewPath } from "../workspace/path";
 import { calculateDropEdge, type EditorPaneModel, type PaneDropEdge } from "./paneLayout";
 import { getDraggedTab, setDraggedTab } from "../workspace/tabDragBus";
 import type { EditorTab } from "../workspace/WorkspaceContext";
+import { ErrorBoundary } from "../ui/ErrorBoundary";
 
 export type EditorPaneViewProps = {
   pane: EditorPaneModel;
@@ -207,7 +208,11 @@ export function EditorPaneView({
         </div>
       )}
 
-      <div className="editor-pane__content">{renderContent()}</div>
+      <div className="editor-pane__content">
+        <ErrorBoundary variant="inline" fallbackTitle="Editor encountered an error">
+          {renderContent()}
+        </ErrorBoundary>
+      </div>
 
       {dropEdge && (
         <div className={`editor-pane__drop-overlay editor-pane__drop-overlay--${dropEdge}`}>

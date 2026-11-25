@@ -3115,27 +3115,27 @@ function ShellChrome() {
 
 export function AppShell() {
   return (
-    <WorkspaceProvider>
-      <EditorActionsProvider>
-        <DiagnosticsProvider>
-          <NotificationsProvider>
-            <AiProvider>
-              <ExtensionsProvider>
-                <DebugProvider>
-                  <SettingsProvider>
+    <SettingsProvider>
+      <WorkspaceProvider>
+        <EditorActionsProvider>
+          <DiagnosticsProvider>
+            <NotificationsProvider>
+              <AiProvider>
+                <ExtensionsProvider>
+                  <DebugProvider>
                     <IconThemeProvider>
                       <AutoSave />
                       <LayoutProvider>
                         <ShellChrome />
                       </LayoutProvider>
                     </IconThemeProvider>
-                  </SettingsProvider>
-                </DebugProvider>
-              </ExtensionsProvider>
-            </AiProvider>
-          </NotificationsProvider>
-        </DiagnosticsProvider>
-      </EditorActionsProvider>
-    </WorkspaceProvider>
+                  </DebugProvider>
+                </ExtensionsProvider>
+              </AiProvider>
+            </NotificationsProvider>
+          </DiagnosticsProvider>
+        </EditorActionsProvider>
+      </WorkspaceProvider>
+    </SettingsProvider>
   );
 }

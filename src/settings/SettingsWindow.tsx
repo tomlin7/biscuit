@@ -85,16 +85,16 @@ function SettingsWindowChrome() {
 /** Dedicated acrylic settings window entry (no editor chrome). */
 export function SettingsWindowApp() {
   return (
-    <WorkspaceProvider>
-      <NotificationsProvider>
-        <AiProvider>
-          <SettingsProvider>
+    <SettingsProvider>
+      <WorkspaceProvider>
+        <NotificationsProvider>
+          <AiProvider>
             <IconThemeProvider>
               <SettingsWindowChrome />
             </IconThemeProvider>
-          </SettingsProvider>
-        </AiProvider>
-      </NotificationsProvider>
-    </WorkspaceProvider>
+          </AiProvider>
+        </NotificationsProvider>
+      </WorkspaceProvider>
+    </SettingsProvider>
   );
 }
