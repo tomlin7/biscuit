@@ -375,6 +375,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.367.0** | Continue debugging from palette | shipped |
 | **0.368.0** | Toggle breakpoint on current line from palette | shipped |
 | **0.369.0** | Open documentation from palette | shipped |
+| **0.370.0** | Transparent window for chrome acrylic | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
