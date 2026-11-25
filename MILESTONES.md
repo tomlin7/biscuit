@@ -296,6 +296,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.288.0** | Cycle AI top_p from palette | shipped |
 | **0.289.0** | Cycle AI max tokens from palette | shipped |
 | **0.290.0** | Cycle AI presence penalty from palette | shipped |
+| **0.291.0** | Focus Source Control view from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

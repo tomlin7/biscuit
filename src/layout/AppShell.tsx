@@ -895,6 +895,10 @@ function ShellChrome() {
         setSettings({ presencePenalty: next });
         setAiOpen(true);
       },
+      focusScm: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,

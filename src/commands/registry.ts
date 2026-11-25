@@ -674,6 +674,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.showSearch(),
   },
   {
+    id: "workbench.view.scm",
+    title: "Show Source Control",
+    category: "View",
+    run: (ctx) => ctx.showScm(),
+  },
+  {
     id: "workbench.view.outline",
     title: "Show Outline",
     category: "View",
@@ -925,5 +931,11 @@ export const COMMANDS: Command[] = [
     title: "Cycle AI Presence Penalty",
     category: "AI",
     run: (ctx) => ctx.cycleAiPresencePenalty(),
+  },
+  {
+    id: "workbench.view.scm",
+    title: "Focus on Source Control View",
+    category: "View",
+    run: (ctx) => ctx.focusScm(),
   },
 ];
