@@ -52,6 +52,7 @@ export function ExtensionsPanel() {
     refresh,
     fetchRegistry,
     setEnabled,
+    toggleWorkspaceEnablement,
     installSample,
     installFromFolder,
     installFromRegistry,
@@ -292,14 +293,22 @@ export function ExtensionsPanel() {
                           >
                             <Trash2 size={12} />
                           </button>
+                          <button
+                            type="button"
+                            className={`ext-panel__btn ${ext.workspaceDisabled ? "ext-panel__btn--warn" : ""}`}
+                            title={ext.workspaceDisabled ? "Enable for this workspace" : "Disable for this workspace"}
+                            onClick={() => toggleWorkspaceEnablement(ext.id)}
+                          >
+                            {ext.workspaceDisabled ? "Enable (Workspace)" : "Disable (Workspace)"}
+                          </button>
                           <label className="ext-panel__toggle">
                             <input
                               type="checkbox"
-                              checked={ext.enabled}
+                              checked={ext.globallyEnabled ?? ext.enabled}
                               onChange={(e) => void setEnabled(ext.id, e.target.checked)}
                             />
                             <span className="ext-panel__toggle-label">
-                              {ext.enabled ? "Enabled" : "Disabled"}
+                              {(ext.globallyEnabled ?? ext.enabled) ? "Enabled" : "Disabled"}
                             </span>
                           </label>
                         </div>

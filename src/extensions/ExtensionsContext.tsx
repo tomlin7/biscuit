@@ -17,6 +17,8 @@ export type ExtensionManifest = {
   version: string;
   description: string;
   enabled: boolean;
+  globallyEnabled?: boolean;
+  workspaceDisabled?: boolean;
   path: string;
   permissions?: string[];
   contributes?: {
@@ -57,6 +59,8 @@ type ExtensionsState = {
   refresh: () => Promise<ExtensionManifest[] | null>;
   fetchRegistry: () => Promise<RegistryExtension[]>;
   setEnabled: (id: string, enabled: boolean) => Promise<void>;
+  isWorkspaceDisabled: (id: string) => boolean;
+  toggleWorkspaceEnablement: (id: string) => void;
   installSample: () => Promise<void>;
   installFromFolder: () => Promise<void>;
   installFromRegistry: (entry: RegistryExtension) => Promise<void>;
@@ -64,11 +68,23 @@ type ExtensionsState = {
   uninstall: (id: string) => Promise<void>;
 };
 
+const STORAGE_WORKSPACE_DISABLED = "t3d.extensions.workspaceDisabled.v1";
+
+function loadWorkspaceDisabled(): Set<string> {
+  try {
+    const raw = localStorage.getItem(STORAGE_WORKSPACE_DISABLED);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
 const ExtensionsContext = createContext<ExtensionsState | null>(null);
 
 export function ExtensionsProvider({ children }: { children: ReactNode }) {
   const { settings } = useSettings();
-  const [extensions, setExtensions] = useState<ExtensionManifest[]>([]);
+  const [rawExtensions, setRawExtensions] = useState<ExtensionManifest[]>([]);
+  const [workspaceDisabledIds, setWorkspaceDisabledIds] = useState<Set<string>>(loadWorkspaceDisabled);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,12 +92,43 @@ export function ExtensionsProvider({ children }: { children: ReactNode }) {
   const [registryLoading, setRegistryLoading] = useState(false);
   const [registryError, setRegistryError] = useState<string | null>(null);
 
+  const isWorkspaceDisabled = useCallback(
+    (id: string) => workspaceDisabledIds.has(id),
+    [workspaceDisabledIds],
+  );
+
+  const toggleWorkspaceEnablement = useCallback((id: string) => {
+    setWorkspaceDisabledIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      try {
+        localStorage.setItem(STORAGE_WORKSPACE_DISABLED, JSON.stringify([...next]));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, []);
+
+  const extensions = useMemo(() => {
+    return rawExtensions.map((ext) => {
+      const isWDisabled = workspaceDisabledIds.has(ext.id);
+      return {
+        ...ext,
+        globallyEnabled: ext.enabled,
+        workspaceDisabled: isWDisabled,
+        enabled: ext.enabled && !isWDisabled,
+      };
+    });
+  }, [rawExtensions, workspaceDisabledIds]);
+
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const list = await invoke<ExtensionManifest[]>("list_extensions");
-      setExtensions(list);
+      setRawExtensions(list);
       return list;
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -202,6 +249,8 @@ export function ExtensionsProvider({ children }: { children: ReactNode }) {
       refresh,
       fetchRegistry,
       setEnabled,
+      isWorkspaceDisabled,
+      toggleWorkspaceEnablement,
       installSample,
       installFromFolder,
       installFromRegistry,
@@ -218,6 +267,8 @@ export function ExtensionsProvider({ children }: { children: ReactNode }) {
       refresh,
       fetchRegistry,
       setEnabled,
+      isWorkspaceDisabled,
+      toggleWorkspaceEnablement,
       installSample,
       installFromFolder,
       installFromRegistry,

@@ -398,3 +398,8 @@
   border: 1px solid var(--border-subtle);
   color: var(--fg-muted);
 }
+
+.ext-panel__btn--warn {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.3);
+}
