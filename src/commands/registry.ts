@@ -1492,4 +1492,15 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.deleteExplorerEntry(),
   },
+  {
+    id: "workbench.action.toggleAlwaysOnTop",
+    title: "Toggle Always on Top",
+    category: "View",
+    run: (ctx) => ctx.toggleAlwaysOnTop(),
+  },
+
+
+
+
+
 ];

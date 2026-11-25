@@ -247,6 +247,7 @@ export type CommandContext = {
   openCodeOfConduct: () => void;
   renameExplorerEntry: () => void;
   deleteExplorerEntry: () => void;
+  toggleAlwaysOnTop: () => void;
 };
 
 export type Command = {

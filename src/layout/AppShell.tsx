@@ -1495,6 +1495,15 @@ function ShellChrome() {
         setSidebarOpen(true);
         void deleteEntry(activePath);
       },
+      toggleAlwaysOnTop: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          return;
+        }
+        const win = getCurrentWindow();
+        void win.isAlwaysOnTop().then((onTop) => {
+          void win.setAlwaysOnTop(!onTop);
+        });
+      },
     }),
     [
       openFolder,
