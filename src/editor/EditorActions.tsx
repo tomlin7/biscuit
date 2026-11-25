@@ -40,6 +40,7 @@ export type EditorCommand =
   | "relativeLines"
   | "goto"
   | "copyLineDown"
+  | "copyLineUp"
   | "moveLineUp"
   | "moveLineDown"
   | "replace"
@@ -139,6 +140,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "copyLineDown":
         handle.trigger("editor.action.copyLinesDownAction");
+        break;
+      case "copyLineUp":
+        handle.trigger("editor.action.copyLinesUpAction");
         break;
       case "moveLineUp":
         handle.trigger("editor.action.moveLinesUpAction");

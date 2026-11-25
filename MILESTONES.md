@@ -254,6 +254,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.246.0** | Cycle terminal font size from palette | shipped |
 | **0.247.0** | Show Logs from palette | shipped |
 | **0.248.0** | Toggle line numbers from palette | shipped |
+| **0.249.0** | Copy lines up | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
