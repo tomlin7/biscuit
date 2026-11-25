@@ -1396,6 +1396,14 @@ function ShellChrome() {
         const isCrlf = document.value.includes("\r\n");
         setEol(isCrlf ? "lf" : "crlf");
       },
+      continueDebugging: () => {
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+        void stepDebugPython("continue").then((next) => {
+          const frame = next?.frames[0];
+          if (frame) void openFileAt(frame.file, frame.line, 1);
+        });
+      },
     }),
     [
       openFolder,

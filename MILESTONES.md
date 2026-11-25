@@ -372,6 +372,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.364.0** | New File in Explorer from palette | shipped |
 | **0.365.0** | New Folder in Explorer from palette | shipped |
 | **0.366.0** | Toggle line ending from palette | shipped |
+| **0.367.0** | Continue debugging from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

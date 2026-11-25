@@ -1418,7 +1418,13 @@ export const COMMANDS: Command[] = [
     category: "Edit",
     run: (ctx) => ctx.toggleLineEnding(),
   },
-
+  {
+    id: "workbench.action.debug.continue",
+    title: "Continue Debugging",
+    category: "Debug",
+    keybinding: "F5",
+    run: (ctx) => ctx.continueDebugging(),
+  },
 
 
 ];
