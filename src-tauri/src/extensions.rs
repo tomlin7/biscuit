@@ -44,6 +44,8 @@ pub struct ExtensionContributes {
 pub struct ExtensionCommand {
     pub id: String,
     pub title: String,
+    #[serde(default)]
+    pub runs: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -117,9 +119,14 @@ fn parse_contributes(value: &serde_json::Value) -> ExtensionContributes {
             let Some(title) = item.get("title").and_then(|part| part.as_str()) else {
                 continue;
             };
+            let runs = item
+                .get("runs")
+                .and_then(|part| part.as_str())
+                .map(|value| value.to_string());
             out.commands.push(ExtensionCommand {
                 id: id.to_string(),
                 title: title.to_string(),
+                runs,
             });
         }
     }
@@ -492,5 +499,20 @@ mod tests {
         assert_eq!(parsed.themes[0].id, "moss");
         assert_eq!(parsed.themes[0].colors.bg, "#123456");
         assert_eq!(parsed.languages[0].extensions, vec![".todo"]);
+    }
+
+    #[test]
+    fn reads_a_command_runs_action() {
+        let value = serde_json::json!({
+            "contributes": {
+                "commands": [
+                    { "id": "demo.open", "title": "Open", "runs": "open-folder" },
+                    { "id": "demo.plain", "title": "Plain" }
+                ]
+            }
+        });
+        let parsed = super::parse_contributes(&value);
+        assert_eq!(parsed.commands[0].runs.as_deref(), Some("open-folder"));
+        assert_eq!(parsed.commands[1].runs, None);
     }
 }

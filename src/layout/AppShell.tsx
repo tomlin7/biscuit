@@ -218,7 +218,20 @@ function ShellChrome() {
           id: contrib.id,
           title: contrib.title,
           category: "Extension",
-          run: () => {
+          run: (ctx) => {
+            const action = contrib.runs?.trim();
+            if (action === "open-folder") {
+              void ctx.openFolder();
+              return;
+            }
+            if (action === "toggle-theme") {
+              ctx.toggleTheme();
+              return;
+            }
+            if (action === "new-terminal") {
+              ctx.toggleTerminal();
+              return;
+            }
             window.alert(`${contrib.title}\n\n(from ${ext.name})`);
           },
         });
