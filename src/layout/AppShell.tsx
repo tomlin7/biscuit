@@ -869,9 +869,9 @@ function ShellChrome() {
           }
           const dest = await saveDialog({
             title: "Save Workspace As",
-            defaultPath: `${basename(folderList[0])}.biscuit-workspace.json`,
+            defaultPath: `${basename(folderList[0])}.morsel-workspace.json`,
             filters: [
-              { name: "Biscuit Workspace", extensions: ["biscuit-workspace.json", "t3d-workspace.json", "json"] },
+              { name: "Morsel Workspace", extensions: ["morsel-workspace.json", "biscuit-workspace.json", "t3d-workspace.json", "json"] },
             ],
           });
           if (!dest) return;
@@ -897,7 +897,7 @@ function ShellChrome() {
             multiple: false,
             title: "Open Workspace",
             filters: [
-              { name: "Biscuit Workspace", extensions: ["biscuit-workspace.json", "t3d-workspace.json", "json"] },
+              { name: "Morsel Workspace", extensions: ["morsel-workspace.json", "biscuit-workspace.json", "t3d-workspace.json", "json"] },
             ],
           });
           if (selected === null) return;
@@ -1616,7 +1616,7 @@ function ShellChrome() {
         if (
           unsaved > 0 &&
           !window.confirm(
-            `Quit Biscuit? ${unsaved} editor${unsaved === 1 ? " has" : "s have"} unsaved changes that will be lost.`,
+            `Quit Morsel? ${unsaved} editor${unsaved === 1 ? " has" : "s have"} unsaved changes that will be lost.`,
           )
         ) {
           return;
@@ -1747,14 +1747,14 @@ function ShellChrome() {
         void getVersion()
           .then((version) => {
             notify(
-              "About Biscuit",
-              `Biscuit ${version} — Tauri 2 + React + Monaco.`,
+              "About Morsel",
+              `Morsel ${version} — a code editor that respects your palate (AKA Biscuit-v2).`,
             );
           })
           .catch(() => {
             notify(
-              "About Biscuit",
-              "Biscuit — Tauri 2 + React + Monaco.",
+              "About Morsel",
+              "Morsel — a code editor that respects your palate (AKA Biscuit-v2).",
             );
           });
       },
@@ -1989,10 +1989,10 @@ function ShellChrome() {
           notify("New Window", "Available only in the desktop app.");
           return;
         }
-        const label = `biscuit-${Date.now()}`;
+        const label = `morsel-${Date.now()}`;
         const created = new WebviewWindow(label, {
           url: "index.html",
-          title: "Biscuit",
+          title: "Morsel",
           width: 1280,
           height: 800,
           minWidth: 800,

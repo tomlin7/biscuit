@@ -73,9 +73,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Biscuit v__VERSION__'
+          releaseName: 'Morsel v__VERSION__'
           releaseBody: |
-            Biscuit release v__VERSION__
+            Morsel release v__VERSION__
 
             ### Download Binaries
             - **Windows**: `.exe` (NSIS Installer) and `.msi`
@@ -109,10 +109,10 @@ jobs:
 
       - name: Bundle extensions archive
         run: |
-          tar -czf biscuit-extensions-${{ github.ref_name }}.tar.gz -C extensions-dist .
+          tar -czf morsel-extensions-${{ github.ref_name }}.tar.gz -C extensions-dist .
 
       - name: Upload extensions archive to GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} biscuit-extensions-${{ github.ref_name }}.tar.gz extensions-dist/index.json --clobber
+          gh release upload ${{ github.ref_name }} morsel-extensions-${{ github.ref_name }}.tar.gz extensions-dist/index.json --clobber

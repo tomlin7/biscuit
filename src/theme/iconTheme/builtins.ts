@@ -299,7 +299,7 @@ export const MINIMAL_MONO_THEME: IconThemeDefinition = {
 export const CLASSIC_THEME: IconThemeDefinition = {
   id: "classic",
   label: "Classic Badges",
-  description: "The original Biscuit badge-based file indicators.",
+  description: "The original Morsel badge-based file indicators.",
 };
 
 export const NONE_THEME: IconThemeDefinition = {

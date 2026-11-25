@@ -1,6 +1,6 @@
 # Versioning
 
-Biscuit follows [Semantic Versioning 2.0.0](https://semver.org/).
+Morsel follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## Version rollover & MSI constraint
 

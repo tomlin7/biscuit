@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Biscuit · High-Performance Desktop Code Editor";
+export const alt = "Morsel · A code editor that respects your palate (AKA Biscuit-v2)";
 export const size = {
   width: 1200,
   height: 630,
@@ -40,10 +40,10 @@ export default function Image() {
               letterSpacing: "-0.05em",
             }}
           >
-            B
+            M
           </div>
           <span style={{ fontSize: "28px", fontWeight: 700, letterSpacing: "-0.03em" }}>
-            Biscuit
+            Morsel
           </span>
           <div
             style={{
@@ -72,7 +72,7 @@ export default function Image() {
               color: "#ffffff",
             }}
           >
-            The high-density desktop code editor.
+            A code editor that respects your palate.
           </h1>
           <p
             style={{
@@ -83,7 +83,7 @@ export default function Image() {
               maxWidth: "960px",
             }}
           >
-            Compiled Rust PTY shell · Tauri 2 · Monaco engine · React 19 · Sub-100ms startup.
+            Morsel /ℳℴ𝓇𝓈ℯ𝓁/ (AKA Biscuit-v2) · Compiled Rust PTY shell · Tauri 2 · Monaco engine · React 19.
           </p>
         </div>
 

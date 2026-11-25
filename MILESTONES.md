@@ -1,6 +1,6 @@
 # Milestones
 
-Gradual rewrite of the Biscuit editor experience on Tauri 2 + React + Monaco.
+Gradual rewrite of the Morsel editor experience on Tauri 2 + React + Monaco.
 Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides.**
 
 | Version | Focus | Status |

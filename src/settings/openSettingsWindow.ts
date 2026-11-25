@@ -34,7 +34,7 @@ export async function openSettingsWindow(tab: SettingsTab = "editor"): Promise<b
 
   const created = new WebviewWindow(SETTINGS_WINDOW_LABEL, {
     url: settingsUrl(tab),
-    title: "Settings — Biscuit",
+    title: "Settings — Morsel",
     width: 780,
     height: 680,
     minWidth: 560,

@@ -100,11 +100,11 @@ export function Welcome() {
           </div>
           <div>
             <div className="welcome__title-row">
-              <h1 className="welcome__title">Biscuit Editor</h1>
+              <h1 className="welcome__title">Morsel Editor</h1>
               <span className="welcome__version">v0.351</span>
             </div>
             <p className="welcome__subtitle">
-              Fast, local-first code editor with integrated AI assistance
+              Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2)
             </p>
           </div>
         </div>

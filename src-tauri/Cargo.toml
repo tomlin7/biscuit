@@ -1,12 +1,12 @@
 [package]
-name = "biscuit"
+name = "morsel"
 version = "1.220.0"
-description = "Biscuit - modern code editor (Tauri)"
+description = "Morsel - a code editor that respects your palate (AKA Biscuit-v2)"
 authors = ["Tomlin7 <billydevbusiness@gmail.com>"]
 edition = "2021"
 
 [lib]
-name = "biscuit_lib"
+name = "morsel_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

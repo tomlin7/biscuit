@@ -128,11 +128,11 @@ export default function Page() {
   const faqs = [
     {
       q: "Is this another Electron app?",
-      a: "No. Biscuit uses Tauri 2 and compiled Rust on top of your operating system native webview runtime. It uses a fraction of the RAM of typical Electron editors and launches in under 100 milliseconds.",
+      a: "No. Morsel uses Tauri 2 and compiled Rust on top of your operating system native webview runtime. It uses a fraction of the RAM of typical Electron editors and launches in under 100 milliseconds.",
     },
     {
       q: "How does the terminal differ from other editors?",
-      a: "Biscuit spawns pseudoterminals directly through native Rust using portable-pty. Keystrokes, terminal resize events, and ANSI sequences bypass Node.js serialization completely, rendering directly into xterm with full OSC 7 and OSC 133 shell integration.",
+      a: "Morsel spawns pseudoterminals directly through native Rust using portable-pty. Keystrokes, terminal resize events, and ANSI sequences bypass Node.js serialization completely, rendering directly into xterm with full OSC 7 and OSC 133 shell integration.",
     },
     {
       q: "Do extensions run in the main thread?",
@@ -144,7 +144,7 @@ export default function Page() {
     },
     {
       q: "What is the release roadmap?",
-      a: "Biscuit follows continuous progressive shipping. Version 1.219.0 is the active stable release, with subsequent core code editor feature slices rolling out regularly.",
+      a: "Morsel follows continuous progressive shipping. Version 1.219.0 is the active stable release, with subsequent core code editor feature slices rolling out regularly.",
     },
   ];
 
@@ -156,9 +156,9 @@ export default function Page() {
         <header className="flex h-16 items-center justify-between px-5 md:px-10">
           <a href="/" className="flex items-center gap-2.5">
             <span className="flex size-7 items-center justify-center rounded-md bg-foreground text-background font-bold text-xs tracking-tight">
-              B
+              M
             </span>
-            <span className="text-[15px] font-semibold tracking-tight text-foreground">Biscuit</span>
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">Morsel</span>
           </a>
 
           <div className="flex items-center gap-4">
@@ -183,19 +183,26 @@ export default function Page() {
         <main id="main-content">
           {/* ── Section 0: Hero (Waku layout) ────────────────────────────── */}
           <section className="px-5 pt-14 pb-14 md:px-10 md:pt-24">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground" data-ui="pill">
-              <span className="flex size-3.5 items-center justify-center rounded-[3px] bg-[#f26522] text-[10px] font-bold text-white">
-                Y
-              </span>
-              Not backed by Y Combinator
+            <div className="mb-7 flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground" data-ui="pill">
+                <span className="flex size-3.5 items-center justify-center rounded-[3px] bg-[#f26522] text-[10px] font-bold text-white">
+                  Y
+                </span>
+                Not backed by Y Combinator
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">Morsel</span>
+                <span className="font-serif italic text-foreground/80">/ℳℴ𝓇𝓈ℯ𝓁/</span>
+                <span className="text-[11px] text-muted-foreground">(AKA Biscuit-v2)</span>
+              </div>
             </div>
 
             <h1 className="max-w-4xl text-4xl font-semibold tracking-[-0.03em] text-balance md:text-[3.4rem] md:leading-[1.04]">
-              One native desktop code editor for modern engineering.
+              Morsel <span className="font-serif font-normal text-muted-foreground tracking-normal">/ℳℴ𝓇𝓈ℯ𝓁/</span> is a code editor that respects your palate.
             </h1>
 
             <p className="mt-5 max-w-[36rem] text-[17px] leading-relaxed text-pretty text-muted-foreground">
-              Biscuit drives your workspace with compiled Rust, Monaco, and Tauri 2. Sessions, terminals, git diffs, multi-pane splitting, and extensions in one fast graphite window, entirely on your machine.
+              Morsel (AKA Biscuit-v2) drives your workspace with compiled Rust, Monaco, and Tauri 2. Sessions, terminals, git diffs, multi-pane splitting, and extensions in one fast graphite window, entirely on your machine.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -354,7 +361,7 @@ export default function Page() {
           {/* ── Section 3: Download Section (Waku layout) ────────────────── */}
           <section id="download" className="border-t border-border/70 px-5 py-16 md:px-10 md:py-20" data-ui="waku-section">
             <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-              Get Biscuit
+              Get Morsel
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Fast, signed installers built for every major desktop operating system.
@@ -446,9 +453,9 @@ export default function Page() {
         <footer className="flex items-center justify-between border-t border-border/70 px-5 py-10 text-xs text-muted-foreground md:px-10" data-ui="waku-footer">
           <div className="flex items-center gap-2">
             <span className="flex size-4 items-center justify-center rounded-[3px] bg-foreground text-background font-bold text-[9px]">
-              B
+              M
             </span>
-            <span>© 2026 Biscuit</span>
+            <span>© 2026 Morsel</span>
           </div>
 
           <div className="flex items-center gap-5">

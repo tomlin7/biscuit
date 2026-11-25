@@ -143,7 +143,7 @@ export function AppShell() {
   "TitleBar.tsx": `import { Folder, Plus, Play, Sparkles, Settings } from "lucide-react";
 import { IconButton } from "../ui/IconButton";
 
-export function TitleBar({ rootName = "biscuit" }) {
+export function TitleBar({ rootName = "morsel" }) {
   return (
     <header className="titlebar">
       <div className="titlebar__left">
@@ -170,9 +170,9 @@ export function TerminalPanel() {
   return <div className="terminal-panel terminal-panel--embedded" />;
 }`,
   "Cargo.toml": `[package]
-name = "biscuit"
+name = "morsel"
 version = "1.220.0"
-description = "Biscuit - modern code editor (Tauri 2)"
+description = "Morsel - a code editor that respects your palate (AKA Biscuit-v2)"
 edition = "2021"
 
 [dependencies]
@@ -180,9 +180,9 @@ tauri = { version = "2", features = [] }
 portable-pty = "0.9.0"
 serde = { version = "1", features = ["derive"] }
 `,
-  "README.md": `# Biscuit
+  "README.md": `# Morsel
 
-Modern code editor built with Tauri 2, React 19, and Monaco.
+Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2).
 `,
 };
 
@@ -365,9 +365,9 @@ export default function TedDemo() {
         </div>
 
         {/* Center: Project Root Capsule */}
-        <button type="button" className="t3d-titlebar__project" title="biscuit">
+        <button type="button" className="t3d-titlebar__project" title="morsel">
           <Folder size={14} strokeWidth={1.75} className="text-[#3b82f6] shrink-0" />
-          <span className="truncate">biscuit</span>
+          <span className="truncate">morsel</span>
           <Plus size={14} strokeWidth={1.75} className="text-[#8a8a8a] shrink-0" />
         </button>
 
@@ -542,13 +542,13 @@ export default function TedDemo() {
               {bottomTab === "terminal" && (
                 <div className="flex-1 p-3 font-mono text-[11.5px] bg-[#141414] text-[#8a8a8a] flex flex-col">
                   <div className="text-[#3b82f6] font-semibold">
-                    PS E:\biscuit&gt; bun run tauri dev
+                    PS E:\morsel&gt; bun run tauri dev
                   </div>
                   <div className="text-[#d4d4d4] mt-1">
                     $ tauri dev
                   </div>
                   <div className="text-[#73c991] mt-0.5">
-                    &bull; Watching E:\biscuit\src-tauri for Rust changes...
+                    &bull; Watching E:\morsel\src-tauri for Rust changes...
                   </div>
                 </div>
               )}
@@ -561,7 +561,7 @@ export default function TedDemo() {
 
               {bottomTab === "logs" && (
                 <div className="flex-1 p-3 font-mono text-xs text-[#8a8a8a]">
-                  [info] biscuit v1.220.0 initialized
+                  [info] morsel v1.220.0 initialized
                 </div>
               )}
             </div>
@@ -592,7 +592,7 @@ export default function TedDemo() {
             title="Workspace folder"
           >
             <Folder size={13} className="text-[#60a5fa]" />
-            <span>biscuit</span>
+            <span>morsel</span>
           </button>
 
           <button

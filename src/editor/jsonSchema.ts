@@ -217,11 +217,11 @@ export const BUILTIN_JSON_SCHEMAS: JsonSchemaAssociation[] = [
   },
   {
     uri: "t3d://schemas/extension.json",
-    fileMatch: ["*extension.json", "*manifest.json", "*biscuit.manifest.json", "*t3d.manifest.json"],
+    fileMatch: ["*extension.json", "*manifest.json", "*morsel.manifest.json", "*biscuit.manifest.json", "*t3d.manifest.json"],
     schema: {
       type: "object",
-      title: "Biscuit Extension Manifest",
-      description: "Biscuit extension contribution and metadata manifest",
+      title: "Morsel Extension Manifest",
+      description: "Morsel extension contribution and metadata manifest",
       required: ["id", "name", "version"],
       properties: {
         id: { type: "string", description: "Unique identifier for the extension." },
@@ -257,11 +257,11 @@ export const BUILTIN_JSON_SCHEMAS: JsonSchemaAssociation[] = [
   },
   {
     uri: "t3d://schemas/settings.json",
-    fileMatch: ["*.biscuit/settings.json", "*.t3d/settings.json", "*settings.json"],
+    fileMatch: ["*.morsel/settings.json", "*.biscuit/settings.json", "*.t3d/settings.json", "*settings.json"],
     schema: {
       type: "object",
-      title: "Biscuit Settings Schema",
-      description: "User and workspace configuration settings for Biscuit",
+      title: "Morsel Settings Schema",
+      description: "User and workspace configuration settings for Morsel",
       properties: {
         editor: {
           type: "object",

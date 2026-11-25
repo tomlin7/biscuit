@@ -18,15 +18,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://t3d.sh"),
   title: {
-    default: "Biscuit · High-Performance Desktop Code Editor",
-    template: "%s | Biscuit",
+    default: "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ · A code editor that respects your palate",
+    template: "%s | Morsel",
   },
   description:
-    "Fast, focused desktop code editor built with Tauri 2, compiled Rust PTY engine, Monaco, and React 19. Sub-second startup, native terminal, split panes, and sandboxed extensions.",
-  applicationName: "Biscuit",
+    "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2). Fast, focused desktop code editor built with Tauri 2, compiled Rust PTY engine, Monaco, and React 19. Sub-second startup, native terminal, split panes, and sandboxed extensions.",
+  applicationName: "Morsel",
   authors: [{ name: "Tomlin7", url: "https://github.com/tomlin7" }],
   generator: "Next.js",
   keywords: [
+    "Morsel",
     "Biscuit",
     "code editor",
     "desktop code editor",
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
     "open source code editor",
   ],
   creator: "Tomlin7",
-  publisher: "Biscuit",
+  publisher: "Morsel",
   alternates: {
     canonical: "/",
   },
@@ -49,24 +50,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://t3d.sh",
-    siteName: "Biscuit",
-    title: "Biscuit · High-Performance Desktop Code Editor",
+    siteName: "Morsel",
+    title: "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ · A code editor that respects your palate",
     description:
-      "Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19. Sub-100ms startup, native terminal, and sandboxed extensions.",
+      "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2). Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Biscuit · High-Performance Desktop Code Editor",
+        alt: "Morsel · A code editor that respects your palate (AKA Biscuit-v2)",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Biscuit · High-Performance Desktop Code Editor",
+    title: "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ · A code editor that respects your palate",
     description:
-      "Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
+      "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2). Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
     creator: "@Tomlin7",
     images: ["/opengraph-image"],
   },
@@ -93,7 +94,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "Biscuit",
+      "name": "Morsel",
       "operatingSystem": "Windows, macOS, Linux",
       "applicationCategory": "DeveloperApplication",
       "offers": {
@@ -103,7 +104,7 @@ const jsonLd = {
       },
       "softwareVersion": "1.212.0",
       "description":
-        "Fast, focused desktop code editor built with Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
+        "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2). Fast, focused desktop code editor built with Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
       "downloadUrl": "https://github.com/tomlin7/t3d/releases",
       "author": {
         "@type": "Person",
@@ -114,9 +115,9 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "name": "Biscuit",
+      "name": "Morsel",
       "url": "https://t3d.sh",
-      "description": "The high-density desktop code editor.",
+      "description": "Morsel /ℳℴ𝓇𝓈ℯ𝓁/ is a code editor that respects your palate (AKA Biscuit-v2).",
     },
   ],
 };

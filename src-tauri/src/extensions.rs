@@ -649,7 +649,7 @@ fn sample_main_js(command: &str, name: &str) -> String {
     let greeting = serde_json::to_string(&format!("Hello from {name}!"))
         .unwrap_or_else(|_| "\"Hello!\"".into());
     format!(
-        r#"// Runs in the Biscuit extension host (a Web Worker) the first time the command is used.
+        r#"// Runs in the Morsel extension host (a Web Worker) the first time the command is used.
 export function activate(t3d, context) {{
   context.subscriptions.push(
     t3d.commands.registerCommand({command}, async () => {{

@@ -16,6 +16,12 @@ describe("JSON schema definitions and patterns", () => {
     expect(uris).toContain("t3d://schemas/extension.json");
     expect(uris).toContain("t3d://schemas/settings.json");
 
+    const extSchema = BUILTIN_JSON_SCHEMAS.find((s) => s.uri === "t3d://schemas/extension.json");
+    expect((extSchema?.schema as any)?.title).toBe("Morsel Extension Manifest");
+
+    const settingsSchema = BUILTIN_JSON_SCHEMAS.find((s) => s.uri === "t3d://schemas/settings.json");
+    expect((settingsSchema?.schema as any)?.title).toBe("Morsel Settings Schema");
+
     for (const item of BUILTIN_JSON_SCHEMAS) {
       expect(item.fileMatch.length).toBeGreaterThan(0);
       expect(item.schema).toBeDefined();
