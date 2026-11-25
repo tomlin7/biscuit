@@ -49,6 +49,7 @@ function ShellChrome() {
     saveAll,
     closeTab,
     closeAll,
+    closeOtherEditors,
     activePath,
     openFolder,
     openFolderAt,
@@ -406,6 +407,7 @@ function ShellChrome() {
         if (activePath) closeTab(activePath);
       },
       closeAll,
+      closeOtherEditors,
       toggleTheme,
       toggleMinimap: () => updateEditor({ minimap: !settings.editor.minimap }),
       openPalette,
@@ -455,6 +457,7 @@ function ShellChrome() {
       saveAs,
       saveAll,
       closeAll,
+      closeOtherEditors,
       activePath,
       closeTab,
       toggleTheme,

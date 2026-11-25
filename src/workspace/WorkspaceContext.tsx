@@ -108,6 +108,7 @@ export type WorkspaceState = {
   saveAll: () => Promise<void>;
   saveDirtyAuto: () => Promise<void>;
   closeAll: () => void;
+  closeOtherEditors: () => void;
   createEntry: (parent: string, kind: "file" | "directory") => Promise<void>;
   renameEntry: (path: string) => Promise<void>;
   deleteEntry: (path: string) => Promise<void>;
@@ -1022,6 +1023,25 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setActivePath(null);
   }, []);
 
+  const closeOtherEditors = useCallback(() => {
+    const keep = activePathRef.current;
+    if (!keep) return;
+    const others = tabsRef.current.filter((tab) => tab.path !== keep);
+    if (others.length === 0) return;
+    const dirty = others.filter(isDirty);
+    if (dirty.length > 0) {
+      const ok = window.confirm(
+        dirty.length === 1
+          ? `Close ${dirty[0].title} without saving?`
+          : `Close ${dirty.length} other unsaved files without saving?`,
+      );
+      if (!ok) return;
+    }
+    for (const tab of others) pushClosedEditor(tab.path);
+    setTabs((current) => current.filter((tab) => tab.path === keep));
+    setActivePath(keep);
+  }, []);
+
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
@@ -1138,6 +1158,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       saveAll,
       saveDirtyAuto,
       closeAll,
+      closeOtherEditors,
       createEntry,
       renameEntry,
       deleteEntry,
@@ -1187,6 +1208,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       saveAll,
       saveDirtyAuto,
       closeAll,
+      closeOtherEditors,
       createEntry,
       renameEntry,
       deleteEntry,

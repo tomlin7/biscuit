@@ -160,6 +160,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.152.0** | Retry failed agent tool calls | shipped |
 | **0.153.0** | Expand and shrink selection | shipped |
 | **0.154.0** | Transform to title case | shipped |
+| **0.155.0** | Close other editors | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

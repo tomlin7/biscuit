@@ -118,6 +118,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeAll(),
   },
   {
+    id: "workbench.action.closeOtherEditors",
+    title: "Close Other Editors",
+    category: "View",
+    run: (ctx) => ctx.closeOtherEditors(),
+  },
+  {
     id: "workbench.action.toggleTheme",
     title: "Toggle Light/Dark Theme",
     category: "Preferences",

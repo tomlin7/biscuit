@@ -13,6 +13,7 @@ export type CommandContext = {
   saveAll: () => Promise<void> | void;
   closeActive: () => void;
   closeAll: () => void;
+  closeOtherEditors: () => void;
   toggleTheme: () => void;
   toggleMinimap: () => void;
   openPalette: () => void;
