@@ -3,10 +3,11 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useAi } from "../ai/AiContext";
 import { reduceTerminalInput } from "./terminalInput";
-import { basename, parentPath, languageFromPath } from "../workspace/path";
+import { basename, parentPath, languageFromPath, joinPath } from "../workspace/path";
 import { setRunListener } from "./runFile";
 import { resolveRunCommand } from "./runConfig";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
@@ -60,6 +61,7 @@ type SessionProps = {
   onControl: (control: TerminalControl | null) => void;
   onCwdChange?: (cwd: string) => void;
   onExitCode?: (code: number | null) => void;
+  openFileAt: (path: string, line: number, column: number) => Promise<void> | void;
 };
 
 function TerminalSession({
@@ -75,6 +77,7 @@ function TerminalSession({
   onControl,
   onCwdChange,
   onExitCode,
+  openFileAt,
 }: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
@@ -88,6 +91,12 @@ function TerminalSession({
   onCwdChangeRef.current = onCwdChange;
   const onExitCodeRef = useRef(onExitCode);
   onExitCodeRef.current = onExitCode;
+  const openFileAtRef = useRef(openFileAt);
+  openFileAtRef.current = openFileAt;
+  const liveCwdRef = useRef<string | null>(cwd ?? null);
+  useEffect(() => {
+    if (cwd) liveCwdRef.current = cwd;
+  }, [cwd]);
   const commandLinesRef = useRef<number[]>([]);
   const commandOutputRef = useRef("");
   const unmountTimerRef = useRef<number | null>(null);
@@ -137,6 +146,7 @@ function TerminalSession({
         path = path.slice(1);
       }
       if (path) {
+        liveCwdRef.current = path;
         onCwdChangeRef.current?.(path);
       }
       return true;
@@ -162,7 +172,10 @@ function TerminalSession({
           } catch {
             /* keep */
           }
-          if (p) onCwdChangeRef.current?.(p);
+          if (p) {
+            liveCwdRef.current = p;
+            onCwdChangeRef.current?.(p);
+          }
         }
       }
       return true;
@@ -182,6 +195,64 @@ function TerminalSession({
         onExitCodeRef.current?.(Number.isNaN(exit) ? null : exit);
       }
       return true;
+    });
+
+    const linkProvider = term.registerLinkProvider({
+      provideLinks(bufferLineNumber, callback) {
+        const line = term.buffer.active.getLine(bufferLineNumber - 1);
+        if (!line) {
+          callback(undefined);
+          return;
+        }
+        const text = line.translateToString(true);
+        const linkRegex =
+          /(?:https?:\/\/[^\s"'`<>]+)|(?:(?:[a-zA-Z]:[\\/][^\s:"'<>]+|(?:\.{1,2}[\\/]|[a-zA-Z0-9_.-]+[\\/])[^\s:"'<>]+|[a-zA-Z0-9_.-]+\.[a-zA-Z0-9]+)(?::(\d+))?(?::(\d+))?)/g;
+        const links: {
+          range: { start: { x: number; y: number }; end: { x: number; y: number } };
+          text: string;
+          activate: (event: MouseEvent, text: string) => void;
+        }[] = [];
+        let m: RegExpExecArray | null;
+        while ((m = linkRegex.exec(text)) !== null) {
+          const matchText = m[0];
+          const startIndex = m.index;
+          const endIndex = linkRegex.lastIndex;
+          const lineNum = m[1] ? parseInt(m[1], 10) : 1;
+          const colNum = m[2] ? parseInt(m[2], 10) : 1;
+
+          links.push({
+            range: {
+              start: { x: startIndex + 1, y: bufferLineNumber },
+              end: { x: endIndex, y: bufferLineNumber },
+            },
+            text: matchText,
+            activate: (_event, raw) => {
+              if (raw.startsWith("http://") || raw.startsWith("https://")) {
+                void openUrl(raw);
+                return;
+              }
+              const colonIdx = raw.indexOf(":");
+              let rawPath =
+                colonIdx >= 0 && !/^[a-zA-Z]:[\\/]/.test(raw)
+                  ? raw.slice(0, colonIdx)
+                  : raw;
+              if (/^[a-zA-Z]:[\\/]/.test(raw)) {
+                const secondColon = raw.indexOf(":", 3);
+                if (secondColon >= 0) rawPath = raw.slice(0, secondColon);
+              }
+              const cleanPath = rawPath.replace(/^\.[\\/]/, "");
+              const activeCwd = liveCwdRef.current ?? cwd;
+              let resolved = cleanPath;
+              if (activeCwd && !cleanPath.startsWith("/") && !/^[a-zA-Z]:/.test(cleanPath)) {
+                resolved = joinPath(activeCwd, cleanPath);
+              }
+              void openFileAtRef.current?.(resolved, lineNum, colNum);
+            },
+          });
+          if (m.index === linkRegex.lastIndex) linkRegex.lastIndex++;
+        }
+        callback(links.length > 0 ? links : undefined);
+      },
     });
 
     let unlistenData: (() => void) | undefined;
@@ -364,6 +435,7 @@ function TerminalSession({
       osc7.dispose();
       osc633.dispose();
       osc133.dispose();
+      linkProvider.dispose();
       const id = ptyIdRef.current;
       if (id) {
         void invoke("pty_kill", { id });
@@ -447,7 +519,7 @@ function shellLabel(session: TermSession, index: number): string {
 }
 
 export function TerminalPanel({ open, embedded = false }: Props) {
-  const { rootPath } = useWorkspace();
+  const { rootPath, openFileAt } = useWorkspace();
   const { settings } = useSettings();
   const { theme, extras } = useTheme();
   const appearance = theme === "light" || (theme.startsWith("ext:") &&
@@ -850,7 +922,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
           >
             <TerminalSession
               active={open && visible}
-              cwd={session.cwd ?? rootPath}
+              cwd={session.liveCwd ?? session.cwd ?? rootPath}
               theme={appearance}
               terminalTheme={terminalTheme}
               shell={session.shell}
@@ -871,6 +943,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
                   ),
                 );
               }}
+              openFileAt={openFileAt}
               onCommandDone={
                 session.command
                   ? (text) => {
