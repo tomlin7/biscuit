@@ -236,6 +236,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.228.0** | SCM paste commit message | shipped |
 | **0.229.0** | Restart active terminal from palette | shipped |
 | **0.230.0** | Export AI session from palette | shipped |
+| **0.231.0** | Show Explorer from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
