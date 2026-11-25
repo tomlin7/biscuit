@@ -76,7 +76,7 @@ function ShellChrome() {
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor } = useSettings();
-  const { findInFile, findInSelection, runEditorCommand } = useEditorActions();
+  const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -421,6 +421,7 @@ function ShellChrome() {
       closePalette,
       findInFile,
       findInSelection,
+      replaceInSelection,
       splitEditorRight: () => requestSplitEditor("right"),
       runEditorCommand,
       revealActiveFile: () => {
@@ -483,6 +484,7 @@ function ShellChrome() {
       closePalette,
       findInFile,
       findInSelection,
+      replaceInSelection,
       runEditorCommand,
       revealInExplorer,
       openSearch,

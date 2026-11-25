@@ -375,6 +375,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.findInSelection(),
   },
   {
+    id: "editor.action.startFindReplaceAction.inSelection",
+    title: "Replace in Selection",
+    category: "Edit",
+    run: (ctx) => ctx.replaceInSelection(),
+  },
+  {
     id: "workbench.action.findInFiles",
     title: "Search in Workspace",
     category: "Edit",

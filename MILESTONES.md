@@ -180,6 +180,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.172.0** | Close saved editors | shipped |
 | **0.173.0** | Status bar minimap toggle | shipped |
 | **0.174.0** | SCM stage or unstage on Enter | shipped |
+| **0.175.0** | Replace in selection | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
