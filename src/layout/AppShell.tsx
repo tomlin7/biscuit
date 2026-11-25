@@ -765,6 +765,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("copyAbsolute");
       },
+      gitOpenSelected: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("openSelected");
+      },
     }),
     [
       openFolder,

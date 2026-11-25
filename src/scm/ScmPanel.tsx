@@ -252,6 +252,17 @@ export function ScmPanel({ onBranch }: Props) {
           return joinPath(rootPath, relative);
         });
         void navigator.clipboard.writeText(absolutes.join("\n"));
+      } else if (action === "openSelected") {
+        if (selectedPaths.length === 0 || !rootPath) return;
+        void (async () => {
+          for (const path of selectedPaths) {
+            const relative = path.replace(
+              /\//g,
+              rootPath.includes("\\") ? "\\" : "/",
+            );
+            await openFile(joinPath(rootPath, relative));
+          }
+        })();
       } else void push();
     });
     return () => setScmRemoteListener(null);

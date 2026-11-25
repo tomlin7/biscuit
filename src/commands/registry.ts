@@ -836,4 +836,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCopyAbsolutePaths(),
   },
+  {
+    id: "git.openSelected",
+    title: "Git: Open Selected",
+    category: "Git",
+    run: (ctx) => ctx.gitOpenSelected(),
+  },
 ];

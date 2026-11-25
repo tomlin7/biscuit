@@ -139,9 +139,9 @@ export type CommandContext = {
   revealActiveParentInExplorer: () => void;
   gitCopyRelativePaths: () => void;
   gitCopyAbsolutePaths: () => void;
- cycleAiRequestTimeout: () => void;
- gitSelectAll: () => void;
-  gitDeselectAll: () => void;
+  gitOpenSelected: () => void;
+ toggleAiStopOnToolError: () => void;
+ gitDeselectAll: () => void;
 };
 
 export type Command = {
