@@ -306,12 +306,31 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             >
               {msg.toolCalls && msg.toolCalls.length > 0 ? (
                 <details className="ai-panel__tools">
-                  <summary>{msg.toolCalls.length} tool calls</summary>
+                  <summary>
+                    {msg.toolCalls.length} tool calls
+                    {msg.toolCalls.some((t) => t.ok === false)
+                      ? ` · ${msg.toolCalls.filter((t) => t.ok === false).length} failed`
+                      : ""}
+                  </summary>
                   <ul>
                     {msg.toolCalls.map((t) => (
-                      <li key={t.id}>
+                      <li key={t.id} className={t.ok === false ? "ai-panel__tool--failed" : undefined}>
                         <code>{t.name}</code>
                         <span>{t.detail}</span>
+                        {t.ok === false ? (
+                          <button
+                            type="button"
+                            className="ai-panel__tool-retry"
+                            disabled={busy}
+                            onClick={() =>
+                              void send(
+                                `Retry the failed \`${t.name}\` tool call. Previous error: ${t.detail}`,
+                              )
+                            }
+                          >
+                            Retry
+                          </button>
+                        ) : null}
                       </li>
                     ))}
                   </ul>

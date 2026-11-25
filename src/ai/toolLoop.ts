@@ -19,6 +19,7 @@ export type ShownToolCall = {
   id: string;
   name: string;
   detail: string;
+  ok: boolean;
 };
 
 export class AgentAbortError extends Error {
@@ -51,7 +52,7 @@ function stringArgs(raw: string): Record<string, string> {
 export async function runToolLoop(input: {
   messages: ModelMessage[];
   complete: (messages: ModelMessage[]) => Promise<{ content: string | null; toolCalls: ModelToolCall[] }>;
-  callTool: (name: string, args: Record<string, string>) => Promise<string>;
+  callTool: (name: string, args: Record<string, string>) => Promise<{ ok: boolean; text: string }>;
   maxRounds?: number;
   signal?: AbortSignal;
 }): Promise<{ content: string; toolCalls: ShownToolCall[] }> {
@@ -96,9 +97,9 @@ export async function runToolLoop(input: {
       if (input.signal?.aborted) {
         throw new AgentAbortError(lastPartial, shown);
       }
-      let text: string;
+      let outcome: { ok: boolean; text: string };
       try {
-        text = await input.callTool(call.name, stringArgs(call.arguments));
+        outcome = await input.callTool(call.name, stringArgs(call.arguments));
       } catch (err) {
         if (
           (err instanceof DOMException && err.name === "AbortError") ||
@@ -109,8 +110,17 @@ export async function runToolLoop(input: {
         }
         throw err;
       }
-      shown.push({ id: call.id, name: call.name, detail: text.slice(0, 240) });
-      messages.push({ role: "tool", tool_call_id: call.id, content: text });
+      shown.push({
+        id: call.id,
+        name: call.name,
+        detail: outcome.text.slice(0, 240),
+        ok: outcome.ok,
+      });
+      messages.push({
+        role: "tool",
+        tool_call_id: call.id,
+        content: outcome.ok ? outcome.text : `Error: ${outcome.text}`,
+      });
     }
   }
   return { content: "Stopped after 8 tool rounds.", toolCalls: shown };

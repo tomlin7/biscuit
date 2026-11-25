@@ -20,7 +20,7 @@ export type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
   createdAt: number;
-  toolCalls?: Array<{ id: string; name: string; detail: string }>;
+  toolCalls?: Array<{ id: string; name: string; detail: string; ok?: boolean }>;
 };
 
 export type ChatSession = {
@@ -406,7 +406,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
                 text: workspace.document?.value ?? null,
               },
             );
-            return outcome.text;
+            return outcome;
           },
         });
 
