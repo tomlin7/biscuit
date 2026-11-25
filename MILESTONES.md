@@ -62,6 +62,8 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.54.0** | Split editor shows a second open file | shipped |
 | **0.55.0** | Dismiss one notification from the bell list | shipped |
 | **0.56.0** | Built-in Gruvbox and Catppuccin themes | shipped |
+| **0.57.0** | Contributed languages skip TypeScript problems | shipped |
+| **0.58.0** | Outline uses text scan for contributed languages | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
