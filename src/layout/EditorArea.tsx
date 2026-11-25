@@ -114,6 +114,11 @@ export function EditorArea() {
 
   useEffect(() => {
     setSplitEditorListener((mode) => {
+      if (mode === "close") {
+        setSplit(false);
+        setSecondaryPath(null);
+        return;
+      }
       if (!activePath) return;
       if (mode === "right") {
         setSplit(true);

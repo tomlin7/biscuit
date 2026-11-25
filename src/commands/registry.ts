@@ -368,6 +368,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.splitEditorRight(),
   },
   {
+    id: "workbench.action.joinEditorGroup",
+    title: "Close Editor Split",
+    category: "View",
+    run: (ctx) => ctx.closeEditorGroup(),
+  },
+  {
     id: "actions.find",
     title: "Find in File",
     category: "Edit",

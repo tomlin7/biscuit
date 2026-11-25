@@ -1,4 +1,4 @@
-type SplitMode = "toggle" | "right";
+type SplitMode = "toggle" | "right" | "close";
 
 type Listener = (mode: SplitMode) => void;
 

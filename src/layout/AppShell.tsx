@@ -430,6 +430,7 @@ function ShellChrome() {
       findInSelection,
       replaceInSelection,
       splitEditorRight: () => requestSplitEditor("right"),
+      closeEditorGroup: () => requestSplitEditor("close"),
       runEditorCommand,
       revealActiveFile: () => {
         if (activePath) void revealInExplorer(activePath);
