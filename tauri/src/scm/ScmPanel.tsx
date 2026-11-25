@@ -411,7 +411,9 @@ export function ScmPanel({ onBranch }: Props) {
         void handleCherryPickContinue();
       } else if (action === "cherryPickAbort") {
         void handleCherryPickAbort();
-      } else void push();
+      } else if (action === "push") {
+        void push();
+      }
     });
     return () => setScmRemoteListener(null);
   });
@@ -1703,6 +1705,10 @@ export function ScmPanel({ onBranch }: Props) {
         <div
           className="scm-panel__modal-overlay"
           onClick={() => setShowRebaseDialog(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setShowRebaseDialog(false);
+          }}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-labelledby="scm-rebase-title"
@@ -1736,9 +1742,14 @@ export function ScmPanel({ onBranch }: Props) {
                     id="scm-rebase-upstream"
                     type="text"
                     className="scm-panel__modal-input"
-                    placeholder="Branch or commit (e.g. main, HEAD~3)"
+                    placeholder="Branch or commit (e.g. main, HEAD~3, --root)"
                     value={rebaseUpstream}
                     onChange={(e) => setRebaseUpstream(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && rebaseUpstream.trim() && !rebaseLoading) {
+                        void loadRebaseTodos(rebaseUpstream);
+                      }
+                    }}
                   />
                   <button
                     type="button"
@@ -1883,6 +1894,10 @@ export function ScmPanel({ onBranch }: Props) {
         <div
           className="scm-panel__modal-overlay"
           onClick={() => setShowCherryPickDialog(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setShowCherryPickDialog(false);
+          }}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-labelledby="scm-cherry-pick-title"
@@ -1969,6 +1984,11 @@ export function ScmPanel({ onBranch }: Props) {
                   placeholder="e.g. 7a4266f or full commit SHA"
                   value={cherryPickCommitSha}
                   onChange={(e) => setCherryPickCommitSha(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && cherryPickCommitSha.trim() && !acting) {
+                      void handleCherryPickSubmit();
+                    }
+                  }}
                 />
               </div>
 

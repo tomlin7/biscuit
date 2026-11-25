@@ -326,6 +326,21 @@ describe("Tauri invoke wrappers for rebase and cherry-pick", () => {
         cmd: "git_cherry_pick_abort",
         args: { root: "/repo" },
       });
+
+      // Test --root upstream handling
+      const rootTodos = await fetchRebaseTodo("/repo", "--root");
+      expect(rootTodos).toHaveLength(3);
+      expect(calls[10]).toEqual({
+        cmd: "git_rebase_todo",
+        args: { root: "/repo", upstream: "--root" },
+      });
+
+      const rootStart = await startRebase("/repo", "--root", sampleItems);
+      expect(rootStart.success).toBe(true);
+      expect(calls[11]).toEqual({
+        cmd: "git_rebase_start",
+        args: { root: "/repo", upstream: "--root", items: sampleItems },
+      });
     } finally {
       if (originalWindow === undefined) {
         delete (globalThis as any).window;
