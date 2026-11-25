@@ -196,6 +196,8 @@ export type CommandContext = {
   openSidebar: () => void;
   openBottomPanel: () => void;
   clearNotifications: () => void;
+  increaseFontSize: () => void;
+  decreaseFontSize: () => void;
 };
 
 export type Command = {

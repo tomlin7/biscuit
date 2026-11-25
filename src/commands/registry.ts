@@ -1178,4 +1178,16 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.clearNotifications(),
   },
+  {
+    id: "editor.action.fontZoomIn",
+    title: "Increase Editor Font Size",
+    category: "View",
+    run: (ctx) => ctx.increaseFontSize(),
+  },
+  {
+    id: "editor.action.fontZoomOut",
+    title: "Decrease Editor Font Size",
+    category: "View",
+    run: (ctx) => ctx.decreaseFontSize(),
+  },
 ];

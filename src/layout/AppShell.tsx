@@ -1158,6 +1158,16 @@ function ShellChrome() {
       clearNotifications: () => {
         clearNotificationsList();
       },
+      increaseFontSize: () => {
+        updateEditor({
+          fontSize: Math.min(32, settings.editor.fontSize + 1),
+        });
+      },
+      decreaseFontSize: () => {
+        updateEditor({
+          fontSize: Math.max(8, settings.editor.fontSize - 1),
+        });
+      },
     }),
     [
       openFolder,
