@@ -39,13 +39,29 @@ export function ProblemsPanel() {
   }, [problems, severityFilter]);
 
   const groups = useMemo(() => {
+    const rank = (severity: string) => {
+      if (severity === "error") return 0;
+      if (severity === "warning") return 1;
+      if (severity === "info") return 2;
+      return 3;
+    };
     const map = new Map<string, typeof filtered>();
     for (const problem of filtered) {
       const list = map.get(problem.path) ?? [];
       list.push(problem);
       map.set(problem.path, list);
     }
-    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+    return [...map.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([path, items]) => [
+        path,
+        [...items].sort((left, right) => {
+          const bySev = rank(left.severity) - rank(right.severity);
+          if (bySev !== 0) return bySev;
+          if (left.line !== right.line) return left.line - right.line;
+          return left.column - right.column;
+        }),
+      ] as const);
   }, [filtered]);
 
   const toggle = (path: string) => {
