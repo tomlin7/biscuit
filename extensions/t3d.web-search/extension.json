@@ -3,6 +3,7 @@
   "name": "Web Search",
   "version": "1.0.0",
   "description": "Search Google and GitHub issues/pull requests directly from the editor.",
+  "permissions": ["network", "workspace", "scm"],
   "main": "main.js",
   "activationEvents": [
     "onCommand:workbench.action.searchGoogle",

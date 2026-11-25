@@ -29,6 +29,6 @@
     "version": "1.0.0",
     "description": "Search Google and GitHub issues/pull requests directly from the editor.",
     "downloadUrl": "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/t3d.web-search.zip",
-    "sha256": "a54c63ce708f40d98b528c8ba4500af1800a5d7c854f3dc021e3c71721822861"
+    "sha256": "2adbed8f1055f70828880057572c088c8979cee1e99f7fe627bdf35c34253980"
   }
 ]

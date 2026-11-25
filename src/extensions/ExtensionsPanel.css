@@ -376,3 +376,25 @@
   gap: 8px;
   padding: 8px;
 }
+
+.ext-panel__perms {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+.ext-panel__perms-label {
+  color: var(--fg-dim);
+  font-weight: 500;
+}
+
+.ext-panel__perm-chip {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--bg-surface, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-muted);
+}

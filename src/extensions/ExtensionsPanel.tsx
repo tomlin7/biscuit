@@ -262,6 +262,17 @@ export function ExtensionsPanel() {
                         {ext.description || "No description provided."}
                       </p>
 
+                      {ext.permissions && ext.permissions.length > 0 && (
+                        <div className="ext-panel__perms">
+                          <span className="ext-panel__perms-label">Permissions:</span>
+                          {ext.permissions.map((p) => (
+                            <span key={p} className="ext-panel__perm-chip">
+                              {p}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="ext-panel__card-footer">
                         {status && (
                           <span

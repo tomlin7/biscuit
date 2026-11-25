@@ -447,7 +447,21 @@ class ExtensionHost {
     const services = this.services;
     if (!services) throw new Error("The editor is not ready yet");
     const p = (params ?? {}) as Record<string, unknown>;
-    const name = this.manifests.find((item) => item.id === extensionId)?.name ?? extensionId;
+    const manifest = this.manifests.find((item) => item.id === extensionId);
+    const name = manifest?.name ?? extensionId;
+    const permissions = new Set((manifest?.permissions ?? []).map((s) => s.toLowerCase()));
+
+    const checkPermission = (perm: string, alt?: string) => {
+      if (manifest?.permissions && Array.isArray(manifest.permissions)) {
+        const allowed = permissions.has(perm.toLowerCase()) || (alt ? permissions.has(alt.toLowerCase()) : false);
+        if (!allowed) {
+          const msg = `Extension '${name}' does not have '${perm}' permission declared in its manifest`;
+          appendLog(`[${extensionId}] Permission denied: ${msg}`);
+          throw new Error(msg);
+        }
+      }
+    };
+
     switch (method) {
       case "window.showMessage":
         services.showMessage(p.level as MessageLevel, String(p.message ?? ""), name);
@@ -468,6 +482,7 @@ class ExtensionHost {
         return services.executeCoreCommand(command, args);
       }
       case "env.openExternal": {
+        checkPermission("network", "env");
         const url = String(p.url ?? "");
         if (!/^https?:\/\//i.test(url) && !/^mailto:/i.test(url)) {
           throw new Error("openExternal only accepts http, https, and mailto URLs");
@@ -475,10 +490,13 @@ class ExtensionHost {
         return services.openExternal(url);
       }
       case "env.writeClipboard":
+        checkPermission("clipboard", "env");
         return services.writeClipboard(String(p.text ?? ""));
       case "workspace.getState":
+        checkPermission("workspace");
         return services.getWorkspaceState();
       case "scm.getRemoteUrl":
+        checkPermission("scm", "network");
         return services.getRemoteUrl();
       default:
         throw new Error(`Unknown extension API method ${String(method)}`);

@@ -18,6 +18,7 @@ export type ExtensionManifest = {
   description: string;
   enabled: boolean;
   path: string;
+  permissions?: string[];
   contributes?: {
     commands?: Array<{ id: string; title: string; runs?: string }>;
     themes?: Array<{
