@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditorNS } from "monaco-editor";
 import * as monacoApi from "monaco-editor";
@@ -16,6 +16,10 @@ import { detectIndentFromText } from "./detectIndent";
 import { parseRulers } from "./rulers";
 import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
 import { registerTsHoverProviders } from "../lsp/tsHover";
+import { StickyOutline } from "./StickyOutline";
+import { symbolsForFile } from "../lsp/OutlinePanel";
+import type { OutlineSymbol } from "../lsp/outlineScan";
+import { // registerCodeLensProvider } from "../lsp/codeLens";
 import "./MonacoEditor.css";
 
 type Props = {
@@ -66,6 +70,31 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   tabsRef.current = tabs;
   const setValueAtRef = useRef(setValueAt);
   setValueAtRef.current = setValueAt;
+
+  const [symbols, setSymbols] = useState<OutlineSymbol[]>([]);
+
+  useEffect(() => {
+    const disp = // registerCodeLensProvider();
+    return () => disp?.dispose();
+  }, []);
+
+  useEffect(() => {
+    if (!doc || !settings.editor.stickyOutline) {
+      setSymbols([]);
+      return;
+    }
+    let cancelled = false;
+    void symbolsForFile(doc.path, doc.value, doc.language)
+      .then((res) => {
+        if (!cancelled) setSymbols(res);
+      })
+      .catch(() => {
+        if (!cancelled) setSymbols([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [doc?.path, doc?.value, doc?.language, settings.editor.stickyOutline]);
 
   useEffect(() => {
     const ed = editorRef.current;
@@ -126,6 +155,27 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   }, [theme, extras]);
 
   useEffect(() => {
+    if (settings.editor.inlayHints) {
+      typescript.typescriptDefaults.setInlayHintsOptions({
+        includeInlayParameterNameHints: "all",
+        includeInlayParameterNameHintsWhenArgumentMatchesName: false,
+        includeInlayFunctionParameterTypeHints: true,
+        includeInlayVariableTypeHints: true,
+        includeInlayPropertyDeclarationTypeHints: true,
+        includeInlayFunctionLikeReturnTypeHints: true,
+        includeInlayEnumMemberValueHints: true,
+      });
+      typescript.javascriptDefaults.setInlayHintsOptions({
+        includeInlayParameterNameHints: "all",
+        includeInlayParameterNameHintsWhenArgumentMatchesName: false,
+        includeInlayFunctionParameterTypeHints: true,
+        includeInlayVariableTypeHints: true,
+        includeInlayPropertyDeclarationTypeHints: true,
+        includeInlayFunctionLikeReturnTypeHints: true,
+        includeInlayEnumMemberValueHints: true,
+      });
+    }
+
     editorRef.current?.updateOptions({
       minimap: { enabled: settings.editor.minimap, scale: 1 },
       stickyScroll: { enabled: settings.editor.stickyScroll },
@@ -564,47 +614,62 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
 
   return (
     <div className="monaco-editor-host">
-      <Editor
-        path={doc.path}
-        theme={monacoThemeId(theme, extras)}
-        language={doc.language}
-        value={doc.value}
-        beforeMount={handleBeforeMount}
-        onMount={handleMount}
-        onChange={(next) => {
-          if (path) setValueAt(path, next ?? "");
-          else setValue(next ?? "");
-        }}
-        loading={<div className="monaco-editor-host__loading">Loading editor…</div>}
-        options={{
-          fontFamily: settings.editor.fontFamily,
-          fontSize: settings.editor.fontSize,
-          lineHeight: Math.round(settings.editor.fontSize * 1.55),
-          minimap: { enabled: settings.editor.minimap, scale: 1 },
-          stickyScroll: { enabled: settings.editor.stickyScroll },
-          wordWrap: settings.editor.wordWrap ? "bounded" : "off",
-          wordWrapColumn: settings.editor.wordWrapColumn,
-          wrappingStrategy: "advanced",
-          renderWhitespace: settings.editor.renderWhitespace ? "all" : "none",
-          cursorStyle: settings.editor.cursorStyle,
-          rulers: parseRulers(settings.editor.rulers),
-          lineNumbers: settings.editor.lineNumbers
-        ? settings.editor.relativeLineNumbers
-          ? "relative"
-          : "on"
-        : "off",
-          scrollBeyondLastLine: false,
-          automaticLayout: true,
-          tabSize: settings.editor.tabSize,
-          renderLineHighlight: "line",
-          glyphMargin: true,
-          padding: { top: 8 },
-          scrollbar: {
-            verticalScrollbarSize: 10,
-            horizontalScrollbarSize: 10,
-          },
-        }}
-      />
+      <div className="monaco-editor-host__body">
+        <Editor
+          path={doc.path}
+          theme={monacoThemeId(theme, extras)}
+          language={doc.language}
+          value={doc.value}
+          beforeMount={handleBeforeMount}
+          onMount={handleMount}
+          onChange={(next) => {
+            if (path) setValueAt(path, next ?? "");
+            else setValue(next ?? "");
+          }}
+          loading={<div className="monaco-editor-host__loading">Loading editor…</div>}
+          options={{
+            fontFamily: settings.editor.fontFamily,
+            fontSize: settings.editor.fontSize,
+            lineHeight: Math.round(settings.editor.fontSize * 1.55),
+            minimap: { enabled: settings.editor.minimap, scale: 1 },
+            stickyScroll: { enabled: settings.editor.stickyScroll },
+            wordWrap: settings.editor.wordWrap ? "bounded" : "off",
+            wordWrapColumn: settings.editor.wordWrapColumn,
+            wrappingStrategy: "advanced",
+            renderWhitespace: settings.editor.renderWhitespace ? "all" : "none",
+            cursorStyle: settings.editor.cursorStyle,
+            rulers: parseRulers(settings.editor.rulers),
+            lineNumbers: settings.editor.lineNumbers
+          ? settings.editor.relativeLineNumbers
+            ? "relative"
+            : "on"
+          : "off",
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            tabSize: settings.editor.tabSize,
+            renderLineHighlight: "line",
+            glyphMargin: true,
+            padding: { top: 8 },
+            scrollbar: {
+              verticalScrollbarSize: 10,
+              horizontalScrollbarSize: 10,
+            },
+          }}
+        />
+        {settings.editor.stickyOutline && symbols.length > 0 && (
+          <StickyOutline
+            symbols={symbols}
+            cursorLine={doc.cursorLine ?? 1}
+            onSelect={(line) => {
+              const ed = editorRef.current;
+              if (!ed) return;
+              ed.revealLineInCenter(line);
+              ed.setPosition({ lineNumber: line, column: 1 });
+              ed.focus();
+            }}
+          />
+        )}
+      </div>
       <div
         ref={vimStatusRef}
         className="monaco-editor-host__vim-status"

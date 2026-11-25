@@ -31,6 +31,8 @@ export type EditorSettings = {
   /** When line numbers are on, show relative numbers instead of absolute. */
   relativeLineNumbers: boolean;
   stickyScroll: boolean;
+  /** Sticky condensed outline beside the minimap. */
+  stickyOutline: boolean;
   /** 0 = off; otherwise idle milliseconds before auto-save. */
   autoSaveMs: number;
   /** Integrated terminal font size. */
@@ -84,6 +86,7 @@ const DEFAULTS: AppSettings = {
     lineNumbers: true,
     relativeLineNumbers: false,
     stickyScroll: true,
+    stickyOutline: false,
     autoSaveMs: 0,
     terminalFontSize: 13,
   },

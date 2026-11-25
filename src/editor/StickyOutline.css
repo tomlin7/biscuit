@@ -1,0 +1,84 @@
+.sticky-outline {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-island);
+  border-left: 1px solid var(--border-subtle);
+  overflow: hidden;
+  user-select: none;
+  z-index: 5;
+}
+
+.sticky-outline__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-dim);
+  background: var(--bg-island-elevated, var(--bg-island));
+}
+
+.sticky-outline__badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--bg-hover);
+  color: var(--fg-dim);
+}
+
+.sticky-outline__list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 3px 0;
+}
+
+.sticky-outline__row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+  background: transparent;
+  border: none;
+  color: var(--fg);
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.1s ease;
+}
+
+.sticky-outline__row:hover {
+  background: var(--bg-hover);
+}
+
+.sticky-outline__row--active {
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+  color: var(--fg-bright, #fff);
+}
+
+.sticky-outline__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sticky-outline__line {
+  font-size: 10px;
+  color: var(--fg-dim);
+  flex-shrink: 0;
+  margin-left: auto;
+}

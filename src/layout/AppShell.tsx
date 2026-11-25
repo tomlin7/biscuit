@@ -675,6 +675,11 @@ function ShellChrome() {
       toggleMinimap: () => updateEditor({ minimap: !settings.editor.minimap }),
       toggleStickyScroll: () =>
         updateEditor({ stickyScroll: !settings.editor.stickyScroll }),
+      toggleStickyOutline: () => {
+        const next = !settings.editor.stickyOutline;
+        updateEditor({ stickyOutline: next });
+        notify("settings", `Sticky outline ${next ? "enabled" : "disabled"}`);
+      },
       toggleWordWrap: () =>
         updateEditor({ wordWrap: !settings.editor.wordWrap }),
       toggleRenderWhitespace: () =>
@@ -2307,6 +2312,7 @@ function ShellChrome() {
       toggleTheme,
       settings.editor.minimap,
       settings.editor.stickyScroll,
+      settings.editor.stickyOutline,
       settings.editor.wordWrap,
       settings.editor.renderWhitespace,
       settings.editor.lineNumbers,

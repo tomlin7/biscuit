@@ -328,6 +328,14 @@ export function SettingsPanel({
                       onChange={(e) => updateEditor({ stickyScroll: e.target.checked })}
                     />
                   </label>
+                  <label className="settings-row settings-row--check">
+                    <span>Sticky outline (minimap)</span>
+                    <input
+                      type="checkbox"
+                      checked={settings.editor.stickyOutline}
+                      onChange={(e) => updateEditor({ stickyOutline: e.target.checked })}
+                    />
+                  </label>
                 </section>
               )}
 

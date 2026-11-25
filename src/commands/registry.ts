@@ -249,6 +249,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleStickyScroll(),
   },
   {
+    id: "editor.action.toggleStickyOutline",
+    title: "Toggle Sticky Outline",
+    category: "View",
+    run: (ctx) => ctx.toggleStickyOutline(),
+  },
+  {
     id: "editor.action.formatDocument",
     title: "Format Document",
     category: "Edit",

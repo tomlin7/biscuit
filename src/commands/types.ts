@@ -27,6 +27,7 @@ export type CommandContext = {
   toggleTheme: () => void;
   toggleMinimap: () => void;
   toggleStickyScroll: () => void;
+  toggleStickyOutline: () => void;
   toggleWordWrap: () => void;
   toggleRenderWhitespace: () => void;
   toggleRelativeLineNumbers: () => void;
