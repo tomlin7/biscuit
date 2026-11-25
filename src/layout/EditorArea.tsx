@@ -242,6 +242,28 @@ export function EditorArea() {
                 >
                   Reveal in Explorer
                 </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(crumbMenu.path);
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Copy Path
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(
+                      relativeToRoot(crumbRoot, crumbMenu.path),
+                    );
+                    setCrumbMenu(null);
+                  }}
+                >
+                  Copy Relative Path
+                </button>
                 {(crumbMenu.siblings ?? []).slice(0, 24).map((sibling) => (
                   <button
                     key={sibling.path}
