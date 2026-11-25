@@ -183,6 +183,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("sortLines"),
   },
   {
+    id: "editor.action.duplicateSelection",
+    title: "Duplicate Selection",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("duplicateSelection"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

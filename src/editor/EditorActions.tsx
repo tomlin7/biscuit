@@ -56,7 +56,8 @@ export type EditorCommand =
   | "lowercase"
   | "blockComment"
   | "joinLines"
-  | "sortLines";
+  | "sortLines"
+  | "duplicateSelection";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -161,6 +162,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "sortLines":
         handle.trigger("editor.action.sortLinesAscending");
+        break;
+      case "duplicateSelection":
+        handle.trigger("editor.action.duplicateSelection");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";
