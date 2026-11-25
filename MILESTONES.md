@@ -281,6 +281,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.273.0** | Git copy relative paths from palette | shipped |
 | **0.274.0** | Git copy absolute paths from palette | shipped |
 | **0.275.0** | Git open selected changes from palette | shipped |
+| **0.276.0** | Cycle AI request timeout from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

@@ -770,6 +770,13 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("openSelected");
       },
+      cycleAiRequestTimeout: () => {
+        const order = [0, 30, 60, 120];
+        const idx = order.indexOf(aiSettings.requestTimeoutSec);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 0;
+        setSettings({ requestTimeoutSec: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -826,6 +833,7 @@ function ShellChrome() {
       newChat,
       setSettings,
       aiSettings.maxToolRounds,
+      aiSettings.requestTimeoutSec,
       setAiOpen,
       setSidebarOpen,
       toggleBottom,

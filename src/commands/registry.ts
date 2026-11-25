@@ -842,4 +842,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitOpenSelected(),
   },
+  {
+    id: "workbench.action.cycleAiRequestTimeout",
+    title: "Cycle AI Request Timeout",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiRequestTimeout(),
+  },
 ];
