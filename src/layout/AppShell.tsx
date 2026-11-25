@@ -12,6 +12,8 @@ import { DiagnosticsProvider } from "../lsp/DiagnosticsContext";
 import { AiProvider } from "../ai/AiContext";
 import { AiPanel } from "../ai/AiPanel";
 import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsContext";
+import { collectContributions, registerExtraLanguages } from "../extensions/contributions";
+import * as monaco from "monaco-editor";
 import { DebugProvider } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
@@ -52,10 +54,21 @@ function ShellChrome() {
     explorerNonce,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
-  const { toggleTheme } = useTheme();
+  const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor } = useSettings();
   const { findInFile, runEditorCommand } = useEditorActions();
   const { extensions } = useExtensions();
+  useEffect(() => {
+    const collected = collectContributions(extensions);
+    setExtras(collected.themes);
+    registerExtraLanguages(collected.languages, (language) => {
+      monaco.languages.register({
+        id: language.id,
+        aliases: language.aliases,
+        extensions: language.extensions,
+      });
+    });
+  }, [extensions, setExtras]);
   const {
     sidebarWidth,
     aiWidth,

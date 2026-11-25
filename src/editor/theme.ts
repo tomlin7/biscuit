@@ -1,11 +1,32 @@
 import type { Monaco } from "@monaco-editor/react";
-import type { ThemeMode } from "../theme/ThemeContext";
+import type { ExtraTheme } from "../extensions/contributions";
 
 export const T3D_THEME_DARK = "t3d-dark";
 export const T3D_THEME_LIGHT = "t3d-light";
 
-export function monacoThemeId(theme: ThemeMode): string {
-  return theme === "light" ? T3D_THEME_LIGHT : T3D_THEME_DARK;
+export function monacoThemeId(theme: string, extras: ExtraTheme[] = []): string {
+  if (theme === "light") return T3D_THEME_LIGHT;
+  if (theme.startsWith("ext:")) {
+    const id = theme.slice(4);
+    if (extras.some((item) => item.id === id)) return `t3d-ext-${id}`;
+  }
+  return T3D_THEME_DARK;
+}
+
+export function defineExtraThemes(monaco: Monaco, extras: ExtraTheme[]) {
+  for (const extra of extras) {
+    const light = extra.mode === "light";
+    monaco.editor.defineTheme(`t3d-ext-${extra.id}`, {
+      base: light ? "vs" : "vs-dark",
+      inherit: true,
+      rules: [],
+      colors: {
+        "editor.background": extra.colors.bg || (light ? "#ffffff" : "#141414"),
+        "editor.foreground": extra.colors.fg || (light ? "#1a1a1a" : "#e8e8e8"),
+        "editor.selectionBackground": extra.colors.accent || (light ? "#add6ff" : "#264f78"),
+      },
+    });
+  }
 }
 
 export function defineT3dThemes(monaco: Monaco) {

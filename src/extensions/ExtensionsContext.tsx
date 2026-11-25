@@ -19,6 +19,13 @@ export type ExtensionManifest = {
   path: string;
   contributes?: {
     commands?: Array<{ id: string; title: string }>;
+    themes?: Array<{
+      id: string;
+      label: string;
+      mode: string;
+      colors: { bg: string; fg: string; accent: string };
+    }>;
+    languages?: Array<{ id: string; aliases: string[]; extensions: string[] }>;
   };
 };
 

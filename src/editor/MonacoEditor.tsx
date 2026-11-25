@@ -11,7 +11,7 @@ import { referencesAt, renamePlan } from "../lsp/tsLocations";
 import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { editorConfigFor } from "./editorconfig";
-import { defineT3dThemes, monacoThemeId } from "./theme";
+import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
 import "./MonacoEditor.css";
 
 type Props = {
@@ -37,7 +37,7 @@ export function MonacoEditor({ path, primary = true }: Props) {
   const doc = path
     ? (tabs.find((t) => t.path === path) ?? null)
     : activeDoc;
-  const { theme } = useTheme();
+  const { theme, extras } = useTheme();
   const { registerFindHandler, registerEditor, showPeek, showReferences } = useEditorActions();
   const showPeekRef = useRef(showPeek);
   showPeekRef.current = showPeek;
@@ -78,9 +78,10 @@ export function MonacoEditor({ path, primary = true }: Props) {
 
   useEffect(() => {
     if (monacoRef.current) {
-      monacoRef.current.editor.setTheme(monacoThemeId(theme));
+      defineExtraThemes(monacoRef.current, extras);
+      monacoRef.current.editor.setTheme(monacoThemeId(theme, extras));
     }
-  }, [theme]);
+  }, [theme, extras]);
 
   useEffect(() => {
     editorRef.current?.updateOptions({
@@ -332,7 +333,8 @@ export function MonacoEditor({ path, primary = true }: Props) {
   const handleMount: OnMount = (ed, monaco) => {
     editorRef.current = ed;
     monacoRef.current = monaco;
-    monaco.editor.setTheme(monacoThemeId(theme));
+    defineExtraThemes(monaco, extras);
+    monaco.editor.setTheme(monacoThemeId(theme, extras));
     const relayout = () => ed.layout();
     requestAnimationFrame(relayout);
     window.setTimeout(relayout, 50);
@@ -378,7 +380,7 @@ export function MonacoEditor({ path, primary = true }: Props) {
     <div className="monaco-editor-host">
       <Editor
         path={doc.path}
-        theme={monacoThemeId(theme)}
+        theme={monacoThemeId(theme, extras)}
         language={doc.language}
         value={doc.value}
         beforeMount={handleBeforeMount}

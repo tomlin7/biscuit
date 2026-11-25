@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function SettingsPanel({ open, onClose }: Props) {
-  const { theme, setTheme } = useTheme();
+  const { theme, extras, setTheme } = useTheme();
   const { settings, updateEditor, reset } = useSettings();
   const { settings: ai, setSettings: setAi } = useAi();
 
@@ -31,12 +31,14 @@ export function SettingsPanel({ open, onClose }: Props) {
             <h3>Appearance</h3>
             <label className="settings-row">
               <span>Theme</span>
-              <select
-                value={theme}
-                onChange={(e) => setTheme(e.target.value as "dark" | "light")}
-              >
+              <select value={theme} onChange={(e) => setTheme(e.target.value)}>
                 <option value="dark">Dark</option>
                 <option value="light">Light</option>
+                {extras.map((extra) => (
+                  <option key={extra.id} value={`ext:${extra.id}`}>
+                    {extra.label}
+                  </option>
+                ))}
               </select>
             </label>
           </section>

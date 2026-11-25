@@ -1,3 +1,5 @@
+import { extraLanguageFor } from "../extensions/contributions";
+
 const SKIP_DIR_NAMES = new Set([
   ".git",
   ".svn",
@@ -50,6 +52,8 @@ export function joinPath(parent: string, child: string): string {
 }
 
 export function languageFromPath(path: string): string {
+  const extra = extraLanguageFor(path);
+  if (extra) return extra;
   const name = basename(path).toLowerCase();
   const dot = name.lastIndexOf(".");
   const ext = dot >= 0 ? name.slice(dot + 1) : "";

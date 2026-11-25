@@ -3,10 +3,41 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::{AppHandle, Manager};
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ExtensionThemeColors {
+    #[serde(default)]
+    pub bg: String,
+    #[serde(default)]
+    pub fg: String,
+    #[serde(default)]
+    pub accent: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExtensionTheme {
+    pub id: String,
+    pub label: String,
+    pub mode: String,
+    pub colors: ExtensionThemeColors,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExtensionLanguage {
+    pub id: String,
+    #[serde(default)]
+    pub aliases: Vec<String>,
+    #[serde(default)]
+    pub extensions: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ExtensionContributes {
     #[serde(default)]
     pub commands: Vec<ExtensionCommand>,
+    #[serde(default)]
+    pub themes: Vec<ExtensionTheme>,
+    #[serde(default)]
+    pub languages: Vec<ExtensionLanguage>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,6 +92,87 @@ fn save_enabled(root: &Path, map: &EnabledMap) -> Result<(), String> {
     fs::write(state_path(root), raw).map_err(|e| e.to_string())
 }
 
+fn string_list(value: Option<&serde_json::Value>) -> Vec<String> {
+    value
+        .and_then(|item| item.as_array())
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(|item| item.as_str().map(|text| text.to_string()))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+fn parse_contributes(value: &serde_json::Value) -> ExtensionContributes {
+    let Some(obj) = value.get("contributes").and_then(|item| item.as_object()) else {
+        return ExtensionContributes::default();
+    };
+    let mut out = ExtensionContributes::default();
+    if let Some(commands) = obj.get("commands").and_then(|item| item.as_array()) {
+        for item in commands {
+            let Some(id) = item.get("id").and_then(|part| part.as_str()).filter(|id| !id.is_empty()) else {
+                continue;
+            };
+            let Some(title) = item.get("title").and_then(|part| part.as_str()) else {
+                continue;
+            };
+            out.commands.push(ExtensionCommand {
+                id: id.to_string(),
+                title: title.to_string(),
+            });
+        }
+    }
+    if let Some(themes) = obj.get("themes").and_then(|item| item.as_array()) {
+        for item in themes {
+            let Some(id) = item.get("id").and_then(|part| part.as_str()).filter(|id| !id.is_empty()) else {
+                continue;
+            };
+            let label = item
+                .get("label")
+                .and_then(|part| part.as_str())
+                .filter(|label| !label.is_empty())
+                .unwrap_or(id);
+            let mode = if item.get("mode").and_then(|part| part.as_str()) == Some("light") {
+                "light"
+            } else {
+                "dark"
+            };
+            let colors = item.get("colors");
+            let color = |key: &str| {
+                colors
+                    .and_then(|entry| entry.get(key))
+                    .and_then(|part| part.as_str())
+                    .unwrap_or("")
+                    .to_string()
+            };
+            out.themes.push(ExtensionTheme {
+                id: id.to_string(),
+                label: label.to_string(),
+                mode: mode.to_string(),
+                colors: ExtensionThemeColors {
+                    bg: color("bg"),
+                    fg: color("fg"),
+                    accent: color("accent"),
+                },
+            });
+        }
+    }
+    if let Some(languages) = obj.get("languages").and_then(|item| item.as_array()) {
+        for item in languages {
+            let Some(id) = item.get("id").and_then(|part| part.as_str()).filter(|id| !id.is_empty()) else {
+                continue;
+            };
+            out.languages.push(ExtensionLanguage {
+                id: id.to_string(),
+                aliases: string_list(item.get("aliases")),
+                extensions: string_list(item.get("extensions")),
+            });
+        }
+    }
+    out
+}
+
 fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManifest> {
     let manifest_path = dir.join("extension.json");
     let raw = fs::read_to_string(manifest_path).ok()?;
@@ -90,10 +202,15 @@ fn read_manifest(dir: &Path, enabled_map: &EnabledMap) -> Option<ExtensionManife
         .and_then(|v| v.as_str())
         .unwrap_or("")
         .to_string();
-    let contributes = value
-        .get("contributes")
-        .cloned()
-        .and_then(|v| serde_json::from_value(v).ok());
+    let parsed = parse_contributes(&value);
+    let contributes = if parsed.commands.is_empty()
+        && parsed.themes.is_empty()
+        && parsed.languages.is_empty()
+    {
+        None
+    } else {
+        Some(parsed)
+    };
     let enabled = enabled_map.enabled.get(&id).copied().unwrap_or(true);
     Some(ExtensionManifest {
         id,
@@ -355,5 +472,25 @@ mod tests {
         let err = scaffold_extension_at(&dir).unwrap_err();
         assert!(err.contains("already exists"), "{err}");
         let _ = fs::remove_dir_all(&parent);
+    }
+
+    #[test]
+    fn skips_a_theme_without_an_id() {
+        let value = serde_json::json!({
+            "contributes": {
+                "commands": [{ "id": "demo.hello", "title": "Hello" }],
+                "themes": [
+                    { "label": "Broken" },
+                    { "id": "moss", "label": "Moss", "mode": "dark", "colors": { "bg": "#123456", "fg": "#eeeeee", "accent": "#22aa66" } }
+                ],
+                "languages": [{ "id": "todo", "aliases": ["Todo"], "extensions": [".todo"] }]
+            }
+        });
+        let parsed = super::parse_contributes(&value);
+        assert_eq!(parsed.commands.len(), 1);
+        assert_eq!(parsed.themes.len(), 1);
+        assert_eq!(parsed.themes[0].id, "moss");
+        assert_eq!(parsed.themes[0].colors.bg, "#123456");
+        assert_eq!(parsed.languages[0].extensions, vec![".todo"]);
     }
 }

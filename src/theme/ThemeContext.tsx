@@ -7,22 +7,26 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type { ExtraTheme } from "../extensions/contributions";
 
 export type ThemeMode = "dark" | "light";
 
 type ThemeState = {
-  theme: ThemeMode;
-  setTheme: (theme: ThemeMode) => void;
+  theme: string;
+  extras: ExtraTheme[];
+  setTheme: (theme: string) => void;
+  setExtras: (themes: ExtraTheme[]) => void;
   toggleTheme: () => void;
 };
 
 const STORAGE_KEY = "t3d.theme";
 const ThemeContext = createContext<ThemeState | null>(null);
 
-function readStoredTheme(): ThemeMode {
+function readStoredTheme(): string {
   try {
     const value = localStorage.getItem(STORAGE_KEY);
     if (value === "light" || value === "dark") return value;
+    if (value?.startsWith("ext:") && value.length > 4) return value;
   } catch {
     /* ignore */
   }
@@ -30,19 +34,35 @@ function readStoredTheme(): ThemeMode {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>(() => readStoredTheme());
+  const [theme, setThemeState] = useState<string>(() => readStoredTheme());
+  const [extras, setExtrasState] = useState<ExtraTheme[]>([]);
+  const [extrasReady, setExtrasReady] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    const extra = extras.find((item) => `ext:${item.id}` === theme);
+    const chrome = extra?.mode ?? (theme === "light" ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", chrome);
     try {
       localStorage.setItem(STORAGE_KEY, theme);
     } catch {
       /* ignore */
     }
-  }, [theme]);
+  }, [theme, extras]);
 
-  const setTheme = useCallback((next: ThemeMode) => {
+  useEffect(() => {
+    if (!extrasReady) return;
+    if (theme.startsWith("ext:") && !extras.some((item) => `ext:${item.id}` === theme)) {
+      setThemeState("dark");
+    }
+  }, [extras, extrasReady, theme]);
+
+  const setTheme = useCallback((next: string) => {
     setThemeState(next);
+  }, []);
+
+  const setExtras = useCallback((next: ExtraTheme[]) => {
+    setExtrasState(next);
+    setExtrasReady(true);
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -50,8 +70,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ theme, setTheme, toggleTheme }),
-    [theme, setTheme, toggleTheme],
+    () => ({ theme, extras, setTheme, setExtras, toggleTheme }),
+    [theme, extras, setTheme, setExtras, toggleTheme],
   );
 
   return (
