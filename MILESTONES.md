@@ -8,8 +8,8 @@ Each row is a shippable `0.x` release. **1.0.0 is future-only.**
 | **0.1.0** | Application shell | shipped |
 | **0.2.0** | Monaco editor engine | shipped |
 | **0.2.1** | Island chrome (Biscuit-like floating panels) | shipped |
-| **0.3.0** | Workspace FS — open folder, explorer tree, open/save files | shipping |
-| **0.4.0** | Editor tabs — multi-file buffers, dirty state, close/reorder | planned |
+| **0.3.0** | Workspace FS — open folder, explorer tree, open/save files | shipped |
+| **0.4.0** | Editor tabs — multi-file buffers, dirty state, close/reorder | shipping |
 | **0.5.0** | Theming polish — light mode, deeper token refinements | planned |
 | **0.6.0** | Command palette + keybindings foundation | planned |
 | **0.7.0** | Find in file / workspace search | planned |
@@ -21,8 +21,7 @@ Each row is a shippable `0.x` release. **1.0.0 is future-only.**
 ## Layout language
 
 Biscuit-style **island** chrome: black canvas, rounded floating panels, gutters,
-explorer + editor. Out-of-scope chrome (AI dock, terminal, SCM) stays out of the
-UI until its milestone.
+explorer + editor. Out-of-scope chrome stays out of the UI until its milestone.
 
 ## Architecture principles
 
@@ -33,4 +32,4 @@ UI until its milestone.
 
 ## Current target
 
-Ship **0.3.0**: open a folder, browse a real file tree, open and save text files.
+Ship **0.4.0**: multi-file tabs with dirty state, close, and drag reorder.

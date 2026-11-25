@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -11,12 +12,14 @@ import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { listDirectory, type TreeNode } from "./fsTree";
 import { basename, isProbablyTextFile, languageFromPath } from "./path";
 
-export type OpenDocument = {
-  path: string | null;
+export type EditorTab = {
+  path: string;
   title: string;
   language: string;
   value: string;
   baseline: string;
+  cursorLine: number;
+  cursorColumn: number;
 };
 
 export type WorkspaceState = {
@@ -26,27 +29,24 @@ export type WorkspaceState = {
   expanded: Set<string>;
   treeError: string | null;
   busy: boolean;
-  document: OpenDocument;
+  tabs: EditorTab[];
+  activePath: string | null;
+  document: EditorTab | null;
   dirty: boolean;
   cursorLine: number;
   cursorColumn: number;
   openFolder: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
+  activateTab: (path: string) => void;
+  closeTab: (path: string) => void;
+  moveTab: (fromPath: string, toPath: string) => void;
   setValue: (value: string) => void;
   setCursor: (line: number, column: number) => void;
   save: () => Promise<void>;
 };
 
 const WorkspaceContext = createContext<WorkspaceState | null>(null);
-
-const EMPTY_DOC: OpenDocument = {
-  path: null,
-  title: "untitled",
-  language: "plaintext",
-  value: "",
-  baseline: "",
-};
 
 function updateTreeNode(
   nodes: TreeNode[],
@@ -65,15 +65,27 @@ function updateTreeNode(
   });
 }
 
+function isDirty(tab: EditorTab): boolean {
+  return tab.value !== tab.baseline;
+}
+
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [rootPath, setRootPath] = useState<string | null>(null);
   const [tree, setTree] = useState<TreeNode[]>([]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [treeError, setTreeError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [document, setDocument] = useState<OpenDocument>(EMPTY_DOC);
-  const [cursorLine, setCursorLine] = useState(1);
-  const [cursorColumn, setCursorColumn] = useState(1);
+  const [tabs, setTabs] = useState<EditorTab[]>([]);
+  const [activePath, setActivePath] = useState<string | null>(null);
+  const tabsRef = useRef(tabs);
+  tabsRef.current = tabs;
+  const activePathRef = useRef(activePath);
+  activePathRef.current = activePath;
+
+  const document = useMemo(
+    () => tabs.find((tab) => tab.path === activePath) ?? null,
+    [tabs, activePath],
+  );
 
   const openFolder = useCallback(async () => {
     const selected = await open({
@@ -93,9 +105,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setRootPath(path);
       setTree(children);
       setExpanded(new Set());
-      setDocument(EMPTY_DOC);
-      setCursorLine(1);
-      setCursorColumn(1);
+      setTabs([]);
+      setActivePath(null);
     } catch (err) {
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -160,48 +171,117 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    if (tabsRef.current.some((tab) => tab.path === path)) {
+      setActivePath(path);
+      return;
+    }
+
     setBusy(true);
     setTreeError(null);
     try {
       const value = await readTextFile(path);
-      setDocument({
+      const next: EditorTab = {
         path,
         title: basename(path),
         language: languageFromPath(path),
         value,
         baseline: value,
+        cursorLine: 1,
+        cursorColumn: 1,
+      };
+      setTabs((current) => {
+        if (current.some((tab) => tab.path === path)) return current;
+        return [...current, next];
       });
-      setCursorLine(1);
-      setCursorColumn(1);
+      setActivePath(path);
     } catch (err) {
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
       setBusy(false);
     }
+  }, []);
+
+  const activateTab = useCallback((path: string) => {
+    setActivePath(path);
+  }, []);
+
+  const closeTab = useCallback((path: string) => {
+    const tab = tabsRef.current.find((t) => t.path === path);
+    if (tab && isDirty(tab)) {
+      const ok = window.confirm(
+        `Close ${tab.title} without saving? Unsaved changes will be lost.`,
+      );
+      if (!ok) return;
+    }
+
+    setTabs((current) => {
+      const index = current.findIndex((t) => t.path === path);
+      if (index < 0) return current;
+      const next = current.filter((t) => t.path !== path);
+
+      setActivePath((active) => {
+        if (active !== path) return active;
+        if (next.length === 0) return null;
+        return next[Math.min(index, next.length - 1)].path;
+      });
+
+      return next;
+    });
+  }, []);
+
+  const moveTab = useCallback((fromPath: string, toPath: string) => {
+    if (fromPath === toPath) return;
+    setTabs((current) => {
+      const fromIndex = current.findIndex((t) => t.path === fromPath);
+      const toIndex = current.findIndex((t) => t.path === toPath);
+      if (fromIndex < 0 || toIndex < 0) return current;
+      const next = [...current];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
   }, []);
 
   const setValue = useCallback((value: string) => {
-    setDocument((doc) => ({ ...doc, value }));
+    const path = activePathRef.current;
+    if (!path) return;
+    setTabs((current) =>
+      current.map((tab) => (tab.path === path ? { ...tab, value } : tab)),
+    );
   }, []);
 
   const setCursor = useCallback((line: number, column: number) => {
-    setCursorLine(line);
-    setCursorColumn(column);
+    const path = activePathRef.current;
+    if (!path) return;
+    setTabs((current) =>
+      current.map((tab) =>
+        tab.path === path
+          ? { ...tab, cursorLine: line, cursorColumn: column }
+          : tab,
+      ),
+    );
   }, []);
 
   const save = useCallback(async () => {
-    if (!document.path) return;
+    const path = activePathRef.current;
+    const tab = tabsRef.current.find((t) => t.path === path);
+    if (!tab) return;
+
     setBusy(true);
     setTreeError(null);
     try {
-      await writeTextFile(document.path, document.value);
-      setDocument((doc) => ({ ...doc, baseline: doc.value }));
+      await writeTextFile(tab.path, tab.value);
+      setTabs((current) =>
+        current.map((t) =>
+          t.path === tab.path ? { ...t, baseline: t.value } : t,
+        ),
+      );
     } catch (err) {
       setTreeError(err instanceof Error ? err.message : String(err));
     } finally {
       setBusy(false);
     }
-  }, [document.path, document.value]);
+  }, []);
 
   const state = useMemo<WorkspaceState>(
     () => ({
@@ -211,13 +291,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       expanded,
       treeError,
       busy,
+      tabs,
+      activePath,
       document,
-      dirty: document.value !== document.baseline,
-      cursorLine,
-      cursorColumn,
+      dirty: document ? isDirty(document) : false,
+      cursorLine: document?.cursorLine ?? 1,
+      cursorColumn: document?.cursorColumn ?? 1,
       openFolder,
       toggleDirectory,
       openFile,
+      activateTab,
+      closeTab,
+      moveTab,
       setValue,
       setCursor,
       save,
@@ -228,12 +313,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       expanded,
       treeError,
       busy,
+      tabs,
+      activePath,
       document,
-      cursorLine,
-      cursorColumn,
       openFolder,
       toggleDirectory,
       openFile,
+      activateTab,
+      closeTab,
+      moveTab,
       setValue,
       setCursor,
       save,

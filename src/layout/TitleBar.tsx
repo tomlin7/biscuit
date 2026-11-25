@@ -19,7 +19,7 @@ export function TitleBar() {
           type="button"
           className="titlebar__text-btn"
           onClick={() => void save()}
-          disabled={busy || !document.path || !dirty}
+          disabled={busy || !document || !dirty}
           title="Ctrl+S"
         >
           Save

@@ -15,7 +15,7 @@ function TreeRows({
     <>
       {nodes.map((node) => {
         const isExpanded = expanded.has(node.path);
-        const isActive = document.path === node.path;
+        const isActive = document?.path === node.path;
         const paddingLeft = 8 + depth * 12;
 
         if (node.kind === "directory") {

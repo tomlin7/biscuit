@@ -7,7 +7,7 @@ import { EditorArea } from "./EditorArea";
 import { StatusBar } from "./StatusBar";
 
 function ShellChrome() {
-  const { save } = useWorkspace();
+  const { save, closeTab, activePath } = useWorkspace();
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -16,10 +16,14 @@ function ShellChrome() {
         event.preventDefault();
         void save();
       }
+      if (mod && event.key.toLowerCase() === "w" && activePath) {
+        event.preventDefault();
+        closeTab(activePath);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [save]);
+  }, [save, closeTab, activePath]);
 
   return (
     <div className="app-shell">

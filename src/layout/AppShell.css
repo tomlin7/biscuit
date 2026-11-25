@@ -117,34 +117,6 @@
   height: 100%;
 }
 
-.editor-area__tabs {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 40px;
-  padding: 8px 10px 0;
-}
-
-.editor-area__tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-control) var(--radius-control) 0 0;
-  color: var(--fg-muted);
-  font-size: 12px;
-  background: transparent;
-}
-
-.editor-area__tab--active {
-  background: var(--bg-tab-active);
-  color: var(--fg);
-}
-
-.editor-area__tab--muted {
-  color: var(--fg-dim);
-}
-
 .editor-area__meta {
   display: flex;
   align-items: center;

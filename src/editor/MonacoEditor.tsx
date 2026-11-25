@@ -9,6 +9,8 @@ export function MonacoEditor() {
   const { document, setValue, setCursor } = useWorkspace();
   const editorRef = useRef<MonacoEditorNS.IStandaloneCodeEditor | null>(null);
 
+  if (!document) return null;
+
   const handleBeforeMount = (monaco: Monaco) => {
     defineT3dTheme(monaco);
   };

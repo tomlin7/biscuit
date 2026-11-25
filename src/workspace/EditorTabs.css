@@ -1,0 +1,69 @@
+.editor-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  min-height: 40px;
+  padding: 8px 8px 0;
+  overflow-x: auto;
+}
+
+.editor-tabs__empty {
+  display: flex;
+  align-items: center;
+  padding: 0 12px 8px;
+  color: var(--fg-dim);
+  font-size: 12px;
+}
+
+.editor-tabs__tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 180px;
+  padding: 6px 4px 6px 12px;
+  border-radius: var(--radius-control) var(--radius-control) 0 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+.editor-tabs__tab:hover {
+  color: var(--fg);
+  background: var(--bg-hover);
+}
+
+.editor-tabs__tab--active {
+  background: var(--bg-tab-active);
+  color: var(--fg);
+}
+
+.editor-tabs__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-tabs__close {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: var(--fg-dim);
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0;
+}
+
+.editor-tabs__tab:hover .editor-tabs__close,
+.editor-tabs__tab--active .editor-tabs__close {
+  opacity: 1;
+}
+
+.editor-tabs__close:hover {
+  color: var(--fg);
+  background: var(--bg-active);
+}
