@@ -504,6 +504,13 @@ function ShellChrome() {
         return;
       }
 
+      if (event.altKey && event.shiftKey && key === "a" && !mod) {
+        event.preventDefault();
+        runEditorCommand("blockComment");
+        clearChord();
+        return;
+      }
+
       if (event.key === "F12") {
         event.preventDefault();
         runEditorCommand(event.shiftKey ? "references" : "definition");
