@@ -850,6 +850,21 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("compareSelected");
       },
+      cycleAiTopP: () => {
+        const order: Array<number | null> = [null, 0.5, 0.9, 1];
+        const current = aiSettings.topP;
+        const idx = order.findIndex(
+          (value) =>
+            value === current ||
+            (value === null && current === null) ||
+            (typeof value === "number" &&
+              typeof current === "number" &&
+              value === current),
+        );
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? null;
+        setSettings({ topP: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -909,6 +924,7 @@ function ShellChrome() {
       aiSettings.requestTimeoutSec,
       aiSettings.stopOnToolError,
       aiSettings.temperature,
+      aiSettings.topP,
       showHistory,
       setShowHistory,
       setAiOpen,

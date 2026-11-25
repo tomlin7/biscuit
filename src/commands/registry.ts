@@ -908,4 +908,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCompareSelected(),
   },
+  {
+    id: "workbench.action.cycleAiTopP",
+    title: "Cycle AI Top P",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiTopP(),
+  },
 ];

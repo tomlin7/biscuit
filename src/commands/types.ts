@@ -152,6 +152,7 @@ export type CommandContext = {
   toggleAiShowHistory: () => void;
   gitIgnoreSelected: () => void;
   gitCompareSelected: () => void;
+  cycleAiTopP: () => void;
 };
 
 export type Command = {
