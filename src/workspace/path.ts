@@ -191,6 +191,13 @@ function insideRoot(rootPath: string, targetPath: string): string | null {
   return targetPath.replace(/\\/g, "/").replace(/\/+$/, "").slice(root.length).replace(/^\//, "");
 }
 
+export function relativeToRoot(rootPath: string | null, filePath: string): string {
+  if (!rootPath) return filePath;
+  const rest = insideRoot(rootPath, filePath);
+  if (rest === null) return filePath;
+  return rest.replace(/\//g, rootPath.includes("\\") ? "\\" : "/") || basename(filePath);
+}
+
 export function workspaceCrumbs(rootPath: string | null, filePath: string): PathCrumb[] {
   const leaf = basename(filePath);
   if (!rootPath) return [{ name: leaf, path: filePath, kind: "file" }];

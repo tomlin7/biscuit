@@ -70,6 +70,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.62.0** | Markdown preview loads sibling images | shipped |
 | **0.63.0** | Extension commands can run a built-in action | shipped |
 | **0.64.0** | Status bar language picker for the active file | shipped |
+| **0.65.0** | Breadcrumb file menu for reveal and copy path | shipped |
+| **0.66.0** | SCM diff opens in the editor island | shipped |
+| **0.67.0** | Terminal copy and paste with Ctrl+Shift+C/V | shipped |
+| **0.68.0** | Find in file match count in the editor meta row | shipped |
+| **0.69.0** | Multi-root workspace folders | shipped |
+| **0.70.0** | Agent panel composer chrome | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

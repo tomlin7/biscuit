@@ -236,6 +236,31 @@
   color: var(--fg-dim);
 }
 
+.editor-area__crumb-menu {
+  position: fixed;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--bg-island-elevated);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.editor-area__crumb-menu button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: left;
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+}
+
+.editor-area__crumb-menu button:hover {
+  background: var(--bg-hover);
+}
+
 .editor-area__tools {
   display: flex;
   align-items: center;

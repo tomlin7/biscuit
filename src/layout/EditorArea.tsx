@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Clock,
   Columns2,
@@ -12,11 +12,13 @@ import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { ImageView } from "../editor/ImageView";
 import { MonacoEditor } from "../editor/MonacoEditor";
+import { DiffView, useDiffTab } from "../scm/DiffView";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
 import { languageLabel } from "../editor/languages";
 import { useWorkspace } from "../workspace/WorkspaceContext";
-import { workspaceCrumbs } from "../workspace/path";
+import { relativeToRoot, workspaceCrumbs } from "../workspace/path";
+import { rootForPath } from "../ai/roots";
 import { patchSession, readSession } from "../workspace/session";
 import { useEditorActions } from "../editor/EditorActions";
 import { useLayout } from "./LayoutContext";
@@ -25,15 +27,30 @@ import { IconButton } from "../ui/IconButton";
 import { ResizeHandle } from "./ResizeHandle";
 
 export function EditorArea() {
-  const { document, rootPath, tabs, activePath, openFileAt, revealInExplorer } = useWorkspace();
-  const { findInFile, peek, clearPeek, references, clearReferences } = useEditorActions();
+  const { document, rootPath, roots, tabs, activePath, openFileAt, revealInExplorer } =
+    useWorkspace();
+  const { findInFile, peek, clearPeek, references, clearReferences, findMatchLabel } =
+    useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
+  const diffTab = useDiffTab();
   const [split, setSplit] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [splitRatio, setSplitRatio] = useState(0.5);
   const [secondaryPath, setSecondaryPath] = useState<string | null>(null);
   const [layoutReady, setLayoutReady] = useState(false);
+  const [crumbMenu, setCrumbMenu] = useState<{ x: number; y: number } | null>(null);
+  const crumbMenuRef = useRef<HTMLDivElement>(null);
   const hasFile = document !== null;
+
+  useEffect(() => {
+    if (!crumbMenu) return;
+    const close = (event: MouseEvent) => {
+      if (crumbMenuRef.current?.contains(event.target as Node)) return;
+      setCrumbMenu(null);
+    };
+    window.addEventListener("mousedown", close);
+    return () => window.removeEventListener("mousedown", close);
+  }, [crumbMenu]);
 
   useEffect(() => {
     const session = readSession();
@@ -82,9 +99,15 @@ export function EditorArea() {
     });
   }, [split, activePath, tabs, otherTabs]);
 
+  const crumbRoot = useMemo(() => {
+    if (!document) return rootPath;
+    const list = roots.length > 0 ? roots : rootPath ? [rootPath] : [];
+    return rootForPath(list, document.path) ?? rootPath;
+  }, [document, rootPath, roots]);
+
   const crumbs = useMemo(
-    () => (document ? workspaceCrumbs(rootPath, document.path) : []),
-    [document, rootPath],
+    () => (document ? workspaceCrumbs(crumbRoot, document.path) : []),
+    [document, crumbRoot],
   );
 
   return (
@@ -105,10 +128,16 @@ export function EditorArea() {
                     <span>{crumb.name}</span>
                   </button>
                 ) : (
-                  <>
+                  <button
+                    type="button"
+                    className="editor-area__crumb-btn"
+                    onClick={(event) =>
+                      setCrumbMenu({ x: event.clientX, y: event.clientY + 4 })
+                    }
+                  >
                     <FileIcon name={crumb.name} kind="file" size={14} />
                     <span>{crumb.name}</span>
-                  </>
+                  </button>
                 )}
                 {i < crumbs.length - 1 ? (
                   <span className="editor-area__crumb-sep">/</span>
@@ -119,6 +148,47 @@ export function EditorArea() {
             <span className="editor-area__crumb-muted">No file</span>
           )}
         </div>
+        {crumbMenu && document ? (
+          <div
+            ref={crumbMenuRef}
+            className="editor-area__crumb-menu"
+            style={{ left: crumbMenu.x, top: crumbMenu.y }}
+            role="menu"
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                void revealInExplorer(document.path);
+                setCrumbMenu(null);
+              }}
+            >
+              Reveal in Explorer
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                void navigator.clipboard.writeText(document.path);
+                setCrumbMenu(null);
+              }}
+            >
+              Copy Path
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                void navigator.clipboard.writeText(
+                  relativeToRoot(crumbRoot, document.path),
+                );
+                setCrumbMenu(null);
+              }}
+            >
+              Copy Relative Path
+            </button>
+          </div>
+        ) : null}
         <div className="editor-area__tools">
           <IconButton
             icon={Sparkles}
@@ -133,6 +203,11 @@ export function EditorArea() {
             size={15}
             onClick={findInFile}
           />
+          {findMatchLabel ? (
+            <span className="editor-area__chip" title="Find matches">
+              {findMatchLabel}
+            </span>
+          ) : null}
           <span className="editor-area__chip" title="Local time">
             <Clock size={13} strokeWidth={1.75} aria-hidden />
             {now}
@@ -225,6 +300,9 @@ export function EditorArea() {
         }
       >
         {hasFile && activePath ? (
+          diffTab ? (
+            <DiffView path={diffTab.path} text={diffTab.text} />
+          ) : (
           <>
             <div className="editor-area__pane">
               {document?.language === "image" ? (
@@ -310,6 +388,7 @@ export function EditorArea() {
               </>
             ) : null}
           </>
+          )
         ) : !rootPath ? (
           <Welcome />
         ) : (
