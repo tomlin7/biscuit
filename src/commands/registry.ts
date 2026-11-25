@@ -1412,7 +1412,12 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.newExplorerFolder(),
   },
-
+  {
+    id: "workbench.action.editor.toggleEOL",
+    title: "Toggle Line Ending (LF / CRLF)",
+    category: "Edit",
+    run: (ctx) => ctx.toggleLineEnding(),
+  },
 
 
 

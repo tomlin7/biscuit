@@ -91,6 +91,7 @@ function ShellChrome() {
     revealInExplorer,
     togglePinTab,
     createEntry,
+    setEol,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -1390,6 +1391,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         void createEntry(parent, "directory");
       },
+      toggleLineEnding: () => {
+        if (!document) return;
+        const isCrlf = document.value.includes("\r\n");
+        setEol(isCrlf ? "lf" : "crlf");
+      },
     }),
     [
       openFolder,
@@ -1519,6 +1525,7 @@ function ShellChrome() {
       stopDebugSession,
       stepDebugPython,
       createEntry,
+      setEol,
       document,
       openFileAt,
       rootPath,

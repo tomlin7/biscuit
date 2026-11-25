@@ -234,6 +234,7 @@ export type CommandContext = {
   stepOutDebugging: () => void;
   newExplorerFile: () => void;
   newExplorerFolder: () => void;
+  toggleLineEnding: () => void;
 };
 
 export type Command = {
