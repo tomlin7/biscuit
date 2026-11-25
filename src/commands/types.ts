@@ -248,6 +248,7 @@ export type CommandContext = {
   renameExplorerEntry: () => void;
   deleteExplorerEntry: () => void;
   toggleAlwaysOnTop: () => void;
+  toggleFullScreen: () => void;
 };
 
 export type Command = {

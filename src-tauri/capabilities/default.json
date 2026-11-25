@@ -16,6 +16,8 @@
     "core:window:allow-set-effects",
     "core:window:allow-clear-effects",
     "core:window:allow-set-always-on-top",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-is-fullscreen",
     "core:window:allow-is-always-on-top",
     "opener:default",
     "dialog:default",

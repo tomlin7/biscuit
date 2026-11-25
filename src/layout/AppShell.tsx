@@ -1504,6 +1504,15 @@ function ShellChrome() {
           void win.setAlwaysOnTop(!onTop);
         });
       },
+      toggleFullScreen: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          return;
+        }
+        const win = getCurrentWindow();
+        void win.isFullscreen().then((full) => {
+          void win.setFullscreen(!full);
+        });
+      },
     }),
     [
       openFolder,

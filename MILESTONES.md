@@ -388,6 +388,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.380.0** | Rename File from Explorer palette | shipped |
 | **0.381.0** | Delete File from Explorer palette | shipped |
 | **0.382.0** | Toggle Always on Top from palette | shipped |
+| **0.383.0** | Toggle Full Screen from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

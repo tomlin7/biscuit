@@ -1498,7 +1498,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleAlwaysOnTop(),
   },
-
+  {
+    id: "workbench.action.toggleFullScreen",
+    title: "Toggle Full Screen",
+    category: "View",
+    run: (ctx) => ctx.toggleFullScreen(),
+  },
 
 
 
