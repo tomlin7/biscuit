@@ -54,7 +54,7 @@ function TreeRows({
   onMenu: (event: MouseEvent, node: TreeNode) => void;
   workspaceRoots: string[];
 }) {
-  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry } = useWorkspace();
+  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry, deleteEntry, collapseExplorerUnder } = useWorkspace();
 
   const copyAbsolute = (path: string) => {
     void navigator.clipboard.writeText(path);
@@ -123,7 +123,10 @@ function TreeRows({
                       void createEntry(node.path, "file");
                     }
                   } else if (event.key === "ArrowLeft") {
-                    if (isExpanded) {
+                    if (event.ctrlKey || event.metaKey) {
+                      event.preventDefault();
+                      collapseExplorerUnder(node.path);
+                    } else if (isExpanded) {
                       event.preventDefault();
                       void toggleDirectory(node.path);
                     }

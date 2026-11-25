@@ -107,6 +107,7 @@ export type WorkspaceState = {
   refreshExplorer: () => Promise<void>;
   collapseExplorer: () => void;
   expandExplorer: () => void;
+  collapseExplorerUnder: (path: string) => void;
   save: () => Promise<void>;
   saveAs: () => Promise<void>;
   saveAll: () => Promise<void>;
@@ -845,6 +846,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setExpanded(new Set());
   }, []);
 
+  const collapseExplorerUnder = useCallback((path: string) => {
+    const prefix = withPrefix(path);
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      for (const item of prev) {
+        if (item === path || item.startsWith(prefix)) next.delete(item);
+      }
+      return next;
+    });
+  }, []);
+
   const expandExplorer = useCallback(() => {
     const dirs: string[] = [];
     const walk = (nodes: TreeNode[]) => {
@@ -1210,6 +1222,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       clearRevealTarget,
       refreshExplorer,
       collapseExplorer,
+      collapseExplorerUnder,
       expandExplorer,
       save,
       saveAs,
@@ -1264,6 +1277,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       clearRevealTarget,
       refreshExplorer,
       collapseExplorer,
+      collapseExplorerUnder,
       expandExplorer,
       save,
       saveAs,

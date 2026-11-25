@@ -212,6 +212,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.204.0** | SCM create branch | shipped |
 | **0.205.0** | Kill active terminal from palette | shipped |
 | **0.206.0** | Agent max tool rounds setting | shipped |
+| **0.207.0** | Explorer collapse subtree from keyboard | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
