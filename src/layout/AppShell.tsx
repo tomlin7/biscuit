@@ -22,7 +22,7 @@ import { AutoSave } from "../workspace/AutoSave";
 import { CommandPalette } from "../commands/CommandPalette";
 import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
-import type { GitSummary } from "../scm/ScmPanel";
+import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog } from "../logs/logBus";
 import { basename } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
@@ -62,6 +62,7 @@ function ShellChrome() {
     refreshExplorer,
     collapseExplorer,
     explorerNonce,
+    revealInExplorer,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
@@ -104,8 +105,22 @@ function ShellChrome() {
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
   const [panelTab, setPanelTab] = useState<BottomTab>("terminal");
   const [gitBranch, setGitBranch] = useState<string | null>(null);
+  const [gitAhead, setGitAhead] = useState<number | null>(null);
+  const [gitBehind, setGitBehind] = useState<number | null>(null);
   const [treeFilter, setTreeFilter] = useState("");
   const [hideDotfiles, setHideDotfiles] = useState(false);
+
+  const applyGitInfo = useCallback((info: GitBranchInfo | null) => {
+    if (!info) {
+      setGitBranch(null);
+      setGitAhead(null);
+      setGitBehind(null);
+      return;
+    }
+    setGitBranch(info.branch);
+    setGitAhead(info.ahead);
+    setGitBehind(info.behind);
+  }, []);
 
   useEffect(() => {
     if (explorerNonce === 0) return;
@@ -115,21 +130,27 @@ function ShellChrome() {
 
   useEffect(() => {
     if (!rootPath) {
-      setGitBranch(null);
+      applyGitInfo(null);
       return;
     }
     let cancelled = false;
     void invoke<GitSummary>("git_summary", { cwd: rootPath })
       .then((summary) => {
-        if (!cancelled) setGitBranch(summary.branch);
+        if (!cancelled) {
+          applyGitInfo({
+            branch: summary.branch,
+            ahead: summary.ahead ?? null,
+            behind: summary.behind ?? null,
+          });
+        }
       })
       .catch(() => {
-        if (!cancelled) setGitBranch(null);
+        if (!cancelled) applyGitInfo(null);
       });
     return () => {
       cancelled = true;
     };
-  }, [rootPath]);
+  }, [rootPath, applyGitInfo]);
 
   const openPalette = useCallback(() => {
     const files = recentFiles().slice(0, 8).map((path) => ({
@@ -205,6 +226,12 @@ function ShellChrome() {
     setPaletteSeed("");
     setPaletteOpen(true);
   }, []);
+
+  useEffect(() => {
+    const onKeybindings = () => openKeybindings();
+    window.addEventListener("t3d:keybindings", onKeybindings);
+    return () => window.removeEventListener("t3d:keybindings", onKeybindings);
+  }, [openKeybindings]);
 
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
@@ -313,6 +340,9 @@ function ShellChrome() {
       closePalette,
       findInFile,
       runEditorCommand,
+      revealActiveFile: () => {
+        if (activePath) void revealInExplorer(activePath);
+      },
       openSearch,
       toggleTerminal,
       runFile: () => {
@@ -355,6 +385,7 @@ function ShellChrome() {
       closePalette,
       findInFile,
       runEditorCommand,
+      revealInExplorer,
       openSearch,
       toggleTerminal,
       setBottomOpen,
@@ -384,6 +415,13 @@ function ShellChrome() {
       if (event.key === "F2") {
         event.preventDefault();
         runEditorCommand("rename");
+        clearChord();
+        return;
+      }
+
+      if (event.altKey && event.shiftKey && key === "f" && !mod) {
+        event.preventDefault();
+        runEditorCommand("format");
         clearChord();
         return;
       }
@@ -619,7 +657,7 @@ function ShellChrome() {
           <Sidebar
             mode={sidebarMode}
             onModeChange={setSidebarMode}
-            onBranch={setGitBranch}
+            onBranch={applyGitInfo}
             treeFilter={treeFilter}
             onTreeFilter={setTreeFilter}
             hideDotfiles={hideDotfiles}
@@ -691,6 +729,8 @@ function ShellChrome() {
           setSidebarOpen(true);
         }}
         gitBranch={gitBranch}
+        gitAhead={gitAhead}
+        gitBehind={gitBehind}
       />
       <CommandPalette
         open={paletteOpen}

@@ -46,7 +46,8 @@ export type EditorCommand =
   | "peek"
   | "definition"
   | "references"
-  | "rename";
+  | "rename"
+  | "format";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -121,6 +122,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "rename":
         handle.renameSymbol?.();
+        break;
+      case "format":
+        handle.trigger("editor.action.formatDocument");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

@@ -32,8 +32,10 @@ export type CommandContext = {
       | "peek"
       | "definition"
       | "references"
-      | "rename",
+      | "rename"
+      | "format",
   ) => void;
+  revealActiveFile: () => void;
   openSearch: () => void;
   toggleTerminal: () => void;
   runFile: () => void;

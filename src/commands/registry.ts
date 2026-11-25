@@ -119,11 +119,24 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleTheme(),
   },
   {
+    id: "editor.action.formatDocument",
+    title: "Format Document",
+    category: "Edit",
+    keybinding: "Shift+Alt+F",
+    run: (ctx) => ctx.runEditorCommand("format"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",
     keybinding: "Ctrl+/",
     run: (ctx) => ctx.runEditorCommand("comment"),
+  },
+  {
+    id: "workbench.files.action.showActiveFileInExplorer",
+    title: "Reveal Active File in Explorer",
+    category: "File",
+    run: (ctx) => ctx.revealActiveFile(),
   },
   {
     id: "editor.action.toggleWordWrap",

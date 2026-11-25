@@ -105,6 +105,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.97.0** | Git fetch from SCM toolbar | shipped |
 | **0.98.0** | HTML preview scroll sync | shipped |
 | **0.99.0** | Regenerate last agent reply | shipped |
+| **0.100.0** | Format Document command | shipped |
+| **0.101.0** | Reveal active file in Explorer | shipped |
+| **0.102.0** | Git ahead/behind in status bar | shipped |
+| **0.103.0** | Persist editor split ratio | shipped |
+| **0.104.0** | Clear all agent attachments | shipped |
+| **0.105.0** | Welcome tips strip | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
