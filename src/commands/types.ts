@@ -9,6 +9,7 @@ export type CommandContext = {
   closeAll: () => void;
   toggleTheme: () => void;
   openPalette: () => void;
+  openSymbols: () => void;
   closePalette: () => void;
   findInFile: () => void;
   runEditorCommand: (

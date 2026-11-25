@@ -8,6 +8,7 @@ type Props = {
   onClose: () => void;
   context: CommandContext;
   extraCommands?: Command[];
+  seed?: string;
 };
 
 export function CommandPalette({
@@ -15,6 +16,7 @@ export function CommandPalette({
   onClose,
   context,
   extraCommands = [],
+  seed = "",
 }: Props) {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
@@ -30,11 +32,11 @@ export function CommandPalette({
 
   useEffect(() => {
     if (!open) return;
-    setQuery("");
+    setQuery(seed);
     setIndex(0);
     const id = window.setTimeout(() => inputRef.current?.focus(), 0);
     return () => window.clearTimeout(id);
-  }, [open]);
+  }, [open, seed]);
 
   useEffect(() => {
     setIndex(0);

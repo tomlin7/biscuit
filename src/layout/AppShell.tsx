@@ -20,6 +20,7 @@ import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
 import { basename } from "../workspace/path";
 import { recentFiles, recentFolders } from "../workspace/history";
+import { symbolsForFile } from "../lsp/OutlinePanel";
 import { TitleBar } from "./TitleBar";
 import { Sidebar, type SidebarMode } from "./Sidebar";
 import { EditorArea } from "./EditorArea";
@@ -38,7 +39,9 @@ function ShellChrome() {
     openFolder,
     openFolderAt,
     openFile,
+    openFileAt,
     reopenClosed,
+    document,
     rootPath,
   } = useWorkspace();
   const { toggleTheme } = useTheme();
@@ -62,7 +65,9 @@ function ShellChrome() {
   } = useLayout();
 
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteSeed, setPaletteSeed] = useState("");
   const [recentCommands, setRecentCommands] = useState<Command[]>([]);
+  const [symbolCommands, setSymbolCommands] = useState<Command[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<SidebarMode>("explorer");
   const [panelTab, setPanelTab] = useState<BottomTab>("terminal");
@@ -102,8 +107,31 @@ function ShellChrome() {
       run: () => void openFolderAt(path),
     }));
     setRecentCommands([...files, ...folders]);
+    setPaletteSeed("");
     setPaletteOpen(true);
   }, [openFile, openFolderAt]);
+
+  const openSymbols = useCallback(() => {
+    const current = document;
+    if (!current) {
+      setSymbolCommands([]);
+      setPaletteSeed("Go to Symbol");
+      setPaletteOpen(true);
+      return;
+    }
+    void symbolsForFile(current.path, current.value, current.language).then((symbols) => {
+      setSymbolCommands(
+        symbols.slice(0, 80).map((symbol) => ({
+          id: `symbol:${current.path}:${symbol.line}:${symbol.name}`,
+          title: `Go to Symbol — ${symbol.name}`,
+          category: symbol.kind,
+          run: () => void openFileAt(current.path, symbol.line, 1),
+        })),
+      );
+    });
+    setPaletteSeed("Go to Symbol");
+    setPaletteOpen(true);
+  }, [document, openFileAt]);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
@@ -160,6 +188,7 @@ function ShellChrome() {
       closeAll,
       toggleTheme,
       openPalette,
+      openSymbols,
       closePalette,
       findInFile,
       runEditorCommand,
@@ -184,6 +213,7 @@ function ShellChrome() {
       closeTab,
       toggleTheme,
       openPalette,
+      openSymbols,
       closePalette,
       findInFile,
       runEditorCommand,
@@ -228,6 +258,13 @@ function ShellChrome() {
       if (mod && event.shiftKey && key === "t") {
         event.preventDefault();
         void reopenClosed();
+        clearChord();
+        return;
+      }
+
+      if (mod && event.shiftKey && key === "o") {
+        event.preventDefault();
+        openSymbols();
         clearChord();
         return;
       }
@@ -352,6 +389,7 @@ function ShellChrome() {
     closePalette,
     closeSettings,
     openPalette,
+    openSymbols,
     reopenClosed,
     openSettings,
     openSearch,
@@ -486,7 +524,8 @@ function ShellChrome() {
         open={paletteOpen}
         onClose={closePalette}
         context={commandContext}
-        extraCommands={[...recentCommands, ...extensionCommands]}
+        seed={paletteSeed}
+        extraCommands={[...symbolCommands, ...recentCommands, ...extensionCommands]}
       />
       <SettingsPanel open={settingsOpen} onClose={closeSettings} />
     </div>

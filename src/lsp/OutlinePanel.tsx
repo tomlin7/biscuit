@@ -105,6 +105,21 @@ async function languageServiceOutline(path: string): Promise<Symbol[] | null> {
   return symbols;
 }
 
+export async function symbolsForFile(
+  path: string,
+  text: string,
+  language: string,
+): Promise<Symbol[]> {
+  const scanned = scanOutline(text, language);
+  try {
+    const fromLanguageService = await languageServiceOutline(path);
+    if (fromLanguageService && fromLanguageService.length > 0) return fromLanguageService;
+  } catch {
+    /* scanned symbols stay */
+  }
+  return scanned;
+}
+
 export function OutlinePanel() {
   const { document, openFileAt } = useWorkspace();
   const fallback = useMemo(

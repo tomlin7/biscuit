@@ -77,6 +77,13 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("relativeLines"),
   },
   {
+    id: "workbench.action.gotoSymbol",
+    title: "Go to Symbol in Editor",
+    category: "Edit",
+    keybinding: "Ctrl+Shift+O",
+    run: (ctx) => ctx.openSymbols(),
+  },
+  {
     id: "editor.action.gotoLine",
     title: "Go to Line",
     category: "Edit",
