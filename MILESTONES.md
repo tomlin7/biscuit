@@ -226,6 +226,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.218.0** | Clear AI attachments from palette | shipped |
 | **0.219.0** | Add explorer folder as workspace root | shipped |
 | **0.220.0** | Toggle render whitespace from palette | shipped |
+| **0.221.0** | Status bar rulers cycle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

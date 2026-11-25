@@ -196,6 +196,24 @@ export function StatusBar({
           <button
             type="button"
             className="status-bar__chip"
+            title="Cycle editor rulers"
+            onClick={() => {
+              const order = ["", "80", "100", "120"];
+              const current = settings.editor.rulers.trim();
+              const idx = order.indexOf(current);
+              const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? "";
+              updateEditor({ rulers: next });
+            }}
+          >
+            {settings.editor.rulers.trim()
+              ? `Ruler ${settings.editor.rulers.trim()}`
+              : "No Ruler"}
+          </button>
+        ) : null}
+        {document && document.language !== "image" ? (
+          <button
+            type="button"
+            className="status-bar__chip"
             title="Toggle word wrap"
             onClick={() => updateEditor({ wordWrap: !settings.editor.wordWrap })}
           >
