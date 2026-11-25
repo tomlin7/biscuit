@@ -364,6 +364,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.356.0** | Close window from palette | shipped |
 | **0.357.0** | Copy notification unread count from palette | shipped |
 | **0.358.0** | Start debugging from palette | shipped |
+| **0.359.0** | Stop debugging from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

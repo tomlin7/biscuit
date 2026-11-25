@@ -139,7 +139,9 @@ function ShellChrome() {
   }, [notificationItems]);
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const {
+    sessions: debugSessions,
     startSession: startDebugSession,
+    stopSession: stopDebugSession,
   } = useDebug();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -1335,6 +1337,10 @@ function ShellChrome() {
         setSidebarOpen(true);
         void startDebugSession(activePath);
       },
+      stopDebugging: () => {
+        const active = debugSessions[0];
+        if (active) void stopDebugSession(active.id);
+      },
     }),
     [
       openFolder,
@@ -1459,7 +1465,9 @@ function ShellChrome() {
       openDebug,
       openSettings,
       toggleSidebar,
+      debugSessions,
       startDebugSession,
+      stopDebugSession,
     ],
   );
 
