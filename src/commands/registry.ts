@@ -35,6 +35,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.closeFolder(),
   },
   {
+    id: "workbench.action.closeWorkspace",
+    title: "Close Workspace",
+    category: "File",
+    run: (ctx) => ctx.closeWorkspace(),
+  },
+  {
     id: "workbench.files.action.refreshFilesExplorer",
     title: "Refresh Explorer",
     category: "File",

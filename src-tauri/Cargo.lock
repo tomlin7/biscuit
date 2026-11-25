@@ -3433,7 +3433,7 @@ dependencies = [
 
 [[package]]
 name = "t3d"
-version = "0.430.0"
+version = "0.431.0"
 dependencies = [
  "portable-pty",
  "serde",

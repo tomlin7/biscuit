@@ -548,6 +548,15 @@ function ShellChrome() {
       removeFolderRoot,
       reopenRemovedRoot,
       closeFolder,
+      closeWorkspace: () => {
+        const count = roots.length || (rootPath ? 1 : 0);
+        if (count === 0) {
+          notify("Close Workspace", "No folders are open.");
+          return;
+        }
+        closeFolder();
+        notify("Workspace closed", `Closed ${count} folder${count === 1 ? "" : "s"}.`);
+      },
       openGoToFile,
       openKeybindings,
       refreshExplorer,
