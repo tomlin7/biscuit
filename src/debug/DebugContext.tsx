@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -22,6 +23,19 @@ export type DebugSession = {
   running: boolean;
 };
 
+export type PyFrame = {
+  name: string;
+  file: string;
+  line: number;
+};
+
+export type PyStop = {
+  id: string;
+  event: string;
+  frames: PyFrame[];
+  locals: Record<string, string>;
+};
+
 type DebugState = {
   breakpoints: Breakpoint[];
   sessions: DebugSession[];
@@ -30,6 +44,8 @@ type DebugState = {
   toggleBreakpoint: (id: string) => void;
   startSession: (path: string) => Promise<void>;
   stopSession: (id: string) => Promise<void>;
+  pythonStop: PyStop | null;
+  pythonError: string | null;
 };
 
 const DebugContext = createContext<DebugState | null>(null);
@@ -37,6 +53,10 @@ const DebugContext = createContext<DebugState | null>(null);
 export function DebugProvider({ children }: { children: ReactNode }) {
   const [breakpoints, setBreakpoints] = useState<Breakpoint[]>([]);
   const [sessions, setSessions] = useState<DebugSession[]>([]);
+  const [pythonStop, setPythonStop] = useState<PyStop | null>(null);
+  const [pythonError, setPythonError] = useState<string | null>(null);
+  const breakpointsRef = useRef(breakpoints);
+  breakpointsRef.current = breakpoints;
 
   const addBreakpoint = useCallback((path: string, line: number) => {
     setBreakpoints((current) => {
@@ -68,7 +88,24 @@ export function DebugProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startSession = useCallback(async (path: string) => {
+    setPythonError(null);
     try {
+      if (path.toLowerCase().endsWith(".py")) {
+        const fileKey = path.replace(/\\/g, "/").toLowerCase();
+        const hits = breakpointsRef.current.filter(
+          (bp) => bp.enabled && bp.path.replace(/\\/g, "/").toLowerCase() === fileKey,
+        );
+        const stop = await invoke<PyStop>("debug_py_start", {
+          path,
+          breakpoints: hits.map((bp) => ({ file: bp.path, line: bp.line })),
+        });
+        setPythonStop(stop);
+        setSessions((current) => [
+          ...current,
+          { id: stop.id, label: path, running: stop.event === "stopped" },
+        ]);
+        return;
+      }
       const id = await invoke<string>("debug_launch", { path });
       setSessions((current) => [
         ...current,
@@ -76,8 +113,8 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       ]);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      setPythonError(message);
       appendLog(`Debug launch failed: ${message}`);
-      throw err;
     }
   }, []);
 
@@ -97,6 +134,8 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       toggleBreakpoint,
       startSession,
       stopSession,
+      pythonStop,
+      pythonError,
     }),
     [
       breakpoints,
@@ -106,6 +145,8 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       toggleBreakpoint,
       startSession,
       stopSession,
+      pythonStop,
+      pythonError,
     ],
   );
 

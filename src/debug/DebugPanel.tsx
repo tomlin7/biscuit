@@ -10,6 +10,8 @@ export function DebugPanel() {
     toggleBreakpoint,
     startSession,
     stopSession,
+    pythonStop,
+    pythonError,
   } = useDebug();
   const { activePath, openFileAt } = useWorkspace();
 
@@ -51,6 +53,50 @@ export function DebugPanel() {
           </ul>
         )}
       </section>
+
+      {pythonError ? <p className="debug-panel__hint">{pythonError}</p> : null}
+      {pythonStop ? (
+        <>
+          <section className="debug-panel__section">
+            <h3>Call stack</h3>
+            {pythonStop.frames.length === 0 ? (
+              <p className="debug-panel__hint">
+                {pythonStop.event === "exited" ? "The program finished." : "No frames."}
+              </p>
+            ) : (
+              <ul>
+                {pythonStop.frames.map((frame) => (
+                  <li key={`${frame.file}:${frame.line}:${frame.name}`}>
+                    <button
+                      type="button"
+                      className="debug-panel__link"
+                      onClick={() => void openFileAt(frame.file, frame.line, 1)}
+                    >
+                      {frame.name} {frame.file.split(/[/\\]/).pop()}:{frame.line}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <section className="debug-panel__section">
+            <h3>Variables</h3>
+            {Object.keys(pythonStop.locals).length === 0 ? (
+              <p className="debug-panel__hint">No locals in the top frame.</p>
+            ) : (
+              <ul>
+                {Object.entries(pythonStop.locals).map(([name, value]) => (
+                  <li key={name}>
+                    <span>
+                      {name} = {value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      ) : null}
 
       <section className="debug-panel__section">
         <h3>Breakpoints</h3>
