@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic-Tac-Toe</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .ttt__board {
+      display: grid;
+      grid-template-columns: repeat(3, 88px);
+      grid-template-rows: repeat(3, 88px);
+      gap: 6px;
+      padding: 6px;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--fg) 5%, transparent);
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+    }
+    .ttt__cell {
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--bg-island);
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+      color: var(--fg);
+      font-size: 32px;
+      font-weight: 700;
+      font-family: var(--font-ui);
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .ttt__cell:not(:disabled):hover {
+      background: color-mix(in srgb, var(--fg) 6%, var(--bg-island));
+    }
+    .ttt__cell:disabled {
+      cursor: default;
+    }
+    .ttt__cell--o {
+      color: var(--fg-muted);
+    }
+    .ttt__cell--win {
+      background: color-mix(in srgb, var(--accent) 18%, var(--bg-island));
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+    .ttt__svg {
+      width: 32px;
+      height: 32px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-view">
+    <div class="game__header">
+      <p class="game__title">Tic-Tac-Toe</p>
+      <p class="game__status" id="status" aria-live="polite">Your move — you are X.</p>
+    </div>
+    <div class="game__score">
+      <span>You (X): <strong id="score-you">0</strong></span>
+      <span>Computer (O): <strong id="score-computer">0</strong></span>
+      <span>Draws: <strong id="score-draws">0</strong></span>
+    </div>
+    <div class="ttt__board" id="board" role="grid" aria-label="Tic-Tac-Toe board"></div>
+    <div class="game__controls">
+      <button type="button" class="game__button" id="btn-reset">New Round</button>
+      <button type="button" class="game__button" id="btn-clear-score">Reset Score</button>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script>
+    const LINES = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    let board = Array(9).fill(null);
+    let scores = { you: 0, computer: 0, draws: 0 };
+    let over = false;
+
+    const boardEl = document.getElementById("board");
+    const statusEl = document.getElementById("status");
+    const scoreYouEl = document.getElementById("score-you");
+    const scoreCompEl = document.getElementById("score-computer");
+    const scoreDrawsEl = document.getElementById("score-draws");
+    const resetBtn = document.getElementById("btn-reset");
+    const clearScoreBtn = document.getElementById("btn-clear-score");
+
+    function winningLine(b) {
+      for (const [x, y, z] of LINES) {
+        if (b[x] && b[x] === b[y] && b[x] === b[z]) return [x, y, z];
+      }
+      return null;
+    }
+
+    function completingMove(b, mark) {
+      for (let i = 0; i < 9; i++) {
+        if (b[i]) continue;
+        const copy = [...b];
+        copy[i] = mark;
+        if (winningLine(copy)) return i;
+      }
+      return null;
+    }
+
+    function computerMove(b) {
+      const win = completingMove(b, "O");
+      if (win != null) return win;
+      const block = completingMove(b, "X");
+      if (block != null) return block;
+      const free = b.map((val, i) => val === null ? i : null).filter(i => i !== null);
+      if (free.length === 0) return null;
+      return free[Math.floor(Math.random() * free.length)];
+    }
+
+    function renderBoard() {
+      boardEl.innerHTML = "";
+      const line = winningLine(board);
+      board.forEach((val, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ttt__cell";
+        if (val === "O") btn.classList.add("ttt__cell--o");
+        if (line && line.includes(i)) btn.classList.add("ttt__cell--win");
+        if (over || val !== null) btn.disabled = true;
+
+        if (val === "X") {
+          btn.innerHTML = `<svg class="ttt__svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        } else if (val === "O") {
+          btn.innerHTML = `<svg class="ttt__svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>`;
+        }
+        btn.addEventListener("click", () => play(i));
+        boardEl.appendChild(btn);
+      });
+    }
+
+    function updateStatus(winner, full) {
+      if (winner === "X") {
+        statusEl.textContent = "You win!";
+      } else if (winner === "O") {
+        statusEl.textContent = "The computer wins.";
+      } else if (full) {
+        statusEl.textContent = "It's a draw.";
+      } else {
+        statusEl.textContent = "Your move — you are X.";
+      }
+    }
+
+    function play(i) {
+      if (over || board[i]) return;
+      board[i] = "X";
+      let line = winningLine(board);
+      if (!line) {
+        const reply = computerMove(board);
+        if (reply != null) board[reply] = "O";
+      }
+
+      line = winningLine(board);
+      const winner = line ? board[line[0]] : null;
+      const full = board.every(Boolean);
+
+      if (winner === "X") {
+        scores.you++;
+        over = true;
+      } else if (winner === "O") {
+        scores.computer++;
+        over = true;
+      } else if (full) {
+        scores.draws++;
+        over = true;
+      }
+
+      scoreYouEl.textContent = scores.you;
+      scoreCompEl.textContent = scores.computer;
+      scoreDrawsEl.textContent = scores.draws;
+
+      updateStatus(winner, full);
+      renderBoard();
+    }
+
+    function reset() {
+      board = Array(9).fill(null);
+      over = false;
+      statusEl.textContent = "Your move — you are X.";
+      renderBoard();
+    }
+
+    resetBtn.addEventListener("click", reset);
+    clearScoreBtn.addEventListener("click", () => {
+      scores = { you: 0, computer: 0, draws: 0 };
+      scoreYouEl.textContent = 0;
+      scoreCompEl.textContent = 0;
+      scoreDrawsEl.textContent = 0;
+      reset();
+    });
+
+    renderBoard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pong</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .pong__stage {
+      position: relative;
+      max-width: 100%;
+    }
+    .pong__canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: var(--bg-island);
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+      outline: none;
+      cursor: none;
+    }
+    .pong__canvas:focus-visible {
+      outline: none;
+      border-color: color-mix(in srgb, var(--fg) 20%, transparent);
+    }
+    .pong__overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg-island) 70%, transparent);
+      border: none;
+      color: var(--fg);
+      cursor: pointer;
+    }
+    .pong__overlay .game__button {
+      display: inline-flex;
+      align-items: center;
+    }
+    .pong__hint {
+      font-size: var(--font-size-xs);
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="game-view">
+    <div class="game__header">
+      <p class="game__title">Pong</p>
+      <p class="game__status" id="status">First to 7 wins. W/S, arrows, or move mouse to steer.</p>
+    </div>
+    <div class="game__score">
+      <span>You: <strong id="score-you">0</strong></span>
+      <span>Computer: <strong id="score-cpu">0</strong></span>
+    </div>
+    <div class="pong__stage">
+      <canvas id="canvas" class="pong__canvas" width="640" height="400" tabindex="0"></canvas>
+      <button type="button" class="pong__overlay" id="overlay">
+        <span class="game__button game__button--active" id="btn-play">Start</span>
+        <span class="pong__hint" id="hint">Click or press Space to play</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script>
+    const WIDTH = 640;
+    const HEIGHT = 400;
+    const PADDLE_W = 10;
+    const PADDLE_H = 70;
+    const BALL = 10;
+    const PLAYER_SPEED = 360;
+    const CPU_SPEED = 250;
+    const WIN_SCORE = 7;
+
+    const clamp = (val, min, max) => Math.min(max, Math.max(min, val));
+
+    let scores = { you: 0, cpu: 0 };
+    let running = false;
+    let winner = null;
+
+    let playerY = HEIGHT / 2 - PADDLE_H / 2;
+    let cpuY = HEIGHT / 2 - PADDLE_H / 2;
+    let ballX = WIDTH / 2 - BALL / 2;
+    let ballY = HEIGHT / 2 - BALL / 2;
+    let velX = 0;
+    let velY = 0;
+
+    let keys = { up: false, down: false };
+    let pointerY = null;
+    let animFrame = null;
+    let lastTime = performance.now();
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const statusEl = document.getElementById("status");
+    const scoreYouEl = document.getElementById("score-you");
+    const scoreCpuEl = document.getElementById("score-cpu");
+    const overlay = document.getElementById("overlay");
+    const btnPlay = document.getElementById("btn-play");
+    const hint = document.getElementById("hint");
+
+    function serve(direction) {
+      const angle = (Math.random() * 0.8 - 0.4) * Math.PI * 0.5;
+      const speed = 280;
+      playerY = HEIGHT / 2 - PADDLE_H / 2;
+      cpuY = HEIGHT / 2 - PADDLE_H / 2;
+      ballX = WIDTH / 2 - BALL / 2;
+      ballY = HEIGHT / 2 - BALL / 2;
+      velX = Math.cos(angle) * speed * direction;
+      velY = Math.sin(angle) * speed;
+    }
+
+    function draw() {
+      const styles = getComputedStyle(canvas);
+      const fg = styles.getPropertyValue("--fg").trim() || "#e6e6e6";
+      const muted = styles.getPropertyValue("--fg-dim").trim() || "rgba(128,128,128,0.4)";
+
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      ctx.fillStyle = muted;
+      for (let y = 8; y < HEIGHT; y += 24) {
+        ctx.fillRect(WIDTH / 2 - 1, y, 2, 12);
+      }
+      ctx.fillStyle = fg;
+      ctx.fillRect(16, playerY, PADDLE_W, PADDLE_H);
+      ctx.fillRect(WIDTH - 16 - PADDLE_W, cpuY, PADDLE_W, PADDLE_H);
+      ctx.fillRect(ballX, ballY, BALL, BALL);
+    }
+
+    function tick(now) {
+      const dt = Math.min(0.032, (now - lastTime) / 1000);
+      lastTime = now;
+
+      if (pointerY != null) {
+        playerY = clamp(pointerY - PADDLE_H / 2, 0, HEIGHT - PADDLE_H);
+      } else {
+        const dir = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+        playerY = clamp(playerY + dir * PLAYER_SPEED * dt, 0, HEIGHT - PADDLE_H);
+      }
+
+      const cpuTarget = ballY + BALL / 2 - PADDLE_H / 2;
+      const cpuStep = clamp(cpuTarget - cpuY, -CPU_SPEED * dt, CPU_SPEED * dt);
+      cpuY = clamp(cpuY + cpuStep, 0, HEIGHT - PADDLE_H);
+
+      ballX += velX * dt;
+      ballY += velY * dt;
+
+      if (ballY <= 0 || ballY >= HEIGHT - BALL) {
+        velY = -velY;
+        ballY = clamp(ballY, 0, HEIGHT - BALL);
+      }
+
+      const hit = (padY) => {
+        const offset = (ballY + BALL / 2 - (padY + PADDLE_H / 2)) / (PADDLE_H / 2);
+        const speed = Math.min(640, Math.hypot(velX, velY) * 1.06);
+        const angle = clamp(offset, -1, 1) * (Math.PI / 3.2);
+        return { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
+      };
+
+      if (
+        velX < 0 &&
+        ballX <= 16 + PADDLE_W &&
+        ballX + BALL >= 16 &&
+        ballY + BALL >= playerY &&
+        ballY <= playerY + PADDLE_H
+      ) {
+        const bounce = hit(playerY);
+        velX = Math.abs(bounce.x);
+        velY = bounce.y;
+        ballX = 16 + PADDLE_W;
+      }
+
+      if (
+        velX > 0 &&
+        ballX + BALL >= WIDTH - 16 - PADDLE_W &&
+        ballX <= WIDTH - 16 &&
+        ballY + BALL >= cpuY &&
+        ballY <= cpuY + PADDLE_H
+      ) {
+        const bounce = hit(cpuY);
+        velX = -Math.abs(bounce.x);
+        velY = bounce.y;
+        ballX = WIDTH - 16 - PADDLE_W - BALL;
+      }
+
+      if (ballX < -BALL * 2) {
+        scores.cpu++;
+        scoreCpuEl.textContent = scores.cpu;
+        if (scores.cpu >= WIN_SCORE) {
+          endGame("cpu");
+          return;
+        }
+        serve(1);
+      } else if (ballX > WIDTH + BALL * 2) {
+        scores.you++;
+        scoreYouEl.textContent = scores.you;
+        if (scores.you >= WIN_SCORE) {
+          endGame("you");
+          return;
+        }
+        serve(-1);
+      }
+
+      draw();
+      if (running) {
+        animFrame = requestAnimationFrame(tick);
+      }
+    }
+
+    function endGame(winnerName) {
+      running = false;
+      winner = winnerName;
+      draw();
+      if (winner === "you") {
+        statusEl.textContent = "Victory! You reached 7 first.";
+        btnPlay.textContent = "Play again";
+      } else {
+        statusEl.textContent = "Defeat — the computer took this one.";
+        btnPlay.textContent = "Try again";
+      }
+      overlay.style.display = "flex";
+      canvas.style.cursor = "default";
+    }
+
+    function start() {
+      if (winner != null) {
+        scores = { you: 0, cpu: 0 };
+        scoreYouEl.textContent = 0;
+        scoreCpuEl.textContent = 0;
+        winner = null;
+      }
+      serve(Math.random() < 0.5 ? 1 : -1);
+      running = true;
+      statusEl.textContent = "First to 7 wins. W/S, arrows, or move mouse to steer.";
+      overlay.style.display = "none";
+      canvas.focus();
+      canvas.style.cursor = "none";
+      lastTime = performance.now();
+      animFrame = requestAnimationFrame(tick);
+    }
+
+    function pause() {
+      if (!running) return;
+      running = false;
+      if (animFrame) cancelAnimationFrame(animFrame);
+      btnPlay.textContent = "Resume";
+      overlay.style.display = "flex";
+      canvas.style.cursor = "default";
+    }
+
+    overlay.addEventListener("click", start);
+    window.addEventListener("blur", pause);
+
+    canvas.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (key === "arrowup" || key === "w") {
+        e.preventDefault();
+        keys.up = true;
+        pointerY = null;
+      } else if (key === "arrowdown" || key === "s") {
+        e.preventDefault();
+        keys.down = true;
+        pointerY = null;
+      } else if (key === " " || key === "escape") {
+        e.preventDefault();
+        if (running) pause();
+        else start();
+      }
+    });
+
+    canvas.addEventListener("keyup", (e) => {
+      const key = e.key.toLowerCase();
+      if (key === "arrowup" || key === "w") keys.up = false;
+      if (key === "arrowdown" || key === "s") keys.down = false;
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      pointerY = ((e.clientY - rect.top) / rect.height) * HEIGHT;
+    });
+
+    serve(1);
+    draw();
+  </script>
+</body>
+</html>

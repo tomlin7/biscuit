@@ -390,9 +390,36 @@ pub fn read_extension_file(app: AppHandle, id: String, path: String) -> Result<S
     fs::read_to_string(file).map_err(|e| e.to_string())
 }
 
+fn ensure_builtin_extensions(root: &Path) {
+    let games_dir = root.join("t3d.games");
+    if !games_dir.exists() {
+        let _ = fs::create_dir_all(games_dir.join("webviews"));
+        let manifest = include_str!("../../extensions/t3d.games/extension.json");
+        let main = include_str!("../../extensions/t3d.games/main.js");
+        let common_css = include_str!("../../extensions/t3d.games/webviews/common.css");
+        let theme_js = include_str!("../../extensions/t3d.games/webviews/theme.js");
+        let tictactoe_html = include_str!("../../extensions/t3d.games/webviews/tictactoe.html");
+        let gameoflife_html = include_str!("../../extensions/t3d.games/webviews/gameoflife.html");
+        let minesweeper_html = include_str!("../../extensions/t3d.games/webviews/minesweeper.html");
+        let pong_html = include_str!("../../extensions/t3d.games/webviews/pong.html");
+        let whoops_html = include_str!("../../extensions/t3d.games/webviews/whoops.html");
+
+        let _ = fs::write(games_dir.join("extension.json"), manifest);
+        let _ = fs::write(games_dir.join("main.js"), main);
+        let _ = fs::write(games_dir.join("webviews").join("common.css"), common_css);
+        let _ = fs::write(games_dir.join("webviews").join("theme.js"), theme_js);
+        let _ = fs::write(games_dir.join("webviews").join("tictactoe.html"), tictactoe_html);
+        let _ = fs::write(games_dir.join("webviews").join("gameoflife.html"), gameoflife_html);
+        let _ = fs::write(games_dir.join("webviews").join("minesweeper.html"), minesweeper_html);
+        let _ = fs::write(games_dir.join("webviews").join("pong.html"), pong_html);
+        let _ = fs::write(games_dir.join("webviews").join("whoops.html"), whoops_html);
+    }
+}
+
 #[tauri::command]
 pub fn list_extensions(app: AppHandle) -> Result<Vec<ExtensionManifest>, String> {
     let root = extensions_root(&app)?;
+    ensure_builtin_extensions(&root);
     let enabled_map = load_enabled(&root);
     let mut out = Vec::new();
     let entries = fs::read_dir(&root).map_err(|e| e.to_string())?;

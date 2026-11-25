@@ -25,13 +25,9 @@ export function basename(path: string): string {
   return parts[parts.length - 1] ?? path;
 }
 
-/** Synthetic tab with no file on disk: untitled buffers, game tabs, and webviews. */
+/** Synthetic tab with no file on disk: untitled buffers and webviews. */
 export function isVirtualPath(path: string): boolean {
-  return path.startsWith("untitled:") || isGamePath(path) || isWebviewPath(path);
-}
-
-export function isGamePath(path: string): boolean {
-  return path.startsWith("game:");
+  return path.startsWith("untitled:") || isWebviewPath(path);
 }
 
 export function isWebviewPath(path: string): boolean {

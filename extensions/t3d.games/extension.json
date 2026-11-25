@@ -1,0 +1,66 @@
+{
+  "id": "t3d.games",
+  "name": "Classic Games",
+  "version": "1.0.0",
+  "description": "Classic casual games in sandboxed editor tabs: Tic-Tac-Toe, Game of Life, Minesweeper, Pong, and Whoops 404.",
+  "main": "main.js",
+  "activationEvents": [
+    "onCommand:t3d.games.pick"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "t3d.games.pick",
+        "title": "Play Game…",
+        "category": "Games"
+      },
+      {
+        "id": "t3d.games.play.tictactoe",
+        "title": "Play Tic-Tac-Toe",
+        "category": "Games"
+      },
+      {
+        "id": "t3d.games.play.gameoflife",
+        "title": "Play Game of Life",
+        "category": "Games"
+      },
+      {
+        "id": "t3d.games.play.minesweeper",
+        "title": "Play Minesweeper",
+        "category": "Games"
+      },
+      {
+        "id": "t3d.games.play.pong",
+        "title": "Play Pong",
+        "category": "Games"
+      }
+    ],
+    "webviews": [
+      {
+        "id": "tictactoe",
+        "title": "Tic-Tac-Toe",
+        "entry": "webviews/tictactoe.html"
+      },
+      {
+        "id": "gameoflife",
+        "title": "Game of Life",
+        "entry": "webviews/gameoflife.html"
+      },
+      {
+        "id": "minesweeper",
+        "title": "Minesweeper",
+        "entry": "webviews/minesweeper.html"
+      },
+      {
+        "id": "pong",
+        "title": "Pong",
+        "entry": "webviews/pong.html"
+      },
+      {
+        "id": "whoops",
+        "title": "Whoops",
+        "entry": "webviews/whoops.html"
+      }
+    ]
+  }
+}

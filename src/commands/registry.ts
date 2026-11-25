@@ -1,4 +1,3 @@
-import { GAMES } from "../games/registry";
 import type { Command } from "./types";
 
 export const COMMANDS: Command[] = [
@@ -1851,18 +1850,4 @@ export const COMMANDS: Command[] = [
     category: "GitHub",
     run: (ctx) => ctx.openRepositoryOnGitHub(),
   },
-  {
-    id: "t3d.games.pick",
-    title: "Play Game…",
-    category: "Games",
-    run: (ctx) => ctx.pickGame(),
-  },
-  ...GAMES.map(
-    (game): Command => ({
-      id: `t3d.games.play.${game.id}`,
-      title: `Play ${game.title}`,
-      category: "Games",
-      run: (ctx) => ctx.openGame(game.id),
-    }),
-  ),
 ];

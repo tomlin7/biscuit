@@ -17,7 +17,6 @@ import {
   isImageFile,
   isProbablyTextFile,
   isSafeEntryName,
-  isGamePath,
   isWebviewPath,
   isVirtualPath,
   joinPath,
@@ -97,7 +96,6 @@ export type WorkspaceState = {
   openFile: (path: string) => Promise<void>;
   openDroppedPaths: (paths: string[]) => Promise<void>;
   openUntitled: () => void;
-  openGame: (id: string, title: string) => void;
   openWebview: (extId: string, viewId: string, title?: string) => void;
   openFileAt: (path: string, line: number, column: number) => Promise<void>;
   activateTab: (path: string) => void;
@@ -607,27 +605,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       cursorColumn: 1,
     };
     setTabs((current) => [...current, next]);
-    setActivePath(path);
-  }, []);
-
-  const openGame = useCallback((id: string, title: string) => {
-    const path = `game:${id}`;
-    setTabs((current) =>
-      current.some((tab) => tab.path === path)
-        ? current
-        : [
-            ...current,
-            {
-              path,
-              title,
-              language: "game",
-              value: "",
-              baseline: "",
-              cursorLine: 1,
-              cursorColumn: 1,
-            },
-          ],
-    );
     setActivePath(path);
   }, []);
 
@@ -1259,7 +1236,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const saveAs = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((item) => item.path === path);
-    if (!tab || tab.language === "image" || isGamePath(tab.path) || isWebviewPath(tab.path)) return;
+    if (!tab || tab.language === "image" || isWebviewPath(tab.path)) return;
     const dest = await saveDialog({
       defaultPath: isVirtualPath(tab.path) ? `${tab.title}.txt` : tab.path,
       title: "Save As",
@@ -1306,7 +1283,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const save = useCallback(async () => {
     const path = activePathRef.current;
     const tab = tabsRef.current.find((t) => t.path === path);
-    if (!tab || tab.language === "image" || isGamePath(tab.path) || isWebviewPath(tab.path)) return;
+    if (!tab || tab.language === "image" || isWebviewPath(tab.path)) return;
     if (isVirtualPath(tab.path)) {
       await saveAs();
       return;
@@ -1363,7 +1340,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFile,
       openDroppedPaths,
       openUntitled,
-      openGame,
       openWebview,
       openFileAt,
       activateTab,
@@ -1425,7 +1401,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFile,
       openDroppedPaths,
       openUntitled,
-      openGame,
       openWebview,
       openFileAt,
       activateTab,

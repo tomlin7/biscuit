@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minesweeper</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .mines__board {
+      display: grid;
+      gap: 2px;
+      padding: 6px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--fg) 5%, transparent);
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+    }
+    .mines__cell {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      background: color-mix(in srgb, var(--fg) 17%, var(--bg-island));
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+    .mines__cell:not(.mines__cell--open):hover {
+      background: color-mix(in srgb, var(--fg) 24%, var(--bg-island));
+    }
+    .mines__cell--open {
+      background: var(--bg-island);
+      cursor: default;
+    }
+    .mines__cell--mine {
+      background: var(--danger-bg);
+      color: var(--danger-fg);
+    }
+    .mines__cell--n1 { color: #4a9eff; }
+    .mines__cell--n2 { color: #3fb950; }
+    .mines__cell--n3 { color: #f85149; }
+    .mines__cell--n4 { color: #a371f7; }
+    .mines__cell--n5 { color: #d29922; }
+    .mines__cell--n6 { color: #39c5cf; }
+    .mines__cell--n7 { color: var(--fg); }
+    .mines__cell--n8 { color: var(--fg-muted); }
+
+    .mines__icon {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-view">
+    <div class="game__header">
+      <p class="game__title">Minesweeper</p>
+      <p class="game__status" id="status">Left-click to reveal, right-click to flag.</p>
+    </div>
+    <div class="game__score">
+      <span>Mines: <strong id="mines-left">10</strong></span>
+      <span>Time: <strong id="timer">0</strong>s</span>
+    </div>
+    <div class="mines__board" id="board"></div>
+    <div class="game__controls">
+      <button type="button" class="game__button" id="btn-restart">Restart</button>
+      <span class="game__separator"></span>
+      <button type="button" class="game__button game__button--active diff-btn" data-level="0">Beginner</button>
+      <button type="button" class="game__button diff-btn" data-level="1">Intermediate</button>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script>
+    const LEVELS = [
+      { label: "Beginner", cols: 9, rows: 9, mines: 10 },
+      { label: "Intermediate", cols: 16, rows: 16, mines: 40 },
+    ];
+
+    let levelIdx = 0;
+    let board = [];
+    let state = "ready"; // ready | playing | won | lost
+    let startedAt = null;
+    let timerId = null;
+
+    const boardEl = document.getElementById("board");
+    const statusEl = document.getElementById("status");
+    const minesLeftEl = document.getElementById("mines-left");
+    const timerEl = document.getElementById("timer");
+    const restartBtn = document.getElementById("btn-restart");
+    const diffBtns = document.querySelectorAll(".diff-btn");
+
+    function getLevel() {
+      return LEVELS[levelIdx];
+    }
+
+    function initBoard() {
+      const { cols, rows, mines } = getLevel();
+      board = Array.from({ length: cols * rows }, () => ({
+        mine: false,
+        adjacent: 0,
+        revealed: false,
+        flagged: false,
+      }));
+      state = "ready";
+      startedAt = null;
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      timerEl.textContent = "0";
+      minesLeftEl.textContent = mines;
+      statusEl.textContent = "Left-click to reveal, right-click to flag.";
+
+      boardEl.style.gridTemplateColumns = `repeat(${cols}, 26px)`;
+      boardEl.style.gridTemplateRows = `repeat(${rows}, 26px)`;
+      render();
+    }
+
+    function neighbours(idx) {
+      const { cols, rows } = getLevel();
+      const x = idx % cols;
+      const y = Math.floor(idx / cols);
+      const out = [];
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) {
+            out.push(ny * cols + nx);
+          }
+        }
+      }
+      return out;
+    }
+
+    function seedMines(safeIdx) {
+      const { cols, rows, mines } = getLevel();
+      const safeNeighbours = new Set([safeIdx, ...neighbours(safeIdx)]);
+      const candidates = board.map((_, i) => safeNeighbours.has(i) ? null : i).filter(i => i !== null);
+      for (let i = candidates.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+      }
+      for (let i = 0; i < mines; i++) {
+        board[candidates[i]].mine = true;
+      }
+      for (let i = 0; i < board.length; i++) {
+        board[i].adjacent = neighbours(i).filter(n => board[n].mine).length;
+      }
+    }
+
+    function reveal(idx) {
+      const queue = [idx];
+      while (queue.length > 0) {
+        const curr = queue.pop();
+        const cell = board[curr];
+        if (cell.revealed || cell.flagged) continue;
+        cell.revealed = true;
+        if (cell.adjacent === 0 && !cell.mine) {
+          for (const n of neighbours(curr)) {
+            if (!board[n].revealed) queue.push(n);
+          }
+        }
+      }
+    }
+
+    function checkWin() {
+      const { mines } = getLevel();
+      const unrevealed = board.filter(c => !c.revealed).length;
+      if (unrevealed === mines) {
+        state = "won";
+        statusEl.textContent = "You win! Great sweep.";
+        if (timerId) clearInterval(timerId);
+      }
+    }
+
+    function render() {
+      boardEl.innerHTML = "";
+      const { mines } = getLevel();
+      const flaggedCount = board.filter(c => c.flagged).length;
+      minesLeftEl.textContent = Math.max(0, mines - flaggedCount);
+
+      board.forEach((cell, i) => {
+        const div = document.createElement("button");
+        div.type = "button";
+        div.className = "mines__cell";
+
+        if (cell.revealed) {
+          div.classList.add("mines__cell--open");
+          if (cell.mine) {
+            div.classList.add("mines__cell--mine");
+            div.innerHTML = `<svg class="mines__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line></svg>`;
+          } else if (cell.adjacent > 0) {
+            div.classList.add(`mines__cell--n${cell.adjacent}`);
+            div.textContent = cell.adjacent;
+          }
+        } else if (cell.flagged) {
+          div.innerHTML = `<svg class="mines__icon" viewBox="0 0 24 24" style="color:var(--accent)"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`;
+        }
+
+        div.addEventListener("click", () => {
+          if (state === "won" || state === "lost" || cell.flagged || cell.revealed) return;
+          if (state === "ready") {
+            seedMines(i);
+            state = "playing";
+            startedAt = Date.now();
+            timerId = setInterval(() => {
+              timerEl.textContent = Math.floor((Date.now() - startedAt) / 1000);
+            }, 250);
+          }
+
+          if (cell.mine) {
+            state = "lost";
+            statusEl.textContent = "Boom! Game over.";
+            if (timerId) clearInterval(timerId);
+            board.forEach(c => { if (c.mine) c.revealed = true; });
+          } else {
+            reveal(i);
+            checkWin();
+          }
+          render();
+        });
+
+        div.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          if (state === "won" || state === "lost" || cell.revealed) return;
+          cell.flagged = !cell.flagged;
+          render();
+        });
+
+        boardEl.appendChild(div);
+      });
+    }
+
+    restartBtn.addEventListener("click", initBoard);
+
+    diffBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        diffBtns.forEach(b => b.classList.remove("game__button--active"));
+        btn.classList.add("game__button--active");
+        levelIdx = parseInt(btn.dataset.level, 10);
+        initBoard();
+      });
+    });
+
+    initBoard();
+  </script>
+</body>
+</html>

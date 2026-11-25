@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Whoops</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .pong__stage {
+      position: relative;
+      max-width: 100%;
+    }
+    .pong__canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: var(--bg-island);
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+      outline: none;
+      cursor: pointer;
+    }
+    .pong__overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg-island) 70%, transparent);
+      border: none;
+      color: var(--fg);
+      cursor: pointer;
+    }
+    .pong__overlay .game__button {
+      display: inline-flex;
+      align-items: center;
+    }
+    .pong__hint {
+      font-size: var(--font-size-xs);
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="game-view">
+    <div class="game__header">
+      <p class="game__title">Whoops</p>
+      <p class="game__status" id="status">
+        Requested game could not be found. Jump the blocks while you are here.
+      </p>
+    </div>
+    <div class="game__score">
+      <span>Score <strong id="score">0</strong></span>
+      <span>Best <strong id="best">0</strong></span>
+    </div>
+    <div class="pong__stage">
+      <canvas id="canvas" class="pong__canvas" width="640" height="240" tabindex="0"></canvas>
+      <button type="button" class="pong__overlay" id="overlay">
+        <span class="game__button game__button--active" id="btn-start">Start</span>
+        <span class="pong__hint">Space, W, the up arrow, or a click jumps</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script>
+    const WIDTH = 640;
+    const HEIGHT = 240;
+    const GROUND = 200;
+    const RUNNER = 26;
+    const GRAVITY = 1800;
+    const JUMP = 620;
+    const SPEED = 260;
+
+    let running = false;
+    let score = 0;
+    let best = 0;
+    let crashed = false;
+
+    let y = GROUND - RUNNER;
+    let vy = 0;
+    let obstacles = [];
+    let distance = 0;
+    let jumpQueued = false;
+    let lastTime = performance.now();
+    let animFrame = null;
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+    const overlay = document.getElementById("overlay");
+    const btnStart = document.getElementById("btn-start");
+
+    // Extract query parameter if any (e.g. ?requested=xyz)
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("requested");
+    if (requested) {
+      document.getElementById("status").textContent = `There is no game called “${requested}”. Jump the blocks while you are here.`;
+    }
+
+    function draw() {
+      const styles = getComputedStyle(canvas);
+      const fg = styles.getPropertyValue("--fg").trim() || "#e6e6e6";
+      const dim = styles.getPropertyValue("--fg-dim").trim() || "rgba(128,128,128,0.5)";
+      const muted = styles.getPropertyValue("--fg-muted").trim() || "#9a9a9a";
+
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      ctx.fillStyle = dim;
+      ctx.font = "600 64px ui-monospace, monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("404", WIDTH / 2, 90);
+      ctx.fillRect(0, GROUND, WIDTH, 2);
+
+      ctx.fillStyle = fg;
+      ctx.fillRect(60, y, RUNNER, RUNNER);
+
+      ctx.fillStyle = muted;
+      for (const o of obstacles) {
+        ctx.fillRect(o.x, GROUND - o.h, o.w, o.h);
+      }
+    }
+
+    function tick(now) {
+      const dt = Math.min(0.032, (now - lastTime) / 1000);
+      lastTime = now;
+
+      const onGround = y >= GROUND - RUNNER;
+      if (jumpQueued && onGround) {
+        vy = -JUMP;
+      }
+      jumpQueued = false;
+      vy += GRAVITY * dt;
+      y = Math.min(GROUND - RUNNER, y + vy * dt);
+      if (y >= GROUND - RUNNER) vy = 0;
+
+      const currentSpeed = SPEED + distance * 0.02;
+      distance += currentSpeed * dt;
+      obstacles = obstacles
+        .map((o) => ({ ...o, x: o.x - currentSpeed * dt }))
+        .filter((o) => o.x + o.w > 0);
+
+      const lastObstacle = obstacles[obstacles.length - 1];
+      if (!lastObstacle || lastObstacle.x < WIDTH - 220 - Math.random() * 260) {
+        obstacles.push({
+          x: WIDTH,
+          w: 14 + Math.random() * 18,
+          h: 22 + Math.random() * 34,
+        });
+      }
+
+      const hit = obstacles.some(
+        (o) => 60 + RUNNER > o.x && 60 < o.x + o.w && y + RUNNER > GROUND - o.h
+      );
+
+      score = Math.floor(distance / 40);
+      scoreEl.textContent = score;
+
+      draw();
+
+      if (hit) {
+        crashed = true;
+        running = false;
+        best = Math.max(best, score);
+        bestEl.textContent = best;
+        btnStart.textContent = "Try again";
+        overlay.style.display = "flex";
+        return;
+      }
+
+      if (running) {
+        animFrame = requestAnimationFrame(tick);
+      }
+    }
+
+    function start() {
+      crashed = false;
+      score = 0;
+      scoreEl.textContent = 0;
+      distance = 0;
+      obstacles = [];
+      y = GROUND - RUNNER;
+      vy = 0;
+      running = true;
+      overlay.style.display = "none";
+      canvas.focus();
+      lastTime = performance.now();
+      animFrame = requestAnimationFrame(tick);
+    }
+
+    function pause() {
+      if (!running) return;
+      running = false;
+      if (animFrame) cancelAnimationFrame(animFrame);
+      btnStart.textContent = "Resume";
+      overlay.style.display = "flex";
+    }
+
+    overlay.addEventListener("click", start);
+    window.addEventListener("blur", pause);
+
+    canvas.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (e.key === " " || key === "arrowup" || key === "w") {
+        e.preventDefault();
+        if (running) jumpQueued = true;
+        else start();
+      }
+    });
+
+    canvas.addEventListener("pointerdown", () => {
+      if (running) jumpQueued = true;
+    });
+
+    draw();
+  </script>
+</body>
+</html>

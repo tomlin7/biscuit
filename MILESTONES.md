@@ -449,6 +449,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.441.0** | Play Game picker and Whoops fallback | shipped |
 | **0.442.0** | Extension host with lazy activation | shipped |
 | **0.443.0** | Webview contributions in sandboxed tabs | shipped |
+| **0.444.0** | Move games to an extension (t3d.games) | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

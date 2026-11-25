@@ -44,7 +44,6 @@ import {
 } from "../scm/githubRemote";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isVirtualPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
-import { findGame, GAMES } from "../games/registry";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
@@ -98,7 +97,6 @@ function ShellChrome() {
     openFile,
     openDroppedPaths,
     openUntitled,
-    openGame: openGameTab,
     openWebview: openWebviewTab,
     openFileAt,
     reopenClosed,
@@ -1552,24 +1550,8 @@ function ShellChrome() {
         }
         void invoke("quit_app");
       },
-      openGame: (id) => {
-        openGameTab(id, findGame(id)?.title ?? id);
-      },
       openWebview: (extId, viewId, title) => {
         openWebviewTab(extId, viewId, title);
-      },
-      pickGame: () => {
-        setRecentCommands([]);
-        setSymbolCommands(
-          GAMES.map((game) => ({
-            id: `gamePick:${game.id}`,
-            title: `Game: ${game.title}`,
-            category: "Games",
-            run: () => openGameTab(game.id, game.title),
-          })),
-        );
-        setPaletteSeed("Game:");
-        setPaletteOpen(true);
       },
       copyUnreadNotificationCount: () => {
         void navigator.clipboard.writeText(String(notificationUnread));
@@ -2347,7 +2329,6 @@ function ShellChrome() {
       toggleSidebar,
       debugSessions,
       restoreRecentSession,
-      openGameTab,
       openWebviewTab,
       startDebugSession,
       stopDebugSession,

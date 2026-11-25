@@ -17,14 +17,12 @@ import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import {
-  isGamePath,
   isWebviewPath,
   isVirtualPath,
   relativeToRoot,
   workspaceCrumbs,
   parentPath,
 } from "../workspace/path";
-import { GameView } from "../games/GameView";
 import { ExtensionWebviewView } from "../extensions/ExtensionWebviewView";
 import { rootForPath } from "../ai/roots";
 import { listDirectory } from "../workspace/fsTree";
@@ -480,9 +478,7 @@ export function EditorArea() {
           ) : (
           <>
             <div className="editor-area__pane">
-              {isGamePath(activePath) ? (
-                <GameView path={activePath} />
-              ) : isWebviewPath(activePath) ? (
+              {isWebviewPath(activePath) ? (
                 <ExtensionWebviewView path={activePath} />
               ) : document?.language === "image" ? (
                 <ImageView path={activePath} />
@@ -565,9 +561,7 @@ export function EditorArea() {
                       }}
                     />
                   </div>
-                  {isGamePath(secondaryPath) ? (
-                    <GameView path={secondaryPath} />
-                  ) : isWebviewPath(secondaryPath) ? (
+                  {isWebviewPath(secondaryPath) ? (
                     <ExtensionWebviewView path={secondaryPath} />
                   ) : tabs.find((tab) => tab.path === secondaryPath)?.language === "image" ? (
                     <ImageView path={secondaryPath} />

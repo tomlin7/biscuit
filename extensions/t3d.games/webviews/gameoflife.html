@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Game of Life</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .life__canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background: var(--bg-island);
+      border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+      cursor: crosshair;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-view">
+    <div class="game__header">
+      <p class="game__title">Game of Life</p>
+      <p class="game__status">
+        Gen <strong id="gen">0</strong> · Population <strong id="pop">0</strong> · Drag to toggle cells
+      </p>
+    </div>
+    <canvas id="canvas" class="life__canvas" width="672" height="420"></canvas>
+    <div class="game__controls">
+      <button type="button" class="game__button game__button--active" id="btn-toggle">Start</button>
+      <button type="button" class="game__button" id="btn-step">Step</button>
+      <button type="button" class="game__button" id="btn-random">Random</button>
+      <button type="button" class="game__button" id="btn-clear">Clear</button>
+      <span class="game__separator"></span>
+      <button type="button" class="game__button speed-btn" data-speed="0">Slow</button>
+      <button type="button" class="game__button game__button--active speed-btn" data-speed="1">Normal</button>
+      <button type="button" class="game__button speed-btn" data-speed="2">Fast</button>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script>
+    const COLS = 48;
+    const ROWS = 30;
+    const CELL = 14;
+    const SPEEDS = [
+      { label: "Slow", ms: 320 },
+      { label: "Normal", ms: 140 },
+      { label: "Fast", ms: 50 },
+    ];
+
+    let grid = new Uint8Array(COLS * ROWS);
+    let running = false;
+    let speedIdx = 1;
+    let generation = 0;
+    let timer = null;
+    let painting = null;
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const genEl = document.getElementById("gen");
+    const popEl = document.getElementById("pop");
+    const toggleBtn = document.getElementById("btn-toggle");
+    const stepBtn = document.getElementById("btn-step");
+    const randomBtn = document.getElementById("btn-random");
+    const clearBtn = document.getElementById("btn-clear");
+    const speedBtns = document.querySelectorAll(".speed-btn");
+
+    function seedRandom() {
+      for (let i = 0; i < grid.length; i++) {
+        grid[i] = Math.random() < 0.28 ? 1 : 0;
+      }
+      generation = 0;
+      updateStats();
+      draw();
+    }
+
+    function step() {
+      const next = new Uint8Array(COLS * ROWS);
+      for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+          let neighbours = 0;
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              if (dx === 0 && dy === 0) continue;
+              const nx = (x + dx + COLS) % COLS;
+              const ny = (y + dy + ROWS) % ROWS;
+              neighbours += grid[ny * COLS + nx];
+            }
+          }
+          const alive = grid[y * COLS + x] === 1;
+          next[y * COLS + x] = neighbours === 3 || (alive && neighbours === 2) ? 1 : 0;
+        }
+      }
+      grid = next;
+      generation++;
+      updateStats();
+      draw();
+    }
+
+    function population() {
+      let count = 0;
+      for (let i = 0; i < grid.length; i++) count += grid[i];
+      return count;
+    }
+
+    function updateStats() {
+      genEl.textContent = generation;
+      popEl.textContent = population();
+    }
+
+    function draw() {
+      const styles = getComputedStyle(canvas);
+      const fg = styles.getPropertyValue("--fg").trim() || "#e6e6e6";
+      const line = styles.getPropertyValue("--border-subtle").trim() || "rgba(128,128,128,0.15)";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = line;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = 0; x <= COLS; x++) {
+        ctx.moveTo(x * CELL + 0.5, 0);
+        ctx.lineTo(x * CELL + 0.5, ROWS * CELL);
+      }
+      for (let y = 0; y <= ROWS; y++) {
+        ctx.moveTo(0, y * CELL + 0.5);
+        ctx.lineTo(COLS * CELL, y * CELL + 0.5);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = fg;
+      for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+          if (grid[y * COLS + x]) {
+            ctx.fillRect(x * CELL + 2, y * CELL + 2, CELL - 3, CELL - 3);
+          }
+        }
+      }
+    }
+
+    function startTimer() {
+      if (timer) clearInterval(timer);
+      timer = setInterval(step, SPEEDS[speedIdx].ms);
+    }
+
+    function stopTimer() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      running = !running;
+      toggleBtn.textContent = running ? "Pause" : "Start";
+      if (running) {
+        startTimer();
+      } else {
+        stopTimer();
+      }
+    });
+
+    stepBtn.addEventListener("click", () => {
+      if (running) {
+        running = false;
+        toggleBtn.textContent = "Start";
+        stopTimer();
+      }
+      step();
+    });
+
+    randomBtn.addEventListener("click", seedRandom);
+
+    clearBtn.addEventListener("click", () => {
+      grid = new Uint8Array(COLS * ROWS);
+      generation = 0;
+      updateStats();
+      draw();
+    });
+
+    speedBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        speedBtns.forEach((b) => b.classList.remove("game__button--active"));
+        btn.classList.add("game__button--active");
+        speedIdx = parseInt(btn.dataset.speed, 10);
+        if (running) startTimer();
+      });
+    });
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor(((e.clientX - rect.left) / rect.width) * COLS);
+      const y = Math.floor(((e.clientY - rect.top) / rect.height) * ROWS);
+      if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return null;
+      return y * COLS + x;
+    }
+
+    canvas.addEventListener("pointerdown", (e) => {
+      const idx = getCoords(e);
+      if (idx === null) return;
+      canvas.setPointerCapture(e.pointerId);
+      const nextVal = grid[idx] === 1 ? 0 : 1;
+      painting = nextVal;
+      grid[idx] = nextVal;
+      updateStats();
+      draw();
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (painting === null) return;
+      const idx = getCoords(e);
+      if (idx === null) return;
+      if (grid[idx] !== painting) {
+        grid[idx] = painting;
+        updateStats();
+        draw();
+      }
+    });
+
+    const stopPainting = (e) => {
+      if (painting !== null) {
+        try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        painting = null;
+      }
+    };
+    canvas.addEventListener("pointerup", stopPainting);
+    canvas.addEventListener("pointercancel", stopPainting);
+
+    seedRandom();
+  </script>
+</body>
+</html>
