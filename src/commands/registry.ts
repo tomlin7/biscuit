@@ -764,4 +764,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCreateBranch(),
   },
+  {
+    id: "git.checkout",
+    title: "Git: Checkout Branch",
+    category: "Git",
+    run: (ctx) => ctx.gitCheckout(),
+  },
 ];

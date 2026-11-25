@@ -695,6 +695,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("createBranch");
       },
+      gitCheckout: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("checkout");
+      },
     }),
     [
       openFolder,

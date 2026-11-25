@@ -4,7 +4,8 @@ export type ScmRemoteAction =
   | "fetch"
   | "stash"
   | "stashPop"
-  | "createBranch";
+  | "createBranch"
+  | "checkout";
 
 type Listener = (action: ScmRemoteAction) => void;
 

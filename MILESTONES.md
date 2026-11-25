@@ -268,6 +268,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.260.0** | Focus active terminal from palette | shipped |
 | **0.261.0** | Duplicate editor to the side | shipped |
 | **0.262.0** | Git create branch from palette | shipped |
+| **0.263.0** | Git checkout branch from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
