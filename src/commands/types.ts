@@ -282,6 +282,7 @@ export type CommandContext = {
   changeEncoding: () => void;
   searchGitHubIssues: () => void;
   searchGitHubPullRequests: () => void;
+  openRepositoryOnGitHub: () => void;
 };
 
 export type Command = {

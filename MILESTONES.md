@@ -422,6 +422,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.414.0** | Change file encoding from palette | shipped |
 | **0.415.0** | Search GitHub issues from palette | shipped |
 | **0.416.0** | Search GitHub pull requests from palette | shipped |
+| **0.417.0** | Open repository on GitHub from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

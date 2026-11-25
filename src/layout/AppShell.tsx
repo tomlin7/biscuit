@@ -1833,6 +1833,14 @@ function ShellChrome() {
           });
         });
       },
+      openRepositoryOnGitHub: () => {
+        void resolveGithubRepoUrl().then((web) => {
+          if (!web) return;
+          void openUrl(web).catch(() => {
+            /* ignore */
+          });
+        });
+      },
     }),
     [
       openFolder,

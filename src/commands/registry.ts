@@ -1708,5 +1708,10 @@ export const COMMANDS: Command[] = [
     category: "GitHub",
     run: (ctx) => ctx.searchGitHubPullRequests(),
   },
-
+  {
+    id: "workbench.action.openRepositoryOnGitHub",
+    title: "Open Repository on GitHub",
+    category: "GitHub",
+    run: (ctx) => ctx.openRepositoryOnGitHub(),
+  },
 ];
