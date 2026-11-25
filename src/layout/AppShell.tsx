@@ -475,6 +475,10 @@ function ShellChrome() {
         updateEditor({
           insertFinalNewline: !settings.editor.insertFinalNewline,
         }),
+      toggleTrimTrailingWhitespace: () =>
+        updateEditor({
+          trimTrailingWhitespace: !settings.editor.trimTrailingWhitespace,
+        }),
       openPalette,
       openSymbols,
       openWorkspaceSymbols,
@@ -595,6 +599,7 @@ function ShellChrome() {
       settings.editor.lineNumbers,
       settings.editor.relativeLineNumbers,
       settings.editor.insertFinalNewline,
+      settings.editor.trimTrailingWhitespace,
       updateEditor,
       clearAttachments,
       clearChat,

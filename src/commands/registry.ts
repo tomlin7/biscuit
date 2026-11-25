@@ -327,6 +327,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleInsertFinalNewline(),
   },
   {
+    id: "editor.action.toggleTrimTrailingWhitespace",
+    title: "Toggle Trim Trailing Whitespace",
+    category: "View",
+    run: (ctx) => ctx.toggleTrimTrailingWhitespace(),
+  },
+  {
     id: "editor.action.toggleMinimap",
     title: "Toggle Minimap",
     category: "View",
