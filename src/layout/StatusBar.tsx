@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   AlertCircle,
   Bell,
@@ -16,6 +16,7 @@ import { useSettings } from "../settings/SettingsContext";
 import { editorConfigFor } from "../editor/editorconfig";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { IconButton } from "../ui/IconButton";
+import { extensionHost } from "../extensions/host/extensionHost";
 
 type StatusBarProps = {
   onOpenProblems?: () => void;
@@ -55,14 +56,13 @@ export function StatusBar({
   } = useWorkspace();
   const { settings, updateEditor } = useSettings();
   const textDocument =
-    document && document.language !== "image" && document.language !== "game" ? document : null;
+    document && document.language !== "image" && document.language !== "webview" ? document : null;
   const eol = textDocument ? (textDocument.value.includes("\r\n") ? "CRLF" : "LF") : null;
   const { problems } = useDiagnostics();
   const { items, unread, markRead, dismiss, clear } = useNotifications();
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [encoding, setEncoding] = useState("UTF-8");
-  const [lastKeyChord, setLastKeyChord] = useState("");
   const configMenuRef = useRef<HTMLDivElement>(null);
   const notifyMenuRef = useRef<HTMLDivElement>(null);
 
@@ -89,27 +89,18 @@ export function StatusBar({
     };
   }, [document?.path, rootPath, settings.preferredEncoding]);
 
+  const statusBarItems = useSyncExternalStore(
+    extensionHost.subscribeStatusBar,
+    extensionHost.getStatusBarItems,
+  );
+
   useEffect(() => {
-    if (!settings.keypressDisplay) {
-      setLastKeyChord("");
-      return;
-    }
     const onKey = (event: KeyboardEvent) => {
-      if (event.repeat) return;
-      const parts: string[] = [];
-      if (event.ctrlKey) parts.push("Ctrl");
-      if (event.altKey) parts.push("Alt");
-      if (event.shiftKey && event.key.length > 1) parts.push("Shift");
-      if (event.metaKey) parts.push("Meta");
-      const key =
-        event.key === " " ? "Space" : event.key.length === 1 ? event.key.toUpperCase() : event.key;
-      if (!["Control", "Alt", "Shift", "Meta"].includes(event.key)) parts.push(key);
-      if (parts.length === 0) return;
-      setLastKeyChord(parts.join("+"));
+      extensionHost.handleKeyDown(event);
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
-  }, [settings.keypressDisplay]);
+  }, []);
 
   // Click outside listener for popovers
   useEffect(() => {
@@ -204,10 +195,50 @@ export function StatusBar({
 
         {busy ? <span className="status-bar__item">Working…</span> : null}
         {dirty ? <span className="status-bar__item">Unsaved</span> : null}
+
+        {statusBarItems
+          .filter((item) => item.alignment === "left")
+          .map((item) =>
+            item.command ? (
+              <button
+                key={item.id}
+                type="button"
+                className="status-bar__chip"
+                title={item.tooltip}
+                onClick={() => void extensionHost.executeCommand(item.command!)}
+              >
+                {item.text}
+              </button>
+            ) : (
+              <span key={item.id} className="status-bar__item" title={item.tooltip}>
+                {item.text}
+              </span>
+            ),
+          )}
       </div>
 
       {/* Right group: Cursor pos, Indent, Encoding, EOL, Language, Quick Config, Settings, Notifications */}
       <div className="status-bar__group status-bar__group--end">
+        {statusBarItems
+          .filter((item) => item.alignment === "right")
+          .map((item) =>
+            item.command ? (
+              <button
+                key={item.id}
+                type="button"
+                className="status-bar__chip"
+                title={item.tooltip}
+                onClick={() => void extensionHost.executeCommand(item.command!)}
+              >
+                {item.text}
+              </button>
+            ) : (
+              <span key={item.id} className="status-bar__item" title={item.tooltip}>
+                {item.text}
+              </span>
+            ),
+          )}
+
         {textDocument ? (
           <span className="status-bar__item" title="Line and Column">
             Ln {cursorLine}, Col {cursorColumn}
@@ -235,16 +266,6 @@ export function StatusBar({
         {settings.vimMode ? (
           <span className="status-bar__item" title="Vim mode scaffold (experimental)">
             VIM
-          </span>
-        ) : null}
-
-        {settings.keypressDisplay ? (
-          <span
-            className="status-bar__item"
-            title="Keypress display"
-            aria-live="polite"
-          >
-            {lastKeyChord || "…"}
           </span>
         ) : null}
 

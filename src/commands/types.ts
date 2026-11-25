@@ -292,7 +292,6 @@ export type CommandContext = {
   configureRunCommand: () => void;
   showRunConfigurations: () => void;
   toggleVimMode: () => void;
-  toggleKeypressDisplay: () => void;
   changeEncoding: () => void;
   searchGitHubIssues: () => void;
   searchGitHubPullRequests: () => void;

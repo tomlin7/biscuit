@@ -1,0 +1,20 @@
+{
+  "id": "t3d.keypress-display",
+  "name": "Keypress Display",
+  "version": "1.0.0",
+  "description": "Streamer-style real-time keypress HUD in the status bar.",
+  "main": "main.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:workbench.action.toggleKeypressDisplay"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "workbench.action.toggleKeypressDisplay",
+        "title": "Toggle Keypress Display",
+        "category": "View"
+      }
+    ]
+  }
+}

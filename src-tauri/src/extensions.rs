@@ -414,6 +414,15 @@ fn ensure_builtin_extensions(root: &Path) {
         let _ = fs::write(games_dir.join("webviews").join("pong.html"), pong_html);
         let _ = fs::write(games_dir.join("webviews").join("whoops.html"), whoops_html);
     }
+
+    let keypress_dir = root.join("t3d.keypress-display");
+    if !keypress_dir.exists() {
+        let _ = fs::create_dir_all(&keypress_dir);
+        let manifest = include_str!("../../extensions/t3d.keypress-display/extension.json");
+        let main = include_str!("../../extensions/t3d.keypress-display/main.js");
+        let _ = fs::write(keypress_dir.join("extension.json"), manifest);
+        let _ = fs::write(keypress_dir.join("main.js"), main);
+    }
 }
 
 #[tauri::command]

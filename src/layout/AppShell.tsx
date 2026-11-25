@@ -2017,11 +2017,6 @@ function ShellChrome() {
             : "Off",
         );
       },
-      toggleKeypressDisplay: () => {
-        const next = !settings.keypressDisplay;
-        updateApp({ keypressDisplay: next });
-        notify("Keypress Display", next ? "On" : "Off");
-      },
       changeEncoding: () => {
         const encodings = [
           "UTF-8",
@@ -2360,7 +2355,6 @@ function ShellChrome() {
       toggleAi,
       updateApp,
       settings.vimMode,
-      settings.keypressDisplay,
       resolveGithubRepoUrl,
       applyDiskValue,
       problems,

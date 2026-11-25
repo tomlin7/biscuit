@@ -4,9 +4,11 @@
 import type {
   HostRequestMethod,
   InputBoxOptions,
+  KeyPressEvent,
   MainToWorker,
   MessageLevel,
   QuickPickOptions,
+  StatusBarAlignment,
   WorkerToMain,
   WorkspaceSnapshot,
 } from "./protocol";
@@ -53,6 +55,84 @@ function request<T>(extensionId: string, method: HostRequestMethod, params: unkn
   });
 }
 
+type KeyPressListener = (event: KeyPressEvent) => void;
+const keyPressListeners = new Set<KeyPressListener>();
+let nextStatusBarId = 1;
+
+class StatusBarItemImpl {
+  private id: string;
+  private extensionId: string;
+  private alignment: StatusBarAlignment;
+  private priority: number;
+  private _text: string = "";
+  private _tooltip?: string;
+  private _command?: string;
+  private _visible: boolean = false;
+
+  constructor(extensionId: string, alignment: StatusBarAlignment = "right", priority: number = 0) {
+    this.id = `sb_${extensionId}_${nextStatusBarId++}`;
+    this.extensionId = extensionId;
+    this.alignment = alignment;
+    this.priority = priority;
+  }
+
+  get text(): string {
+    return this._text;
+  }
+
+  set text(value: string) {
+    this._text = String(value);
+    if (this._visible) this.sync();
+  }
+
+  get tooltip(): string | undefined {
+    return this._tooltip;
+  }
+
+  set tooltip(value: string | undefined) {
+    this._tooltip = value ? String(value) : undefined;
+    if (this._visible) this.sync();
+  }
+
+  get command(): string | undefined {
+    return this._command;
+  }
+
+  set command(value: string | undefined) {
+    this._command = value ? String(value) : undefined;
+    if (this._visible) this.sync();
+  }
+
+  show(): void {
+    this._visible = true;
+    this.sync();
+  }
+
+  hide(): void {
+    this._visible = false;
+    post({ type: "disposeStatusBarItem", id: this.id });
+  }
+
+  dispose(): void {
+    this.hide();
+  }
+
+  private sync(): void {
+    post({
+      type: "setStatusBarItem",
+      item: {
+        id: this.id,
+        extensionId: this.extensionId,
+        alignment: this.alignment,
+        priority: this.priority,
+        text: this._text,
+        tooltip: this._tooltip,
+        command: this._command,
+      },
+    });
+  }
+}
+
 function createApi(extensionId: string) {
   const log = (level: MessageLevel, message: string) =>
     post({ type: "log", extensionId, level, message });
@@ -61,6 +141,10 @@ function createApi(extensionId: string) {
 
   return Object.freeze({
     version: 1,
+    StatusBarAlignment: Object.freeze({
+      Left: "left" as StatusBarAlignment,
+      Right: "right" as StatusBarAlignment,
+    }),
     commands: Object.freeze({
       registerCommand(command: string, handler: CommandHandler): Disposable {
         const owner = handlers.get(command);
@@ -90,6 +174,17 @@ function createApi(extensionId: string) {
       },
       showQuickPick(items: string[], options: QuickPickOptions = {}): Promise<string | undefined> {
         return request(extensionId, "window.showQuickPick", { items: items.map(String), options });
+      },
+      createStatusBarItem(alignment: StatusBarAlignment = "right", priority: number = 0) {
+        return new StatusBarItemImpl(extensionId, alignment, priority);
+      },
+      onDidPressKey(listener: KeyPressListener): Disposable {
+        keyPressListeners.add(listener);
+        return {
+          dispose() {
+            keyPressListeners.delete(listener);
+          },
+        };
       },
     }),
     env: Object.freeze({
@@ -158,6 +253,13 @@ scope.addEventListener("message", (event) => {
       break;
     case "invokeCommand":
       void invokeCommand(message.callId, message.command, message.args);
+      break;
+    case "keyPress":
+      for (const listener of keyPressListeners) {
+        try {
+          listener(message.event);
+        } catch (_) {}
+      }
       break;
     case "response": {
       const entry = pending.get(message.callId);

@@ -1821,12 +1821,6 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.toggleVimMode(),
   },
   {
-    id: "workbench.action.toggleKeypressDisplay",
-    title: "Toggle Keypress Display",
-    category: "View",
-    run: (ctx) => ctx.toggleKeypressDisplay(),
-  },
-  {
     id: "workbench.action.editor.changeEncoding",
     title: "Change File Encoding",
     category: "File",

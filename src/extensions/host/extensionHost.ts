@@ -4,9 +4,11 @@ import type { ExtensionManifest } from "../ExtensionsContext";
 import type {
   HostRequestMethod,
   InputBoxOptions,
+  KeyPressEvent,
   MainToWorker,
   MessageLevel,
   QuickPickOptions,
+  StatusBarItemDto,
   WorkerToMain,
   WorkspaceSnapshot,
 } from "./protocol";
@@ -59,6 +61,9 @@ class ExtensionHost {
   private services: HostServices | null = null;
   private nextCallId = 1;
   private snapshot: ReadonlyMap<string, ActivationRecord> = new Map();
+  private statusBarItems = new Map<string, StatusBarItemDto>();
+  private statusBarSnapshot: StatusBarItemDto[] = [];
+  private statusBarListeners = new Set<() => void>();
 
   setServices(services: HostServices) {
     this.services = services;
@@ -75,7 +80,29 @@ class ExtensionHost {
     };
   };
 
+  subscribeStatusBar = (listener: () => void) => {
+    this.statusBarListeners.add(listener);
+    return () => {
+      this.statusBarListeners.delete(listener);
+    };
+  };
+
   getRecords = (): ReadonlyMap<string, ActivationRecord> => this.snapshot;
+
+  getStatusBarItems = (): StatusBarItemDto[] => this.statusBarSnapshot;
+
+  handleKeyDown(event: KeyboardEvent) {
+    if (!this.worker) return;
+    const dto: KeyPressEvent = {
+      key: event.key,
+      code: event.code,
+      ctrlKey: event.ctrlKey,
+      altKey: event.altKey,
+      shiftKey: event.shiftKey,
+      metaKey: event.metaKey,
+    };
+    this.send(this.worker, { type: "keyPress", event: dto });
+  }
 
   /** True when an enabled extension with code declares this command. */
   ownsCommand(command: string): boolean {
@@ -130,7 +157,16 @@ class ExtensionHost {
     this.commandCalls.clear();
     this.registeredCommands.clear();
     this.records.clear();
+    this.statusBarItems.clear();
     this.emit();
+    this.emitStatusBar();
+  }
+
+  private emitStatusBar() {
+    this.statusBarSnapshot = Array.from(this.statusBarItems.values()).sort(
+      (a, b) => b.priority - a.priority,
+    );
+    for (const listener of this.statusBarListeners) listener();
   }
 
   activate(extensionId: string, reason: string): Promise<void> {
@@ -203,6 +239,15 @@ class ExtensionHost {
       case "unregisterCommand":
         if (this.registeredCommands.get(message.command) === message.extensionId) {
           this.registeredCommands.delete(message.command);
+        }
+        break;
+      case "setStatusBarItem":
+        this.statusBarItems.set(message.item.id, message.item);
+        this.emitStatusBar();
+        break;
+      case "disposeStatusBarItem":
+        if (this.statusBarItems.delete(message.id)) {
+          this.emitStatusBar();
         }
         break;
       case "commandResult": {

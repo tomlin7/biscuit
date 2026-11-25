@@ -33,9 +33,31 @@ export type WorkspaceSnapshot = {
   } | null;
 };
 
+export type StatusBarAlignment = "left" | "right";
+
+export type StatusBarItemDto = {
+  id: string;
+  extensionId: string;
+  alignment: StatusBarAlignment;
+  priority: number;
+  text: string;
+  tooltip?: string;
+  command?: string;
+};
+
+export type KeyPressEvent = {
+  key: string;
+  code: string;
+  ctrlKey: boolean;
+  altKey: boolean;
+  shiftKey: boolean;
+  metaKey: boolean;
+};
+
 export type MainToWorker =
   | { type: "activate"; extensionId: string; code: string }
   | { type: "invokeCommand"; callId: number; command: string; args: unknown[] }
+  | { type: "keyPress"; event: KeyPressEvent }
   | { type: "response"; callId: number; ok: true; value: unknown }
   | { type: "response"; callId: number; ok: false; error: string };
 
@@ -44,6 +66,8 @@ export type WorkerToMain =
   | { type: "activationFailed"; extensionId: string; error: string }
   | { type: "registerCommand"; extensionId: string; command: string }
   | { type: "unregisterCommand"; extensionId: string; command: string }
+  | { type: "setStatusBarItem"; item: StatusBarItemDto }
+  | { type: "disposeStatusBarItem"; id: string }
   | { type: "commandResult"; callId: number; ok: true; value: unknown }
   | { type: "commandResult"; callId: number; ok: false; error: string }
   | {

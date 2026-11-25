@@ -43,8 +43,6 @@ export type AppSettings = {
   chromeAcrylic: boolean;
   /** Experimental vim-mode scaffold (status badge + block caret). */
   vimMode: boolean;
-  /** Streamer-style keypress HUD in the status bar. */
-  keypressDisplay: boolean;
   /** Preferred charset label shown in the status bar / encoding picker. */
   preferredEncoding: string;
 };
@@ -54,7 +52,7 @@ type SettingsState = {
   updateEditor: (patch: Partial<EditorSettings>) => void;
   updateChromeAcrylic: (on: boolean) => void;
   updateApp: (
-    patch: Partial<Pick<AppSettings, "vimMode" | "keypressDisplay" | "preferredEncoding">>,
+    patch: Partial<Pick<AppSettings, "vimMode" | "preferredEncoding">>,
   ) => void;
   reset: () => void;
 };
@@ -82,7 +80,6 @@ const DEFAULTS: AppSettings = {
   },
   chromeAcrylic: true,
   vimMode: false,
-  keypressDisplay: false,
   preferredEncoding: "UTF-8",
 };
 
@@ -102,7 +99,6 @@ function load(): AppSettings {
           ? parsed.chromeAcrylic
           : DEFAULTS.chromeAcrylic,
       vimMode: parsed.vimMode === true,
-      keypressDisplay: parsed.keypressDisplay === true,
       preferredEncoding:
         typeof parsed.preferredEncoding === "string" && parsed.preferredEncoding.trim()
           ? parsed.preferredEncoding.trim().toUpperCase()
@@ -156,7 +152,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const updateApp = useCallback(
     (
       patch: Partial<
-        Pick<AppSettings, "vimMode" | "keypressDisplay" | "preferredEncoding">
+        Pick<AppSettings, "vimMode" | "preferredEncoding">
       >,
     ) => {
       setSettings((s) => ({ ...s, ...patch }));
