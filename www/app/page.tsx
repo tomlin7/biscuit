@@ -1,63 +1,101 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import TedDemo from "@/components/TedDemo";
 
-function ArrowRightIcon() {
+function DownloadIcon({ className }: { className?: string }) {
   return (
-    <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="inline-block shrink-0" aria-hidden="true">
-      <path d="M2.5 6h7M6.5 2.5l3.5 3.5-3.5 3.5" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M12 15V3" />
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="m7 10 5 5 5-5" />
     </svg>
   );
 }
 
-function GithubIcon() {
+function GithubIcon({ className }: { className?: string }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
-      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className || "size-6"} aria-hidden="true">
+      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2" />
     </svg>
   );
 }
 
-function CopyIcon() {
+function ZapIcon({ className }: { className?: string }) {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M15.914 4a1.5 1.5 0 0 0-2.474-1.561l-9 9A1.5 1.5 0 0 0 5.5 14h4.002a.5.5 0 0 1 .471.666L8.086 20a1.5 1.5 0 0 0 2.475 1.56l9-9A1.5 1.5 0 0 0 18.5 10h-3.997a.5.5 0 0 1-.472-.667z" />
     </svg>
   );
 }
 
-function CheckIcon() {
+function LayersIcon({ className }: { className?: string }) {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400" aria-hidden="true">
-      <polyline points="20 6 9 17 4 12" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+      <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+      <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
     </svg>
   );
 }
 
-function TerminalIcon() {
+function TerminalIcon({ className }: { className?: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
       <polyline points="4 17 10 11 4 5" />
       <line x1="12" y1="19" x2="20" y2="19" />
     </svg>
   );
 }
 
+function GitBranchIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <line x1="6" y1="3" x2="6" y2="15" />
+      <circle cx="18" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <path d="M18 9a9 9 0 0 1-9 9" />
+    </svg>
+  );
+}
+
+function CommandIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+    </svg>
+  );
+}
+
+function HardDriveIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <line x1="22" y1="12" x2="2" y2="12" />
+      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+      <line x1="6" y1="16" x2="6.01" y2="16" />
+      <line x1="10" y1="16" x2="10.01" y2="16" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+function ChevronUpIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="m18 15-6-6-6 6" />
+    </svg>
+  );
+}
+
 export default function Page() {
-  const [copied, setCopied] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const quickstartCmd = "git clone https://github.com/tomlin7/T3D.git && cd T3D && bun install && bun run tauri dev";
-
-  const handleCopy = () => {
-    void navigator.clipboard.writeText(quickstartCmd);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(openFaq === idx ? null : idx);
@@ -65,8 +103,8 @@ export default function Page() {
 
   const faqs = [
     {
-      q: "Is T3D another Electron app?",
-      a: "No. T3D uses Tauri 2 and compiled Rust on top of your operating system's native webview runtime. It uses a fraction of the RAM of typical Electron editors and launches in under 100 milliseconds.",
+      q: "Is this another Electron app?",
+      a: "No. T3D uses Tauri 2 and compiled Rust on top of your operating system native webview runtime. It uses a fraction of the RAM of typical Electron editors and launches in under 100 milliseconds.",
     },
     {
       q: "How does the terminal differ from other editors?",
@@ -74,635 +112,330 @@ export default function Page() {
     },
     {
       q: "Do extensions run in the main thread?",
-      a: "No. Extensions execute in background Web Workers and sandboxed webviews with manifest permissions for network, clipboard, workspace, and scm. Heavy extension tasks cannot freeze Monaco's typing pipeline or the editor interface.",
+      a: "No. Extensions execute in background Web Workers and sandboxed webviews with manifest permissions for network, clipboard, workspace, and scm. Heavy extension tasks cannot freeze Monaco typing pipeline or the editor interface.",
     },
     {
-      q: "Does T3D collect analytics or phone home?",
-      a: "No. T3D has zero telemetry, no user tracking, and no required accounts. All configuration, logs, and workspace state remain strictly on your local disk.",
+      q: "Where does my data live?",
+      a: "Projects, sessions, configurations, and local logs live on your disk. No account, no telemetry, and no cloud between you and your machine.",
+    },
+    {
+      q: "What is the release roadmap?",
+      a: "T3D follows continuous progressive shipping. Version 1.212.0 is the active stable release, with milestone 1.213.0 and subsequent feature slices rolling out regularly.",
     },
   ];
 
   return (
-    <div className="min-h-[100dvh] bg-[#09090b] text-[#f4f4f5] antialiased selection:bg-zinc-800 selection:text-white">
-      {/* ── Top Navigation ─────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 bg-[#09090b] px-6 py-3.5">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <span className="flex size-6 items-center justify-center rounded bg-white text-[#09090b] font-bold text-xs tracking-tight">
-                T3
-              </span>
-              <span className="text-sm font-semibold tracking-tight text-white group-hover:text-zinc-200 transition-colors">
-                T3D
-              </span>
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium">
-                v1.212.0
-              </span>
-            </Link>
+    <div className="min-h-dvh antialiased bg-[#09090b] text-[#f4f4f5]">
+      {/* ── Outer Waku Container (1100px with side borders) ─────────────── */}
+      <div className="mx-auto w-full max-w-[1100px] border-zinc-800/70 md:border-x" data-ui="waku-frame">
+        {/* ── Header (Waku layout) ───────────────────────────────────────── */}
+        <header className="flex h-16 items-center justify-between px-5 md:px-10">
+          <a href="/" className="flex items-center gap-2.5">
+            <span className="flex size-8 items-center justify-center rounded-[6px] bg-white text-black font-bold text-xs tracking-tight">
+              T3
+            </span>
+            <span className="text-[15px] font-semibold tracking-tight">T3D</span>
+          </a>
 
-            <div className="hidden md:flex items-center gap-6 text-xs text-zinc-400">
-              <a href="#features" className="hover:text-white transition-colors">Features</a>
-              <a href="#architecture" className="hover:text-white transition-colors">Architecture</a>
-              <a href="#milestones" className="hover:text-white transition-colors">Milestones</a>
-              <a href="#downloads" className="hover:text-white transition-colors">Downloads</a>
-              <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-5">
             <a
               href="https://github.com/tomlin7/T3D"
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded bg-zinc-900 hover:bg-zinc-800 text-xs text-zinc-300 hover:text-white transition-colors"
+              aria-label="GitHub"
+              className="rounded-full text-zinc-400 transition-colors outline-none hover:text-white"
             >
-              <GithubIcon />
-              <span>GitHub</span>
+              <GithubIcon className="size-6" />
             </a>
             <a
-              href="#downloads"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded bg-white hover:bg-zinc-200 text-xs font-semibold text-[#09090b] transition-colors"
+              href="#download"
+              className="inline-flex shrink-0 items-center justify-center rounded-lg bg-white text-black hover:bg-zinc-200 h-7 px-2.5 text-[0.8rem] font-medium transition-colors"
             >
-              <span>Download</span>
-              <ArrowRightIcon />
+              Download
             </a>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden inline-flex p-1.5 rounded text-zinc-400 hover:text-white"
-              aria-label="Toggle menu"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-2 px-2 flex flex-col gap-3 text-xs text-zinc-300 bg-zinc-900 mt-3 rounded p-4">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-1">Features</a>
-            <a href="#architecture" onClick={() => setMobileMenuOpen(false)} className="py-1">Architecture</a>
-            <a href="#milestones" onClick={() => setMobileMenuOpen(false)} className="py-1">Milestones</a>
-            <a href="#downloads" onClick={() => setMobileMenuOpen(false)} className="py-1">Downloads</a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-1">FAQ</a>
-            <a href="https://github.com/tomlin7/T3D" target="_blank" rel="noreferrer" className="py-1 flex items-center gap-2">
-              <GithubIcon />
-              <span>GitHub Repository</span>
-            </a>
-          </div>
-        )}
-      </nav>
-
-      <main id="main-content">
-        {/* ── Hero Section ───────────────────────────────────────────────── */}
-        <header className="pt-20 pb-16 px-6 text-center">
-          <div className="mx-auto max-w-4xl">
-            {/* Version Announcement Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 text-xs text-zinc-300 mb-8">
-              <span className="size-1.5 rounded-full bg-emerald-400" />
-              <span>Release v1.212.0 is live</span>
-              <span className="text-zinc-600">·</span>
-              <a href="#downloads" className="text-zinc-400 hover:text-white transition-colors underline underline-offset-2">
-                Download binaries
-              </a>
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.1]">
-              One native editor for speed, control, and zero bloat.
-            </h1>
-
-            {/* Subhead */}
-            <p className="mt-6 text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              T3D pairs compiled Rust with Monaco and React 19 on Tauri 2. Direct PTY shell integration, instant split panes, and sandboxed extensions in a sub-100ms window.
-            </p>
-
-            {/* Primary Action Row */}
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3.5">
-              <a
-                href="#downloads"
-                className="inline-flex items-center gap-2.5 px-6 py-3 rounded bg-white hover:bg-zinc-200 text-[#09090b] text-sm font-semibold transition-colors"
-              >
-                <span>Download T3D v1.212.0</span>
-                <ArrowRightIcon />
-              </a>
-
-              {/* Quickstart Copy Pill */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded bg-zinc-900 text-xs text-zinc-300">
-                <TerminalIcon />
-                <code>bun run tauri dev</code>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="ml-1 inline-flex p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
-                  aria-label="Copy quickstart command"
-                >
-                  {copied ? <CheckIcon /> : <CopyIcon />}
-                </button>
-              </div>
-            </div>
-
-            {/* Micro Trust Indicators */}
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-400">
-              <span className="flex items-center gap-1.5">
-                <span className="size-1 rounded-full bg-zinc-600" />
-                Sub-100ms cold startup
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-1 rounded-full bg-zinc-600" />
-                Zero telemetry
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-1 rounded-full bg-zinc-600" />
-                Compiled Rust PTY
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-1 rounded-full bg-zinc-600" />
-                Sandboxed webviews
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-1 rounded-full bg-zinc-600" />
-                MIT License
-              </span>
-            </div>
           </div>
         </header>
 
-        {/* ── App Canvas Showcase ────────────────────────────────────────── */}
-        <section className="px-6 pb-24" id="demo">
-          <div className="mx-auto max-w-6xl">
-            <div className="rounded-xl bg-[#121215] p-2.5 sm:p-4">
-              {/* Window Header Dots */}
-              <div className="flex items-center justify-between pb-3 px-2 mb-3 bg-[#18181c] rounded-t p-2">
-                <div className="flex items-center gap-2">
-                  <span className="size-3 rounded-full bg-red-500/80 inline-block" />
-                  <span className="size-3 rounded-full bg-amber-500/80 inline-block" />
-                  <span className="size-3 rounded-full bg-emerald-500/80 inline-block" />
-                  <span className="ml-3 text-xs text-zinc-400">T3D Editor preview</span>
-                </div>
-                <div className="text-xs text-zinc-500 hidden sm:block">
-                  Tauri 2 · Monaco · portable-pty
-                </div>
-              </div>
+        <main id="main-content">
+          {/* ── Section 0: Hero (Waku layout) ────────────────────────────── */}
+          <section className="px-5 pt-14 pb-14 md:px-10 md:pt-24">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-zinc-800 px-3 py-1 text-xs text-zinc-400">
+              <span className="flex size-3.5 items-center justify-center rounded-[3px] bg-[#f26522] text-[10px] font-bold text-white">
+                T
+              </span>
+              Not backed by Y Combinator
+            </div>
 
-              {/* Real Interactive Demo */}
+            <h1 className="max-w-4xl text-4xl font-semibold tracking-[-0.03em] text-balance md:text-[3.4rem] md:leading-[1.04]">
+              One native editor for speed, control, and zero bloat.
+            </h1>
+
+            <p className="mt-5 max-w-[36rem] text-[17px] leading-relaxed text-pretty text-zinc-400">
+              T3D drives your workspace with compiled Rust, Monaco, and Tauri 2. Sessions, terminals, git diffs, and extensions in one fast graphite window, entirely on your machine.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <a
+                href="#download"
+                className="inline-flex shrink-0 items-center justify-center rounded-lg bg-white text-black hover:bg-zinc-200 gap-1.5 h-10 px-4 text-sm font-medium transition-colors"
+              >
+                <DownloadIcon className="size-4" />
+                <span>Download v1.212.0</span>
+              </a>
+
+              <div className="text-xs text-zinc-400">
+                <span>or run </span>
+                <code className="text-zinc-200 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">
+                  bun run tauri dev
+                </code>
+              </div>
+            </div>
+
+            <div className="mt-16">
+              <div className="text-[11px] tracking-[0.14em] text-zinc-400 uppercase">
+                Built for native desktop speed
+              </div>
+              <div className="mt-4 flex flex-wrap items-center gap-x-7 gap-y-4 text-xs text-zinc-300">
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-zinc-500" />
+                  Tauri 2
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-zinc-500" />
+                  Compiled Rust
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-zinc-500" />
+                  Monaco Engine
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-zinc-500" />
+                  portable-pty
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-zinc-500" />
+                  Sub-100ms startup
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-zinc-500" />
+                  Zero telemetry
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Section 1: Interactive App Canvas (Waku layout) ──────────── */}
+          <section className="border-t border-zinc-800/70" data-ui="waku-section">
+            <div className="p-3 sm:p-6 bg-[#09090b]">
               <div data-ui="true">
                 <TedDemo />
               </div>
             </div>
-            <p className="mt-4 text-center text-xs text-zinc-400">
-              Interactive preview: click files in the tree, toggle bottom drawer tabs, and test editor commands.
-            </p>
-          </div>
-        </section>
+          </section>
 
-        {/* ── Core Technical Features (Bento Grid) ───────────────────────── */}
-        <section className="py-24 px-6 bg-[#0f0f12]" id="features">
-          <div className="mx-auto max-w-6xl">
-            <div className="max-w-2xl mb-16">
-              <span className="text-xs font-semibold text-zinc-400">Features</span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                Native down to the frame.
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
-                Built from the ground up for responsiveness, density, and local control. Eliminating the multi-gigabyte memory bloat and sluggish IPC pipelines of generic Electron editors.
-              </p>
+          {/* ── Section 2: Why Native 6-Card Grid (Waku layout) ──────────── */}
+          <section className="border-t border-zinc-800/70">
+            <div className="px-5 pt-14 md:px-10">
+              <div className="text-[11px] tracking-[0.14em] text-zinc-400 uppercase">
+                Why native
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {/* Feature 1 */}
-              <article className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="size-8 rounded bg-zinc-800/80 flex items-center justify-center text-white mb-4">
-                    <TerminalIcon />
-                  </div>
-                  <h3 className="text-base font-semibold text-white">Compiled Rust PTY and Terminal</h3>
-                  <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                    Direct process execution via portable-pty with zero intermediate Node IPC lag. Supports PowerShell, Bash, and Zsh with live OSC 7 and OSC 133 shell integration.
-                  </p>
+            <div className="mt-8 grid grid-cols-1 gap-px border-t border-zinc-800/70 bg-zinc-800/70 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Card 1 */}
+              <div className="bg-[#09090b] p-6 md:p-8">
+                <div className="flex items-center gap-2.5">
+                  <ZapIcon className="size-4 text-zinc-400" />
+                  <h3 className="text-sm font-medium text-white">Native down to the frame</h3>
                 </div>
-                <ul className="mt-6 space-y-2 text-xs text-zinc-300 pt-4 bg-[#111114] p-3 rounded">
-                  <li>• Live working directory tracking and command boundaries</li>
-                  <li>• Split side-by-side terminals with in-scrollback search</li>
-                  <li>• Process Explorer monitoring terminal children with kill action</li>
-                </ul>
-              </article>
-
-              {/* Feature 2 */}
-              <article className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="size-8 rounded bg-zinc-800/80 flex items-center justify-center text-white mb-4 text-xs">
-                    Symbols
-                  </div>
-                  <h3 className="text-base font-semibold text-white">Monaco with Real Symbol Depth</h3>
-                  <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                    Full language intelligence tuned for instant keypresses. Built with Code Lens reference counts, in-file symbol breadcrumbs, and sticky outline docked beside the minimap.
-                  </p>
-                </div>
-                <ul className="mt-6 space-y-2 text-xs text-zinc-300 pt-4 bg-[#111114] p-3 rounded">
-                  <li>• Call Hierarchy view for incoming and outgoing callers</li>
-                  <li>• Type Hierarchy tree for supertypes and subtypes</li>
-                  <li>• Inlay parameter names and inferred variable types</li>
-                </ul>
-              </article>
-
-              {/* Feature 3 */}
-              <article className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="size-8 rounded bg-zinc-800/80 flex items-center justify-center text-white mb-4">
-                    <GithubIcon />
-                  </div>
-                  <h3 className="text-base font-semibold text-white">Built-in Git without Clutter</h3>
-                  <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                    Native source control without external CLI lag. Inspect dirty files, stage, unstage, commit, amend, stash, and compare arbitrary branches or commit SHAs.
-                  </p>
-                </div>
-                <ul className="mt-6 space-y-2 text-xs text-zinc-300 pt-4 bg-[#111114] p-3 rounded">
-                  <li>• Unified CompareView with side-by-side diff viewer</li>
-                  <li>• One-click GitHub PR creation targeting origin or upstream</li>
-                  <li>• Local branch management and .gitignore integration</li>
-                </ul>
-              </article>
-
-              {/* Feature 4 */}
-              <article className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="size-8 rounded bg-zinc-800/80 flex items-center justify-center text-white mb-4 text-xs font-semibold">
-                    RPC
-                  </div>
-                  <h3 className="text-base font-semibold text-white">Sandboxed Extension Host</h3>
-                  <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                    Manifest-first architecture mirroring modern web extension runtimes. A shared background Web Worker executes extensions via asynchronous RPC.
-                  </p>
-                </div>
-                <ul className="mt-6 space-y-2 text-xs text-zinc-300 pt-4 bg-[#111114] p-3 rounded">
-                  <li>• Contributed webviews running in isolated iframes</li>
-                  <li>• Strict manifest permissions for network, clipboard, workspace, and scm</li>
-                  <li>• Remote extension registry and packaging utilities</li>
-                </ul>
-              </article>
-
-              {/* Feature 5 */}
-              <article className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="size-8 rounded bg-zinc-800/80 flex items-center justify-center text-white mb-4 text-xs font-semibold">
-                    Local
-                  </div>
-                  <h3 className="text-base font-semibold text-white">Local by Architecture</h3>
-                  <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                    Completely offline-first with zero telemetry. Your project files, configuration, and git repositories stay on your physical machine.
-                  </p>
-                </div>
-                <ul className="mt-6 space-y-2 text-xs text-zinc-300 pt-4 bg-[#111114] p-3 rounded">
-                  <li>• No mandatory sign-in or account creation</li>
-                  <li>• Optional AI composer supporting local Ollama models</li>
-                  <li>• Secure custom cloud API key storage</li>
-                </ul>
-              </article>
-
-              {/* Feature 6 */}
-              <article className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="size-8 rounded bg-zinc-800/80 flex items-center justify-center text-white mb-4 text-xs font-semibold">
-                    Key
-                  </div>
-                  <h3 className="text-base font-semibold text-white">Keyboard First Workflow</h3>
-                  <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                    Every operation is accessible without leaving the keyboard. Over 180 Command Palette actions, customizable shortcuts, and modal editing.
-                  </p>
-                </div>
-                <ul className="mt-6 space-y-2 text-xs text-zinc-300 pt-4 bg-[#111114] p-3 rounded">
-                  <li>• Full vim mode support via first-party extension</li>
-                  <li>• Quick file switching with fuzzy file navigation</li>
-                  <li>• Reusable split layouts and editor presets</li>
-                </ul>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Architecture Layers ────────────────────────────────────────── */}
-        <section className="py-24 px-6 bg-[#09090b]" id="architecture">
-          <div className="mx-auto max-w-6xl">
-            <div className="max-w-2xl mb-16">
-              <span className="text-xs font-semibold text-zinc-400">Architecture</span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                The four architectural layers.
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
-                Clean separation between native system capabilities, isolated UI islands, and editing surfaces.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="rounded-lg bg-[#121215] p-5">
-                <span className="text-xs text-zinc-500 font-semibold">Layer 01</span>
-                <h3 className="mt-2 text-sm font-semibold text-white">Tauri 2 Shell</h3>
-                <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                  Native webview runtime, fine-grained capability gates, native window chrome, and minimal binary footprint.
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">
+                  Rust and Tauri 2 runtime. Instant launch, smooth scrolling through years of files, and sub-100ms window creation without Electron.
                 </p>
               </div>
 
-              <div className="rounded-lg bg-[#121215] p-5">
-                <span className="text-xs text-zinc-500 font-semibold">Layer 02</span>
-                <h3 className="mt-2 text-sm font-semibold text-white">Compiled Rust Core</h3>
-                <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                  Direct portable-pty process spawning, filesystem watchers, git operations, and desktop notifications.
+              {/* Card 2 */}
+              <div className="bg-[#09090b] p-6 md:p-8">
+                <div className="flex items-center gap-2.5">
+                  <LayersIcon className="size-4 text-zinc-400" />
+                  <h3 className="text-sm font-medium text-white">Every symbol, real depth</h3>
+                </div>
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">
+                  Monaco editor core with Code Lens reference counts, in-file symbol breadcrumbs, incoming and outgoing Call Hierarchy, and Type Hierarchy trees.
                 </p>
               </div>
 
-              <div className="rounded-lg bg-[#121215] p-5">
-                <span className="text-xs text-zinc-500 font-semibold">Layer 03</span>
-                <h3 className="mt-2 text-sm font-semibold text-white">React 19 Island UI</h3>
-                <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                  Independent island containers for titlebar, sidebar, editor, and bottom drawer. Monaco never re-renders on resize.
+              {/* Card 3 */}
+              <div className="bg-[#09090b] p-6 md:p-8">
+                <div className="flex items-center gap-2.5">
+                  <TerminalIcon className="size-4 text-zinc-400" />
+                  <h3 className="text-sm font-medium text-white">Terminal with true PTY</h3>
+                </div>
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">
+                  Direct process execution via portable-pty with zero Node IPC overhead. Supports PowerShell, Bash, and Zsh with live OSC 7 and OSC 133 shell integration.
                 </p>
               </div>
 
-              <div className="rounded-lg bg-[#121215] p-5">
-                <span className="text-xs text-zinc-500 font-semibold">Layer 04</span>
-                <h3 className="mt-2 text-sm font-semibold text-white">Monaco Editor</h3>
-                <p className="mt-2.5 text-xs text-zinc-400 leading-relaxed">
-                  Industrial editor buffer, syntax tree parsers, Code Lens, inlay hints, breadcrumbs, and modal keybindings.
+              {/* Card 4 */}
+              <div className="bg-[#09090b] p-6 md:p-8">
+                <div className="flex items-center gap-2.5">
+                  <GitBranchIcon className="size-4 text-zinc-400" />
+                  <h3 className="text-sm font-medium text-white">Rewind that means it</h3>
+                </div>
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">
+                  Built-in Git operations with side-by-side diff viewers, branch-to-branch comparisons, and one-click GitHub Pull Request creation.
+                </p>
+              </div>
+
+              {/* Card 5 */}
+              <div className="bg-[#09090b] p-6 md:p-8">
+                <div className="flex items-center gap-2.5">
+                  <CommandIcon className="size-4 text-zinc-400" />
+                  <h3 className="text-sm font-medium text-white">Keyboard first</h3>
+                </div>
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">
+                  Over 180 Command Palette actions, customizable shortcuts, Vim mode extension, and responsive multi-pane layout presets. Every control works without a mouse.
+                </p>
+              </div>
+
+              {/* Card 6 */}
+              <div className="bg-[#09090b] p-6 md:p-8">
+                <div className="flex items-center gap-2.5">
+                  <HardDriveIcon className="size-4 text-zinc-400" />
+                  <h3 className="text-sm font-medium text-white">Local by architecture</h3>
+                </div>
+                <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">
+                  Projects, sessions, configurations, and logs live on your disk. No account, zero telemetry, and no cloud between you and your machine.
                 </p>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ── Downloads Section (Waku cards) ─────────────────────────────── */}
-        <section className="py-24 px-6 bg-[#0f0f12]" id="downloads">
-          <div className="mx-auto max-w-6xl">
-            <div className="max-w-2xl mb-14">
-              <span className="text-xs font-semibold text-zinc-400">Downloads</span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                Install T3D for your desktop.
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
-                Official multi-platform binaries built on every release tag using GitHub Actions. Standalone, zero telemetry, offline-first.
-              </p>
+          {/* ── Section 3: Download Section (Waku layout) ────────────────── */}
+          <section id="download" className="border-t border-zinc-800/70 px-5 py-16 md:px-10 md:py-20" data-ui="waku-section">
+            <div className="text-[11px] tracking-[0.14em] text-zinc-400 uppercase">
+              Download
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+              Get T3D
+            </h2>
+
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <a
+                href="https://github.com/tomlin7/T3D/releases/latest"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex shrink-0 items-center justify-center rounded-lg bg-white text-black hover:bg-zinc-200 gap-1.5 h-10 px-4 text-sm font-medium transition-colors"
+              >
+                <DownloadIcon className="size-4" />
+                <span>Download for Windows (.exe)</span>
+              </a>
+
+              <a
+                href="https://github.com/tomlin7/T3D/releases/latest"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex shrink-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 gap-1.5 h-10 px-4 text-sm font-medium transition-colors"
+              >
+                <DownloadIcon className="size-4" />
+                <span>macOS Universal (.dmg)</span>
+              </a>
+
+              <a
+                href="https://github.com/tomlin7/T3D/releases/latest"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex shrink-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 gap-1.5 h-10 px-4 text-sm font-medium transition-colors"
+              >
+                <DownloadIcon className="size-4" />
+                <span>Linux (.AppImage / .deb)</span>
+              </a>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Windows */}
-              <div className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-300">Windows</span>
-                    <span className="text-[11px] text-zinc-500">x86_64</span>
-                  </div>
-                  <h3 className="mt-3 text-lg font-semibold text-white">Windows Installer</h3>
-                  <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
-                    Standard 64-bit NSIS executable setup or enterprise WiX installer package.
-                  </p>
-                </div>
-                <div className="mt-8 flex flex-wrap gap-2">
-                  <a
-                    href="https://github.com/tomlin7/T3D/releases/latest"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded bg-white hover:bg-zinc-200 text-[#09090b] text-xs font-semibold transition-colors"
-                  >
-                    <span>Download .exe</span>
-                    <ArrowRightIcon />
-                  </a>
-                  <a
-                    href="https://github.com/tomlin7/T3D/releases/latest"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs transition-colors"
-                  >
-                    <span>.msi package</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* macOS */}
-              <div className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-300">macOS</span>
-                    <span className="text-[11px] text-zinc-500">Universal</span>
-                  </div>
-                  <h3 className="mt-3 text-lg font-semibold text-white">Apple Silicon and Intel</h3>
-                  <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
-                    Single universal disk image running natively on both Apple Silicon (M1 to M4) and Intel Macs.
-                  </p>
-                </div>
-                <div className="mt-8">
-                  <a
-                    href="https://github.com/tomlin7/T3D/releases/latest"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded bg-white hover:bg-zinc-200 text-[#09090b] text-xs font-semibold transition-colors"
-                  >
-                    <span>Download .dmg</span>
-                    <ArrowRightIcon />
-                  </a>
-                </div>
-              </div>
-
-              {/* Linux */}
-              <div className="rounded-lg bg-[#141418] p-6 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-300">Linux</span>
-                    <span className="text-[11px] text-zinc-500">amd64</span>
-                  </div>
-                  <h3 className="mt-3 text-lg font-semibold text-white">AppImage and Debian</h3>
-                  <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
-                    Zero-install standalone AppImage or Debian package for Ubuntu, Debian, and Linux Mint.
-                  </p>
-                </div>
-                <div className="mt-8 flex flex-wrap gap-2">
-                  <a
-                    href="https://github.com/tomlin7/T3D/releases/latest"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded bg-white hover:bg-zinc-200 text-[#09090b] text-xs font-semibold transition-colors"
-                  >
-                    <span>.AppImage</span>
-                    <ArrowRightIcon />
-                  </a>
-                  <a
-                    href="https://github.com/tomlin7/T3D/releases/latest"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs transition-colors"
-                  >
-                    <span>.deb package</span>
-                  </a>
-                </div>
-              </div>
+            <div className="mt-8 text-xs text-zinc-500">
+              <span>All builds signed and verifiable on </span>
+              <a
+                href="https://github.com/tomlin7/T3D/releases"
+                target="_blank"
+                rel="noreferrer"
+                className="text-zinc-400 hover:text-white underline underline-offset-2"
+              >
+                GitHub Releases
+              </a>
+              <span>. Current version: v1.212.0.</span>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ── Milestones & Track Record ──────────────────────────────────── */}
-        <section className="py-24 px-6 bg-[#09090b]" id="milestones">
-          <div className="mx-auto max-w-6xl">
-            <div className="max-w-2xl mb-12">
-              <span className="text-xs font-semibold text-zinc-400">Milestones</span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                467 milestones, shipped progressively.
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
-                T3D is developed with strict progressive shipping. Every milestone is a concrete, tested capability locked across Rust, Tauri, React, and package versions.
-              </p>
+          {/* ── Section 4: Questions (Waku layout) ───────────────────────── */}
+          <section className="border-t border-zinc-800/70 px-5 py-16 md:px-10" data-ui="waku-section">
+            <div className="text-[11px] tracking-[0.14em] text-zinc-400 uppercase">
+              Questions
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-              <div className="rounded-lg bg-[#121215] p-5">
-                <div className="text-xs text-zinc-500 font-semibold">v1.212.0</div>
-                <div className="mt-1 font-semibold text-white">Code Lens and Multi-Platform Release</div>
-                <p className="mt-1.5 text-xs text-zinc-400">Reference counters, inlay hints, and automated multi-platform release binaries.</p>
-              </div>
-
-              <div className="rounded-lg bg-[#121215] p-5">
-                <div className="text-xs text-zinc-500 font-semibold">v0.466.0</div>
-                <div className="mt-1 font-semibold text-white">Inlay Hints for Parameters and Types</div>
-                <p className="mt-1.5 text-xs text-zinc-400">Inline function parameter labels and inferred variable types inside editor buffers.</p>
-              </div>
-
-              <div className="rounded-lg bg-[#121215] p-5">
-                <div className="text-xs text-zinc-500 font-semibold">v0.465.0</div>
-                <div className="mt-1 font-semibold text-white">Type Hierarchy Tree View</div>
-                <p className="mt-1.5 text-xs text-zinc-400">Recursive supertypes and subtypes exploration for interfaces and classes.</p>
-              </div>
-
-              <div className="rounded-lg bg-[#121215] p-5">
-                <div className="text-xs text-zinc-500 font-semibold">v0.464.0</div>
-                <div className="mt-1 font-semibold text-white">Call Hierarchy Navigation</div>
-                <p className="mt-1.5 text-xs text-zinc-400">Expandable incoming caller and outgoing callee trees for functions and methods.</p>
-              </div>
-
-              <div className="rounded-lg bg-[#121215] p-5">
-                <div className="text-xs text-zinc-500 font-semibold">v0.463.0</div>
-                <div className="mt-1 font-semibold text-white">Sticky Condensed Outline</div>
-                <p className="mt-1.5 text-xs text-zinc-400">Real-time symbol outline docked beside minimap with active scope highlighting.</p>
-              </div>
-
-              <div className="rounded-lg bg-[#121215] p-5">
-                <div className="text-xs text-zinc-500 font-semibold">v0.461.0</div>
-                <div className="mt-1 font-semibold text-white">Compare Branches and Commits Diff</div>
-                <p className="mt-1.5 text-xs text-zinc-400">Unified CompareView with side-by-side file tree and changed files diff viewer.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FAQ Section (Waku style) ───────────────────────────────────── */}
-        <section className="py-24 px-6 bg-[#0f0f12]" id="faq">
-          <div className="mx-auto max-w-4xl">
-            <div className="text-center mb-16">
-              <span className="text-xs font-semibold text-zinc-400">FAQ</span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                Frequently asked questions.
-              </h2>
-            </div>
-
-            <div className="space-y-4">
+            <div className="flex w-full flex-col mt-6 max-w-2xl">
               {faqs.map((faq, idx) => (
-                <div
-                  key={faq.q}
-                  className="rounded-lg bg-[#141418] overflow-hidden"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggleFaq(idx)}
-                    className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 text-sm font-semibold text-white hover:text-zinc-200 transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <span className="text-zinc-500 text-lg leading-none">
-                      {openFaq === idx ? "−" : "+"}
-                    </span>
-                  </button>
+                <div key={faq.q} className="border-b border-zinc-800/60 py-3" data-ui="faq-item">
+                  <h3>
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="flex w-full items-start justify-between text-left text-[15px] font-medium text-white hover:underline transition-colors"
+                    >
+                      <span>{faq.q}</span>
+                      {openFaq === idx ? (
+                        <ChevronUpIcon className="size-4 text-zinc-400 shrink-0 ml-4 mt-1" />
+                      ) : (
+                        <ChevronDownIcon className="size-4 text-zinc-400 shrink-0 ml-4 mt-1" />
+                      )}
+                    </button>
+                  </h3>
                   {openFaq === idx && (
-                    <div className="px-6 pb-5 text-xs sm:text-sm text-zinc-400 leading-relaxed bg-[#111114]">
+                    <div className="mt-2.5 text-sm text-zinc-400 leading-relaxed">
                       {faq.a}
                     </div>
                   )}
                 </div>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
 
-        {/* ── Quickstart Section ─────────────────────────────────────────── */}
-        <section className="py-24 px-6 bg-[#09090b]" id="quickstart">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Run T3D locally in seconds.
-            </h2>
-            <p className="mt-4 text-sm sm:text-base text-zinc-400 leading-relaxed">
-              Requires Bun and the Rust toolchain installed on your development system.
-            </p>
-
-            <div className="mt-8 rounded-lg bg-[#121215] p-6 text-left text-xs space-y-3">
-              <div className="flex items-center justify-between text-zinc-500">
-                <span>Terminal Setup</span>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
-                >
-                  {copied ? <CheckIcon /> : <CopyIcon />}
-                  <span>{copied ? "Copied" : "Copy command"}</span>
-                </button>
-              </div>
-
-              <div className="space-y-1.5 text-zinc-300">
-                <div className="text-zinc-500"># 1. Clone the repository</div>
-                <pre className="text-white"><code>git clone https://github.com/tomlin7/T3D.git</code></pre>
-                <div className="text-zinc-500 pt-2"># 2. Enter project directory and install dependencies</div>
-                <pre className="text-white"><code>cd T3D &amp;&amp; bun install</code></pre>
-                <div className="text-zinc-500 pt-2"># 3. Launch native desktop application</div>
-                <pre className="text-emerald-400 font-semibold"><code>bun run tauri dev</code></pre>
-              </div>
-            </div>
-
-            <div className="mt-8 flex items-center justify-center gap-4">
-              <a
-                href="https://github.com/tomlin7/T3D"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded bg-white hover:bg-zinc-200 text-[#09090b] text-sm font-semibold transition-colors"
-              >
-                <GithubIcon />
-                <span>Explore GitHub Repository</span>
-              </a>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="py-12 px-6 bg-[#070709]">
-        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-zinc-500">
-          <div className="flex items-center gap-3">
-            <span className="flex size-5 items-center justify-center rounded bg-white text-[#09090b] font-bold text-[10px]">
+        {/* ── Footer (Waku layout) ───────────────────────────────────────── */}
+        <footer className="flex items-center justify-between border-t border-zinc-800/70 px-5 py-10 text-xs text-zinc-400 md:px-10" data-ui="waku-footer">
+          <div className="flex items-center gap-2">
+            <span className="flex size-4 items-center justify-center rounded-[3px] bg-white text-black font-bold text-[9px]">
               T3
             </span>
-            <span className="text-zinc-200 font-semibold">T3D</span>
-            <span>·</span>
-            <span>Successor architecture to Biscuit</span>
-            <span>·</span>
-            <span>MIT License</span>
+            <span>© 2026 T3D</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a href="#features" className="hover:text-zinc-200 transition-colors">Features</a>
-            <a href="#architecture" className="hover:text-zinc-200 transition-colors">Architecture</a>
-            <a href="#milestones" className="hover:text-zinc-200 transition-colors">Milestones</a>
-            <a href="#downloads" className="hover:text-zinc-200 transition-colors">Downloads</a>
-            <a href="#faq" className="hover:text-zinc-200 transition-colors">FAQ</a>
-            <a href="https://github.com/tomlin7/T3D" target="_blank" rel="noreferrer" className="hover:text-zinc-200 transition-colors">GitHub</a>
+          <div className="flex items-center gap-5">
+            <a
+              href="https://github.com/tomlin7/T3D"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://github.com/tomlin7/T3D/releases"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Releases
+            </a>
+            <a
+              href="https://github.com/tomlin7/T3D/blob/main/LICENSE"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              MIT License
+            </a>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }
