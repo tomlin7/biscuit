@@ -6,11 +6,9 @@ Successor architecture to Biscuit — same product spirit, cleaner structure, be
 
 ## Status
 
-Current version: **0.10.0** (pre-1.0).
+Current version: **1.0.0** (stable).
 
 See [VERSIONING.md](VERSIONING.md) and [MILESTONES.md](MILESTONES.md).
-
-`1.0.0` is the next gate after 0.10.0 foundations land.
 
 ## Develop
 
@@ -27,6 +25,15 @@ bun run tauri dev
 | UI | React 19 + TypeScript |
 | Editor engine | Monaco |
 | Native | Rust |
+
+## Features (1.0.0)
+
+- Island chrome with explorer, search, git, extensions, and debug sidebars
+- Monaco editing with tabs, themes, find, and diagnostics
+- Integrated PTY terminal and Problems panel
+- OpenAI-compatible AI agent island
+- Extensions host (manifest + contributed commands)
+- Run/debug foundations with breakpoints
 
 ## License
 

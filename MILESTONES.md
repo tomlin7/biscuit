@@ -1,7 +1,6 @@
 # Milestones
 
 Gradual rewrite of the Biscuit editor experience on Tauri 2 + React + Monaco.
-Each row is a shippable `0.x` release until **1.0.0**.
 
 | Version | Focus | Status |
 |---------|--------|--------|
@@ -15,9 +14,9 @@ Each row is a shippable `0.x` release until **1.0.0**.
 | **0.7.0** | Find in file / workspace search | shipped |
 | **0.8.0** | Integrated terminal (PTY) | shipped |
 | **0.9.0** | Git SCM view | shipped |
-| **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipping |
-| **1.0.0** | Stable product | next |
+| **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipped |
+| **1.0.0** | Stable product | shipped |
 
-## Current target
+## 1.0.0 gate
 
-Ship **0.10.0**: Problems panel (Monaco diagnostics), AI agent island, extensions host, and run/debug foundations — then gate **1.0.0**.
+All planned 0.x milestones are on `main`. **1.0.0** is the first stable SemVer release of T3D.
