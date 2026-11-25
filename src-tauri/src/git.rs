@@ -269,13 +269,60 @@ pub fn git_ignore(cwd: String, path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn git_commit(cwd: String, message: String) -> Result<(), String> {
+pub fn git_commit(cwd: String, message: String, amend: Option<bool>) -> Result<(), String> {
     let message = message.trim();
-    if message.is_empty() {
+    if message.is_empty() && !amend.unwrap_or(false) {
         return Err("Commit message is empty".into());
     }
-    run_git(&cwd, &["commit".into(), "-m".into(), message.to_string()])?;
+    let mut args = vec!["commit".into()];
+    if amend.unwrap_or(false) {
+        args.push("--amend".into());
+        if message.is_empty() {
+            args.push("--no-edit".into());
+        } else {
+            args.push("-m".into());
+            args.push(message.to_string());
+        }
+    } else {
+        args.push("-m".into());
+        args.push(message.to_string());
+    }
+    run_git(&cwd, &args)?;
     Ok(())
+}
+
+#[tauri::command]
+pub fn git_can_amend(cwd: String) -> Result<bool, String> {
+    let upstream = Command::new("git")
+        .args(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+        .current_dir(&cwd)
+        .output();
+    let Ok(out) = upstream else {
+        return Ok(true);
+    };
+    if !out.status.success() {
+        // No upstream configured — safe to offer amend.
+        return Ok(true);
+    }
+    let status = Command::new("git")
+        .args(["status", "-sb", "--porcelain=v1"])
+        .current_dir(&cwd)
+        .output()
+        .map_err(|e| format!("failed to run git: {e}"))?;
+    if !status.status.success() {
+        return Ok(false);
+    }
+    let text = String::from_utf8_lossy(&status.stdout);
+    // First line of -sb looks like "## main...origin/main [ahead 1]" or similar.
+    let first = text.lines().next().unwrap_or("");
+    if first.contains("[ahead ") && !first.contains("behind") {
+        return Ok(true);
+    }
+    if first.contains("...") && !first.contains("[") {
+        // In sync with upstream — amending would rewrite published tip.
+        return Ok(false);
+    }
+    Ok(true)
 }
 
 #[cfg(test)]

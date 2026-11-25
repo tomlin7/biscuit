@@ -11,7 +11,7 @@ use extensions::{
 };
 use fsops::{fs_create_file, fs_mkdir, fs_remove, fs_rename};
 use git::{
-    git_branches, git_checkout, git_clone, git_commit, git_diff, git_discard, git_ignore, git_pull, git_push,
+    git_branches, git_can_amend, git_checkout, git_clone, git_commit, git_diff, git_discard, git_ignore, git_pull, git_push,
     git_show_head, git_stage,
     git_summary, git_unstage,
 };
@@ -36,6 +36,7 @@ pub fn run() {
             git_stage,
             git_unstage,
             git_commit,
+            git_can_amend,
             git_branches,
             git_checkout,
             git_clone,

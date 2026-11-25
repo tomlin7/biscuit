@@ -31,6 +31,8 @@ export function ScmPanel({ onBranch }: Props) {
   const [message, setMessage] = useState("");
   const [acting, setActing] = useState(false);
   const [branches, setBranches] = useState<string[]>([]);
+  const [amend, setAmend] = useState(false);
+  const [canAmend, setCanAmend] = useState(false);
 
   const refresh = useCallback(async () => {
     if (!rootPath) {
@@ -47,9 +49,15 @@ export function ScmPanel({ onBranch }: Props) {
       onBranch(next.branch);
       const names = await invoke<string[]>("git_branches", { cwd: rootPath });
       setBranches(names);
+      try {
+        setCanAmend(await invoke<boolean>("git_can_amend", { cwd: rootPath }));
+      } catch {
+        setCanAmend(false);
+      }
     } catch (err) {
       setSummary(null);
       setBranches([]);
+      setCanAmend(false);
       onBranch(null);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -170,18 +178,48 @@ export function ScmPanel({ onBranch }: Props) {
             Unstage all
           </button>
         </div>
+        <label className="scm-panel__amend">
+          <input
+            type="checkbox"
+            checked={amend}
+            onChange={(event) => {
+              const next = event.target.checked;
+              if (next && !canAmend) {
+                const ok = window.confirm(
+                  "HEAD may already be on the remote. Amend anyway?",
+                );
+                if (!ok) return;
+              }
+              setAmend(next);
+            }}
+          />
+          <span>Amend last commit{canAmend ? "" : " (may be published)"}</span>
+        </label>
         <button
           type="button"
           className="scm-panel__commit-btn"
-          disabled={acting || busy || !message.trim() || staged.length === 0}
+          disabled={
+            acting ||
+            busy ||
+            (!amend && (!message.trim() || staged.length === 0))
+          }
           onClick={() => {
             const text = message.trim();
-            void run("git_commit", { message: text }).then((ok) => {
-              if (ok) setMessage("");
+            if (amend && !canAmend) {
+              const ok = window.confirm(
+                "Amending may rewrite a commit that is already published. Continue?",
+              );
+              if (!ok) return;
+            }
+            void run("git_commit", { message: text, amend }).then((ok) => {
+              if (ok) {
+                setMessage("");
+                setAmend(false);
+              }
             });
           }}
         >
-          Commit
+          {amend ? "Amend" : "Commit"}
         </button>
       </div>
       {loading && !summary ? <p className="scm-panel__hint">Loading…</p> : null}
