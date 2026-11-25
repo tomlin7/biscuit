@@ -26,6 +26,7 @@ import type { WorkspaceSnapshot } from "../extensions/host/protocol";
 import * as monaco from "monaco-editor";
 import { DebugProvider, useDebug } from "../debug/DebugContext";
 import { SettingsProvider, useSettings } from "../settings/SettingsContext";
+import { IconThemeProvider, useIconTheme } from "../theme/iconTheme/IconThemeContext";
 import { SettingsPanel } from "../settings/SettingsPanel";
 import { NotificationsProvider, useNotifications } from "../notifications/NotificationsContext";
 import { X } from "lucide-react";
@@ -190,9 +191,15 @@ function ShellChrome() {
     installSample,
     refresh: reloadExtensions,
   } = useExtensions();
+  const {
+    setIconTheme,
+    availableThemes: availableIconThemes,
+    setContributedThemes,
+  } = useIconTheme();
   useEffect(() => {
     const collected = collectContributions(extensions);
     setExtras(collected.themes);
+    setContributedThemes(collected.iconThemes);
     registerExtraLanguages(collected.languages, (language) => {
       monaco.languages.register({
         id: language.id,
@@ -200,7 +207,7 @@ function ShellChrome() {
         extensions: language.extensions,
       });
     });
-  }, [extensions, setExtras]);
+  }, [extensions, setExtras, setContributedThemes]);
 
   const sidebarViews = useMemo(() => {
     return collectContributions(extensions).sidebarViews;
@@ -2390,8 +2397,41 @@ function ShellChrome() {
         resetPresets();
         notify("Layout", "Reset layout presets to defaults.");
       },
+      selectIconTheme: (themeId?: string) => {
+        if (themeId) {
+          const match = availableIconThemes.find(
+            (t) => t.id === themeId || t.label.toLowerCase() === themeId.toLowerCase(),
+          );
+          if (match) {
+            setIconTheme(match.id);
+            updateApp({ iconTheme: match.id });
+            notify("Preferences", `File icon theme set to ${match.label}`);
+          } else {
+            notify("Preferences", `Icon theme '${themeId}' not found.`);
+          }
+        } else {
+          setRecentCommands([]);
+          setSymbolCommands(
+            availableIconThemes.map((item) => ({
+              id: `icon-theme:${item.id}`,
+              title: `File Icon Theme: ${item.label}`,
+              category: "Preferences",
+              run: () => {
+                setIconTheme(item.id);
+                updateApp({ iconTheme: item.id });
+                notify("Preferences", `File icon theme set to ${item.label}`);
+              },
+            })),
+          );
+          setPaletteSeed("File Icon Theme:");
+          setPaletteOpen(true);
+        }
+      },
     }),
     [
+      availableIconThemes,
+      setIconTheme,
+      updateApp,
       presets,
       applyPreset,
       saveCurrentAsPreset,
@@ -3083,10 +3123,12 @@ export function AppShell() {
               <ExtensionsProvider>
                 <DebugProvider>
                   <SettingsProvider>
-                    <AutoSave />
-                    <LayoutProvider>
-                      <ShellChrome />
-                    </LayoutProvider>
+                    <IconThemeProvider>
+                      <AutoSave />
+                      <LayoutProvider>
+                        <ShellChrome />
+                      </LayoutProvider>
+                    </IconThemeProvider>
                   </SettingsProvider>
                 </DebugProvider>
               </ExtensionsProvider>

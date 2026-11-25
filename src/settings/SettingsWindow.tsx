@@ -6,6 +6,7 @@ import { WorkspaceProvider } from "../workspace/WorkspaceContext";
 import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { AiProvider } from "../ai/AiContext";
 import { SettingsProvider } from "./SettingsContext";
+import { IconThemeProvider } from "../theme/iconTheme/IconThemeContext";
 import { SettingsPanel, type SettingsCategory } from "./SettingsPanel";
 import { applyChromeAcrylic } from "../layout/chromeAcrylic";
 import { SETTINGS_TAB_EVENT, type SettingsTab } from "./openSettingsWindow";
@@ -88,7 +89,9 @@ export function SettingsWindowApp() {
       <NotificationsProvider>
         <AiProvider>
           <SettingsProvider>
-            <SettingsWindowChrome />
+            <IconThemeProvider>
+              <SettingsWindowChrome />
+            </IconThemeProvider>
           </SettingsProvider>
         </AiProvider>
       </NotificationsProvider>

@@ -2036,4 +2036,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCompareBranches(),
   },
+  {
+    id: "workbench.action.selectIconTheme",
+    title: "Preferences: File Icon Theme",
+    category: "Preferences",
+    run: (ctx) => ctx.selectIconTheme(),
+  },
 ];

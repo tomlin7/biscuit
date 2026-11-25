@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, Palette, RotateCcw, Search, Sliders, Sparkles, X } from "lucide-react";
 import { useTheme } from "../theme/ThemeContext";
+import { useIconTheme } from "../theme/iconTheme/IconThemeContext";
 import { BUILTIN_THEMES } from "../editor/theme";
 import { useAi } from "../ai/AiContext";
 import { IconButton } from "../ui/IconButton";
@@ -25,6 +26,7 @@ export function SettingsPanel({
   variant = "modal",
 }: Props) {
   const { theme, extras, setTheme } = useTheme();
+  const { iconTheme, setIconTheme, availableThemes: availableIconThemes } = useIconTheme();
   const { settings, updateEditor, updateChromeAcrylic, updateApp, reset } = useSettings();
   const { settings: ai, setSettings: setAi } = useAi();
   const [activeTab, setActiveTab] = useState<SettingsCategory>(initialTab);
@@ -42,7 +44,7 @@ export function SettingsPanel({
 
   const q = searchQuery.trim().toLowerCase();
 
-  const matchesAppearance = !q || "theme color dark light appearance acrylic mica chrome glass translucen".includes(q);
+  const matchesAppearance = !q || "theme color icon file dark light appearance acrylic mica chrome glass translucen".includes(q);
   const matchesEditorTypography = !q || "font size font family terminal font typography cascadia monospace".includes(q);
   const matchesEditorDisplay = !q || "word wrap column rulers cursor minimap line numbers sticky scroll display layout".includes(q);
   const matchesEditorFormatting = !q || "tab size whitespace trim trailing newline insert auto save formatting".includes(q);
@@ -166,6 +168,22 @@ export function SettingsPanel({
                   {extras.map((extra) => (
                     <option key={extra.id} value={`ext:${extra.id}`}>
                       {extra.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="settings-row">
+                <span>File Icon Theme</span>
+                <select
+                  value={iconTheme}
+                  onChange={(e) => {
+                    setIconTheme(e.target.value);
+                    updateApp({ iconTheme: e.target.value });
+                  }}
+                >
+                  {availableIconThemes.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
                     </option>
                   ))}
                 </select>

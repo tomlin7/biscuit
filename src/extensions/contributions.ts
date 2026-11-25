@@ -1,4 +1,7 @@
 import type { ExtensionManifest } from "./ExtensionsContext";
+import type { IconThemeDefinition } from "../theme/iconTheme/types";
+
+export type ExtraIconTheme = IconThemeDefinition;
 
 export type ExtraTheme = {
   id: string;
@@ -68,11 +71,13 @@ export function collectContributions(extensions: ExtensionManifest[]): {
   languages: ExtraLanguage[];
   webviews: ExtraWebview[];
   sidebarViews: ExtraSidebarView[];
+  iconThemes: ExtraIconTheme[];
 } {
   const themes: ExtraTheme[] = [];
   const nextLanguages: ExtraLanguage[] = [];
   const webviews: ExtraWebview[] = [];
   const sidebarViews: ExtraSidebarView[] = [];
+  const iconThemes: ExtraIconTheme[] = [];
   for (const ext of extensions) {
     if (!ext.enabled) continue;
     for (const theme of ext.contributes?.themes ?? []) {
@@ -115,6 +120,23 @@ export function collectContributions(extensions: ExtensionManifest[]): {
         entry: view.entry,
       });
     }
+    for (const it of ext.contributes?.iconThemes ?? []) {
+      if (!it.id) continue;
+      const themeId = it.id.startsWith("ext:") ? it.id : `ext:${it.id}`;
+      iconThemes.push({
+        id: themeId,
+        label: it.label || it.id,
+        description: it.description,
+        defaultFile: it.defaultFile,
+        defaultFolder: it.defaultFolder,
+        defaultFolderOpen: it.defaultFolderOpen,
+        fileExtensions: it.fileExtensions,
+        fileNames: it.fileNames,
+        folderNames: it.folderNames,
+        folderNamesOpen: it.folderNamesOpen,
+        icons: it.icons,
+      });
+    }
   }
-  return { themes, languages: nextLanguages, webviews, sidebarViews };
+  return { themes, languages: nextLanguages, webviews, sidebarViews, iconThemes };
 }

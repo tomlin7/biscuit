@@ -42,6 +42,8 @@ pub struct ExtensionContributes {
     pub webviews: Vec<ExtensionWebview>,
     #[serde(default)]
     pub views: Vec<ExtensionView>,
+    #[serde(rename = "iconThemes", default)]
+    pub icon_themes: Vec<serde_json::Value>,
 }
 
 /// A sidebar view contributed by an extension.
@@ -244,6 +246,13 @@ fn parse_contributes(value: &serde_json::Value) -> ExtensionContributes {
                 icon: text("icon").map(|s| s.to_string()),
                 entry: text("entry").map(|s| s.to_string()),
             });
+        }
+    }
+    if let Some(icon_themes) = obj.get("iconThemes").and_then(|item| item.as_array()) {
+        for item in icon_themes {
+            if item.get("id").and_then(|part| part.as_str()).filter(|id| !id.is_empty()).is_some() {
+                out.icon_themes.push(item.clone());
+            }
         }
     }
     out

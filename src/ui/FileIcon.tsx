@@ -7,6 +7,7 @@ import {
   Settings,
   Terminal,
 } from "lucide-react";
+import { useIconTheme } from "../theme/iconTheme/IconThemeContext";
 import "./fileIcon.css";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
   kind: "file" | "directory";
   open?: boolean;
   size?: number;
+  className?: string;
 };
 
 function extOf(name: string): string {
@@ -36,7 +38,7 @@ function Badge({
   );
 }
 
-export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
+function renderClassic(name: string, kind: "file" | "directory", open: boolean, size: number) {
   if (kind === "directory") {
     const Icon = open ? FolderOpen : Folder;
     return <Icon size={size} strokeWidth={1.75} className="file-icon file-icon--folder" />;
@@ -96,4 +98,49 @@ export function FileIcon({ name, kind, open = false, size = 14 }: Props) {
     return <Settings size={size} strokeWidth={1.75} className="file-icon file-icon--config" />;
   }
   return <File size={size} strokeWidth={1.75} className="file-icon" />;
+}
+
+function extractSvgInner(svg: string): string {
+  const match = svg.match(/<svg[^>]*>([\s\S]*)<\/svg>/i);
+  return match ? match[1] : svg;
+}
+
+export function FileIcon({ name, kind, open = false, size = 14, className }: Props) {
+  const { getIconForFile, getIconForFolder } = useIconTheme();
+
+  const resolved =
+    kind === "directory" ? getIconForFolder(name, open) : getIconForFile(name);
+
+  if (resolved.isNone) {
+    return <span style={{ width: size, display: "inline-block" }} aria-hidden />;
+  }
+
+  if (resolved.isBadge) {
+    return renderClassic(name, kind, open, size);
+  }
+
+  if (resolved.badge) {
+    return <Badge text={resolved.badge} tone={resolved.tone || "js"} />;
+  }
+
+  if (resolved.svg) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox={resolved.viewBox || "0 0 24 24"}
+        fill={resolved.fill ? (resolved.color || "currentColor") : "none"}
+        stroke={resolved.fill ? "none" : (resolved.color || "currentColor")}
+        strokeWidth={resolved.strokeWidth ?? 1.75}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={`file-icon ${className || ""}`}
+        style={{ color: resolved.color }}
+        aria-hidden="true"
+        dangerouslySetInnerHTML={{ __html: extractSvgInner(resolved.svg) }}
+      />
+    );
+  }
+
+  return renderClassic(name, kind, open, size);
 }

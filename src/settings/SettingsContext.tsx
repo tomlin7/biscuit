@@ -61,6 +61,8 @@ export type AppSettings = {
   desktopNotifications: boolean;
   /** Independent terminal color palette theme ('auto', 'dracula', 'one-dark', etc.) */
   terminalTheme: string;
+  /** Active file icon theme ('material', 'seti', 'minimal-mono', 'classic', 'none', etc.) */
+  iconTheme: string;
   /** Configurable JSON Schema associations (path pattern -> schema map). */
   jsonSchemas: JsonSchemaAssociation[];
 };
@@ -73,7 +75,12 @@ type SettingsState = {
     patch: Partial<
       Pick<
         AppSettings,
-        "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme" | "jsonSchemas"
+        | "preferredEncoding"
+        | "extensionRegistryUrl"
+        | "desktopNotifications"
+        | "terminalTheme"
+        | "iconTheme"
+        | "jsonSchemas"
       >
     >,
   ) => void;
@@ -111,6 +118,7 @@ const DEFAULTS: AppSettings = {
     "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/index.json",
   desktopNotifications: true,
   terminalTheme: "auto",
+  iconTheme: "material",
   jsonSchemas: [],
 };
 
@@ -145,6 +153,10 @@ function load(): AppSettings {
         typeof parsed.terminalTheme === "string" && parsed.terminalTheme.trim()
           ? parsed.terminalTheme.trim()
           : DEFAULTS.terminalTheme,
+      iconTheme:
+        typeof parsed.iconTheme === "string" && parsed.iconTheme.trim()
+          ? parsed.iconTheme.trim()
+          : DEFAULTS.iconTheme,
       jsonSchemas: Array.isArray(parsed.jsonSchemas) ? parsed.jsonSchemas : DEFAULTS.jsonSchemas,
     };
   } catch {

@@ -32,6 +32,20 @@ export type ExtensionManifest = {
     languages?: Array<{ id: string; aliases: string[]; extensions: string[] }>;
     webviews?: Array<{ id: string; title: string; entry: string }>;
     views?: Array<{ id: string; name: string; icon?: string; entry?: string }>;
+    iconThemes?: Array<{
+      id: string;
+      label: string;
+      description?: string;
+      path?: string;
+      defaultFile?: any;
+      defaultFolder?: any;
+      defaultFolderOpen?: any;
+      fileExtensions?: Record<string, any>;
+      fileNames?: Record<string, any>;
+      folderNames?: Record<string, any>;
+      folderNamesOpen?: Record<string, any>;
+      icons?: Record<string, any>;
+    }>;
   };
   /** Entry module run in the extension host; absent for declarative-only extensions. */
   main?: string | null;

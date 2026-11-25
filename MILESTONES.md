@@ -481,6 +481,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **1.217.0** | JSON Schema association for config file validation | shipped |
 | **1.218.0** | Switchable named Layout Presets | shipped |
 | **1.219.0** | Drag-to-split tabs and multi-pane grid layout | shipped |
+| **1.220.0** | Installable icon themes and theme selector | shipped |
 | **2.0.0** | Stable product | owner decision only |
 
 ## Current target

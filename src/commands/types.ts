@@ -329,6 +329,7 @@ export type CommandContext = {
   saveCurrentLayoutPreset: () => void;
   deleteLayoutPreset: () => void;
   resetLayoutPresets: () => void;
+  selectIconTheme: (themeId?: string) => Promise<void> | void;
 };
 
 export type Command = {
