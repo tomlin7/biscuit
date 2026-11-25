@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { invoke } from "@tauri-apps/api/core";
@@ -13,16 +13,20 @@ type Props = {
   embedded?: boolean;
 };
 
-export function TerminalPanel({ open, embedded = false }: Props) {
+type SessionProps = {
+  active: boolean;
+  cwd: string | null;
+  theme: "light" | "dark";
+};
+
+function TerminalSession({ active, cwd, theme }: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
   const ptyIdRef = useRef<string | null>(null);
-  const { rootPath } = useWorkspace();
-  const { theme } = useTheme();
 
   useEffect(() => {
-    if (!open || !hostRef.current || termRef.current) return;
+    if (!hostRef.current || termRef.current) return;
 
     const term = new Terminal({
       cursorBlink: true,
@@ -53,12 +57,10 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     let disposed = false;
 
     const start = async () => {
-      const cols = term.cols;
-      const rows = term.rows;
       const id = await invoke<string>("pty_spawn", {
-        cwd: rootPath,
-        cols,
-        rows,
+        cwd,
+        cols: term.cols,
+        rows: term.rows,
       });
       if (disposed) {
         await invoke("pty_kill", { id });
@@ -67,9 +69,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       ptyIdRef.current = id;
 
       unlistenData = await listen<{ id: string; data: string }>("pty-data", (event) => {
-        if (event.payload.id === id) {
-          term.write(event.payload.data);
-        }
+        if (event.payload.id === id) term.write(event.payload.data);
       });
       unlistenExit = await listen<{ id: string }>("pty-exit", (event) => {
         if (event.payload.id === id) {
@@ -83,11 +83,10 @@ export function TerminalPanel({ open, embedded = false }: Props) {
         if (!current) return;
         void invoke("pty_write", { id: current, data });
       });
-
-      term.onResize(({ cols: c, rows: r }) => {
+      term.onResize(({ cols, rows }) => {
         const current = ptyIdRef.current;
         if (!current) return;
-        void invoke("pty_resize", { id: current, cols: c, rows: r });
+        void invoke("pty_resize", { id: current, cols, rows });
       });
     };
 
@@ -95,10 +94,6 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       term.writeln(`Failed to start terminal: ${String(err)}`);
     });
 
-    const onWinResize = () => {
-      fit.fit();
-    };
-    window.addEventListener("resize", onWinResize);
     const observer = new ResizeObserver(() => {
       fit.fit();
     });
@@ -107,7 +102,6 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     return () => {
       disposed = true;
       observer.disconnect();
-      window.removeEventListener("resize", onWinResize);
       unlistenData?.();
       unlistenExit?.();
       const id = ptyIdRef.current;
@@ -119,32 +113,113 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       termRef.current = null;
       fitRef.current = null;
     };
-    // Recreate terminal when panel first opens; theme applied on next open.
+    // One shell per session. A new tab creates a new session.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, []);
 
   useEffect(() => {
-    if (!open) return;
-    const id = window.setTimeout(() => fitRef.current?.fit(), 50);
+    if (!active) return;
+    const id = window.setTimeout(() => fitRef.current?.fit(), 30);
     return () => window.clearTimeout(id);
-  }, [open]);
+  }, [active]);
+
+  return <div className="terminal-panel__body" ref={hostRef} />;
+}
+
+let nextSession = 1;
+
+export function TerminalPanel({ open, embedded = false }: Props) {
+  const { rootPath } = useWorkspace();
+  const { theme } = useTheme();
+  const [sessions, setSessions] = useState<number[]>(() => [nextSession]);
+  const [activeId, setActiveId] = useState(sessions[0]);
+
+  const addSession = () => {
+    nextSession += 1;
+    const id = nextSession;
+    setSessions((current) => [...current, id]);
+    setActiveId(id);
+  };
+
+  const closeSession = (id: number) => {
+    setSessions((current) => {
+      const next = current.filter((item) => item !== id);
+      if (next.length === 0) {
+        nextSession += 1;
+        setActiveId(nextSession);
+        return [nextSession];
+      }
+      setActiveId((active) => (active === id ? next[next.length - 1] : active));
+      return next;
+    });
+  };
 
   if (!open) return null;
+
+  const chrome = (
+    <>
+      <div className="terminal-panel__sessions" role="tablist" aria-label="Terminals">
+        {sessions.map((id, index) => (
+          <span key={id} className="terminal-panel__session">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={id === activeId}
+              className={
+                id === activeId
+                  ? "terminal-panel__session-tab terminal-panel__session-tab--active"
+                  : "terminal-panel__session-tab"
+              }
+              onClick={() => setActiveId(id)}
+            >
+              Terminal {index + 1}
+            </button>
+            <button
+              type="button"
+              className="terminal-panel__session-close"
+              aria-label={`Close terminal ${index + 1}`}
+              onClick={() => closeSession(id)}
+            >
+              ×
+            </button>
+          </span>
+        ))}
+        <button type="button" className="terminal-panel__session-add" onClick={addSession}>
+          New
+        </button>
+      </div>
+      <div className="terminal-panel__stack">
+        {sessions.map((id) => (
+          <div
+            key={id}
+            className={
+              id === activeId
+                ? "terminal-panel__slot terminal-panel__slot--active"
+                : "terminal-panel__slot"
+            }
+          >
+            <TerminalSession
+              active={open && id === activeId}
+              cwd={rootPath}
+              theme={theme}
+            />
+          </div>
+        ))}
+      </div>
+    </>
+  );
 
   if (embedded) {
     return (
       <div className="terminal-panel terminal-panel--embedded" aria-label="Terminal">
-        <div className="terminal-panel__body" ref={hostRef} />
+        {chrome}
       </div>
     );
   }
 
   return (
     <section className="terminal-panel island" aria-label="Terminal">
-      <div className="terminal-panel__header">
-        <span>Terminal</span>
-      </div>
-      <div className="terminal-panel__body" ref={hostRef} />
+      {chrome}
     </section>
   );
 }

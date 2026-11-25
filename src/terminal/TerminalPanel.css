@@ -16,6 +16,61 @@
   background: var(--bg-island);
 }
 
+.terminal-panel__sessions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px 0;
+  overflow: auto;
+}
+
+.terminal-panel__session {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.terminal-panel__session-tab,
+.terminal-panel__session-add,
+.terminal-panel__session-close {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.terminal-panel__session-tab--active,
+.terminal-panel__session-tab:hover,
+.terminal-panel__session-add:hover,
+.terminal-panel__session-close:hover {
+  background: var(--bg-active);
+  color: var(--fg);
+}
+
+.terminal-panel__session-close {
+  padding: 4px 6px;
+}
+
+.terminal-panel__stack {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.terminal-panel__slot {
+  display: none;
+  min-height: 0;
+}
+
+.terminal-panel__slot--active {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
 .terminal-panel__header {
   padding: 6px 12px;
   font-size: var(--font-size-sm);
