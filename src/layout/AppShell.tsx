@@ -1942,6 +1942,41 @@ function ShellChrome() {
         const next = list[idx];
         void openFileAt(next.path, next.line, next.column);
       },
+      goToPreviousProblem: () => {
+        refreshDiagnosticsMarkers();
+        const list = [...problems].sort((a, b) => {
+          const byPath = a.path.localeCompare(b.path);
+          if (byPath !== 0) return byPath;
+          if (a.line !== b.line) return a.line - b.line;
+          return a.column - b.column;
+        });
+        if (list.length === 0) {
+          notify("Problems", "No problems in open editors.");
+          return;
+        }
+        openProblems();
+        const curPath = activePath ?? "";
+        const curLine = document?.cursorLine ?? 1;
+        const curCol = document?.cursorColumn ?? 1;
+        let idx = -1;
+        for (let i = list.length - 1; i >= 0; i--) {
+          const p = list[i];
+          if (
+            p.path === curPath &&
+            (p.line < curLine || (p.line === curLine && p.column < curCol))
+          ) {
+            idx = i;
+            break;
+          }
+          if (p.path.localeCompare(curPath) < 0) {
+            idx = i;
+            break;
+          }
+        }
+        if (idx < 0) idx = list.length - 1;
+        const prev = list[idx];
+        void openFileAt(prev.path, prev.line, prev.column);
+      },
     }),
     [
       openFolder,

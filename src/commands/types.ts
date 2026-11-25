@@ -290,6 +290,7 @@ export type CommandContext = {
   saveWorkspaceAs: () => void;
   openWorkspaceFile: () => void;
   goToNextProblem: () => void;
+  goToPreviousProblem: () => void;
 };
 
 export type Command = {
