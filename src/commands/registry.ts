@@ -550,6 +550,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.openProblems(),
   },
   {
+    id: "workbench.actions.view.toggleProblems",
+    title: "Toggle Problems",
+    category: "View",
+    run: (ctx) => ctx.toggleProblems(),
+  },
+  {
     id: "git.viewAmend",
     title: "Toggle Amend Last Commit",
     category: "Git",

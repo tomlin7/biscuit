@@ -370,6 +370,14 @@ function ShellChrome() {
     setBottomOpen(true);
   }, [setBottomOpen]);
 
+  const toggleProblems = useCallback(() => {
+    if (bottomOpen && panelTab === "problems") {
+      setBottomOpen(false);
+      return;
+    }
+    setPanelTab("problems");
+    setBottomOpen(true);
+  }, [bottomOpen, panelTab, setBottomOpen]);
 
   const extensionCommands = useMemo<Command[]>(() => {
     const cmds: Command[] = [];
@@ -562,6 +570,7 @@ function ShellChrome() {
         setBottomOpen(true);
       },
       openProblems,
+      toggleProblems,
       toggleScmAmend: () => {
         setSidebarMode("scm");
         setSidebarOpen(true);
@@ -647,6 +656,7 @@ function ShellChrome() {
       setAiOpen,
       setSidebarOpen,
       toggleBottom,
+      toggleProblems,
       openFolderAt,
       openPalette,
       openSymbols,
