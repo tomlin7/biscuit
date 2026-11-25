@@ -1820,4 +1820,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.showSidebarView(""),
   },
+  {
+    id: "workbench.action.exportLogs",
+    title: "Logs: Export Logs to File",
+    category: "Logs",
+    run: (ctx) => ctx.exportLogs(),
+  },
 ];

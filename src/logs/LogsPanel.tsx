@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownToLine, Ban, Copy, ScrollText, Search, SearchX, X } from "lucide-react";
+import { ArrowDownToLine, Ban, Copy, Download, ScrollText, Search, SearchX, X } from "lucide-react";
 import { EmptyState } from "../ui/EmptyState";
-import { clearLogs, subscribeLogs, type LogLine } from "./logBus";
+import { clearLogs, exportLogsToFile, subscribeLogs, type LogLine } from "./logBus";
 import { IconButton } from "../ui/IconButton";
 import "./LogsPanel.css";
 
@@ -65,6 +65,13 @@ export function LogsPanel() {
             size={13}
             active={autoScroll}
             onClick={() => setAutoScroll((v) => !v)}
+          />
+          <IconButton
+            icon={Download}
+            label="Export logs to file"
+            size={13}
+            disabled={lines.length === 0}
+            onClick={() => void exportLogsToFile()}
           />
           <IconButton
             icon={Copy}

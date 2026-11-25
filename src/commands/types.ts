@@ -300,6 +300,7 @@ export type CommandContext = {
   openNextGitChangedFile: () => void;
   openWebview: (extId: string, viewId: string, title?: string) => void;
   showSidebarView: (viewId: string) => void;
+  exportLogs: () => Promise<void> | void;
 };
 
 export type Command = {

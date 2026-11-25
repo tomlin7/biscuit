@@ -34,7 +34,7 @@ import { CommandPalette } from "../commands/CommandPalette";
 import { COMMANDS } from "../commands/registry";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
-import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
+import { appendLog, clearLogs as clearLogBuffer, exportLogsToFile } from "../logs/logBus";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
 import { githubWebUrlFromRemote } from "../scm/githubRemote";
@@ -2134,6 +2134,12 @@ function ShellChrome() {
         } else {
           notify("Sidebar Views", "No contributed sidebar views available.");
         }
+      },
+      exportLogs: () => {
+        void (async () => {
+          const res = await exportLogsToFile();
+          if (res) notify("Logs exported", `Saved to ${res}`);
+        })();
       },
       openNextGitChangedFile: () => {
         void (async () => {
