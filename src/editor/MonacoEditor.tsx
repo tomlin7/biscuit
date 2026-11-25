@@ -87,8 +87,9 @@ export function MonacoEditor({ path, primary = true }: Props) {
   useEffect(() => {
     editorRef.current?.updateOptions({
       minimap: { enabled: settings.editor.minimap, scale: 1 },
+      stickyScroll: { enabled: settings.editor.stickyScroll },
     });
-  }, [settings.editor.minimap]);
+  }, [settings.editor.minimap, settings.editor.stickyScroll]);
 
   useEffect(() => {
     if (!primary) return;
@@ -446,6 +447,7 @@ export function MonacoEditor({ path, primary = true }: Props) {
           fontSize: settings.editor.fontSize,
           lineHeight: Math.round(settings.editor.fontSize * 1.55),
           minimap: { enabled: settings.editor.minimap, scale: 1 },
+          stickyScroll: { enabled: settings.editor.stickyScroll },
           wordWrap: settings.editor.wordWrap ? "on" : "off",
           lineNumbers: settings.editor.lineNumbers ? "on" : "off",
           scrollBeyondLastLine: false,

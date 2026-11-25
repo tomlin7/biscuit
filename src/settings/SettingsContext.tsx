@@ -14,6 +14,7 @@ export type EditorSettings = {
   wordWrap: boolean;
   minimap: boolean;
   lineNumbers: boolean;
+  stickyScroll: boolean;
 };
 
 export type AppSettings = {
@@ -35,6 +36,7 @@ const DEFAULTS: AppSettings = {
     wordWrap: false,
     minimap: true,
     lineNumbers: true,
+    stickyScroll: true,
   },
 };
 

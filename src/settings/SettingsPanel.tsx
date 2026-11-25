@@ -93,6 +93,14 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => updateEditor({ lineNumbers: e.target.checked })}
               />
             </label>
+            <label className="settings-row settings-row--check">
+              <span>Sticky scroll</span>
+              <input
+                type="checkbox"
+                checked={settings.editor.stickyScroll}
+                onChange={(e) => updateEditor({ stickyScroll: e.target.checked })}
+              />
+            </label>
           </section>
 
           <section>
@@ -120,6 +128,28 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => setAi({ model: e.target.value })}
               />
             </label>
+            <div className="settings-presets" role="group" aria-label="Model presets">
+              {[
+                "gpt-4o-mini",
+                "gpt-4o",
+                "gpt-4.1-mini",
+                "o4-mini",
+                "claude-sonnet-4-20250514",
+              ].map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={
+                    ai.model === id
+                      ? "settings-preset settings-preset--active"
+                      : "settings-preset"
+                  }
+                  onClick={() => setAi({ model: id })}
+                >
+                  {id}
+                </button>
+              ))}
+            </div>
             <label className="settings-row">
               <span>Effort</span>
               <select
