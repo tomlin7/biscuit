@@ -33,12 +33,27 @@
 
 .terminal-panel__session-tab,
 .terminal-panel__session-add,
+.terminal-panel__shell select,
 .terminal-panel__session-close {
   padding: 4px 8px;
   border-radius: 8px;
   background: transparent;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
+}
+
+.terminal-panel__shell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.terminal-panel__shell select {
+  color: var(--fg);
+  background: transparent;
 }
 
 .terminal-panel__session-tab--active,

@@ -34,18 +34,53 @@ struct PtyExitPayload {
     id: String,
 }
 
-fn default_shell() -> CommandBuilder {
+struct ShellLaunch {
+    program: String,
+    args: Vec<String>,
+}
+
+fn resolve_shell(shell: Option<&str>) -> Result<ShellLaunch, String> {
+    match shell.map(str::trim).filter(|value| !value.is_empty()) {
+        None => Ok(default_launch()),
+        Some("powershell") => Ok(ShellLaunch {
+            program: "powershell.exe".into(),
+            args: vec!["-NoLogo".into()],
+        }),
+        Some("cmd") => Ok(ShellLaunch {
+            program: "cmd.exe".into(),
+            args: Vec::new(),
+        }),
+        Some("bash") => Ok(ShellLaunch {
+            program: "bash".into(),
+            args: Vec::new(),
+        }),
+        Some(other) => Err(format!("unsupported shell: {other}")),
+    }
+}
+
+fn default_launch() -> ShellLaunch {
     #[cfg(target_os = "windows")]
     {
-        let mut cmd = CommandBuilder::new("powershell.exe");
-        cmd.arg("-NoLogo");
-        cmd
+        ShellLaunch {
+            program: "powershell.exe".into(),
+            args: vec!["-NoLogo".into()],
+        }
     }
     #[cfg(not(target_os = "windows"))]
     {
-        let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/bash".into());
-        CommandBuilder::new(shell)
+        ShellLaunch {
+            program: std::env::var("SHELL").unwrap_or_else(|_| "/bin/bash".into()),
+            args: Vec::new(),
+        }
     }
+}
+
+fn command_from(launch: ShellLaunch) -> CommandBuilder {
+    let mut cmd = CommandBuilder::new(launch.program);
+    for arg in launch.args {
+        cmd.arg(arg);
+    }
+    cmd
 }
 
 #[tauri::command]
@@ -55,7 +90,9 @@ pub fn pty_spawn(
     cwd: Option<String>,
     cols: u16,
     rows: u16,
+    shell: Option<String>,
 ) -> Result<String, String> {
+    let launch = resolve_shell(shell.as_deref())?;
     let pty_system = native_pty_system();
     let pair = pty_system
         .openpty(PtySize {
@@ -66,7 +103,7 @@ pub fn pty_spawn(
         })
         .map_err(|e| e.to_string())?;
 
-    let mut cmd = default_shell();
+    let mut cmd = command_from(launch);
     if let Some(dir) = cwd {
         cmd.cwd(dir);
     }
@@ -170,4 +207,19 @@ pub fn pty_kill(state: State<'_, PtyState>, id: String) -> Result<(), String> {
         let _ = killer.kill();
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::resolve_shell;
+
+    #[test]
+    fn shell_allowlist() {
+        assert_eq!(resolve_shell(None).unwrap().program, resolve_shell(Some("")).unwrap().program);
+        assert_eq!(resolve_shell(Some("powershell")).unwrap().program, "powershell.exe");
+        assert_eq!(resolve_shell(Some("cmd")).unwrap().program, "cmd.exe");
+        assert_eq!(resolve_shell(Some("bash")).unwrap().program, "bash");
+        assert!(resolve_shell(Some("calc.exe")).is_err());
+        assert!(resolve_shell(Some("powershell.exe")).is_err());
+    }
 }

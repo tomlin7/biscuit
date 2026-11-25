@@ -13,13 +13,16 @@ type Props = {
   embedded?: boolean;
 };
 
+type ShellChoice = "" | "powershell" | "cmd" | "bash";
+
 type SessionProps = {
   active: boolean;
   cwd: string | null;
   theme: "light" | "dark";
+  shell: ShellChoice;
 };
 
-function TerminalSession({ active, cwd, theme }: SessionProps) {
+function TerminalSession({ active, cwd, theme, shell }: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
@@ -61,6 +64,7 @@ function TerminalSession({ active, cwd, theme }: SessionProps) {
         cwd,
         cols: term.cols,
         rows: term.rows,
+        shell: shell || null,
       });
       if (disposed) {
         await invoke("pty_kill", { id });
@@ -128,28 +132,49 @@ function TerminalSession({ active, cwd, theme }: SessionProps) {
 
 let nextSession = 1;
 
+type TermSession = {
+  id: number;
+  shell: ShellChoice;
+};
+
+const SHELLS: { value: ShellChoice; label: string }[] = [
+  { value: "", label: "Default" },
+  { value: "powershell", label: "PowerShell" },
+  { value: "cmd", label: "Command Prompt" },
+  { value: "bash", label: "bash" },
+];
+
+function shellLabel(shell: ShellChoice, index: number): string {
+  if (!shell) return `Terminal ${index + 1}`;
+  const named = SHELLS.find((item) => item.value === shell);
+  return named ? named.label : `Terminal ${index + 1}`;
+}
+
 export function TerminalPanel({ open, embedded = false }: Props) {
   const { rootPath } = useWorkspace();
   const { theme } = useTheme();
-  const [sessions, setSessions] = useState<number[]>(() => [nextSession]);
-  const [activeId, setActiveId] = useState(sessions[0]);
+  const [sessions, setSessions] = useState<TermSession[]>(() => [
+    { id: nextSession, shell: "" },
+  ]);
+  const [activeId, setActiveId] = useState(sessions[0].id);
+  const [nextShell, setNextShell] = useState<ShellChoice>("");
 
   const addSession = () => {
     nextSession += 1;
     const id = nextSession;
-    setSessions((current) => [...current, id]);
+    setSessions((current) => [...current, { id, shell: nextShell }]);
     setActiveId(id);
   };
 
   const closeSession = (id: number) => {
     setSessions((current) => {
-      const next = current.filter((item) => item !== id);
+      const next = current.filter((item) => item.id !== id);
       if (next.length === 0) {
         nextSession += 1;
         setActiveId(nextSession);
-        return [nextSession];
+        return [{ id: nextSession, shell: nextShell }];
       }
-      setActiveId((active) => (active === id ? next[next.length - 1] : active));
+      setActiveId((active) => (active === id ? next[next.length - 1].id : active));
       return next;
     });
   };
@@ -159,49 +184,64 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   const chrome = (
     <>
       <div className="terminal-panel__sessions" role="tablist" aria-label="Terminals">
-        {sessions.map((id, index) => (
-          <span key={id} className="terminal-panel__session">
+        {sessions.map((session, index) => (
+          <span key={session.id} className="terminal-panel__session">
             <button
               type="button"
               role="tab"
-              aria-selected={id === activeId}
+              aria-selected={session.id === activeId}
               className={
-                id === activeId
+                session.id === activeId
                   ? "terminal-panel__session-tab terminal-panel__session-tab--active"
                   : "terminal-panel__session-tab"
               }
-              onClick={() => setActiveId(id)}
+              onClick={() => setActiveId(session.id)}
             >
-              Terminal {index + 1}
+              {shellLabel(session.shell, index)}
             </button>
             <button
               type="button"
               className="terminal-panel__session-close"
               aria-label={`Close terminal ${index + 1}`}
-              onClick={() => closeSession(id)}
+              onClick={() => closeSession(session.id)}
             >
               ×
             </button>
           </span>
         ))}
+        <label className="terminal-panel__shell">
+          <span className="terminal-panel__shell-label">New shell</span>
+          <select
+            value={nextShell}
+            aria-label="Shell for the next terminal"
+            onChange={(event) => setNextShell(event.target.value as ShellChoice)}
+          >
+            {SHELLS.map((item) => (
+              <option key={item.value || "default"} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <button type="button" className="terminal-panel__session-add" onClick={addSession}>
           New
         </button>
       </div>
       <div className="terminal-panel__stack">
-        {sessions.map((id) => (
+        {sessions.map((session) => (
           <div
-            key={id}
+            key={session.id}
             className={
-              id === activeId
+              session.id === activeId
                 ? "terminal-panel__slot terminal-panel__slot--active"
                 : "terminal-panel__slot"
             }
           >
             <TerminalSession
-              active={open && id === activeId}
+              active={open && session.id === activeId}
               cwd={rootPath}
               theme={theme}
+              shell={session.shell}
             />
           </div>
         ))}
