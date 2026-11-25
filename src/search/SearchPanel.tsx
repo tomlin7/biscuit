@@ -16,6 +16,8 @@ type Props = {
 export function SearchPanel({ onOpenHit }: Props) {
   const { rootPath, busy, tabs, applyDiskValue } = useWorkspace();
   const [query, setQuery] = useState("");
+  const [matchCase, setMatchCase] = useState(true);
+  const [useRegex, setUseRegex] = useState(false);
   const [replacement, setReplacement] = useState("");
   const [replaceNote, setReplaceNote] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
@@ -34,7 +36,7 @@ export function SearchPanel({ onOpenHit }: Props) {
     const timer = window.setTimeout(() => {
       setSearching(true);
       setError(null);
-      void searchWorkspace(rootPath, query)
+      void searchWorkspace(rootPath, query, { matchCase, useRegex })
         .then((results) => {
           if (!cancelled) setHits(results);
         })
@@ -53,7 +55,7 @@ export function SearchPanel({ onOpenHit }: Props) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [rootPath, query, revision]);
+  }, [rootPath, query, matchCase, useRegex, revision]);
 
   if (!rootPath) {
     return (
@@ -75,6 +77,26 @@ export function SearchPanel({ onOpenHit }: Props) {
         autoFocus
         disabled={busy}
       />
+      <div className="search-panel__flags">
+        <button
+          type="button"
+          className={matchCase ? "search-panel__flag search-panel__flag--on" : "search-panel__flag"}
+          aria-pressed={matchCase}
+          onClick={() => setMatchCase((value) => !value)}
+          disabled={busy}
+        >
+          Match case
+        </button>
+        <button
+          type="button"
+          className={useRegex ? "search-panel__flag search-panel__flag--on" : "search-panel__flag"}
+          aria-pressed={useRegex}
+          onClick={() => setUseRegex((value) => !value)}
+          disabled={busy}
+        >
+          Use regex
+        </button>
+      </div>
       <input
         className="search-panel__input"
         value={replacement}
@@ -93,7 +115,7 @@ export function SearchPanel({ onOpenHit }: Props) {
             tabs.filter((tab) => tab.value !== tab.baseline).map((tab) => tab.path),
           );
           setReplaceNote(null);
-          void replaceInWorkspace(rootPath, query, replacement, dirty)
+          void replaceInWorkspace(rootPath, query, replacement, dirty, { matchCase, useRegex })
             .then(async (result) => {
               for (const path of result.paths) {
                 if (tabs.some((tab) => tab.path === path)) {

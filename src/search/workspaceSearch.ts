@@ -8,15 +8,70 @@ export type SearchHit = {
   preview: string;
 };
 
+export type TextSearchOptions = {
+  matchCase: boolean;
+  useRegex: boolean;
+};
+
+export const defaultSearchOptions: TextSearchOptions = {
+  matchCase: true,
+  useRegex: false,
+};
+
+function searchPattern(query: string, options: TextSearchOptions): RegExp {
+  const source = options.useRegex ? query : query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  try {
+    return new RegExp(source, options.matchCase ? "g" : "gi");
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : String(err));
+  }
+}
+
+export function hitsInText(
+  text: string,
+  query: string,
+  options: TextSearchOptions,
+): Omit<SearchHit, "path">[] {
+  const pattern = searchPattern(query, options);
+  const lines = text.split(/\r?\n/);
+  const hits: Omit<SearchHit, "path">[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    pattern.lastIndex = 0;
+    const match = pattern.exec(lines[i]);
+    if (!match || match.index === undefined) continue;
+    hits.push({
+      line: i + 1,
+      column: match.index + 1,
+      preview: lines[i].trim().slice(0, 160),
+    });
+  }
+  return hits;
+}
+
+export function replaceInText(
+  text: string,
+  query: string,
+  replacement: string,
+  options: TextSearchOptions,
+): { next: string; count: number } {
+  const pattern = searchPattern(query, options);
+  const matches = text.match(pattern);
+  if (!matches || matches.length === 0) return { next: text, count: 0 };
+  pattern.lastIndex = 0;
+  return { next: text.replace(pattern, replacement), count: matches.length };
+}
+
 const MAX_HITS = 200;
 const MAX_FILE_BYTES = 512_000;
 
 export async function searchWorkspace(
   rootPath: string,
   query: string,
+  options: TextSearchOptions = defaultSearchOptions,
 ): Promise<SearchHit[]> {
   const needle = query.trim();
   if (!needle) return [];
+  searchPattern(needle, options);
 
   const hits: SearchHit[] = [];
   const queue = [rootPath];
@@ -43,20 +98,9 @@ export async function searchWorkspace(
       try {
         const text = await readTextFile(path);
         if (text.length > MAX_FILE_BYTES) continue;
-        const lines = text.split(/\r?\n/);
-        for (let i = 0; i < lines.length; i++) {
-          const lineText = lines[i];
-          const column = lineText.indexOf(needle);
-          if (column < 0) continue;
-          hits.push({
-            path,
-            line: i + 1,
-            column: column + 1,
-            preview: lineText.trim().slice(0, 160),
-          });
-          if (hits.length >= MAX_HITS) {
-            return hits;
-          }
+        for (const hit of hitsInText(text, needle, options)) {
+          hits.push({ path, ...hit });
+          if (hits.length >= MAX_HITS) return hits;
         }
       } catch {
         /* skip unreadable */
@@ -72,9 +116,11 @@ export async function replaceInWorkspace(
   query: string,
   replacement: string,
   dirtyPaths: ReadonlySet<string>,
+  options: TextSearchOptions = defaultSearchOptions,
 ): Promise<{ files: number; replacements: number; skippedDirty: number; paths: string[] }> {
   const needle = query.trim();
   if (!needle) return { files: 0, replacements: 0, skippedDirty: 0, paths: [] };
+  searchPattern(needle, options);
 
   let files = 0;
   let replacements = 0;
@@ -106,11 +152,12 @@ export async function replaceInWorkspace(
 
       try {
         const text = await readTextFile(path);
-        if (text.length > MAX_FILE_BYTES || !text.includes(needle)) continue;
-        const count = text.split(needle).length - 1;
-        await writeTextFile(path, text.split(needle).join(replacement));
+        if (text.length > MAX_FILE_BYTES) continue;
+        const replaced = replaceInText(text, needle, replacement, options);
+        if (replaced.count === 0) continue;
+        await writeTextFile(path, replaced.next);
         files += 1;
-        replacements += count;
+        replacements += replaced.count;
         paths.push(path);
       } catch {
         /* skip unreadable */

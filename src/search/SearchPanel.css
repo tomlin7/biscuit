@@ -26,6 +26,24 @@
   background: var(--bg-hover);
 }
 
+.search-panel__flags {
+  display: flex;
+  gap: 4px;
+}
+
+.search-panel__flag {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.search-panel__flag--on {
+  background: var(--bg-active);
+  color: var(--fg);
+}
+
 .search-panel__replace {
   align-self: flex-start;
   padding: 4px 10px;
