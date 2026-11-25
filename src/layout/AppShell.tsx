@@ -3,8 +3,8 @@ import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { open as openDialog } from "@tauri-apps/plugin-dialog";
-import { readTextFile } from "@tauri-apps/plugin-fs";
+import { open as openDialog, save as saveDialog } from "@tauri-apps/plugin-dialog";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import { applyChromeAcrylic } from "./chromeAcrylic";
 import "./AppShell.css";
@@ -39,6 +39,7 @@ import {
   githubPullsSearchUrl,
   githubWebUrlFromRemote,
 } from "../scm/githubRemote";
+import { serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -707,6 +708,38 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestRestartActiveTerminal();
+      },
+      saveWorkspaceAs: () => {
+        void (async () => {
+          const folderList =
+            roots.length > 0 ? roots : rootPath ? [rootPath] : [];
+          if (folderList.length === 0) {
+            notify("Workspace", "Open a folder before saving a workspace.");
+            return;
+          }
+          const dest = await saveDialog({
+            title: "Save Workspace As",
+            defaultPath: `${basename(folderList[0])}.t3d-workspace.json`,
+            filters: [
+              { name: "T3D Workspace", extensions: ["t3d-workspace.json", "json"] },
+            ],
+          });
+          if (!dest) return;
+          try {
+            const text = serializeWorkspace({
+              roots: folderList,
+              tabs: tabs.map((tab) => tab.path),
+              active: activePath,
+            });
+            await writeTextFile(dest, text);
+            notify("Workspace", `Saved ${basename(dest)}`);
+          } catch (err) {
+            notify(
+              "Workspace",
+              err instanceof Error ? err.message : String(err),
+            );
+          }
+        })();
       },
       runFile: () => {
         if (!activePath) return;

@@ -116,6 +116,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.saveAll(),
   },
   {
+    id: "workbench.action.saveWorkspaceAs",
+    title: "Save Workspace As…",
+    category: "File",
+    run: (ctx) => void ctx.saveWorkspaceAs(),
+  },
+  {
     id: "workbench.action.closeActiveEditor",
     title: "Close Editor",
     category: "View",

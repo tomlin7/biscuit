@@ -425,6 +425,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.417.0** | Open repository on GitHub from palette | shipped |
 | **0.418.0** | Undo / Redo from the command palette | shipped |
 | **0.419.0** | Split editor down from the command palette | shipped |
+| **0.420.0** | Save workspace as from the command palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
