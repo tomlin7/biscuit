@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
+import { openDiffTab } from "./diffBus";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -29,8 +30,6 @@ export function ScmPanel({ onBranch }: Props) {
   const [message, setMessage] = useState("");
   const [acting, setActing] = useState(false);
   const [branches, setBranches] = useState<string[]>([]);
-  const [diffText, setDiffText] = useState<string | null>(null);
-  const [diffPath, setDiffPath] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!rootPath) {
@@ -256,11 +255,6 @@ export function ScmPanel({ onBranch }: Props) {
                 className="scm-panel__action"
                 disabled={acting}
                 onClick={() => {
-                  if (diffPath === entry.path) {
-                    setDiffPath(null);
-                    setDiffText(null);
-                    return;
-                  }
                   const staged = entry.index !== " " && entry.index !== "?" && entry.worktree === " ";
                   void invoke<string>("git_diff", {
                     cwd: rootPath,
@@ -268,8 +262,7 @@ export function ScmPanel({ onBranch }: Props) {
                     staged,
                   })
                     .then((text) => {
-                      setDiffPath(entry.path);
-                      setDiffText(text);
+                      openDiffTab(entry.path, text);
                     })
                     .catch((err) => {
                       setError(err instanceof Error ? err.message : String(err));
@@ -279,9 +272,6 @@ export function ScmPanel({ onBranch }: Props) {
                 Diff
               </button>
             </div>
-            {diffPath === entry.path && diffText ? (
-              <pre className="scm-panel__diff">{diffText}</pre>
-            ) : null}
           </li>
         ))}
       </ul>
