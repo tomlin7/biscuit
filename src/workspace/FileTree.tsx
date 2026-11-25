@@ -50,7 +50,7 @@ function TreeRows({
   forceExpand: boolean;
   onMenu: (event: MouseEvent, node: TreeNode) => void;
 }) {
-  const { expanded, document, toggleDirectory, openFile, createEntry } = useWorkspace();
+  const { expanded, document, toggleDirectory, openFile, createEntry, renameEntry } = useWorkspace();
 
   return (
     <>
@@ -69,6 +69,11 @@ function TreeRows({
                 style={{ paddingLeft }}
                 onClick={() => void toggleDirectory(node.path)}
                 onKeyDown={(event) => {
+                  if (event.key === "F2") {
+                    event.preventDefault();
+                    void renameEntry(node.path);
+                    return;
+                  }
                   if (event.key === "Enter" || event.key === "ArrowRight") {
                     if (!isExpanded) {
                       event.preventDefault();
@@ -131,6 +136,11 @@ function TreeRows({
             style={{ paddingLeft }}
             onClick={() => void openFile(node.path)}
             onKeyDown={(event) => {
+              if (event.key === "F2") {
+                event.preventDefault();
+                void renameEntry(node.path);
+                return;
+              }
               if (event.key === "Enter" || event.key === "ArrowRight") {
                 event.preventDefault();
                 void openFile(node.path);
