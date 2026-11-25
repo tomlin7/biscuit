@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Search, SearchX } from "lucide-react";
 import { COMMANDS } from "./registry";
 import { rememberCommandId, readRecentCommandIds } from "./recentCommands";
 import { matchCommandQuery, type Command, type CommandContext } from "./types";
+import { EmptyState } from "../ui/EmptyState";
 import "./CommandPalette.css";
 
 type Props = {
@@ -11,6 +13,20 @@ type Props = {
   extraCommands?: Command[];
   seed?: string;
 };
+
+function Keybinding({ value }: { value: string }) {
+  return (
+    <span className="command-palette__keys">
+      {value.split(" ").map((chord, ci) => (
+        <span key={`${chord}:${ci}`} className="command-palette__chord">
+          {chord.split("+").map((key, ki) => (
+            <kbd key={`${key}:${ki}`}>{key}</kbd>
+          ))}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export function CommandPalette({
   open,
@@ -26,22 +42,22 @@ export function CommandPalette({
   const listRef = useRef<HTMLUListElement>(null);
   const isKeyNavRef = useRef(false);
 
-  const items = useMemo(() => {
+  const { items, recentCount } = useMemo(() => {
     const all = [...COMMANDS, ...extraCommands].filter((cmd) =>
       cmd.when ? cmd.when(context) : true,
     );
     const matched = all.filter((cmd) => matchCommandQuery(cmd.title, query));
-    if (query.trim()) return matched;
+    if (query.trim()) return { items: matched, recentCount: 0 };
 
     const byId = new Map(all.map((cmd) => [cmd.id, cmd]));
     const recent: Command[] = [];
     for (const id of recentIds) {
       const cmd = byId.get(id);
-      if (cmd) recent.push({ ...cmd, category: cmd.category ? `Recent · ${cmd.category}` : "Recent" });
+      if (cmd) recent.push(cmd);
     }
     const recentSet = new Set(recent.map((cmd) => cmd.id));
     const rest = matched.filter((cmd) => !recentSet.has(cmd.id));
-    return [...recent, ...rest];
+    return { items: [...recent, ...rest], recentCount: recent.length };
   }, [query, context, extraCommands, recentIds]);
 
   useEffect(() => {
@@ -59,10 +75,8 @@ export function CommandPalette({
 
   useEffect(() => {
     if (!open || !listRef.current) return;
-    const activeItem = listRef.current.children[index] as HTMLElement | undefined;
-    if (activeItem) {
-      activeItem.scrollIntoView({ block: "nearest" });
-    }
+    const activeItem = listRef.current.querySelector<HTMLElement>(`[data-index="${index}"]`);
+    activeItem?.scrollIntoView({ block: "nearest" });
   }, [index, open]);
 
   if (!open) return null;
@@ -74,6 +88,13 @@ export function CommandPalette({
     setRecentIds(readRecentCommandIds());
     onClose();
     void cmd.run(context);
+  };
+
+  const sectionLabel = (i: number): string | null => {
+    if (recentCount === 0) return null;
+    if (i === 0) return "Recently used";
+    if (i === recentCount) return "All commands";
+    return null;
   };
 
   return (
@@ -92,70 +113,98 @@ export function CommandPalette({
         aria-label="Dismiss"
         onClick={onClose}
       />
-      <div className="command-palette__panel island">
-        <input
-          ref={inputRef}
-          className="command-palette__input"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Type a command…"
-          aria-label="Filter commands"
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              event.preventDefault();
-              onClose();
-            } else if (event.key === "ArrowDown") {
-              event.preventDefault();
-              isKeyNavRef.current = true;
-              setIndex((i) => Math.min(i + 1, Math.max(items.length - 1, 0)));
-            } else if (event.key === "ArrowUp") {
-              event.preventDefault();
-              isKeyNavRef.current = true;
-              setIndex((i) => Math.max(i - 1, 0));
-            } else if (event.key === "Enter") {
-              event.preventDefault();
-              runAt(index);
-            }
-          }}
-        />
-        <ul ref={listRef} className="command-palette__list" role="listbox">
-          {items.length === 0 ? (
-            <li className="command-palette__empty">No matching commands</li>
-          ) : (
-            items.map((cmd, i) => (
-              <li key={`${cmd.id}:${cmd.category ?? ""}:${i}`}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={i === index}
-                  className={
-                    i === index
-                      ? "command-palette__item command-palette__item--active"
-                      : "command-palette__item"
-                  }
-                  onMouseMove={() => {
-                    if (!isKeyNavRef.current && index !== i) {
-                      setIndex(i);
-                    }
-                  }}
-                  onClick={() => runAt(i)}
-                >
-                  <span className="command-palette__title">
-                    {cmd.category ? (
-                      <span className="command-palette__category">
-                        {cmd.category}:{" "}
-                      </span>
-                    ) : null}
-                    {cmd.title}
-                  </span>
-                  {cmd.keybinding ? (
-                    <span className="command-palette__keys">{cmd.keybinding}</span>
+      <div className="command-palette__panel">
+        <div className="command-palette__search">
+          <Search size={15} strokeWidth={1.75} className="command-palette__search-icon" aria-hidden />
+          <input
+            ref={inputRef}
+            className="command-palette__input"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Type a command…"
+            aria-label="Filter commands"
+            spellCheck={false}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                onClose();
+              } else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                isKeyNavRef.current = true;
+                setIndex((i) => Math.min(i + 1, Math.max(items.length - 1, 0)));
+              } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                isKeyNavRef.current = true;
+                setIndex((i) => Math.max(i - 1, 0));
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                runAt(index);
+              }
+            }}
+          />
+        </div>
+        {items.length === 0 ? (
+          <div className="command-palette__empty">
+            <EmptyState
+              compact
+              icon={SearchX}
+              title="No matching commands"
+              description="Try a shorter or different search."
+            />
+          </div>
+        ) : (
+          <ul ref={listRef} className="command-palette__list" role="listbox">
+            {items.map((cmd, i) => {
+              const label = sectionLabel(i);
+              return (
+                <li key={`${cmd.id}:${i}`}>
+                  {label ? (
+                    <div className="command-palette__section" role="presentation">
+                      {label}
+                    </div>
                   ) : null}
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
+                  <button
+                    type="button"
+                    role="option"
+                    data-index={i}
+                    aria-selected={i === index}
+                    className={
+                      i === index
+                        ? "command-palette__item command-palette__item--active"
+                        : "command-palette__item"
+                    }
+                    onMouseMove={() => {
+                      if (!isKeyNavRef.current && index !== i) {
+                        setIndex(i);
+                      }
+                    }}
+                    onClick={() => runAt(i)}
+                  >
+                    <span className="command-palette__title">
+                      {cmd.category ? (
+                        <span className="command-palette__category">{cmd.category}</span>
+                      ) : null}
+                      <span className="command-palette__name">{cmd.title}</span>
+                    </span>
+                    {cmd.keybinding ? <Keybinding value={cmd.keybinding} /> : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <div className="command-palette__footer" aria-hidden>
+          <span>
+            <kbd>↑</kbd>
+            <kbd>↓</kbd> navigate
+          </span>
+          <span>
+            <kbd>↵</kbd> run
+          </span>
+          <span>
+            <kbd>Esc</kbd> close
+          </span>
+        </div>
       </div>
     </div>
   );

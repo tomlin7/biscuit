@@ -60,10 +60,14 @@ select:focus-visible {
   background: var(--accent-soft);
 }
 
-/* Custom Scrollbars */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
+/* Custom Scrollbars. Standard scrollbar-* props make Chromium ignore the
+   ::-webkit-scrollbar rules below (and show arrow buttons), so only apply
+   them where the WebKit pseudo-elements are unsupported. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
 }
 
 ::-webkit-scrollbar {
