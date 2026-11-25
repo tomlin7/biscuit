@@ -1434,6 +1434,11 @@ function ShellChrome() {
       toggleChromeAcrylic: () => {
         updateChromeAcrylic(!settings.chromeAcrylic);
       },
+      openReleaseNotes: () => {
+        void openUrl("https://github.com/tomlin7/T3D/releases").catch(() => {
+          /* ignore */
+        });
+      },
     }),
     [
       openFolder,

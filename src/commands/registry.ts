@@ -1444,6 +1444,11 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleChromeAcrylic(),
   },
-
+  {
+    id: "t3d.openReleaseNotes",
+    title: "Open Release Notes",
+    category: "Help",
+    run: (ctx) => ctx.openReleaseNotes(),
+  },
 
 ];
