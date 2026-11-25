@@ -1208,4 +1208,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.closeSidebar(),
   },
+  {
+    id: "notifications.markAsRead",
+    title: "Mark Notifications as Read",
+    category: "View",
+    run: (ctx) => ctx.markNotificationsRead(),
+  },
 ];

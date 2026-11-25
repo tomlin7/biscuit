@@ -201,6 +201,7 @@ export type CommandContext = {
   notifyGitDirtyCount: () => void;
   closeBottomPanel: () => void;
   closeSidebar: () => void;
+  markNotificationsRead: () => void;
 };
 
 export type Command = {

@@ -341,6 +341,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.333.0** | Git show dirty file count from palette | shipped |
 | **0.334.0** | Close bottom panel from palette | shipped |
 | **0.335.0** | Close primary side bar from palette | shipped |
+| **0.336.0** | Mark notifications as read from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

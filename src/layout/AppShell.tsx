@@ -115,6 +115,7 @@ function ShellChrome() {
   const {
     push: notify,
     clear: clearNotificationsList,
+    markRead: markNotificationsReadList,
   } = useNotifications();
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
@@ -1188,6 +1189,9 @@ function ShellChrome() {
       closeSidebar: () => {
         setSidebarOpen(false);
       },
+      markNotificationsRead: () => {
+        markNotificationsReadList();
+      },
     }),
     [
       openFolder,
@@ -1277,6 +1281,7 @@ function ShellChrome() {
       gitBranch,
       gitDirtyCount,
       clearNotificationsList,
+      markNotificationsReadList,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,
