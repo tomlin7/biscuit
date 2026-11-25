@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Olive colour palette - exact match with ted-industries */
+  --color-olive-100: oklch(17.4% 0 0);
+  --color-olive-200: oklch(93% 0.007 106.5);
+  --color-olive-300: oklch(88% 0.011 106.6);
+  --color-olive-400: oklch(73.7% 0.021 106.9);
+  --color-olive-500: oklch(58% 0.031 107.3);
+  --color-olive-600: oklch(46.6% 0.025 107.3);
+  --color-olive-700: oklch(39.4% 0.023 107.4);
+  --color-olive-800: oklch(28.6% 0.016 107.4);
+  --color-olive-950: oklch(17.4% 0 0);
+
+  /* Fonts */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), serif;
+
+  /* Named container widths */
+  --container-2xl: 48rem;
+  --container-3xl: 56rem;
+  --container-4xl: 64rem;
+  --container-5xl: 76rem;
+  --container-7xl: 87rem;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #1a1a1a;
+    color: #d4d4d4;
+    scroll-padding-top: 5.25rem;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
