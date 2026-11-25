@@ -397,6 +397,25 @@ export function ScmPanel({ onBranch }: Props) {
             disabled={acting || selectedPaths.length === 0 || !rootPath}
             onClick={() => {
               if (!rootPath) return;
+              void (async () => {
+                for (const path of selectedPaths) {
+                  const relative = path.replace(
+                    /\//g,
+                    rootPath.includes("\\") ? "\\" : "/",
+                  );
+                  await openFile(joinPath(rootPath, relative));
+                }
+              })();
+            }}
+          >
+            Open selected
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
+            disabled={acting || selectedPaths.length === 0 || !rootPath}
+            onClick={() => {
+              if (!rootPath) return;
               const absolutes = selectedPaths.map((path) => {
                 const relative = path.replace(
                   /\//g,
