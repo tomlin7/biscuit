@@ -73,6 +73,9 @@ function TreeRows({
                     if (!isExpanded) {
                       event.preventDefault();
                       void toggleDirectory(node.path);
+                    } else if (event.key === "Enter" && event.shiftKey) {
+                      event.preventDefault();
+                      void createEntry(node.path, "directory");
                     } else if (event.key === "Enter" && !event.shiftKey) {
                       event.preventDefault();
                       void createEntry(node.path, "file");
@@ -85,6 +88,9 @@ function TreeRows({
                   } else if (event.key === "n" && !event.ctrlKey && !event.metaKey && !event.altKey) {
                     event.preventDefault();
                     void createEntry(node.path, "file");
+                  } else if (event.key === "a" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                    event.preventDefault();
+                    void createEntry(node.path, "directory");
                   }
                 }}
                 onContextMenu={(event) => onMenu(event, node)}
