@@ -276,6 +276,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.268.0** | Git discard all unstaged from palette | shipped |
 | **0.269.0** | Git stage all from palette | shipped |
 | **0.270.0** | Git unstage all from palette | shipped |
+| **0.271.0** | Cycle AI max tool rounds from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

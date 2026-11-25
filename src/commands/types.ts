@@ -135,8 +135,8 @@ export type CommandContext = {
   gitDiscardAll: () => void;
   gitStageAll: () => void;
   gitUnstageAll: () => void;
- revealActiveParentInExplorer: () => void;
-  gitCopyRelativePaths: () => void;
+  cycleAiMaxToolRounds: () => void;
+ gitCopyRelativePaths: () => void;
 };
 
 export type Command = {

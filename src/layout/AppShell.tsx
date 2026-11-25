@@ -91,7 +91,7 @@ function ShellChrome() {
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor } = useSettings();
-  const { clearAttachments, clearChat, exportSession, importSession, newChat } = useAi();
+  const { clearAttachments, clearChat, exportSession, importSession, newChat, setSettings, settings: aiSettings } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
   const { extensions } = useExtensions();
@@ -740,6 +740,13 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("unstageAll");
       },
+      cycleAiMaxToolRounds: () => {
+        const order = [4, 8, 12, 16, 24, 32];
+        const idx = order.indexOf(aiSettings.maxToolRounds);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 8;
+        setSettings({ maxToolRounds: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -794,6 +801,8 @@ function ShellChrome() {
       exportSession,
       importSession,
       newChat,
+      setSettings,
+      aiSettings.maxToolRounds,
       setAiOpen,
       setSidebarOpen,
       toggleBottom,

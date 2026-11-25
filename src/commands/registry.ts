@@ -812,4 +812,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitUnstageAll(),
   },
+  {
+    id: "workbench.action.cycleAiMaxToolRounds",
+    title: "Cycle AI Max Tool Rounds",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiMaxToolRounds(),
+  },
 ];
