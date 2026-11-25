@@ -195,6 +195,7 @@ export type CommandContext = {
   resetAllLayoutSizes: () => void;
   openSidebar: () => void;
   openBottomPanel: () => void;
+  clearNotifications: () => void;
 };
 
 export type Command = {

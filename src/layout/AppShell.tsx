@@ -112,7 +112,7 @@ function ShellChrome() {
     messages,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
-  const { push: notify } = useNotifications();
+  const { push: notify, clear: clearNotificationsList } = useNotifications();
   const { problems, refresh: refreshDiagnosticsMarkers } = useDiagnostics();
   const { extensions } = useExtensions();
   useEffect(() => {
@@ -1155,6 +1155,9 @@ function ShellChrome() {
       openBottomPanel: () => {
         setBottomOpen(true);
       },
+      clearNotifications: () => {
+        clearNotificationsList();
+      },
     }),
     [
       openFolder,
@@ -1242,6 +1245,7 @@ function ShellChrome() {
       problems,
       refreshDiagnosticsMarkers,
       gitBranch,
+      clearNotificationsList,
       setSidebarWidth,
       setBottomHeight,
       bottomOpen,

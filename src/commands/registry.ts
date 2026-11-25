@@ -1172,4 +1172,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.openBottomPanel(),
   },
+  {
+    id: "notifications.clearAll",
+    title: "Clear All Notifications",
+    category: "View",
+    run: (ctx) => ctx.clearNotifications(),
+  },
 ];
