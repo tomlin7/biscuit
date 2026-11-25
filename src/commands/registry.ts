@@ -357,6 +357,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.cycleTabSize(),
   },
   {
+    id: "editor.action.cycleTerminalFontSize",
+    title: "Cycle Terminal Font Size",
+    category: "Preferences",
+    run: (ctx) => ctx.cycleTerminalFontSize(),
+  },
+  {
     id: "editor.action.toggleMinimap",
     title: "Toggle Minimap",
     category: "View",

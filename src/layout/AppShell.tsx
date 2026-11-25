@@ -514,6 +514,12 @@ function ShellChrome() {
         const next = current === 2 ? 4 : current === 4 ? 8 : 2;
         updateEditor({ tabSize: next });
       },
+      cycleTerminalFontSize: () => {
+        const order = [12, 13, 14, 16, 18];
+        const idx = order.indexOf(settings.editor.terminalFontSize);
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? 13;
+        updateEditor({ terminalFontSize: next });
+      },
       openPalette,
       openSymbols,
       openWorkspaceSymbols,
@@ -669,6 +675,7 @@ function ShellChrome() {
       settings.editor.fontSize,
       settings.editor.cursorStyle,
       settings.editor.tabSize,
+      settings.editor.terminalFontSize,
       updateEditor,
       clearAttachments,
       clearChat,
