@@ -246,8 +246,13 @@ export function EditorArea() {
                     role="menuitem"
                     onClick={() => {
                       setCrumbMenu(null);
-                      if (sibling.kind === "file") void openFile(sibling.path);
-                      else void revealInExplorer(sibling.path);
+                      if (sibling.kind === "file") {
+                        void openFile(sibling.path).then(() => {
+                          /* breadcrumbs follow activePath via workspaceCrumbs */
+                        });
+                      } else {
+                        void revealInExplorer(sibling.path);
+                      }
                     }}
                   >
                     {sibling.name}
@@ -374,6 +379,9 @@ export function EditorArea() {
               text={diffTab.text}
               head={diffTab.head}
               working={diffTab.working}
+              cwd={diffTab.cwd}
+              staged={diffTab.staged}
+              ignoreSpace={diffTab.ignoreSpace}
             />
           ) : (
           <>

@@ -202,18 +202,25 @@ export function workspaceCrumbs(rootPath: string | null, filePath: string): Path
   const leaf = basename(filePath);
   if (!rootPath) return [{ name: leaf, path: filePath, kind: "file" }];
   const rest = insideRoot(rootPath, filePath);
-  if (rest === null || rest === "") return [{ name: leaf, path: filePath, kind: "file" }];
-  const names = rest.split("/").filter(Boolean);
   const root = rootPath.replace(/[\\/]+$/, "");
+  const rootCrumb: PathCrumb = {
+    name: basename(root),
+    path: root,
+    kind: "directory",
+  };
+  if (rest === null) return [{ name: leaf, path: filePath, kind: "file" }];
+  if (rest === "") return [rootCrumb, { name: leaf, path: filePath, kind: "file" }];
+  const names = rest.split("/").filter(Boolean);
   let acc = root;
-  return names.map((name, index) => {
+  const trail = names.map((name, index) => {
     acc = joinPath(acc, name);
     return {
       name,
       path: acc,
-      kind: index === names.length - 1 ? "file" : "directory",
+      kind: (index === names.length - 1 ? "file" : "directory") as "file" | "directory",
     };
   });
+  return [rootCrumb, ...trail];
 }
 
 export function directoryChain(rootPath: string, directoryPath: string): string[] {
