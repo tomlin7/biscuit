@@ -22,6 +22,8 @@ export type EditorSettings = {
   insertFinalNewline: boolean;
   /** Show whitespace characters in the editor. */
   renderWhitespace: boolean;
+  /** Caret rendering style. */
+  cursorStyle: "line" | "block" | "underline";
   minimap: boolean;
   lineNumbers: boolean;
   stickyScroll: boolean;
@@ -51,6 +53,7 @@ const DEFAULTS: AppSettings = {
     trimTrailingWhitespace: false,
     insertFinalNewline: false,
     renderWhitespace: false,
+    cursorStyle: "line",
     minimap: true,
     lineNumbers: true,
     stickyScroll: true,

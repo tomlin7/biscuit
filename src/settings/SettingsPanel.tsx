@@ -133,6 +133,21 @@ export function SettingsPanel({ open, onClose }: Props) {
                 }
               />
             </label>
+            <label className="settings-row">
+              <span>Cursor style</span>
+              <select
+                value={settings.editor.cursorStyle}
+                onChange={(e) =>
+                  updateEditor({
+                    cursorStyle: e.target.value as "line" | "block" | "underline",
+                  })
+                }
+              >
+                <option value="line">Line</option>
+                <option value="block">Block</option>
+                <option value="underline">Underline</option>
+              </select>
+            </label>
             <label className="settings-row settings-row--check">
               <span>Minimap</span>
               <input

@@ -132,6 +132,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       wordWrapColumn: settings.editor.wordWrapColumn,
       wrappingStrategy: "advanced",
       renderWhitespace: settings.editor.renderWhitespace ? "all" : "none",
+      cursorStyle: settings.editor.cursorStyle,
       rulers: parseRulers(settings.editor.rulers),
     });
   }, [
@@ -141,6 +142,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
     settings.editor.wordWrap,
     settings.editor.wordWrapColumn,
     settings.editor.renderWhitespace,
+    settings.editor.cursorStyle,
     settings.editor.rulers,
   ]);
 
@@ -509,6 +511,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
           wordWrapColumn: settings.editor.wordWrapColumn,
           wrappingStrategy: "advanced",
           renderWhitespace: settings.editor.renderWhitespace ? "all" : "none",
+          cursorStyle: settings.editor.cursorStyle,
           rulers: parseRulers(settings.editor.rulers),
           lineNumbers: settings.editor.lineNumbers ? "on" : "off",
           scrollBeyondLastLine: false,
