@@ -1124,4 +1124,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.resetSidebarWidth(),
   },
+  {
+    id: "workbench.action.resetBottomPanelHeight",
+    title: "Reset Bottom Panel Height",
+    category: "View",
+    run: (ctx) => ctx.resetBottomPanelHeight(),
+  },
 ];

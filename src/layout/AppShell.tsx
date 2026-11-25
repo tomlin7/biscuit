@@ -1115,6 +1115,10 @@ function ShellChrome() {
         setSidebarWidth(280);
         setSidebarOpen(true);
       },
+      resetBottomPanelHeight: () => {
+        setBottomHeight(220);
+        setBottomOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1201,6 +1205,7 @@ function ShellChrome() {
       setAiWidth,
       problems,
       setSidebarWidth,
+      setBottomHeight,
       bottomOpen,
       panelTab,
       setPanelTab,

@@ -187,6 +187,7 @@ export type CommandContext = {
   copyProblems: () => void;
   copyWorkspaceRoot: () => void;
   resetSidebarWidth: () => void;
+  resetBottomPanelHeight: () => void;
 };
 
 export type Command = {
