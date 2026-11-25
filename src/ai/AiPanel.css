@@ -304,6 +304,11 @@
   white-space: nowrap;
 }
 
+.ai-panel__chip-meta {
+  color: var(--fg-dim);
+  font-size: var(--font-size-xs);
+}
+
 .ai-panel__chip:hover {
   color: var(--fg);
   background: var(--bg-hover);

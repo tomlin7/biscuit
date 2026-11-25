@@ -441,13 +441,13 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       }
       const selection = ed.getSelection();
       if (!selection || selection.isEmpty()) {
-        setSelection(0, 0);
+        setSelection(0, 0, "");
         return;
       }
       const model = ed.getModel();
       const text = model?.getValueInRange(selection) ?? "";
       const lines = selection.endLineNumber - selection.startLineNumber + 1;
-      setSelection(text.length, lines);
+      setSelection(text.length, lines, text);
     };
 
     syncCursor();

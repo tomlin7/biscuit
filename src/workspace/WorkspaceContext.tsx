@@ -60,6 +60,7 @@ export type WorkspaceState = {
   cursorColumn: number;
   selectionChars: number;
   selectionLines: number;
+  selectionText: string;
   revealTarget: RevealTarget | null;
   openFolder: () => Promise<void>;
   openFolderAt: (path: string) => Promise<void>;
@@ -80,7 +81,7 @@ export type WorkspaceState = {
   setLanguageAt: (path: string, language: string) => void;
   applyDiskValue: (path: string, value: string) => void;
   setCursor: (line: number, column: number) => void;
-  setSelection: (chars: number, lines: number) => void;
+  setSelection: (chars: number, lines: number, text?: string) => void;
   clearRevealTarget: () => void;
   refreshExplorer: () => Promise<void>;
   collapseExplorer: () => void;
@@ -161,6 +162,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [revealTarget, setRevealTarget] = useState<RevealTarget | null>(null);
   const [selectionChars, setSelectionChars] = useState(0);
   const [selectionLines, setSelectionLines] = useState(0);
+  const [selectionText, setSelectionText] = useState("");
   const revealToken = useRef(0);
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
@@ -740,9 +742,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
-  const setSelection = useCallback((chars: number, lines: number) => {
+  const setSelection = useCallback((chars: number, lines: number, text = "") => {
     setSelectionChars(chars);
     setSelectionLines(lines);
+    setSelectionText(text);
   }, []);
 
   const refreshExplorer = useCallback(async () => {
@@ -1073,6 +1076,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       cursorColumn: document?.cursorColumn ?? 1,
       selectionChars,
       selectionLines,
+      selectionText,
       revealTarget,
       openFolder,
       openFolderAt,
@@ -1121,6 +1125,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       revealTarget,
       selectionChars,
       selectionLines,
+      selectionText,
       openFolder,
       openFolderAt,
       addFolderRoot,

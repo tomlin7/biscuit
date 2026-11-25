@@ -57,7 +57,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     exportSession,
     importSession,
   } = useAi();
-  const { document, tabs } = useWorkspace();
+  const { document, tabs, selectionText } = useWorkspace();
   const { toggleAi } = useLayout();
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
@@ -165,7 +165,14 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
 
   const showSoftChip =
     document != null && !attachments.some((a) => a.path === document.path);
-  const showChips = showSoftChip || attachments.length > 0;
+  const selectionKey = document
+    ? `selection:${document.path}:${selectionText.slice(0, 48)}`
+    : "";
+  const showSelectionChip =
+    document != null &&
+    selectionText.trim().length > 0 &&
+    !attachments.some((a) => a.path === selectionKey);
+  const showChips = showSoftChip || showSelectionChip || attachments.length > 0;
 
   return (
     <aside className="ai-panel island" aria-label="AI">
@@ -290,6 +297,25 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
               >
                 <FileIcon name={document.title} kind="file" size={12} />
                 <span>{document.title}</span>
+              </button>
+            ) : null}
+            {showSelectionChip && document ? (
+              <button
+                type="button"
+                className="ai-panel__chip"
+                title="Pin current selection to context"
+                onClick={() =>
+                  attachPath(
+                    selectionKey,
+                    `${document.title} selection`,
+                    selectionText.slice(0, 12000),
+                  )
+                }
+              >
+                <span>Selection</span>
+                <span className="ai-panel__chip-meta">
+                  {selectionText.trim().length} chars
+                </span>
               </button>
             ) : null}
             {attachments.map((a) => (
