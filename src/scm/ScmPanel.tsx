@@ -325,6 +325,19 @@ export function ScmPanel({ onBranch }: Props) {
           <button
             type="button"
             className="scm-panel__refresh"
+            disabled={acting}
+            onClick={() => {
+              void navigator.clipboard.readText().then((text) => {
+                const next = text.trim();
+                if (next) setMessage(next);
+              });
+            }}
+          >
+            Paste message
+          </button>
+          <button
+            type="button"
+            className="scm-panel__refresh"
             disabled={acting || !summary || summary.entries.length === 0}
             onClick={() => {
               if (!summary) return;
