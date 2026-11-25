@@ -902,4 +902,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitIgnoreSelected(),
   },
+  {
+    id: "git.compareSelected",
+    title: "Git: Compare Selected with HEAD",
+    category: "Git",
+    run: (ctx) => ctx.gitCompareSelected(),
+  },
 ];

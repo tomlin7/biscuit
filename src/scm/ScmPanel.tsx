@@ -323,6 +323,52 @@ export function ScmPanel({ onBranch }: Props) {
             await run("git_ignore", { path });
           }
         })();
+      } else if (action === "compareSelected") {
+        if (selectedPaths.length === 0 || !rootPath) return;
+        const path = selectedPaths[0];
+        if (!path) return;
+        const entry = summary?.entries.find((item) => item.path === path);
+        if (!entry) return;
+        const relative = entry.path.replace(
+          /\//g,
+          rootPath.includes("\\") ? "\\" : "/",
+        );
+        const absolute = joinPath(rootPath, relative);
+        void (async () => {
+          try {
+            const ignoreSpace = readIgnoreSpacePref();
+            const text = await invoke<string>("git_diff", {
+              cwd: rootPath,
+              path: entry.path,
+              staged: false,
+              ignoreSpace,
+            });
+            let head: string | null = null;
+            try {
+              head = await invoke<string>("git_show_head", {
+                cwd: rootPath,
+                path: entry.path,
+              });
+            } catch {
+              head = null;
+            }
+            let working: string | null = null;
+            try {
+              working = await readTextFile(absolute);
+            } catch {
+              working = null;
+            }
+            openDiffTab(entry.path, text, {
+              head,
+              working,
+              cwd: rootPath,
+              staged: false,
+              ignoreSpace,
+            });
+          } catch (err) {
+            setError(err instanceof Error ? err.message : String(err));
+          }
+        })();
       } else void push();
     });
     return () => setScmRemoteListener(null);

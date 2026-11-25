@@ -292,6 +292,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.284.0** | Cycle AI temperature from palette | shipped |
 | **0.285.0** | Toggle AI session history from palette | shipped |
 | **0.286.0** | Git ignore selected from palette | shipped |
+| **0.287.0** | Git compare selected with HEAD from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

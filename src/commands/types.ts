@@ -151,6 +151,7 @@ export type CommandContext = {
   cycleAiTemperature: () => void;
   toggleAiShowHistory: () => void;
   gitIgnoreSelected: () => void;
+  gitCompareSelected: () => void;
 };
 
 export type Command = {

@@ -845,6 +845,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("ignoreSelected");
       },
+      gitCompareSelected: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("compareSelected");
+      },
     }),
     [
       openFolder,
