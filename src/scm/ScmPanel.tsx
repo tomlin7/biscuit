@@ -1,7 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import {
+  Archive,
+  ArchiveRestore,
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ChevronRight,
+  GitBranch,
+  Minus,
+  Plus,
+  RefreshCw,
+  Undo2,
+} from "lucide-react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { joinPath } from "../workspace/path";
 import { appendLog } from "../logs/logBus";
@@ -9,6 +22,8 @@ import { openDiffTab } from "./diffBus";
 import { readIgnoreSpacePref } from "./diffPrefs";
 import { setToggleAmendListener } from "./amendBus";
 import { setScmRemoteListener, type ScmRemoteAction } from "./scmRemoteBus";
+import { IconButton } from "../ui/IconButton";
+import { FileIcon } from "../ui/FileIcon";
 import "./ScmPanel.css";
 
 export type GitStatusEntry = {
@@ -36,6 +51,13 @@ type Props = {
   onBranch: (info: GitBranchInfo | null) => void;
 };
 
+type ScmContextMenuState = {
+  x: number;
+  y: number;
+  entry: GitStatusEntry;
+  isStaged: boolean;
+};
+
 export function ScmPanel({ onBranch }: Props) {
   const { rootPath, openFile, busy, tabs, applyDiskValue, closeTab } = useWorkspace();
   const [summary, setSummary] = useState<GitSummary | null>(null);
@@ -47,6 +69,10 @@ export function ScmPanel({ onBranch }: Props) {
   const [amend, setAmend] = useState(false);
   const [canAmend, setCanAmend] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const [stagedCollapsed, setStagedCollapsed] = useState(false);
+  const [changesCollapsed, setChangesCollapsed] = useState(false);
+  const [contextMenu, setContextMenu] = useState<ScmContextMenuState | null>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   const refresh = useCallback(async () => {
     if (!rootPath) {
@@ -107,21 +133,34 @@ export function ScmPanel({ onBranch }: Props) {
     return () => setToggleAmendListener(null);
   }, [canAmend]);
 
+  // Context menu dismissal
+  useEffect(() => {
+    if (!contextMenu) return;
+    const handleDown = (e: MouseEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenu(null);
+      }
+    };
+    window.addEventListener("mousedown", handleDown);
+    return () => window.removeEventListener("mousedown", handleDown);
+  }, [contextMenu]);
+
   const run = async (command: string, args: Record<string, unknown> = {}) => {
     if (!rootPath) return false;
     setActing(true);
     setError(null);
     try {
-      const result = await invoke<unknown>(command, { cwd: rootPath, ...args });
-      if (typeof result === "string" && result.trim()) {
-        appendLog(result.trim());
-      }
+      const out = await invoke<string | null>(command, {
+        cwd: rootPath,
+        ...args,
+      });
+      if (out?.trim()) appendLog(out.trim());
       await refresh();
       return true;
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-      appendLog(`Git failed: ${message}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
+      appendLog(`Git failed: ${msg}`);
       return false;
     } finally {
       setActing(false);
@@ -185,8 +224,8 @@ export function ScmPanel({ onBranch }: Props) {
       if (action === "pull") void run("git_pull", {});
       else if (action === "fetch") void run("git_fetch", {});
       else if (action === "stash") {
-        const message = window.prompt("Stash message (optional)") ?? undefined;
-        void run("git_stash_push", { message: message?.trim() || null });
+        const msg = window.prompt("Stash message (optional)") ?? undefined;
+        void run("git_stash_push", { message: msg?.trim() || null });
       } else if (action === "stashPop") void run("git_stash_pop", {});
       else if (action === "createBranch") {
         const name = window.prompt("New branch name")?.trim();
@@ -216,15 +255,10 @@ export function ScmPanel({ onBranch }: Props) {
               untracked,
             });
             if (!succeeded || !rootPath) continue;
-            const relative = entry.path.replace(
-              /\//g,
-              rootPath.includes("\\") ? "\\" : "/",
-            );
+            const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
             const absolute = joinPath(rootPath, relative);
             const open = tabs.find(
-              (tab) =>
-                tab.path.replace(/\\/g, "/").toLowerCase() ===
-                absolute.replace(/\\/g, "/").toLowerCase(),
+              (tab) => tab.path.replace(/\\/g, "/").toLowerCase() === absolute.replace(/\\/g, "/").toLowerCase(),
             );
             if (!open) continue;
             if (untracked) {
@@ -239,154 +273,6 @@ export function ScmPanel({ onBranch }: Props) {
             }
           }
         })();
-      } else if (action === "copyRelative") {
-        if (selectedPaths.length === 0) return;
-        void navigator.clipboard.writeText(selectedPaths.join("\n"));
-      } else if (action === "copyAbsolute") {
-        if (selectedPaths.length === 0 || !rootPath) return;
-        const absolutes = selectedPaths.map((path) => {
-          const relative = path.replace(
-            /\//g,
-            rootPath.includes("\\") ? "\\" : "/",
-          );
-          return joinPath(rootPath, relative);
-        });
-        void navigator.clipboard.writeText(absolutes.join("\n"));
-      } else if (action === "openSelected") {
-        if (selectedPaths.length === 0 || !rootPath) return;
-        void (async () => {
-          for (const path of selectedPaths) {
-            const relative = path.replace(
-              /\//g,
-              rootPath.includes("\\") ? "\\" : "/",
-            );
-            await openFile(joinPath(rootPath, relative));
-          }
-        })();
-      } else if (action === "selectAll") {
-        if (!summary?.entries.length) return;
-        setSelected(new Set(summary.entries.map((entry) => entry.path)));
-      } else if (action === "deselectAll") {
-        setSelected(new Set());
-      } else if (action === "stageSelected") {
-        if (selectedUnstaged.length === 0) return;
-        void run("git_stage", { paths: selectedUnstaged });
-      } else if (action === "unstageSelected") {
-        if (selectedStaged.length === 0) return;
-        void run("git_unstage", { paths: selectedStaged });
-      } else if (action === "discardSelected") {
-        if (selectedUnstaged.length === 0) return;
-        const ok = window.confirm(
-          `Discard changes in ${selectedUnstaged.length} selected path(s)?`,
-        );
-        if (!ok) return;
-        void (async () => {
-          for (const path of selectedUnstaged) {
-            const entry = unstaged.find((item) => item.path === path);
-            if (!entry) continue;
-            const untracked = entry.index === "?";
-            const succeeded = await run("git_discard", {
-              path: entry.path,
-              untracked,
-            });
-            if (!succeeded || !rootPath) continue;
-            const relative = entry.path.replace(
-              /\//g,
-              rootPath.includes("\\") ? "\\" : "/",
-            );
-            const absolute = joinPath(rootPath, relative);
-            const openTab = tabs.find(
-              (tab) =>
-                tab.path.replace(/\\/g, "/").toLowerCase() ===
-                absolute.replace(/\\/g, "/").toLowerCase(),
-            );
-            if (!openTab) continue;
-            if (untracked) {
-              closeTab(openTab.path);
-              continue;
-            }
-            try {
-              const text = await readTextFile(absolute);
-              applyDiskValue(openTab.path, text);
-            } catch {
-              closeTab(openTab.path);
-            }
-          }
-        })();
-      } else if (action === "copyBranch") {
-        if (!summary?.branch) return;
-        void navigator.clipboard.writeText(summary.branch);
-      } else if (action === "ignoreSelected") {
-        if (selectedPaths.length === 0) return;
-        void (async () => {
-          for (const path of selectedPaths) {
-            await run("git_ignore", { path });
-          }
-        })();
-      } else if (action === "compareSelected") {
-        if (selectedPaths.length === 0 || !rootPath) return;
-        const path = selectedPaths[0];
-        if (!path) return;
-        const entry = summary?.entries.find((item) => item.path === path);
-        if (!entry) return;
-        const relative = entry.path.replace(
-          /\//g,
-          rootPath.includes("\\") ? "\\" : "/",
-        );
-        const absolute = joinPath(rootPath, relative);
-        void (async () => {
-          try {
-            const ignoreSpace = readIgnoreSpacePref();
-            const text = await invoke<string>("git_diff", {
-              cwd: rootPath,
-              path: entry.path,
-              staged: false,
-              ignoreSpace,
-            });
-            let head: string | null = null;
-            try {
-              head = await invoke<string>("git_show_head", {
-                cwd: rootPath,
-                path: entry.path,
-              });
-            } catch {
-              head = null;
-            }
-            let working: string | null = null;
-            try {
-              working = await readTextFile(absolute);
-            } catch {
-              working = null;
-            }
-            openDiffTab(entry.path, text, {
-              head,
-              working,
-              cwd: rootPath,
-              staged: false,
-              ignoreSpace,
-            });
-          } catch (err) {
-            setError(err instanceof Error ? err.message : String(err));
-          }
-        })();
-      } else if (action === "revealSelected") {
-        if (selectedPaths.length === 0 || !rootPath) return;
-        const targets = selectedPaths.map((path) => {
-          const relative = path.replace(
-            /\//g,
-            rootPath.includes("\\") ? "\\" : "/",
-          );
-          return joinPath(rootPath, relative);
-        });
-        void revealItemInDir(targets).catch((err) => {
-          setError(err instanceof Error ? err.message : String(err));
-        });
-      } else if (action === "refresh") {
-        void refresh();
-      } else if (action === "focusCommitMessage") {
-        window.setTimeout(() => {
-          window.document.getElementById("scm-commit-message")?.focus();
-        }, 0);
       } else if (action === "pasteCommitMessage") {
         void navigator.clipboard.readText().then((text) => {
           const next = text.trim();
@@ -408,6 +294,104 @@ export function ScmPanel({ onBranch }: Props) {
     });
   };
 
+  const openDiff = (entry: GitStatusEntry, isStaged: boolean) => {
+    if (!rootPath) return;
+    const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+    const absolute = joinPath(rootPath, relative);
+    void (async () => {
+      try {
+        const ignoreSpace = readIgnoreSpacePref();
+        const text = await invoke<string>("git_diff", {
+          cwd: rootPath,
+          path: entry.path,
+          staged: isStaged,
+          ignoreSpace,
+        });
+        let head: string | null = null;
+        try {
+          head = await invoke<string>("git_show_head", {
+            cwd: rootPath,
+            path: entry.path,
+          });
+        } catch {
+          head = null;
+        }
+        let working: string | null = null;
+        try {
+          working = await readTextFile(absolute);
+        } catch {
+          working = null;
+        }
+        openDiffTab(entry.path, text, {
+          head,
+          working,
+          cwd: rootPath,
+          staged: isStaged,
+          ignoreSpace,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      }
+    })();
+  };
+
+  const discardEntry = (entry: GitStatusEntry) => {
+    const untracked = entry.index === "?";
+    const ok = window.confirm(
+      untracked
+        ? `Delete untracked ${entry.path}?`
+        : `Discard changes in ${entry.path}?`,
+    );
+    if (!ok) return;
+    void (async () => {
+      const succeeded = await run("git_discard", {
+        path: entry.path,
+        untracked,
+      });
+      if (!succeeded || !rootPath) return;
+      const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+      const absolute = joinPath(rootPath, relative);
+      const open = tabs.find(
+        (tab) => tab.path.replace(/\\/g, "/").toLowerCase() === absolute.replace(/\\/g, "/").toLowerCase(),
+      );
+      if (!open) return;
+      if (untracked) {
+        closeTab(open.path);
+        return;
+      }
+      try {
+        const text = await readTextFile(absolute);
+        applyDiskValue(open.path, text);
+      } catch {
+        closeTab(open.path);
+      }
+    })();
+  };
+
+  const handleCommit = () => {
+    const text = message.trim();
+    if (!amend && (!text || staged.length === 0)) return;
+    if (amend && !canAmend) {
+      const ok = window.confirm(
+        "Amending may rewrite a commit that is already published. Continue?",
+      );
+      if (!ok) return;
+    }
+    void run("git_commit", { message: text, amend }).then((ok) => {
+      if (ok) {
+        setMessage("");
+        setAmend(false);
+      }
+    });
+  };
+
+  const onCommitKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleCommit();
+    }
+  };
+
   if (!rootPath) {
     return (
       <div className="scm-panel scm-panel--empty">
@@ -416,662 +400,462 @@ export function ScmPanel({ onBranch }: Props) {
     );
   }
 
+  const renderFileRow = (entry: GitStatusEntry, isStaged: boolean) => {
+    const isSelected = selected.has(entry.path);
+    const fileName = entry.path.split(/[/\\]/).pop() ?? entry.path;
+    const dirName = entry.path.includes("/") || entry.path.includes("\\")
+      ? entry.path.substring(0, Math.max(entry.path.lastIndexOf("/"), entry.path.lastIndexOf("\\")))
+      : "";
+
+    return (
+      <li key={`${isStaged ? "s" : "u"}:${entry.path}`} className="scm-panel__row">
+        <label className="scm-panel__check" title="Select for bulk action">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => toggleSelected(entry.path)}
+            aria-label={`Select ${entry.path}`}
+          />
+        </label>
+        <button
+          type="button"
+          className="scm-panel__file"
+          onClick={() => openDiff(entry, isStaged)}
+          onDoubleClick={() => {
+            const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+            void openFile(joinPath(rootPath, relative));
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setContextMenu({ x: e.clientX, y: e.clientY, entry, isStaged });
+          }}
+          title={`${entry.path}\nClick to view Diff · Double-click to open file`}
+        >
+          <FileIcon name={fileName} kind="file" size={13} />
+          <span className="scm-panel__path-container">
+            <span className="scm-panel__file-name">{fileName}</span>
+            {dirName ? <span className="scm-panel__dir-name">{dirName}</span> : null}
+          </span>
+          <span className={`scm-panel__status scm-panel__status--${entry.status.trim().toLowerCase()}`}>
+            {entry.status}
+          </span>
+        </button>
+        <div className="scm-panel__row-actions">
+          {isStaged ? (
+            <IconButton
+              icon={Minus}
+              label="Unstage changes"
+              size={12}
+              disabled={acting}
+              onClick={() => void run("git_unstage", { paths: [entry.path] })}
+            />
+          ) : (
+            <>
+              <IconButton
+                icon={Plus}
+                label="Stage changes"
+                size={12}
+                disabled={acting}
+                onClick={() => void run("git_stage", { paths: [entry.path] })}
+              />
+              <IconButton
+                icon={Undo2}
+                label="Discard changes"
+                size={12}
+                disabled={acting}
+                onClick={() => discardEntry(entry)}
+              />
+            </>
+          )}
+        </div>
+      </li>
+    );
+  };
+
   return (
     <div className="scm-panel">
-      <div className="scm-panel__toolbar">
-        <span className="scm-panel__branch">
-          {summary?.branch ?? (loading ? "…" : "—")}
-        </span>
-        <span className="scm-panel__toolbar-actions">
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={!summary?.branch}
-            title="Copy current branch name"
-            onClick={() => {
-              if (!summary?.branch) return;
-              void navigator.clipboard.writeText(summary.branch);
+      {/* Top Header with Branch Picker & Actions */}
+      <div className="scm-panel__header">
+        <div className="scm-panel__branch-select-wrap" title="Switch branch">
+          <GitBranch size={13} strokeWidth={1.75} className="scm-panel__branch-icon" />
+          <select
+            className="scm-panel__branch-select"
+            value={summary?.branch ?? ""}
+            aria-label="Git branch"
+            onChange={(e) => {
+              const b = e.target.value;
+              if (b && b !== summary?.branch) void run("git_checkout", { branch: b });
             }}
           >
-            Copy branch
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || busy}
-            onClick={() => void run("git_pull", {})}
-          >
-            Pull
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || busy}
-            onClick={() => void run("git_fetch", {})}
-          >
-            Fetch
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || busy}
-            onClick={() => void push()}
-          >
-            Push
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
+            {branches.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="scm-panel__header-actions">
+          <IconButton
+            icon={Plus}
+            label="New branch"
+            size={13}
             disabled={acting || busy}
             onClick={() => {
               const name = window.prompt("New branch name")?.trim();
-              if (!name) return;
-              void run("git_create_branch", { branch: name });
+              if (name) void run("git_create_branch", { branch: name });
             }}
-          >
-            New branch
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
+          />
+          <IconButton
+            icon={ArrowDown}
+            label="Pull"
+            size={13}
+            disabled={acting || busy}
+            onClick={() => void run("git_pull", {})}
+          />
+          <IconButton
+            icon={ArrowUp}
+            label="Push"
+            size={13}
+            disabled={acting || busy}
+            onClick={() => void push()}
+          />
+          <IconButton
+            icon={Archive}
+            label="Stash changes"
+            size={13}
             disabled={acting || busy}
             onClick={() => {
-              const message = window.prompt("Stash message (optional)") ?? undefined;
-              void run("git_stash_push", { message: message?.trim() || null });
+              const msg = window.prompt("Stash message (optional)") ?? undefined;
+              void run("git_stash_push", { message: msg?.trim() || null });
             }}
-          >
-            Stash
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
+          />
+          <IconButton
+            icon={ArchiveRestore}
+            label="Pop stash"
+            size={13}
             disabled={acting || busy}
             onClick={() => void run("git_stash_pop", {})}
-          >
-            Pop stash
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
+          />
+          <IconButton
+            icon={RefreshCw}
+            label="Refresh"
+            size={13}
+            disabled={acting || busy || loading}
             onClick={() => void refresh()}
-            disabled={busy || loading}
-          >
-            Refresh
-          </button>
-        </span>
-      </div>
-      {branches.length > 0 ? (
-        <div className="scm-panel__branches">
-          {branches.map((branch) => (
-            <div key={branch} className="scm-panel__branch-row">
-              <button
-                type="button"
-                className={
-                  branch === summary?.branch
-                    ? "scm-panel__branch-btn scm-panel__branch-btn--current"
-                    : "scm-panel__branch-btn"
-                }
-                disabled={acting || branch === summary?.branch}
-                onClick={() => void run("git_checkout", { branch })}
-              >
-                {branch}
-              </button>
-              {branch !== summary?.branch ? (
-                <button
-                  type="button"
-                  className="scm-panel__branch-delete"
-                  title={`Delete branch ${branch}`}
-                  disabled={acting}
-                  onClick={() => {
-                    void (async () => {
-                      const ok = window.confirm(
-                        `Delete local branch "${branch}"?`,
-                      );
-                      if (!ok) return;
-                      const soft = await run("git_delete_branch", {
-                        branch,
-                        force: false,
-                      });
-                      if (soft) return;
-                      const force = window.confirm(
-                        `Branch "${branch}" is not fully merged. Force delete with git branch -D?`,
-                      );
-                      if (!force) return;
-                      await run("git_delete_branch", { branch, force: true });
-                    })();
-                  }}
-                >
-                  ×
-                </button>
-              ) : null}
-            </div>
-          ))}
+          />
         </div>
-      ) : null}
+      </div>
+
       {error ? <p className="scm-panel__error">{error}</p> : null}
+
+      {/* Commit Box */}
       <div className="scm-panel__commit">
         <textarea
           id="scm-commit-message"
           className="scm-panel__message"
           rows={3}
-          placeholder="Commit message"
+          placeholder="Message (Ctrl+Enter to commit)"
           value={message}
           onChange={(event) => setMessage(event.target.value)}
+          onKeyDown={onCommitKeyDown}
         />
-        <div className="scm-panel__bulk">
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting}
-            onClick={() => {
-              void navigator.clipboard.readText().then((text) => {
-                const next = text.trim();
-                if (next) setMessage(next);
-              });
-            }}
-          >
-            Paste message
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || !message.trim()}
-            onClick={() => setMessage("")}
-          >
-            Clear message
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || !summary || summary.entries.length === 0}
-            onClick={() => {
-              if (!summary) return;
-              setSelected(new Set(summary.entries.map((entry) => entry.path)));
-            }}
-          >
-            Select all
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedPaths.length === 0}
-            onClick={() => setSelected(new Set())}
-          >
-            Deselect all
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedUnstaged.length === 0}
-            onClick={() => void run("git_stage", { paths: selectedUnstaged })}
-          >
-            Stage selected
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedStaged.length === 0}
-            onClick={() => void run("git_unstage", { paths: selectedStaged })}
-          >
-            Unstage selected
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || unstaged.length === 0}
-            onClick={() => void run("git_stage", { paths: unstaged.map((entry) => entry.path) })}
-          >
-            Stage all
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || staged.length === 0}
-            onClick={() => void run("git_unstage", { paths: staged.map((entry) => entry.path) })}
-          >
-            Unstage all
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedUnstaged.length === 0}
-            onClick={() => {
-              const ok = window.confirm(
-                `Discard changes in ${selectedUnstaged.length} selected path(s)?`,
-              );
-              if (!ok) return;
-              void (async () => {
-                for (const path of selectedUnstaged) {
-                  const entry = unstaged.find((item) => item.path === path);
-                  if (!entry) continue;
-                  const untracked = entry.index === "?";
-                  const succeeded = await run("git_discard", {
-                    path: entry.path,
-                    untracked,
-                  });
-                  if (!succeeded || !rootPath) continue;
-                  const relative = entry.path.replace(
-                    /\//g,
-                    rootPath.includes("\\") ? "\\" : "/",
-                  );
-                  const absolute = joinPath(rootPath, relative);
-                  const openTab = tabs.find(
-                    (tab) =>
-                      tab.path.replace(/\\/g, "/").toLowerCase() ===
-                      absolute.replace(/\\/g, "/").toLowerCase(),
-                  );
-                  if (!openTab) continue;
-                  if (untracked) {
-                    closeTab(openTab.path);
-                    continue;
-                  }
-                  try {
-                    const text = await readTextFile(absolute);
-                    applyDiskValue(openTab.path, text);
-                  } catch {
-                    closeTab(openTab.path);
-                  }
-                }
-              })();
-            }}
-          >
-            Discard selected
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || unstaged.length === 0}
-            onClick={() => {
-              const ok = window.confirm(
-                `Discard all unstaged changes in ${unstaged.length} path(s)?`,
-              );
-              if (!ok) return;
-              void (async () => {
-                for (const entry of unstaged) {
-                  const untracked = entry.index === "?";
-                  const succeeded = await run("git_discard", {
-                    path: entry.path,
-                    untracked,
-                  });
-                  if (!succeeded || !rootPath) continue;
-                  const relative = entry.path.replace(
-                    /\//g,
-                    rootPath.includes("\\") ? "\\" : "/",
-                  );
-                  const absolute = joinPath(rootPath, relative);
-                  const open = tabs.find(
-                    (tab) =>
-                      tab.path.replace(/\\/g, "/").toLowerCase() ===
-                      absolute.replace(/\\/g, "/").toLowerCase(),
-                  );
-                  if (!open) continue;
-                  if (untracked) {
-                    closeTab(open.path);
-                    continue;
-                  }
-                  try {
-                    const text = await readTextFile(absolute);
-                    applyDiskValue(open.path, text);
-                  } catch {
-                    closeTab(open.path);
-                  }
-                }
-              })();
-            }}
-          >
-            Discard all
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedPaths.length === 0 || !rootPath}
-            onClick={() => {
-              if (!rootPath) return;
-              void (async () => {
-                for (const path of selectedPaths) {
-                  const relative = path.replace(
-                    /\//g,
-                    rootPath.includes("\\") ? "\\" : "/",
-                  );
-                  await openFile(joinPath(rootPath, relative));
-                }
-              })();
-            }}
-          >
-            Open selected
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedPaths.length === 0 || !rootPath}
-            onClick={() => {
-              if (!rootPath) return;
-              const absolutes = selectedPaths.map((path) => {
-                const relative = path.replace(
-                  /\//g,
-                  rootPath.includes("\\") ? "\\" : "/",
-                );
-                return joinPath(rootPath, relative);
-              });
-              void navigator.clipboard.writeText(absolutes.join("\n"));
-            }}
-          >
-            Copy path
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedPaths.length === 0}
-            onClick={() => {
-              void navigator.clipboard.writeText(selectedPaths.join("\n"));
-            }}
-          >
-            Copy relative path
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedPaths.length === 0}
-            onClick={() => {
-              void (async () => {
-                for (const path of selectedPaths) {
-                  await run("git_ignore", { path });
-                }
-              })();
-            }}
-          >
-            Ignore selected
-          </button>
-          <button
-            type="button"
-            className="scm-panel__refresh"
-            disabled={acting || selectedPaths.length === 0 || !rootPath}
-            onClick={() => {
-              if (!rootPath) return;
-              const targets = selectedPaths.map((path) => {
-                const relative = path.replace(
-                  /\//g,
-                  rootPath.includes("\\") ? "\\" : "/",
-                );
-                return joinPath(rootPath, relative);
-              });
-              void revealItemInDir(targets).catch((err) => {
-                setError(err instanceof Error ? err.message : String(err));
-              });
-            }}
-          >
-            Reveal in Explorer
-          </button>
-        </div>
-        <label className="scm-panel__amend">
-          <input
-            type="checkbox"
-            checked={amend}
-            onChange={(event) => {
-              const next = event.target.checked;
-              if (next && !canAmend) {
-                const ok = window.confirm(
-                  "HEAD may already be on the remote. Amend anyway?",
-                );
-                if (!ok) return;
-              }
-              setAmend(next);
-            }}
-          />
-          <span>Amend last commit{canAmend ? "" : " (may be published)"}</span>
-        </label>
-        <button
-          type="button"
-          className="scm-panel__commit-btn"
-          disabled={
-            acting ||
-            busy ||
-            (!amend && (!message.trim() || staged.length === 0))
-          }
-          onClick={() => {
-            const text = message.trim();
-            if (amend && !canAmend) {
-              const ok = window.confirm(
-                "Amending may rewrite a commit that is already published. Continue?",
-              );
-              if (!ok) return;
-            }
-            void run("git_commit", { message: text, amend }).then((ok) => {
-              if (ok) {
-                setMessage("");
-                setAmend(false);
-              }
-            });
-          }}
-        >
-          {amend ? "Amend" : "Commit"}
-        </button>
-      </div>
-      {loading && !summary ? <p className="scm-panel__hint">Loading…</p> : null}
-      {summary && summary.entries.length === 0 ? (
-        <p className="scm-panel__hint">Working tree clean.</p>
-      ) : null}
-      <ul className="scm-panel__list">
-        {summary?.entries.map((entry) => (
-          <li key={entry.path}>
-            <div className="scm-panel__row">
-              <label className="scm-panel__check">
-                <input
-                  type="checkbox"
-                  checked={selected.has(entry.path)}
-                  onChange={() => toggleSelected(entry.path)}
-                  aria-label={`Select ${entry.path}`}
-                />
-              </label>
+        <div className="scm-panel__commit-footer">
+          <label className="scm-panel__amend">
+            <input
+              type="checkbox"
+              checked={amend}
+              onChange={(event) => setAmend(event.target.checked)}
+            />
+            <span>Amend</span>
+          </label>
+          <div className="scm-panel__msg-helpers">
+            <button
+              type="button"
+              className="scm-panel__text-btn"
+              onClick={() => {
+                void navigator.clipboard.readText().then((text) => {
+                  const next = text.trim();
+                  if (next) setMessage(next);
+                });
+              }}
+            >
+              Paste
+            </button>
+            {message ? (
               <button
                 type="button"
-                className="scm-panel__file"
-                onClick={() => {
-                  const relative = entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
-                  void openFile(joinPath(rootPath, relative));
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter") return;
-                  event.preventDefault();
-                  const canStage = entry.worktree !== " " || entry.index === "?";
-                  const canUnstage = entry.index !== " " && entry.index !== "?";
-                  if (canStage) {
-                    void run("git_stage", { paths: [entry.path] });
-                    return;
-                  }
-                  if (canUnstage) {
-                    void run("git_unstage", { paths: [entry.path] });
-                    return;
-                  }
-                  const relative = entry.path.replace(
-                    /\//g,
-                    rootPath.includes("\\") ? "\\" : "/",
-                  );
-                  void openFile(joinPath(rootPath, relative));
-                }}
-                title={`${entry.path} — Enter to stage, unstage, or open`}
+                className="scm-panel__text-btn"
+                onClick={() => setMessage("")}
               >
-                <span className="scm-panel__status">{entry.status}</span>
-                <span className="scm-panel__path">{entry.path}</span>
+                Clear
               </button>
-              {entry.worktree !== " " || entry.index === "?" ? (
-                <button
-                  type="button"
-                  className="scm-panel__action"
+            ) : null}
+          </div>
+          <button
+            type="button"
+            className="scm-panel__commit-btn"
+            disabled={
+              acting ||
+              busy ||
+              (!amend && (!message.trim() || staged.length === 0))
+            }
+            onClick={handleCommit}
+          >
+            {amend ? "Amend Commit" : "Commit"}
+          </button>
+        </div>
+      </div>
+
+      {/* Batch Selection Action Bar (Appears when items are checked) */}
+      {selectedPaths.length > 0 ? (
+        <div className="scm-panel__batch-bar">
+          <span>{selectedPaths.length} selected</span>
+          <div className="scm-panel__batch-actions">
+            {selectedUnstaged.length > 0 ? (
+              <button
+                type="button"
+                className="scm-panel__batch-btn"
+                disabled={acting}
+                onClick={() => void run("git_stage", { paths: selectedUnstaged })}
+              >
+                Stage
+              </button>
+            ) : null}
+            {selectedStaged.length > 0 ? (
+              <button
+                type="button"
+                className="scm-panel__batch-btn"
+                disabled={acting}
+                onClick={() => void run("git_unstage", { paths: selectedStaged })}
+              >
+                Unstage
+              </button>
+            ) : null}
+            {selectedUnstaged.length > 0 ? (
+              <button
+                type="button"
+                className="scm-panel__batch-btn scm-panel__batch-btn--danger"
+                disabled={acting}
+                onClick={() => {
+                  const ok = window.confirm(`Discard ${selectedUnstaged.length} selected file(s)?`);
+                  if (!ok) return;
+                  void (async () => {
+                    for (const p of selectedUnstaged) {
+                      const entry = unstaged.find((item) => item.path === p);
+                      if (entry) discardEntry(entry);
+                    }
+                  })();
+                }}
+              >
+                Discard
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="scm-panel__batch-btn"
+              onClick={() => setSelected(new Set())}
+            >
+              Deselect
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Changes list area */}
+      <div className="scm-panel__lists">
+        {loading && !summary ? <p className="scm-panel__hint">Loading git status…</p> : null}
+        {summary && summary.entries.length === 0 ? (
+          <p className="scm-panel__hint">Working tree clean. No changes.</p>
+        ) : null}
+
+        {/* Staged Changes Section */}
+        {staged.length > 0 ? (
+          <div className="scm-panel__section">
+            <div className="scm-panel__section-header">
+              <button
+                type="button"
+                className="scm-panel__section-toggle"
+                onClick={() => setStagedCollapsed((v) => !v)}
+              >
+                {stagedCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                <span>Staged Changes</span>
+                <span className="scm-panel__badge">{staged.length}</span>
+              </button>
+              <IconButton
+                icon={Minus}
+                label="Unstage all changes"
+                size={13}
+                disabled={acting}
+                onClick={() => void run("git_unstage", { paths: staged.map((e) => e.path) })}
+              />
+            </div>
+            {!stagedCollapsed ? (
+              <ul className="scm-panel__list">
+                {staged.map((entry) => renderFileRow(entry, true))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* Unstaged Changes Section */}
+        {unstaged.length > 0 ? (
+          <div className="scm-panel__section">
+            <div className="scm-panel__section-header">
+              <button
+                type="button"
+                className="scm-panel__section-toggle"
+                onClick={() => setChangesCollapsed((v) => !v)}
+              >
+                {changesCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                <span>Changes</span>
+                <span className="scm-panel__badge">{unstaged.length}</span>
+              </button>
+              <div className="scm-panel__section-actions">
+                <IconButton
+                  icon={Plus}
+                  label="Stage all changes"
+                  size={13}
                   disabled={acting}
-                  onClick={() => void run("git_stage", { paths: [entry.path] })}
-                >
-                  Stage
-                </button>
-              ) : null}
-              {entry.index !== " " && entry.index !== "?" ? (
-                <button
-                  type="button"
-                  className="scm-panel__action"
-                  disabled={acting}
-                  onClick={() => void run("git_unstage", { paths: [entry.path] })}
-                >
-                  Unstage
-                </button>
-              ) : null}
-              {entry.worktree !== " " || entry.index === "?" ? (
-                <button
-                  type="button"
-                  className="scm-panel__action"
+                  onClick={() => void run("git_stage", { paths: unstaged.map((e) => e.path) })}
+                />
+                <IconButton
+                  icon={Undo2}
+                  label="Discard all changes"
+                  size={13}
                   disabled={acting}
                   onClick={() => {
-                    const untracked = entry.index === "?";
-                    const ok = window.confirm(
-                      untracked
-                        ? `Delete untracked ${entry.path}?`
-                        : `Discard changes in ${entry.path}?`,
-                    );
+                    const ok = window.confirm(`Discard all unstaged changes in ${unstaged.length} file(s)?`);
                     if (!ok) return;
                     void (async () => {
-                      const succeeded = await run("git_discard", {
-                        path: entry.path,
-                        untracked,
-                      });
-                      if (!succeeded || !rootPath) return;
-                      const relative = entry.path.replace(
-                        /\//g,
-                        rootPath.includes("\\") ? "\\" : "/",
-                      );
-                      const absolute = joinPath(rootPath, relative);
-                      const open = tabs.find(
-                        (tab) =>
-                          tab.path.replace(/\\/g, "/").toLowerCase() ===
-                          absolute.replace(/\\/g, "/").toLowerCase(),
-                      );
-                      if (!open) return;
-                      if (untracked) {
-                        closeTab(open.path);
-                        return;
-                      }
-                      try {
-                        const text = await readTextFile(absolute);
-                        applyDiskValue(open.path, text);
-                      } catch {
-                        closeTab(open.path);
+                      for (const entry of unstaged) {
+                        discardEntry(entry);
                       }
                     })();
                   }}
-                >
-                  Discard
-                </button>
-              ) : null}
-              <button
-                type="button"
-                className="scm-panel__action"
-                disabled={acting}
-                onClick={() => void run("git_ignore", { path: entry.path })}
-              >
-                Ignore
-              </button>
-              <button
-                type="button"
-                className="scm-panel__action"
-                disabled={acting}
-                onClick={() => {
-                  const relative = entry.path.replace(
-                    /\//g,
-                    rootPath.includes("\\") ? "\\" : "/",
-                  );
-                  const absolute = joinPath(rootPath, relative);
-                  void (async () => {
-                    try {
-                      const ignoreSpace = readIgnoreSpacePref();
-                      const text = await invoke<string>("git_diff", {
-                        cwd: rootPath,
-                        path: entry.path,
-                        staged: false,
-                        ignoreSpace,
-                      });
-                      let head: string | null = null;
-                      try {
-                        head = await invoke<string>("git_show_head", {
-                          cwd: rootPath,
-                          path: entry.path,
-                        });
-                      } catch {
-                        head = null;
-                      }
-                      let working: string | null = null;
-                      try {
-                        working = await readTextFile(absolute);
-                      } catch {
-                        working = null;
-                      }
-                      openDiffTab(entry.path, text, {
-                        head,
-                        working,
-                        cwd: rootPath,
-                        staged: false,
-                        ignoreSpace,
-                      });
-                    } catch (err) {
-                      setError(err instanceof Error ? err.message : String(err));
-                    }
-                  })();
-                }}
-              >
-                Compare HEAD
-              </button>
-              <button
-                type="button"
-                className="scm-panel__action"
-                disabled={acting}
-                onClick={() => {
-                  const stagedOnly =
-                    entry.index !== " " && entry.index !== "?" && entry.worktree === " ";
-                  const relative = entry.path.replace(
-                    /\//g,
-                    rootPath.includes("\\") ? "\\" : "/",
-                  );
-                  const absolute = joinPath(rootPath, relative);
-                  void (async () => {
-                    try {
-                      const ignoreSpace = readIgnoreSpacePref();
-                      const text = await invoke<string>("git_diff", {
-                        cwd: rootPath,
-                        path: entry.path,
-                        staged: stagedOnly,
-                        ignoreSpace,
-                      });
-                      let head: string | null = null;
-                      try {
-                        head = await invoke<string>("git_show_head", {
-                          cwd: rootPath,
-                          path: entry.path,
-                        });
-                      } catch {
-                        head = null;
-                      }
-                      let working: string | null = null;
-                      try {
-                        working = await readTextFile(absolute);
-                      } catch {
-                        working = null;
-                      }
-                      openDiffTab(entry.path, text, {
-                        head,
-                        working,
-                        cwd: rootPath,
-                        staged: stagedOnly,
-                        ignoreSpace,
-                      });
-                    } catch (err) {
-                      setError(err instanceof Error ? err.message : String(err));
-                    }
-                  })();
-                }}
-              >
-                Diff
-              </button>
+                />
+              </div>
             </div>
-          </li>
-        ))}
-      </ul>
+            {!changesCollapsed ? (
+              <ul className="scm-panel__list">
+                {unstaged.map((entry) => renderFileRow(entry, false))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
+      {/* SCM Row Context Menu */}
+      {contextMenu ? (
+        <div
+          ref={contextMenuRef}
+          className="scm-panel__context-menu island"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          role="menu"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              openDiff(contextMenu.entry, contextMenu.isStaged);
+              setContextMenu(null);
+            }}
+          >
+            Open Diff
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              const relative = contextMenu.entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+              void openFile(joinPath(rootPath, relative));
+              setContextMenu(null);
+            }}
+          >
+            Open File
+          </button>
+          {contextMenu.isStaged ? (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                void run("git_unstage", { paths: [contextMenu.entry.path] });
+                setContextMenu(null);
+              }}
+            >
+              Unstage Changes
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  void run("git_stage", { paths: [contextMenu.entry.path] });
+                  setContextMenu(null);
+                }}
+              >
+                Stage Changes
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  discardEntry(contextMenu.entry);
+                  setContextMenu(null);
+                }}
+              >
+                Discard Changes
+              </button>
+            </>
+          )}
+          <div className="scm-panel__menu-sep" role="separator" />
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              void navigator.clipboard.writeText(contextMenu.entry.path);
+              setContextMenu(null);
+            }}
+          >
+            Copy Relative Path
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              const relative = contextMenu.entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+              void navigator.clipboard.writeText(joinPath(rootPath, relative));
+              setContextMenu(null);
+            }}
+          >
+            Copy Absolute Path
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              const relative = contextMenu.entry.path.replace(/\//g, rootPath.includes("\\") ? "\\" : "/");
+              void revealItemInDir(joinPath(rootPath, relative));
+              setContextMenu(null);
+            }}
+          >
+            Reveal in File Explorer
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              void run("git_ignore", { path: contextMenu.entry.path });
+              setContextMenu(null);
+            }}
+          >
+            Add to .gitignore
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

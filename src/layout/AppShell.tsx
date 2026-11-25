@@ -345,7 +345,11 @@ function ShellChrome() {
   }, [openKeybindings]);
 
   const closePalette = useCallback(() => setPaletteOpen(false), []);
-  const openSettings = useCallback(() => setSettingsOpen(true), []);
+  const [settingsCategory, setSettingsCategory] = useState<"appearance" | "editor" | "ai">("editor");
+  const openSettings = useCallback((tab?: "appearance" | "editor" | "ai") => {
+    if (tab) setSettingsCategory(tab);
+    setSettingsOpen(true);
+  }, []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const cloneRepository = useCallback(async () => {
     const url = window.prompt("Repository URL");
@@ -1079,16 +1083,14 @@ function ShellChrome() {
         setAiOpen(true);
       },
       focusAiSettings: () => {
-        openSettings();
+        openSettings("ai");
         window.setTimeout(() => {
-          const section = window.document.getElementById("settings-ai-section");
-          section?.scrollIntoView({ block: "start", behavior: "smooth" });
           (
             window.document.getElementById(
               "settings-ai-system-prompt",
             ) as HTMLTextAreaElement | null
           )?.focus();
-        }, 0);
+        }, 50);
       },
       showGitSyncStatus: () => {
         const ahead = gitAhead ?? 0;
@@ -1684,23 +1686,16 @@ function ShellChrome() {
   return (
     <div className="app-shell">
       <TitleBar
+        sidebarOpen={sidebarOpen}
         sidebarMode={sidebarMode}
         onOpenSettings={openSettings}
-        onShowExplorer={() => {
-          setSidebarMode("explorer");
-          setSidebarOpen(true);
-        }}
-        onShowSearch={() => {
-          setSidebarMode("search");
-          setSidebarOpen(true);
-        }}
-        onShowOutline={() => {
-          setSidebarMode("outline");
-          setSidebarOpen(true);
-        }}
-        onShowScm={() => {
-          setSidebarMode("scm");
-          setSidebarOpen(true);
+        onToggleSidebarMode={(mode) => {
+          if (sidebarOpen && sidebarMode === mode) {
+            setSidebarOpen(false);
+          } else {
+            setSidebarMode(mode);
+            setSidebarOpen(true);
+          }
         }}
       />
       <div className="app-shell__workspace" style={workspaceStyle}>
@@ -1745,6 +1740,12 @@ function ShellChrome() {
             tab={panelTab}
             onTabChange={setPanelTab}
             height={bottomHeight}
+            onClose={() => setBottomOpen(false)}
+            isMaximized={bottomHeight >= 420}
+            onToggleMaximize={() => {
+              if (bottomHeight >= 420) setBottomHeight(220);
+              else setBottomHeight(480);
+            }}
           />
         </div>
 
@@ -1763,11 +1764,7 @@ function ShellChrome() {
           className="app-shell__ai-slot"
           style={{ display: aiOpen ? "flex" : "none" }}
         >
-          <AiPanel
-            onOpenSettings={openSettings}
-            onOpenSearch={openSearch}
-            onOpenPalette={openPalette}
-          />
+          <AiPanel onOpenSettings={() => openSettings("ai")} />
         </div>
       </div>
       <StatusBar
@@ -1794,7 +1791,11 @@ function ShellChrome() {
         seed={paletteSeed}
         extraCommands={[...symbolCommands, ...recentCommands, ...extensionCommands]}
       />
-      <SettingsPanel open={settingsOpen} onClose={closeSettings} />
+      <SettingsPanel
+        open={settingsOpen}
+        onClose={closeSettings}
+        initialTab={settingsCategory}
+      />
     </div>
   );
 }

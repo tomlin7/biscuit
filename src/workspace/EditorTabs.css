@@ -13,13 +13,14 @@
   align-items: center;
   gap: 6px;
   max-width: 220px;
-  padding: 5px 6px 5px 6px;
+  padding: 5px 8px;
   border-radius: 8px;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
   background: transparent;
   cursor: pointer;
   user-select: none;
+  transition: background 100ms ease, color 100ms ease;
 }
 
 .editor-tabs__tab:hover {
@@ -30,6 +31,7 @@
 .editor-tabs__tab--active {
   background: var(--bg-active);
   color: var(--fg);
+  font-weight: 500;
 }
 
 .editor-tabs__label {
@@ -48,49 +50,75 @@
   background: var(--accent);
 }
 
-.editor-tabs__pin {
+.editor-tabs__pin-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.editor-tabs__pin-indicator:hover {
+  opacity: 1;
+  background: var(--bg-hover);
+}
+
+.editor-tabs__close {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
   display: grid;
   place-items: center;
-  border-radius: 5px;
+  border-radius: 4px;
   color: var(--fg-dim);
   opacity: 0;
-}
-
-.editor-tabs__tab:hover .editor-tabs__pin,
-.editor-tabs__tab--active .editor-tabs__pin,
-.editor-tabs__pin--on {
-  opacity: 1;
-}
-
-.editor-tabs__pin--on {
-  color: var(--accent, var(--fg));
-}
-
-.editor-tabs__pin:hover {
-  color: var(--fg);
-  background: var(--bg-active);
-}
-
-.editor-tabs__close {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  border-radius: 6px;
-  color: var(--fg-dim);
-  opacity: 0;
+  transition: opacity 120ms ease;
 }
 
 .editor-tabs__tab:hover .editor-tabs__close,
 .editor-tabs__tab--active .editor-tabs__close {
-  opacity: 1;
+  opacity: 0.75;
 }
 
 .editor-tabs__close:hover {
+  opacity: 1 !important;
   color: var(--fg);
-  background: var(--bg-active);
+  background: var(--bg-hover);
+}
+
+/* Context Menu */
+.editor-tabs__context-menu {
+  position: fixed;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--bg-island-elevated);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.editor-tabs__context-menu button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: left;
+  color: var(--fg);
+  font-size: var(--font-size-sm);
+  background: transparent;
+  cursor: pointer;
+}
+
+.editor-tabs__context-menu button:hover {
+  background: var(--bg-hover);
+}
+
+.editor-tabs__menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border-subtle);
 }

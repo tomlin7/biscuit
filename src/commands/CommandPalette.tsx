@@ -23,6 +23,8 @@ export function CommandPalette({
   const [index, setIndex] = useState(0);
   const [recentIds, setRecentIds] = useState<string[]>(() => readRecentCommandIds());
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const isKeyNavRef = useRef(false);
 
   const items = useMemo(() => {
     const all = [...COMMANDS, ...extraCommands].filter((cmd) =>
@@ -55,6 +57,14 @@ export function CommandPalette({
     setIndex(0);
   }, [query]);
 
+  useEffect(() => {
+    if (!open || !listRef.current) return;
+    const activeItem = listRef.current.children[index] as HTMLElement | undefined;
+    if (activeItem) {
+      activeItem.scrollIntoView({ block: "nearest" });
+    }
+  }, [index, open]);
+
   if (!open) return null;
 
   const runAt = (i: number) => {
@@ -72,6 +82,9 @@ export function CommandPalette({
       role="dialog"
       aria-modal="true"
       aria-label="Command palette"
+      onMouseMove={() => {
+        isKeyNavRef.current = false;
+      }}
     >
       <button
         type="button"
@@ -93,9 +106,11 @@ export function CommandPalette({
               onClose();
             } else if (event.key === "ArrowDown") {
               event.preventDefault();
+              isKeyNavRef.current = true;
               setIndex((i) => Math.min(i + 1, Math.max(items.length - 1, 0)));
             } else if (event.key === "ArrowUp") {
               event.preventDefault();
+              isKeyNavRef.current = true;
               setIndex((i) => Math.max(i - 1, 0));
             } else if (event.key === "Enter") {
               event.preventDefault();
@@ -103,7 +118,7 @@ export function CommandPalette({
             }
           }}
         />
-        <ul className="command-palette__list" role="listbox">
+        <ul ref={listRef} className="command-palette__list" role="listbox">
           {items.length === 0 ? (
             <li className="command-palette__empty">No matching commands</li>
           ) : (
@@ -118,7 +133,11 @@ export function CommandPalette({
                       ? "command-palette__item command-palette__item--active"
                       : "command-palette__item"
                   }
-                  onMouseEnter={() => setIndex(i)}
+                  onMouseMove={() => {
+                    if (!isKeyNavRef.current && index !== i) {
+                      setIndex(i);
+                    }
+                  }}
                   onClick={() => runAt(i)}
                 >
                   <span className="command-palette__title">

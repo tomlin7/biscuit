@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import {
+  Blocks,
+  Bug,
   Copy,
   Folder,
   FolderTree,
@@ -9,9 +11,9 @@ import {
   Play,
   Plus,
   Search,
+  Settings,
   Sparkles,
   Square,
-  UserRound,
   X,
 } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -22,13 +24,17 @@ import { IconButton } from "../ui/IconButton";
 import type { SidebarMode } from "./Sidebar";
 
 type TitleBarProps = {
+  sidebarOpen?: boolean;
   sidebarMode?: SidebarMode;
   onOpenPalette?: () => void;
   onOpenSettings?: () => void;
+  onToggleSidebarMode?: (mode: SidebarMode) => void;
   onShowExplorer?: () => void;
   onShowSearch?: () => void;
   onShowOutline?: () => void;
   onShowScm?: () => void;
+  onShowDebug?: () => void;
+  onShowExtensions?: () => void;
 };
 
 const noDrag = { "data-tauri-drag-region": "false" } as const;
@@ -98,16 +104,28 @@ function WindowControls() {
 }
 
 export function TitleBar({
+  sidebarOpen = true,
   sidebarMode = "explorer",
   onOpenSettings,
+  onToggleSidebarMode,
   onShowExplorer,
   onShowSearch,
   onShowOutline,
   onShowScm,
+  onShowDebug,
+  onShowExtensions,
 }: TitleBarProps) {
   const { rootName, openFolder, activePath, busy } = useWorkspace();
   const { aiOpen, toggleAi } = useLayout();
   const { startSession } = useDebug();
+
+  const handleModeClick = (mode: SidebarMode, fallback?: () => void) => {
+    if (onToggleSidebarMode) {
+      onToggleSidebarMode(mode);
+    } else if (fallback) {
+      fallback();
+    }
+  };
 
   return (
     <header className="titlebar" role="banner" data-tauri-drag-region="deep">
@@ -116,32 +134,48 @@ export function TitleBar({
           icon={FolderTree}
           label="Explorer"
           size={15}
-          active={sidebarMode === "explorer"}
-          onClick={onShowExplorer}
+          active={sidebarOpen && sidebarMode === "explorer"}
+          onClick={() => handleModeClick("explorer", onShowExplorer)}
           {...noDrag}
         />
         <IconButton
           icon={Search}
           label="Search files"
           size={15}
-          active={sidebarMode === "search"}
-          onClick={onShowSearch}
+          active={sidebarOpen && sidebarMode === "search"}
+          onClick={() => handleModeClick("search", onShowSearch)}
           {...noDrag}
         />
         <IconButton
           icon={ListTree}
           label="Outline"
           size={15}
-          active={sidebarMode === "outline"}
-          onClick={onShowOutline}
+          active={sidebarOpen && sidebarMode === "outline"}
+          onClick={() => handleModeClick("outline", onShowOutline)}
           {...noDrag}
         />
         <IconButton
           icon={GitBranch}
           label="Source control"
           size={15}
-          active={sidebarMode === "scm"}
-          onClick={onShowScm}
+          active={sidebarOpen && sidebarMode === "scm"}
+          onClick={() => handleModeClick("scm", onShowScm)}
+          {...noDrag}
+        />
+        <IconButton
+          icon={Bug}
+          label="Run and Debug"
+          size={15}
+          active={sidebarOpen && sidebarMode === "debug"}
+          onClick={() => handleModeClick("debug", onShowDebug)}
+          {...noDrag}
+        />
+        <IconButton
+          icon={Blocks}
+          label="Extensions"
+          size={15}
+          active={sidebarOpen && sidebarMode === "extensions"}
+          onClick={() => handleModeClick("extensions", onShowExtensions)}
           {...noDrag}
         />
       </div>
@@ -181,7 +215,7 @@ export function TitleBar({
           {...noDrag}
         />
         <IconButton
-          icon={UserRound}
+          icon={Settings}
           label="Settings"
           size={15}
           onClick={onOpenSettings}

@@ -11,222 +11,398 @@
   padding: 14px 12px;
 }
 
-.scm-panel__toolbar {
+/* Header toolbar with branch picker & actions */
+.scm-panel__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.scm-panel__branch {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+.scm-panel__branch-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  padding: 3px 6px;
+  border-radius: var(--radius-control);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+}
+
+.scm-panel__branch-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.scm-panel__branch-select {
+  width: 100%;
+  border: none;
+  background: transparent;
   color: var(--fg);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.scm-panel__toolbar-actions {
+.scm-panel__header-actions {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 2px;
   flex-shrink: 0;
 }
 
-.scm-panel__branches {
+/* Commit box */
+.scm-panel__commit {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: var(--radius-control);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+}
+
+.scm-panel__message {
+  width: 100%;
+  min-height: 60px;
+  max-height: 140px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  outline: none;
+  resize: vertical;
+}
+
+.scm-panel__message::placeholder {
+  color: var(--fg-dim);
+}
+
+.scm-panel__commit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.scm-panel__amend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--fg-muted);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  user-select: none;
+}
+
+.scm-panel__amend input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.scm-panel__msg-helpers {
+  display: flex;
+  align-items: center;
   gap: 4px;
 }
 
-.scm-panel__branch-row {
-  display: inline-flex;
-  align-items: stretch;
-  gap: 0;
-}
-
-.scm-panel__branch-delete {
-  border: 1px solid var(--border);
-  border-left: none;
-  border-radius: 0 4px 4px 0;
-  background: transparent;
-  color: var(--fg-muted, var(--fg));
-  padding: 0 6px;
-  cursor: pointer;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.scm-panel__branch-row .scm-panel__branch-btn {
-  border-radius: 4px 0 0 4px;
-}
-
-.scm-panel__branch-row .scm-panel__branch-btn:only-child,
-.scm-panel__branch-btn--current {
+.scm-panel__text-btn {
+  padding: 2px 6px;
   border-radius: 4px;
-}
-
-.scm-panel__branch-delete:hover:not(:disabled) {
-  background: var(--danger, #a33);
-  color: #fff;
-}
-
-.scm-panel__branch-btn {
-  padding: 3px 8px;
-  border-radius: 999px;
   background: transparent;
-  color: var(--fg-muted);
-  font-size: var(--font-size-sm);
+  color: var(--fg-dim);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
 }
 
-.scm-panel__branch-btn--current,
-.scm-panel__branch-btn:hover:not(:disabled) {
-  background: var(--bg-active);
-  color: var(--fg);
-}
-
-.scm-panel__diff {
-  margin: 0 8px 8px;
-  padding: 8px;
-  max-height: 220px;
-  overflow: auto;
-  border-radius: var(--radius-control);
-  background: var(--bg-root);
-  color: var(--fg-muted);
-  font-size: 12px;
-  line-height: 1.45;
-  white-space: pre-wrap;
-}
-
-.scm-panel__refresh {
-  padding: 4px 8px;
-  border-radius: 6px;
-  color: var(--fg-muted);
-  font-size: var(--font-size-sm);
-}
-
-.scm-panel__refresh:hover:not(:disabled) {
+.scm-panel__text-btn:hover {
   color: var(--fg);
   background: var(--bg-hover);
 }
 
-.scm-panel__hint {
-  margin: 0 2px;
+.scm-panel__commit-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #ffffff;
   font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 120ms ease;
+}
+
+.scm-panel__commit-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.scm-panel__commit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Batch action bar */
+.scm-panel__batch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--bg-active);
+  font-size: var(--font-size-xs);
   color: var(--fg-muted);
 }
 
-.scm-panel__error {
-  margin: 0;
-  padding: 8px;
-  border-radius: 8px;
-  background: var(--danger-bg);
-  color: var(--danger-fg);
-  font-size: var(--font-size-sm);
+.scm-panel__batch-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.scm-panel__batch-btn {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-input);
+  color: var(--fg);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+
+.scm-panel__batch-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.scm-panel__batch-btn--danger:hover {
+  color: #f87171;
+}
+
+/* Lists and section headers */
+.scm-panel__lists {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.scm-panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scm-panel__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 2px 4px;
+}
+
+.scm-panel__section-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.scm-panel__section-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.scm-panel__section-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.scm-panel__badge {
+  padding: 1px 5px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-active);
+  color: var(--fg-muted);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .scm-panel__list {
   list-style: none;
   margin: 0;
   padding: 0;
-  overflow: auto;
-  flex: 1;
 }
 
+/* Individual File Row */
 .scm-panel__row {
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.scm-panel__check {
-  display: inline-flex;
-  flex-shrink: 0;
-  padding: 0 2px;
-}
-
-.scm-panel__file {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  text-align: left;
-  color: inherit;
-  background: transparent;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: background 100ms ease;
 }
 
 .scm-panel__row:hover {
   background: var(--bg-hover);
+}
+
+.scm-panel__check {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 2px;
+  cursor: pointer;
+}
+
+.scm-panel__check input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.scm-panel__file {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  padding: 2px 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.scm-panel__path-container {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scm-panel__file-name {
   color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scm-panel__dir-name {
+  color: var(--fg-dim);
+  font-size: var(--font-size-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .scm-panel__status {
   flex-shrink: 0;
-  min-width: 72px;
-  color: var(--accent);
-  font-size: var(--font-size-sm);
+  margin-left: auto;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  padding: 0 4px;
 }
 
-.scm-panel__path {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.scm-panel__status--m,
+.scm-panel__status--modified {
+  color: #fbbf24;
 }
 
-.scm-panel__bulk {
-  display: flex;
-  gap: 4px;
+.scm-panel__status--a,
+.scm-panel__status--added,
+.scm-panel__status--untracked,
+.scm-panel__status--\? {
+  color: #34d399;
 }
 
-.scm-panel__commit {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.scm-panel__status--d,
+.scm-panel__status--deleted {
+  color: #f87171;
 }
 
-.scm-panel__amend {
+.scm-panel__row-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: var(--fg-muted);
-  font-size: var(--font-size-sm);
-}
-
-.scm-panel__message {
-  width: 100%;
-  min-height: 64px;
-  padding: 8px;
-  border: none;
-  border-radius: var(--radius-control);
-  background: var(--bg-input);
-  color: var(--fg);
-  resize: vertical;
-}
-
-.scm-panel__commit-btn,
-.scm-panel__action {
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: var(--bg-active);
-  color: var(--fg);
-  font-size: var(--font-size-sm);
-}
-
-.scm-panel__commit-btn:disabled,
-.scm-panel__action:disabled {
-  opacity: 0.4;
-}
-
-.scm-panel__action {
-  margin-left: auto;
+  gap: 2px;
   flex-shrink: 0;
-  background: transparent;
-  color: var(--fg-muted);
+  opacity: 0;
+  transition: opacity 120ms ease;
 }
 
-.scm-panel__action:hover:not(:disabled) {
+.scm-panel__row:hover .scm-panel__row-actions {
+  opacity: 1;
+}
+
+/* Context Menu */
+.scm-panel__context-menu {
+  position: fixed;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--bg-island-elevated);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.scm-panel__context-menu button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: left;
   color: var(--fg);
+  font-size: var(--font-size-sm);
+  background: transparent;
+  cursor: pointer;
+}
+
+.scm-panel__context-menu button:hover {
   background: var(--bg-hover);
+}
+
+.scm-panel__menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border-subtle);
+}
+
+.scm-panel__hint {
+  margin: 4px 6px;
+  font-size: var(--font-size-sm);
+  color: var(--fg-dim);
+}
+
+.scm-panel__error {
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--danger-bg);
+  color: var(--danger-fg);
+  font-size: var(--font-size-xs);
 }

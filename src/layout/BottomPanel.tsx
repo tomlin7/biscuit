@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Maximize2, Minimize2, X } from "lucide-react";
 import { TerminalPanel } from "../terminal/TerminalPanel";
 import { ProblemsPanel } from "../lsp/ProblemsPanel";
 import { LogsPanel } from "../logs/LogsPanel";
 import { useDiagnostics } from "../lsp/DiagnosticsContext";
+import { IconButton } from "../ui/IconButton";
 import "./BottomPanel.css";
 
 export type BottomTab = "terminal" | "problems" | "logs";
@@ -12,9 +14,20 @@ type Props = {
   tab: BottomTab;
   onTabChange: (tab: BottomTab) => void;
   height?: number;
+  onClose?: () => void;
+  onToggleMaximize?: () => void;
+  isMaximized?: boolean;
 };
 
-export function BottomPanel({ open, tab, onTabChange, height = 220 }: Props) {
+export function BottomPanel({
+  open,
+  tab,
+  onTabChange,
+  height = 220,
+  onClose,
+  onToggleMaximize,
+  isMaximized = false,
+}: Props) {
   const { problems } = useDiagnostics();
   const [mountedTerminal, setMountedTerminal] = useState(false);
 
@@ -30,48 +43,72 @@ export function BottomPanel({ open, tab, onTabChange, height = 220 }: Props) {
       aria-label="Panel"
       style={{ height }}
     >
-      <div className="bottom-panel__tabs" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "terminal"}
-          className={
-            tab === "terminal"
-              ? "bottom-panel__tab bottom-panel__tab--active"
-              : "bottom-panel__tab"
-          }
-          onClick={() => onTabChange("terminal")}
-        >
-          Terminal
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "problems"}
-          className={
-            tab === "problems"
-              ? "bottom-panel__tab bottom-panel__tab--active"
-              : "bottom-panel__tab"
-          }
-          onClick={() => onTabChange("problems")}
-        >
-          Problems
-          {problems.length > 0 ? (
-            <span className="bottom-panel__badge">{problems.length}</span>
+      <div className="bottom-panel__header">
+        <div className="bottom-panel__tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "terminal"}
+            className={
+              tab === "terminal"
+                ? "bottom-panel__tab bottom-panel__tab--active"
+                : "bottom-panel__tab"
+            }
+            onClick={() => onTabChange("terminal")}
+          >
+            Terminal
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "problems"}
+            className={
+              tab === "problems"
+                ? "bottom-panel__tab bottom-panel__tab--active"
+                : "bottom-panel__tab"
+            }
+            onClick={() => onTabChange("problems")}
+          >
+            Problems
+            {problems.length > 0 ? (
+              <span className="bottom-panel__badge">{problems.length}</span>
+            ) : null}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "logs"}
+            className={
+              tab === "logs"
+                ? "bottom-panel__tab bottom-panel__tab--active"
+                : "bottom-panel__tab"
+            }
+            onClick={() => onTabChange("logs")}
+          >
+            Logs
+          </button>
+        </div>
+
+        <div className="bottom-panel__actions">
+          {onToggleMaximize ? (
+            <IconButton
+              icon={isMaximized ? Minimize2 : Maximize2}
+              label={isMaximized ? "Restore panel height" : "Maximize panel height"}
+              size={13}
+              onClick={onToggleMaximize}
+            />
           ) : null}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "logs"}
-          className={
-            tab === "logs" ? "bottom-panel__tab bottom-panel__tab--active" : "bottom-panel__tab"
-          }
-          onClick={() => onTabChange("logs")}
-        >
-          Logs
-        </button>
+          {onClose ? (
+            <IconButton
+              icon={X}
+              label="Close panel"
+              size={13}
+              onClick={onClose}
+            />
+          ) : null}
+        </div>
       </div>
+
       <div className="bottom-panel__body">
         {mountedTerminal ? (
           <div

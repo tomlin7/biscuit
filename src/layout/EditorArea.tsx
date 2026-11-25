@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Clock,
   Columns2,
   Eye,
-  PanelRightClose,
   Search,
   Sparkles,
-  Zap,
+  X,
 } from "lucide-react";
 import { HtmlPreview } from "../editor/HtmlPreview";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
@@ -15,7 +13,6 @@ import { MonacoEditor } from "../editor/MonacoEditor";
 import { DiffView, useDiffTab } from "../scm/DiffView";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { Welcome } from "../workspace/Welcome";
-import { languageLabel } from "../editor/languages";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { relativeToRoot, workspaceCrumbs, parentPath } from "../workspace/path";
 import { rootForPath } from "../ai/roots";
@@ -81,11 +78,6 @@ export function EditorArea() {
       splitRatio,
     });
   }, [layoutReady, previewOpen, split, secondaryPath, splitRatio]);
-
-  const now = useMemo(() => {
-    const d = new Date();
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }, [document?.path]);
 
   const previewKind =
     document?.language === "markdown" || document?.language === "html"
@@ -320,13 +312,6 @@ export function EditorArea() {
         ) : null}
         <div className="editor-area__tools">
           <IconButton
-            icon={Sparkles}
-            label="Ask AI"
-            size={15}
-            onClick={toggleAi}
-            active={aiOpen}
-          />
-          <IconButton
             icon={Search}
             label="Find in file"
             size={15}
@@ -335,16 +320,6 @@ export function EditorArea() {
           {findMatchLabel ? (
             <span className="editor-area__chip" title="Find matches">
               {findMatchLabel}
-            </span>
-          ) : null}
-          <span className="editor-area__chip" title="Local time">
-            <Clock size={13} strokeWidth={1.75} aria-hidden />
-            {now}
-          </span>
-          {hasFile ? (
-            <span className="editor-area__chip">
-              <Zap size={13} strokeWidth={1.75} aria-hidden />
-              {languageLabel(document.language)}
             </span>
           ) : null}
           {previewKind ? (
@@ -373,10 +348,11 @@ export function EditorArea() {
             }}
           />
           <IconButton
-            icon={PanelRightClose}
-            label={aiOpen ? "Hide AI" : "Show AI"}
+            icon={Sparkles}
+            label={aiOpen ? "Hide AI" : "Ask AI"}
             size={15}
             onClick={toggleAi}
+            active={aiOpen}
           />
         </div>
       </div>
@@ -521,6 +497,15 @@ export function EditorArea() {
                         </option>
                       ))}
                     </select>
+                    <IconButton
+                      icon={X}
+                      label="Close split pane"
+                      size={13}
+                      onClick={() => {
+                        setSplit(false);
+                        setSecondaryPath(null);
+                      }}
+                    />
                   </div>
                   {tabs.find((tab) => tab.path === secondaryPath)?.language === "image" ? (
                     <ImageView path={secondaryPath} />
@@ -541,7 +526,19 @@ export function EditorArea() {
                   }}
                 />
                 <div className="editor-area__pane editor-area__pane--hint">
-                  <p>Open another file to split.</p>
+                  <div className="editor-area__secondary-label">
+                    <span>Split Editor</span>
+                    <IconButton
+                      icon={X}
+                      label="Close split pane"
+                      size={13}
+                      onClick={() => {
+                        setSplit(false);
+                        setSecondaryPath(null);
+                      }}
+                    />
+                  </div>
+                  <p>Open another file to view side by side.</p>
                 </div>
               </>
             ) : null}

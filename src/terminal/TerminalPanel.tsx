@@ -19,6 +19,8 @@ import { setRestartActiveTerminalListener } from "./restartTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
+import { IconButton } from "../ui/IconButton";
+import { Ban, Plus, RotateCcw, Trash2 } from "lucide-react";
 import "@xterm/xterm/css/xterm.css";
 import "./TerminalPanel.css";
 
@@ -365,18 +367,6 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     });
   };
 
-  const clearAllSessions = () => {
-    for (const control of controls.current.values()) {
-      void control.kill();
-    }
-    controls.current.clear();
-    commandDone.current.clear();
-    nextSession += 1;
-    const id = nextSession;
-    setSessions([{ id, shell: nextShell, runPath: null, command: null, cwd: null }]);
-    setActiveId(id);
-  };
-
   useEffect(() => {
     const clearAll = () => {
       for (const control of controls.current.values()) {
@@ -511,103 +501,99 @@ export function TerminalPanel({ open, embedded = false }: Props) {
 
   const chrome = (
     <>
-      <div className="terminal-panel__sessions" role="tablist" aria-label="Terminals">
-        {sessions.map((session, index) => (
-          <span key={session.id} className="terminal-panel__session">
-            {renamingId === session.id ? (
-              <input
-                className="terminal-panel__session-rename"
-                value={renameDraft}
-                autoFocus
-                aria-label="Rename terminal"
-                onChange={(event) => setRenameDraft(event.target.value)}
-                onBlur={() => commitRename(session.id)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    commitRename(session.id);
-                  } else if (event.key === "Escape") {
-                    event.preventDefault();
-                    setRenamingId(null);
+      <div className="terminal-panel__toolbar">
+        <div className="terminal-panel__sessions" role="tablist" aria-label="Terminals">
+          {sessions.map((session, index) => (
+            <span key={session.id} className="terminal-panel__session">
+              {renamingId === session.id ? (
+                <input
+                  className="terminal-panel__session-rename"
+                  value={renameDraft}
+                  autoFocus
+                  aria-label="Rename terminal"
+                  onChange={(event) => setRenameDraft(event.target.value)}
+                  onBlur={() => commitRename(session.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      commitRename(session.id);
+                    } else if (event.key === "Escape") {
+                      event.preventDefault();
+                      setRenamingId(null);
+                    }
+                  }}
+                />
+              ) : (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={session.id === activeId}
+                  className={
+                    session.id === activeId
+                      ? "terminal-panel__session-tab terminal-panel__session-tab--active"
+                      : "terminal-panel__session-tab"
                   }
-                }}
-              />
-            ) : (
+                  onClick={() => setActiveId(session.id)}
+                  onDoubleClick={() => {
+                    setRenamingId(session.id);
+                    setRenameDraft(shellLabel(session, index));
+                  }}
+                  title="Double-click to rename"
+                >
+                  {shellLabel(session, index)}
+                </button>
+              )}
               <button
                 type="button"
-                role="tab"
-                aria-selected={session.id === activeId}
-                className={
-                  session.id === activeId
-                    ? "terminal-panel__session-tab terminal-panel__session-tab--active"
-                    : "terminal-panel__session-tab"
-                }
-                onClick={() => setActiveId(session.id)}
-                onDoubleClick={() => {
-                  setRenamingId(session.id);
-                  setRenameDraft(shellLabel(session, index));
-                }}
-                title="Double-click to rename"
+                className="terminal-panel__session-close"
+                aria-label={`Close terminal ${index + 1}`}
+                onClick={() => closeSession(session.id)}
               >
-                {shellLabel(session, index)}
+                ×
               </button>
-            )}
-            <button
-              type="button"
-              className="terminal-panel__session-close"
-              aria-label={`Close terminal ${index + 1}`}
-              onClick={() => closeSession(session.id)}
+            </span>
+          ))}
+          <IconButton
+            icon={Plus}
+            label="New terminal"
+            size={13}
+            onClick={addSession}
+          />
+        </div>
+
+        <div className="terminal-panel__actions">
+          <label className="terminal-panel__shell" title="Default shell for new terminals">
+            <select
+              value={nextShell}
+              aria-label="Shell for the next terminal"
+              onChange={(event) => setNextShell(event.target.value as ShellChoice)}
             >
-              ×
-            </button>
-          </span>
-        ))}
-        <button
-          type="button"
-          className="terminal-panel__session-add"
-          onClick={() => void controls.current.get(activeId)?.kill()}
-        >
-          Kill
-        </button>
-        <button
-          type="button"
-          className="terminal-panel__session-add"
-          onClick={() => void controls.current.get(activeId)?.restart()}
-        >
-          Restart
-        </button>
-        <button
-          type="button"
-          className="terminal-panel__session-add"
-          onClick={() => controls.current.get(activeId)?.clear()}
-        >
-          Clear
-        </button>
-        <button
-          type="button"
-          className="terminal-panel__session-add"
-          onClick={clearAllSessions}
-          title="Close every terminal and open a fresh one"
-        >
-          Clear all
-        </button>
-        <label className="terminal-panel__shell">
-          <span className="terminal-panel__shell-label">New shell</span>
-          <select
-            value={nextShell}
-            aria-label="Shell for the next terminal"
-            onChange={(event) => setNextShell(event.target.value as ShellChoice)}
-          >
-            {SHELLS.map((item) => (
-              <option key={item.value || "default"} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button type="button" className="terminal-panel__session-add" onClick={addSession}>
-          New
-        </button>
+              {SHELLS.map((item) => (
+                <option key={item.value || "default"} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <IconButton
+            icon={RotateCcw}
+            label="Restart terminal"
+            size={13}
+            onClick={() => void controls.current.get(activeId)?.restart()}
+          />
+          <IconButton
+            icon={Ban}
+            label="Clear terminal"
+            size={13}
+            onClick={() => controls.current.get(activeId)?.clear()}
+          />
+          <IconButton
+            icon={Trash2}
+            label="Kill active terminal"
+            size={13}
+            onClick={() => void controls.current.get(activeId)?.kill()}
+          />
+        </div>
       </div>
       <div className="terminal-panel__stack">
         {sessions.map((session) => (

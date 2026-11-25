@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUp,
-  BookOpen,
-  Command,
   Copy,
   Download,
   FilePlus,
   Flame,
+  History,
   Mic,
   Plus,
   RefreshCw,
-  Search,
   Settings2,
   Sparkles,
   Square,
@@ -34,11 +32,9 @@ type MentionItem =
 
 type Props = {
   onOpenSettings?: () => void;
-  onOpenSearch?: () => void;
-  onOpenPalette?: () => void;
 };
 
-export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) {
+export function AiPanel({ onOpenSettings }: Props) {
   const {
     messages,
     sessions,
@@ -238,7 +234,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         </h2>
         <div className="ai-panel__actions">
           <IconButton
-            icon={Search}
+            icon={History}
             label="Chat history"
             size={14}
             active={showHistory}
@@ -563,17 +559,14 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         </div>
 
         <div className="ai-panel__footer">
-          <button type="button" className="ai-panel__pill" onClick={onOpenSearch}>
-            <Search size={12} strokeWidth={1.75} aria-hidden />
-            Search
-          </button>
-          <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
-            <Settings2 size={12} strokeWidth={1.75} aria-hidden />
-            Default
-          </button>
-          <button type="button" className="ai-panel__pill" onClick={onOpenSettings}>
+          <button
+            type="button"
+            className="ai-panel__pill"
+            title="Configure model in AI settings"
+            onClick={onOpenSettings}
+          >
             <Sparkles size={12} strokeWidth={1.75} aria-hidden />
-            {settings.model}
+            <span>{settings.model}</span>
           </button>
           <button
             type="button"
@@ -582,26 +575,11 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
             onClick={cycleEffort}
           >
             <Flame size={12} strokeWidth={1.75} aria-hidden />
-            {effortLabel}
+            <span>{effortLabel}</span>
           </button>
-          {onOpenPalette ? (
-            <IconButton
-              icon={Command}
-              label="Command palette"
-              size={13}
-              onClick={onOpenPalette}
-            />
-          ) : (
-            <IconButton
-              icon={Command}
-              label="Open settings"
-              size={13}
-              onClick={onOpenSettings}
-            />
-          )}
           <IconButton
-            icon={BookOpen}
-            label="Docs / settings"
+            icon={Settings2}
+            label="AI settings"
             size={13}
             onClick={onOpenSettings}
           />

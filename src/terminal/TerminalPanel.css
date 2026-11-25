@@ -16,18 +16,37 @@
   background: var(--bg-island);
 }
 
+.terminal-panel__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  padding: 2px 8px;
+  min-height: 30px;
+}
+
 .terminal-panel__sessions {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px 0;
-  overflow: auto;
+  overflow-x: auto;
+  min-width: 0;
+  flex: 1;
+}
+
+.terminal-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .terminal-panel__session {
   display: flex;
   align-items: center;
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
 }
 
@@ -35,8 +54,8 @@
 .terminal-panel__session-add,
 .terminal-panel__shell select,
 .terminal-panel__session-close {
-  padding: 4px 8px;
-  border-radius: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
@@ -45,8 +64,8 @@
 .terminal-panel__session-rename {
   min-width: 80px;
   max-width: 160px;
-  padding: 4px 8px;
-  border-radius: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-input);
   color: var(--fg);
@@ -56,15 +75,18 @@
 .terminal-panel__shell {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-left: auto;
+  gap: 4px;
   color: var(--fg-muted);
   font-size: var(--font-size-sm);
 }
 
 .terminal-panel__shell select {
   color: var(--fg);
-  background: transparent;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
 }
 
 .terminal-panel__session-tab--active,

@@ -630,3 +630,45 @@
   color: var(--fg);
   background: var(--bg-hover);
 }
+
+.status-bar__selection {
+  color: var(--fg-dim);
+  font-size: var(--font-size-xs);
+}
+
+.status-bar__popover--config {
+  width: 250px;
+}
+
+.status-bar__config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px;
+}
+
+.status-bar__config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--font-size-sm);
+  color: var(--fg);
+  cursor: pointer;
+  user-select: none;
+}
+
+.status-bar__config-row select {
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--fg);
+  font-size: var(--font-size-xs);
+  outline: none;
+}
+
+.status-bar__config-row input[type="checkbox"] {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
