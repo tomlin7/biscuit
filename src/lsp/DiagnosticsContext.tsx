@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import * as monaco from "monaco-editor";
+import { keepMarker } from "./markerFilter";
 
 export type ProblemItem = {
   id: string;
@@ -38,9 +39,11 @@ function collectProblems(): ProblemItem[] {
   const models = monaco.editor.getModels();
   const items: ProblemItem[] = [];
   for (const model of models) {
+    const language = model.getLanguageId();
     const uri = model.uri.toString();
     const markers = monaco.editor.getModelMarkers({ resource: model.uri });
     for (const marker of markers) {
+      if (!keepMarker(language, marker.owner)) continue;
       items.push({
         id: `${uri}:${marker.startLineNumber}:${marker.startColumn}:${marker.message}`,
         path: model.uri.scheme === "file" ? model.uri.fsPath : uri,

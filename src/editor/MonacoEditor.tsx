@@ -335,6 +335,12 @@ export function MonacoEditor({ path, primary = true }: Props) {
     monacoRef.current = monaco;
     defineExtraThemes(monaco, extras);
     monaco.editor.setTheme(monacoThemeId(theme, extras));
+    const model = ed.getModel();
+    const language = model?.getLanguageId();
+    if (model && language && language !== "typescript" && language !== "javascript") {
+      monaco.editor.setModelMarkers(model, "typescript", []);
+      monaco.editor.setModelMarkers(model, "javascript", []);
+    }
     const relayout = () => ed.layout();
     requestAnimationFrame(relayout);
     window.setTimeout(relayout, 50);
