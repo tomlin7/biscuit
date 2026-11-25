@@ -1149,6 +1149,9 @@ function ShellChrome() {
         setAiWidth(340);
         setBottomHeight(220);
       },
+      openSidebar: () => {
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,

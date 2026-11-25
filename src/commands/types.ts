@@ -193,6 +193,7 @@ export type CommandContext = {
   refreshDiagnostics: () => void;
   copyGitBranchSync: () => void;
   resetAllLayoutSizes: () => void;
+  openSidebar: () => void;
 };
 
 export type Command = {

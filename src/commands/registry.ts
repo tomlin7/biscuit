@@ -1160,4 +1160,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.resetAllLayoutSizes(),
   },
+  {
+    id: "workbench.action.openSidebar",
+    title: "Open Primary Side Bar",
+    category: "View",
+    run: (ctx) => ctx.openSidebar(),
+  },
 ];
