@@ -1838,4 +1838,16 @@ export const COMMANDS: Command[] = [
     category: "Terminal",
     run: (ctx) => ctx.killProcessByPid(),
   },
+  {
+    id: "workbench.action.terminal.scrollToPreviousCommand",
+    title: "Terminal: Scroll to Previous Command",
+    category: "Terminal",
+    run: (ctx) => ctx.terminalScrollToPreviousCommand(),
+  },
+  {
+    id: "workbench.action.terminal.scrollToNextCommand",
+    title: "Terminal: Scroll to Next Command",
+    category: "Terminal",
+    run: (ctx) => ctx.terminalScrollToNextCommand(),
+  },
 ];

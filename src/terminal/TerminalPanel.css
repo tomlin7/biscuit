@@ -123,12 +123,29 @@
 .terminal-panel__slot {
   display: none;
   min-height: 0;
+  position: relative;
 }
 
 .terminal-panel__slot--active {
   display: flex;
   flex: 1;
   flex-direction: column;
+  position: relative;
+}
+
+.terminal-panel__exit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--status-error, #ef4444);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .terminal-panel__header {

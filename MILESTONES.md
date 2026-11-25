@@ -461,6 +461,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.453.0** | Native OS desktop notifications for background tasks | shipped |
 | **0.454.0** | Export logs to file and persist logs across restarts | shipped |
 | **0.455.0** | Process Explorer for terminal-spawned processes | shipped |
+| **0.456.0** | Terminal shell integration (live cwd, command boundaries) | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

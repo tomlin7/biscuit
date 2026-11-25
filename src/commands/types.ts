@@ -303,6 +303,8 @@ export type CommandContext = {
   exportLogs: () => Promise<void> | void;
   showProcessExplorer: () => void;
   killProcessByPid: () => Promise<void> | void;
+  terminalScrollToPreviousCommand: () => void;
+  terminalScrollToNextCommand: () => void;
 };
 
 export type Command = {

@@ -18,6 +18,7 @@ import { setFocusTerminalListener } from "./focusTerminal";
 import { setRenameActiveTerminalListener } from "./renameTerminal";
 import { setRestartActiveTerminalListener } from "./restartTerminal";
 import { requestSplitTerminal, setSplitTerminalListener } from "./splitTerminal";
+import { setScrollCommandListener } from "./scrollCommand";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -38,6 +39,8 @@ type TerminalControl = {
   restart: () => Promise<void>;
   clear: () => void;
   focus: () => void;
+  scrollToPreviousCommand: () => void;
+  scrollToNextCommand: () => void;
 };
 
 type SessionProps = {
@@ -50,6 +53,8 @@ type SessionProps = {
   command: string | null;
   onCommandDone?: (text: string) => void;
   onControl: (control: TerminalControl | null) => void;
+  onCwdChange?: (cwd: string) => void;
+  onExitCode?: (code: number | null) => void;
 };
 
 function TerminalSession({
@@ -62,6 +67,8 @@ function TerminalSession({
   command,
   onCommandDone,
   onControl,
+  onCwdChange,
+  onExitCode,
 }: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
@@ -71,6 +78,11 @@ function TerminalSession({
   onControlRef.current = onControl;
   const onCommandDoneRef = useRef(onCommandDone);
   onCommandDoneRef.current = onCommandDone;
+  const onCwdChangeRef = useRef(onCwdChange);
+  onCwdChangeRef.current = onCwdChange;
+  const onExitCodeRef = useRef(onExitCode);
+  onExitCodeRef.current = onExitCode;
+  const commandLinesRef = useRef<number[]>([]);
   const commandOutputRef = useRef("");
   const unmountTimerRef = useRef<number | null>(null);
   const lineRef = useRef("");
@@ -110,6 +122,71 @@ function TerminalSession({
       unmountTimerRef.current = null;
     }
     commandOutputRef.current = "";
+
+    const osc7 = term.parser.registerOscHandler(7, (data) => {
+      let path = data.trim();
+      if (path.startsWith("file://")) {
+        path = path.slice("file://".length);
+        const slashIdx = path.indexOf("/");
+        if (slashIdx >= 0) {
+          path = path.slice(slashIdx);
+        }
+      }
+      try {
+        path = decodeURIComponent(path);
+      } catch {
+        /* keep path */
+      }
+      if (/^\/[a-zA-Z]:/.test(path)) {
+        path = path.slice(1);
+      }
+      if (path) {
+        onCwdChangeRef.current?.(path);
+      }
+      return true;
+    });
+
+    const osc633 = term.parser.registerOscHandler(633, (data) => {
+      const parts = data.split(";");
+      const code = parts[0];
+      if (code === "B" || code === "C") {
+        const line = term.buffer.active.baseY + term.buffer.active.cursorY;
+        const list = commandLinesRef.current;
+        if (list.length === 0 || list[list.length - 1] !== line) {
+          list.push(line);
+        }
+      } else if (code === "D") {
+        const exit = parts[1] !== undefined ? parseInt(parts[1], 10) : 0;
+        onExitCodeRef.current?.(Number.isNaN(exit) ? null : exit);
+      } else if (code === "P") {
+        if (parts[1] && parts[1].startsWith("Cwd=")) {
+          let p = parts[1].slice("Cwd=".length).trim();
+          try {
+            p = decodeURIComponent(p);
+          } catch {
+            /* keep */
+          }
+          if (p) onCwdChangeRef.current?.(p);
+        }
+      }
+      return true;
+    });
+
+    const osc133 = term.parser.registerOscHandler(133, (data) => {
+      const parts = data.split(";");
+      const code = parts[0];
+      if (code === "B" || code === "C") {
+        const line = term.buffer.active.baseY + term.buffer.active.cursorY;
+        const list = commandLinesRef.current;
+        if (list.length === 0 || list[list.length - 1] !== line) {
+          list.push(line);
+        }
+      } else if (code === "D") {
+        const exit = parts[1] !== undefined ? parseInt(parts[1], 10) : 0;
+        onExitCodeRef.current?.(Number.isNaN(exit) ? null : exit);
+      }
+      return true;
+    });
 
     let unlistenData: (() => void) | undefined;
     let unlistenExit: (() => void) | undefined;
@@ -241,6 +318,28 @@ function TerminalSession({
       focus: () => {
         term.focus();
       },
+      scrollToPreviousCommand: () => {
+        const lines = commandLinesRef.current;
+        if (lines.length === 0) return;
+        const currentScroll = term.buffer.active.viewportY;
+        const prev = [...lines].reverse().find((l) => l < currentScroll);
+        if (prev !== undefined) {
+          term.scrollToLine(prev);
+        } else {
+          term.scrollToLine(lines[0]);
+        }
+      },
+      scrollToNextCommand: () => {
+        const lines = commandLinesRef.current;
+        if (lines.length === 0) return;
+        const currentScroll = term.buffer.active.viewportY;
+        const next = lines.find((l) => l > currentScroll);
+        if (next !== undefined) {
+          term.scrollToLine(next);
+        } else {
+          term.scrollToBottom();
+        }
+      },
     });
 
     void spawn();
@@ -258,6 +357,9 @@ function TerminalSession({
       observer.disconnect();
       unlistenData?.();
       unlistenExit?.();
+      osc7.dispose();
+      osc633.dispose();
+      osc133.dispose();
       const id = ptyIdRef.current;
       if (id) {
         void invoke("pty_kill", { id });
@@ -285,7 +387,11 @@ function TerminalSession({
     fitRef.current?.fit();
   }, [fontSize]);
 
-  return <div className="terminal-panel__body" ref={hostRef} />;
+ return (
+    <>
+      <div className="terminal-panel__body" ref={hostRef} />
+    </>
+  );
 }
 
 let nextSession = 1;
@@ -296,6 +402,8 @@ type TermSession = {
   runPath: string | null;
   command: string | null;
   cwd: string | null;
+  liveCwd?: string | null;
+  lastExitCode?: number | null;
   title?: string;
 };
 
@@ -310,9 +418,13 @@ function shellLabel(session: TermSession, index: number): string {
   if (session.title?.trim()) return session.title.trim();
   if (session.command) return commandLabel(session.command);
   if (session.runPath) return basename(session.runPath);
-  if (!session.shell) return `Terminal ${index + 1}`;
-  const named = SHELLS.find((item) => item.value === session.shell);
-  return named ? named.label : `Terminal ${index + 1}`;
+  const baseName = session.shell
+    ? (SHELLS.find((item) => item.value === session.shell)?.label ?? `Terminal ${index + 1}`)
+    : `Terminal ${index + 1}`;
+  if (session.liveCwd) {
+    return `${baseName} (${basename(session.liveCwd)})`;
+  }
+  return baseName;
 }
 
 export function TerminalPanel({ open, embedded = false }: Props) {
@@ -512,6 +624,15 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   }, [activeId]);
 
   useEffect(() => {
+    setScrollCommandListener((direction) => {
+      const ctrl = controls.current.get(activeId);
+      if (direction === "previous") ctrl?.scrollToPreviousCommand();
+      else ctrl?.scrollToNextCommand();
+    });
+    return () => setScrollCommandListener(null);
+  }, [activeId]);
+
+  useEffect(() => {
     setRunListener((path) => {
       const override = resolveRunCommand(languageFromPath(path), path);
       if (override) {
@@ -601,9 +722,17 @@ export function TerminalPanel({ open, embedded = false }: Props) {
                     setRenamingId(session.id);
                     setRenameDraft(shellLabel(session, index));
                   }}
-                  title="Double-click to rename"
+                  title={`${shellLabel(session, index)}${session.liveCwd ? `\nDirectory: ${session.liveCwd}` : ""}${session.lastExitCode != null ? `\nExit code: ${session.lastExitCode}` : ""}\nDouble-click to rename`}
                 >
                   {shellLabel(session, index)}
+                  {session.lastExitCode != null && session.lastExitCode !== 0 && (
+                    <span
+                      className="terminal-panel__exit-badge"
+                      title={`Command failed with exit code ${session.lastExitCode}`}
+                    >
+                      !
+                    </span>
+                  )}
                 </button>
               )}
               <button
@@ -694,6 +823,20 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               fontSize={terminalFontSize}
               runPath={session.runPath}
               command={session.command}
+              onCwdChange={(newCwd) => {
+                setSessions((current) =>
+                  current.map((item) =>
+                    item.id === session.id ? { ...item, liveCwd: newCwd } : item,
+                  ),
+                );
+              }}
+              onExitCode={(exitCode) => {
+                setSessions((current) =>
+                  current.map((item) =>
+                    item.id === session.id ? { ...item, lastExitCode: exitCode } : item,
+                  ),
+                );
+              }}
               onCommandDone={
                 session.command
                   ? (text) => {

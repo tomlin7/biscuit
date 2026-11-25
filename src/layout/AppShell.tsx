@@ -38,6 +38,7 @@ import { appendLog, clearLogs as clearLogBuffer, exportLogsToFile } from "../log
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
 import { githubWebUrlFromRemote } from "../scm/githubRemote";
+import { requestScrollCommand } from "../terminal/scrollCommand";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isVirtualPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
@@ -2189,6 +2190,16 @@ function ShellChrome() {
             notify("Kill Process", err instanceof Error ? err.message : String(err));
           }
         })();
+      },
+      terminalScrollToPreviousCommand: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestScrollCommand("previous");
+      },
+      terminalScrollToNextCommand: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestScrollCommand("next");
       },
     }),
     [
