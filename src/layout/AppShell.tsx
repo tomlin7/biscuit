@@ -21,6 +21,7 @@ import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
 import { basename } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
+import { setShowTerminalListener } from "../terminal/runCommand";
 import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
 import { symbolsForFile } from "../lsp/OutlinePanel";
@@ -170,6 +171,14 @@ function ShellChrome() {
   }, [setSidebarOpen]);
   const openExtensions = useCallback(() => setSidebarMode("extensions"), []);
   const openDebug = useCallback(() => setSidebarMode("debug"), []);
+
+  useEffect(() => {
+    setShowTerminalListener(() => {
+      setPanelTab("terminal");
+      setBottomOpen(true);
+    });
+    return () => setShowTerminalListener(null);
+  }, [setBottomOpen]);
 
   const toggleTerminal = useCallback(() => {
     if (bottomOpen && panelTab === "terminal") {

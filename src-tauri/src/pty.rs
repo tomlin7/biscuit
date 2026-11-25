@@ -75,6 +75,27 @@ fn default_launch() -> ShellLaunch {
     }
 }
 
+fn exec_launch(command: &str) -> Result<ShellLaunch, String> {
+    let command = command.trim();
+    if command.is_empty() {
+        return Err("command is empty".into());
+    }
+    #[cfg(target_os = "windows")]
+    {
+        Ok(ShellLaunch {
+            program: "powershell.exe".into(),
+            args: vec!["-NoLogo".into(), "-Command".into(), command.to_string()],
+        })
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        Ok(ShellLaunch {
+            program: std::env::var("SHELL").unwrap_or_else(|_| "bash".into()),
+            args: vec!["-lc".into(), command.to_string()],
+        })
+    }
+}
+
 fn command_from(launch: ShellLaunch) -> CommandBuilder {
     let mut cmd = CommandBuilder::new(launch.program);
     for arg in launch.args {
@@ -114,6 +135,23 @@ pub fn pty_run_file(
         cmd.arg(arg);
     }
     cmd.cwd(spec.cwd);
+    spawn_in_pty(app, state, cmd, cols, rows)
+}
+
+#[tauri::command]
+pub fn pty_exec(
+    app: AppHandle,
+    state: State<'_, PtyState>,
+    command: String,
+    cwd: Option<String>,
+    cols: u16,
+    rows: u16,
+) -> Result<String, String> {
+    let launch = exec_launch(&command)?;
+    let mut cmd = command_from(launch);
+    if let Some(dir) = cwd {
+        cmd.cwd(dir);
+    }
     spawn_in_pty(app, state, cmd, cols, rows)
 }
 
@@ -247,5 +285,29 @@ mod tests {
         assert_eq!(resolve_shell(Some("bash")).unwrap().program, "bash");
         assert!(resolve_shell(Some("calc.exe")).is_err());
         assert!(resolve_shell(Some("powershell.exe")).is_err());
+    }
+
+    #[test]
+    fn exec_launch_rejects_an_empty_command() {
+        assert!(super::exec_launch("").is_err());
+        assert!(super::exec_launch("   ").is_err());
+    }
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn exec_launch_uses_powershell_command() {
+        let launch = super::exec_launch("echo t3d-ok").unwrap();
+        assert_eq!(launch.program, "powershell.exe");
+        assert_eq!(
+            launch.args,
+            vec!["-NoLogo", "-Command", "echo t3d-ok"]
+        );
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    #[test]
+    fn exec_launch_uses_the_login_shell() {
+        let launch = super::exec_launch("echo t3d-ok").unwrap();
+        assert_eq!(launch.args, vec!["-lc", "echo t3d-ok"]);
     }
 }

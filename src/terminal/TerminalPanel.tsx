@@ -6,6 +6,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { basename } from "../workspace/path";
 import { setRunListener } from "./runFile";
+import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import "@xterm/xterm/css/xterm.css";
@@ -30,16 +31,31 @@ type SessionProps = {
   theme: "light" | "dark";
   shell: ShellChoice;
   runPath: string | null;
+  command: string | null;
+  onCommandDone?: (text: string) => void;
   onControl: (control: TerminalControl | null) => void;
 };
 
-function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: SessionProps) {
+function TerminalSession({
+  active,
+  cwd,
+  theme,
+  shell,
+  runPath,
+  command,
+  onCommandDone,
+  onControl,
+}: SessionProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
   const ptyIdRef = useRef<string | null>(null);
   const onControlRef = useRef(onControl);
   onControlRef.current = onControl;
+  const onCommandDoneRef = useRef(onCommandDone);
+  onCommandDoneRef.current = onCommandDone;
+  const commandOutputRef = useRef("");
+  const unmountTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!hostRef.current || termRef.current) return;
@@ -68,17 +84,32 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
     termRef.current = term;
     fitRef.current = fit;
 
+    if (unmountTimerRef.current) {
+      window.clearTimeout(unmountTimerRef.current);
+      unmountTimerRef.current = null;
+    }
+    commandOutputRef.current = "";
+
     let unlistenData: (() => void) | undefined;
     let unlistenExit: (() => void) | undefined;
     let disposed = false;
 
+    let settled = false;
+    const finishCommand = (stillRunning: boolean) => {
+      if (!command || settled) return;
+      settled = true;
+      onCommandDoneRef.current?.(finishCommandOutput(commandOutputRef.current, stillRunning));
+    };
+
     const spawn = async () => {
       try {
         const id = await invoke<string>(
-          runPath ? "pty_run_file" : "pty_spawn",
-          runPath
-            ? { path: runPath, cols: term.cols, rows: term.rows }
-            : { cwd, cols: term.cols, rows: term.rows, shell: shell || null },
+          command ? "pty_exec" : runPath ? "pty_run_file" : "pty_spawn",
+          command
+            ? { command, cwd, cols: term.cols, rows: term.rows }
+            : runPath
+              ? { path: runPath, cols: term.cols, rows: term.rows }
+              : { cwd, cols: term.cols, rows: term.rows, shell: shell || null },
         );
         if (disposed) {
           await invoke("pty_kill", { id });
@@ -89,6 +120,8 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
         const message = err instanceof Error ? err.message : String(err);
         term.writeln(`Failed to start terminal: ${message}`);
         appendLog(`Terminal failed: ${message}`);
+        commandOutputRef.current = message;
+        finishCommand(false);
       }
     };
 
@@ -104,7 +137,9 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
     });
 
     void listen<{ id: string; data: string }>("pty-data", (event) => {
-      if (event.payload.id === ptyIdRef.current) term.write(event.payload.data);
+      if (event.payload.id !== ptyIdRef.current) return;
+      term.write(event.payload.data);
+      if (command) commandOutputRef.current += event.payload.data;
     }).then((stop) => {
       if (disposed) stop();
       else unlistenData = stop;
@@ -113,6 +148,7 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
       if (event.payload.id !== ptyIdRef.current) return;
       term.writeln("\r\n[process exited]");
       ptyIdRef.current = null;
+      finishCommand(false);
     }).then((stop) => {
       if (disposed) stop();
       else unlistenExit = stop;
@@ -136,6 +172,7 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
     });
 
     void spawn();
+    const commandTimer = command ? window.setTimeout(() => finishCommand(true), 15_000) : 0;
 
     const observer = new ResizeObserver(() => {
       fit.fit();
@@ -144,6 +181,8 @@ function TerminalSession({ active, cwd, theme, shell, runPath, onControl }: Sess
 
     return () => {
       disposed = true;
+      if (commandTimer) window.clearTimeout(commandTimer);
+      unmountTimerRef.current = window.setTimeout(() => finishCommand(true), 100);
       observer.disconnect();
       unlistenData?.();
       unlistenExit?.();
@@ -176,6 +215,8 @@ type TermSession = {
   id: number;
   shell: ShellChoice;
   runPath: string | null;
+  command: string | null;
+  cwd: string | null;
 };
 
 const SHELLS: { value: ShellChoice; label: string }[] = [
@@ -186,6 +227,7 @@ const SHELLS: { value: ShellChoice; label: string }[] = [
 ];
 
 function shellLabel(session: TermSession, index: number): string {
+  if (session.command) return commandLabel(session.command);
   if (session.runPath) return basename(session.runPath);
   if (!session.shell) return `Terminal ${index + 1}`;
   const named = SHELLS.find((item) => item.value === session.shell);
@@ -196,18 +238,22 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   const { rootPath } = useWorkspace();
   const { theme } = useTheme();
   const [sessions, setSessions] = useState<TermSession[]>(() => [
-    { id: nextSession, shell: "", runPath: null },
+    { id: nextSession, shell: "", runPath: null, command: null, cwd: null },
   ]);
   const sessionsRef = useRef(sessions);
   sessionsRef.current = sessions;
   const [activeId, setActiveId] = useState(sessions[0].id);
   const [nextShell, setNextShell] = useState<ShellChoice>("");
   const controls = useRef(new Map<number, TerminalControl>());
+  const commandDone = useRef(new Map<number, (text: string) => void>());
 
   const addSession = () => {
     nextSession += 1;
     const id = nextSession;
-    setSessions((current) => [...current, { id, shell: nextShell, runPath: null }]);
+    setSessions((current) => [
+      ...current,
+      { id, shell: nextShell, runPath: null, command: null, cwd: null },
+    ]);
     setActiveId(id);
   };
 
@@ -217,7 +263,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       if (next.length === 0) {
         nextSession += 1;
         setActiveId(nextSession);
-        return [{ id: nextSession, shell: nextShell, runPath: null }];
+        return [{ id: nextSession, shell: nextShell, runPath: null, command: null, cwd: null }];
       }
       setActiveId((active) => (active === id ? next[next.length - 1].id : active));
       return next;
@@ -234,10 +280,26 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       }
       nextSession += 1;
       const id = nextSession;
-      setSessions((current) => [...current, { id, shell: "", runPath: path }]);
+      setSessions((current) => [
+        ...current,
+        { id, shell: "", runPath: path, command: null, cwd: null },
+      ]);
       setActiveId(id);
     });
-    return () => setRunListener(null);
+    setCommandListener((request, done) => {
+      nextSession += 1;
+      const id = nextSession;
+      setSessions((current) => [
+        ...current,
+        { id, shell: "", runPath: null, command: request.command, cwd: request.cwd },
+      ]);
+      setActiveId(id);
+      commandDone.current.set(id, done);
+    });
+    return () => {
+      setRunListener(null);
+      setCommandListener(null);
+    };
   }, []);
 
   if (!open) return null;
@@ -321,10 +383,20 @@ export function TerminalPanel({ open, embedded = false }: Props) {
           >
             <TerminalSession
               active={open && session.id === activeId}
-              cwd={rootPath}
+              cwd={session.cwd ?? rootPath}
               theme={theme}
               shell={session.shell}
               runPath={session.runPath}
+              command={session.command}
+              onCommandDone={
+                session.command
+                  ? (text) => {
+                      const done = commandDone.current.get(session.id);
+                      commandDone.current.delete(session.id);
+                      done?.(text);
+                    }
+                  : undefined
+              }
               onControl={(control) => {
                 if (control) controls.current.set(session.id, control);
                 else controls.current.delete(session.id);

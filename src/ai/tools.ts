@@ -2,6 +2,7 @@ import { exists, readDir, readTextFile, writeTextFile } from "@tauri-apps/plugin
 import { applyEditorConfigText, editorConfigFor } from "../editor/editorconfig";
 import { searchWorkspace, type SearchHit } from "../search/workspaceSearch";
 import { pathInsideRoot } from "./workspacePath";
+import { requestRunCommand, requestShowTerminal } from "../terminal/runCommand";
 
 const MAX_FILE_CHARS = 20_000;
 const MAX_LIST = 200;
@@ -170,6 +171,12 @@ export const agentToolSchema = [
   ),
   toolDef("write_file", "Write a whole file inside the workspace.", { path: "File path", contents: "Full new text" }, ["path", "contents"]),
   toolDef("workspace_info", "Return the open folder, the active file, and the start of its buffer.", {}, []),
+  toolDef(
+    "run_terminal",
+    "Run a shell command in a terminal tab in the open folder.",
+    { command: "Shell command line" },
+    ["command"],
+  ),
 ];
 
 function toolDef(
@@ -194,6 +201,19 @@ function toolDef(
   };
 }
 
+export async function runTerminalCommand(root: string, command: string): Promise<ToolOutcome> {
+  const line = command.trim();
+  if (!line) return { ok: false, text: "command is empty" };
+  if (!root) return { ok: false, text: "Open a folder first." };
+  requestShowTerminal();
+  try {
+    const text = await requestRunCommand({ command: line, cwd: root });
+    return { ok: true, text };
+  } catch (err) {
+    return { ok: false, text: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 export async function runAgentTool(
   name: string,
   args: Record<string, string>,
@@ -201,6 +221,7 @@ export async function runAgentTool(
   host: FileHost = noFiles,
   focus: { path: string | null; text: string | null } = { path: null, text: null },
 ): Promise<ToolOutcome> {
+  if (name === "run_terminal") return runTerminalCommand(root, args.command ?? "");
   if (!root) return { ok: false, text: "Open a folder first." };
   if (name === "read_file") return readWorkspaceFile(root, args.path ?? "");
   if (name === "list_directory") return listWorkspaceDirectory(root, args.path ?? ".");
