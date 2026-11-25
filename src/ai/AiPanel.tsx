@@ -20,11 +20,17 @@ import {
 } from "lucide-react";
 import { useAi } from "./AiContext";
 import { useWorkspace } from "../workspace/WorkspaceContext";
+import { listDirectory } from "../workspace/fsTree";
+import { basename } from "../workspace/path";
 import { useLayout } from "../layout/LayoutContext";
 import { IconButton } from "../ui/IconButton";
 import { FileIcon } from "../ui/FileIcon";
 import { RichMessage } from "./RichMessage";
 import "./AiPanel.css";
+
+type MentionItem =
+  | { kind: "file"; path: string; title: string; value: string }
+  | { kind: "folder"; path: string; title: string };
 
 type Props = {
   onOpenSettings?: () => void;
@@ -57,7 +63,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     exportSession,
     importSession,
   } = useAi();
-  const { document, tabs, selectionText } = useWorkspace();
+  const { document, tabs, roots, tree, selectionText } = useWorkspace();
   const { toggleAi } = useLayout();
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
@@ -133,23 +139,72 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     return [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
   }, [sessions]);
 
-  const mentionCandidates = useMemo(() => {
+  const mentionCandidates = useMemo((): MentionItem[] => {
     if (mentionQuery === null) return [];
     const q = mentionQuery.toLowerCase();
-    return tabs
-      .filter((tab) => !q || tab.title.toLowerCase().includes(q) || tab.path.toLowerCase().includes(q))
-      .slice(0, 8);
-  }, [mentionQuery, tabs]);
+    const folders: MentionItem[] = [];
+    const seen = new Set<string>();
+    const addFolder = (path: string) => {
+      const key = path.replace(/\\/g, "/").toLowerCase();
+      if (seen.has(key)) return;
+      const title = basename(path);
+      if (q && !title.toLowerCase().includes(q) && !path.toLowerCase().includes(q)) return;
+      seen.add(key);
+      folders.push({ kind: "folder", path, title });
+    };
+    for (const root of roots) addFolder(root);
+    for (const node of tree) {
+      if (node.kind === "directory") addFolder(node.path);
+    }
+    const files: MentionItem[] = tabs
+      .filter(
+        (tab) =>
+          !q ||
+          tab.title.toLowerCase().includes(q) ||
+          tab.path.toLowerCase().includes(q),
+      )
+      .slice(0, 8)
+      .map((tab) => ({
+        kind: "file" as const,
+        path: tab.path,
+        title: tab.title,
+        value: tab.value,
+      }));
+    return [...folders.slice(0, 6), ...files].slice(0, 10);
+  }, [mentionQuery, tabs, roots, tree]);
 
-  const applyMention = (tab: { path: string; title: string; value: string }) => {
-    attachPath(tab.path, tab.title, tab.value.slice(0, 12000));
-    setDraft((current) => {
-      const match = current.match(/@([^\s@]*)$/);
-      if (!match) return current;
-      return `${current.slice(0, current.length - match[0].length)}@${tab.title} `;
-    });
-    setMentionQuery(null);
-    setMentionIndex(0);
+  const applyMention = (item: MentionItem) => {
+    void (async () => {
+      if (item.kind === "file") {
+        attachPath(item.path, item.title, item.value.slice(0, 12000));
+      } else {
+        try {
+          const children = await listDirectory(item.path);
+          const listing = children
+            .slice(0, 80)
+            .map((child) => `${child.kind === "directory" ? "dir" : "file"}\t${child.name}`)
+            .join("\n");
+          attachPath(
+            `folder:${item.path}`,
+            item.title,
+            `Directory listing for ${item.path}:\n${listing || "(empty)"}`,
+          );
+        } catch (err) {
+          attachPath(
+            `folder:${item.path}`,
+            item.title,
+            `Directory ${item.path} (listing failed: ${err instanceof Error ? err.message : String(err)})`,
+          );
+        }
+      }
+      setDraft((current) => {
+        const match = current.match(/@([^\s@]*)$/);
+        if (!match) return current;
+        return `${current.slice(0, current.length - match[0].length)}@${item.title} `;
+      });
+      setMentionQuery(null);
+      setMentionIndex(0);
+    })();
   };
 
   const onDraftChange = (value: string) => {
@@ -348,9 +403,9 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         <div className="ai-panel__composer">
           {mentionCandidates.length > 0 ? (
             <div className="ai-panel__mentions" role="listbox">
-              {mentionCandidates.map((tab, index) => (
+              {mentionCandidates.map((item, index) => (
                 <button
-                  key={tab.path}
+                  key={`${item.kind}:${item.path}`}
                   type="button"
                   role="option"
                   aria-selected={index === mentionIndex}
@@ -361,11 +416,18 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
                   }
                   onMouseDown={(event) => {
                     event.preventDefault();
-                    applyMention(tab);
+                    applyMention(item);
                   }}
                 >
-                  <FileIcon name={tab.title} kind="file" size={12} />
-                  <span>{tab.title}</span>
+                  <FileIcon
+                    name={item.title}
+                    kind={item.kind === "folder" ? "directory" : "file"}
+                    size={12}
+                  />
+                  <span>{item.title}</span>
+                  {item.kind === "folder" ? (
+                    <span className="ai-panel__chip-meta">folder</span>
+                  ) : null}
                 </button>
               ))}
             </div>
@@ -373,7 +435,7 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
           <textarea
             className="ai-panel__composer-input"
             rows={3}
-            placeholder="Ask anything… (@ files, / commands)"
+            placeholder="Ask anything… (@ files/folders, / commands)"
             value={draft}
             disabled={busy}
             onChange={(e) => onDraftChange(e.target.value)}
