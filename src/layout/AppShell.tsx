@@ -509,6 +509,11 @@ function ShellChrome() {
         const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? "line";
         updateEditor({ cursorStyle: next });
       },
+      cycleTabSize: () => {
+        const current = settings.editor.tabSize;
+        const next = current === 2 ? 4 : current === 4 ? 8 : 2;
+        updateEditor({ tabSize: next });
+      },
       openPalette,
       openSymbols,
       openWorkspaceSymbols,
@@ -663,6 +668,7 @@ function ShellChrome() {
       settings.editor.autoSaveMs,
       settings.editor.fontSize,
       settings.editor.cursorStyle,
+      settings.editor.tabSize,
       updateEditor,
       clearAttachments,
       clearChat,

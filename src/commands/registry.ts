@@ -351,6 +351,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.cycleCursorStyle(),
   },
   {
+    id: "editor.action.cycleTabSize",
+    title: "Cycle Tab Size",
+    category: "Preferences",
+    run: (ctx) => ctx.cycleTabSize(),
+  },
+  {
     id: "editor.action.toggleMinimap",
     title: "Toggle Minimap",
     category: "View",
