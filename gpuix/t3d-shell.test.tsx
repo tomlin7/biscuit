@@ -215,4 +215,51 @@ describeNative('T3D Clean Empty Dockable Layout', () => {
 
     await app.close()
   })
+
+  it('opens Quick Open modal from titlebar and dismisses on backdrop click', async () => {
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(<T3DAppShell />)
+    const app = await connectTest(renderer)
+
+    const searchBtn = app.getByTestId('titlebar-quick-open-btn')
+    await searchBtn.waitFor({ timeoutMs: 5_000 })
+    await searchBtn.click()
+
+    const overlay = app.getByTestId('command-palette-overlay')
+    await overlay.waitFor({ timeoutMs: 5_000 })
+    expect(await overlay.bounds()).toBeDefined()
+
+    const input = app.getByTestId('command-palette-input')
+    await input.waitFor({ timeoutMs: 5_000 })
+    expect(await input.bounds()).toBeDefined()
+
+    const backdrop = app.getByTestId('command-palette-backdrop')
+    await backdrop.waitFor({ timeoutMs: 5_000 })
+    await backdrop.click()
+
+    expect(await overlay.count()).toBe(0)
+
+    await app.close()
+  })
+
+  it('opens Command Palette and lists shell commands', async () => {
+    const { render, renderer } = createTestRoot({ width: 1200, height: 800 })
+    render(<T3DAppShell />)
+    const app = await connectTest(renderer)
+
+    const cmdBtn = app.getByTestId('titlebar-command-palette-btn')
+    await cmdBtn.waitFor({ timeoutMs: 5_000 })
+    await cmdBtn.click()
+
+    const overlay = app.getByTestId('command-palette-overlay')
+    await overlay.waitFor({ timeoutMs: 5_000 })
+    expect(await overlay.bounds()).toBeDefined()
+
+    const text = renderer.getPaintedText()
+    expect(text).toContain('Quick Open File')
+    expect(text).toContain('Save Active Buffer')
+    expect(text).toContain('Split Editor Right')
+
+    await app.close()
+  })
 })

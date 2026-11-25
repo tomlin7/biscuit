@@ -14,13 +14,21 @@ import {
   setActivePanel,
   findGroupContainingPanel,
   getAllGroups,
+  splitGroup,
+  closePanel,
   type DockLayoutState,
   type DockPanel,
   type DockPanelGroupNode,
   type DockSplitNode,
 } from '../dock'
-import { WorkspaceProvider, FileTreeExplorer } from '../workspace'
+import { WorkspaceProvider, FileTreeExplorer, useWorkspace } from '../workspace'
 import { EditorProvider, EditorBufferView, useEditor } from '../editor'
+import {
+  CommandPalette,
+  createDefaultCommands,
+  flattenWorkspaceFiles,
+  type PaletteMode,
+} from '../commands'
 
 export interface T3DAppShellProps {
   initialLayout?: DockLayoutState
@@ -72,58 +80,78 @@ export function createT3DStarterLayout(): DockLayoutState {
 export function T3DAppShell({ initialLayout, initialRootPath, virtualFileMap }: T3DAppShellProps) {
   return (
     <EditorProvider virtualFileMap={virtualFileMap}>
-      <T3DAppShellInner initialLayout={initialLayout} initialRootPath={initialRootPath} />
+      <WorkspaceProvider initialRootPath={initialRootPath}>
+        <T3DAppShellWorkspaceContent initialLayout={initialLayout} />
+      </WorkspaceProvider>
     </EditorProvider>
   )
 }
 
-function T3DAppShellInner({
+function T3DAppShellWorkspaceContent({
   initialLayout,
-  initialRootPath,
 }: {
   initialLayout?: DockLayoutState
-  initialRootPath?: string
 }) {
   const { renderer } = useGpuix()
   const isDarwin = typeof process !== 'undefined' && process.platform === 'darwin'
   const [maximized, setMaximized] = useState(false)
-  const { openFile } = useEditor()
+  const { openFile, activeBufferId, saveBuffer, createUntitledBuffer } = useEditor()
+  const { entries, rootPath } = useWorkspace()
 
   // Default to clean empty layout if no initialLayout is passed
   const [shellLayout, setShellLayout] = useState<DockLayoutState>(() => {
     return initialLayout ?? createEmptyDockLayout()
   })
 
-  // Open a file from the explorer into a dock editor tab
-  const handleOpenFile = useCallback((path: string, name: string) => {
-    const panelId = `file-${path}`
-    void openFile(path)
+  // Command palette & Quick Open state
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const [paletteMode, setPaletteMode] = useState<PaletteMode>('commands')
 
-    setShellLayout((prev) => {
-      // If already open in any group, just focus it
-      const existing = findGroupContainingPanel(prev.root, panelId)
-      if (existing) {
-        return setActivePanel(prev, existing.id, panelId)
-      }
+  const handleOpenQuickOpen = useCallback(() => {
+    setPaletteMode('files')
+    setPaletteOpen(true)
+  }, [])
 
-      const allGroups = getAllGroups(prev.root)
-      // Pick active group or the first non-explorer group
-      const target =
-        allGroups.find((g) => g.id === prev.activeGroupId && !g.panels.some((p) => p.id === 'panel-explorer')) ??
-        allGroups.find((g) => !g.panels.some((p) => p.id === 'panel-explorer')) ??
-        allGroups[0]
+  const handleOpenCommandPalette = useCallback(() => {
+    setPaletteMode('commands')
+    setPaletteOpen(true)
+  }, [])
 
-      if (!target) return prev
+  // Open a file from explorer/quick open into a dock editor tab
+  const handleOpenFile = useCallback(
+    (path: string, name?: string) => {
+      const panelId = `file-${path}`
+      void openFile(path)
 
-      const newPanel: DockPanel = {
-        id: panelId,
-        title: name,
-        closable: true,
-      }
+      const title = name ?? path.split('/').pop()?.split('\\').pop() ?? path
 
-      return addPanelToGroup(prev, target.id, newPanel)
-    })
-  }, [openFile])
+      setShellLayout((prev) => {
+        // If already open in any group, just focus it
+        const existing = findGroupContainingPanel(prev.root, panelId)
+        if (existing) {
+          return setActivePanel(prev, existing.id, panelId)
+        }
+
+        const allGroups = getAllGroups(prev.root)
+        // Pick active group or the first non-explorer group
+        const target =
+          allGroups.find((g) => g.id === prev.activeGroupId && !g.panels.some((p) => p.id === 'panel-explorer')) ??
+          allGroups.find((g) => !g.panels.some((p) => p.id === 'panel-explorer')) ??
+          allGroups[0]
+
+        if (!target) return prev
+
+        const newPanel: DockPanel = {
+          id: panelId,
+          title,
+          closable: true,
+        }
+
+        return addPanelToGroup(prev, target.id, newPanel)
+      })
+    },
+    [openFile]
+  )
 
   // Add an Explorer panel to a group
   const handleAddExplorerTab = useCallback((groupId: string) => {
@@ -142,6 +170,144 @@ function T3DAppShellInner({
       return addPanelToGroup(prev, groupId, newPanel)
     })
   }, [])
+
+  // Add a generic new tab
+  const handleAddTab = useCallback((groupId: string) => {
+    const newPanel: DockPanel = {
+      id: generateDockId('panel'),
+      title: 'New Tab',
+      closable: true,
+    }
+    setShellLayout((prev) => addPanelToGroup(prev, groupId, newPanel))
+  }, [])
+
+  // Shell & Editor Actions for Command Palette
+  const handleSplitEditorRight = useCallback(() => {
+    setShellLayout((prev) => {
+      const activeGroupId = prev.activeGroupId
+      if (!activeGroupId) return prev
+      const newPanel: DockPanel = {
+        id: generateDockId('panel'),
+        title: 'New Tab',
+        closable: true,
+      }
+      return splitGroup(prev, activeGroupId, newPanel, 'horizontal', 'second', 0.5)
+    })
+  }, [])
+
+  const handleSplitEditorDown = useCallback(() => {
+    setShellLayout((prev) => {
+      const activeGroupId = prev.activeGroupId
+      if (!activeGroupId) return prev
+      const newPanel: DockPanel = {
+        id: generateDockId('panel'),
+        title: 'New Tab',
+        closable: true,
+      }
+      return splitGroup(prev, activeGroupId, newPanel, 'vertical', 'second', 0.5)
+    })
+  }, [])
+
+  const handleCloseActivePanel = useCallback(() => {
+    setShellLayout((prev) => {
+      const all = getAllGroups(prev.root)
+      const group = all.find((g) => g.id === prev.activeGroupId) ?? all[0]
+      if (!group || !group.activePanelId) return prev
+      return closePanel(prev, group.activePanelId)
+    })
+  }, [])
+
+  const handleSaveActiveBuffer = useCallback(() => {
+    if (activeBufferId) {
+      void saveBuffer(activeBufferId)
+    }
+  }, [activeBufferId, saveBuffer])
+
+  const handleCreateUntitledFile = useCallback(() => {
+    const buf = createUntitledBuffer()
+    handleOpenFile(buf.path, buf.title)
+  }, [createUntitledBuffer, handleOpenFile])
+
+  const handleToggleExplorer = useCallback(() => {
+    setShellLayout((prev) => {
+      const existing = findGroupContainingPanel(prev.root, 'panel-explorer')
+      if (existing) {
+        return setActivePanel(prev, existing.id, 'panel-explorer')
+      }
+      const all = getAllGroups(prev.root)
+      if (all.length === 0) return prev
+      const target = all[0]
+      const newPanel: DockPanel = {
+        id: 'panel-explorer',
+        title: 'Explorer',
+        closable: false,
+      }
+      return addPanelToGroup(prev, target.id, newPanel)
+    })
+  }, [])
+
+  // Registered commands for Command Palette
+  const commands = useMemo(() => {
+    return createDefaultCommands({
+      openFile: handleOpenFile,
+      saveActiveBuffer: handleSaveActiveBuffer,
+      createUntitledFile: handleCreateUntitledFile,
+      splitEditorRight: handleSplitEditorRight,
+      splitEditorDown: handleSplitEditorDown,
+      closeActivePanel: handleCloseActivePanel,
+      newTab: () => {
+        if (shellLayout.activeGroupId) {
+          handleAddTab(shellLayout.activeGroupId)
+        }
+      },
+      toggleExplorer: handleToggleExplorer,
+      openQuickOpen: handleOpenQuickOpen,
+      openCommandPalette: handleOpenCommandPalette,
+      toggleMaximize: () => {
+        if (renderer) {
+          toggleWindowZoom(renderer)
+          setMaximized(isWindowMaximized())
+        }
+      },
+    })
+  }, [
+    handleOpenFile,
+    handleSaveActiveBuffer,
+    handleCreateUntitledFile,
+    handleSplitEditorRight,
+    handleSplitEditorDown,
+    handleCloseActivePanel,
+    handleAddTab,
+    handleToggleExplorer,
+    handleOpenQuickOpen,
+    handleOpenCommandPalette,
+    renderer,
+    shellLayout.activeGroupId,
+  ])
+
+  // Flatten workspace directory entries for Quick Open file search
+  const quickOpenFiles = useMemo(() => {
+    return flattenWorkspaceFiles(entries, rootPath)
+  }, [entries, rootPath])
+
+  // Global keydown handler on app container
+  const handleGlobalKeyDown = useCallback(
+    (e: any) => {
+      // Ctrl+Shift+P / Cmd+Shift+P -> Command Palette
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P') && e.shiftKey) {
+        e.preventDefault?.()
+        e.stopPropagation?.()
+        handleOpenCommandPalette()
+      }
+      // Ctrl+P / Cmd+P -> Quick Open
+      else if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P') && !e.shiftKey) {
+        e.preventDefault?.()
+        e.stopPropagation?.()
+        handleOpenQuickOpen()
+      }
+    },
+    [handleOpenCommandPalette, handleOpenQuickOpen]
+  )
 
   // Panel content renderer
   const renderPanel = useCallback(
@@ -305,151 +471,217 @@ function T3DAppShellInner({
   )
 
   return (
-    <WorkspaceProvider initialRootPath={initialRootPath} onOpenFile={handleOpenFile}>
+    <div
+      testId="t3d-app-shell"
+      onKeyDown={handleGlobalKeyDown}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#121214',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      {/* Minimal Native Titlebar for OS window dragging & controls */}
       <div
-        testId="t3d-app-shell"
+        testId="header-titlebar"
+        onMouseDown={(e) => handleTitlebarMouseDown(e, renderer)}
+        onMouseUp={() => endWindowDrag()}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: 34,
+          width: '100%',
+          backgroundColor: '#161618',
+          borderBottomWidth: 1,
+          borderColor: '#27272a',
+          paddingLeft: isDarwin ? 80 : 12,
+          paddingRight: 12,
+          userSelect: 'none',
+          flexShrink: 0,
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <text style={{ fontSize: 12, fontWeight: 'bold', color: '#f4f4f5' }}>
+            Morsel
+          </text>
+          <text style={{ fontSize: 11, color: '#71717a' }}>
+            Dockable Layout
+          </text>
+        </div>
+
+        {/* Search & Command Palette triggers in Titlebar */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Button
+            testId="titlebar-quick-open-btn"
+            onClick={(e: any) => {
+              e?.stopPropagation?.()
+              handleOpenQuickOpen()
+            }}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              height: 22,
+              paddingLeft: 10,
+              paddingRight: 10,
+              borderRadius: 4,
+              backgroundColor: '#1f1f23',
+              borderWidth: 1,
+              borderColor: '#2f2f35',
+              cursor: 'pointer',
+              hover: { backgroundColor: '#27272a' },
+            }}
+          >
+            <text style={{ fontSize: 11, color: '#a1a1aa' }}>
+              Search files (Ctrl+P)
+            </text>
+          </Button>
+
+          <Button
+            testId="titlebar-command-palette-btn"
+            onClick={(e: any) => {
+              e?.stopPropagation?.()
+              handleOpenCommandPalette()
+            }}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              height: 22,
+              paddingLeft: 8,
+              paddingRight: 8,
+              borderRadius: 4,
+              backgroundColor: '#1f1f23',
+              borderWidth: 1,
+              borderColor: '#2f2f35',
+              cursor: 'pointer',
+              hover: { backgroundColor: '#27272a' },
+            }}
+          >
+            <text style={{ fontSize: 11, color: '#a1a1aa' }}>
+              Commands (Ctrl+Shift+P)
+            </text>
+          </Button>
+        </div>
+
+        {/* Window Controls on non-macOS */}
+        {!isDarwin && typeof document === 'undefined' && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Button
+              testId="window-minimize"
+              aria-label="Minimize"
+              onClick={(e: any) => {
+                e?.stopPropagation?.()
+                renderer?.minimizeWindow?.()
+              }}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                hover: { backgroundColor: '#27272a' },
+              }}
+            >
+              <text style={{ fontSize: 10, color: '#a1a1aa' }}>─</text>
+            </Button>
+
+            <Button
+              testId="window-maximize"
+              aria-label={maximized ? 'Restore' : 'Maximize'}
+              onClick={(e: any) => {
+                e?.stopPropagation?.()
+                if (!renderer) return
+                toggleWindowZoom(renderer)
+                setMaximized(isWindowMaximized())
+              }}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                hover: { backgroundColor: '#27272a' },
+              }}
+            >
+              <text style={{ fontSize: 10, color: '#a1a1aa' }}>□</text>
+            </Button>
+
+            <Button
+              testId="window-close"
+              aria-label="Close"
+              onClick={(e: any) => {
+                e?.stopPropagation?.()
+                if (typeof process !== 'undefined' && process.exit) {
+                  process.exit(0)
+                }
+              }}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                hover: { backgroundColor: '#ef4444' },
+              }}
+            >
+              <text style={{ fontSize: 10, color: '#a1a1aa' }}>✕</text>
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Pure, flexible, resizable, dockable layout engine filling the entire window */}
+      <div
+        testId="t3d-dock-workspace-area"
         style={{
           display: 'flex',
           flexDirection: 'column',
+          flexGrow: 1,
           width: '100%',
           height: '100%',
-          backgroundColor: '#121214',
           overflow: 'hidden',
           position: 'relative',
         }}
       >
-        {/* Minimal Native Titlebar for OS window dragging & controls */}
-        <div
-          testId="header-titlebar"
-          onMouseDown={(e) => handleTitlebarMouseDown(e, renderer)}
-          onMouseUp={() => endWindowDrag()}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: 34,
-            width: '100%',
-            backgroundColor: '#161618',
-            borderBottomWidth: 1,
-            borderColor: '#27272a',
-            paddingLeft: isDarwin ? 80 : 12,
-            paddingRight: 12,
-            userSelect: 'none',
-            flexShrink: 0,
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <text style={{ fontSize: 12, fontWeight: 'bold', color: '#f4f4f5' }}>
-              Morsel
-            </text>
-            <text style={{ fontSize: 11, color: '#71717a' }}>
-              Dockable Layout
-            </text>
-          </div>
-
-          {/* Window Controls on non-macOS */}
-          {!isDarwin && typeof document === 'undefined' && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 2,
-              }}
-            >
-              <Button
-                testId="window-minimize"
-                aria-label="Minimize"
-                onClick={(e: any) => {
-                  e?.stopPropagation?.()
-                  renderer?.minimizeWindow?.()
-                }}
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  hover: { backgroundColor: '#27272a' },
-                }}
-              >
-                <text style={{ fontSize: 10, color: '#a1a1aa' }}>─</text>
-              </Button>
-
-              <Button
-                testId="window-maximize"
-                aria-label={maximized ? 'Restore' : 'Maximize'}
-                onClick={(e: any) => {
-                  e?.stopPropagation?.()
-                  if (!renderer) return
-                  toggleWindowZoom(renderer)
-                  setMaximized(isWindowMaximized())
-                }}
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  hover: { backgroundColor: '#27272a' },
-                }}
-              >
-                <text style={{ fontSize: 10, color: '#a1a1aa' }}>□</text>
-              </Button>
-
-              <Button
-                testId="window-close"
-                aria-label="Close"
-                onClick={(e: any) => {
-                  e?.stopPropagation?.()
-                  if (typeof process !== 'undefined' && process.exit) {
-                    process.exit(0)
-                  }
-                }}
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  hover: { backgroundColor: '#ef4444' },
-                }}
-              >
-                <text style={{ fontSize: 10, color: '#a1a1aa' }}>✕</text>
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Pure, flexible, resizable, dockable layout engine filling the entire window */}
-        <div
-          testId="t3d-dock-workspace-area"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            flexGrow: 1,
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          <DockContainer
-            initialLayout={shellLayout}
-            onLayoutChange={(l) => setShellLayout(l)}
-            renderPanel={renderPanel}
-            renderEmptyGroup={renderEmptyGroup}
-            showControls={false}
-          />
-        </div>
+        <DockContainer
+          initialLayout={shellLayout}
+          onLayoutChange={(l) => setShellLayout(l)}
+          renderPanel={renderPanel}
+          renderEmptyGroup={renderEmptyGroup}
+          showControls={false}
+        />
       </div>
-    </WorkspaceProvider>
+
+      {/* Command Palette / Quick Open Overlay */}
+      <CommandPalette
+        open={paletteOpen}
+        mode={paletteMode}
+        onClose={() => setPaletteOpen(false)}
+        commands={commands}
+        files={quickOpenFiles}
+        onSelectFile={(f) => handleOpenFile(f.path, f.name)}
+      />
+    </div>
   )
 }
