@@ -178,6 +178,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.170.0** | Agent system prompt setting | shipped |
 | **0.171.0** | Explorer new file from keyboard | shipped |
 | **0.172.0** | Close saved editors | shipped |
+| **0.173.0** | Status bar minimap toggle | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
