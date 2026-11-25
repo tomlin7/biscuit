@@ -30,6 +30,7 @@ import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { requestClearAllTerminals, requestClearActiveTerminal } from "../terminal/clearAll";
 import { requestNewTerminal } from "../terminal/newTerminal";
+import { requestKillActiveTerminal } from "../terminal/killTerminal";
 import { relativeToRoot } from "../workspace/path";
 import { rootForPath } from "../ai/roots";
 import { requestSplitEditor } from "./splitBus";
@@ -174,13 +175,13 @@ function ShellChrome() {
   const openPalette = useCallback(() => {
     const files = recentFiles().slice(0, 8).map((path) => ({
       id: `recent.file:${path}`,
-      title: `Open Recent â€” ${basename(path)}`,
+      title: `Open Recent — ${basename(path)}`,
       category: "File",
       run: () => void openFile(path),
     }));
     const folders = recentFolders().slice(0, 8).map((path) => ({
       id: `recent.folder:${path}`,
-      title: `Open Recent Folder â€” ${basename(path)}`,
+      title: `Open Recent Folder — ${basename(path)}`,
       category: "File",
       run: () => void openFolderAt(path),
     }));
@@ -201,7 +202,7 @@ function ShellChrome() {
       setSymbolCommands(
         symbols.slice(0, 80).map((symbol) => ({
           id: `symbol:${current.path}:${symbol.line}:${symbol.name}`,
-          title: `Go to Symbol â€” ${symbol.name}`,
+          title: `Go to Symbol — ${symbol.name}`,
           category: symbol.kind,
           run: () => void openFileAt(current.path, symbol.line, 1),
         })),
@@ -226,8 +227,8 @@ function ShellChrome() {
         seen.add(id);
         cmds.push({
           id,
-          title: `${symbol.name} â€” ${basename(path)}`,
-          category: `Workspace Â· ${symbol.kind}`,
+          title: `${symbol.name} — ${basename(path)}`,
+          category: `Workspace · ${symbol.kind}`,
           run: () => void openFileAt(path, symbol.line, 1),
         });
       };
@@ -277,7 +278,7 @@ function ShellChrome() {
       setSymbolCommands(
         files.slice(0, 400).map((path) => ({
           id: `file:${path}`,
-          title: `Go to File â€” ${basename(path)}`,
+          title: `Go to File — ${basename(path)}`,
           category: "File",
           run: () => void openFile(path),
         })),
@@ -289,7 +290,7 @@ function ShellChrome() {
     setSymbolCommands(
       COMMANDS.filter((cmd) => cmd.keybinding).map((cmd) => ({
         id: `kb:${cmd.id}`,
-        title: `${cmd.keybinding} â€” ${cmd.title}`,
+        title: `${cmd.keybinding} — ${cmd.title}`,
         category: "Keybinding",
         run: () => undefined,
       })),
@@ -477,6 +478,11 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestNewTerminal();
+      },
+      killActiveTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestKillActiveTerminal();
       },
       runFile: () => {
         if (!activePath) return;

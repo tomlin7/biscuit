@@ -71,6 +71,7 @@ export type CommandContext = {
   clearAllTerminals: () => void;
   clearActiveTerminal: () => void;
   newTerminal: () => void;
+  killActiveTerminal: () => void;
   runFile: () => void;
   openProblems: () => void;
   toggleAi: () => void;

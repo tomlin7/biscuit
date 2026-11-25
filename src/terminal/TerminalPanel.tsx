@@ -11,6 +11,7 @@ import { setRunListener } from "./runFile";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
 import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./clearAll";
 import { setNewTerminalListener } from "./newTerminal";
+import { setKillActiveTerminalListener } from "./killTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -404,6 +405,13 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     });
     return () => setNewTerminalListener(null);
   }, [nextShell]);
+
+  useEffect(() => {
+    setKillActiveTerminalListener(() => {
+      void controls.current.get(activeId)?.kill();
+    });
+    return () => setKillActiveTerminalListener(null);
+  }, [activeId]);
 
   useEffect(() => {
     setRunListener((path) => {
