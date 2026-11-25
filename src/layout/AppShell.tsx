@@ -91,7 +91,17 @@ function ShellChrome() {
   useFileDrop(openDroppedPaths);
   const { toggleTheme, setExtras } = useTheme();
   const { settings, updateEditor } = useSettings();
-  const { clearAttachments, clearChat, exportSession, importSession, newChat, setSettings, settings: aiSettings } = useAi();
+  const {
+    clearAttachments,
+    clearChat,
+    exportSession,
+    importSession,
+    newChat,
+    setSettings,
+    settings: aiSettings,
+    showHistory,
+    setShowHistory,
+  } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
   const { extensions } = useExtensions();
@@ -826,6 +836,10 @@ function ShellChrome() {
         setSettings({ temperature: next });
         setAiOpen(true);
       },
+      toggleAiShowHistory: () => {
+        setShowHistory(!showHistory);
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -885,6 +899,8 @@ function ShellChrome() {
       aiSettings.requestTimeoutSec,
       aiSettings.stopOnToolError,
       aiSettings.temperature,
+      showHistory,
+      setShowHistory,
       setAiOpen,
       setSidebarOpen,
       toggleBottom,

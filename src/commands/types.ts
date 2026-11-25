@@ -149,7 +149,7 @@ export type CommandContext = {
   gitDiscardSelected: () => void;
   gitCopyBranch: () => void;
   cycleAiTemperature: () => void;
-
+  toggleAiShowHistory: () => void;
 };
 
 export type Command = {

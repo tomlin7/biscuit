@@ -896,4 +896,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.cycleAiTemperature(),
   },
+  {
+    id: "workbench.action.toggleAiShowHistory",
+    title: "Toggle AI Session History",
+    category: "AI",
+    run: (ctx) => ctx.toggleAiShowHistory(),
+  },
 ];
