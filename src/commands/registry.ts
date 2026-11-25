@@ -950,4 +950,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitRevealSelected(),
   },
+  {
+    id: "git.refresh",
+    title: "Git: Refresh",
+    category: "Git",
+    run: (ctx) => ctx.gitRefresh(),
+  },
 ];

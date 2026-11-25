@@ -159,6 +159,7 @@ export type CommandContext = {
   cycleAiFrequencyPenalty: () => void;
   focusAiSystemPrompt: () => void;
   gitRevealSelected: () => void;
+  gitRefresh: () => void;
 };
 
 export type Command = {

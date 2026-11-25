@@ -381,6 +381,8 @@ export function ScmPanel({ onBranch }: Props) {
         void revealItemInDir(targets).catch((err) => {
           setError(err instanceof Error ? err.message : String(err));
         });
+      } else if (action === "refresh") {
+        void refresh();
       } else void push();
     });
     return () => setScmRemoteListener(null);

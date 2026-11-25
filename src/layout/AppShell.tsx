@@ -925,6 +925,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("revealSelected");
       },
+      gitRefresh: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("refresh");
+      },
     }),
     [
       openFolder,
