@@ -60,7 +60,9 @@ export type EditorCommand =
   | "duplicateSelection"
   | "transposeLetters"
   | "jumpToBracket"
-  | "selectHighlights";
+  | "selectHighlights"
+  | "smartSelectExpand"
+  | "smartSelectShrink";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -177,6 +179,12 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "selectHighlights":
         handle.trigger("editor.action.selectHighlights");
+        break;
+      case "smartSelectExpand":
+        handle.trigger("editor.action.smartSelect.expand");
+        break;
+      case "smartSelectShrink":
+        handle.trigger("editor.action.smartSelect.shrink");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

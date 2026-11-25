@@ -214,6 +214,20 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("selectHighlights"),
   },
   {
+    id: "editor.action.smartSelect.expand",
+    title: "Expand Selection",
+    category: "Edit",
+    keybinding: "Shift+Alt+Right",
+    run: (ctx) => ctx.runEditorCommand("smartSelectExpand"),
+  },
+  {
+    id: "editor.action.smartSelect.shrink",
+    title: "Shrink Selection",
+    category: "Edit",
+    keybinding: "Shift+Alt+Left",
+    run: (ctx) => ctx.runEditorCommand("smartSelectShrink"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

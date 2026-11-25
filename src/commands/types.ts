@@ -47,7 +47,9 @@ export type CommandContext = {
       | "duplicateSelection"
       | "transposeLetters"
       | "jumpToBracket"
-      | "selectHighlights",
+      | "selectHighlights"
+      | "smartSelectExpand"
+      | "smartSelectShrink",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;
