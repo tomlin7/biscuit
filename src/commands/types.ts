@@ -306,6 +306,7 @@ export type CommandContext = {
   terminalScrollToPreviousCommand: () => void;
   terminalScrollToNextCommand: () => void;
   selectTerminalColorTheme: () => Promise<void> | void;
+  terminalFind: () => void;
 };
 
 export type Command = {

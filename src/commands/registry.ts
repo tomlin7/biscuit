@@ -1856,4 +1856,10 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.selectTerminalColorTheme(),
   },
+  {
+    id: "workbench.action.terminal.find",
+    title: "Terminal: Find in Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.terminalFind(),
+  },
 ];

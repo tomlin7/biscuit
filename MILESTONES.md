@@ -463,6 +463,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.455.0** | Process Explorer for terminal-spawned processes | shipped |
 | **0.456.0** | Terminal shell integration (live cwd, command boundaries) | shipped |
 | **0.457.0** | Independent terminal color theme setting | shipped |
+| **0.458.0** | In-terminal scrollback search widget | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

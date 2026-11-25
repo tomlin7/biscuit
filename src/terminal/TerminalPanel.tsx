@@ -18,13 +18,15 @@ import { setFocusTerminalListener } from "./focusTerminal";
 import { setRenameActiveTerminalListener } from "./renameTerminal";
 import { setRestartActiveTerminalListener } from "./restartTerminal";
 import { requestSplitTerminal, setSplitTerminalListener } from "./splitTerminal";
+import { setFindTerminalListener } from "./findTerminal";
 import { setScrollCommandListener } from "./scrollCommand";
 import { resolveTerminalTheme } from "./terminalThemes";
+import { TerminalFindWidget } from "./TerminalFindWidget";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
 import { IconButton } from "../ui/IconButton";
-import { Ban, Columns2, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { Ban, Columns2, Plus, RotateCcw, Search, Trash2 } from "lucide-react";
 import "@xterm/xterm/css/xterm.css";
 import "./TerminalPanel.css";
 
@@ -40,6 +42,7 @@ type TerminalControl = {
   restart: () => Promise<void>;
   clear: () => void;
   focus: () => void;
+  find: () => void;
   scrollToPreviousCommand: () => void;
   scrollToNextCommand: () => void;
 };
@@ -89,6 +92,7 @@ function TerminalSession({
   const commandOutputRef = useRef("");
   const unmountTimerRef = useRef<number | null>(null);
   const lineRef = useRef("");
+  const [findOpen, setFindOpen] = useState(false);
   const { send } = useAi();
   const sendRef = useRef(send);
   sendRef.current = send;
@@ -225,6 +229,11 @@ function TerminalSession({
         }
       }
       const mod = event.ctrlKey || event.metaKey;
+      if (mod && !event.shiftKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        setFindOpen(true);
+        return false;
+      }
       if (!mod || !event.shiftKey) return true;
       if (event.key.toLowerCase() === "c") {
         const selection = term.getSelection();
@@ -310,6 +319,9 @@ function TerminalSession({
       focus: () => {
         term.focus();
       },
+      find: () => {
+        setFindOpen(true);
+      },
       scrollToPreviousCommand: () => {
         const lines = commandLinesRef.current;
         if (lines.length === 0) return;
@@ -388,6 +400,15 @@ function TerminalSession({
   return (
     <>
       <div className="terminal-panel__body" ref={hostRef} />
+      {findOpen && (
+        <TerminalFindWidget
+          term={termRef.current}
+          onClose={() => {
+            setFindOpen(false);
+            termRef.current?.focus();
+          }}
+        />
+      )}
     </>
   );
 }
@@ -623,6 +644,13 @@ export function TerminalPanel({ open, embedded = false }: Props) {
   }, [activeId]);
 
   useEffect(() => {
+    setFindTerminalListener(() => {
+      controls.current.get(activeId)?.find();
+    });
+    return () => setFindTerminalListener(null);
+  }, [activeId]);
+
+  useEffect(() => {
     setScrollCommandListener((direction) => {
       const ctrl = controls.current.get(activeId);
       if (direction === "previous") ctrl?.scrollToPreviousCommand();
@@ -773,6 +801,12 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               ))}
             </select>
           </label>
+          <IconButton
+            icon={Search}
+            label="Find in terminal (Ctrl+F)"
+            size={13}
+            onClick={() => controls.current.get(activeId)?.find()}
+          />
           <IconButton
             icon={RotateCcw}
             label="Restart terminal"
