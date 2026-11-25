@@ -143,6 +143,51 @@
 .mines__cell--n7 { color: var(--fg); }
 .mines__cell--n8 { color: var(--fg-muted); }
 
+.pong__stage {
+  position: relative;
+  max-width: 100%;
+}
+
+.pong__canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: var(--bg-island);
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+  outline: none;
+  cursor: none;
+}
+
+.pong__canvas:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--fg) 20%, transparent);
+}
+
+.pong__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-island) 70%, transparent);
+  border: none;
+  color: var(--fg);
+}
+
+.pong__overlay .game__button {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pong__hint {
+  font-size: var(--font-size-xs);
+  color: var(--fg-muted);
+}
+
 .game__score {
   display: flex;
   gap: 16px;
