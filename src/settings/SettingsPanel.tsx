@@ -77,6 +77,32 @@ export function SettingsPanel({ open, onClose }: Props) {
                 onChange={(e) => updateEditor({ wordWrap: e.target.checked })}
               />
             </label>
+            <label className="settings-row">
+              <span>Wrap column</span>
+              <input
+                type="number"
+                min={40}
+                max={200}
+                value={settings.editor.wordWrapColumn}
+                disabled={!settings.editor.wordWrap}
+                onChange={(e) =>
+                  updateEditor({
+                    wordWrapColumn: Math.min(
+                      200,
+                      Math.max(40, Number(e.target.value) || 80),
+                    ),
+                  })
+                }
+              />
+            </label>
+            <label className="settings-row settings-row--stack">
+              <span>Rulers</span>
+              <input
+                value={settings.editor.rulers}
+                placeholder="80, 120"
+                onChange={(e) => updateEditor({ rulers: e.target.value })}
+              />
+            </label>
             <label className="settings-row settings-row--check">
               <span>Minimap</span>
               <input

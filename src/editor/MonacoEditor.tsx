@@ -12,6 +12,7 @@ import { useDebug } from "../debug/DebugContext";
 import { useSettings } from "../settings/SettingsContext";
 import { editorConfigFor } from "./editorconfig";
 import { detectIndentFromText } from "./detectIndent";
+import { parseRulers } from "./rulers";
 import { defineExtraThemes, defineT3dThemes, monacoThemeId } from "./theme";
 import { registerTsHoverProviders } from "../lsp/tsHover";
 import "./MonacoEditor.css";
@@ -127,8 +128,19 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
       minimap: { enabled: settings.editor.minimap, scale: 1 },
       stickyScroll: { enabled: settings.editor.stickyScroll },
       tabSize: settings.editor.tabSize,
+      wordWrap: settings.editor.wordWrap ? "bounded" : "off",
+      wordWrapColumn: settings.editor.wordWrapColumn,
+      wrappingStrategy: "advanced",
+      rulers: parseRulers(settings.editor.rulers),
     });
-  }, [settings.editor.minimap, settings.editor.stickyScroll, settings.editor.tabSize]);
+  }, [
+    settings.editor.minimap,
+    settings.editor.stickyScroll,
+    settings.editor.tabSize,
+    settings.editor.wordWrap,
+    settings.editor.wordWrapColumn,
+    settings.editor.rulers,
+  ]);
 
   useEffect(() => {
     if (!primary) return;
@@ -491,7 +503,10 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
           lineHeight: Math.round(settings.editor.fontSize * 1.55),
           minimap: { enabled: settings.editor.minimap, scale: 1 },
           stickyScroll: { enabled: settings.editor.stickyScroll },
-          wordWrap: settings.editor.wordWrap ? "on" : "off",
+          wordWrap: settings.editor.wordWrap ? "bounded" : "off",
+          wordWrapColumn: settings.editor.wordWrapColumn,
+          wrappingStrategy: "advanced",
+          rulers: parseRulers(settings.editor.rulers),
           lineNumbers: settings.editor.lineNumbers ? "on" : "off",
           scrollBeyondLastLine: false,
           automaticLayout: true,

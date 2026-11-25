@@ -123,6 +123,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.115.0** | Breadcrumb copy path for folders | shipped |
 | **0.116.0** | Problems jump to column | shipped |
 | **0.117.0** | Clear all terminal tabs | shipped |
+| **0.118.0** | Editor rulers setting | shipped |
+| **0.119.0** | Soft wrap column | shipped |
+| **0.120.0** | Go to Symbol in Workspace | shipped |
+| **0.121.0** | Persist diff ignore-whitespace | shipped |
+| **0.122.0** | Extension search + enabled filter | shipped |
+| **0.123.0** | Notification action buttons | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

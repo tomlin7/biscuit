@@ -12,6 +12,10 @@ export type EditorSettings = {
   fontSize: number;
   tabSize: number;
   wordWrap: boolean;
+  /** Preferred wrap column when word wrap is on. */
+  wordWrapColumn: number;
+  /** Comma-separated ruler columns; empty disables. */
+  rulers: string;
   minimap: boolean;
   lineNumbers: boolean;
   stickyScroll: boolean;
@@ -36,6 +40,8 @@ const DEFAULTS: AppSettings = {
     fontSize: 14,
     tabSize: 2,
     wordWrap: false,
+    wordWrapColumn: 80,
+    rulers: "",
     minimap: true,
     lineNumbers: true,
     stickyScroll: true,
