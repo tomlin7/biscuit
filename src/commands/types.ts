@@ -276,6 +276,7 @@ export type CommandContext = {
   changeIndentationLevel: () => void;
   openNewWindow: () => void;
   toggleSecondarySidebar: () => void;
+  configureRunCommand: () => void;
 };
 
 export type Command = {

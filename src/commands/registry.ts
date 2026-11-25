@@ -1672,5 +1672,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleSecondarySidebar(),
   },
-
+  {
+    id: "workbench.action.configureRunCommand",
+    title: "Configure Run Command",
+    category: "Run",
+    run: (ctx) => ctx.configureRunCommand(),
+  },
 ];

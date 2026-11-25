@@ -32,6 +32,7 @@ import type { Command, CommandContext } from "../commands/types";
 import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
+import { readRunCommands, setRunCommand } from "../terminal/runConfig";
 import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -1726,6 +1727,29 @@ function ShellChrome() {
       },
       toggleSecondarySidebar: () => {
         toggleAi();
+      },
+      configureRunCommand: () => {
+        const language =
+          document?.language && document.language !== "plaintext"
+            ? document.language
+            : window.prompt(
+                "Language id (e.g. python, javascript):",
+                document?.language ?? "python",
+              )?.trim() || "";
+        if (!language) return;
+        const current = readRunCommands()[language] ?? "";
+        const next = window.prompt(
+          `Run command for ${language} (use {file} for the path; empty clears):`,
+          current || `python {file}`,
+        );
+        if (next == null) return;
+        setRunCommand(language, next);
+        notify(
+          "Run Command",
+          next.trim()
+            ? `Saved for ${languageLabel(language)}`
+            : `Cleared for ${languageLabel(language)}`,
+        );
       },
     }),
     [

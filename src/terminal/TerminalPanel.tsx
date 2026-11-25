@@ -6,8 +6,9 @@ import { listen } from "@tauri-apps/api/event";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { useAi } from "../ai/AiContext";
 import { reduceTerminalInput } from "./terminalInput";
-import { basename } from "../workspace/path";
+import { basename, parentPath, languageFromPath } from "../workspace/path";
 import { setRunListener } from "./runFile";
+import { resolveRunCommand } from "./runConfig";
 import { commandLabel, finishCommandOutput, setCommandListener } from "./runCommand";
 import { setClearAllTerminalsListener, setClearActiveTerminalListener } from "./clearAll";
 import { setNewTerminalListener } from "./newTerminal";
@@ -467,6 +468,23 @@ export function TerminalPanel({ open, embedded = false }: Props) {
 
   useEffect(() => {
     setRunListener((path) => {
+      const override = resolveRunCommand(languageFromPath(path), path);
+      if (override) {
+        nextSession += 1;
+        const id = nextSession;
+        setSessions((current) => [
+          ...current,
+          {
+            id,
+            shell: "",
+            runPath: null,
+            command: override,
+            cwd: parentPath(path),
+          },
+        ]);
+        setActiveId(id);
+        return;
+      }
       const existing = sessionsRef.current.find((item) => item.runPath === path);
       if (existing) {
         setActiveId(existing.id);
@@ -549,7 +567,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
                 aria-label={`Close terminal ${index + 1}`}
                 onClick={() => closeSession(session.id)}
               >
-                ├ù
+                ×
               </button>
             </span>
           ))}

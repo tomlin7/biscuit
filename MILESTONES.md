@@ -416,6 +416,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.408.0** | Change indentation level from palette | shipped |
 | **0.409.0** | New window from palette | shipped |
 | **0.410.0** | Toggle secondary side bar from palette | shipped |
+| **0.411.0** | Configure run command from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
