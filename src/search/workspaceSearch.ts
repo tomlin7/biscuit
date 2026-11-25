@@ -111,6 +111,60 @@ export async function searchWorkspace(
   return hits;
 }
 
+export async function countReplaceInWorkspace(
+  rootPath: string,
+  query: string,
+  replacement: string,
+  dirtyPaths: ReadonlySet<string>,
+  options: TextSearchOptions = defaultSearchOptions,
+): Promise<{ files: number; replacements: number; skippedDirty: number }> {
+  const needle = query.trim();
+  if (!needle) return { files: 0, replacements: 0, skippedDirty: 0 };
+  searchPattern(needle, options);
+
+  let files = 0;
+  let replacements = 0;
+  let skippedDirty = 0;
+  const queue = [rootPath];
+
+  while (queue.length > 0) {
+    const dir = queue.shift()!;
+    let entries;
+    try {
+      entries = await readDir(dir);
+    } catch {
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (!entry.name || entry.name === ".DS_Store") continue;
+      const path = joinPath(dir, entry.name);
+      if (entry.isDirectory) {
+        if (!shouldSkipDir(entry.name)) queue.push(path);
+        continue;
+      }
+      if (!entry.isFile || !isProbablyTextFile(path)) continue;
+      if (dirtyPaths.has(path)) {
+        skippedDirty += 1;
+        continue;
+      }
+
+      try {
+        const text = await readTextFile(path);
+        if (text.length > MAX_FILE_BYTES) continue;
+        const replaced = replaceInText(text, needle, replacement, options);
+        if (replaced.count === 0) continue;
+        files += 1;
+        replacements += replaced.count;
+      } catch {
+        /* skip unreadable */
+      }
+    }
+  }
+
+  return { files, replacements, skippedDirty };
+}
+
 export async function replaceInWorkspace(
   rootPath: string,
   query: string,

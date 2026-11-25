@@ -16,7 +16,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.8.0** | Integrated terminal (PTY) | shipped |
 | **0.9.0** | Git SCM view | shipped |
 | **0.10.0** | LSP diagnostics, AI agent, extensions, debugger | shipped |
-| **0.11.0** | Island layout fidelity â€” resize/collapse, Lucide, UI font, settings | shipped |
+| **0.11.0** | Island layout fidelity Ã¢â‚¬â€ resize/collapse, Lucide, UI font, settings | shipped |
 | **0.12.0** | Explorer create, rename, and delete | shipped |
 | **0.13.0** | Recent files, recent folders, reopen closed editor | shipped |
 | **0.14.0** | Editor comment, wrap, relative lines, go to line, move and copy lines | shipped |
@@ -66,6 +66,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.58.0** | Outline uses text scan for contributed languages | shipped |
 | **0.59.0** | Session restores preview and split | shipped |
 | **0.60.0** | Successful git clone writes a logs line | shipped |
+| **0.61.0** | Workspace replace shows a match count first | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

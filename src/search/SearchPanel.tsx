@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useWorkspace } from "../workspace/WorkspaceContext";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import {
+  countReplaceInWorkspace,
   hitLabel,
   replaceInWorkspace,
   searchWorkspace,
@@ -115,21 +116,40 @@ export function SearchPanel({ onOpenHit }: Props) {
             tabs.filter((tab) => tab.value !== tab.baseline).map((tab) => tab.path),
           );
           setReplaceNote(null);
-          void replaceInWorkspace(rootPath, query, replacement, dirty, { matchCase, useRegex })
-            .then(async (result) => {
-              for (const path of result.paths) {
-                if (tabs.some((tab) => tab.path === path)) {
-                  applyDiskValue(path, await readTextFile(path));
-                }
+          void countReplaceInWorkspace(rootPath, query, replacement, dirty, { matchCase, useRegex })
+            .then((preview) => {
+              if (preview.replacements === 0) {
+                setReplaceNote("No matches to replace.");
+                return;
               }
               const skipped =
-                result.skippedDirty > 0
-                  ? ` Skipped ${result.skippedDirty} unsaved file${result.skippedDirty === 1 ? "" : "s"}.`
+                preview.skippedDirty > 0
+                  ? ` ${preview.skippedDirty} unsaved file${preview.skippedDirty === 1 ? "" : "s"} will be skipped.`
                   : "";
-              setReplaceNote(
-                `Replaced ${result.replacements} in ${result.files} file${result.files === 1 ? "" : "s"}.${skipped}`,
+              const ok = window.confirm(
+                `Replace ${preview.replacements} match${preview.replacements === 1 ? "" : "es"} in ${preview.files} file${preview.files === 1 ? "" : "s"}?${skipped}`,
               );
-              setRevision((value) => value + 1);
+              if (!ok) {
+                setReplaceNote("Replace cancelled.");
+                return;
+              }
+              return replaceInWorkspace(rootPath, query, replacement, dirty, { matchCase, useRegex }).then(
+                async (result) => {
+                  for (const path of result.paths) {
+                    if (tabs.some((tab) => tab.path === path)) {
+                      applyDiskValue(path, await readTextFile(path));
+                    }
+                  }
+                  const skippedNote =
+                    result.skippedDirty > 0
+                      ? ` Skipped ${result.skippedDirty} unsaved file${result.skippedDirty === 1 ? "" : "s"}.`
+                      : "";
+                  setReplaceNote(
+                    `Replaced ${result.replacements} in ${result.files} file${result.files === 1 ? "" : "s"}.${skippedNote}`,
+                  );
+                  setRevision((value) => value + 1);
+                },
+              );
             })
             .catch((err) => {
               setError(err instanceof Error ? err.message : String(err));
