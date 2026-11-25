@@ -123,4 +123,23 @@ describe("JSON schema definitions and patterns", () => {
     expect(capturedOptions.enableSchemaRequest).toBe(true);
     expect(capturedOptions.schemas.length).toBe(BUILTIN_JSON_SCHEMAS.length);
   });
+
+  test("handles undefined, null, or incomplete monaco instances without throwing", () => {
+    // Calling with undefined
+    expect(() => configureJsonSchemas(undefined)).not.toThrow();
+    // Calling with null
+    expect(() => configureJsonSchemas(null)).not.toThrow();
+    // Calling with empty object
+    expect(() => configureJsonSchemas({} as any)).not.toThrow();
+    // Calling with missing languages.json
+    expect(() => configureJsonSchemas({ languages: {} } as any)).not.toThrow();
+    // Calling with missing jsonDefaults
+    expect(() => configureJsonSchemas({ languages: { json: {} } } as any)).not.toThrow();
+    // Calling with missing setDiagnosticsOptions
+    expect(() =>
+      configureJsonSchemas({ languages: { json: { jsonDefaults: {} } } } as any),
+    ).not.toThrow();
+    // Calling with no arguments
+    expect(() => configureJsonSchemas()).not.toThrow();
+  });
 });

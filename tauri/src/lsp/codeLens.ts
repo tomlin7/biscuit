@@ -20,7 +20,7 @@ export function registerCodeLensProvider(
     (typeof window !== "undefined"
       ? (window as unknown as { monaco?: typeof MonacoType }).monaco
       : undefined);
-  if (!monaco) return null;
+  if (!monaco?.languages?.registerCodeLensProvider) return null;
   registered = true;
 
   const languages = ["typescript", "javascript"];

@@ -24,7 +24,8 @@ export function monacoThemeId(theme: string, extras: ExtraTheme[] = []): string 
   return T3D_THEME_DARK;
 }
 
-export function defineExtraThemes(monaco: Monaco, extras: ExtraTheme[]) {
+export function defineExtraThemes(monaco?: Monaco | null, extras: ExtraTheme[] = []) {
+  if (!monaco?.editor?.defineTheme) return;
   for (const extra of extras) {
     const light = extra.mode === "light";
     monaco.editor.defineTheme(`t3d-ext-${extra.id}`, {
@@ -40,7 +41,8 @@ export function defineExtraThemes(monaco: Monaco, extras: ExtraTheme[]) {
   }
 }
 
-export function defineT3dThemes(monaco: Monaco) {
+export function defineT3dThemes(monaco?: Monaco | null) {
+  if (!monaco?.editor?.defineTheme) return;
   monaco.editor.defineTheme(T3D_THEME_DARK, {
     base: "vs-dark",
     inherit: true,

@@ -201,7 +201,7 @@ function ShellChrome() {
     setExtras(collected.themes);
     setContributedThemes(collected.iconThemes);
     registerExtraLanguages(collected.languages, (language) => {
-      monaco.languages.register({
+      monaco?.languages?.register?.({
         id: language.id,
         aliases: language.aliases,
         extensions: language.extensions,

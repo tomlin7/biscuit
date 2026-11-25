@@ -4,8 +4,9 @@ import { hoverAt } from "../lsp/tsLocations";
 
 let registered = false;
 
-export function registerTsHoverProviders(monaco: Monaco) {
+export function registerTsHoverProviders(monaco?: Monaco | null) {
   if (registered) return;
+  if (!monaco?.languages?.registerHoverProvider) return;
   registered = true;
   for (const language of ["typescript", "javascript", "typescriptreact", "javascriptreact"]) {
     monaco.languages.registerHoverProvider(language, {

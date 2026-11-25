@@ -362,11 +362,15 @@ export function getEffectiveJsonSchemas(
 }
 
 export function configureJsonSchemas(
-  monaco: Monaco,
+  monaco?: Monaco | null,
   userSchemas: JsonSchemaAssociation[] = [],
 ): void {
+  const jsonDefaults = (monaco as any)?.languages?.json?.jsonDefaults;
+  if (!jsonDefaults || typeof jsonDefaults.setDiagnosticsOptions !== "function") {
+    return;
+  }
   const allSchemas = getEffectiveJsonSchemas(userSchemas);
-  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+  jsonDefaults.setDiagnosticsOptions({
     validate: true,
     allowComments: true,
     enableSchemaRequest: true,

@@ -163,7 +163,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
 
   useEffect(() => {
     if (settings.editor.inlayHints) {
-      typescript.typescriptDefaults.setInlayHintsOptions({
+      typescript?.typescriptDefaults?.setInlayHintsOptions?.({
         includeInlayParameterNameHints: "all",
         includeInlayParameterNameHintsWhenArgumentMatchesName: false,
         includeInlayFunctionParameterTypeHints: true,
@@ -172,7 +172,7 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
         includeInlayFunctionLikeReturnTypeHints: true,
         includeInlayEnumMemberValueHints: true,
       });
-      typescript.javascriptDefaults.setInlayHintsOptions({
+      typescript?.javascriptDefaults?.setInlayHintsOptions?.({
         includeInlayParameterNameHints: "all",
         includeInlayParameterNameHintsWhenArgumentMatchesName: false,
         includeInlayFunctionParameterTypeHints: true,
@@ -545,22 +545,48 @@ export function MonacoEditor({ path, primary = true, onScrollRatio }: Props) {
   if (!doc) return null;
 
   const handleBeforeMount = (monaco: Monaco) => {
-    defineT3dThemes(monaco);
-    registerTsHoverProviders(monaco);
-    configureJsonSchemas(monaco, settings.jsonSchemas);
+    if (!monaco) return;
+    try {
+      defineT3dThemes(monaco);
+    } catch (err) {
+      console.warn("Failed to define T3D themes in beforeMount:", err);
+    }
+    try {
+      registerTsHoverProviders(monaco);
+    } catch (err) {
+      console.warn("Failed to register TS hover providers in beforeMount:", err);
+    }
+    try {
+      configureJsonSchemas(monaco, settings.jsonSchemas);
+    } catch (err) {
+      console.warn("Failed to configure JSON schemas in beforeMount:", err);
+    }
     monacoRef.current = monaco;
   };
 
   const handleMount: OnMount = (ed, monaco) => {
     editorRef.current = ed;
     monacoRef.current = monaco;
-    defineExtraThemes(monaco, extras);
-    monaco.editor.setTheme(monacoThemeId(theme, extras));
+    try {
+      defineExtraThemes(monaco, extras);
+      monaco?.editor?.setTheme?.(monacoThemeId(theme, extras));
+    } catch (err) {
+      console.warn("Failed to apply themes in onMount:", err);
+    }
+    try {
+      configureJsonSchemas(monaco, settings.jsonSchemas);
+    } catch (err) {
+      console.warn("Failed to configure JSON schemas in onMount:", err);
+    }
     const model = ed.getModel();
     const language = model?.getLanguageId();
     if (model && language && language !== "typescript" && language !== "javascript") {
-      monaco.editor.setModelMarkers(model, "typescript", []);
-      monaco.editor.setModelMarkers(model, "javascript", []);
+      try {
+        monaco?.editor?.setModelMarkers?.(model, "typescript", []);
+        monaco?.editor?.setModelMarkers?.(model, "javascript", []);
+      } catch {
+        // ignore
+      }
     }
     const relayout = () => ed.layout();
     requestAnimationFrame(relayout);
