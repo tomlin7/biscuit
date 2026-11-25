@@ -170,6 +170,7 @@ export type CommandContext = {
   gitFocusCommitMessage: () => void;
   cycleAiEffort: () => void;
   stopAi: () => void;
+  regenerateAi: () => void;
 };
 
 export type Command = {

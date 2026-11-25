@@ -311,6 +311,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.303.0** | Focus SCM commit message from palette | shipped |
 | **0.304.0** | Cycle AI effort from palette | shipped |
 | **0.305.0** | Stop AI generation from palette | shipped |
+| **0.306.0** | Regenerate AI response from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

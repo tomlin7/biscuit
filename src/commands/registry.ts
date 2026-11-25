@@ -1022,4 +1022,10 @@ export const COMMANDS: Command[] = [
     category: "AI",
     run: (ctx) => ctx.stopAi(),
   },
+  {
+    id: "workbench.action.regenerateAi",
+    title: "Regenerate AI Response",
+    category: "AI",
+    run: (ctx) => ctx.regenerateAi(),
+  },
 ];
