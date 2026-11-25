@@ -102,6 +102,7 @@ function ShellChrome() {
     settings: aiSettings,
     showHistory,
     setShowHistory,
+    cycleEffort,
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
@@ -972,6 +973,10 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("focusCommitMessage");
       },
+      cycleAiEffort: () => {
+        cycleEffort();
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1042,6 +1047,7 @@ function ShellChrome() {
       setSidebarMode,
       openSettings,
       setSidebarOpen,
+      cycleEffort,
       toggleBottom,
       toggleProblems,
       openFolderAt,

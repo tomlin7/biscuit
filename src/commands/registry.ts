@@ -1010,4 +1010,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitFocusCommitMessage(),
   },
+  {
+    id: "workbench.action.cycleAiEffort",
+    title: "Cycle AI Effort",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiEffort(),
+  },
 ];
