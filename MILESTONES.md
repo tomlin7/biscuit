@@ -338,6 +338,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.330.0** | Open bottom panel from palette | shipped |
 | **0.331.0** | Clear all notifications from palette | shipped |
 | **0.332.0** | Increase and decrease editor font size from palette | shipped |
+| **0.333.0** | Git show dirty file count from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

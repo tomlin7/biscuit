@@ -198,6 +198,7 @@ export type CommandContext = {
   clearNotifications: () => void;
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
+  notifyGitDirtyCount: () => void;
 };
 
 export type Command = {

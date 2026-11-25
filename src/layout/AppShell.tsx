@@ -1168,6 +1168,17 @@ function ShellChrome() {
           fontSize: Math.max(8, settings.editor.fontSize - 1),
         });
       },
+      notifyGitDirtyCount: () => {
+        const count = gitDirtyCount;
+        notify(
+          "Git changes",
+          count === 0
+            ? "Working tree clean."
+            : `${count} changed path${count === 1 ? "" : "s"}.`,
+        );
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+      },
     }),
     [
       openFolder,
@@ -1255,6 +1266,7 @@ function ShellChrome() {
       problems,
       refreshDiagnosticsMarkers,
       gitBranch,
+      gitDirtyCount,
       clearNotificationsList,
       setSidebarWidth,
       setBottomHeight,

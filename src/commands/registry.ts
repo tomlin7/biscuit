@@ -1190,4 +1190,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.decreaseFontSize(),
   },
+  {
+    id: "git.notifyDirtyCount",
+    title: "Git: Show Dirty File Count",
+    category: "Git",
+    run: (ctx) => ctx.notifyGitDirtyCount(),
+  },
 ];
