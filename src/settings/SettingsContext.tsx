@@ -43,6 +43,8 @@ export type AppSettings = {
   chromeAcrylic: boolean;
   /** Preferred charset label shown in the status bar / encoding picker. */
   preferredEncoding: string;
+  /** Remote extensions registry index.json URL. */
+  extensionRegistryUrl: string;
 };
 
 type SettingsState = {
@@ -50,7 +52,7 @@ type SettingsState = {
   updateEditor: (patch: Partial<EditorSettings>) => void;
   updateChromeAcrylic: (on: boolean) => void;
   updateApp: (
-    patch: Partial<Pick<AppSettings, "preferredEncoding">>,
+    patch: Partial<Pick<AppSettings, "preferredEncoding" | "extensionRegistryUrl">>,
   ) => void;
   reset: () => void;
 };
@@ -78,6 +80,8 @@ const DEFAULTS: AppSettings = {
   },
   chromeAcrylic: true,
   preferredEncoding: "UTF-8",
+  extensionRegistryUrl:
+    "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/index.json",
 };
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -99,6 +103,10 @@ function load(): AppSettings {
         typeof parsed.preferredEncoding === "string" && parsed.preferredEncoding.trim()
           ? parsed.preferredEncoding.trim().toUpperCase()
           : DEFAULTS.preferredEncoding,
+      extensionRegistryUrl:
+        typeof parsed.extensionRegistryUrl === "string" && parsed.extensionRegistryUrl.trim()
+          ? parsed.extensionRegistryUrl.trim()
+          : DEFAULTS.extensionRegistryUrl,
     };
   } catch {
     return DEFAULTS;
@@ -148,7 +156,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const updateApp = useCallback(
     (
       patch: Partial<
-        Pick<AppSettings, "preferredEncoding">
+        Pick<AppSettings, "preferredEncoding" | "extensionRegistryUrl">
       >,
     ) => {
       setSettings((s) => ({ ...s, ...patch }));

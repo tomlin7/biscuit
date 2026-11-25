@@ -269,3 +269,110 @@
 .ext-panel__toggle input {
   cursor: pointer;
 }
+
+.ext-panel__tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ext-panel__tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ext-panel__tab:hover {
+  background: var(--bg-hover);
+  color: var(--fg);
+}
+
+.ext-panel__tab--active {
+  color: var(--fg);
+  font-weight: 600;
+  background: var(--bg-active, rgba(255, 255, 255, 0.08));
+}
+
+.ext-panel__tab-badge {
+  font-size: 10px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--fg-muted);
+}
+
+.ext-panel__card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ext-panel__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.ext-panel__btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.ext-panel__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ext-panel__btn--primary {
+  background: var(--accent);
+  color: var(--accent-fg, #ffffff);
+  border-color: transparent;
+}
+
+.ext-panel__btn--primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.ext-panel__btn--update {
+  background: var(--accent-subtle, rgba(56, 189, 248, 0.15));
+  color: var(--accent, #38bdf8);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.ext-panel__btn--danger {
+  color: var(--fg-dim);
+  padding: 3px 5px;
+}
+
+.ext-panel__btn--danger:hover:not(:disabled) {
+  color: var(--danger-fg, #f87171);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.ext-panel__installed-badge {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-right: auto;
+}
+
+.ext-panel__error-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+}

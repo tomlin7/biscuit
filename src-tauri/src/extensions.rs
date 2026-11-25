@@ -625,6 +625,95 @@ pub fn install_local_extension(app: AppHandle, source: String) -> Result<String,
     install_extension_from(Path::new(&source), &root)
 }
 
+fn find_manifest_dir(dir: &Path) -> Option<PathBuf> {
+    if dir.join("extension.json").is_file() {
+        return Some(dir.to_path_buf());
+    }
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() && path.join("extension.json").is_file() {
+                return Some(path);
+            }
+        }
+    }
+    None
+}
+
+#[tauri::command]
+pub fn install_remote_extension(
+    app: AppHandle,
+    url: String,
+    expected_id: Option<String>,
+) -> Result<String, String> {
+    let root = extensions_root(&app)?;
+    let temp_zip = std::env::temp_dir().join(format!("t3d-ext-{}.zip", uuid::Uuid::new_v4()));
+    let temp_extract = std::env::temp_dir().join(format!("t3d-ext-extract-{}", uuid::Uuid::new_v4()));
+
+    let status = std::process::Command::new("curl")
+        .args(["-sSL", "-f", "-o"])
+        .arg(&temp_zip)
+        .arg(&url)
+        .status()
+        .map_err(|e| format!("curl failed: {e}"))?;
+
+    if !status.success() {
+        let _ = fs::remove_file(&temp_zip);
+        return Err(format!("Download failed for {url}"));
+    }
+
+    let _ = fs::create_dir_all(&temp_extract);
+    let extract_status = std::process::Command::new("tar")
+        .args(["-xf"])
+        .arg(&temp_zip)
+        .args(["-C"])
+        .arg(&temp_extract)
+        .status()
+        .map_err(|e| format!("tar extract failed: {e}"))?;
+
+    let _ = fs::remove_file(&temp_zip);
+
+    if !extract_status.success() {
+        let _ = fs::remove_dir_all(&temp_extract);
+        return Err("Failed to extract extension archive".to_string());
+    }
+
+    let manifest_dir = find_manifest_dir(&temp_extract)
+        .ok_or_else(|| {
+            let _ = fs::remove_dir_all(&temp_extract);
+            "Archive does not contain a valid extension.json".to_string()
+        })?;
+
+    let id = require_manifest_id(&manifest_dir).map_err(|e| {
+        let _ = fs::remove_dir_all(&temp_extract);
+        e
+    })?;
+
+    if let Some(expected) = expected_id {
+        if expected != id {
+            let _ = fs::remove_dir_all(&temp_extract);
+            return Err(format!("Extension id '{id}' does not match expected id '{expected}'"));
+        }
+    }
+
+    let installed_id = install_extension_from(&manifest_dir, &root)?;
+    let _ = fs::remove_dir_all(&temp_extract);
+    Ok(installed_id)
+}
+
+#[tauri::command]
+pub fn uninstall_extension(app: AppHandle, id: String) -> Result<(), String> {
+    valid_extension_id(&id)?;
+    let root = extensions_root(&app)?;
+    let dest = root.join(&id);
+    if dest.exists() {
+        fs::remove_dir_all(&dest).map_err(|e| e.to_string())?;
+    }
+    let mut map = load_enabled(&root);
+    map.enabled.remove(&id);
+    save_enabled(&root, &map)
+}
+
 #[tauri::command]
 pub fn scaffold_extension(dest: String) -> Result<String, String> {
     scaffold_extension_at(Path::new(&dest))
@@ -820,6 +909,59 @@ mod tests {
         .unwrap();
         let manifest = super::read_manifest(&root, &super::EnabledMap::default()).unwrap();
         assert_eq!(manifest.extension_kind.as_deref(), Some("ui"));
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn find_manifest_dir_finds_root_or_subfolder() {
+        let root = scratch("manifest-find");
+        assert!(super::find_manifest_dir(&root).is_none());
+        fs::write(root.join("extension.json"), "{}").unwrap();
+        assert_eq!(super::find_manifest_dir(&root), Some(root.clone()));
+
+        let nested_root = scratch("manifest-nested");
+        let sub = nested_root.join("my-pack");
+        fs::create_dir_all(&sub).unwrap();
+        fs::write(sub.join("extension.json"), "{}").unwrap();
+        assert_eq!(super::find_manifest_dir(&nested_root), Some(sub));
+
+        let _ = fs::remove_dir_all(&root);
+        let _ = fs::remove_dir_all(&nested_root);
+    }
+
+    #[test]
+    fn validates_extension_id() {
+        assert!(super::valid_extension_id("valid.ext-123_a").is_ok());
+        assert!(super::valid_extension_id("").is_err());
+        assert!(super::valid_extension_id("../bad").is_err());
+        assert!(super::valid_extension_id(".hidden").is_err());
+        assert!(super::valid_extension_id("has space").is_err());
+    }
+
+    #[test]
+    fn uninstalls_an_installed_extension() {
+        let root = scratch("ext-uninstall");
+        let ext = root.join("my.ext");
+        fs::create_dir_all(&ext).unwrap();
+        fs::write(ext.join("extension.json"), r#"{"id":"my.ext"}"#).unwrap();
+        let mut map = super::EnabledMap::default();
+        map.enabled.insert("my.ext".to_string(), true);
+        super::save_enabled(&root, &map).unwrap();
+
+        assert!(ext.exists());
+        assert_eq!(super::load_enabled(&root).enabled.get("my.ext"), Some(&true));
+
+        assert!(super::valid_extension_id("my.ext").is_ok());
+        let dest = root.join("my.ext");
+        if dest.exists() {
+            fs::remove_dir_all(&dest).unwrap();
+        }
+        let mut map = super::load_enabled(&root);
+        map.enabled.remove("my.ext");
+        super::save_enabled(&root, &map).unwrap();
+
+        assert!(!dest.exists());
+        assert_eq!(super::load_enabled(&root).enabled.get("my.ext"), None);
         let _ = fs::remove_dir_all(&root);
     }
 }
