@@ -224,6 +224,7 @@ export type CommandContext = {
   decreaseAiPanelWidth: () => void;
   resetTerminalFontSize: () => void;
   resetEditorFontSize: () => void;
+  closeWindow: () => void;
 };
 
 export type Command = {

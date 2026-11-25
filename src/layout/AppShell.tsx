@@ -1317,6 +1317,12 @@ function ShellChrome() {
       resetEditorFontSize: () => {
         updateEditor({ fontSize: 14 });
       },
+      closeWindow: () => {
+        if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+          return;
+        }
+        void getCurrentWindow().close();
+      },
     }),
     [
       openFolder,

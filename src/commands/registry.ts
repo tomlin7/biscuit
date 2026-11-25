@@ -1346,6 +1346,11 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.resetEditorFontSize(),
   },
-
+  {
+    id: "workbench.action.closeWindow",
+    title: "Close Window",
+    category: "View",
+    run: (ctx) => ctx.closeWindow(),
+  },
 
 ];
