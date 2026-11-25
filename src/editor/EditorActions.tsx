@@ -64,7 +64,8 @@ export type EditorCommand =
   | "jumpToBracket"
   | "selectHighlights"
   | "smartSelectExpand"
-  | "smartSelectShrink";
+  | "smartSelectShrink"
+  | "selectLine";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -215,6 +216,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "smartSelectShrink":
         handle.trigger("editor.action.smartSelect.shrink");
+        break;
+      case "selectLine":
+        handle.trigger("expandLineSelection");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

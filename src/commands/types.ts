@@ -76,7 +76,8 @@ export type CommandContext = {
       | "jumpToBracket"
       | "selectHighlights"
       | "smartSelectExpand"
-      | "smartSelectShrink",
+      | "smartSelectShrink"
+      | "selectLine",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;

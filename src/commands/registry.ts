@@ -289,7 +289,13 @@ export const COMMANDS: Command[] = [
     keybinding: "Shift+Alt+Left",
     run: (ctx) => ctx.runEditorCommand("smartSelectShrink"),
   },
-
+  {
+    id: "expandLineSelection",
+    title: "Select Line",
+    category: "Edit",
+    keybinding: "Ctrl+L",
+    run: (ctx) => ctx.runEditorCommand("selectLine"),
+  },
 
   {
     id: "editor.action.commentLine",
