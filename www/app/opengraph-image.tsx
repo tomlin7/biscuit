@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "T3D — High-Performance Desktop Code Editor";
+export const alt = "T3D . High-Performance Desktop Code Editor";
 export const size = {
   width: 1200,
   height: 630,
@@ -18,8 +18,8 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px 80px",
-          backgroundColor: "#0a0a0c",
-          backgroundImage: "radial-gradient(circle at 50% 0%, #1f2438 0%, #0a0a0c 70%)",
+          backgroundColor: "#0c0c0e",
+          border: "2px solid #27272a",
           color: "#f4f4f5",
           fontFamily: "system-ui, sans-serif",
         }}

@@ -1,12 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -14,21 +8,8 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-});
-
 export const viewport: Viewport = {
-  themeColor: "#0a0a0c",
+  themeColor: "#09090b",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -37,7 +18,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://t3d.sh"),
   title: {
-    default: "T3D — High-Performance Desktop Code Editor",
+    default: "T3D · High-Performance Desktop Code Editor",
     template: "%s | T3D",
   },
   description:
@@ -70,7 +51,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://t3d.sh",
     siteName: "T3D",
-    title: "T3D — High-Performance Desktop Code Editor",
+    title: "T3D · High-Performance Desktop Code Editor",
     description:
       "Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19. Sub-100ms startup, native terminal, and sandboxed extensions.",
     images: [
@@ -78,13 +59,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "T3D — High-Performance Desktop Code Editor",
+        alt: "T3D · High-Performance Desktop Code Editor",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "T3D — High-Performance Desktop Code Editor",
+    title: "T3D · High-Performance Desktop Code Editor",
     description:
       "Fast, focused desktop code editor built on Tauri 2, compiled Rust PTY engine, Monaco, and React 19.",
     creator: "@Tomlin7",
@@ -149,7 +130,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${instrumentSerif.variable} ${dmSans.variable} ${jetbrainsMono.variable} dark`}
+      className={`${dmSans.variable} dark font-sans`}
     >
       <head>
         <script
@@ -157,7 +138,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased bg-[#09090b] text-[#f4f4f5]">
         {children}
       </body>
     </html>
