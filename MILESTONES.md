@@ -289,6 +289,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.281.0** | Git unstage selected from palette | shipped |
 | **0.282.0** | Git discard selected from palette | shipped |
 | **0.283.0** | Git copy current branch from palette | shipped |
+| **0.284.0** | Cycle AI temperature from palette | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

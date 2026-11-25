@@ -890,4 +890,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitCopyBranch(),
   },
+  {
+    id: "workbench.action.cycleAiTemperature",
+    title: "Cycle AI Temperature",
+    category: "AI",
+    run: (ctx) => ctx.cycleAiTemperature(),
+  },
 ];

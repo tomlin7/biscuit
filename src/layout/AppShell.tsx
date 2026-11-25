@@ -811,6 +811,21 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("copyBranch");
       },
+      cycleAiTemperature: () => {
+        const order: Array<number | null> = [null, 0, 0.2, 0.7, 1];
+        const current = aiSettings.temperature;
+        const idx = order.findIndex(
+          (value) =>
+            value === current ||
+            (value === null && current === null) ||
+            (typeof value === "number" &&
+              typeof current === "number" &&
+              value === current),
+        );
+        const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? null;
+        setSettings({ temperature: next });
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
@@ -869,6 +884,7 @@ function ShellChrome() {
       aiSettings.maxToolRounds,
       aiSettings.requestTimeoutSec,
       aiSettings.stopOnToolError,
+      aiSettings.temperature,
       setAiOpen,
       setSidebarOpen,
       toggleBottom,
