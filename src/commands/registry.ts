@@ -866,4 +866,10 @@ export const COMMANDS: Command[] = [
     category: "Git",
     run: (ctx) => ctx.gitDeselectAll(),
   },
+  {
+    id: "git.stageSelected",
+    title: "Git: Stage Selected",
+    category: "Git",
+    run: (ctx) => ctx.gitStageSelected(),
+  },
 ];

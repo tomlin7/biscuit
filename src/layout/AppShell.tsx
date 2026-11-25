@@ -791,6 +791,11 @@ function ShellChrome() {
         setSidebarOpen(true);
         requestScmRemote("deselectAll");
       },
+      gitStageSelected: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("stageSelected");
+      },
     }),
     [
       openFolder,

@@ -144,6 +144,12 @@ export type CommandContext = {
   toggleAiStopOnToolError: () => void;
   gitSelectAll: () => void;
   gitDeselectAll: () => void;
+  gitStageSelected: () => void;
+
+
+
+
+
 };
 
 export type Command = {

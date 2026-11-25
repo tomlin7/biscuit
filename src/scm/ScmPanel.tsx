@@ -268,6 +268,9 @@ export function ScmPanel({ onBranch }: Props) {
         setSelected(new Set(summary.entries.map((entry) => entry.path)));
       } else if (action === "deselectAll") {
         setSelected(new Set());
+      } else if (action === "stageSelected") {
+        if (selectedUnstaged.length === 0) return;
+        void run("git_stage", { paths: selectedUnstaged });
       } else void push();
     });
     return () => setScmRemoteListener(null);
