@@ -3,6 +3,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { recentFiles, recentFolders } from "./history";
 import { basename } from "./path";
 import { useWorkspace } from "./WorkspaceContext";
+import { appendLog } from "../logs/logBus";
 import "./Welcome.css";
 
 export function Welcome() {
@@ -20,6 +21,7 @@ export function Welcome() {
     });
     if (selected === null || Array.isArray(selected)) return;
     const dest = await invoke<string>("git_clone", { url: url.trim(), parent: selected });
+    appendLog(`Cloned repository into ${dest}`);
     await openFolderAt(dest);
   };
 

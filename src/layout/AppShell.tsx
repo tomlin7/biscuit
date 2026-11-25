@@ -21,6 +21,7 @@ import { NotificationsProvider } from "../notifications/NotificationsContext";
 import { CommandPalette } from "../commands/CommandPalette";
 import type { Command, CommandContext } from "../commands/types";
 import type { GitSummary } from "../scm/ScmPanel";
+import { appendLog } from "../logs/logBus";
 import { basename } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -175,6 +176,7 @@ function ShellChrome() {
     const parent = Array.isArray(selected) ? selected[0] : selected;
     if (!parent) return;
     const dest = await invoke<string>("git_clone", { url: url.trim(), parent });
+    appendLog(`Cloned repository into ${dest}`);
     await openFolderAt(dest);
   }, [openFolderAt]);
 
