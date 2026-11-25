@@ -10,7 +10,7 @@ import {
   EditorActionsProvider,
   useEditorActions,
 } from "../editor/EditorActions";
-import { DiagnosticsProvider } from "../lsp/DiagnosticsContext";
+import { DiagnosticsProvider, useDiagnostics } from "../lsp/DiagnosticsContext";
 import { AiProvider, useAi } from "../ai/AiContext";
 import { AiPanel } from "../ai/AiPanel";
 import { ExtensionsProvider, useExtensions } from "../extensions/ExtensionsContext";
@@ -113,6 +113,7 @@ function ShellChrome() {
   } = useAi();
   const { findInFile, findInSelection, replaceInSelection, runEditorCommand } = useEditorActions();
   const { push: notify } = useNotifications();
+  const { problems } = useDiagnostics();
   const { extensions } = useExtensions();
   useEffect(() => {
     const collected = collectContributions(extensions);
@@ -1094,6 +1095,18 @@ function ShellChrome() {
         setAiWidth(340);
         setAiOpen(true);
       },
+      copyProblems: () => {
+        if (problems.length === 0) {
+          void navigator.clipboard.writeText("");
+          return;
+        }
+        const lines = problems.map(
+          (problem) =>
+            `${problem.path}:${problem.line}:${problem.column} ${problem.severity} ${problem.message}`,
+        );
+        void navigator.clipboard.writeText(lines.join("\n"));
+        openProblems();
+      },
     }),
     [
       openFolder,
@@ -1178,6 +1191,7 @@ function ShellChrome() {
       gitBehind,
       notify,
       setAiWidth,
+      problems,
       bottomOpen,
       panelTab,
       setPanelTab,

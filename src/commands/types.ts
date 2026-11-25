@@ -184,6 +184,7 @@ export type CommandContext = {
   focusAiSettings: () => void;
   showGitSyncStatus: () => void;
   resetAiPanelWidth: () => void;
+  copyProblems: () => void;
 };
 
 export type Command = {

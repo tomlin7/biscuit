@@ -1106,4 +1106,10 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.resetAiPanelWidth(),
   },
+  {
+    id: "workbench.action.copyProblems",
+    title: "Copy Problems",
+    category: "View",
+    run: (ctx) => ctx.copyProblems(),
+  },
 ];
