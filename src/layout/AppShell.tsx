@@ -39,6 +39,7 @@ import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
 import { githubWebUrlFromRemote } from "../scm/githubRemote";
 import { requestScrollCommand } from "../terminal/scrollCommand";
+import { TERMINAL_THEMES } from "../terminal/terminalThemes";
 import { parseWorkspace, serializeWorkspace } from "../workspace/workspaceFile";
 import { basename, isVirtualPath, joinPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
@@ -2200,6 +2201,22 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestScrollCommand("next");
+      },
+      selectTerminalColorTheme: () => {
+        setRecentCommands([]);
+        setSymbolCommands(
+          TERMINAL_THEMES.map((item) => ({
+            id: `terminal-theme:${item.id}`,
+            title: `Terminal Theme: ${item.label}`,
+            category: "Preferences",
+            run: () => {
+              updateApp({ terminalTheme: item.id });
+              notify("Preferences", `Terminal theme set to ${item.label}`);
+            },
+          })),
+        );
+        setPaletteSeed("Terminal Theme:");
+        setPaletteOpen(true);
       },
     }),
     [

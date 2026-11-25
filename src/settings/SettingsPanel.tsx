@@ -5,6 +5,7 @@ import { BUILTIN_THEMES } from "../editor/theme";
 import { useAi } from "../ai/AiContext";
 import { IconButton } from "../ui/IconButton";
 import { useSettings } from "./SettingsContext";
+import { TERMINAL_THEMES } from "../terminal/terminalThemes";
 import "./SettingsPanel.css";
 
 export type SettingsCategory = "appearance" | "editor" | "ai";
@@ -24,7 +25,7 @@ export function SettingsPanel({
   variant = "modal",
 }: Props) {
   const { theme, extras, setTheme } = useTheme();
-  const { settings, updateEditor, updateChromeAcrylic, reset } = useSettings();
+  const { settings, updateEditor, updateChromeAcrylic, updateApp, reset } = useSettings();
   const { settings: ai, setSettings: setAi } = useAi();
   const [activeTab, setActiveTab] = useState<SettingsCategory>(initialTab);
   const [showAdvancedAi, setShowAdvancedAi] = useState(false);
@@ -231,6 +232,19 @@ export function SettingsPanel({
                         }
                       }}
                     />
+                  </label>
+                  <label className="settings-row">
+                    <span>Terminal color theme</span>
+                    <select
+                      value={settings.terminalTheme}
+                      onChange={(e) => updateApp({ terminalTheme: e.target.value })}
+                    >
+                      {TERMINAL_THEMES.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.label}
+                        </option>
+                      ))}
+                    </select>
                   </label>
                 </section>
               )}

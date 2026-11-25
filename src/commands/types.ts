@@ -305,6 +305,7 @@ export type CommandContext = {
   killProcessByPid: () => Promise<void> | void;
   terminalScrollToPreviousCommand: () => void;
   terminalScrollToNextCommand: () => void;
+  selectTerminalColorTheme: () => Promise<void> | void;
 };
 
 export type Command = {

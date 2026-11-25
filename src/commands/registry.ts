@@ -1850,4 +1850,10 @@ export const COMMANDS: Command[] = [
     category: "Terminal",
     run: (ctx) => ctx.terminalScrollToNextCommand(),
   },
+  {
+    id: "workbench.action.terminal.selectColorTheme",
+    title: "Preferences: Select Terminal Color Theme",
+    category: "Preferences",
+    run: (ctx) => ctx.selectTerminalColorTheme(),
+  },
 ];

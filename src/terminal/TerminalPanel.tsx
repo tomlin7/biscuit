@@ -19,6 +19,7 @@ import { setRenameActiveTerminalListener } from "./renameTerminal";
 import { setRestartActiveTerminalListener } from "./restartTerminal";
 import { requestSplitTerminal, setSplitTerminalListener } from "./splitTerminal";
 import { setScrollCommandListener } from "./scrollCommand";
+import { resolveTerminalTheme } from "./terminalThemes";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -47,6 +48,7 @@ type SessionProps = {
   active: boolean;
   cwd: string | null;
   theme: "light" | "dark";
+  terminalTheme?: string;
   shell: ShellChoice;
   fontSize: number;
   runPath: string | null;
@@ -61,6 +63,7 @@ function TerminalSession({
   active,
   cwd,
   theme,
+  terminalTheme,
   shell,
   fontSize,
   runPath,
@@ -97,18 +100,7 @@ function TerminalSession({
       cursorBlink: true,
       fontFamily: "Cascadia Code, Consolas, monospace",
       fontSize,
-      theme:
-        theme === "light"
-          ? {
-              background: "#ffffff",
-              foreground: "#1a1a1a",
-              cursor: "#1a1a1a",
-            }
-          : {
-              background: "#141414",
-              foreground: "#e8e8e8",
-              cursor: "#e8e8e8",
-            },
+      theme: resolveTerminalTheme(terminalTheme, theme),
     });
     const fit = new FitAddon();
     term.loadAddon(fit);
@@ -387,7 +379,13 @@ function TerminalSession({
     fitRef.current?.fit();
   }, [fontSize]);
 
- return (
+  useEffect(() => {
+    const term = termRef.current;
+    if (!term) return;
+    term.options.theme = resolveTerminalTheme(terminalTheme, theme);
+  }, [terminalTheme, theme]);
+
+  return (
     <>
       <div className="terminal-panel__body" ref={hostRef} />
     </>
@@ -436,6 +434,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
     ? "light"
     : "dark";
   const terminalFontSize = settings.editor.terminalFontSize;
+  const terminalTheme = settings.terminalTheme;
   const [sessions, setSessions] = useState<TermSession[]>(() => [
     { id: nextSession, shell: "", runPath: null, command: null, cwd: null },
   ]);
@@ -819,6 +818,7 @@ export function TerminalPanel({ open, embedded = false }: Props) {
               active={open && visible}
               cwd={session.cwd ?? rootPath}
               theme={appearance}
+              terminalTheme={terminalTheme}
               shell={session.shell}
               fontSize={terminalFontSize}
               runPath={session.runPath}

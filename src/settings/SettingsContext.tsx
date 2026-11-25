@@ -47,6 +47,8 @@ export type AppSettings = {
   extensionRegistryUrl: string;
   /** Native OS desktop notifications for background task completion. */
   desktopNotifications: boolean;
+  /** Independent terminal color palette theme ('auto', 'dracula', 'one-dark', etc.) */
+  terminalTheme: string;
 };
 
 type SettingsState = {
@@ -54,7 +56,12 @@ type SettingsState = {
   updateEditor: (patch: Partial<EditorSettings>) => void;
   updateChromeAcrylic: (on: boolean) => void;
   updateApp: (
-    patch: Partial<Pick<AppSettings, "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications">>,
+    patch: Partial<
+      Pick<
+        AppSettings,
+        "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme"
+      >
+    >,
   ) => void;
   reset: () => void;
 };
@@ -85,6 +92,7 @@ const DEFAULTS: AppSettings = {
   extensionRegistryUrl:
     "https://raw.githubusercontent.com/Tomlin7/t3d/main/extensions-dist/index.json",
   desktopNotifications: true,
+  terminalTheme: "auto",
 };
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -114,6 +122,10 @@ function load(): AppSettings {
         typeof parsed.desktopNotifications === "boolean"
           ? parsed.desktopNotifications
           : DEFAULTS.desktopNotifications,
+      terminalTheme:
+        typeof parsed.terminalTheme === "string" && parsed.terminalTheme.trim()
+          ? parsed.terminalTheme.trim()
+          : DEFAULTS.terminalTheme,
     };
   } catch {
     return DEFAULTS;
@@ -167,7 +179,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const updateApp = useCallback(
     (
       patch: Partial<
-        Pick<AppSettings, "preferredEncoding" | "extensionRegistryUrl">
+        Pick<
+          AppSettings,
+          "preferredEncoding" | "extensionRegistryUrl" | "desktopNotifications" | "terminalTheme"
+        >
       >,
     ) => {
       setSettings((s) => ({ ...s, ...patch }));
