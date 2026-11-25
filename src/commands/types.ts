@@ -24,7 +24,6 @@ export type CommandContext = {
   closePalette: () => void;
   findInFile: () => void;
   findInSelection: () => void;
-  replaceInSelection: () => void;
   splitEditorRight: () => void;
   runEditorCommand: (
     command:
