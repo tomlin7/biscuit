@@ -167,6 +167,7 @@ export type CommandContext = {
   focusDebug: () => void;
   focusOutline: () => void;
   cycleFontFamily: () => void;
+  gitFocusCommitMessage: () => void;
 };
 
 export type Command = {

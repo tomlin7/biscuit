@@ -383,6 +383,10 @@ export function ScmPanel({ onBranch }: Props) {
         });
       } else if (action === "refresh") {
         void refresh();
+      } else if (action === "focusCommitMessage") {
+        window.setTimeout(() => {
+          window.document.getElementById("scm-commit-message")?.focus();
+        }, 0);
       } else void push();
     });
     return () => setScmRemoteListener(null);
@@ -409,7 +413,7 @@ export function ScmPanel({ onBranch }: Props) {
     <div className="scm-panel">
       <div className="scm-panel__toolbar">
         <span className="scm-panel__branch">
-          {summary?.branch ?? (loading ? "ΓÇª" : "ΓÇö")}
+          {summary?.branch ?? (loading ? "…" : "—")}
         </span>
         <span className="scm-panel__toolbar-actions">
           <button
@@ -530,7 +534,7 @@ export function ScmPanel({ onBranch }: Props) {
                     })();
                   }}
                 >
-                  ├ù
+                  ×
                 </button>
               ) : null}
             </div>
@@ -540,6 +544,7 @@ export function ScmPanel({ onBranch }: Props) {
       {error ? <p className="scm-panel__error">{error}</p> : null}
       <div className="scm-panel__commit">
         <textarea
+          id="scm-commit-message"
           className="scm-panel__message"
           rows={3}
           placeholder="Commit message"
@@ -835,7 +840,7 @@ export function ScmPanel({ onBranch }: Props) {
           {amend ? "Amend" : "Commit"}
         </button>
       </div>
-      {loading && !summary ? <p className="scm-panel__hint">LoadingΓÇª</p> : null}
+      {loading && !summary ? <p className="scm-panel__hint">Loading…</p> : null}
       {summary && summary.entries.length === 0 ? (
         <p className="scm-panel__hint">Working tree clean.</p>
       ) : null}
@@ -877,7 +882,7 @@ export function ScmPanel({ onBranch }: Props) {
                   );
                   void openFile(joinPath(rootPath, relative));
                 }}
-                title={`${entry.path} ΓÇö Enter to stage, unstage, or open`}
+                title={`${entry.path} — Enter to stage, unstage, or open`}
               >
                 <span className="scm-panel__status">{entry.status}</span>
                 <span className="scm-panel__path">{entry.path}</span>

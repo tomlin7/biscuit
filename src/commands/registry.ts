@@ -1004,4 +1004,10 @@ export const COMMANDS: Command[] = [
     category: "Preferences",
     run: (ctx) => ctx.cycleFontFamily(),
   },
+  {
+    id: "git.focusCommitMessage",
+    title: "Git: Focus Commit Message",
+    category: "Git",
+    run: (ctx) => ctx.gitFocusCommitMessage(),
+  },
 ];

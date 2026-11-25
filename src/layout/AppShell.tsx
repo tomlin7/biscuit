@@ -967,6 +967,11 @@ function ShellChrome() {
         const next = order[(idx >= 0 ? idx + 1 : 0) % order.length] ?? order[0];
         updateEditor({ fontFamily: next });
       },
+      gitFocusCommitMessage: () => {
+        setSidebarMode("scm");
+        setSidebarOpen(true);
+        requestScmRemote("focusCommitMessage");
+      },
     }),
     [
       openFolder,
