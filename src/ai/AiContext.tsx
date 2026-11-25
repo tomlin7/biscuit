@@ -4,11 +4,15 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
+import { useWorkspace } from "../workspace/WorkspaceContext";
+import { agentToolSchema, runAgentTool } from "./tools";
+import { runToolLoop } from "./toolLoop";
 
 export type ChatMessage = {
   id: string;
@@ -114,6 +118,9 @@ function basename(path: string): string {
 }
 
 export function AiProvider({ children }: { children: ReactNode }) {
+  const { rootPath, tabs, document, setValueAt, applyDiskValue } = useWorkspace();
+  const workspaceRef = useRef({ rootPath, tabs, document, setValueAt, applyDiskValue });
+  workspaceRef.current = { rootPath, tabs, document, setValueAt, applyDiskValue };
   const initial = useMemo(() => loadSessions(), []);
   const [sessions, setSessions] = useState<ChatSession[]>(initial.sessions);
   const [activeSessionId, setActiveSessionId] = useState(initial.activeSessionId);
@@ -307,41 +314,68 @@ export function AiProvider({ children }: { children: ReactNode }) {
           });
         }
 
-        const res = await fetch(
-          `${settings.baseUrl.replace(/\/$/, "")}/chat/completions`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${settings.apiKey}`,
-            },
-            body: JSON.stringify({
-              model: settings.model,
-              messages: history,
-            }),
+        const result = await runToolLoop({
+          messages: history,
+          complete: async (nextMessages) => {
+            const res = await fetch(
+              `${settings.baseUrl.replace(/\/$/, "")}/chat/completions`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${settings.apiKey}`,
+                },
+                body: JSON.stringify({
+                  model: settings.model,
+                  messages: nextMessages,
+                  tools: agentToolSchema,
+                }),
+              },
+            );
+            if (!res.ok) {
+              const text = await res.text();
+              throw new Error(text || `HTTP ${res.status}`);
+            }
+            const data = (await res.json()) as {
+              choices?: Array<{
+                message?: {
+                  content?: string | null;
+                  tool_calls?: Array<{
+                    id: string;
+                    function: { name: string; arguments: string };
+                  }>;
+                };
+              }>;
+            };
+            const message = data.choices?.[0]?.message;
+            return {
+              content: message?.content ?? null,
+              toolCalls: (message?.tool_calls ?? []).map((call) => ({
+                id: call.id,
+                name: call.function.name,
+                arguments: call.function.arguments,
+              })),
+            };
           },
-        );
-
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || `HTTP ${res.status}`);
-        }
-
-        const data = (await res.json()) as {
-          choices?: Array<{ message?: { content?: string } }>;
-        };
-        const content =
-          data.choices?.[0]?.message?.content?.trim() ||
-          "(empty response from model)";
-
-        const toolCalls =
-          attachments.length > 0
-            ? attachments.map((a, i) => ({
-                id: `read-${i}`,
-                name: "read_file",
-                detail: a.path,
-              }))
-            : undefined;
+          callTool: async (name, args) => {
+            const workspace = workspaceRef.current;
+            const outcome = await runAgentTool(
+              name,
+              args,
+              workspace.rootPath ?? "",
+              {
+                tabs: workspace.tabs,
+                setValueAt: workspace.setValueAt,
+                applyDiskValue: workspace.applyDiskValue,
+              },
+              {
+                path: workspace.document?.path ?? null,
+                text: workspace.document?.value ?? null,
+              },
+            );
+            return outcome.text;
+          },
+        });
 
         patchActive((session) => ({
           ...session,
@@ -350,9 +384,9 @@ export function AiProvider({ children }: { children: ReactNode }) {
             {
               id: crypto.randomUUID(),
               role: "assistant",
-              content,
+              content: result.content,
               createdAt: Date.now(),
-              toolCalls,
+              toolCalls: result.toolCalls.length > 0 ? result.toolCalls : undefined,
             },
           ],
           updatedAt: Date.now(),
