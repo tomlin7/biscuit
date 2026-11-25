@@ -129,6 +129,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.121.0** | Persist diff ignore-whitespace | shipped |
 | **0.122.0** | Extension search + enabled filter | shipped |
 | **0.123.0** | Notification action buttons | shipped |
+| **0.124.0** | Add selection to next find match | shipped |
+| **0.125.0** | Fold all / unfold all | shipped |
+| **0.126.0** | SCM dirty file count in status bar | shipped |
+| **0.127.0** | Recent commands in palette | shipped |
+| **0.128.0** | Image zoom controls | shipped |
+| **0.129.0** | Agent attach selection | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

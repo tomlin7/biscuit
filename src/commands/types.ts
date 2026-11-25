@@ -35,7 +35,10 @@ export type CommandContext = {
       | "references"
       | "rename"
       | "format"
-      | "hover",
+      | "hover"
+      | "addNextMatch"
+      | "foldAll"
+      | "unfoldAll",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;

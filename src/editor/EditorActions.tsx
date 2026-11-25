@@ -48,7 +48,10 @@ export type EditorCommand =
   | "references"
   | "rename"
   | "format"
-  | "hover";
+  | "hover"
+  | "addNextMatch"
+  | "foldAll"
+  | "unfoldAll";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -129,6 +132,15 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "hover":
         handle.trigger("editor.action.showHover");
+        break;
+      case "addNextMatch":
+        handle.trigger("editor.action.addSelectionToNextFindMatch");
+        break;
+      case "foldAll":
+        handle.trigger("editor.foldAll");
+        break;
+      case "unfoldAll":
+        handle.trigger("editor.unfoldAll");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

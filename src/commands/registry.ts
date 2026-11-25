@@ -133,6 +133,25 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("hover"),
   },
   {
+    id: "editor.action.addSelectionToNextFindMatch",
+    title: "Add Selection To Next Find Match",
+    category: "Edit",
+    keybinding: "Ctrl+D",
+    run: (ctx) => ctx.runEditorCommand("addNextMatch"),
+  },
+  {
+    id: "editor.foldAll",
+    title: "Fold All",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("foldAll"),
+  },
+  {
+    id: "editor.unfoldAll",
+    title: "Unfold All",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("unfoldAll"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

@@ -112,6 +112,7 @@ function ShellChrome() {
   const [gitBranch, setGitBranch] = useState<string | null>(null);
   const [gitAhead, setGitAhead] = useState<number | null>(null);
   const [gitBehind, setGitBehind] = useState<number | null>(null);
+  const [gitDirtyCount, setGitDirtyCount] = useState(0);
   const [treeFilter, setTreeFilter] = useState("");
   const [hideDotfiles, setHideDotfiles] = useState(false);
 
@@ -120,11 +121,13 @@ function ShellChrome() {
       setGitBranch(null);
       setGitAhead(null);
       setGitBehind(null);
+      setGitDirtyCount(0);
       return;
     }
     setGitBranch(info.branch);
     setGitAhead(info.ahead);
     setGitBehind(info.behind);
+    setGitDirtyCount(info.dirtyCount);
   }, []);
 
   useEffect(() => {
@@ -146,6 +149,7 @@ function ShellChrome() {
             branch: summary.branch,
             ahead: summary.ahead ?? null,
             behind: summary.behind ?? null,
+            dirtyCount: summary.entries?.length ?? 0,
           });
         }
       })
@@ -534,6 +538,13 @@ function ShellChrome() {
         return;
       }
 
+      if (mod && !event.shiftKey && key === "d") {
+        event.preventDefault();
+        runEditorCommand("addNextMatch");
+        clearChord();
+        return;
+      }
+
       if (mod && !event.shiftKey && key === "t") {
         event.preventDefault();
         openWorkspaceSymbols();
@@ -826,6 +837,7 @@ function ShellChrome() {
         gitBranch={gitBranch}
         gitAhead={gitAhead}
         gitBehind={gitBehind}
+        gitDirtyCount={gitDirtyCount}
       />
       <CommandPalette
         open={paletteOpen}
