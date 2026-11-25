@@ -195,6 +195,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("transposeLetters"),
   },
   {
+    id: "editor.action.jumpToBracket",
+    title: "Go to Matching Bracket",
+    category: "Go",
+    run: (ctx) => ctx.runEditorCommand("jumpToBracket"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

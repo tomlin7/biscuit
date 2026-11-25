@@ -58,7 +58,8 @@ export type EditorCommand =
   | "joinLines"
   | "sortLines"
   | "duplicateSelection"
-  | "transposeLetters";
+  | "transposeLetters"
+  | "jumpToBracket";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -169,6 +170,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "transposeLetters":
         handle.trigger("editor.action.transposeLetters");
+        break;
+      case "jumpToBracket":
+        handle.trigger("editor.action.jumpToBracket");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";

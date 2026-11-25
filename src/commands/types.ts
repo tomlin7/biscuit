@@ -45,7 +45,8 @@ export type CommandContext = {
       | "joinLines"
       | "sortLines"
       | "duplicateSelection"
-      | "transposeLetters",
+      | "transposeLetters"
+      | "jumpToBracket",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;
