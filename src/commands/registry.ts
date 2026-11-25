@@ -170,6 +170,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("lowercase"),
   },
   {
+    id: "editor.action.transformToTitlecase",
+    title: "Transform to Title Case",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("titlecase"),
+  },
+  {
     id: "editor.action.blockComment",
     title: "Toggle Block Comment",
     category: "Edit",

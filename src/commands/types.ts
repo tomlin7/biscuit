@@ -41,6 +41,7 @@ export type CommandContext = {
       | "unfoldAll"
       | "uppercase"
       | "lowercase"
+      | "titlecase"
       | "blockComment"
       | "joinLines"
       | "sortLines"

@@ -54,6 +54,7 @@ export type EditorCommand =
   | "unfoldAll"
   | "uppercase"
   | "lowercase"
+  | "titlecase"
   | "blockComment"
   | "joinLines"
   | "sortLines"
@@ -158,6 +159,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "lowercase":
         handle.trigger("editor.action.transformToLowercase");
+        break;
+      case "titlecase":
+        handle.trigger("editor.action.transformToTitlecase");
         break;
       case "blockComment":
         handle.trigger("editor.action.blockComment");
