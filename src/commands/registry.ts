@@ -189,6 +189,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.runEditorCommand("duplicateSelection"),
   },
   {
+    id: "editor.action.transposeLetters",
+    title: "Transpose Letters",
+    category: "Edit",
+    run: (ctx) => ctx.runEditorCommand("transposeLetters"),
+  },
+  {
     id: "editor.action.commentLine",
     title: "Toggle Line Comment",
     category: "Edit",

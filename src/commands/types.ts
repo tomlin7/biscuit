@@ -44,7 +44,8 @@ export type CommandContext = {
       | "blockComment"
       | "joinLines"
       | "sortLines"
-      | "duplicateSelection",
+      | "duplicateSelection"
+      | "transposeLetters",
   ) => void;
   revealActiveFile: () => void;
   openSearch: () => void;

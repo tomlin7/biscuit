@@ -57,7 +57,8 @@ export type EditorCommand =
   | "blockComment"
   | "joinLines"
   | "sortLines"
-  | "duplicateSelection";
+  | "duplicateSelection"
+  | "transposeLetters";
 
 type EditorActionsState = {
   registerFindHandler: (handler: (() => void) | null) => void;
@@ -165,6 +166,9 @@ export function EditorActionsProvider({ children }: { children: ReactNode }) {
         break;
       case "duplicateSelection":
         handle.trigger("editor.action.duplicateSelection");
+        break;
+      case "transposeLetters":
+        handle.trigger("editor.action.transposeLetters");
         break;
       case "wordWrap":
         wordWrap.current = wordWrap.current === "on" ? "off" : "on";
