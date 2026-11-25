@@ -1583,6 +1583,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.continueDebugging(),
   },
   {
+    id: "workbench.action.debug.pause",
+    title: "Pause / Continue Debugging",
+    category: "Debug",
+    run: (ctx) => ctx.toggleDebugPause(),
+  },
+  {
     id: "editor.debug.action.toggleBreakpoint",
     title: "Toggle Breakpoint",
     category: "Debug",

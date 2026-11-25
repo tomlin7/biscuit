@@ -247,6 +247,7 @@ export type CommandContext = {
   newExplorerFolder: () => void;
   toggleLineEnding: () => void;
   continueDebugging: () => void;
+  toggleDebugPause: () => void;
   toggleBreakpointCurrentLine: () => void;
   openDocumentation: () => void;
   toggleChromeAcrylic: () => void;

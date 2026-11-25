@@ -173,6 +173,7 @@ function ShellChrome() {
     startSession: startDebugSession,
     stopSession: stopDebugSession,
     stepPython: stepDebugPython,
+    pythonStop: debugPythonStop,
     addBreakpoint,
     removeBreakpoint,
     clearBreakpoints,
@@ -1551,6 +1552,23 @@ function ShellChrome() {
           if (frame) void openFileAt(frame.file, frame.line, 1);
         });
       },
+      toggleDebugPause: () => {
+        setSidebarMode("debug");
+        setSidebarOpen(true);
+        if (debugPythonStop?.event === "stopped") {
+          void stepDebugPython("continue").then((next) => {
+            const frame = next?.frames[0];
+            if (frame) void openFileAt(frame.file, frame.line, 1);
+          });
+          return;
+        }
+        notify(
+          "Debug",
+          debugSessions.some((session) => session.running)
+            ? "Pause is only available while stopped at a breakpoint; set one to break into the running program."
+            : "No debug session is running.",
+        );
+      },
       toggleBreakpointCurrentLine: () => {
         if (!activePath || isUntitledPath(activePath)) return;
         const line = document?.cursorLine ?? 1;
@@ -2229,6 +2247,7 @@ function ShellChrome() {
       startDebugSession,
       stopDebugSession,
       stepDebugPython,
+      debugPythonStop,
       createEntry,
       setEol,
       document,
