@@ -1513,6 +1513,9 @@ function ShellChrome() {
           void win.setFullscreen(!full);
         });
       },
+      reloadWindow: () => {
+        window.location.reload();
+      },
     }),
     [
       openFolder,

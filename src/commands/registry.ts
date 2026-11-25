@@ -1504,7 +1504,12 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.toggleFullScreen(),
   },
-
+  {
+    id: "workbench.action.reloadWindow",
+    title: "Reload Window",
+    category: "Developer",
+    run: (ctx) => ctx.reloadWindow(),
+  },
 
 
 

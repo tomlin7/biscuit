@@ -249,6 +249,7 @@ export type CommandContext = {
   deleteExplorerEntry: () => void;
   toggleAlwaysOnTop: () => void;
   toggleFullScreen: () => void;
+  reloadWindow: () => void;
 };
 
 export type Command = {
