@@ -19,9 +19,25 @@ def emit(payload):
 
 
 class Session(bdb.Bdb):
+    def __init__(self):
+        super().__init__()
+        self.script = ""
+        self.stepping = False
+
+    def in_script(self, frame):
+        filename = frame.f_code.co_filename
+        try:
+            filename = os.path.normcase(os.path.abspath(filename))
+        except OSError:
+            return False
+        return filename == os.path.normcase(self.script)
+
     def user_line(self, frame):
-        if not self.break_here(frame):
+        if not self.in_script(frame):
             return
+        if not self.break_here(frame) and not self.stepping:
+            return
+        self.stepping = False
         frames = []
         current = frame
         while current is not None:
@@ -52,14 +68,19 @@ class Session(bdb.Bdb):
                 raise SystemExit(0)
             command = line.strip()
             if command == "continue":
+                self.stepping = False
+                self.set_continue()
                 return
             if command == "next":
+                self.stepping = True
                 self.set_next(frame)
                 return
             if command == "step":
+                self.stepping = True
                 self.set_step()
                 return
             if command == "return":
+                self.stepping = True
                 self.set_return(frame)
                 return
 
@@ -68,6 +89,7 @@ def main():
     script = os.path.abspath(sys.argv[1])
     breaks = json.loads(sys.argv[2])
     session = Session()
+    session.script = script
     for item in breaks:
         session.set_break(os.path.abspath(item["file"]), int(item["line"]))
     try:

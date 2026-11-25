@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 use std::process::{Child, ChildStderr, ChildStdin, Command, Stdio};
 use std::sync::Mutex;
@@ -9,7 +9,6 @@ const DEBUG_HELPER: &str = include_str!("debug_helper.py");
 
 struct PySession {
     child: Child,
-    #[allow(dead_code)]
     stdin: ChildStdin,
     stderr: BufReader<ChildStderr>,
 }
@@ -281,6 +280,39 @@ pub fn debug_py_start(
     Ok(stop)
 }
 
+fn send_python_command(session: &mut PySession, command: &str) -> Result<serde_json::Value, String> {
+    writeln!(session.stdin, "{command}").map_err(|err| err.to_string())?;
+    session.stdin.flush().map_err(|err| err.to_string())?;
+    read_debug_event(&mut session.stderr)
+}
+
+#[tauri::command]
+pub fn debug_py_command(
+    state: tauri::State<'_, DebugState>,
+    id: String,
+    command: String,
+) -> Result<PyStop, String> {
+    if !matches!(command.as_str(), "continue" | "next" | "step" | "return") {
+        return Err("unsupported debug command".into());
+    }
+    let event = {
+        let mut python = state.python.lock().map_err(|err| err.to_string())?;
+        let session = python
+            .get_mut(&id)
+            .ok_or_else(|| "debug session is not paused".to_string())?;
+        send_python_command(session, &command)?
+    };
+    let stop = stop_from_event(id.clone(), event)?;
+    if stop.event != "stopped" {
+        let mut python = state.python.lock().map_err(|err| err.to_string())?;
+        if let Some(mut session) = python.remove(&id) {
+            let _ = session.child.kill();
+            let _ = session.child.wait();
+        }
+    }
+    Ok(stop)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{launch_spec, spawn_python_debug, stop_from_event, PyBreak};
@@ -339,6 +371,44 @@ mod tests {
         assert_eq!(stop.event, "stopped");
         assert_eq!(stop.frames[0].name, "add");
         assert_eq!(stop.locals.get("left").map(String::as_str), Some("2"));
+        let _ = session.child.kill();
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn step_over_moves_to_the_next_line() {
+        let python = std::env::temp_dir()
+            .join("t3d-debugpy-venv")
+            .join("Scripts")
+            .join("python.exe");
+        if !python.exists() {
+            return;
+        }
+        let dir = std::env::temp_dir().join(format!("t3d-pystep-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let script = dir.join("sample.py");
+        std::fs::write(
+            &script,
+            "def add(left, right):\n    total = left + right\n    return total\n\nadd(2, 3)\n",
+        )
+        .unwrap();
+        let (mut session, event) = spawn_python_debug(
+            &python.to_string_lossy(),
+            &script.to_string_lossy(),
+            &[PyBreak {
+                file: script.to_string_lossy().to_string(),
+                line: 2,
+            }],
+        )
+        .unwrap();
+        let first = stop_from_event("test".into(), event).unwrap();
+        assert_eq!(first.frames[0].line, 2);
+        let stepped = super::send_python_command(&mut session, "next").unwrap();
+        let second = stop_from_event("test".into(), stepped).unwrap();
+        assert_eq!(second.event, "stopped");
+        assert_eq!(second.frames[0].name, "add");
+        assert_eq!(second.frames[0].line, 3);
         let _ = session.child.kill();
         let _ = std::fs::remove_dir_all(&dir);
     }

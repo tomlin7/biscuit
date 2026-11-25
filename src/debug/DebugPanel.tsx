@@ -10,6 +10,7 @@ export function DebugPanel() {
     toggleBreakpoint,
     startSession,
     stopSession,
+    stepPython,
     pythonStop,
     pythonError,
   } = useDebug();
@@ -54,6 +55,40 @@ export function DebugPanel() {
         )}
       </section>
 
+      {pythonStop?.event === "stopped" ? (
+        <div className="debug-panel__toolbar">
+          {(
+            [
+              ["continue", "Continue"],
+              ["next", "Step over"],
+              ["step", "Step into"],
+              ["return", "Step out"],
+            ] as const
+          ).map(([command, label]) => (
+            <button
+              key={command}
+              type="button"
+              onClick={() => {
+                void stepPython(command).then((next) => {
+                  const frame = next?.frames[0];
+                  if (frame) void openFileAt(frame.file, frame.line, 1);
+                });
+              }}
+            >
+              {label}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              if (!activePath) return;
+              void stopSession(pythonStop.id).then(() => startSession(activePath));
+            }}
+          >
+            Restart
+          </button>
+        </div>
+      ) : null}
       {pythonError ? <p className="debug-panel__hint">{pythonError}</p> : null}
       {pythonStop ? (
         <>

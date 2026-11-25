@@ -45,6 +45,7 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.37.0** | Run the active file in a terminal tab | shipped |
 | **0.38.0** | Logs panel for folder, save, git, terminal, and debug failures | shipped |
 | **0.39.0** | Python call stack and locals when debugpy is installed | shipped |
+| **0.40.0** | Continue, step, and restart a paused Python debug session | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target

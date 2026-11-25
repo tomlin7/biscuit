@@ -44,6 +44,7 @@ type DebugState = {
   toggleBreakpoint: (id: string) => void;
   startSession: (path: string) => Promise<void>;
   stopSession: (id: string) => Promise<void>;
+  stepPython: (command: "continue" | "next" | "step" | "return") => Promise<PyStop | null>;
   pythonStop: PyStop | null;
   pythonError: string | null;
 };
@@ -118,6 +119,32 @@ export function DebugProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const stepPython = useCallback(
+    async (command: "continue" | "next" | "step" | "return") => {
+      const id = pythonStop?.id;
+      if (!id || pythonStop.event !== "stopped") return null;
+      try {
+        const next = await invoke<PyStop>("debug_py_command", { id, command });
+        setPythonStop(next);
+        setPythonError(null);
+        if (next.event !== "stopped") {
+          setSessions((current) =>
+            current.map((session) =>
+              session.id === id ? { ...session, running: false } : session,
+            ),
+          );
+        }
+        return next;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        setPythonError(message);
+        appendLog(`Debug step failed: ${message}`);
+        return null;
+      }
+    },
+    [pythonStop],
+  );
+
   const stopSession = useCallback(async (id: string) => {
     await invoke("debug_stop", { id });
     setSessions((current) =>
@@ -134,6 +161,7 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       toggleBreakpoint,
       startSession,
       stopSession,
+      stepPython,
       pythonStop,
       pythonError,
     }),
@@ -145,6 +173,7 @@ export function DebugProvider({ children }: { children: ReactNode }) {
       toggleBreakpoint,
       startSession,
       stopSession,
+      stepPython,
       pythonStop,
       pythonError,
     ],

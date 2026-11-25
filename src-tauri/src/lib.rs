@@ -4,7 +4,7 @@ mod extensions;
 mod debug;
 mod fsops;
 
-use debug::{debug_launch, debug_py_start, debug_stop, DebugState};
+use debug::{debug_launch, debug_py_command, debug_py_start, debug_stop, DebugState};
 use extensions::{
     install_sample_extension, list_extensions, set_extension_enabled,
 };
@@ -47,6 +47,7 @@ pub fn run() {
             install_sample_extension,
             debug_launch,
             debug_py_start,
+            debug_py_command,
             debug_stop,
             fs_create_file,
             fs_mkdir,
