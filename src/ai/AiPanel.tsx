@@ -48,10 +48,12 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
     attachPath,
     cycleEffort,
   } = useAi();
-  const { document } = useWorkspace();
+  const { document, tabs } = useWorkspace();
   const { toggleAi } = useLayout();
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [mentionIndex, setMentionIndex] = useState(0);
 
   useEffect(() => {
     if (!document) return;
@@ -117,6 +119,36 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
   const filteredHistory = useMemo(() => {
     return [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
   }, [sessions]);
+
+  const mentionCandidates = useMemo(() => {
+    if (mentionQuery === null) return [];
+    const q = mentionQuery.toLowerCase();
+    return tabs
+      .filter((tab) => !q || tab.title.toLowerCase().includes(q) || tab.path.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [mentionQuery, tabs]);
+
+  const applyMention = (tab: { path: string; title: string; value: string }) => {
+    attachPath(tab.path, tab.title, tab.value.slice(0, 12000));
+    setDraft((current) => {
+      const match = current.match(/@([^\s@]*)$/);
+      if (!match) return current;
+      return `${current.slice(0, current.length - match[0].length)}@${tab.title} `;
+    });
+    setMentionQuery(null);
+    setMentionIndex(0);
+  };
+
+  const onDraftChange = (value: string) => {
+    setDraft(value);
+    const match = value.match(/@([^\s@]*)$/);
+    if (match) {
+      setMentionQuery(match[1]);
+      setMentionIndex(0);
+    } else {
+      setMentionQuery(null);
+    }
+  };
 
   const showSoftChip =
     document != null && !attachments.some((a) => a.path === document.path);
@@ -251,14 +283,63 @@ export function AiPanel({ onOpenSettings, onOpenSearch, onOpenPalette }: Props) 
         ) : null}
 
         <div className="ai-panel__composer">
+          {mentionCandidates.length > 0 ? (
+            <div className="ai-panel__mentions" role="listbox">
+              {mentionCandidates.map((tab, index) => (
+                <button
+                  key={tab.path}
+                  type="button"
+                  role="option"
+                  aria-selected={index === mentionIndex}
+                  className={
+                    index === mentionIndex
+                      ? "ai-panel__mention ai-panel__mention--active"
+                      : "ai-panel__mention"
+                  }
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    applyMention(tab);
+                  }}
+                >
+                  <FileIcon name={tab.title} kind="file" size={12} />
+                  <span>{tab.title}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
           <textarea
             className="ai-panel__composer-input"
             rows={3}
             placeholder="Ask anything… (@ files, / commands)"
             value={draft}
             disabled={busy}
-            onChange={(e) => setDraft(e.target.value)}
+            onChange={(e) => onDraftChange(e.target.value)}
             onKeyDown={(e) => {
+              if (mentionCandidates.length > 0) {
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  setMentionIndex((i) => (i + 1) % mentionCandidates.length);
+                  return;
+                }
+                if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  setMentionIndex(
+                    (i) => (i - 1 + mentionCandidates.length) % mentionCandidates.length,
+                  );
+                  return;
+                }
+                if (e.key === "Enter" || e.key === "Tab") {
+                  e.preventDefault();
+                  const pick = mentionCandidates[mentionIndex] ?? mentionCandidates[0];
+                  if (pick) applyMention(pick);
+                  return;
+                }
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  setMentionQuery(null);
+                  return;
+                }
+              }
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 submit();

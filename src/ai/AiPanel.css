@@ -160,6 +160,40 @@
   border-radius: var(--radius-control);
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.ai-panel__mentions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 160px;
+  overflow: auto;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--bg-island-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.ai-panel__mention {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ai-panel__mention:hover,
+.ai-panel__mention--active {
+  color: var(--fg);
+  background: var(--bg-hover);
 }
 
 .ai-panel__composer-input {
