@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { COMMANDS } from "./registry";
+import { rememberCommandId, readRecentCommandIds } from "./recentCommands";
 import { matchCommandQuery, type Command, type CommandContext } from "./types";
 import "./CommandPalette.css";
 
@@ -20,18 +21,30 @@ export function CommandPalette({
 }: Props) {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
+  const [recentIds, setRecentIds] = useState<string[]>(() => readRecentCommandIds());
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const items = useMemo(
-    () =>
-      [...COMMANDS, ...extraCommands]
-        .filter((cmd) => matchCommandQuery(cmd.title, query))
-        .filter((cmd) => (cmd.when ? cmd.when(context) : true)),
-    [query, context, extraCommands],
-  );
+  const items = useMemo(() => {
+    const all = [...COMMANDS, ...extraCommands].filter((cmd) =>
+      cmd.when ? cmd.when(context) : true,
+    );
+    const matched = all.filter((cmd) => matchCommandQuery(cmd.title, query));
+    if (query.trim()) return matched;
+
+    const byId = new Map(all.map((cmd) => [cmd.id, cmd]));
+    const recent: Command[] = [];
+    for (const id of recentIds) {
+      const cmd = byId.get(id);
+      if (cmd) recent.push({ ...cmd, category: cmd.category ? `Recent · ${cmd.category}` : "Recent" });
+    }
+    const recentSet = new Set(recent.map((cmd) => cmd.id));
+    const rest = matched.filter((cmd) => !recentSet.has(cmd.id));
+    return [...recent, ...rest];
+  }, [query, context, extraCommands, recentIds]);
 
   useEffect(() => {
     if (!open) return;
+    setRecentIds(readRecentCommandIds());
     setQuery(seed);
     setIndex(0);
     const id = window.setTimeout(() => inputRef.current?.focus(), 0);
@@ -47,6 +60,8 @@ export function CommandPalette({
   const runAt = (i: number) => {
     const cmd = items[i];
     if (!cmd) return;
+    rememberCommandId(cmd.id);
+    setRecentIds(readRecentCommandIds());
     onClose();
     void cmd.run(context);
   };
@@ -93,7 +108,7 @@ export function CommandPalette({
             <li className="command-palette__empty">No matching commands</li>
           ) : (
             items.map((cmd, i) => (
-              <li key={cmd.id}>
+              <li key={`${cmd.id}:${cmd.category ?? ""}:${i}`}>
                 <button
                   type="button"
                   role="option"
