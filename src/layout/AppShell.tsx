@@ -65,6 +65,7 @@ function ShellChrome() {
     roots,
     refreshExplorer,
     collapseExplorer,
+    expandExplorer,
     explorerNonce,
     revealInExplorer,
   } = useWorkspace();
@@ -393,6 +394,7 @@ function ShellChrome() {
       openKeybindings,
       refreshExplorer,
       collapseExplorer,
+      expandExplorer,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -444,6 +446,7 @@ function ShellChrome() {
       openKeybindings,
       refreshExplorer,
       collapseExplorer,
+      expandExplorer,
       cloneRepository,
       openFolderAt,
       openFile,

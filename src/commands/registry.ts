@@ -47,6 +47,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.collapseExplorer(),
   },
   {
+    id: "workbench.files.action.expandExplorerFolders",
+    title: "Expand Folders in Explorer",
+    category: "File",
+    run: (ctx) => ctx.expandExplorer(),
+  },
+  {
     id: "workbench.action.quickOpen",
     title: "Go to File…",
     category: "Go",

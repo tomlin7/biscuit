@@ -102,6 +102,7 @@ export type WorkspaceState = {
   clearRevealTarget: () => void;
   refreshExplorer: () => Promise<void>;
   collapseExplorer: () => void;
+  expandExplorer: () => void;
   save: () => Promise<void>;
   saveAs: () => Promise<void>;
   saveAll: () => Promise<void>;
@@ -808,6 +809,23 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setExpanded(new Set());
   }, []);
 
+  const expandExplorer = useCallback(() => {
+    const dirs: string[] = [];
+    const walk = (nodes: TreeNode[]) => {
+      for (const node of nodes) {
+        if (node.kind !== "directory") continue;
+        dirs.push(node.path);
+        if (node.children?.length) walk(node.children);
+      }
+    };
+    walk(tree);
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      for (const path of dirs) next.add(path);
+      return next;
+    });
+  }, [tree]);
+
   const saveDirtyAuto = useCallback(async () => {
     const dirty = tabsRef.current.filter(isDirty);
     if (dirty.length === 0) return;
@@ -1114,6 +1132,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       clearRevealTarget,
       refreshExplorer,
       collapseExplorer,
+      expandExplorer,
       save,
       saveAs,
       saveAll,
@@ -1162,6 +1181,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       clearRevealTarget,
       refreshExplorer,
       collapseExplorer,
+      expandExplorer,
       save,
       saveAs,
       saveAll,
