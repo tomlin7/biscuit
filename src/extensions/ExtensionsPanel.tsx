@@ -14,15 +14,19 @@ export function ExtensionsPanel() {
     scaffoldInFolder,
   } = useExtensions();
   const [query, setQuery] = useState("");
+  const [enabledOnly, setEnabledOnly] = useState(false);
   const shown = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return extensions;
-    return extensions.filter(
-      (ext) =>
+    return extensions.filter((ext) => {
+      if (enabledOnly && !ext.enabled) return false;
+      if (!needle) return true;
+      return (
         ext.name.toLowerCase().includes(needle) ||
-        ext.id.toLowerCase().includes(needle),
-    );
-  }, [extensions, query]);
+        ext.id.toLowerCase().includes(needle) ||
+        (ext.description ?? "").toLowerCase().includes(needle)
+      );
+    });
+  }, [extensions, query, enabledOnly]);
 
   return (
     <div className="ext-panel">
@@ -40,12 +44,26 @@ export function ExtensionsPanel() {
           Install sample
         </button>
       </div>
-      <input
-        className="ext-panel__search"
-        value={query}
-        placeholder="Search installed extensions"
-        onChange={(event) => setQuery(event.target.value)}
-      />
+      <div className="ext-panel__filters">
+        <input
+          className="ext-panel__search"
+          value={query}
+          placeholder="Search name, id, or description"
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <button
+          type="button"
+          className={
+            enabledOnly
+              ? "ext-panel__chip ext-panel__chip--active"
+              : "ext-panel__chip"
+          }
+          aria-pressed={enabledOnly}
+          onClick={() => setEnabledOnly((value) => !value)}
+        >
+          Enabled only
+        </button>
+      </div>
       {loading ? <p className="ext-panel__hint">Loading…</p> : null}
       {error ? <p className="ext-panel__error">{error}</p> : null}
       {extensions.length === 0 && !loading ? (
@@ -54,7 +72,7 @@ export function ExtensionsPanel() {
           extension.json, or start a new one.
         </p>
       ) : shown.length === 0 ? (
-        <p className="ext-panel__hint">No extensions match that name.</p>
+        <p className="ext-panel__hint">No extensions match that filter.</p>
       ) : (
         <ul className="ext-panel__list">
           {shown.map((ext) => (
