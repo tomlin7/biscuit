@@ -63,6 +63,7 @@ export type WorkspaceState = {
   openFolderAt: (path: string) => Promise<void>;
   addFolderRoot: () => Promise<void>;
   removeFolderRoot: (path: string) => Promise<void>;
+  closeFolder: () => void;
   reopenClosed: () => Promise<void>;
   toggleDirectory: (path: string) => Promise<void>;
   openFile: (path: string) => Promise<void>;
@@ -305,6 +306,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setTree((current) => current.filter((node) => node.path.replace(/\\/g, "/").toLowerCase() !== key));
     }
     appendLog(`Removed folder ${path}`);
+  }, []);
+
+  const closeFolder = useCallback(() => {
+    setRootPath(null);
+    setRoots([]);
+    setTree([]);
+    setExpanded(new Set());
+    setTabs([]);
+    setActivePath(null);
+    setTreeError(null);
+    writeSession(null);
+    appendLog("Closed folder");
   }, []);
 
   const sessionReady = useRef(false);
@@ -979,6 +992,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolderAt,
       addFolderRoot,
       removeFolderRoot,
+      closeFolder,
       reopenClosed,
       toggleDirectory,
       openFile,
@@ -1019,6 +1033,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       openFolderAt,
       addFolderRoot,
       removeFolderRoot,
+      closeFolder,
       reopenClosed,
       toggleDirectory,
       openFile,

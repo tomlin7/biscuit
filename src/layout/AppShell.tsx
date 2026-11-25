@@ -27,6 +27,7 @@ import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
 import { useFileDrop } from "../workspace/fileDrop";
 import { recentFiles, recentFolders } from "../workspace/history";
+import { listWorkspaceFiles } from "../search/workspaceSearch";
 import { symbolsForFile } from "../lsp/OutlinePanel";
 import { TitleBar } from "./TitleBar";
 import { Sidebar, type SidebarMode } from "./Sidebar";
@@ -48,12 +49,14 @@ function ShellChrome() {
     openFolderAt,
     addFolderRoot,
     removeFolderRoot,
+    closeFolder,
     openFile,
     openDroppedPaths,
     openFileAt,
     reopenClosed,
     document,
     rootPath,
+    roots,
     explorerNonce,
   } = useWorkspace();
   useFileDrop(openDroppedPaths);
@@ -163,6 +166,29 @@ function ShellChrome() {
     setPaletteSeed("Go to Symbol");
     setPaletteOpen(true);
   }, [document, openFileAt]);
+
+  const openGoToFile = useCallback(() => {
+    const folderList = roots.length > 0 ? roots : rootPath ? [rootPath] : [];
+    if (folderList.length === 0) {
+      setSymbolCommands([]);
+      setPaletteSeed("");
+      setPaletteOpen(true);
+      return;
+    }
+    setPaletteSeed("");
+    setPaletteOpen(true);
+    void listWorkspaceFiles(folderList).then((files) => {
+      setSymbolCommands(
+        files.slice(0, 400).map((path) => ({
+          id: `file:${path}`,
+          title: `Go to File — ${basename(path)}`,
+          category: "File",
+          run: () => void openFile(path),
+        })),
+      );
+    });
+  }, [roots, rootPath, openFile]);
+
   const closePalette = useCallback(() => setPaletteOpen(false), []);
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
@@ -247,6 +273,8 @@ function ShellChrome() {
       openFolder,
       addFolderRoot,
       removeFolderRoot,
+      closeFolder,
+      openGoToFile,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -284,6 +312,8 @@ function ShellChrome() {
       openFolder,
       addFolderRoot,
       removeFolderRoot,
+      closeFolder,
+      openGoToFile,
       cloneRepository,
       openFolderAt,
       openFile,
@@ -365,6 +395,13 @@ function ShellChrome() {
       if (mod && event.shiftKey && key === "o") {
         event.preventDefault();
         openSymbols();
+        clearChord();
+        return;
+      }
+
+      if (mod && !event.shiftKey && key === "t") {
+        event.preventDefault();
+        openGoToFile();
         clearChord();
         return;
       }
@@ -497,6 +534,7 @@ function ShellChrome() {
     closeSettings,
     openPalette,
     openSymbols,
+    openGoToFile,
     reopenClosed,
     openSettings,
     openSearch,

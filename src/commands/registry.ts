@@ -29,6 +29,19 @@ export const COMMANDS: Command[] = [
     run: (ctx) => void ctx.openFolder(),
   },
   {
+    id: "workbench.action.closeFolder",
+    title: "Close Folder",
+    category: "File",
+    run: (ctx) => ctx.closeFolder(),
+  },
+  {
+    id: "workbench.action.quickOpen",
+    title: "Go to File…",
+    category: "Go",
+    keybinding: "Ctrl+T",
+    run: (ctx) => ctx.openGoToFile(),
+  },
+  {
     id: "workbench.action.addRootFolder",
     title: "Add Folder to Workspace…",
     category: "File",

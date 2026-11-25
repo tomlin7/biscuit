@@ -82,6 +82,12 @@ Each row is a shippable `0.x` release. **1.0.0 ships only when the owner decides
 | **0.74.0** | Terminal select-all with Ctrl+Shift+A | shipped |
 | **0.75.0** | Find match count while replace is open | shipped |
 | **0.76.0** | Agent composer @ file mention | shipped |
+| **0.77.0** | Close folder clears the workspace | shipped |
+| **0.78.0** | Breadcrumbs include the root and follow sibling opens | shipped |
+| **0.79.0** | Diff ignore-whitespace toggle | shipped |
+| **0.80.0** | Terminal Escape clears selection | shipped |
+| **0.81.0** | Go to File across workspace roots | shipped |
+| **0.82.0** | Stop in-flight agent generation | shipped |
 | **1.0.0** | Stable product | owner decision only |
 
 ## Current target
