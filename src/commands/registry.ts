@@ -1696,7 +1696,12 @@ export const COMMANDS: Command[] = [
     category: "File",
     run: (ctx) => ctx.changeEncoding(),
   },
-
+  {
+    id: "workbench.action.searchGitHubIssues",
+    title: "Search GitHub Issues",
+    category: "GitHub",
+    run: (ctx) => ctx.searchGitHubIssues(),
+  },
 
 
 ];

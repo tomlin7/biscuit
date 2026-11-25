@@ -280,6 +280,7 @@ export type CommandContext = {
   toggleVimMode: () => void;
   toggleKeypressDisplay: () => void;
   changeEncoding: () => void;
+  searchGitHubIssues: () => void;
 };
 
 export type Command = {

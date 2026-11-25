@@ -33,7 +33,11 @@ import type { GitBranchInfo, GitSummary } from "../scm/ScmPanel";
 import { appendLog, clearLogs as clearLogBuffer } from "../logs/logBus";
 import { languageLabel, PICKABLE_LANGUAGES } from "../editor/languages";
 import { readRunCommands, setRunCommand } from "../terminal/runConfig";
-
+import {
+  githubIssuesSearchUrl,
+  githubPullsSearchUrl,
+  githubWebUrlFromRemote,
+} from "../scm/githubRemote";
 import { basename, isUntitledPath, languageFromPath, parentPath } from "../workspace/path";
 import { requestRunFile } from "../terminal/runFile";
 import { setShowTerminalListener } from "../terminal/runCommand";
@@ -397,6 +401,25 @@ function ShellChrome() {
   }, [openKeybindings]);
 
   const closePalette = useCallback(() => setPaletteOpen(false), []);
+
+  const resolveGithubRepoUrl = useCallback(async (): Promise<string | null> => {
+    if (!rootPath) {
+      notify("GitHub", "Open a folder that is a GitHub repository first.");
+      return null;
+    }
+    try {
+      const remote = await invoke<string>("git_remote_origin", { cwd: rootPath });
+      const web = githubWebUrlFromRemote(remote);
+      if (!web) {
+        notify("GitHub", "Origin remote is not a GitHub URL.");
+        return null;
+      }
+      return web;
+    } catch {
+      notify("GitHub", "Could not read git remote origin.");
+      return null;
+    }
+  }, [rootPath, notify]);
 
   const [settingsCategory, setSettingsCategory] = useState<"appearance" | "editor" | "ai">("editor");
   const openSettings = useCallback((tab?: "appearance" | "editor" | "ai") => {
@@ -1792,6 +1815,15 @@ function ShellChrome() {
         setPaletteSeed("Encoding");
         setPaletteOpen(true);
       },
+      searchGitHubIssues: () => {
+        void resolveGithubRepoUrl().then((web) => {
+          if (!web) return;
+          const q = selectionText.trim() || window.prompt("Search issues for:")?.trim() || "";
+          void openUrl(githubIssuesSearchUrl(web, q)).catch(() => {
+            /* ignore */
+          });
+        });
+      },
     }),
     [
       openFolder,
@@ -1948,6 +1980,7 @@ function ShellChrome() {
       updateApp,
       settings.vimMode,
       settings.keypressDisplay,
+      resolveGithubRepoUrl,
     ],
   );
 

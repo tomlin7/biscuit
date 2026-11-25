@@ -369,7 +369,7 @@ pub fn git_can_amend(cwd: String) -> Result<bool, String> {
         return Ok(true);
     };
     if !out.status.success() {
-        // No upstream configured ΓÇö safe to offer amend.
+        // No upstream configured — safe to offer amend.
         return Ok(true);
     }
     let status = Command::new("git")
@@ -387,7 +387,7 @@ pub fn git_can_amend(cwd: String) -> Result<bool, String> {
         return Ok(true);
     }
     if first.contains("...") && !first.contains("[") {
-        // In sync with upstream ΓÇö amending would rewrite published tip.
+        // In sync with upstream — amending would rewrite published tip.
         return Ok(false);
     }
     Ok(true)
@@ -411,6 +411,16 @@ pub fn git_stash_push(cwd: String, message: Option<String>) -> Result<(), String
 pub fn git_stash_pop(cwd: String) -> Result<(), String> {
     run_git(&cwd, &["stash".into(), "pop".into()])?;
     Ok(())
+}
+
+#[tauri::command]
+pub fn git_remote_origin(cwd: String) -> Result<String, String> {
+    let out = run_git(&cwd, &["remote".into(), "get-url".into(), "origin".into()])?;
+    let trimmed = out.trim();
+    if trimmed.is_empty() {
+        return Err("origin remote URL is empty".into());
+    }
+    Ok(trimmed.to_string())
 }
 
 #[cfg(test)]
