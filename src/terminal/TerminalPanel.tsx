@@ -14,6 +14,7 @@ import { setNewTerminalListener } from "./newTerminal";
 import { setKillActiveTerminalListener } from "./killTerminal";
 import { setDuplicateTerminalListener } from "./duplicateTerminal";
 import { setFocusTerminalListener } from "./focusTerminal";
+import { setRenameActiveTerminalListener } from "./renameTerminal";
 import { appendLog } from "../logs/logBus";
 import { useTheme } from "../theme/ThemeContext";
 import { useSettings } from "../settings/SettingsContext";
@@ -444,6 +445,18 @@ export function TerminalPanel({ open, embedded = false }: Props) {
       if (next) setActiveId(next.id);
     });
     return () => setFocusTerminalListener(null);
+  }, [activeId]);
+
+  useEffect(() => {
+    setRenameActiveTerminalListener(() => {
+      const list = sessionsRef.current;
+      const idx = list.findIndex((item) => item.id === activeId);
+      const session = idx >= 0 ? list[idx] : null;
+      if (!session) return;
+      setRenamingId(session.id);
+      setRenameDraft(shellLabel(session, idx >= 0 ? idx : 0));
+    });
+    return () => setRenameActiveTerminalListener(null);
   }, [activeId]);
 
   useEffect(() => {

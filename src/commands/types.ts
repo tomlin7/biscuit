@@ -78,6 +78,7 @@ export type CommandContext = {
   duplicateTerminal: () => void;
   focusNextTerminal: () => void;
   focusPreviousTerminal: () => void;
+  renameActiveTerminal: () => void;
   runFile: () => void;
   openProblems: () => void;
   toggleAi: () => void;

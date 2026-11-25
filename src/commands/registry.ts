@@ -488,6 +488,12 @@ export const COMMANDS: Command[] = [
     run: (ctx) => ctx.focusPreviousTerminal(),
   },
   {
+    id: "workbench.action.terminal.rename",
+    title: "Rename Active Terminal",
+    category: "Terminal",
+    run: (ctx) => ctx.renameActiveTerminal(),
+  },
+  {
     id: "workbench.action.runFile",
     title: "Run File",
     category: "Run",

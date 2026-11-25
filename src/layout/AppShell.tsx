@@ -33,6 +33,7 @@ import { requestNewTerminal } from "../terminal/newTerminal";
 import { requestKillActiveTerminal } from "../terminal/killTerminal";
 import { requestDuplicateTerminal } from "../terminal/duplicateTerminal";
 import { requestFocusTerminal } from "../terminal/focusTerminal";
+import { requestRenameActiveTerminal } from "../terminal/renameTerminal";
 import { relativeToRoot } from "../workspace/path";
 import { rootForPath } from "../ai/roots";
 import { requestSplitEditor } from "./splitBus";
@@ -509,6 +510,11 @@ function ShellChrome() {
         setPanelTab("terminal");
         setBottomOpen(true);
         requestFocusTerminal("previous");
+      },
+      renameActiveTerminal: () => {
+        setPanelTab("terminal");
+        setBottomOpen(true);
+        requestRenameActiveTerminal();
       },
       runFile: () => {
         if (!activePath) return;
