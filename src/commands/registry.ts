@@ -1322,8 +1322,18 @@ export const COMMANDS: Command[] = [
     category: "View",
     run: (ctx) => ctx.decreaseBottomPanelHeight(),
   },
-
-
+  {
+    id: "workbench.action.increaseAiPanelWidth",
+    title: "Increase AI Panel Width",
+    category: "View",
+    run: (ctx) => ctx.increaseAiPanelWidth(),
+  },
+  {
+    id: "workbench.action.decreaseAiPanelWidth",
+    title: "Decrease AI Panel Width",
+    category: "View",
+    run: (ctx) => ctx.decreaseAiPanelWidth(),
+  },
 
 
 

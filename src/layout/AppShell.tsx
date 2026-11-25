@@ -1303,6 +1303,14 @@ function ShellChrome() {
         setBottomHeight(bottomHeight - 20);
         setBottomOpen(true);
       },
+      increaseAiPanelWidth: () => {
+        setAiWidth(aiWidth + 20);
+        setAiOpen(true);
+      },
+      decreaseAiPanelWidth: () => {
+        setAiWidth(aiWidth - 20);
+        setAiOpen(true);
+      },
     }),
     [
       openFolder,
