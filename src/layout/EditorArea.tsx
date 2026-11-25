@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 import {
   Clock,
   Columns2,
+  Eye,
   PanelRightClose,
   Search,
   Sparkles,
   Zap,
 } from "lucide-react";
+import { MarkdownPreview } from "../editor/MarkdownPreview";
 import { MonacoEditor } from "../editor/MonacoEditor";
 import { EditorTabs } from "../workspace/EditorTabs";
 import { languageLabel } from "../editor/languages";
@@ -22,6 +24,7 @@ export function EditorArea() {
   const { findInFile } = useEditorActions();
   const { toggleAi, aiOpen } = useLayout();
   const [split, setSplit] = useState(false);
+  const [markdownPreview, setMarkdownPreview] = useState(false);
   const [splitRatio, setSplitRatio] = useState(0.5);
   const hasFile = document !== null;
 
@@ -29,6 +32,8 @@ export function EditorArea() {
     const d = new Date();
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }, [document?.path]);
+
+  const showPreview = markdownPreview && document?.language === "markdown";
 
   const secondaryPath = useMemo(() => {
     if (!split || !activePath) return null;
@@ -91,6 +96,15 @@ export function EditorArea() {
               {languageLabel(document.language)}
             </span>
           ) : null}
+          {document?.language === "markdown" ? (
+            <IconButton
+              icon={Eye}
+              label="Preview markdown"
+              size={15}
+              active={showPreview}
+              onClick={() => setMarkdownPreview((value) => !value)}
+            />
+          ) : null}
           <IconButton
             icon={Columns2}
             label="Split editor"
@@ -109,12 +123,12 @@ export function EditorArea() {
       </div>
       <div
         className={
-          split && secondaryPath
+          (showPreview || (split && secondaryPath))
             ? "editor-area__surface editor-area__surface--split"
             : "editor-area__surface"
         }
         style={
-          split && secondaryPath
+          showPreview || (split && secondaryPath)
             ? { gridTemplateColumns: `${splitRatio}fr 6px ${1 - splitRatio}fr` }
             : undefined
         }
@@ -124,7 +138,20 @@ export function EditorArea() {
             <div className="editor-area__pane">
               <MonacoEditor path={activePath} primary />
             </div>
-            {split && secondaryPath ? (
+            {showPreview ? (
+              <>
+                <ResizeHandle
+                  axis="x"
+                  label="Resize preview"
+                  onResize={(d) => {
+                    setSplitRatio((r) => Math.min(0.8, Math.max(0.2, r + d / 900)));
+                  }}
+                />
+                <div className="editor-area__pane">
+                  <MarkdownPreview source={document?.value ?? ""} />
+                </div>
+              </>
+            ) : split && secondaryPath ? (
               <>
                 <ResizeHandle
                   axis="x"
